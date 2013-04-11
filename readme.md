@@ -26,7 +26,7 @@ Theraot's Libraries...
   - includes code from HashBucket (another project of mine).
   - includes (among others) the following types to be used in old versions of .NET back to .NET 2.0:
     - System.Collections.Concurrent: Work in progress
-    - System.Collections.Generic.HashTable: Done
+    - System.Collections.Generic.HashSet: Done
     - System.Collections.Generic.SortedSet: Done
     - System.Collections.StructuralComparison: Done
     - System.Collections.Linq & System.Collections.Linq.Expressions: Nearly Done [Mostly taken from Mono]
