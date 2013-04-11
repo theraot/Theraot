@@ -93,4 +93,4 @@ Aside from the license, I can only warranty the following: It did work on my mac
 Binary
 ---
 
-Coming soon!
+The binary downloads are available from: http://www.4shared.com/folder/o2pF-8Oe/Theraot.html
