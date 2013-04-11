@@ -1,0 +1,29 @@
+using System;
+using System.Collections.Generic;
+
+using Theraot.Core;
+
+namespace Theraot.Collections.Specialized
+{
+    [global::System.Diagnostics.DebuggerNonUserCode]
+    public class CustomComparer<T> : IComparer<T>
+    {
+        private Func<T, T, int> _comparison;
+
+        public CustomComparer(Func<T, T, int> comparison)
+        {
+            _comparison = Check.NotNullArgument(comparison, "comparison");
+        }
+
+        public CustomComparer(Comparison<T> comparison)
+        {
+            var __comparison = Check.NotNullArgument(comparison, "comparison");
+            _comparison = __comparison.Invoke;
+        }
+
+        public int Compare(T x, T y)
+        {
+            return _comparison.Invoke(x, y);
+        }
+    }
+}

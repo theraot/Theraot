@@ -1,0 +1,101 @@
+﻿<#@ assembly name="$(SolutionDir)\Core\$(OutDir)\theraot.Core.dll" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Globalization" #>
+<#@ import namespace="Theraot.Core" #>
+<#@ import namespace="Theraot.Collections" #><#+
+
+    private string ConverterA(KeyValuePair<string, string> input)
+    {
+        return string.Format(CultureInfo.InvariantCulture, "{0}.{1}();", input.Key, input.Value);
+    }
+
+    private string ConverterB(string input)
+    {
+        return string.Format(CultureInfo.InvariantCulture, "{0} = null;", input);
+    }
+
+    public string getText
+    (
+        bool isInherited,
+        bool isSealed,
+        bool nonCritical,
+        string namespaceName,
+        string className,
+        IEnumerable<KeyValuePair<string, string>> managedCalls,
+        IEnumerable<KeyValuePair<string, string>> unmanagedCalls,
+        IEnumerable<string> toSetToNull
+    )
+    {
+        string path = Host.ResolvePath("@Path").EnsureEnd(System.IO.Path.DirectorySeparatorChar.ToString());
+        string baseText;
+        if (isInherited)
+        {
+            baseText = System.IO.File.ReadAllText(path + "InheritedDisposableTemplate.cs");
+        }
+        else
+        {
+            if (nonCritical)
+            {
+                baseText = System.IO.File.ReadAllText(path + "DisposableTemplate.cs");
+            }
+            else
+            {
+                baseText = System.IO.File.ReadAllText(path + "DisposableCriticalTemplate.cs");
+            }
+        }
+        StringAssembler assambler = new StringAssembler(baseText);
+        if (isSealed)
+        {
+            assambler.Replace("partial", "sealed partial");
+            assambler.Replace("protected virtual", "private");
+            assambler.Replace("protected", "private");
+        }
+        assambler.Replace("@NamespaceName", namespaceName);
+        assambler.Replace("@ClassName/*GenericParams*/", className);
+        assambler.Replace("@ClassName", className.Split('<')[0]);
+        var converterA = new Converter<KeyValuePair<string, string>, string>(ConverterA);
+        var converterB = new Converter<string, string>(ConverterB);
+        assambler.ReplaceFactory
+        (
+            "//ReleaseManagedResources",
+            new MultilineBuilder
+                (
+                    "                        ",
+                    "//Empty",
+                    managedCalls.ConvertProgressive<KeyValuePair<string, string>, string>
+                    (
+                        converterA
+                    )
+                )
+        );
+        assambler.ReplaceFactory
+        (
+            "//SetToNull",
+            new MultilineBuilder
+                (
+                    "                        ",
+                    "//Empty",
+                    toSetToNull.ConvertProgressive<string, string>
+                    (
+                        converterB
+                    )
+                )
+        );
+        assambler.ReplaceFactory
+        (
+            "//ReleaseUnmanagedResources",
+            new MultilineBuilder
+                (
+                    "                        ",
+                    "//Empty",
+                    unmanagedCalls.ConvertProgressive<KeyValuePair<string, string>, string>
+                    (
+                        converterA
+                    )
+                )
+        );
+        return assambler.Create();
+    }
+#>

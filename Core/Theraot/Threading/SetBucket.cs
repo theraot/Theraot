@@ -1,0 +1,632 @@
+#if FAT
+using System;
+using System.Collections.Generic;
+using System.Threading;
+
+namespace Theraot.Threading
+{
+    /// <summary>
+    /// Represent a thread-safe lock-free hash based set.
+    /// </summary>
+    /// <typeparam name="T">The type of the item.</typeparam>
+    /// <remarks>
+    /// Consider wrapping this class to implement <see cref="ISet{T}" /> or any other desired interface.
+    /// </remarks>
+    public sealed class SetBucket<T> : IEnumerable<T>
+    {
+        private const int INT_DefaultCapacity = 64;
+        private const int INT_DefaultMaxProbing = 1;
+        private const int INT_SpinWaitHint = 80;
+
+        private IEqualityComparer<T> _comparer;
+        private int _copyingThreads;
+        private int _copyPosition;
+        private int _count;
+        private FixedSizeSetBucket<T> _entriesNew;
+        private FixedSizeSetBucket<T> _entriesOld;
+        private int _maxProbing;
+        private volatile int _revision;
+        private int _status;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SetBucket{TValue}" /> class.
+        /// </summary>
+        public SetBucket()
+            : this(INT_DefaultCapacity, EqualityComparer<T>.Default, INT_DefaultMaxProbing)
+        {
+            // Empty
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SetBucket{TValue}" /> class.
+        /// </summary>
+        /// <param name="capacity">The initial capacity.</param>
+        public SetBucket(int capacity)
+            : this(capacity, EqualityComparer<T>.Default, INT_DefaultMaxProbing)
+        {
+            // Empty
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SetBucket{TValue}" /> class.
+        /// </summary>
+        /// <param name="capacity">The initial capacity.</param>
+        /// <param name="maxProbing">The maximum number of steps in linear probing.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">maxProbing;maxProbing must be greater or equal to 1 and less than capacity.</exception>
+        public SetBucket(int capacity, int maxProbing)
+            : this(capacity, EqualityComparer<T>.Default, maxProbing)
+        {
+            // Empty
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SetBucket{TValue}" /> class.
+        /// </summary>
+        /// <param name="comparer">The comparer.</param>
+        public SetBucket(IEqualityComparer<T> comparer)
+            : this(INT_DefaultCapacity, comparer, INT_DefaultMaxProbing)
+        {
+            // Empty
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SetBucket{TValue}" /> class.
+        /// </summary>
+        /// <param name="comparer">The comparer.</param>
+        /// <param name="maxProbing">The maximum number of steps in linear probing.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">maxProbing;maxProbing must be greater or equal to 1 and less than capacity.</exception>
+        public SetBucket(IEqualityComparer<T> comparer, int maxProbing)
+            : this(INT_DefaultCapacity, comparer, maxProbing)
+        {
+            // Empty
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SetBucket{TValue}" /> class.
+        /// </summary>
+        /// <param name="capacity">The initial capacity.</param>
+        /// <param name="comparer">The comparer.</param>
+        public SetBucket(int capacity, IEqualityComparer<T> comparer)
+            : this(capacity, comparer, INT_DefaultMaxProbing)
+        {
+            // Empty
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SetBucket{TValue}" /> class.
+        /// </summary>
+        /// <param name="capacity">The initial capacity.</param>
+        /// <param name="comparer">The comparer.</param>
+        /// <param name="maxProbing">The maximum number of steps in linear probing.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">maxProbing;maxProbing must be greater or equal to 1 and less than capacity.</exception>
+        public SetBucket(int capacity, IEqualityComparer<T> comparer, int maxProbing)
+        {
+            if (maxProbing < 1 || maxProbing >= capacity)
+            {
+                throw new ArgumentOutOfRangeException("maxProbing", "maxProbing must be greater or equal to 1 and less than capacity.");
+            }
+            else
+            {
+                _comparer = comparer ?? EqualityComparer<T>.Default;
+                _entriesOld = null;
+                _entriesNew = new FixedSizeSetBucket<T>(capacity, _comparer);
+                _maxProbing = maxProbing;
+            }
+        }
+
+        /// <summary>
+        /// Gets the capacity.
+        /// </summary>
+        public int Capacity
+        {
+            get
+            {
+                return _entriesNew.Capacity;
+            }
+        }
+
+        /// <summary>
+        /// Gets the item comparer.
+        /// </summary>
+        public IEqualityComparer<T> Comparer
+        {
+            get
+            {
+                return _entriesNew.Comparer;
+            }
+        }
+
+        /// <summary>
+        /// Gets the number of items actually contained.
+        /// </summary>
+        public int Count
+        {
+            get
+            {
+                return _count;
+            }
+        }
+
+        /// <summary>
+        /// Gets the items and associated values contained in this object.
+        /// </summary>
+        public IList<T> Values
+        {
+            get
+            {
+                return _entriesNew.Values;
+            }
+        }
+
+        /// <summary>
+        /// Adds the specified item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <exception cref="System.ArgumentException">the item is already present</exception>
+        public void Add(T item)
+        {
+            bool result = false;
+            int revision;
+            while (true)
+            {
+                revision = _revision;
+                if (IsOperationSafe() == 0)
+                {
+                    bool isCollision = false;
+                    var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
+                    bool done = false;
+                    try
+                    {
+                        if (AddExtracted(item, entries, out isCollision) != -1)
+                        {
+                            result = true;
+                        }
+                    }
+                    finally
+                    {
+                        var isOperationSafe = IsOperationSafe(entries, revision);
+                        if (isOperationSafe == 0)
+                        {
+                            if (result)
+                            {
+                                Interlocked.Increment(ref _count);
+                                done = true;
+                            }
+                            else
+                            {
+                                if (isCollision)
+                                {
+                                    var oldStatus = Interlocked.CompareExchange(ref _status, 1, 0);
+                                    if (oldStatus == 0)
+                                    {
+                                        _revision++;
+                                    }
+                                }
+                                else
+                                {
+                                    throw new ArgumentException("the item is already present");
+                                }
+                            }
+                        }
+                    }
+                    if (done)
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    CooperativeGrow();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Removes all the elements.
+        /// </summary>
+        public void Clear()
+        {
+            _entriesOld = null;
+            _entriesNew = new FixedSizeSetBucket<T>(INT_DefaultCapacity, _comparer);
+            Thread.VolatileWrite(ref _status, 0);
+            Thread.VolatileWrite(ref _count, 0);
+            _revision++;
+        }
+
+        /// <summary>
+        /// Determines whether the specified item is contained.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified item is contained; otherwise, <c>false</c>.
+        /// </returns>
+        public bool Contains(T item)
+        {
+            bool result = false;
+            int revision;
+            while (true)
+            {
+                revision = _revision;
+                if (IsOperationSafe() == 0)
+                {
+                    var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
+                    bool done = false;
+                    try
+                    {
+                        if (ContainsExtracted(item, entries))
+                        {
+                            result = true;
+                        }
+                    }
+                    finally
+                    {
+                        var isOperationSafe = IsOperationSafe(entries, revision);
+                        if (isOperationSafe == 0)
+                        {
+                            done = true;
+                        }
+                    }
+                    if (done)
+                    {
+                        return result;
+                    }
+                }
+                else
+                {
+                    CooperativeGrow();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns an <see cref="System.Collections.Generic.IEnumerator{T}" /> that allows to iterate through the collection.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.Collections.Generic.IEnumerator{T}" /> that can be used to iterate through the collection.
+        /// </returns>
+        public IEnumerator<T> GetEnumerator()
+        {
+            return _entriesNew.GetEnumerable().GetEnumerator();
+        }
+
+        /// <summary>
+        /// Removes the specified item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified item was removed; otherwise, <c>false</c>.
+        /// </returns>
+        public bool Remove(T item)
+        {
+            bool result = false;
+            int revision;
+            while (true)
+            {
+                revision = _revision;
+                if (IsOperationSafe() == 0)
+                {
+                    var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
+                    bool done = false;
+                    try
+                    {
+                        if (RemoveExtracted(item, entries))
+                        {
+                            result = true;
+                        }
+                    }
+                    finally
+                    {
+                        var isOperationSafe = IsOperationSafe(entries, revision);
+                        if (isOperationSafe == 0)
+                        {
+                            if (result)
+                            {
+                                Interlocked.Decrement(ref _count);
+                            }
+                            done = true;
+                        }
+                    }
+                    if (done)
+                    {
+                        return result;
+                    }
+                }
+                else
+                {
+                    CooperativeGrow();
+                }
+            }
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        /// <summary>
+        /// Tries to retrieve the item at the specified index.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="item">The item.</param>
+        /// <returns>
+        ///   <c>true</c> if the item was retrieved; otherwise, <c>false</c>.
+        /// </returns>
+        public bool TryGet(int index, out T item)
+        {
+            item = default(T);
+            bool result = false;
+            int revision;
+            while (true)
+            {
+                revision = _revision;
+                if (IsOperationSafe() == 0)
+                {
+                    var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
+                    bool done = false;
+                    try
+                    {
+                        T tmpItem;
+                        if (TryGetExtracted(index, entries, out tmpItem))
+                        {
+                            item = tmpItem;
+                            result = true;
+                        }
+                    }
+                    finally
+                    {
+                        var isOperationSafe = IsOperationSafe(entries, revision);
+                        if (isOperationSafe == 0)
+                        {
+                            done = true;
+                        }
+                    }
+                    if (done)
+                    {
+                        return result;
+                    }
+                }
+                else
+                {
+                    CooperativeGrow();
+                }
+            }
+        }
+
+        private int AddExtracted(T item, FixedSizeSetBucket<T> entries, out bool isCollision)
+        {
+            isCollision = true;
+            if (entries != null)
+            {
+                for (int attempts = 0; attempts < _maxProbing; attempts++)
+                {
+                    int index = entries.Add(item, attempts, out isCollision);
+                    if (index != -1 || !isCollision)
+                    {
+                        return index;
+                    }
+                }
+            }
+            return -1;
+        }
+
+        private bool ContainsExtracted(T item, FixedSizeSetBucket<T> entries)
+        {
+            for (int attempts = 0; attempts < _maxProbing; attempts++)
+            {
+                if (entries.Contains(item, attempts) != -1)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void CooperativeGrow()
+        {
+            int status = 0;
+            do
+            {
+                status = Thread.VolatileRead(ref _status);
+                int oldStatus;
+                switch (status)
+                {
+                    case 1:
+
+                        // This area is only accessed by one thread, if that thread is aborted, we are doomed.
+                        // This class is not abort safe, aside from a thread being aborted here, a thread being aborted on status == 2 will mean lost items
+                        var priority = Thread.CurrentThread.Priority;
+                        oldStatus = Interlocked.CompareExchange(ref _status, 2, 1);
+                        if (oldStatus == 1)
+                        {
+                            try
+                            {
+                                // The progress of other threads depend of this one, we should not allow a priority inversion.
+                                Thread.CurrentThread.Priority = ThreadPriority.Highest;
+                                Thread.VolatileWrite(ref _copyPosition, -1);
+                                var newCapacity = _entriesNew.Capacity * 2;
+                                _entriesOld = Interlocked.Exchange(ref _entriesNew, new FixedSizeSetBucket<T>(newCapacity, _comparer));
+                                oldStatus = Interlocked.CompareExchange(ref _status, 3, 2);
+                            }
+                            finally
+                            {
+                                Thread.CurrentThread.Priority = priority;
+                                _revision++;
+                            }
+                        }
+                        break;
+
+                    case 2:
+
+                        // This is the whole reason why this datastructure is not wait free.
+                        // Testing shows that it is uncommon that a thread enters here.
+                        // _status is 2 only for a short period.
+                        // Still, it happens, so this is needed for correctness.
+                        // Going completely wait-free adds complexity with deminished value.
+                        Thread.Sleep(0);
+                        Thread.SpinWait(INT_SpinWaitHint);
+                        break;
+
+                    case 3:
+
+                        // It is time to cooperate to copy the old storage to the new one
+                        var old = _entriesOld;
+                        if (old != null)
+                        {
+                            // This class is not abort safe, aside from a thread being aborted here (causing lost items) a thread being aborted on status == 1 will mean a livelock
+                            _revision++;
+                            Interlocked.Increment(ref _copyingThreads);
+                            T item;
+                            int index = Interlocked.Increment(ref _copyPosition);
+                            for (; index < old.Capacity; index = Interlocked.Increment(ref _copyPosition))
+                            {
+                                if (old.TryGet(index, out item))
+                                {
+                                    // We have read an item, so let's try to add it to the new storage
+                                    bool dummy;
+
+                                    //HACK
+                                    if (SetExtracted(item, _entriesNew, out dummy) == -1)
+                                    {
+                                        GC.KeepAlive(dummy);
+                                    }
+                                }
+                            }
+                            Interlocked.CompareExchange(ref _status, 4, 3);
+                            _revision++;
+                            Interlocked.Decrement(ref _copyingThreads);
+                        }
+                        break;
+
+                    case 4:
+
+                        // Our copy is finished, we don't need the old storage anymore
+                        oldStatus = Interlocked.CompareExchange(ref _status, 2, 4);
+                        if (oldStatus == 4)
+                        {
+                            _revision++;
+                            Interlocked.Exchange(ref _entriesOld, null);
+                            Interlocked.CompareExchange(ref _status, 0, 2);
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+            while (status != 0);
+        }
+
+        private int IsOperationSafe(object entries, int revision)
+        {
+            int result = 5;
+            bool check = _revision != revision;
+            if (check)
+            {
+                result = 4;
+            }
+            else
+            {
+                var newEntries = Interlocked.CompareExchange(ref _entriesNew, null, null);
+                if (entries != newEntries)
+                {
+                    result = 3;
+                }
+                else
+                {
+                    var newStatus = Interlocked.CompareExchange(ref _status, 0, 0);
+                    if (newStatus != 0)
+                    {
+                        result = 2;
+                    }
+                    else
+                    {
+                        if (Thread.VolatileRead(ref _copyingThreads) > 0)
+                        {
+                            _revision++;
+                            result = 1;
+                        }
+                        else
+                        {
+                            result = 0;
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+        private int IsOperationSafe()
+        {
+            var newStatus = Interlocked.CompareExchange(ref _status, 0, 0);
+            if (newStatus != 0)
+            {
+                return 2;
+            }
+            else
+            {
+                if (Thread.VolatileRead(ref _copyingThreads) > 0)
+                {
+                    _revision++;
+                    return 1;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+
+        private bool RemoveExtracted(T item, FixedSizeSetBucket<T> entries)
+        {
+            if (entries != null)
+            {
+                for (int attempts = 0; attempts < _maxProbing; attempts++)
+                {
+                    if (entries.Remove(item, attempts) != -1)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        //HACK
+        private int SetExtracted(T item, FixedSizeSetBucket<T> entries, out bool isNew)
+        {
+            isNew = false;
+            if (entries != null)
+            {
+                for (int attempts = 0; attempts < _maxProbing; attempts++)
+                {
+                    int index = entries.Set(item, attempts, out isNew);
+                    if (index != -1)
+                    {
+                        return index;
+                    }
+                }
+            }
+            return -1;
+        }
+
+        private bool TryGetExtracted(int index, FixedSizeSetBucket<T> entries, out T item)
+        {
+            item = default(T);
+            if (entries != null)
+            {
+                if (entries.TryGet(index, out item))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // This class will not shrink, the reason for this is that shrinking may fail, supporting it may require to add locks. [Not solved problem]
+        // Enumerating this class gives no guaranties:
+        //  Items may be added or removed during enumeration without causing an exception.
+        //  A version mechanism is not in place.
+        //  This can be added by a wrapper.
+    }
+}
+#endif
