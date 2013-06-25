@@ -52,6 +52,7 @@ There are a few things that are beyond the scope of my work:
 
   - I cannot provide Generic Variance
   - I cannot extend reflection (I recommend to use Mono.Cecil)
+  - I cannot add some methods such as String.Join(string, IEnumerator<string>), I'll provide helper functions instead.
   - I will not include backports of Reactive Extensions or any other code not in the BCL, but I may provide similar functionality.
   - I have no intention to backport GUI libraries.
 
