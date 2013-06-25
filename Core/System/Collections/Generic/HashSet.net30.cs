@@ -121,7 +121,7 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException("array");
             }
-            else if (Count >= array.Length)
+            else if (Count > array.Length)
             {
                 throw new ArgumentException("the Count property is larger than the size of the destination array.");
             }
@@ -145,7 +145,7 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentException("arrayIndex is greater than the length of the destination array.");
             }
-            if (Count >= array.Length)
+            if (Count > array.Length)
             {
                 throw new ArgumentException("the Count property is larger than the size of the destination array.");
             }
