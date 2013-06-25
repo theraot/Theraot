@@ -111,7 +111,8 @@
     <Compile Include="System\Linq\SortContext.cs" />
     <Compile Include="System\Linq\SortDirection.cs" />
     <Compile Include="System\Linq\SortSequenceContext.cs" />
-    <Compile Include="System\Numerics\Complex.cs" />
+    <Compile Include="System\Numerics\BigInteger.net35.cs" />
+    <Compile Include="System\Numerics\Complex.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\DynamicAttribute.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\ExecutionScope.net30.cs" />
     <Compile Include="System\Runtime\CompilerServices\IStrongBox.cs" />

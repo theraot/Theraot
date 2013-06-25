@@ -30,6 +30,7 @@ Theraot's Libraries...
     - System.Collections.Generic.SortedSet: Done
     - System.Collections.StructuralComparison: Done
     - System.Collections.Linq & System.Collections.Linq.Expressions: Nearly Done [Mostly taken from Mono]
+    - System.Numerics: Done [Taken from Mono]*
     - System.Runtime.CompilerServices.DynamicAttribute & System.Runtime.CompilerServices.ExtensionAttribute: Done
     - System.Therading.ThreadLocal: Done
     - System.Threading.Tasks: Planned
@@ -40,9 +41,10 @@ Theraot's Libraries...
     - System.Lazy: Done
     - System.Tuple: Done
   - uses less than 1MB in disk
-  - keeps a consistent code style in the whole code*
+  - keeps a consistent code style in the whole code**
     
-*: I intent to keep the code readeable, yet documentation is low priority at this point.
+*: I can't probably mantain the code of System.Numerics from Mono, I'll look into adapting IntX or implementing my own.
+**: I intent to keep the code readeable, yet documentation is low priority at this point. 
 
 ---
 

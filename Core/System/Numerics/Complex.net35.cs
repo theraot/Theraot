@@ -1,4 +1,6 @@
-﻿//
+﻿#if NET20 || NET30 || NET35
+
+//
 // Complex.cs: Complex number support
 //
 // Author:
@@ -136,10 +138,10 @@ namespace System.Numerics
             return new Complex((double)value, 0);
         }
 
-        /*public static explicit operator Complex(BigInteger value)
+        public static explicit operator Complex(BigInteger value)
         {
             return new Complex((double)value, 0);
-        }*/
+        }
 
         public static Complex FromPolarCoordinates(double magnitude, double phase)
         {
@@ -280,7 +282,9 @@ namespace System.Numerics
         public static Complex Reciprocal(Complex value)
         {
             if (value == Zero)
-            { return value; }
+            {
+                return value;
+            }
             return One / value;
         }
 
@@ -324,7 +328,9 @@ namespace System.Numerics
         public override bool Equals(object obj)
         {
             if (obj == null || !(obj is Complex))
-            { return false; }
+            {
+                return false;
+            }
             Complex r = (Complex)obj;
             return real == r.real && imaginary == r.imaginary;
         }
@@ -355,3 +361,5 @@ namespace System.Numerics
         }
     }
 }
+
+#endif
