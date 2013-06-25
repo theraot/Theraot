@@ -9,7 +9,7 @@ using Theraot.Collections;
 namespace Theraot.Core
 {
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public static class StringExtensions
+    public static class StringHelper
     {
         public static string Append(this string text, string value)
         {

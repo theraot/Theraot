@@ -319,7 +319,7 @@
     <Compile Include="Theraot\Core\DebugHelper.cs" />
     <Compile Include="Theraot\Core\MultilineBuilder.cs" />
     <Compile Include="Theraot\Core\StringAssembler.cs" />
-    <Compile Include="Theraot\Core\StringExtensions.cs" />
+    <Compile Include="Theraot\Core\StringHelper.cs" />
     <Compile Include="Theraot\Core\TypeHelper.cs" />
     <Compile Include="System\Tuple1.net35.cs" />
     <Compile Include="System\Tuple.net35.cs" />
