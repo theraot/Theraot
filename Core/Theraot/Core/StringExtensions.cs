@@ -11,6 +11,27 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public static class StringExtensions
     {
+        public static bool IsNullOrWhiteSpace (this string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return true;
+            }
+            foreach (char c in value)
+            {
+                if (!Char.IsWhiteSpace(c))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public static bool IsNullOrEmpty(this string value)
+        {
+            return string.IsNullOrEmpty(value);
+        }
+
         public static string Append(this string text, string value)
         {
             return string.Concat(text, value);
