@@ -11,27 +11,6 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public static class StringExtensions
     {
-        public static bool IsNullOrWhiteSpace (this string value)
-        {
-            if (string.IsNullOrEmpty(value))
-            {
-                return true;
-            }
-            foreach (char c in value)
-            {
-                if (!Char.IsWhiteSpace(c))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public static bool IsNullOrEmpty(this string value)
-        {
-            return string.IsNullOrEmpty(value);
-        }
-
         public static string Append(this string text, string value)
         {
             return string.Concat(text, value);
@@ -45,6 +24,72 @@ namespace Theraot.Core
         public static string Append(this string text, params string[] values)
         {
             return string.Concat(text, values);
+        }
+
+        public static string Concat(params string[] value)
+        {
+            return string.Concat(value);
+        }
+
+        public static string Concat(string[] array, int arrayIndex)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException("array");
+            }
+            if (arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
+            }
+            if (arrayIndex == array.Length)
+            {
+                return string.Empty;
+            }
+            return ConcatExtracted(array, arrayIndex, array.Length - arrayIndex);
+        }
+
+        public static string Concat(string[] array, int arrayIndex, int countLimit)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException("array");
+            }
+            if (arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
+            }
+            if (countLimit < 0)
+            {
+                throw new ArgumentOutOfRangeException("countLimit", "Non-negative number is required.");
+            }
+            if (countLimit > array.Length - arrayIndex)
+            {
+                throw new ArgumentException("array", "startIndex plus countLimit is greater than the number of elements in array.");
+            }
+            if (arrayIndex == array.Length)
+            {
+                return string.Empty;
+            }
+            return ConcatExtracted(array, arrayIndex, countLimit);
+        }
+
+        public static string Concat(params object[] values)
+        {
+            return string.Concat(values);
+        }
+
+        public static string Concat<T>(IEnumerable<T> values)
+        {
+            if (values == null)
+            {
+                throw new ArgumentNullException("values");
+            }
+            var stringList = new List<string>();
+            foreach (var item in values)
+            {
+                stringList.Add(item.ToString());
+            }
+            return ConcatExtracted(stringList.ToArray(), 0, stringList.Count);
         }
 
         public static string End(this string text, int characterCount)
@@ -194,6 +239,126 @@ namespace Theraot.Core
             {
                 return str.ToString();
             }
+        }
+
+        public static bool IsNullOrEmpty(this string value)
+        {
+            return string.IsNullOrEmpty(value);
+        }
+
+        public static bool IsNullOrWhiteSpace(this string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return true;
+            }
+            foreach (char character in value)
+            {
+                if (!Char.IsWhiteSpace(character))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        public static string Join(string separator, params string[] value)
+        {
+            if (ReferenceEquals(value, null))
+            {
+                throw new ArgumentNullException("value");
+            }
+            if (ReferenceEquals(separator, null))
+            {
+                separator = string.Empty;
+            }
+            return JoinExtracted (separator, value, 0, value.Length);
+        }
+
+        public static string Join(string separator, string[] array, int arrayIndex)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException("array");
+            }
+            if (arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
+            }
+            if (arrayIndex == array.Length)
+            {
+                return string.Empty;
+            }
+            if (ReferenceEquals(separator, null))
+            {
+                separator = string.Empty;
+            }
+            return JoinExtracted(separator, array, arrayIndex, array.Length - arrayIndex);
+        }
+
+        public static string Join(string separator, string[] array, int arrayIndex, int countLimit)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException("array");
+            }
+            if (arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
+            }
+            if (countLimit < 0)
+            {
+                throw new ArgumentOutOfRangeException("countLimit", "Non-negative number is required.");
+            }
+            if (countLimit > array.Length - arrayIndex)
+            {
+                throw new ArgumentException("array", "The array can not contain the number of elements.");
+            }
+            if (arrayIndex == array.Length)
+            {
+                return string.Empty;
+            }
+            if (ReferenceEquals(separator, null))
+            {
+                separator = string.Empty;
+            }
+            return JoinExtracted(separator, array, arrayIndex, countLimit);
+        }
+
+        public static string Join(string separator, params object[] values)
+        {
+            if (separator == null)
+            {
+                return string.Concat(values);
+            }
+            if (values == null)
+            {
+                throw new ArgumentNullException("values");
+            }
+            var array = new string[values.Length];
+            int index = 0;
+            foreach (var item in values)
+            {
+                array[index++] = item.ToString();
+            }
+            return JoinExtracted(separator, array, 0, array.Length);
+        }
+
+        public static string Join<T>(string separator, IEnumerable<T> values)
+        {
+            if (separator == null)
+            {
+                return Concat<T>(values);
+            }
+            if (values == null)
+            {
+                throw new ArgumentNullException("values");
+            }
+            var stringList = new List<string>();
+            foreach (var item in values)
+            {
+                stringList.Add(item.ToString());
+            }
+            return JoinExtracted(separator, stringList.ToArray(), 0, stringList.Count);
         }
 
         public static bool Like(this string text, Regex regex, int startAt)
@@ -452,18 +617,33 @@ namespace Theraot.Core
             }
         }
 
-        /*[global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", Justification = "By Design")]
-        public static string ToString(this object obj, string onNull)
+        private static string ConcatExtracted(string[] array, int startIndex, int count)
         {
-            if (obj == null)
+            int length = 0;
+            int maxIndex = startIndex + count;
+            for (int index = startIndex; index < maxIndex; index++)
             {
-                return onNull;
+                var item = array[index];
+                if (!ReferenceEquals(item, null))
+                {
+                    length += item.Length;
+                }
+            }
+            if (length <= 0)
+            {
+                return string.Empty;
             }
             else
             {
-                return obj.ToString();
+                StringBuilder result = new StringBuilder(length);
+                for (int index = startIndex; index < maxIndex; index++)
+                {
+                    var item = array[index];
+                    result.Append(item);
+                }
+                return result.ToString();
             }
-        }*/
+        }
 
         private static StringBuilder ImplodeExtracted(IEnumerable<string> collection, string separator)
         {
@@ -483,5 +663,55 @@ namespace Theraot.Core
             }
             return str;
         }
+
+        private static string JoinExtracted(string separator, string[] array, int startIndex, int count)
+        {
+            int length = 0;
+            int maxIndex = startIndex + count;
+            for (int index = startIndex; index < maxIndex; index++)
+            {
+                var item = array[index];
+                if (!ReferenceEquals(item, null))
+                {
+                    length += item.Length;
+                }
+            }
+            length += separator.Length * (count - 1);
+            if (length <= 0)
+            {
+                return string.Empty;
+            }
+            else
+            {
+                StringBuilder result = new StringBuilder(length);
+                bool first = true;
+                for (int index = startIndex; index < maxIndex; index++)
+                {
+                    var item = array[index];
+                    if (first)
+                    {
+                        first = false;
+                    }
+                    else
+                    {
+                        result.Append(separator);
+                    }
+                    result.Append(item);
+                }
+                return result.ToString();
+            }
+        }
+        /*[global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", Justification = "By Design")]
+        public static string ToString(this object obj, string onNull)
+        {
+            if (obj == null)
+            {
+                return onNull;
+            }
+            else
+            {
+                return obj.ToString();
+            }
+        }*/
     }
 }
