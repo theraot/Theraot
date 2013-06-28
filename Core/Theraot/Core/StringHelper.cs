@@ -21,6 +21,11 @@ namespace Theraot.Core
             return string.Concat(text, value1, value2);
         }
 
+        public static string Append(this string text, string value1, string value2, string value3)
+        {
+            return string.Concat(text, value1, value2, value3);
+        }
+
         public static string Append(this string text, params string[] values)
         {
             return string.Concat(text, values);
@@ -78,18 +83,87 @@ namespace Theraot.Core
             return string.Concat(values);
         }
 
-        public static string Concat<T>(IEnumerable<T> values)
+        public static string Concat(object[] array, int arrayIndex)
         {
+            if (array == null)
+            {
+                throw new ArgumentNullException("array");
+            }
+            if (arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
+            }
+            if (arrayIndex == array.Length)
+            {
+                return string.Empty;
+            }
+            return ConcatExtracted(array, arrayIndex, array.Length - arrayIndex);
+        }
+
+        public static string Concat(object[] array, int arrayIndex, int countLimit)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException("array");
+            }
+            if (arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
+            }
+            if (countLimit < 0)
+            {
+                throw new ArgumentOutOfRangeException("countLimit", "Non-negative number is required.");
+            }
+            if (countLimit > array.Length - arrayIndex)
+            {
+                throw new ArgumentException("array", "startIndex plus countLimit is greater than the number of elements in array.");
+            }
+            if (arrayIndex == array.Length)
+            {
+                return string.Empty;
+            }
+            return ConcatExtracted(array, arrayIndex, countLimit);
+        }
+
+        public static string Concat(IEnumerable<string> values)
+        {
+#if NET20 || NET30 || NET35
             if (values == null)
             {
                 throw new ArgumentNullException("values");
             }
             var stringList = new List<string>();
+            int length = 0;
             foreach (var item in values)
             {
-                stringList.Add(item.ToString());
+                stringList.Add(item);
+                length += item.Length;
             }
-            return ConcatExtracted(stringList.ToArray(), 0, stringList.Count);
+            return ConcatExtractedExtracted(stringList.ToArray(), 0, stringList.Count, length);
+#else
+            return string.Concat(values);
+#endif
+        }
+
+        public static string Concat<T>(IEnumerable<T> values)
+        {
+#if NET20 || NET30 || NET35
+            if (values == null)
+            {
+                throw new ArgumentNullException("values");
+            }
+            var stringList = new List<string>();
+            int length = 0;
+            foreach (var item in values)
+            {
+                var itemToString = item.ToString();
+                stringList.Add(itemToString);
+                length += itemToString.Length;
+            }
+            return ConcatExtractedExtracted(stringList.ToArray(), 0, stringList.Count, length);
+#else
+            return string.Concat(values);
+#endif
         }
 
         public static string End(this string text, int characterCount)
@@ -254,13 +328,14 @@ namespace Theraot.Core
             }
             foreach (char character in value)
             {
-                if (!Char.IsWhiteSpace(character))
+                if (!char.IsWhiteSpace(character))
                 {
                     return false;
                 }
             }
             return true;
         }
+
         public static string Join(string separator, params string[] value)
         {
             if (ReferenceEquals(value, null))
@@ -271,7 +346,7 @@ namespace Theraot.Core
             {
                 separator = string.Empty;
             }
-            return JoinExtracted (separator, value, 0, value.Length);
+            return JoinExtracted(separator, value, 0, value.Length);
         }
 
         public static string Join(string separator, string[] array, int arrayIndex)
@@ -617,6 +692,24 @@ namespace Theraot.Core
             }
         }
 
+        private static string ConcatExtracted(object[] array, int startIndex, int count)
+        {
+            int length = 0;
+            int maxIndex = startIndex + count;
+            var newArray = new string[count];
+            for (int index = startIndex; index < maxIndex; index++)
+            {
+                var item = array[index];
+                if (!ReferenceEquals(item, null))
+                {
+                    var itemToString = item.ToString();
+                    newArray[index - startIndex] = itemToString;
+                    length += itemToString.Length;
+                }
+            }
+            return ConcatExtractedExtracted(newArray, 0, count, length);
+        }
+
         private static string ConcatExtracted(string[] array, int startIndex, int count)
         {
             int length = 0;
@@ -629,6 +722,11 @@ namespace Theraot.Core
                     length += item.Length;
                 }
             }
+            return ConcatExtractedExtracted(array, startIndex, maxIndex, length);
+        }
+
+        private static string ConcatExtractedExtracted(string[] array, int startIndex, int maxIndex, int length)
+        {
             if (length <= 0)
             {
                 return string.Empty;
@@ -701,6 +799,7 @@ namespace Theraot.Core
                 return result.ToString();
             }
         }
+
         /*[global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", Justification = "By Design")]
         public static string ToString(this object obj, string onNull)
         {
