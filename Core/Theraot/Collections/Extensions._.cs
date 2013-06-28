@@ -18,7 +18,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("array");
             }
-            if (count >= array.Length)
+            if (count > array.Length)
             {
                 throw new ArgumentException("array", "The array can not contain the number of elements.");
             }
@@ -46,7 +46,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("array");
             }
-            if (count >= array.Length)
+            if (count > array.Length)
             {
                 throw new ArgumentException("array", "The array can not contain the number of elements.");
             }
