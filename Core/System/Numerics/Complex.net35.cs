@@ -35,19 +35,28 @@ namespace System.Numerics
         public static readonly Complex ImaginaryOne = new Complex(0, 1);
         public static readonly Complex One = new Complex(1, 0);
         public static readonly Complex Zero = new Complex(0, 0);
-        private double real, imaginary;
+        private double _imaginary;
+        private double _real;
 
         public Complex(double real, double imaginary)
         {
-            this.imaginary = imaginary;
-            this.real = real;
+            _imaginary = imaginary;
+            _real = real;
         }
 
         public double Imaginary
         {
             get
             {
-                return imaginary;
+                return _imaginary;
+            }
+        }
+
+        private double MagnitudeSquared
+        {
+            get
+            {
+                return (_imaginary * _imaginary) + (_real * _real);
             }
         }
 
@@ -55,7 +64,7 @@ namespace System.Numerics
         {
             get
             {
-                return Math.Sqrt((imaginary * imaginary) + (real * real));
+                return Math.Sqrt((_imaginary * _imaginary) + (_real * _real));
             }
         }
 
@@ -63,7 +72,7 @@ namespace System.Numerics
         {
             get
             {
-                return Math.Atan2(imaginary, real);
+                return Math.Atan2(_imaginary, _real);
             }
         }
 
@@ -71,13 +80,13 @@ namespace System.Numerics
         {
             get
             {
-                return real;
+                return _real;
             }
         }
 
         public static double Abs(Complex value)
         {
-            return Math.Sqrt((value.imaginary * value.imaginary) + (value.real * value.real));
+            return Math.Sqrt((value._imaginary * value._imaginary) + (value._real * value._real));
         }
 
         public static Complex Acos(Complex value)
@@ -89,8 +98,8 @@ namespace System.Numerics
         {
             return new Complex
                 (
-                    left.real + right.real,
-                    left.imaginary + right.imaginary
+                    left._real + right._real,
+                    left._imaginary + right._imaginary
                 );
         }
 
@@ -106,15 +115,15 @@ namespace System.Numerics
 
         public static Complex Conjugate(Complex value)
         {
-            return new Complex(value.real, -value.imaginary);
+            return new Complex(value._real, -value._imaginary);
         }
 
         public static Complex Cos(Complex value)
         {
             return new Complex
                 (
-                    Math.Cos(value.real) * Math.Cosh(value.imaginary),
-                    -Math.Sin(value.real) * Math.Sinh(value.imaginary)
+                    Math.Cos(value._real) * Math.Cosh(value._imaginary),
+                    -Math.Sin(value._real) * Math.Sinh(value._imaginary)
                 );
         }
 
@@ -122,28 +131,28 @@ namespace System.Numerics
         {
             return new Complex
                 (
-                    Math.Cosh(value.real) * Math.Cos(value.imaginary),
-                    -Math.Sinh(value.real) * Math.Sin(value.imaginary)
+                    Math.Cosh(value._real) * Math.Cos(value._imaginary),
+                    -Math.Sinh(value._real) * Math.Sin(value._imaginary)
                 );
         }
 
         public static Complex Divide(Complex dividend, Complex divisor)
         {
-            double rsri = (divisor.real * divisor.real) + (divisor.imaginary * divisor.imaginary);
+            double divisorMagnitudeSquared = divisor.MagnitudeSquared;
             return new Complex
                 (
-                    ((dividend.real * divisor.real) + (dividend.imaginary * divisor.imaginary)) / rsri,
-                    ((dividend.imaginary * divisor.real) - (dividend.real * divisor.imaginary)) / rsri
+                    ((dividend._real * divisor._real) + (dividend._imaginary * divisor._imaginary)) / divisorMagnitudeSquared,
+                    ((dividend._imaginary * divisor._real) - (dividend._real * divisor._imaginary)) / divisorMagnitudeSquared
                 );
         }
 
         public static Complex Exp(Complex value)
         {
-            var e = Math.Exp(value.real);
+            var expReal = Math.Exp(value._real);
             return new Complex
                 (
-                    e * Math.Cos(value.imaginary),
-                    e * Math.Sin(value.imaginary)
+                    expReal * Math.Cos(value._imaginary),
+                    expReal * Math.Sin(value._imaginary)
                 );
         }
 
@@ -243,8 +252,8 @@ namespace System.Numerics
         {
             return new Complex
                 (
-                    (left.real * right.real) - (left.imaginary * right.imaginary),
-                    (left.real * right.imaginary) + (left.imaginary * right.real)
+                    (left._real * right._real) - (left._imaginary * right._imaginary),
+                    (left._real * right._imaginary) + (left._imaginary * right._real)
                 );
         }
 
@@ -257,37 +266,37 @@ namespace System.Numerics
         {
             return new Complex
                 (
-                    left.real - right.real,
-                    left.imaginary - right.imaginary
+                    left._real - right._real,
+                    left._imaginary - right._imaginary
                 );
         }
 
         public static Complex operator -(Complex value)
         {
-            return new Complex(-value.real, -value.imaginary);
+            return new Complex(-value._real, -value._imaginary);
         }
 
         public static bool operator !=(Complex left, Complex right)
         {
-            return left.real != right.real || left.imaginary != right.imaginary;
+            return left._real != right._real || left._imaginary != right._imaginary;
         }
 
         public static Complex operator *(Complex left, Complex right)
         {
             return new Complex
                 (
-                    (left.real * right.real) - (left.imaginary * right.imaginary),
-                    (left.real * right.imaginary) + (left.imaginary * right.real)
+                    (left._real * right._real) - (left._imaginary * right._imaginary),
+                    (left._real * right._imaginary) + (left._imaginary * right._real)
                 );
         }
 
         public static Complex operator /(Complex left, Complex right)
         {
-            double rsri = (right.real * right.real) + (right.imaginary * right.imaginary);
+            double rsri = (right._real * right._real) + (right._imaginary * right._imaginary);
             return new Complex
                 (
-                    ((left.real * right.real) + (left.imaginary * right.imaginary)) / rsri,
-                    ((left.imaginary * right.real) - (left.real * right.imaginary)) / rsri
+                    ((left._real * right._real) + (left._imaginary * right._imaginary)) / rsri,
+                    ((left._imaginary * right._real) - (left._real * right._imaginary)) / rsri
                 );
         }
 
@@ -295,14 +304,14 @@ namespace System.Numerics
         {
             return new Complex
                 (
-                    left.real + right.real,
-                    left.imaginary + right.imaginary
+                    left._real + right._real,
+                    left._imaginary + right._imaginary
                 );
         }
 
         public static bool operator ==(Complex left, Complex right)
         {
-            return left.real == right.real && left.imaginary == right.imaginary;
+            return left._real == right._real && left._imaginary == right._imaginary;
         }
 
         public static Complex Pow(Complex value, double power)
@@ -321,15 +330,18 @@ namespace System.Numerics
             {
                 return value;
             }
-            return One / value;
+            else
+            {
+                return One / value;
+            }
         }
 
         public static Complex Sin(Complex value)
         {
             return new Complex
                 (
-                    Math.Sin(value.real) * Math.Cosh(value.imaginary),
-                    Math.Cos(value.real) * Math.Sinh(value.imaginary)
+                    Math.Sin(value._real) * Math.Cosh(value._imaginary),
+                    Math.Cos(value._real) * Math.Sinh(value._imaginary)
                 );
         }
 
@@ -337,8 +349,8 @@ namespace System.Numerics
         {
             return new Complex
                 (
-                    Math.Sinh(value.real) * Math.Cos(value.imaginary),
-                    Math.Cosh(value.real) * Math.Sin(value.imaginary)
+                    Math.Sinh(value._real) * Math.Cos(value._imaginary),
+                    Math.Cosh(value._real) * Math.Sin(value._imaginary)
                 );
         }
 
@@ -351,8 +363,8 @@ namespace System.Numerics
         {
             return new Complex
                 (
-                    left.real - right.real,
-                    left.imaginary - right.imaginary
+                    left._real - right._real,
+                    left._imaginary - right._imaginary
                 );
         }
 
@@ -368,7 +380,7 @@ namespace System.Numerics
 
         public bool Equals(Complex value)
         {
-            return real == value.real && imaginary == value.imaginary;
+            return _real == value._real && _imaginary == value._imaginary;
         }
 
         public override bool Equals(object obj)
@@ -377,33 +389,36 @@ namespace System.Numerics
             {
                 return false;
             }
-            Complex r = (Complex)obj;
-            return real == r.real && imaginary == r.imaginary;
+            else
+            {
+                Complex other = (Complex)obj;
+                return _real == other._real && _imaginary == other._imaginary;
+            }
         }
 
         public override int GetHashCode()
         {
-            return real.GetHashCode() ^ imaginary.GetHashCode();
+            return _real.GetHashCode() ^ _imaginary.GetHashCode();
         }
 
         public override string ToString()
         {
-            return string.Format("({0}, {1})", real, imaginary);
+            return string.Format("({0}, {1})", _real, _imaginary);
         }
 
         public string ToString(IFormatProvider provider)
         {
-            return string.Format(provider, "({0}, {1})", real, imaginary);
+            return string.Format(provider, "({0}, {1})", _real, _imaginary);
         }
 
         public string ToString(string format)
         {
-            return string.Format("({0}, {1})", real.ToString(format), imaginary.ToString(format));
+            return string.Format("({0}, {1})", _real.ToString(format), _imaginary.ToString(format));
         }
 
         public string ToString(string format, IFormatProvider provider)
         {
-            return string.Format("({0}, {1})", real.ToString(format, provider), imaginary.ToString(format, provider));
+            return string.Format("({0}, {1})", _real.ToString(format, provider), _imaginary.ToString(format, provider));
         }
     }
 }
