@@ -1,13 +1,11 @@
 ﻿#if NET20 || NET30 || NET35
 
-//
 // System.Numerics.BigInteger
-//
+
 // Rodrigo Kumpera (rkumpera@novell.com)
 
-//
 // Copyright (C) 2010 Novell, Inc (http://www.novell.com)
-//
+
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
 // "Software"), to deal in the Software without restriction, including
@@ -15,10 +13,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-//
+
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-//
+
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -26,10 +24,10 @@
 // LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//
+
 // A big chuck of code comes the DLR (as hosted in http://ironpython.codeplex.com),
 // which has the following License:
-//
+
 /* ****************************************************************************
  *
  * Copyright (c) Microsoft Corporation.
@@ -62,291 +60,11 @@ Optimization
 
 namespace System.Numerics
 {
-    public struct BigInteger : IComparable, IFormattable, IComparable<BigInteger>, IEquatable<BigInteger>
+    public partial struct BigInteger : IComparable, IFormattable, IComparable<BigInteger>, IEquatable<BigInteger>
     {
-        private const ulong Base = 0x100000000;
-
-        private const int bias = 1075;
-
-        private const Int32 DecimalScaleFactorMask = 0x00FF0000;
-
-        private const Int32 DecimalSignMask = unchecked((Int32)0x80000000);
-
         private static readonly uint[] ONE = new uint[1] { 1 };
 
         private static readonly uint[] ZERO = new uint[1];
-
-        //LSB on [0]
-        private readonly uint[] data;
-
-        private readonly short sign;
-
-        public BigInteger(int value)
-        {
-            if (value == 0)
-            {
-                sign = 0;
-                data = ZERO;
-            }
-            else if (value > 0)
-            {
-                sign = 1;
-                data = new uint[] { (uint)value };
-            }
-            else
-            {
-                sign = -1;
-                data = new uint[1] { (uint)-value };
-            }
-        }
-
-        [CLSCompliantAttribute(false)]
-        public BigInteger(uint value)
-        {
-            if (value == 0)
-            {
-                sign = 0;
-                data = ZERO;
-            }
-            else
-            {
-                sign = 1;
-                data = new uint[1] { value };
-            }
-        }
-
-        public BigInteger(long value)
-        {
-            if (value == 0)
-            {
-                sign = 0;
-                data = ZERO;
-            }
-            else if (value > 0)
-            {
-                sign = 1;
-                uint low = (uint)value;
-                uint high = (uint)(value >> 32);
-                data = new uint[high != 0 ? 2 : 1];
-                data[0] = low;
-                if (high != 0)
-                {
-                    data[1] = high;
-                }
-            }
-            else
-            {
-                sign = -1;
-                value = -value;
-                uint low = (uint)value;
-                uint high = (uint)((ulong)value >> 32);
-                data = new uint[high != 0 ? 2 : 1];
-                data[0] = low;
-                if (high != 0)
-                {
-                    data[1] = high;
-                }
-            }
-        }
-
-        [CLSCompliantAttribute(false)]
-        public BigInteger(ulong value)
-        {
-            if (value == 0)
-            {
-                sign = 0;
-                data = ZERO;
-            }
-            else
-            {
-                sign = 1;
-                uint low = (uint)value;
-                uint high = (uint)(value >> 32);
-                data = new uint[high != 0 ? 2 : 1];
-                data[0] = low;
-                if (high != 0)
-                {
-                    data[1] = high;
-                }
-            }
-        }
-
-        public BigInteger(double value)
-        {
-            if (double.IsNaN(value) || Double.IsInfinity(value))
-            {
-                throw new OverflowException();
-            }
-            byte[] bytes = BitConverter.GetBytes(value);
-            ulong mantissa = Mantissa(bytes);
-            if (mantissa == 0)
-            {
-                // 1.0 * 2**exp, we have a power of 2
-                int exponent = Exponent(bytes);
-                if (exponent == 0)
-                {
-                    sign = 0;
-                    data = ZERO;
-                    return;
-                }
-                BigInteger res = Negative(bytes) ? MinusOne : One;
-                res = res << (exponent - 0x3ff);
-                this.sign = res.sign;
-                this.data = res.data;
-            }
-            else
-            {
-                // 1.mantissa * 2**exp
-                int exponent = Exponent(bytes);
-                mantissa |= 0x10000000000000ul;
-                BigInteger res = mantissa;
-                res = exponent > bias ? res << (exponent - bias) : res >> (bias - exponent);
-                this.sign = (short)(Negative(bytes) ? -1 : 1);
-                this.data = res.data;
-            }
-        }
-
-        public BigInteger(float value)
-            : this((double)value)
-        {
-        }
-
-        public BigInteger(decimal value)
-        {
-            // First truncate to get scale to 0 and extract bits
-            int[] bits = Decimal.GetBits(Decimal.Truncate(value));
-            int size = 3;
-            while (size > 0 && bits[size - 1] == 0)
-            {
-                size--;
-            }
-            if (size == 0)
-            {
-                sign = 0;
-                data = ZERO;
-                return;
-            }
-            sign = (short)((bits[3] & DecimalSignMask) != 0 ? -1 : 1);
-            data = new uint[size];
-            data[0] = (uint)bits[0];
-            if (size > 1)
-            {
-                data[1] = (uint)bits[1];
-            }
-            if (size > 2)
-            {
-                data[2] = (uint)bits[2];
-            }
-        }
-
-        [CLSCompliantAttribute(false)]
-        public BigInteger(byte[] value)
-        {
-            if (value == null)
-            {
-                throw new ArgumentNullException("value");
-            }
-            int len = value.Length;
-            if (len == 0 || (len == 1 && value[0] == 0))
-            {
-                sign = 0;
-                data = ZERO;
-                return;
-            }
-            if ((value[len - 1] & 0x80) != 0)
-            {
-                sign = -1;
-            }
-            else
-            {
-                sign = 1;
-            }
-            if (sign == 1)
-            {
-                while (value[len - 1] == 0)
-                {
-                    if (--len == 0)
-                    {
-                        sign = 0;
-                        data = ZERO;
-                        return;
-                    }
-                }
-                int full_words, size;
-                full_words = size = len / 4;
-                if ((len & 0x3) != 0)
-                {
-                    ++size;
-                }
-                data = new uint[size];
-                int j = 0;
-                for (int i = 0; i < full_words; ++i)
-                {
-                    data[i] = (uint)value[j++] |
-                              (uint)(value[j++] << 8) |
-                              (uint)(value[j++] << 16) |
-                              (uint)(value[j++] << 24);
-                }
-                size = len & 0x3;
-                if (size > 0)
-                {
-                    int idx = data.Length - 1;
-                    for (int i = 0; i < size; ++i)
-                    {
-                        data[idx] |= (uint)(value[j++] << (i * 8));
-                    }
-                }
-            }
-            else
-            {
-                int full_words, size;
-                full_words = size = len / 4;
-                if ((len & 0x3) != 0)
-                {
-                    ++size;
-                }
-                data = new uint[size];
-                uint word, borrow = 1;
-                ulong sub = 0;
-                int j = 0;
-                for (int i = 0; i < full_words; ++i)
-                {
-                    word = (uint)value[j++] |
-                           (uint)(value[j++] << 8) |
-                           (uint)(value[j++] << 16) |
-                           (uint)(value[j++] << 24);
-                    sub = (ulong)word - borrow;
-                    word = (uint)sub;
-                    borrow = (uint)(sub >> 32) & 0x1u;
-                    data[i] = ~word;
-                }
-                size = len & 0x3;
-                if (size > 0)
-                {
-                    word = 0;
-                    uint store_mask = 0;
-                    for (int i = 0; i < size; ++i)
-                    {
-                        word |= (uint)(value[j++] << (i * 8));
-                        store_mask = (store_mask << 8) | 0xFF;
-                    }
-                    sub = word - borrow;
-                    word = (uint)sub;
-                    borrow = (uint)(sub >> 32) & 0x1u;
-                    data[data.Length - 1] = ~word & store_mask;
-                }
-                if (borrow != 0) //FIXME I believe this can't happen, can someone write a test for it?
-                {
-                    throw new Exception("non zero final carry");
-                }
-            }
-        }
-
-        private BigInteger(short sign, uint[] data)
-        {
-            this.sign = sign;
-            this.data = data;
-        }
 
         public static BigInteger MinusOne
         {
@@ -369,64 +87,6 @@ namespace System.Numerics
             get
             {
                 return new BigInteger(0, ZERO);
-            }
-        }
-
-        public bool IsEven
-        {
-            get
-            {
-                return sign == 0 || (data[0] & 0x1) == 0;
-            }
-        }
-
-        public bool IsOne
-        {
-            get 
-            {
-                return sign == 1 && data.Length == 1 && data[0] == 1;
-            }
-        }
-
-        public bool IsPowerOfTwo
-        {
-            get
-            {
-                bool foundBit = false;
-                if (sign != 1)
-                {
-                    return false;
-                }
-                //This function is pop count == 1 for positive numbers
-                for (int i = 0; i < data.Length; ++i)
-                {
-                    int p = PopulationCount(data[i]);
-                    if (p > 0)
-                    {
-                        if (p > 1 || foundBit)
-                        {
-                            return false;
-                        }
-                        foundBit = true;
-                    }
-                }
-                return foundBit;
-            }
-        }
-
-        public bool IsZero
-        {
-            get
-            {
-                return sign == 0;
-            }
-        }
-
-        public int Sign
-        {
-            get
-            {
-                return sign;
             }
         }
 
@@ -483,7 +143,10 @@ namespace System.Numerics
             uint[] remainder_value;
             DivModUnsigned(dividend.data, divisor.data, out quotient, out remainder_value);
             int i;
-            for (i = remainder_value.Length - 1; i >= 0 && remainder_value[i] == 0; --i) ;
+            for (i = remainder_value.Length - 1; i >= 0 && remainder_value[i] == 0; --i)
+            {
+                //Empty
+            }
             if (i == -1)
             {
                 remainder = new BigInteger(0, ZERO);
@@ -496,7 +159,10 @@ namespace System.Numerics
                 }
                 remainder = new BigInteger(dividend.sign, remainder_value);
             }
-            for (i = quotient.Length - 1; i >= 0 && quotient[i] == 0; --i) ;
+            for (i = quotient.Length - 1; i >= 0 && quotient[i] == 0; --i)
+            {
+                //Empty
+            }
             if (i == -1)
             {
                 return new BigInteger(0, ZERO);
@@ -537,7 +203,7 @@ namespace System.Numerics
         {
             if (value.sign == 0)
             {
-                return Decimal.Zero;
+                return decimal.Zero;
             }
             uint[] data = value.data;
             if (data.Length > 3)
@@ -547,17 +213,64 @@ namespace System.Numerics
             int lo = 0, mi = 0, hi = 0;
             if (data.Length > 2)
             {
-                hi = (Int32)data[2];
+                hi = (int)data[2];
             }
             if (data.Length > 1)
             {
-                mi = (Int32)data[1];
+                mi = (int)data[1];
             }
             if (data.Length > 0)
             {
-                lo = (Int32)data[0];
+                lo = (int)data[0];
             }
-            return new Decimal(lo, mi, hi, value.sign < 0, 0);
+            return new decimal(lo, mi, hi, value.sign < 0, 0);
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static explicit operator ulong(BigInteger value)
+        {
+            if (value.sign == 0)
+            {
+                return 0;
+            }
+            if (value.data.Length > 2 || value.sign == -1)
+            {
+                throw new OverflowException();
+            }
+            uint low = value.data[0];
+            if (value.data.Length == 1)
+            {
+                return low;
+            }
+            uint high = value.data[1];
+            return (((ulong)high) << 32) | low;
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static explicit operator uint(BigInteger value)
+        {
+            if (value.sign == 0)
+            {
+                return 0;
+            }
+            if (value.data.Length > 1 || value.sign == -1)
+            {
+                throw new OverflowException();
+            }
+            return value.data[0];
+        }
+
+        public static explicit operator double(BigInteger value)
+        {
+            //FIXME
+            try
+            {
+                return double.Parse(value.ToString(), System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+            }
+            catch (OverflowException)
+            {
+                return value.sign == -1 ? double.NegativeInfinity : double.PositiveInfinity;
+            }
         }
 
         public static explicit operator int(BigInteger value)
@@ -590,27 +303,18 @@ namespace System.Numerics
             return 0;
         }
 
-        [CLSCompliantAttribute(false)]
-        public static explicit operator sbyte(BigInteger value)
+        public static explicit operator float(BigInteger value)
         {
-            int val = (int)value;
-            if (val < sbyte.MinValue || val > sbyte.MaxValue)
+            //FIXME
+            try
             {
-                throw new OverflowException();
+                return float.Parse(value.ToString(), System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
             }
-            return (sbyte)val;
-        }
-
-        public static explicit operator short(BigInteger value)
-        {
-            int val = (int)value;
-            if (val < short.MinValue || val > short.MaxValue)
+            catch (OverflowException)
             {
-                throw new OverflowException();
+                return value.sign == -1 ? float.NegativeInfinity : float.PositiveInfinity;
             }
-            return (short)val;
         }
-
         [CLSCompliantAttribute(false)]
         public static explicit operator ushort(BigInteger value)
         {
@@ -622,54 +326,60 @@ namespace System.Numerics
             return (ushort)val;
         }
 
-        public static explicit operator float(BigInteger value)
-        {
-            //FIXME
-            try
-            {
-                return float.Parse(value.ToString(),
-                                   System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
-            }
-            catch (OverflowException)
-            {
-                return value.sign == -1 ? float.NegativeInfinity : float.PositiveInfinity;
-            }
-        }
-
-        public static explicit operator double(BigInteger value)
-        {
-            //FIXME
-            try
-            {
-                return double.Parse(value.ToString(),
-                                    System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
-            }
-            catch (OverflowException)
-            {
-                return value.sign == -1 ? double.NegativeInfinity : double.PositiveInfinity;
-            }
-        }
-
-        [CLSCompliantAttribute(false)]
-        public static explicit operator ulong(BigInteger value)
+        public static explicit operator long(BigInteger value)
         {
             if (value.sign == 0)
             {
                 return 0;
             }
-            if (value.data.Length > 2 || value.sign == -1)
+            if (value.data.Length > 2)
             {
                 throw new OverflowException();
             }
             uint low = value.data[0];
             if (value.data.Length == 1)
             {
-                return low;
+                if (value.sign == 1)
+                {
+                    return (long)low;
+                }
+                long res = (long)low;
+                return -res;
             }
             uint high = value.data[1];
-            return (((ulong)high) << 32) | low;
+            if (value.sign == 1)
+            {
+                if (high >= 0x80000000u)
+                {
+                    throw new OverflowException();
+                }
+                return (((long)high) << 32) | low;
+            }
+            if (high > 0x80000000u)
+            {
+                throw new OverflowException();
+            }
+            return -((((long)high) << 32) | (long)low);
         }
-
+        public static explicit operator short(BigInteger value)
+        {
+            int val = (int)value;
+            if (val < short.MinValue || val > short.MaxValue)
+            {
+                throw new OverflowException();
+            }
+            return (short)val;
+        }
+        [CLSCompliantAttribute(false)]
+        public static explicit operator sbyte(BigInteger value)
+        {
+            int val = (int)value;
+            if (val < sbyte.MinValue || val > sbyte.MaxValue)
+            {
+                throw new OverflowException();
+            }
+            return (sbyte)val;
+        }
         public static BigInteger GreatestCommonDivisor(BigInteger left, BigInteger right)
         {
             if (left.sign != 0 && left.data.Length == 1 && left.data[0] == 1)
@@ -702,10 +412,8 @@ namespace System.Numerics
                 return g;
             }
             // TODO: should we have something here if we can convert to long?
-            //
             // Now we can just do it with single precision. I am using the binary gcd method,
             // as it should be faster.
-            //
             uint yy = x.data[0];
             uint xx = (uint)(y % yy);
             int t = 0;
@@ -781,14 +489,14 @@ namespace System.Numerics
             return new BigInteger(value);
         }
 
-        public static double Log(BigInteger value, Double baseValue)
+        public static double Log(BigInteger value, double baseValue)
         {
             if (value.sign == -1 || baseValue == 1.0d || baseValue == -1.0d ||
-                    baseValue == Double.NegativeInfinity || double.IsNaN(baseValue))
+                    baseValue == double.NegativeInfinity || double.IsNaN(baseValue))
             {
                 return double.NaN;
             }
-            if (baseValue == 0.0d || baseValue == Double.PositiveInfinity)
+            if (baseValue == 0.0d || baseValue == double.PositiveInfinity)
             {
                 return value.IsOne ? 0 : double.NaN;
             }
@@ -802,18 +510,18 @@ namespace System.Numerics
             {
                 if ((value.data[length] & (1 << curBit)) != 0)
                 {
-                    bitCount = curBit + length * 32;
+                    bitCount = curBit + (length * 32);
                     break;
                 }
             }
             long bitlen = bitCount;
-            Double c = 0, d = 1;
+            double c = 0, d = 1;
             BigInteger testBit = One;
             long tempBitlen = bitlen;
-            while (tempBitlen > Int32.MaxValue)
+            while (tempBitlen > int.MaxValue)
             {
-                testBit = testBit << Int32.MaxValue;
-                tempBitlen -= Int32.MaxValue;
+                testBit = testBit << int.MaxValue;
+                tempBitlen -= int.MaxValue;
             }
             testBit = testBit << (int)tempBitlen;
             for (long curbit = bitlen; curbit >= 0; --curbit)
@@ -825,7 +533,7 @@ namespace System.Numerics
                 d *= 0.5;
                 testBit = testBit >> 1;
             }
-            return (System.Math.Log(c) + System.Math.Log(2) * bitlen) / System.Math.Log(baseValue);
+            return (System.Math.Log(c) + (System.Math.Log(2) * bitlen)) / System.Math.Log(baseValue);
         }
 
         public static double Log(BigInteger value)
@@ -1031,7 +739,10 @@ namespace System.Numerics
             uint[] remainder_value;
             DivModUnsigned(dividend.data, divisor.data, out quotient, out remainder_value);
             int i;
-            for (i = remainder_value.Length - 1; i >= 0 && remainder_value[i] == 0; --i) ;
+            for (i = remainder_value.Length - 1; i >= 0 && remainder_value[i] == 0; --i)
+            {
+                //Empty
+            }
             if (i == -1)
             {
                 return new BigInteger(0, ZERO);
@@ -1094,7 +805,10 @@ namespace System.Numerics
                 }
                 result[i] = word;
             }
-            for (i = result.Length - 1; i >= 0 && result[i] == 0; --i) ;
+            for (i = result.Length - 1; i >= 0 && result[i] == 0; --i)
+            {
+                //Empty
+            }
             if (i == -1)
             {
                 return new BigInteger(0, ZERO);
@@ -1138,7 +852,7 @@ namespace System.Numerics
                 ulong carry = 0;
                 for (int j = 0; j < b.Length; ++j)
                 {
-                    carry = carry + ((ulong)ai) * b[j] + res[k];
+                    carry = carry + (((ulong)ai) * b[j]) + res[k];
                     res[k++] = (uint)carry;
                     carry >>= 32;
                 }
@@ -1150,7 +864,10 @@ namespace System.Numerics
                 }
             }
             int m;
-            for (m = res.Length - 1; m >= 0 && res[m] == 0; --m) ;
+            for (m = res.Length - 1; m >= 0 && res[m] == 0; --m)
+            {
+                //Empty
+            }
             if (m < res.Length - 1)
             {
                 res = Resize(res, m + 1);
@@ -1172,7 +889,10 @@ namespace System.Numerics
             uint[] remainder_value;
             DivModUnsigned(dividend.data, divisor.data, out quotient, out remainder_value);
             int i;
-            for (i = quotient.Length - 1; i >= 0 && quotient[i] == 0; --i) ;
+            for (i = quotient.Length - 1; i >= 0 && quotient[i] == 0; --i)
+            {
+                //Empty
+            }
             if (i == -1)
             {
                 return new BigInteger(0, ZERO);
@@ -1235,7 +955,10 @@ namespace System.Numerics
                 }
                 result[i] = word;
             }
-            for (i = result.Length - 1; i >= 0 && result[i] == 0; --i) ;
+            for (i = result.Length - 1; i >= 0 && result[i] == 0; --i)
+            {
+                //Empty
+            }
             if (i == -1)
             {
                 return new BigInteger(0, ZERO);
@@ -1298,7 +1021,10 @@ namespace System.Numerics
                 }
                 result[i] = word;
             }
-            for (i = result.Length - 1; i >= 0 && result[i] == 0; --i) ;
+            for (i = result.Length - 1; i >= 0 && result[i] == 0; --i)
+            {
+                //Empty
+            }
             if (i == -1)
             {
                 return new BigInteger(0, ZERO);
@@ -1340,7 +1066,10 @@ namespace System.Numerics
                 }
                 result[i] = word;
             }
-            for (i = result.Length - 1; i >= 0 && result[i] == 0; --i) ;
+            for (i = result.Length - 1; i >= 0 && result[i] == 0; --i)
+            {
+                //Empty
+            }
             if (i == -1)
             {
                 return new BigInteger(0, ZERO);
@@ -1727,6 +1456,919 @@ namespace System.Numerics
             return Parse(value, true, out result, out ex);
         }
 
+        //returns the 0-based index of the most significant set bit
+        //returns 0 if no bit is set, so extra care when using it
+        private static int BitScanBackward(uint word)
+        {
+            for (int i = 31; i >= 0; --i)
+            {
+                uint mask = 1u << i;
+                if ((word & mask) == mask)
+                {
+                    return i;
+                }
+            }
+            return 0;
+        }
+
+        private static uint[] CoreAdd(uint[] a, uint[] b)
+        {
+            if (a.Length < b.Length)
+            {
+                uint[] tmp = a;
+                a = b;
+                b = tmp;
+            }
+            int bl = a.Length;
+            int sl = b.Length;
+            uint[] res = new uint[bl];
+            ulong sum = 0;
+            int i = 0;
+            for (; i < sl; i++)
+            {
+                sum = sum + a[i] + b[i];
+                res[i] = (uint)sum;
+                sum >>= 32;
+            }
+            for (; i < bl; i++)
+            {
+                sum = sum + a[i];
+                res[i] = (uint)sum;
+                sum >>= 32;
+            }
+            if (sum != 0)
+            {
+                res = Resize(res, bl + 1);
+                res[i] = (uint)sum;
+            }
+            return res;
+        }
+
+        private static uint[] CoreAdd(uint[] a, uint b)
+        {
+            int len = a.Length;
+            uint[] res = new uint[len];
+            ulong sum = b;
+            int i;
+            for (i = 0; i < len; i++)
+            {
+                sum = sum + a[i];
+                res[i] = (uint)sum;
+                sum >>= 32;
+            }
+            if (sum != 0)
+            {
+                res = Resize(res, len + 1);
+                res[i] = (uint)sum;
+            }
+            return res;
+        }
+
+        private static int CoreCompare(uint[] a, uint[] b)
+        {
+            int al = a != null ? a.Length : 0;
+            int bl = b != null ? b.Length : 0;
+            if (al > bl)
+            {
+                return 1;
+            }
+            if (bl > al)
+            {
+                return -1;
+            }
+            for (int i = al - 1; i >= 0; --i)
+            {
+                uint ai = a[i];
+                uint bi = b[i];
+                if (ai > bi)
+                {
+                    return 1;
+                }
+                if (ai < bi)
+                {
+                    return -1;
+                }
+            }
+            return 0;
+        }
+
+        private static uint[] CoreSub(uint[] a, uint[] b)
+        {
+            int bl = a.Length;
+            int sl = b.Length;
+            uint[] res = new uint[bl];
+            ulong borrow = 0;
+            int i;
+            for (i = 0; i < sl; ++i)
+            {
+                borrow = (ulong)a[i] - b[i] - borrow;
+                res[i] = (uint)borrow;
+                borrow = (borrow >> 32) & 0x1;
+            }
+            for (; i < bl; i++)
+            {
+                borrow = (ulong)a[i] - borrow;
+                res[i] = (uint)borrow;
+                borrow = (borrow >> 32) & 0x1;
+            }
+            //remove extra zeroes
+            for (i = bl - 1; i >= 0 && res[i] == 0; --i)
+            {
+                //Empty
+            }
+            if (i < bl - 1)
+            {
+                res = Resize(res, i + 1);
+            }
+            return res;
+        }
+
+        private static uint[] CoreSub(uint[] a, uint b)
+        {
+            int len = a.Length;
+            uint[] res = new uint[len];
+            ulong borrow = b;
+            int i;
+            for (i = 0; i < len; i++)
+            {
+                borrow = (ulong)a[i] - borrow;
+                res[i] = (uint)borrow;
+                borrow = (borrow >> 32) & 0x1;
+            }
+            //remove extra zeroes
+            for (i = len - 1; i >= 0 && res[i] == 0; --i)
+            {
+                //Empty
+            }
+            if (i < len - 1)
+            {
+                res = Resize(res, i + 1);
+            }
+            return res;
+        }
+
+        private static void DivModUnsigned(uint[] u, uint[] v, out uint[] q, out uint[] r)
+        {
+            int m = u.Length;
+            int n = v.Length;
+            if (n <= 1)
+            {
+                //  Divide by single digit
+                ulong rem = 0;
+                uint v0 = v[0];
+                q = new uint[m];
+                r = new uint[1];
+                for (int j = m - 1; j >= 0; j--)
+                {
+                    rem *= Base;
+                    rem += u[j];
+                    ulong div = rem / v0;
+                    rem -= div * v0;
+                    q[j] = (uint)div;
+                }
+                r[0] = (uint)rem;
+            }
+            else if (m >= n)
+            {
+                int shift = GetNormalizeShift(v[n - 1]);
+                uint[] un = new uint[m + 1];
+                uint[] vn = new uint[n];
+                Normalize(u, m, un, shift);
+                Normalize(v, n, vn, shift);
+                q = new uint[m - n + 1];
+                r = null;
+                //  Main division loop
+                for (int j = m - n; j >= 0; j--)
+                {
+                    ulong rr, qq;
+                    int i;
+                    rr = (Base * un[j + n]) + un[j + n - 1];
+                    qq = rr / vn[n - 1];
+                    rr -= qq * vn[n - 1];
+                    for (;;)
+                    {
+                        // Estimate too big ?
+                        if ((qq >= Base) || ((qq * vn[n - 2]) > ((rr * Base) + un[j + n - 2])))
+                        {
+                            qq--;
+                            rr += (ulong)vn[n - 1];
+                            if (rr < Base)
+                            {
+                                continue;
+                            }
+                        }
+                        break;
+                    }
+                    //  Multiply and subtract
+                    long b = 0;
+                    long t = 0;
+                    for (i = 0; i < n; i++)
+                    {
+                        ulong p = vn[i] * qq;
+                        t = (long)un[i + j] - (long)(uint)p - b;
+                        un[i + j] = (uint)t;
+                        p >>= 32;
+                        t >>= 32;
+                        b = (long)p - t;
+                    }
+                    t = (long)un[j + n] - b;
+                    un[j + n] = (uint)t;
+                    //  Store the calculated value
+                    q[j] = (uint)qq;
+                    //  Add back vn[0..n] to un[j..j+n]
+                    if (t < 0)
+                    {
+                        q[j]--;
+                        ulong c = 0;
+                        for (i = 0; i < n; i++)
+                        {
+                            c = (ulong)vn[i] + un[j + i] + c;
+                            un[j + i] = (uint)c;
+                            c >>= 32;
+                        }
+                        c += (ulong)un[j + n];
+                        un[j + n] = (uint)c;
+                    }
+                }
+                Unnormalize(un, out r, shift);
+            }
+            else
+            {
+                q = new uint[] { 0 };
+                r = u;
+            }
+        }
+
+        private static ushort Exponent(byte[] v)
+        {
+            return (ushort)((((ushort)(v[7] & 0x7F)) << (ushort)4) | (((ushort)(v[6] & 0xF0)) >> 4));
+        }
+
+        private static int FirstNonFFByte(uint word)
+        {
+            if ((word & 0xFF000000u) != 0xFF000000u)
+            {
+                return 4;
+            }
+            else if ((word & 0xFF0000u) != 0xFF0000u)
+            {
+                return 3;
+            }
+            else if ((word & 0xFF00u) != 0xFF00u)
+            {
+                return 2;
+            }
+            return 1;
+        }
+
+        private static Exception GetFormatException()
+        {
+            return new FormatException("Input string was not in the correct format");
+        }
+
+        private static int GetNormalizeShift(uint value)
+        {
+            int shift = 0;
+            if ((value & 0xFFFF0000) == 0)
+            {
+                value <<= 16;
+                shift += 16;
+            }
+            if ((value & 0xFF000000) == 0)
+            {
+                value <<= 8;
+                shift += 8;
+            }
+            if ((value & 0xF0000000) == 0)
+            {
+                value <<= 4;
+                shift += 4;
+            }
+            if ((value & 0xC0000000) == 0)
+            {
+                value <<= 2;
+                shift += 2;
+            }
+            if ((value & 0x80000000) == 0)
+            {
+                value <<= 1;
+                shift += 1;
+            }
+            return shift;
+        }
+
+        private static uint[] MakeTwoComplement(uint[] v)
+        {
+            uint[] res = new uint[v.Length];
+            ulong carry = 1;
+            for (int i = 0; i < v.Length; ++i)
+            {
+                uint word = v[i];
+                carry = (ulong)~word + carry;
+                word = (uint)carry;
+                carry = (uint)(carry >> 32);
+                res[i] = word;
+            }
+            uint last = res[res.Length - 1];
+            int idx = FirstNonFFByte(last);
+            uint mask = 0xFF;
+            for (int i = 1; i < idx; ++i)
+            {
+                mask = (mask << 8) | 0xFF;
+            }
+            res[res.Length - 1] = last & mask;
+            return res;
+        }
+
+        private static ulong Mantissa(byte[] v)
+        {
+            uint i1 = (uint)v[0] | ((uint)v[1] << 8) | ((uint)v[2] << 16) | ((uint)v[3] << 24);
+            uint i2 = (uint)v[4] | ((uint)v[5] << 8) | ((uint)(v[6] & 0xF) << 16);
+            return (ulong)((ulong)i1 | ((ulong)i2 << 32));
+        }
+
+        private static bool Negative(byte[] v)
+        {
+            return (v[7] & 0x80) != 0;
+        }
+
+        private static void Normalize(uint[] u, int l, uint[] un, int shift)
+        {
+            uint carry = 0;
+            int i;
+            if (shift > 0)
+            {
+                int rshift = 32 - shift;
+                for (i = 0; i < l; i++)
+                {
+                    uint ui = u[i];
+                    un[i] = (ui << shift) | carry;
+                    carry = ui >> rshift;
+                }
+            }
+            else
+            {
+                for (i = 0; i < l; i++)
+                {
+                    un[i] = u[i];
+                }
+            }
+            while (i < un.Length)
+            {
+                un[i++] = 0;
+            }
+            if (carry != 0)
+            {
+                un[l] = carry;
+            }
+        }
+
+        private static bool Parse(string s, bool tryParse, out BigInteger result, out Exception exc)
+        {
+            int len;
+            int i, sign = 1;
+            bool digits_seen = false;
+            result = Zero;
+            exc = null;
+            if (s == null)
+            {
+                if (!tryParse)
+                {
+                    exc = new ArgumentNullException("value");
+                }
+                return false;
+            }
+            len = s.Length;
+            char c;
+            for (i = 0; i < len; i++)
+            {
+                c = s[i];
+                if (!char.IsWhiteSpace(c))
+                {
+                    break;
+                }
+            }
+            if (i == len)
+            {
+                if (!tryParse)
+                {
+                    exc = GetFormatException();
+                }
+                return false;
+            }
+            var info = Thread.CurrentThread.CurrentCulture.NumberFormat;
+            string negative = info.NegativeSign;
+            string positive = info.PositiveSign;
+            if (string.CompareOrdinal(s, i, positive, 0, positive.Length) == 0)
+            {
+                i += positive.Length;
+            }
+            else if (string.CompareOrdinal(s, i, negative, 0, negative.Length) == 0)
+            {
+                sign = -1;
+                i += negative.Length;
+            }
+            BigInteger val = Zero;
+            for (; i < len; i++)
+            {
+                c = s[i];
+                if (c == '\0')
+                {
+                    i = len;
+                    continue;
+                }
+                if (c >= '0' && c <= '9')
+                {
+                    byte d = (byte)(c - '0');
+                    val = (val * 10) + d;
+                    digits_seen = true;
+                }
+                else if (!ProcessTrailingWhitespace(tryParse, s, i, ref exc))
+                {
+                    return false;
+                }
+            }
+            if (!digits_seen)
+            {
+                if (!tryParse)
+                {
+                    exc = GetFormatException();
+                }
+                return false;
+            }
+            if (val.sign == 0)
+            {
+                result = val;
+            }
+            else if (sign == -1)
+            {
+                result = new BigInteger(-1, val.data);
+            }
+            else
+            {
+                result = new BigInteger(1, val.data);
+            }
+            return true;
+        }
+
+        //Gem from Hacker's Delight
+        //Returns the number of bits set in @x
+        private static int PopulationCount(uint x)
+        {
+            x = x - ((x >> 1) & 0x55555555);
+            x = (x & 0x33333333) + ((x >> 2) & 0x33333333);
+            x = (x + (x >> 4)) & 0x0F0F0F0F;
+            x = x + (x >> 8);
+            x = x + (x >> 16);
+            return (int)(x & 0x0000003F);
+        }
+        private static bool ProcessTrailingWhitespace(bool tryParse, string s, int position, ref Exception exc)
+        {
+            int len = s.Length;
+            for (int i = position; i < len; i++)
+            {
+                char c = s[i];
+                if (c != 0 && !char.IsWhiteSpace(c))
+                {
+                    if (!tryParse)
+                    {
+                        exc = GetFormatException();
+                    }
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private static byte[] Resize(byte[] v, int len)
+        {
+            byte[] res = new byte[len];
+            Array.Copy(v, res, Math.Min(v.Length, len));
+            return res;
+        }
+
+        private static uint[] Resize(uint[] v, int len)
+        {
+            uint[] res = new uint[len];
+            Array.Copy(v, res, Math.Min(v.Length, len));
+            return res;
+        }
+
+        private static int TopByte(uint x)
+        {
+            if ((x & 0xFFFF0000u) != 0)
+            {
+                if ((x & 0xFF000000u) != 0)
+                {
+                    return 4;
+                }
+                return 3;
+            }
+            if ((x & 0xFF00u) != 0)
+            {
+                return 2;
+            }
+            return 1;
+        }
+
+        private static void Unnormalize(uint[] un, out uint[] r, int shift)
+        {
+            int length = un.Length;
+            r = new uint[length];
+            if (shift > 0)
+            {
+                int lshift = 32 - shift;
+                uint carry = 0;
+                for (int i = length - 1; i >= 0; i--)
+                {
+                    uint uni = un[i];
+                    r[i] = (uni >> shift) | carry;
+                    carry = uni << lshift;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < length; i++)
+                {
+                    r[i] = un[i];
+                }
+            }
+        }
+
+        /*
+                [MonoTODO]
+                public static BigInteger Parse (string value, NumberStyles style)
+                {
+                    throw new NotImplementedException ();
+                }
+
+                [MonoTODO]
+                public static BigInteger Parse (string value, IFormatProvider provider)
+                {
+                    throw new NotImplementedException ();
+                }
+
+                [MonoTODO]
+                public static BigInteger Parse (
+                    string value, NumberStyles style, IFormatProvider provider)
+                {
+                    throw new InvalidOperationException ();
+                }
+
+                [MonoTODO]
+                public static bool TryParse (
+                    string value, NumberStyles style, IFormatProvider provider,
+                    out BigInteger result)
+                {
+                    throw new NotImplementedException ();
+                }
+        */
+        /*LAMESPEC Log doesn't specify to how many ulp is has to be precise
+        We are equilavent to MS with about 2 ULP
+        */
+        /*invariant a > b*/
+    }
+
+    public partial struct BigInteger : IComparable, IFormattable, IComparable<BigInteger>, IEquatable<BigInteger>
+    {
+        private const ulong Base = 0x100000000;
+
+        private const int Bias = 1075;
+
+        private const int DecimalScaleFactorMask = 0x00FF0000;
+
+        private const int DecimalSignMask = unchecked((int)0x80000000);
+
+        //LSB on [0]
+        private readonly uint[] data;
+
+        private readonly short sign;
+
+        public BigInteger(int value)
+        {
+            if (value == 0)
+            {
+                sign = 0;
+                data = ZERO;
+            }
+            else if (value > 0)
+            {
+                sign = 1;
+                data = new uint[] { (uint)value };
+            }
+            else
+            {
+                sign = -1;
+                data = new uint[1] { (uint)-value };
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        public BigInteger(uint value)
+        {
+            if (value == 0)
+            {
+                sign = 0;
+                data = ZERO;
+            }
+            else
+            {
+                sign = 1;
+                data = new uint[1] { value };
+            }
+        }
+
+        public BigInteger(long value)
+        {
+            if (value == 0)
+            {
+                sign = 0;
+                data = ZERO;
+            }
+            else if (value > 0)
+            {
+                sign = 1;
+                uint low = (uint)value;
+                uint high = (uint)(value >> 32);
+                data = new uint[high != 0 ? 2 : 1];
+                data[0] = low;
+                if (high != 0)
+                {
+                    data[1] = high;
+                }
+            }
+            else
+            {
+                sign = -1;
+                value = -value;
+                uint low = (uint)value;
+                uint high = (uint)((ulong)value >> 32);
+                data = new uint[high != 0 ? 2 : 1];
+                data[0] = low;
+                if (high != 0)
+                {
+                    data[1] = high;
+                }
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        public BigInteger(ulong value)
+        {
+            if (value == 0)
+            {
+                sign = 0;
+                data = ZERO;
+            }
+            else
+            {
+                sign = 1;
+                uint low = (uint)value;
+                uint high = (uint)(value >> 32);
+                data = new uint[high != 0 ? 2 : 1];
+                data[0] = low;
+                if (high != 0)
+                {
+                    data[1] = high;
+                }
+            }
+        }
+
+        public BigInteger(double value)
+        {
+            if (double.IsNaN(value) || double.IsInfinity(value))
+            {
+                throw new OverflowException();
+            }
+            byte[] bytes = BitConverter.GetBytes(value);
+            ulong mantissa = Mantissa(bytes);
+            if (mantissa == 0)
+            {
+                // 1.0 * 2**exp, we have a power of 2
+                int exponent = Exponent(bytes);
+                if (exponent == 0)
+                {
+                    sign = 0;
+                    data = ZERO;
+                    return;
+                }
+                BigInteger res = Negative(bytes) ? MinusOne : One;
+                res = res << (exponent - 0x3ff);
+                this.sign = res.sign;
+                this.data = res.data;
+            }
+            else
+            {
+                // 1.mantissa * 2**exp
+                int exponent = Exponent(bytes);
+                mantissa |= 0x10000000000000ul;
+                BigInteger res = mantissa;
+                res = exponent > Bias ? res << (exponent - Bias) : res >> (Bias - exponent);
+                this.sign = (short)(Negative(bytes) ? -1 : 1);
+                this.data = res.data;
+            }
+        }
+
+        public BigInteger(float value)
+            : this((double)value)
+        {
+        }
+
+        public BigInteger(decimal value)
+        {
+            // First truncate to get scale to 0 and extract bits
+            int[] bits = decimal.GetBits(decimal.Truncate(value));
+            int size = 3;
+            while (size > 0 && bits[size - 1] == 0)
+            {
+                size--;
+            }
+            if (size == 0)
+            {
+                sign = 0;
+                data = ZERO;
+                return;
+            }
+            sign = (short)((bits[3] & DecimalSignMask) != 0 ? -1 : 1);
+            data = new uint[size];
+            data[0] = (uint)bits[0];
+            if (size > 1)
+            {
+                data[1] = (uint)bits[1];
+            }
+            if (size > 2)
+            {
+                data[2] = (uint)bits[2];
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        public BigInteger(byte[] value)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException("value");
+            }
+            int len = value.Length;
+            if (len == 0 || (len == 1 && value[0] == 0))
+            {
+                sign = 0;
+                data = ZERO;
+                return;
+            }
+            if ((value[len - 1] & 0x80) != 0)
+            {
+                sign = -1;
+            }
+            else
+            {
+                sign = 1;
+            }
+            if (sign == 1)
+            {
+                while (value[len - 1] == 0)
+                {
+                    if (--len == 0)
+                    {
+                        sign = 0;
+                        data = ZERO;
+                        return;
+                    }
+                }
+                int full_words, size;
+                full_words = size = len / 4;
+                if ((len & 0x3) != 0)
+                {
+                    ++size;
+                }
+                data = new uint[size];
+                int j = 0;
+                for (int i = 0; i < full_words; ++i)
+                {
+                    data[i] = (uint)value[j++] |
+                              (uint)(value[j++] << 8) |
+                              (uint)(value[j++] << 16) |
+                              (uint)(value[j++] << 24);
+                }
+                size = len & 0x3;
+                if (size > 0)
+                {
+                    int idx = data.Length - 1;
+                    for (int i = 0; i < size; ++i)
+                    {
+                        data[idx] |= (uint)(value[j++] << (i * 8));
+                    }
+                }
+            }
+            else
+            {
+                int full_words, size;
+                full_words = size = len / 4;
+                if ((len & 0x3) != 0)
+                {
+                    ++size;
+                }
+                data = new uint[size];
+                uint word, borrow = 1;
+                ulong sub = 0;
+                int j = 0;
+                for (int i = 0; i < full_words; ++i)
+                {
+                    word = (uint)value[j++] |
+                           (uint)(value[j++] << 8) |
+                           (uint)(value[j++] << 16) |
+                           (uint)(value[j++] << 24);
+                    sub = (ulong)word - borrow;
+                    word = (uint)sub;
+                    borrow = (uint)(sub >> 32) & 0x1u;
+                    data[i] = ~word;
+                }
+                size = len & 0x3;
+                if (size > 0)
+                {
+                    word = 0;
+                    uint store_mask = 0;
+                    for (int i = 0; i < size; ++i)
+                    {
+                        word |= (uint)(value[j++] << (i * 8));
+                        store_mask = (store_mask << 8) | 0xFF;
+                    }
+                    sub = word - borrow;
+                    word = (uint)sub;
+                    borrow = (uint)(sub >> 32) & 0x1u;
+                    data[data.Length - 1] = ~word & store_mask;
+                }
+                if (borrow != 0) //FIXME I believe this can't happen, can someone write a test for it?
+                {
+                    throw new Exception("non zero final carry");
+                }
+            }
+        }
+
+        private BigInteger(short sign, uint[] data)
+        {
+            this.sign = sign;
+            this.data = data;
+        }
+
+        public bool IsEven
+        {
+            get
+            {
+                return sign == 0 || (data[0] & 0x1) == 0;
+            }
+        }
+
+        public bool IsOne
+        {
+            get
+            {
+                return sign == 1 && data.Length == 1 && data[0] == 1;
+            }
+        }
+
+        public bool IsPowerOfTwo
+        {
+            get
+            {
+                bool foundBit = false;
+                if (sign != 1)
+                {
+                    return false;
+                }
+                //This function is pop count == 1 for positive numbers
+                for (int i = 0; i < data.Length; ++i)
+                {
+                    int p = PopulationCount(data[i]);
+                    if (p > 0)
+                    {
+                        if (p > 1 || foundBit)
+                        {
+                            return false;
+                        }
+                        foundBit = true;
+                    }
+                }
+                return foundBit;
+            }
+        }
+
+        public bool IsZero
+        {
+            get
+            {
+                return sign == 0;
+            }
+        }
+
+        public int Sign
+        {
+            get
+            {
+                return sign;
+            }
+        }
+
         public int CompareTo(object obj)
         {
             if (obj == null)
@@ -1909,13 +2551,13 @@ namespace System.Numerics
                     res[j++] = (byte)(word >> 16);
                     res[j++] = (byte)(word >> 24);
                 }
-                add = (ulong)~topWord + (carry);
+                add = (ulong)~topWord + carry;
                 word = (uint)add;
                 carry = (uint)(add >> 32);
                 if (carry == 0)
                 {
                     int ex = FirstNonFFByte(word);
-                    bool needExtra = (word & (1 << (ex * 8 - 1))) == 0;
+                    bool needExtra = (word & (1 << ((ex * 8) - 1))) == 0;
                     int to = ex + (needExtra ? 1 : 0);
                     if (to != extra)
                     {
@@ -1961,7 +2603,7 @@ namespace System.Numerics
 
         public string ToString(string format, IFormatProvider provider)
         {
-            if (format == null || format == "")
+            if (format == null || format == string.Empty)
             {
                 return ToString(10, provider);
             }
@@ -1979,591 +2621,6 @@ namespace System.Numerics
                     return ToStringWithPadding(format, 16, null);
                 default:
                     throw new FormatException(string.Format("format '{0}' not implemented", format));
-            }
-        }
-
-        //returns the 0-based index of the most significant set bit
-        //returns 0 if no bit is set, so extra care when using it
-        private static int BitScanBackward(uint word)
-        {
-            for (int i = 31; i >= 0; --i)
-            {
-                uint mask = 1u << i;
-                if ((word & mask) == mask)
-                {
-                    return i;
-                }
-            }
-            return 0;
-        }
-
-        private static uint[] CoreAdd(uint[] a, uint[] b)
-        {
-            if (a.Length < b.Length)
-            {
-                uint[] tmp = a;
-                a = b;
-                b = tmp;
-            }
-            int bl = a.Length;
-            int sl = b.Length;
-            uint[] res = new uint[bl];
-            ulong sum = 0;
-            int i = 0;
-            for (; i < sl; i++)
-            {
-                sum = sum + a[i] + b[i];
-                res[i] = (uint)sum;
-                sum >>= 32;
-            }
-            for (; i < bl; i++)
-            {
-                sum = sum + a[i];
-                res[i] = (uint)sum;
-                sum >>= 32;
-            }
-            if (sum != 0)
-            {
-                res = Resize(res, bl + 1);
-                res[i] = (uint)sum;
-            }
-            return res;
-        }
-
-        private static uint[] CoreAdd(uint[] a, uint b)
-        {
-            int len = a.Length;
-            uint[] res = new uint[len];
-            ulong sum = b;
-            int i;
-            for (i = 0; i < len; i++)
-            {
-                sum = sum + a[i];
-                res[i] = (uint)sum;
-                sum >>= 32;
-            }
-            if (sum != 0)
-            {
-                res = Resize(res, len + 1);
-                res[i] = (uint)sum;
-            }
-            return res;
-        }
-
-        private static int CoreCompare(uint[] a, uint[] b)
-        {
-            int al = a != null ? a.Length : 0;
-            int bl = b != null ? b.Length : 0;
-            if (al > bl)
-            {
-                return 1;
-            }
-            if (bl > al)
-            {
-                return -1;
-            }
-            for (int i = al - 1; i >= 0; --i)
-            {
-                uint ai = a[i];
-                uint bi = b[i];
-                if (ai > bi)
-                {
-                    return 1;
-                }
-                if (ai < bi)
-                {
-                    return -1;
-                }
-            }
-            return 0;
-        }
-
-        private static uint[] CoreSub(uint[] a, uint[] b)
-        {
-            int bl = a.Length;
-            int sl = b.Length;
-            uint[] res = new uint[bl];
-            ulong borrow = 0;
-            int i;
-            for (i = 0; i < sl; ++i)
-            {
-                borrow = (ulong)a[i] - b[i] - borrow;
-                res[i] = (uint)borrow;
-                borrow = (borrow >> 32) & 0x1;
-            }
-            for (; i < bl; i++)
-            {
-                borrow = (ulong)a[i] - borrow;
-                res[i] = (uint)borrow;
-                borrow = (borrow >> 32) & 0x1;
-            }
-            //remove extra zeroes
-            for (i = bl - 1; i >= 0 && res[i] == 0; --i) ;
-            if (i < bl - 1)
-            {
-                res = Resize(res, i + 1);
-            }
-            return res;
-        }
-
-        private static uint[] CoreSub(uint[] a, uint b)
-        {
-            int len = a.Length;
-            uint[] res = new uint[len];
-            ulong borrow = b;
-            int i;
-            for (i = 0; i < len; i++)
-            {
-                borrow = (ulong)a[i] - borrow;
-                res[i] = (uint)borrow;
-                borrow = (borrow >> 32) & 0x1;
-            }
-            //remove extra zeroes
-            for (i = len - 1; i >= 0 && res[i] == 0; --i) ;
-            if (i < len - 1)
-            {
-                res = Resize(res, i + 1);
-            }
-            return res;
-        }
-
-        private static void DivModUnsigned(uint[] u, uint[] v, out uint[] q, out uint[] r)
-        {
-            int m = u.Length;
-            int n = v.Length;
-            if (n <= 1)
-            {
-                //  Divide by single digit
-                //
-                ulong rem = 0;
-                uint v0 = v[0];
-                q = new uint[m];
-                r = new uint[1];
-                for (int j = m - 1; j >= 0; j--)
-                {
-                    rem *= Base;
-                    rem += u[j];
-                    ulong div = rem / v0;
-                    rem -= div * v0;
-                    q[j] = (uint)div;
-                }
-                r[0] = (uint)rem;
-            }
-            else if (m >= n)
-            {
-                int shift = GetNormalizeShift(v[n - 1]);
-                uint[] un = new uint[m + 1];
-                uint[] vn = new uint[n];
-                Normalize(u, m, un, shift);
-                Normalize(v, n, vn, shift);
-                q = new uint[m - n + 1];
-                r = null;
-                //  Main division loop
-                //
-                for (int j = m - n; j >= 0; j--)
-                {
-                    ulong rr, qq;
-                    int i;
-                    rr = Base * un[j + n] + un[j + n - 1];
-                    qq = rr / vn[n - 1];
-                    rr -= qq * vn[n - 1];
-                    for (; ; )
-                    {
-                        // Estimate too big ?
-                        //
-                        if ((qq >= Base) || (qq * vn[n - 2] > (rr * Base + un[j + n - 2])))
-                        {
-                            qq--;
-                            rr += (ulong)vn[n - 1];
-                            if (rr < Base)
-                            {
-                                continue;
-                            }
-                        }
-                        break;
-                    }
-                    //  Multiply and subtract
-                    //
-                    long b = 0;
-                    long t = 0;
-                    for (i = 0; i < n; i++)
-                    {
-                        ulong p = vn[i] * qq;
-                        t = (long)un[i + j] - (long)(uint)p - b;
-                        un[i + j] = (uint)t;
-                        p >>= 32;
-                        t >>= 32;
-                        b = (long)p - t;
-                    }
-                    t = (long)un[j + n] - b;
-                    un[j + n] = (uint)t;
-                    //  Store the calculated value
-                    //
-                    q[j] = (uint)qq;
-                    //  Add back vn[0..n] to un[j..j+n]
-                    //
-                    if (t < 0)
-                    {
-                        q[j]--;
-                        ulong c = 0;
-                        for (i = 0; i < n; i++)
-                        {
-                            c = (ulong)vn[i] + un[j + i] + c;
-                            un[j + i] = (uint)c;
-                            c >>= 32;
-                        }
-                        c += (ulong)un[j + n];
-                        un[j + n] = (uint)c;
-                    }
-                }
-                Unnormalize(un, out r, shift);
-            }
-            else
-            {
-                q = new uint[] { 0 };
-                r = u;
-            }
-        }
-
-        private static ushort Exponent(byte[] v)
-        {
-            return (ushort)((((ushort)(v[7] & 0x7F)) << (ushort)4) | (((ushort)(v[6] & 0xF0)) >> 4));
-        }
-
-        private static int FirstNonFFByte(uint word)
-        {
-            if ((word & 0xFF000000u) != 0xFF000000u)
-            {
-                return 4;
-            }
-            else if ((word & 0xFF0000u) != 0xFF0000u)
-            {
-                return 3;
-            }
-            else if ((word & 0xFF00u) != 0xFF00u)
-            {
-                return 2;
-            }
-            return 1;
-        }
-
-        private static Exception GetFormatException()
-        {
-            return new FormatException("Input string was not in the correct format");
-        }
-
-        private static int GetNormalizeShift(uint value)
-        {
-            int shift = 0;
-            if ((value & 0xFFFF0000) == 0)
-            {
-                value <<= 16; shift += 16;
-            }
-            if ((value & 0xFF000000) == 0)
-            {
-                value <<= 8; shift += 8;
-            }
-            if ((value & 0xF0000000) == 0)
-            {
-                value <<= 4; shift += 4;
-            }
-            if ((value & 0xC0000000) == 0)
-            {
-                value <<= 2; shift += 2;
-            }
-            if ((value & 0x80000000) == 0)
-            {
-                value <<= 1; shift += 1;
-            }
-            return shift;
-        }
-
-        private static uint[] MakeTwoComplement(uint[] v)
-        {
-            uint[] res = new uint[v.Length];
-            ulong carry = 1;
-            for (int i = 0; i < v.Length; ++i)
-            {
-                uint word = v[i];
-                carry = (ulong)~word + carry;
-                word = (uint)carry;
-                carry = (uint)(carry >> 32);
-                res[i] = word;
-            }
-            uint last = res[res.Length - 1];
-            int idx = FirstNonFFByte(last);
-            uint mask = 0xFF;
-            for (int i = 1; i < idx; ++i)
-            {
-                mask = (mask << 8) | 0xFF;
-            }
-            res[res.Length - 1] = last & mask;
-            return res;
-        }
-
-        private static ulong Mantissa(byte[] v)
-        {
-            uint i1 = ((uint)v[0] | ((uint)v[1] << 8) | ((uint)v[2] << 16) | ((uint)v[3] << 24));
-            uint i2 = ((uint)v[4] | ((uint)v[5] << 8) | ((uint)(v[6] & 0xF) << 16));
-            return (ulong)((ulong)i1 | ((ulong)i2 << 32));
-        }
-
-        private static bool Negative(byte[] v)
-        {
-            return ((v[7] & 0x80) != 0);
-        }
-
-        private static void Normalize(uint[] u, int l, uint[] un, int shift)
-        {
-            uint carry = 0;
-            int i;
-            if (shift > 0)
-            {
-                int rshift = 32 - shift;
-                for (i = 0; i < l; i++)
-                {
-                    uint ui = u[i];
-                    un[i] = (ui << shift) | carry;
-                    carry = ui >> rshift;
-                }
-            }
-            else
-            {
-                for (i = 0; i < l; i++)
-                {
-                    un[i] = u[i];
-                }
-            }
-            while (i < un.Length)
-            {
-                un[i++] = 0;
-            }
-            if (carry != 0)
-            {
-                un[l] = carry;
-            }
-        }
-
-        private static bool Parse(string s, bool tryParse, out BigInteger result, out Exception exc)
-        {
-            int len;
-            int i, sign = 1;
-            bool digits_seen = false;
-            result = Zero;
-            exc = null;
-            if (s == null)
-            {
-                if (!tryParse)
-                {
-                    exc = new ArgumentNullException("value");
-                }
-                return false;
-            }
-            len = s.Length;
-            char c;
-            for (i = 0; i < len; i++)
-            {
-                c = s[i];
-                if (!Char.IsWhiteSpace(c))
-                {
-                    break;
-                }
-            }
-            if (i == len)
-            {
-                if (!tryParse)
-                {
-                    exc = GetFormatException();
-                }
-                return false;
-            }
-            var info = Thread.CurrentThread.CurrentCulture.NumberFormat;
-            string negative = info.NegativeSign;
-            string positive = info.PositiveSign;
-            if (string.CompareOrdinal(s, i, positive, 0, positive.Length) == 0)
-            {
-                 i += positive.Length;
-            }
-            else if (string.CompareOrdinal(s, i, negative, 0, negative.Length) == 0)
-            {
-                sign = -1;
-                i += negative.Length;
-            }
-            BigInteger val = Zero;
-            for (; i < len; i++)
-            {
-                c = s[i];
-                if (c == '\0')
-                {
-                    i = len;
-                    continue;
-                }
-                if (c >= '0' && c <= '9')
-                {
-                    byte d = (byte)(c - '0');
-                    val = val * 10 + d;
-                    digits_seen = true;
-                }
-                else if (!ProcessTrailingWhitespace(tryParse, s, i, ref exc))
-                {
-                    return false;
-                }
-            }
-            if (!digits_seen)
-            {
-                if (!tryParse)
-                {
-                    exc = GetFormatException();
-                }
-                return false;
-            }
-            if (val.sign == 0)
-            {
-                result = val;
-            }
-            else if (sign == -1)
-            {
-                result = new BigInteger(-1, val.data);
-            }
-            else
-            {
-                result = new BigInteger(1, val.data);
-            }
-            return true;
-        }
-
-        //Gem from Hacker's Delight
-        //Returns the number of bits set in @x
-        private static int PopulationCount(uint x)
-        {
-            x = x - ((x >> 1) & 0x55555555);
-            x = (x & 0x33333333) + ((x >> 2) & 0x33333333);
-            x = (x + (x >> 4)) & 0x0F0F0F0F;
-            x = x + (x >> 8);
-            x = x + (x >> 16);
-            return (int)(x & 0x0000003F);
-        }
-
-        [CLSCompliantAttribute(false)]
-        public static explicit operator uint(BigInteger value)
-        {
-            if (value.sign == 0)
-            {
-                return 0;
-            }
-            if (value.data.Length > 1 || value.sign == -1)
-            {
-                throw new OverflowException();
-            }
-            return value.data[0];
-        }
-
-        public static explicit operator long(BigInteger value)
-        {
-            if (value.sign == 0)
-            {
-                return 0;
-            }
-            if (value.data.Length > 2)
-            {
-                throw new OverflowException();
-            }
-            uint low = value.data[0];
-            if (value.data.Length == 1)
-            {
-                if (value.sign == 1)
-                {
-                    return (long)low;
-                }
-                long res = (long)low;
-                return -res;
-            }
-            uint high = value.data[1];
-            if (value.sign == 1)
-            {
-                if (high >= 0x80000000u)
-                {
-                    throw new OverflowException();
-                }
-                return (((long)high) << 32) | low;
-            }
-            if (high > 0x80000000u)
-            {
-                throw new OverflowException();
-            }
-            return -((((long)high) << 32) | (long)low);
-        }
-
-        private static bool ProcessTrailingWhitespace(bool tryParse, string s, int position, ref Exception exc)
-        {
-            int len = s.Length;
-            for (int i = position; i < len; i++)
-            {
-                char c = s[i];
-                if (c != 0 && !Char.IsWhiteSpace(c))
-                {
-                    if (!tryParse)
-                    {
-                        exc = GetFormatException();
-                    }
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        private static byte[] Resize(byte[] v, int len)
-        {
-            byte[] res = new byte[len];
-            Array.Copy(v, res, Math.Min(v.Length, len));
-            return res;
-        }
-
-        private static uint[] Resize(uint[] v, int len)
-        {
-            uint[] res = new uint[len];
-            Array.Copy(v, res, Math.Min(v.Length, len));
-            return res;
-        }
-
-        private static int TopByte(uint x)
-        {
-            if ((x & 0xFFFF0000u) != 0)
-            {
-                if ((x & 0xFF000000u) != 0)
-                {
-                    return 4;
-                }
-                return 3;
-            }
-            if ((x & 0xFF00u) != 0)
-            {
-                return 2;
-            }
-            return 1;
-        }
-
-        private static void Unnormalize(uint[] un, out uint[] r, int shift)
-        {
-            int length = un.Length;
-            r = new uint[length];
-            if (shift > 0)
-            {
-                int lshift = 32 - shift;
-                uint carry = 0;
-                for (int i = length - 1; i >= 0; i--)
-                {
-                    uint uni = un[i];
-                    r[i] = (uni >> shift) | carry;
-                    carry = (uni << lshift);
-                }
-            }
-            else
-            {
-                for (int i = 0; i < length; i++)
-                {
-                    r[i] = un[i];
-                }
             }
         }
 
@@ -2596,8 +2653,8 @@ namespace System.Numerics
 
         private string ToString(uint radix, IFormatProvider provider)
         {
-            const string characterSet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            if (characterSet.Length < radix)
+            const string CharacterSet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            if (CharacterSet.Length < radix)
             {
                 throw new ArgumentException("charSet length less than radix", "characterSet");
             }
@@ -2613,7 +2670,7 @@ namespace System.Numerics
             {
                 return sign == 1 ? "1" : "-1";
             }
-            List<char> digits = new List<char>(1 + data.Length * 3 / 10);
+            List<char> digits = new List<char>(1 + ((data.Length * 3) / 10));
             BigInteger a;
             if (sign == 1)
             {
@@ -2632,7 +2689,7 @@ namespace System.Numerics
             {
                 BigInteger rem;
                 a = DivRem(a, radix, out rem);
-                digits.Add(characterSet[(int)rem]);
+                digits.Add(CharacterSet[(int)rem]);
             }
             if (sign == -1 && radix == 10)
             {
@@ -2660,7 +2717,7 @@ namespace System.Numerics
                 digits.Add('0');
             }
             digits.Reverse();
-            return new String(digits.ToArray());
+            return new string(digits.ToArray());
         }
 
         private string ToStringWithPadding(string format, uint radix, IFormatProvider provider)
@@ -2671,7 +2728,7 @@ namespace System.Numerics
                 string baseStr = ToString(radix, provider);
                 if (baseStr.Length < precision)
                 {
-                    string additional = new String('0', precision - baseStr.Length);
+                    string additional = new string('0', precision - baseStr.Length);
                     if (baseStr[0] != '-')
                     {
                         return additional + baseStr;
@@ -2685,39 +2742,6 @@ namespace System.Numerics
             }
             return ToString(radix, provider);
         }
-
-/*
-        [MonoTODO]
-        public static BigInteger Parse (string value, NumberStyles style)
-        {
-            throw new NotImplementedException ();
-        }
-
-        [MonoTODO]
-        public static BigInteger Parse (string value, IFormatProvider provider)
-        {
-            throw new NotImplementedException ();
-        }
-
-        [MonoTODO]
-        public static BigInteger Parse (
-            string value, NumberStyles style, IFormatProvider provider)
-        {
-            throw new InvalidOperationException ();
-        }
-
-        [MonoTODO]
-        public static bool TryParse (
-            string value, NumberStyles style, IFormatProvider provider,
-            out BigInteger result)
-        {
-            throw new NotImplementedException ();
-        }
-*/
-        /*LAMESPEC Log doesn't specify to how many ulp is has to be precise
-        We are equilavent to MS with about 2 ULP
-        */
-        /*invariant a > b*/
     }
 }
 
