@@ -174,20 +174,12 @@ namespace Theraot.Core
         }
 
         [CLSCompliantAttribute(false)]
-        public static uint GetHi(ulong value)
+        public static void GetParts(ulong value, out uint lo, out uint hi)
         {
             unchecked
             {
-                return (uint)(value >> 32);
-            }
-        }
-
-        [CLSCompliantAttribute(false)]
-        public static uint GetLo(ulong value)
-        {
-            unchecked
-            {
-                return (uint)value;
+                lo = (uint)value;
+                hi = (uint)(value >> 32);
             }
         }
 
