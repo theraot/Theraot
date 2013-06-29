@@ -2288,14 +2288,14 @@ namespace System.Numerics
                     ulong difference = 0;
                     for (int wordIndex = 0; wordIndex < wordCount; wordIndex++)
                     {
-                        word = (uint)value[dataIndex++] |
-                               (uint)(value[dataIndex++] << 8) |
-                               (uint)(value[dataIndex++] << 16) |
-                               (uint)(value[dataIndex++] << 24);
+                        word = (uint)value[dataIndex]
+                            | (uint)(value[dataIndex + 1] << 8)
+                            | (uint)(value[dataIndex + 2] << 16)
+                            | (uint)(value[dataIndex + 3] << 24);
                         difference = (ulong)word - borrow;
-                        word = (uint)difference;
                         borrow = (uint)(difference >> 32) & 0x1u;
-                        _data[wordIndex] = ~word;
+                        _data[wordIndex] = ~(uint)difference;
+                        dataIndex += 4;
                     }
                     if (hasExtraBytes)
                     {
