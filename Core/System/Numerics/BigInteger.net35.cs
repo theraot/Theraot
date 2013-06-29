@@ -2471,7 +2471,10 @@ namespace System.Numerics
             {
                 return false;
             }
-            return Equals((BigInteger)obj);
+            else
+            {
+                return Equals((BigInteger)obj);
+            }
         }
 
         public bool Equals(BigInteger other)
@@ -2480,20 +2483,26 @@ namespace System.Numerics
             {
                 return false;
             }
-            int alen = _data != null ? _data.Length : 0;
-            int blen = other._data != null ? other._data.Length : 0;
-            if (alen != blen)
+            else
             {
-                return false;
-            }
-            for (int i = 0; i < alen; ++i)
-            {
-                if (_data[i] != other._data[i])
+                int dataLength = _data != null ? _data.Length : 0;
+                int otherDataLength = other._data != null ? other._data.Length : 0;
+                if (dataLength != otherDataLength)
                 {
                     return false;
                 }
+                else
+                {
+                    for (int dataIndex = 0; dataIndex < dataLength; dataIndex++)
+                    {
+                        if (_data[dataIndex] != other._data[dataIndex])
+                        {
+                            return false;
+                        }
+                    }
+                    return true;
+                }
             }
-            return true;
         }
 
         public bool Equals(long other)
@@ -2511,9 +2520,9 @@ namespace System.Numerics
         {
             uint hash = (uint)(_sign * 0x01010101u);
             int len = _data != null ? _data.Length : 0;
-            for (int i = 0; i < len; ++i)
+            for (int dataIndex = 0; dataIndex < len; dataIndex++)
             {
-                hash ^= _data[i];
+                hash ^= _data[dataIndex];
             }
             return (int)hash;
         }
