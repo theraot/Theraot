@@ -2251,10 +2251,11 @@ namespace System.Numerics
                 _data = new uint[dataSize];
                 if (_sign == 1)
                 {
+                    uint word;
                     int dataIndex = 0;
                     for (int wordIndex = 0; wordIndex < wordCount; ++wordIndex)
                     {
-                        var word = (uint)value[dataIndex]
+                        word = (uint)value[dataIndex]
                             | (uint)(value[dataIndex + 1] << 8)
                             | (uint)(value[dataIndex + 2] << 16)
                             | (uint)(value[dataIndex + 3] << 24);
@@ -2264,7 +2265,7 @@ namespace System.Numerics
                     if (hasExtraBytes)
                     {
                         int lastDataIndex = _data.Length - 1;
-                        uint word = 0;
+                        word = 0;
                         if (extraBytes == 3)
                         {
                             word = (uint)value[dataIndex]
