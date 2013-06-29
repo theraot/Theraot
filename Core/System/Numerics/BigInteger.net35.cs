@@ -2326,11 +2326,11 @@ namespace System.Numerics
                         }
                         difference = word - borrow;
                         borrow = (uint)(difference >> 32) & 0x1u;
+                        Console.WriteLine(difference);
+                        Console.WriteLine(difference >> 32);
+                        Console.WriteLine((uint)(difference >> 32));
+                        Console.WriteLine((uint)(difference >> 32) & 0x1u);
                         _data[lastDataIndex] = ~(uint)difference & mask;
-                    }
-                    if (borrow != 0) //FIXME I believe this can't happen, can someone write a test for it?
-                    {
-                        throw new Exception("non zero final carry");
                     }
                 }
             }
