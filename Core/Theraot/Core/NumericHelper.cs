@@ -168,7 +168,7 @@ namespace Theraot.Core
         }
 
         //Gem from Hacker's Delight
-        //Returns the number of bits set in @x
+        //Returns the number of bits set in @value
         [CLSCompliantAttribute(false)]
         public static int PopulationCount(uint value)
         {
@@ -181,7 +181,7 @@ namespace Theraot.Core
         }
 
         //Gem from BitTwiddler1011 at StackOverflow
-        //Returns the number of bits set in @x
+        //Returns the number of bits set in @value
         [CLSCompliantAttribute(false)]
         public static int PopulationCount(ulong value)
         {
