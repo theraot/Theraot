@@ -2267,18 +2267,18 @@ namespace System.Numerics
                         uint word = 0;
                         if (extraBytes == 3)
                         {
-                            word |= (uint)(value[dataIndex++] << (0 * 8));
-                            word |= (uint)(value[dataIndex++] << (1 * 8));
-                            word |= (uint)(value[dataIndex++] << (2 * 8));
+                            word |= (uint)(value[dataIndex] << 0);
+                            word |= (uint)(value[dataIndex + 1] << 8);
+                            word |= (uint)(value[dataIndex + 2] << 16);
                         }
                         else if (extraBytes == 2)
                         {
-                            word |= (uint)(value[dataIndex++] << (0 * 8));
-                            word |= (uint)(value[dataIndex++] << (1 * 8));
+                            word |= (uint)(value[dataIndex] << 0);
+                            word |= (uint)(value[dataIndex + 1] << 8);
                         }
                         else if (extraBytes == 1)
                         {
-                            word |= (uint)(value[dataIndex++] << (0 * 8));
+                            word |= (uint)(value[dataIndex + 2] << 0);
                         }
                         _data[lastDataIndex] = word;
                     }
