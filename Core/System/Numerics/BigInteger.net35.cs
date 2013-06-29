@@ -2186,8 +2186,8 @@ namespace System.Numerics
                     // 1.mantissa * 2**exp
                     int exponent = Exponent(bytes);
                     mantissa |= 0x10000000000000ul;
-                    BigInteger mantisaAsBigInteger = mantissa;
-                    BigInteger result = exponent > Bias ? mantisaAsBigInteger << (exponent - Bias) : mantisaAsBigInteger >> (Bias - exponent);
+                    BigInteger mantissaAsBigInteger = mantissa;
+                    BigInteger result = exponent > Bias ? mantissaAsBigInteger << (exponent - Bias) : mantissaAsBigInteger >> (Bias - exponent);
                     _sign = (short)(Negative(bytes) ? -1 : 1);
                     _data = result._data;
                 }
