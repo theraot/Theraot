@@ -2260,7 +2260,6 @@ namespace System.Numerics
                     if (hasExtraBytes)
                     {
                         int lastDataIndex = _data.Length - 1;
-                        word = 0;
                         if (extraBytes == 3)
                         {
                             word = (uint)value[dataIndex]
@@ -2276,22 +2275,26 @@ namespace System.Numerics
                         {
                             word = (uint)value[dataIndex];
                         }
+                        else
+                        {
+                            word = 0;
+                        }
                         _data[lastDataIndex] = word;
                     }
                 }
                 else
                 {
                     uint borrow = 1;
-                    ulong sub = 0;
+                    ulong difference = 0;
                     for (int wordIndex = 0; wordIndex < wordCount; wordIndex++)
                     {
                         word = (uint)value[dataIndex++] |
                                (uint)(value[dataIndex++] << 8) |
                                (uint)(value[dataIndex++] << 16) |
                                (uint)(value[dataIndex++] << 24);
-                        sub = (ulong)word - borrow;
-                        word = (uint)sub;
-                        borrow = (uint)(sub >> 32) & 0x1u;
+                        difference = (ulong)word - borrow;
+                        word = (uint)difference;
+                        borrow = (uint)(difference >> 32) & 0x1u;
                         _data[wordIndex] = ~word;
                     }
                     if (hasExtraBytes)
@@ -2303,9 +2306,9 @@ namespace System.Numerics
                             word |= (uint)(value[dataIndex++] << (i * 8));
                             store_mask = (store_mask << 8) | 0xFF;
                         }
-                        sub = word - borrow;
-                        word = (uint)sub;
-                        borrow = (uint)(sub >> 32) & 0x1u;
+                        difference = word - borrow;
+                        word = (uint)difference;
+                        borrow = (uint)(difference >> 32) & 0x1u;
                         _data[_data.Length - 1] = ~word & store_mask;
                     }
                     if (borrow != 0) //FIXME I believe this can't happen, can someone write a test for it?
