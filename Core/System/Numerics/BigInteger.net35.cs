@@ -2324,10 +2324,9 @@ namespace System.Numerics
                             word = 0;
                             mask = 0;
                         }
-                        _data[lastDataIndex] = word;
                         difference = word - borrow;
                         borrow = (uint)(difference >> 32) & 0x1u;
-                        _data[_data.Length - 1] = ~(uint)difference & mask;
+                        _data[lastDataIndex] = ~(uint)difference & mask;
                     }
                     if (borrow != 0) //FIXME I believe this can't happen, can someone write a test for it?
                     {
