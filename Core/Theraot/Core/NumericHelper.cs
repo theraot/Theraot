@@ -229,6 +229,7 @@ namespace Theraot.Core
 
         //Gem from Hacker's Delight
         //Returns the number of bits set in @x
+        [CLSCompliantAttribute(false)]
         public static int PopulationCount(uint value)
         {
             value = value - ((value >> 1) & 0x55555555);
