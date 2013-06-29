@@ -137,44 +137,53 @@ namespace System.Numerics
             {
                 throw new DivideByZeroException();
             }
-            if (dividend._sign == 0)
-            {
-                remainder = dividend;
-                return dividend;
-            }
-            uint[] quotient;
-            uint[] remainder_value;
-            DivModUnsigned(dividend._data, divisor._data, out quotient, out remainder_value);
-            int i;
-            for (i = remainder_value.Length - 1; i >= 0 && remainder_value[i] == 0; --i)
-            {
-                //Empty
-            }
-            if (i == -1)
-            {
-                remainder = new BigInteger(0, ZERO);
-            }
             else
             {
-                if (i < remainder_value.Length - 1)
+                if (dividend._sign == 0)
                 {
-                    remainder_value = Resize(remainder_value, i + 1);
+                    remainder = dividend;
+                    return dividend;
                 }
-                remainder = new BigInteger(dividend._sign, remainder_value);
+                else
+                {
+                    uint[] quotientData;
+                    uint[] remainderData;
+                    DivModUnsigned(dividend._data, divisor._data, out quotientData, out remainderData);
+                    int index;
+                    for (index = remainderData.Length - 1; index >= 0 && remainderData[index] == 0; index--)
+                    {
+                        //Empty
+                    }
+                    if (index == -1)
+                    {
+                        remainder = new BigInteger(0, ZERO);
+                    }
+                    else
+                    {
+                        if (index < remainderData.Length - 1)
+                        {
+                            remainderData = Resize(remainderData, index + 1);
+                        }
+                        remainder = new BigInteger(dividend._sign, remainderData);
+                    }
+                    for (index = quotientData.Length - 1; index >= 0 && quotientData[index] == 0; index--)
+                    {
+                        //Empty
+                    }
+                    if (index == -1)
+                    {
+                        return new BigInteger(0, ZERO);
+                    }
+                    else
+                    {
+                        if (index < quotientData.Length - 1)
+                        {
+                            quotientData = Resize(quotientData, index + 1);
+                        }
+                        return new BigInteger((short)(dividend._sign * divisor._sign), quotientData);
+                    }
+                }
             }
-            for (i = quotient.Length - 1; i >= 0 && quotient[i] == 0; --i)
-            {
-                //Empty
-            }
-            if (i == -1)
-            {
-                return new BigInteger(0, ZERO);
-            }
-            if (i < quotient.Length - 1)
-            {
-                quotient = Resize(quotient, i + 1);
-            }
-            return new BigInteger((short)(dividend._sign * divisor._sign), quotient);
         }
 
         public static explicit operator BigInteger(double value)
