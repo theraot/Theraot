@@ -2215,14 +2215,8 @@ namespace System.Numerics
             {
                 throw new ArgumentNullException("value");
             }
-            int len = value.Length;
-            if (len == 0 || (len == 1 && value[0] == 0))
-            {
-                _sign = 0;
-                _data = ZERO;
-                return;
-            }
-            if ((value[len - 1] & 0x80) != 0)
+            int valueLength = value.Length;
+            if ((value[valueLength - 1] & 0x80) != 0)
             {
                 _sign = -1;
             }
@@ -2230,37 +2224,49 @@ namespace System.Numerics
             {
                 _sign = 1;
             }
+            if (valueLength == 0 || (valueLength == 1 && value[0] == 0))
+            {
+                _sign = 0;
+                _data = ZERO;
+                return;
+            }
             if (_sign == 1)
             {
-                while (value[len - 1] == 0)
+                while (valueLength > 0 && value[valueLength - 1] == 0)
                 {
-                    if (--len == 0)
-                    {
-                        _sign = 0;
-                        _data = ZERO;
-                        return;
-                    }
+                    valueLength--;
                 }
-                int full_words, size;
-                full_words = size = len / 4;
-                if ((len & 0x3) != 0)
+                if (valueLength == 0)
                 {
-                    ++size;
+                    _sign = 0;
+                    _data = ZERO;
+                    return;
                 }
-                _data = new uint[size];
+            }
+            int wordCount, dataSize;
+            wordCount = valueLength / 4;
+            dataSize = wordCount;
+            int extraBytes = (valueLength & 0x3);
+            if (extraBytes != 0)
+            {
+                dataSize++;
+            }
+            _data = new uint[dataSize];
+            if (_sign == 1)
+            {
                 int j = 0;
-                for (int i = 0; i < full_words; ++i)
+                for (int i = 0; i < wordCount; ++i)
                 {
                     _data[i] = (uint)value[j++] |
                               (uint)(value[j++] << 8) |
                               (uint)(value[j++] << 16) |
                               (uint)(value[j++] << 24);
                 }
-                size = len & 0x3;
-                if (size > 0)
+                dataSize = valueLength & 0x3;
+                if (dataSize > 0)
                 {
                     int idx = _data.Length - 1;
-                    for (int i = 0; i < size; ++i)
+                    for (int i = 0; i < dataSize; ++i)
                     {
                         _data[idx] |= (uint)(value[j++] << (i * 8));
                     }
@@ -2268,17 +2274,10 @@ namespace System.Numerics
             }
             else
             {
-                int full_words, size;
-                full_words = size = len / 4;
-                if ((len & 0x3) != 0)
-                {
-                    ++size;
-                }
-                _data = new uint[size];
                 uint word, borrow = 1;
                 ulong sub = 0;
                 int j = 0;
-                for (int i = 0; i < full_words; ++i)
+                for (int i = 0; i < wordCount; ++i)
                 {
                     word = (uint)value[j++] |
                            (uint)(value[j++] << 8) |
@@ -2289,12 +2288,12 @@ namespace System.Numerics
                     borrow = (uint)(sub >> 32) & 0x1u;
                     _data[i] = ~word;
                 }
-                size = len & 0x3;
-                if (size > 0)
+                dataSize = valueLength & 0x3;
+                if (dataSize > 0)
                 {
                     word = 0;
                     uint store_mask = 0;
-                    for (int i = 0; i < size; ++i)
+                    for (int i = 0; i < dataSize; ++i)
                     {
                         word |= (uint)(value[j++] << (i * 8));
                         store_mask = (store_mask << 8) | 0xFF;
