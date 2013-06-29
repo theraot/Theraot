@@ -167,6 +167,30 @@ namespace Theraot.Core
             }
         }
 
+        //Gem from Hacker's Delight
+        //Returns the number of bits set in @x
+        [CLSCompliantAttribute(false)]
+        public static int PopulationCount(uint value)
+        {
+            value = value - ((value >> 1) & 0x55555555);
+            value = (value & 0x33333333) + ((value >> 2) & 0x33333333);
+            value = (value + (value >> 4)) & 0x0F0F0F0F;
+            value = value + (value >> 8);
+            value = value + (value >> 16);
+            return (int)(value & 0x0000003F);
+        }
+
+        //Gem from BitTwiddler1011 at StackOverflow
+        //Returns the number of bits set in @x
+        [CLSCompliantAttribute(false)]
+        public static int PopulationCount(ulong value)
+        {
+            value -= (value >> 1) & 0x5555555555555555UL;
+            value = (value & 0x3333333333333333UL) + ((value >> 2) & 0x3333333333333333UL);
+            value = (value + (value >> 4)) & 0x0f0f0f0f0f0f0f0fUL;
+            return (int)((value * 0x0101010101010101UL) >> 56);
+        }
+
         public static float Round(this float number, int decimals)
         {
             return (float)Math.Round((double)number, decimals);
@@ -225,19 +249,6 @@ namespace Theraot.Core
         public static decimal Round(this decimal number, MidpointRounding mode)
         {
             return Math.Round(number, mode);
-        }
-
-        //Gem from Hacker's Delight
-        //Returns the number of bits set in @x
-        [CLSCompliantAttribute(false)]
-        public static int PopulationCount(uint value)
-        {
-            value = value - ((value >> 1) & 0x55555555);
-            value = (value & 0x33333333) + ((value >> 2) & 0x33333333);
-            value = (value + (value >> 4)) & 0x0F0F0F0F;
-            value = value + (value >> 8);
-            value = value + (value >> 16);
-            return (int)(value & 0x0000003F);
         }
     }
 }
