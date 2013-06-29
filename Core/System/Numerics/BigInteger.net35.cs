@@ -2299,17 +2299,35 @@ namespace System.Numerics
                     }
                     if (hasExtraBytes)
                     {
-                        word = 0;
-                        uint store_mask = 0;
-                        for (int i = 0; i < extraBytes; ++i)
+                        int lastDataIndex = _data.Length - 1;
+                        uint mask = 0;
+                        if (extraBytes == 3)
                         {
-                            word |= (uint)(value[dataIndex++] << (i * 8));
-                            store_mask = (store_mask << 8) | 0xFF;
+                            word = (uint)value[dataIndex]
+                                | (uint)(value[dataIndex + 1] << 8)
+                                | (uint)(value[dataIndex + 2] << 16);
+                            mask = 0xFFFFFF;
                         }
+                        else if (extraBytes == 2)
+                        {
+                            word = (uint)value[dataIndex]
+                                | (uint)(value[dataIndex + 1] << 8);
+                            mask = 0xFFFF;
+                        }
+                        else if (extraBytes == 1)
+                        {
+                            word = (uint)value[dataIndex];
+                            mask = 0xFF;
+                        }
+                        else
+                        {
+                            word = 0;
+                            mask = 0;
+                        }
+                        _data[lastDataIndex] = word;
                         difference = word - borrow;
-                        word = (uint)difference;
                         borrow = (uint)(difference >> 32) & 0x1u;
-                        _data[_data.Length - 1] = ~word & store_mask;
+                        _data[_data.Length - 1] = ~(uint)difference & mask;
                     }
                     if (borrow != 0) //FIXME I believe this can't happen, can someone write a test for it?
                     {
