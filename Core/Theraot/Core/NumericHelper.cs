@@ -113,6 +113,12 @@ namespace Theraot.Core
             }
         }
 
+        [CLSCompliantAttribute(false)]
+        public static ulong BuildUlong(uint hi, uint lo)
+        {
+            return (ulong)hi << 32 | (ulong)lo;
+        }
+
         public static int CheckedDecrement(this int value)
         {
             checked
@@ -164,6 +170,24 @@ namespace Theraot.Core
             {
                 value++;
                 return value;
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static uint GetHi(ulong value)
+        {
+            unchecked
+            {
+                return (uint)(value >> 32);
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static uint GetLo(ulong value)
+        {
+            unchecked
+            {
+                return (uint)value;
             }
         }
 
