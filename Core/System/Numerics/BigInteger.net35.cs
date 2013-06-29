@@ -1911,17 +1911,6 @@ namespace System.Numerics
             return true;
         }
 
-        //Gem from Hacker's Delight
-        //Returns the number of bits set in @x
-        private static int PopulationCount(uint x)
-        {
-            x = x - ((x >> 1) & 0x55555555);
-            x = (x & 0x33333333) + ((x >> 2) & 0x33333333);
-            x = (x + (x >> 4)) & 0x0F0F0F0F;
-            x = x + (x >> 8);
-            x = x + (x >> 16);
-            return (int)(x & 0x0000003F);
-        }
         private static bool ProcessTrailingWhitespace(bool tryParse, string s, int position, ref Exception exc)
         {
             int len = s.Length;
@@ -2367,20 +2356,23 @@ namespace System.Numerics
                 {
                     return false;
                 }
-                //This function is pop count == 1 for positive numbers
-                for (int i = 0; i < _data.Length; ++i)
+                else
                 {
-                    int p = PopulationCount(_data[i]);
-                    if (p > 0)
+                    //This function is pop count == 1 for positive numbers
+                    for (int dataIndex = 0; dataIndex < _data.Length; dataIndex++)
                     {
-                        if (p > 1 || foundBit)
+                        int population = Theraot.Core.NumericHelper.PopulationCount(_data[dataIndex]);
+                        if (population > 0)
                         {
-                            return false;
+                            if (population > 1 || foundBit)
+                            {
+                                return false;
+                            }
+                            foundBit = true;
                         }
-                        foundBit = true;
                     }
+                    return foundBit;
                 }
-                return foundBit;
             }
         }
 
