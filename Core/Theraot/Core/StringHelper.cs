@@ -166,6 +166,27 @@ namespace Theraot.Core
 #endif
         }
 
+        public static string Concat<T>(IEnumerable<T> values, Converter<T, string> converter)
+        {
+            if (values == null)
+            {
+                throw new ArgumentNullException("values");
+            }
+            if (converter == null)
+            {
+                throw new ArgumentNullException("converter");
+            }
+            var stringList = new List<string>();
+            int length = 0;
+            foreach (var item in values)
+            {
+                var itemToString = converter.Invoke(item);
+                stringList.Add(itemToString);
+                length += itemToString.Length;
+            }
+            return ConcatExtractedExtracted(stringList.ToArray(), 0, stringList.Count, length);
+        }
+
         public static string End(this string text, int characterCount)
         {
             var _text = Check.NotNullArgument(text, "text");
@@ -285,71 +306,27 @@ namespace Theraot.Core
                 return _text.Substring(characterCount);
             }
         }
-
-        public static string Implode<TInput>(IEnumerable<TInput> collection, Converter<TInput, string> converter, string separator, string open, string close)
+        
+        public static string Implode(string separator, params object[] values)
         {
-            return Implode(new ConversionSet<TInput, string>(collection, converter), separator, open, close);
-        }
-
-        public static string Implode<TInput>(IEnumerable<TInput> collection, Converter<TInput, string> converter, string separator)
-        {
-            return Implode(new ConversionSet<TInput, string>(collection, converter), separator);
-        }
-
-        public static string Implode(IEnumerable<string> collection, string separator)
-        {
-            StringBuilder str = ImplodeExtracted(collection, separator);
-            return str.ToString();
-        }
-
-        public static string Implode(IEnumerable<string> collection, string separator, string open, string close)
-        {
-            StringBuilder str = ImplodeExtracted(collection, separator);
-            if (str.Length > 0)
+            if (separator == null)
             {
-                return open.Safe() + str.ToString() + close.Safe();
+                return string.Concat(values);
             }
-            else
+            if (values == null)
             {
-                return str.ToString();
+                throw new ArgumentNullException("values");
             }
+            var array = new string[values.Length];
+            int index = 0;
+            foreach (var item in values)
+            {
+                array[index++] = item.ToString();
+            }
+            return ImplodeExtracted(separator, array, 0, array.Length);
         }
 
-        public static bool IsNullOrEmpty(this string value)
-        {
-            return string.IsNullOrEmpty(value);
-        }
-
-        public static bool IsNullOrWhiteSpace(this string value)
-        {
-            if (string.IsNullOrEmpty(value))
-            {
-                return true;
-            }
-            foreach (char character in value)
-            {
-                if (!char.IsWhiteSpace(character))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public static string Join(string separator, params string[] value)
-        {
-            if (ReferenceEquals(value, null))
-            {
-                throw new ArgumentNullException("value");
-            }
-            if (ReferenceEquals(separator, null))
-            {
-                separator = string.Empty;
-            }
-            return JoinExtracted(separator, value, 0, value.Length);
-        }
-
-        public static string Join(string separator, string[] array, int arrayIndex)
+        public static string Implode(string separator, object[] array, int arrayIndex)
         {
             if (array == null)
             {
@@ -367,10 +344,10 @@ namespace Theraot.Core
             {
                 separator = string.Empty;
             }
-            return JoinExtracted(separator, array, arrayIndex, array.Length - arrayIndex);
+            return ImplodeExtracted(separator, array, arrayIndex, array.Length - arrayIndex);
         }
 
-        public static string Join(string separator, string[] array, int arrayIndex, int countLimit)
+        public static string Implode(string separator, object[] array, int arrayIndex, int countLimit)
         {
             if (array == null)
             {
@@ -396,46 +373,271 @@ namespace Theraot.Core
             {
                 separator = string.Empty;
             }
-            return JoinExtracted(separator, array, arrayIndex, countLimit);
+            return ImplodeExtracted(separator, array, arrayIndex, countLimit);
         }
 
-        public static string Join(string separator, params object[] values)
+        public static string Implode(string separator, params string[] value)
         {
-            if (separator == null)
+            if (ReferenceEquals(value, null))
             {
-                return string.Concat(values);
+                throw new ArgumentNullException("value");
             }
+            if (ReferenceEquals(separator, null))
+            {
+                separator = string.Empty;
+            }
+            return ImplodeExtracted(separator, value, 0, value.Length);
+        }
+
+        public static string Implode(string separator, string[] array, int arrayIndex)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException("array");
+            }
+            if (arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
+            }
+            if (arrayIndex == array.Length)
+            {
+                return string.Empty;
+            }
+            if (ReferenceEquals(separator, null))
+            {
+                separator = string.Empty;
+            }
+            return ImplodeExtracted(separator, array, arrayIndex, array.Length - arrayIndex);
+        }
+
+        public static string Implode(string separator, string[] array, int arrayIndex, int countLimit)
+        {
+            if (array == null)
+            {
+                throw new ArgumentNullException("array");
+            }
+            if (arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
+            }
+            if (countLimit < 0)
+            {
+                throw new ArgumentOutOfRangeException("countLimit", "Non-negative number is required.");
+            }
+            if (countLimit > array.Length - arrayIndex)
+            {
+                throw new ArgumentException("array", "The array can not contain the number of elements.");
+            }
+            if (arrayIndex == array.Length)
+            {
+                return string.Empty;
+            }
+            if (ReferenceEquals(separator, null))
+            {
+                separator = string.Empty;
+            }
+            return ImplodeExtracted(separator, array, arrayIndex, countLimit);
+        }
+
+        public static string Implode(string separator, IEnumerable<string> values)
+        {
             if (values == null)
             {
                 throw new ArgumentNullException("values");
             }
-            var array = new string[values.Length];
-            int index = 0;
-            foreach (var item in values)
+            if (separator == null)
             {
-                array[index++] = item.ToString();
+                return Concat(values);
             }
-            return JoinExtracted(separator, array, 0, array.Length);
+            else
+            {
+                var stringList = new List<string>();
+                foreach (var item in values)
+                {
+                    stringList.Add(item);
+                }
+                return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
+            }
         }
 
-        public static string Join<T>(string separator, IEnumerable<T> values)
+        public static string Implode<T>(string separator, IEnumerable<T> values)
         {
+            if (values == null)
+            {
+                throw new ArgumentNullException("values");
+            }
             if (separator == null)
             {
                 return Concat<T>(values);
             }
+            else
+            {
+                var stringList = new List<string>();
+                foreach (var item in values)
+                {
+                    stringList.Add(item.ToString());
+                }
+                return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
+            }
+        }
+
+        public static string Implode<T>(string separator, IEnumerable<T> values, Converter<T, string> converter)
+        {
+            if (converter == null)
+            {
+                throw new ArgumentNullException("converter");
+            }
             if (values == null)
             {
                 throw new ArgumentNullException("values");
             }
-            var stringList = new List<string>();
-            foreach (var item in values)
+            if (separator == null)
             {
-                stringList.Add(item.ToString());
+                return Concat<T>(values, converter);
             }
-            return JoinExtracted(separator, stringList.ToArray(), 0, stringList.Count);
+            else
+            {
+                var stringList = new List<string>();
+                foreach (var item in values)
+                {
+                    stringList.Add(item.ToString());
+                }
+                return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
+            }
         }
 
+        public static string Implode(string separator, IEnumerable<string> values, string start, string end)
+        {
+            if (values == null)
+            {
+                throw new ArgumentNullException("values");
+            }
+            if (separator == null)
+            {
+                return Concat(values);
+            }
+            else
+            {
+                var stringList = new List<string>();
+                foreach (var item in values)
+                {
+                    stringList.Add(item);
+                }
+                if (stringList.Count > 0)
+                {
+                    if (start == null)
+                    {
+                        start = string.Empty;
+                    }
+                    if (end == null)
+                    {
+                        end = string.Empty;
+                    }
+                    return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+        }
+
+        public static string Implode<T>(string separator, IEnumerable<T> values, string start, string end)
+        {
+            if (values == null)
+            {
+                throw new ArgumentNullException("values");
+            }
+            if (separator == null)
+            {
+                return Concat<T>(values);
+            }
+            else
+            {
+                var stringList = new List<string>();
+                foreach (var item in values)
+                {
+                    stringList.Add(item.ToString());
+                }
+                if (stringList.Count > 0)
+                {
+                    if (start == null)
+                    {
+                        start = string.Empty;
+                    }
+                    if (end == null)
+                    {
+                        end = string.Empty;
+                    }
+                    return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+        }
+
+        public static string Implode<T>(string separator, IEnumerable<T> values, Converter<T, string> converter, string start, string end)
+        {
+            if (converter == null)
+            {
+                throw new ArgumentNullException("converter");
+            }
+            if (values == null)
+            {
+                throw new ArgumentNullException("values");
+            }
+            if (separator == null)
+            {
+                return Concat<T>(values, converter);
+            }
+            else
+            {
+                var stringList = new List<string>();
+                foreach (var item in values)
+                {
+                    stringList.Add(item.ToString());
+                }
+                if (stringList.Count > 0)
+                {
+                    if (start == null)
+                    {
+                        start = string.Empty;
+                    }
+                    if (end == null)
+                    {
+                        end = string.Empty;
+                    }
+                    return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+        }
+
+        public static bool IsNullOrEmpty(this string value)
+        {
+            return string.IsNullOrEmpty(value);
+        }
+
+        public static bool IsNullOrWhiteSpace(this string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return true;
+            }
+            foreach (char character in value)
+            {
+                if (!char.IsWhiteSpace(character))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
         public static bool Like(this string text, Regex regex, int startAt)
         {
             return regex.IsMatch(text, startAt);
@@ -743,26 +945,26 @@ namespace Theraot.Core
             }
         }
 
-        private static StringBuilder ImplodeExtracted(IEnumerable<string> collection, string separator)
+        private static string ImplodeExtracted(string separator, object[] array, int startIndex, int count)
         {
-            var str = new StringBuilder();
-            bool first = true;
-            foreach (string item in Check.NotNullArgument(collection, "collection"))
+            int length = 0;
+            int maxIndex = startIndex + count;
+            var newArray = new string[count];
+            for (int index = startIndex; index < maxIndex; index++)
             {
-                if (first)
+                var item = array[index];
+                if (!ReferenceEquals(item, null))
                 {
-                    first = false;
+                    var itemToString = item.ToString();
+                    newArray[index - startIndex] = itemToString;
+                    length += itemToString.Length;
                 }
-                else
-                {
-                    str.Append(separator);
-                }
-                str.Append(item);
             }
-            return str;
+            length += separator.Length * (count - 1);
+            return ImplodeExtractedExtracted(separator, newArray, 0, count, length);
         }
 
-        private static string JoinExtracted(string separator, string[] array, int startIndex, int count)
+        private static string ImplodeExtracted(string separator, string[] array, int startIndex, int count)
         {
             int length = 0;
             int maxIndex = startIndex + count;
@@ -775,6 +977,11 @@ namespace Theraot.Core
                 }
             }
             length += separator.Length * (count - 1);
+            return ImplodeExtractedExtracted(separator, array, startIndex, maxIndex, length);
+        }
+
+        private static string ImplodeExtractedExtracted(string separator, string[] array, int startIndex, int maxIndex, int length)
+        {
             if (length <= 0)
             {
                 return string.Empty;
