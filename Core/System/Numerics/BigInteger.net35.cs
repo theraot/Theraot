@@ -2394,15 +2394,14 @@ namespace System.Numerics
 
         public int CompareTo(object obj)
         {
-            if (obj == null)
+            if (ReferenceEquals(obj, null) || !(obj is BigInteger))
             {
                 return 1;
             }
-            if (!(obj is BigInteger))
+            else
             {
-                return -1;
+                return Compare(this, (BigInteger)obj);
             }
-            return Compare(this, (BigInteger)obj);
         }
 
         public int CompareTo(BigInteger other)
