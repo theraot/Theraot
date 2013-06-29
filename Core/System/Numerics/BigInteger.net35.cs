@@ -2288,26 +2288,25 @@ namespace System.Numerics
                 {
                     uint word, borrow = 1;
                     ulong sub = 0;
-                    int j = 0;
-                    for (int i = 0; i < wordCount; ++i)
+                    int dataIndex = 0;
+                    for (int wordIndex = 0; wordIndex < wordCount; wordIndex++)
                     {
-                        word = (uint)value[j++] |
-                               (uint)(value[j++] << 8) |
-                               (uint)(value[j++] << 16) |
-                               (uint)(value[j++] << 24);
+                        word = (uint)value[dataIndex++] |
+                               (uint)(value[dataIndex++] << 8) |
+                               (uint)(value[dataIndex++] << 16) |
+                               (uint)(value[dataIndex++] << 24);
                         sub = (ulong)word - borrow;
                         word = (uint)sub;
                         borrow = (uint)(sub >> 32) & 0x1u;
-                        _data[i] = ~word;
+                        _data[wordIndex] = ~word;
                     }
-                    dataSize = valueLength & 0x3;
-                    if (dataSize > 0)
+                    if (hasExtraBytes)
                     {
                         word = 0;
                         uint store_mask = 0;
-                        for (int i = 0; i < dataSize; ++i)
+                        for (int i = 0; i < extraBytes; ++i)
                         {
-                            word |= (uint)(value[j++] << (i * 8));
+                            word |= (uint)(value[dataIndex++] << (i * 8));
                             store_mask = (store_mask << 8) | 0xFF;
                         }
                         sub = word - borrow;
