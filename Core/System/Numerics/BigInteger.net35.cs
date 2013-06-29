@@ -2243,28 +2243,28 @@ namespace System.Numerics
                 wordCount = valueLength / 4;
                 dataSize = wordCount;
                 int extraBytes = (valueLength & 0x3);
-                if (extraBytes != 0)
+                bool hasExtraBytes = extraBytes > 0;
+                if (hasExtraBytes)
                 {
                     dataSize++;
                 }
                 _data = new uint[dataSize];
                 if (_sign == 1)
                 {
-                    int j = 0;
-                    for (int i = 0; i < wordCount; ++i)
+                    int dataIndex = 0;
+                    for (int wordIndex = 0; wordIndex < wordCount; ++wordIndex)
                     {
-                        _data[i] = (uint)value[j++] |
-                                  (uint)(value[j++] << 8) |
-                                  (uint)(value[j++] << 16) |
-                                  (uint)(value[j++] << 24);
+                        _data[wordIndex] = (uint)value[dataIndex++] |
+                                  (uint)(value[dataIndex++] << 8) |
+                                  (uint)(value[dataIndex++] << 16) |
+                                  (uint)(value[dataIndex++] << 24);
                     }
-                    dataSize = valueLength & 0x3;
-                    if (dataSize > 0)
+                    if (hasExtraBytes)
                     {
                         int idx = _data.Length - 1;
-                        for (int i = 0; i < dataSize; ++i)
+                        for (int i = 0; i < extraBytes; ++i)
                         {
-                            _data[idx] |= (uint)(value[j++] << (i * 8));
+                            _data[idx] |= (uint)(value[dataIndex++] << (i * 8));
                         }
                     }
                 }
