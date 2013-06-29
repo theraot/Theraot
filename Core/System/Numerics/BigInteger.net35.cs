@@ -2416,47 +2416,53 @@ namespace System.Numerics
             {
                 return -1;
             }
-            if (_sign == 0)
+            else if (_sign == 0)
             {
                 return other == 0 ? 0 : -1;
             }
-            if (_data.Length > 2)
+            else if (_data.Length > 2)
             {
                 return 1;
             }
-            uint high = (uint)(other >> 32);
-            uint low = (uint)other;
-            return LongCompare(low, high);
+            else
+            {
+                uint high = (uint)(other >> 32);
+                uint low = (uint)other;
+                return LongCompare(low, high);
+            }
         }
 
         public int CompareTo(long other)
         {
-            int ls = _sign;
-            int rs = Math.Sign(other);
-            if (ls != rs)
+            int leftSign = _sign;
+            int rightSign = Math.Sign(other);
+            if (leftSign != rightSign)
             {
-                return ls > rs ? 1 : -1;
+                return leftSign > rightSign ? 1 : -1;
             }
-            if (ls == 0)
+            else if (leftSign == 0)
             {
                 return 0;
             }
-            if (_data.Length > 2)
+            else if (_data.Length > 2)
             {
                 return _sign;
             }
-            if (other < 0)
+            else
             {
-                other = -other;
+                if (other < 0)
+                {
+                    other = -other;
+                }
+                uint low = (uint)other;
+                uint high = (uint)((ulong)other >> 32);
+                int result = LongCompare(low, high);
+                if (leftSign == -1)
+                {
+                    result = -result;
+                }
+                return result;
             }
-            uint low = (uint)other;
-            uint high = (uint)((ulong)other >> 32);
-            int r = LongCompare(low, high);
-            if (ls == -1)
-            {
-                r = -r;
-            }
-            return r;
         }
 
         public override bool Equals(object obj)
