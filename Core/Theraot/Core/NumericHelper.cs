@@ -5,111 +5,515 @@ namespace Theraot.Core
 {
     public static class NumericHelper
     {
-        public static IEnumerable<int> Bits(this int value)
+        [CLSCompliantAttribute(false)]
+        public static IEnumerable<sbyte> Bits(this sbyte value)
         {
-            int check = 1;
             unchecked
             {
+                byte check = (byte)1 << 7;
+                int log2 = 8;
+                byte _value = (byte)value;
                 do
                 {
-                    if ((value & check) != 0)
+                    if ((_value & check) != 0)
                     {
-                        yield return check;
+                        yield return (sbyte)check;
                     }
-                    check *= 2;
+                    check >>= 1;
+                    log2--;
                 }
-                while (check <= value);
+                while (log2 > 0);
             }
         }
 
         public static IEnumerable<short> Bits(this short value)
         {
-            short check = 1;
             unchecked
             {
+                ushort check = (ushort)1 << 15;
+                int log2 = 16;
+                ushort _value = (ushort)value;
                 do
                 {
-                    if ((value & check) != 0)
+                    if ((_value & check) != 0)
                     {
-                        yield return check;
+                        yield return (short)check;
                     }
-                    check *= 2;
+                    check >>= 1;
+                    log2--;
                 }
-                while (check <= value);
+                while (log2 > 0);
+            }
+        }
+
+        public static IEnumerable<int> Bits(this int value)
+        {
+            unchecked
+            {
+                uint check = (uint)1 << 31;
+                int log2 = 32;
+                uint _value = (uint)value;
+                do
+                {
+                    if ((_value & check) != 0)
+                    {
+                        yield return (int)check;
+                    }
+                    check >>= 1;
+                    log2--;
+                }
+                while (log2 > 0);
             }
         }
 
         public static IEnumerable<long> Bits(this long value)
         {
-            long check = 1;
             unchecked
             {
+                ulong check = (ulong)1 << 63;
+                int log2 = 64;
+                ulong _value = (ulong)value;
+                do
+                {
+                    if ((_value & check) != 0)
+                    {
+                        yield return (long)check;
+                    }
+                    check >>= 1;
+                    log2--;
+                }
+                while (log2 > 0);
+            }
+        }
+
+        public static IEnumerable<byte> Bits(this byte value)
+        {
+            unchecked
+            {
+                byte check = (byte)1 << 7;
+                int log2 = 8;
+                do
+                {
+                    if ((value & check) != 0)
+                    {
+                        yield return (byte)check;
+                    }
+                    check >>= 1;
+                    log2--;
+                }
+                while (log2 > 0);
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static IEnumerable<ushort> Bits(this ushort value)
+        {
+            unchecked
+            {
+                ushort check = (ushort)1 << 15;
+                int log2 = 16;
                 do
                 {
                     if ((value & check) != 0)
                     {
                         yield return check;
                     }
-                    check *= 2;
+                    check >>= 1;
+                    log2--;
                 }
-                while (check <= value);
+                while (log2 > 0);
             }
         }
 
-        public static IEnumerable<int> BitsLog2(this int value)
+        [CLSCompliantAttribute(false)]
+        public static IEnumerable<uint> Bits(this uint value)
         {
-            int check = 1;
-            int log2 = 0;
             unchecked
             {
+                uint check = (uint)1 << 31;
+                int log2 = 32;
                 do
                 {
                     if ((value & check) != 0)
                     {
+                        yield return check;
+                    }
+                    check >>= 1;
+                    log2--;
+                }
+                while (log2 > 0);
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static IEnumerable<ulong> Bits(this ulong value)
+        {
+            unchecked
+            {
+                ulong check = (ulong)1 << 63;
+                int log2 = 64;
+                do
+                {
+                    if ((value & check) != 0)
+                    {
+                        yield return check;
+                    }
+                    check >>= 1;
+                    log2--;
+                }
+                while (log2 > 0);
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static IEnumerable<int> BitsBinary(this sbyte value)
+        {
+            unchecked
+            {
+                byte check = (byte)1 << 7;
+                int log2 = 8;
+                byte _value = (byte)value;
+                do
+                {
+                    if ((_value & check) != 0)
+                    {
+                        yield return 1;
+                    }
+                    else
+                    {
+                        yield return 0;
+                    }
+                    check >>= 1;
+                    log2--;
+                }
+                while (log2 > 0);
+            }
+        }
+
+        public static IEnumerable<int> BitsBinary(this short value)
+        {
+            unchecked
+            {
+                ushort check = (ushort)1 << 15;
+                int log2 = 16;
+                ushort _value = (ushort)value;
+                do
+                {
+                    if ((_value & check) != 0)
+                    {
+                        yield return 1;
+                    }
+                    else
+                    {
+                        yield return 0;
+                    }
+                    check >>= 1;
+                    log2--;
+                }
+                while (log2 > 0);
+            }
+        }
+
+        public static IEnumerable<int> BitsBinary(this int value)
+        {
+            unchecked
+            {
+                uint check = (uint)1 << 31;
+                int log2 = 32;
+                uint _value = (uint)value;
+                do
+                {
+                    if ((_value & check) != 0)
+                    {
+                        yield return 1;
+                    }
+                    else
+                    {
+                        yield return 0;
+                    }
+                    check >>= 1;
+                    log2--;
+                }
+                while (log2 > 0);
+            }
+        }
+
+        public static IEnumerable<int> BitsBinary(this long value)
+        {
+            unchecked
+            {
+                ulong check = (ulong)1 << 63;
+                int log2 = 64;
+                ulong _value = (ulong)value;
+                do
+                {
+                    if ((_value & check) != 0)
+                    {
+                        yield return 1;
+                    }
+                    else
+                    {
+                        yield return 0;
+                    }
+                    check >>= 1;
+                    log2--;
+                }
+                while (log2 > 0);
+            }
+        }
+
+        public static IEnumerable<int> BitsBinary(this byte value)
+        {
+            unchecked
+            {
+                byte check = (byte)1 << 7;
+                int log2 = 8;
+                do
+                {
+                    if ((value & check) != 0)
+                    {
+                        yield return 1;
+                    }
+                    else
+                    {
+                        yield return 0;
+                    }
+                    check >>= 1;
+                    log2--;
+                }
+                while (log2 > 0);
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static IEnumerable<int> BitsBinary(this ushort value)
+        {
+            unchecked
+            {
+                ushort check = (ushort)1 << 15;
+                int log2 = 16;
+                do
+                {
+                    if ((value & check) != 0)
+                    {
+                        yield return 1;
+                    }
+                    else
+                    {
+                        yield return 0;
+                    }
+                    check >>= 1;
+                    log2--;
+                }
+                while (log2 > 0);
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static IEnumerable<int> BitsBinary(this uint value)
+        {
+            unchecked
+            {
+                uint check = (uint)1 << 31;
+                int log2 = 32;
+                do
+                {
+                    if ((value & check) != 0)
+                    {
+                        yield return 1;
+                    }
+                    else
+                    {
+                        yield return 0;
+                    }
+                    check >>= 1;
+                    log2--;
+                }
+                while (log2 > 0);
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static IEnumerable<int> BitsBinary(this ulong value)
+        {
+            unchecked
+            {
+                ulong check = (ulong)1 << 63;
+                int log2 = 64;
+                do
+                {
+                    if ((value & check) != 0)
+                    {
+                        yield return 1;
+                    }
+                    else
+                    {
+                        yield return 0;
+                    }
+                    check >>= 1;
+                    log2--;
+                }
+                while (log2 > 0);
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static IEnumerable<int> BitsLog2(this sbyte value)
+        {
+            unchecked
+            {
+                byte check = (byte)1 << 7;
+                int log2 = 8;
+                byte _value = (byte)value;
+                do
+                {
+                    if ((_value & check) != 0)
+                    {
                         yield return log2;
                     }
-                    check *= 2;
-                    log2++;
+                    check >>= 1;
+                    log2--;
                 }
-                while (check <= value);
+                while (log2 > 0);
             }
         }
 
         public static IEnumerable<int> BitsLog2(this short value)
         {
-            short check = 1;
-            int log2 = 0;
             unchecked
             {
+                ushort check = (ushort)1 << 15;
+                int log2 = 16;
+                ushort _value = (ushort)value;
                 do
                 {
-                    if ((value & check) != 0)
+                    if ((_value & check) != 0)
                     {
                         yield return log2;
                     }
-                    check *= 2;
-                    log2++;
+                    check >>= 1;
+                    log2--;
                 }
-                while (check <= value);
+                while (log2 > 0);
+            }
+        }
+
+        public static IEnumerable<int> BitsLog2(this int value)
+        {
+            unchecked
+            {
+                uint check = (uint)1 << 31;
+                int log2 = 32;
+                uint _value = (uint)value;
+                do
+                {
+                    if ((_value & check) != 0)
+                    {
+                        yield return log2;
+                    }
+                    check >>= 1;
+                    log2--;
+                }
+                while (log2 > 0);
             }
         }
 
         public static IEnumerable<int> BitsLog2(this long value)
         {
-            long check = 1;
-            int log2 = 0;
             unchecked
             {
+                ulong check = (ulong)1 << 63;
+                int log2 = 64;
+                ulong _value = (ulong)value;
+                do
+                {
+                    if ((_value & check) != 0)
+                    {
+                        yield return log2;
+                    }
+                    check >>= 1;
+                    log2--;
+                }
+                while (log2 > 0);
+            }
+        }
+
+        public static IEnumerable<int> BitsLog2(this byte value)
+        {
+            unchecked
+            {
+                byte check = (byte)1 << 7;
+                int log2 = 8;
                 do
                 {
                     if ((value & check) != 0)
                     {
                         yield return log2;
                     }
-                    check *= 2;
-                    log2++;
+                    check >>= 1;
+                    log2--;
                 }
-                while (check <= value);
+                while (log2 > 0);
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static IEnumerable<int> BitsLog2(this ushort value)
+        {
+            unchecked
+            {
+                ushort check = (ushort)1 << 15;
+                int log2 = 16;
+                do
+                {
+                    if ((value & check) != 0)
+                    {
+                        yield return log2;
+                    }
+                    check >>= 1;
+                    log2--;
+                }
+                while (log2 > 0);
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static IEnumerable<int> BitsLog2(this uint value)
+        {
+            unchecked
+            {
+                uint check = (uint)1 << 31;
+                int log2 = 32;
+                do
+                {
+                    if ((value & check) != 0)
+                    {
+                        yield return log2;
+                    }
+                    check >>= 1;
+                    log2--;
+                }
+                while (log2 > 0);
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static IEnumerable<int> BitsLog2(this ulong value)
+        {
+            unchecked
+            {
+                ulong check = (ulong)1 << 63;
+                int log2 = 64;
+                do
+                {
+                    if ((value & check) != 0)
+                    {
+                        yield return log2;
+                    }
+                    check >>= 1;
+                    log2--;
+                }
+                while (log2 > 0);
             }
         }
 
