@@ -92,7 +92,7 @@ namespace System.Numerics
 
         public static BigInteger Abs(BigInteger value)
         {
-            return new BigInteger((short)Math.Abs(value.sign), value.data);
+            return new BigInteger((short)Math.Abs(value._sign), value._data);
         }
 
         public static BigInteger Add(BigInteger left, BigInteger right)
@@ -102,8 +102,8 @@ namespace System.Numerics
 
         public static int Compare(BigInteger left, BigInteger right)
         {
-            int ls = left.sign;
-            int rs = right.sign;
+            int ls = left._sign;
+            int rs = right._sign;
             if (ls != rs)
             {
                 if (ls > rs)
@@ -115,7 +115,7 @@ namespace System.Numerics
                     return -1;
                 }
             }
-            int r = CoreCompare(left.data, right.data);
+            int r = CoreCompare(left._data, right._data);
             if (ls < 0)
             {
                 r = -r;
@@ -130,18 +130,18 @@ namespace System.Numerics
 
         public static BigInteger DivRem(BigInteger dividend, BigInteger divisor, out BigInteger remainder)
         {
-            if (divisor.sign == 0)
+            if (divisor._sign == 0)
             {
                 throw new DivideByZeroException();
             }
-            if (dividend.sign == 0)
+            if (dividend._sign == 0)
             {
                 remainder = dividend;
                 return dividend;
             }
             uint[] quotient;
             uint[] remainder_value;
-            DivModUnsigned(dividend.data, divisor.data, out quotient, out remainder_value);
+            DivModUnsigned(dividend._data, divisor._data, out quotient, out remainder_value);
             int i;
             for (i = remainder_value.Length - 1; i >= 0 && remainder_value[i] == 0; --i)
             {
@@ -157,7 +157,7 @@ namespace System.Numerics
                 {
                     remainder_value = Resize(remainder_value, i + 1);
                 }
-                remainder = new BigInteger(dividend.sign, remainder_value);
+                remainder = new BigInteger(dividend._sign, remainder_value);
             }
             for (i = quotient.Length - 1; i >= 0 && quotient[i] == 0; --i)
             {
@@ -171,7 +171,7 @@ namespace System.Numerics
             {
                 quotient = Resize(quotient, i + 1);
             }
-            return new BigInteger((short)(dividend.sign * divisor.sign), quotient);
+            return new BigInteger((short)(dividend._sign * divisor._sign), quotient);
         }
 
         public static explicit operator BigInteger(double value)
@@ -201,11 +201,11 @@ namespace System.Numerics
 
         public static explicit operator decimal(BigInteger value)
         {
-            if (value.sign == 0)
+            if (value._sign == 0)
             {
                 return decimal.Zero;
             }
-            uint[] data = value.data;
+            uint[] data = value._data;
             if (data.Length > 3)
             {
                 throw new OverflowException();
@@ -223,41 +223,41 @@ namespace System.Numerics
             {
                 lo = (int)data[0];
             }
-            return new decimal(lo, mi, hi, value.sign < 0, 0);
+            return new decimal(lo, mi, hi, value._sign < 0, 0);
         }
 
         [CLSCompliantAttribute(false)]
         public static explicit operator ulong(BigInteger value)
         {
-            if (value.sign == 0)
+            if (value._sign == 0)
             {
                 return 0;
             }
-            if (value.data.Length > 2 || value.sign == -1)
+            if (value._data.Length > 2 || value._sign == -1)
             {
                 throw new OverflowException();
             }
-            uint low = value.data[0];
-            if (value.data.Length == 1)
+            uint low = value._data[0];
+            if (value._data.Length == 1)
             {
                 return low;
             }
-            uint high = value.data[1];
+            uint high = value._data[1];
             return (((ulong)high) << 32) | low;
         }
 
         [CLSCompliantAttribute(false)]
         public static explicit operator uint(BigInteger value)
         {
-            if (value.sign == 0)
+            if (value._sign == 0)
             {
                 return 0;
             }
-            if (value.data.Length > 1 || value.sign == -1)
+            if (value._data.Length > 1 || value._sign == -1)
             {
                 throw new OverflowException();
             }
-            return value.data[0];
+            return value._data[0];
         }
 
         public static explicit operator double(BigInteger value)
@@ -269,22 +269,22 @@ namespace System.Numerics
             }
             catch (OverflowException)
             {
-                return value.sign == -1 ? double.NegativeInfinity : double.PositiveInfinity;
+                return value._sign == -1 ? double.NegativeInfinity : double.PositiveInfinity;
             }
         }
 
         public static explicit operator int(BigInteger value)
         {
-            if (value.sign == 0)
+            if (value._sign == 0)
             {
                 return 0;
             }
-            if (value.data.Length > 1)
+            if (value._data.Length > 1)
             {
                 throw new OverflowException();
             }
-            uint data = value.data[0];
-            if (value.sign == 1)
+            uint data = value._data[0];
+            if (value._sign == 1)
             {
                 if (data > (uint)int.MaxValue)
                 {
@@ -292,7 +292,7 @@ namespace System.Numerics
                 }
                 return (int)data;
             }
-            else if (value.sign == -1)
+            else if (value._sign == -1)
             {
                 if (data > 0x80000000u)
                 {
@@ -312,7 +312,7 @@ namespace System.Numerics
             }
             catch (OverflowException)
             {
-                return value.sign == -1 ? float.NegativeInfinity : float.PositiveInfinity;
+                return value._sign == -1 ? float.NegativeInfinity : float.PositiveInfinity;
             }
         }
         [CLSCompliantAttribute(false)]
@@ -328,26 +328,26 @@ namespace System.Numerics
 
         public static explicit operator long(BigInteger value)
         {
-            if (value.sign == 0)
+            if (value._sign == 0)
             {
                 return 0;
             }
-            if (value.data.Length > 2)
+            if (value._data.Length > 2)
             {
                 throw new OverflowException();
             }
-            uint low = value.data[0];
-            if (value.data.Length == 1)
+            uint low = value._data[0];
+            if (value._data.Length == 1)
             {
-                if (value.sign == 1)
+                if (value._sign == 1)
                 {
                     return (long)low;
                 }
                 long res = (long)low;
                 return -res;
             }
-            uint high = value.data[1];
-            if (value.sign == 1)
+            uint high = value._data[1];
+            if (value._sign == 1)
             {
                 if (high >= 0x80000000u)
                 {
@@ -382,11 +382,11 @@ namespace System.Numerics
         }
         public static BigInteger GreatestCommonDivisor(BigInteger left, BigInteger right)
         {
-            if (left.sign != 0 && left.data.Length == 1 && left.data[0] == 1)
+            if (left._sign != 0 && left._data.Length == 1 && left._data[0] == 1)
             {
                 return new BigInteger(1, ONE);
             }
-            if (right.sign != 0 && right.data.Length == 1 && right.data[0] == 1)
+            if (right._sign != 0 && right._data.Length == 1 && right._data[0] == 1)
             {
                 return new BigInteger(1, ONE);
             }
@@ -398,10 +398,10 @@ namespace System.Numerics
             {
                 return Abs(left);
             }
-            BigInteger x = new BigInteger(1, left.data);
-            BigInteger y = new BigInteger(1, right.data);
+            BigInteger x = new BigInteger(1, left._data);
+            BigInteger y = new BigInteger(1, right._data);
             BigInteger g = y;
-            while (x.data.Length > 1)
+            while (x._data.Length > 1)
             {
                 g = x;
                 x = y % x;
@@ -414,7 +414,7 @@ namespace System.Numerics
             // TODO: should we have something here if we can convert to long?
             // Now we can just do it with single precision. I am using the binary gcd method,
             // as it should be faster.
-            uint yy = x.data[0];
+            uint yy = x._data[0];
             uint xx = (uint)(y % yy);
             int t = 0;
             while (((xx | yy) & 1) == 0)
@@ -491,7 +491,7 @@ namespace System.Numerics
 
         public static double Log(BigInteger value, double baseValue)
         {
-            if (value.sign == -1 || baseValue == 1.0d || baseValue == -1.0d ||
+            if (value._sign == -1 || baseValue == 1.0d || baseValue == -1.0d ||
                     baseValue == double.NegativeInfinity || double.IsNaN(baseValue))
             {
                 return double.NaN;
@@ -500,15 +500,15 @@ namespace System.Numerics
             {
                 return value.IsOne ? 0 : double.NaN;
             }
-            if (value.sign == 0)
+            if (value._sign == 0)
             {
                 return double.NegativeInfinity;
             }
-            int length = value.data.Length - 1;
+            int length = value._data.Length - 1;
             int bitCount = -1;
             for (int curBit = 31; curBit >= 0; curBit--)
             {
-                if ((value.data[length] & (1 << curBit)) != 0)
+                if ((value._data[length] & (1 << curBit)) != 0)
                 {
                     bitCount = curBit + (length * 32);
                     break;
@@ -526,7 +526,7 @@ namespace System.Numerics
             testBit = testBit << (int)tempBitlen;
             for (long curbit = bitlen; curbit >= 0; --curbit)
             {
-                if ((value & testBit).sign != 0)
+                if ((value & testBit)._sign != 0)
                 {
                     c += d;
                 }
@@ -548,8 +548,8 @@ namespace System.Numerics
 
         public static BigInteger Max(BigInteger left, BigInteger right)
         {
-            int ls = left.sign;
-            int rs = right.sign;
+            int ls = left._sign;
+            int rs = right._sign;
             if (ls > rs)
             {
                 return left;
@@ -558,7 +558,7 @@ namespace System.Numerics
             {
                 return right;
             }
-            int r = CoreCompare(left.data, right.data);
+            int r = CoreCompare(left._data, right._data);
             if (ls == -1)
             {
                 r = -r;
@@ -572,8 +572,8 @@ namespace System.Numerics
 
         public static BigInteger Min(BigInteger left, BigInteger right)
         {
-            int ls = left.sign;
-            int rs = right.sign;
+            int ls = left._sign;
+            int rs = right._sign;
             if (ls < rs)
             {
                 return left;
@@ -582,7 +582,7 @@ namespace System.Numerics
             {
                 return right;
             }
-            int r = CoreCompare(left.data, right.data);
+            int r = CoreCompare(left._data, right._data);
             if (ls == -1)
             {
                 r = -r;
@@ -596,16 +596,16 @@ namespace System.Numerics
 
         public static BigInteger ModPow(BigInteger value, BigInteger exponent, BigInteger modulus)
         {
-            if (exponent.sign == -1)
+            if (exponent._sign == -1)
             {
                 throw new ArgumentOutOfRangeException("exponent", "power must be >= 0");
             }
-            if (modulus.sign == 0)
+            if (modulus._sign == 0)
             {
                 throw new DivideByZeroException();
             }
             BigInteger result = One % modulus;
-            while (exponent.sign != 0)
+            while (exponent._sign != 0)
             {
                 if (!exponent.IsEven)
                 {
@@ -635,47 +635,47 @@ namespace System.Numerics
 
         public static BigInteger operator -(BigInteger left, BigInteger right)
         {
-            if (right.sign == 0)
+            if (right._sign == 0)
             {
                 return left;
             }
-            if (left.sign == 0)
+            if (left._sign == 0)
             {
-                return new BigInteger((short)-right.sign, right.data);
+                return new BigInteger((short)-right._sign, right._data);
             }
-            if (left.sign == right.sign)
+            if (left._sign == right._sign)
             {
-                int r = CoreCompare(left.data, right.data);
+                int r = CoreCompare(left._data, right._data);
                 if (r == 0)
                 {
                     return new BigInteger(0, ZERO);
                 }
                 if (r > 0) //left > right
                 {
-                    return new BigInteger(left.sign, CoreSub(left.data, right.data));
+                    return new BigInteger(left._sign, CoreSub(left._data, right._data));
                 }
-                return new BigInteger((short)-right.sign, CoreSub(right.data, left.data));
+                return new BigInteger((short)-right._sign, CoreSub(right._data, left._data));
             }
-            return new BigInteger(left.sign, CoreAdd(left.data, right.data));
+            return new BigInteger(left._sign, CoreAdd(left._data, right._data));
         }
 
         public static BigInteger operator -(BigInteger value)
         {
-            if (value.sign == 0)
+            if (value._sign == 0)
             {
                 return value;
             }
-            return new BigInteger((short)-value.sign, value.data);
+            return new BigInteger((short)-value._sign, value._data);
         }
 
         public static BigInteger operator --(BigInteger value)
         {
-            if (value.sign == 0)
+            if (value._sign == 0)
             {
                 return MinusOne;
             }
-            short sign = value.sign;
-            uint[] data = value.data;
+            short sign = value._sign;
+            uint[] data = value._data;
             if (data.Length == 1)
             {
                 if (sign == 1 && data[0] == 1)
@@ -727,17 +727,17 @@ namespace System.Numerics
 
         public static BigInteger operator %(BigInteger dividend, BigInteger divisor)
         {
-            if (divisor.sign == 0)
+            if (divisor._sign == 0)
             {
                 throw new DivideByZeroException();
             }
-            if (dividend.sign == 0)
+            if (dividend._sign == 0)
             {
                 return dividend;
             }
             uint[] quotient;
             uint[] remainder_value;
-            DivModUnsigned(dividend.data, divisor.data, out quotient, out remainder_value);
+            DivModUnsigned(dividend._data, divisor._data, out quotient, out remainder_value);
             int i;
             for (i = remainder_value.Length - 1; i >= 0 && remainder_value[i] == 0; --i)
             {
@@ -751,23 +751,23 @@ namespace System.Numerics
             {
                 remainder_value = Resize(remainder_value, i + 1);
             }
-            return new BigInteger(dividend.sign, remainder_value);
+            return new BigInteger(dividend._sign, remainder_value);
         }
 
         public static BigInteger operator &(BigInteger left, BigInteger right)
         {
-            if (left.sign == 0)
+            if (left._sign == 0)
             {
                 return left;
             }
-            if (right.sign == 0)
+            if (right._sign == 0)
             {
                 return right;
             }
-            uint[] a = left.data;
-            uint[] b = right.data;
-            int ls = left.sign;
-            int rs = right.sign;
+            uint[] a = left._data;
+            uint[] b = right._data;
+            int ls = left._sign;
+            int rs = right._sign;
             bool neg_res = (ls == rs) && (ls == -1);
             uint[] result = new uint[Math.Max(a.Length, b.Length)];
             ulong ac = 1, bc = 1, borrow = 1;
@@ -822,28 +822,28 @@ namespace System.Numerics
 
         public static BigInteger operator *(BigInteger left, BigInteger right)
         {
-            if (left.sign == 0 || right.sign == 0)
+            if (left._sign == 0 || right._sign == 0)
             {
                 return new BigInteger(0, ZERO);
             }
-            if (left.data[0] == 1 && left.data.Length == 1)
+            if (left._data[0] == 1 && left._data.Length == 1)
             {
-                if (left.sign == 1)
+                if (left._sign == 1)
                 {
                     return right;
                 }
-                return new BigInteger((short)-right.sign, right.data);
+                return new BigInteger((short)-right._sign, right._data);
             }
-            if (right.data[0] == 1 && right.data.Length == 1)
+            if (right._data[0] == 1 && right._data.Length == 1)
             {
-                if (right.sign == 1)
+                if (right._sign == 1)
                 {
                     return left;
                 }
-                return new BigInteger((short)-left.sign, left.data);
+                return new BigInteger((short)-left._sign, left._data);
             }
-            uint[] a = left.data;
-            uint[] b = right.data;
+            uint[] a = left._data;
+            uint[] b = right._data;
             uint[] res = new uint[a.Length + b.Length];
             for (int i = 0; i < a.Length; ++i)
             {
@@ -872,22 +872,22 @@ namespace System.Numerics
             {
                 res = Resize(res, m + 1);
             }
-            return new BigInteger((short)(left.sign * right.sign), res);
+            return new BigInteger((short)(left._sign * right._sign), res);
         }
 
         public static BigInteger operator /(BigInteger dividend, BigInteger divisor)
         {
-            if (divisor.sign == 0)
+            if (divisor._sign == 0)
             {
                 throw new DivideByZeroException();
             }
-            if (dividend.sign == 0)
+            if (dividend._sign == 0)
             {
                 return dividend;
             }
             uint[] quotient;
             uint[] remainder_value;
-            DivModUnsigned(dividend.data, divisor.data, out quotient, out remainder_value);
+            DivModUnsigned(dividend._data, divisor._data, out quotient, out remainder_value);
             int i;
             for (i = quotient.Length - 1; i >= 0 && quotient[i] == 0; --i)
             {
@@ -901,23 +901,23 @@ namespace System.Numerics
             {
                 quotient = Resize(quotient, i + 1);
             }
-            return new BigInteger((short)(dividend.sign * divisor.sign), quotient);
+            return new BigInteger((short)(dividend._sign * divisor._sign), quotient);
         }
 
         public static BigInteger operator ^(BigInteger left, BigInteger right)
         {
-            if (left.sign == 0)
+            if (left._sign == 0)
             {
                 return right;
             }
-            if (right.sign == 0)
+            if (right._sign == 0)
             {
                 return left;
             }
-            uint[] a = left.data;
-            uint[] b = right.data;
-            int ls = left.sign;
-            int rs = right.sign;
+            uint[] a = left._data;
+            uint[] b = right._data;
+            int ls = left._sign;
+            int rs = right._sign;
             bool neg_res = (ls == -1) ^ (rs == -1);
             uint[] result = new uint[Math.Max(a.Length, b.Length)];
             ulong ac = 1, bc = 1, borrow = 1;
@@ -972,18 +972,18 @@ namespace System.Numerics
 
         public static BigInteger operator |(BigInteger left, BigInteger right)
         {
-            if (left.sign == 0)
+            if (left._sign == 0)
             {
                 return right;
             }
-            if (right.sign == 0)
+            if (right._sign == 0)
             {
                 return left;
             }
-            uint[] a = left.data;
-            uint[] b = right.data;
-            int ls = left.sign;
-            int rs = right.sign;
+            uint[] a = left._data;
+            uint[] b = right._data;
+            int ls = left._sign;
+            int rs = right._sign;
             bool neg_res = (ls == -1) || (rs == -1);
             uint[] result = new uint[Math.Max(a.Length, b.Length)];
             ulong ac = 1, bc = 1, borrow = 1;
@@ -1038,12 +1038,12 @@ namespace System.Numerics
 
         public static BigInteger operator ~(BigInteger value)
         {
-            if (value.sign == 0)
+            if (value._sign == 0)
             {
                 return new BigInteger(-1, ONE);
             }
-            uint[] data = value.data;
-            int sign = value.sign;
+            uint[] data = value._data;
+            int sign = value._sign;
             bool neg_res = sign == 1;
             uint[] result = new uint[data.Length];
             ulong carry = 1, borrow = 1;
@@ -1083,28 +1083,28 @@ namespace System.Numerics
 
         public static BigInteger operator +(BigInteger left, BigInteger right)
         {
-            if (left.sign == 0)
+            if (left._sign == 0)
             {
                 return right;
             }
-            if (right.sign == 0)
+            if (right._sign == 0)
             {
                 return left;
             }
-            if (left.sign == right.sign)
+            if (left._sign == right._sign)
             {
-                return new BigInteger(left.sign, CoreAdd(left.data, right.data));
+                return new BigInteger(left._sign, CoreAdd(left._data, right._data));
             }
-            int r = CoreCompare(left.data, right.data);
+            int r = CoreCompare(left._data, right._data);
             if (r == 0)
             {
                 return new BigInteger(0, ZERO);
             }
             if (r > 0) //left > right
             {
-                return new BigInteger(left.sign, CoreSub(left.data, right.data));
+                return new BigInteger(left._sign, CoreSub(left._data, right._data));
             }
-            return new BigInteger(right.sign, CoreSub(right.data, left.data));
+            return new BigInteger(right._sign, CoreSub(right._data, left._data));
         }
 
         public static BigInteger operator +(BigInteger value)
@@ -1114,12 +1114,12 @@ namespace System.Numerics
 
         public static BigInteger operator ++(BigInteger value)
         {
-            if (value.sign == 0)
+            if (value._sign == 0)
             {
                 return One;
             }
-            short sign = value.sign;
-            uint[] data = value.data;
+            short sign = value._sign;
+            uint[] data = value._data;
             if (data.Length == 1)
             {
                 if (sign == -1 && data[0] == 1)
@@ -1171,7 +1171,7 @@ namespace System.Numerics
 
         public static BigInteger operator <<(BigInteger value, int shift)
         {
-            if (shift == 0 || value.sign == 0)
+            if (shift == 0 || value._sign == 0)
             {
                 return value;
             }
@@ -1179,8 +1179,8 @@ namespace System.Numerics
             {
                 return value >> -shift;
             }
-            uint[] data = value.data;
-            int sign = value.sign;
+            uint[] data = value._data;
+            int sign = value._sign;
             int topMostIdx = BitScanBackward(data[data.Length - 1]);
             int bits = shift - (31 - topMostIdx);
             int extra_words = (bits >> 5) + ((bits & 0x1F) != 0 ? 1 : 0);
@@ -1321,7 +1321,7 @@ namespace System.Numerics
 
         public static BigInteger operator >>(BigInteger value, int shift)
         {
-            if (shift == 0 || value.sign == 0)
+            if (shift == 0 || value._sign == 0)
             {
                 return value;
             }
@@ -1329,8 +1329,8 @@ namespace System.Numerics
             {
                 return value << -shift;
             }
-            uint[] data = value.data;
-            int sign = value.sign;
+            uint[] data = value._data;
+            int sign = value._sign;
             int topMostIdx = BitScanBackward(data[data.Length - 1]);
             int idx_shift = shift >> 5;
             int bit_shift = shift & 0x1F;
@@ -1896,17 +1896,17 @@ namespace System.Numerics
                 }
                 return false;
             }
-            if (val.sign == 0)
+            if (val._sign == 0)
             {
                 result = val;
             }
             else if (sign == -1)
             {
-                result = new BigInteger(-1, val.data);
+                result = new BigInteger(-1, val._data);
             }
             else
             {
-                result = new BigInteger(1, val.data);
+                result = new BigInteger(1, val._data);
             }
             return true;
         }
@@ -2033,33 +2033,31 @@ namespace System.Numerics
     {
         private const ulong Base = 0x100000000;
 
-        private const int Bias = 1075;
-
         private const int DecimalScaleFactorMask = 0x00FF0000;
 
         private const int DecimalSignMask = unchecked((int)0x80000000);
 
         //LSB on [0]
-        private readonly uint[] data;
+        private readonly uint[] _data;
 
-        private readonly short sign;
+        private readonly short _sign;
 
         public BigInteger(int value)
         {
             if (value == 0)
             {
-                sign = 0;
-                data = ZERO;
+                _sign = 0;
+                _data = ZERO;
             }
             else if (value > 0)
             {
-                sign = 1;
-                data = new uint[] { (uint)value };
+                _sign = 1;
+                _data = new uint[] { (uint)value };
             }
             else
             {
-                sign = -1;
-                data = new uint[1] { (uint)-value };
+                _sign = -1;
+                _data = new uint[1] { (uint)-value };
             }
         }
 
@@ -2068,13 +2066,13 @@ namespace System.Numerics
         {
             if (value == 0)
             {
-                sign = 0;
-                data = ZERO;
+                _sign = 0;
+                _data = ZERO;
             }
             else
             {
-                sign = 1;
-                data = new uint[1] { value };
+                _sign = 1;
+                _data = new uint[1] { value };
             }
         }
 
@@ -2082,32 +2080,32 @@ namespace System.Numerics
         {
             if (value == 0)
             {
-                sign = 0;
-                data = ZERO;
+                _sign = 0;
+                _data = ZERO;
             }
             else if (value > 0)
             {
-                sign = 1;
+                _sign = 1;
                 uint low = (uint)value;
                 uint high = (uint)(value >> 32);
-                data = new uint[high != 0 ? 2 : 1];
-                data[0] = low;
+                _data = new uint[high != 0 ? 2 : 1];
+                _data[0] = low;
                 if (high != 0)
                 {
-                    data[1] = high;
+                    _data[1] = high;
                 }
             }
             else
             {
-                sign = -1;
+                _sign = -1;
                 value = -value;
                 uint low = (uint)value;
                 uint high = (uint)((ulong)value >> 32);
-                data = new uint[high != 0 ? 2 : 1];
-                data[0] = low;
+                _data = new uint[high != 0 ? 2 : 1];
+                _data[0] = low;
                 if (high != 0)
                 {
-                    data[1] = high;
+                    _data[1] = high;
                 }
             }
         }
@@ -2117,61 +2115,66 @@ namespace System.Numerics
         {
             if (value == 0)
             {
-                sign = 0;
-                data = ZERO;
+                _sign = 0;
+                _data = ZERO;
             }
             else
             {
-                sign = 1;
+                _sign = 1;
                 uint low = (uint)value;
                 uint high = (uint)(value >> 32);
-                data = new uint[high != 0 ? 2 : 1];
-                data[0] = low;
+                _data = new uint[high != 0 ? 2 : 1];
+                _data[0] = low;
                 if (high != 0)
                 {
-                    data[1] = high;
+                    _data[1] = high;
                 }
             }
         }
 
         public BigInteger(double value)
         {
+            const int Bias = 1075;
             if (double.IsNaN(value) || double.IsInfinity(value))
             {
                 throw new OverflowException();
             }
-            byte[] bytes = BitConverter.GetBytes(value);
-            ulong mantissa = Mantissa(bytes);
-            if (mantissa == 0)
-            {
-                // 1.0 * 2**exp, we have a power of 2
-                int exponent = Exponent(bytes);
-                if (exponent == 0)
-                {
-                    sign = 0;
-                    data = ZERO;
-                    return;
-                }
-                BigInteger res = Negative(bytes) ? MinusOne : One;
-                res = res << (exponent - 0x3ff);
-                this.sign = res.sign;
-                this.data = res.data;
-            }
             else
             {
-                // 1.mantissa * 2**exp
-                int exponent = Exponent(bytes);
-                mantissa |= 0x10000000000000ul;
-                BigInteger res = mantissa;
-                res = exponent > Bias ? res << (exponent - Bias) : res >> (Bias - exponent);
-                this.sign = (short)(Negative(bytes) ? -1 : 1);
-                this.data = res.data;
+                byte[] bytes = BitConverter.GetBytes(value);
+                ulong mantissa = Mantissa(bytes);
+                if (mantissa == 0)
+                {
+                    // 1.0 * 2**exp, we have a power of 2
+                    int exponent = Exponent(bytes);
+                    if (exponent == 0)
+                    {
+                        _sign = 0;
+                        _data = ZERO;
+                        return;
+                    }
+                    BigInteger result = Negative(bytes) ? MinusOne : One;
+                    result = result << (exponent - 0x3ff);
+                    _sign = result._sign;
+                    _data = result._data;
+                }
+                else
+                {
+                    // 1.mantissa * 2**exp
+                    int exponent = Exponent(bytes);
+                    mantissa |= 0x10000000000000ul;
+                    BigInteger mantisaAsBigInteger = mantissa;
+                    BigInteger result = exponent > Bias ? mantisaAsBigInteger << (exponent - Bias) : mantisaAsBigInteger >> (Bias - exponent);
+                    _sign = (short)(Negative(bytes) ? -1 : 1);
+                    _data = result._data;
+                }
             }
         }
 
         public BigInteger(float value)
             : this((double)value)
         {
+            //Empty
         }
 
         public BigInteger(decimal value)
@@ -2185,20 +2188,23 @@ namespace System.Numerics
             }
             if (size == 0)
             {
-                sign = 0;
-                data = ZERO;
+                _sign = 0;
+                _data = ZERO;
                 return;
             }
-            sign = (short)((bits[3] & DecimalSignMask) != 0 ? -1 : 1);
-            data = new uint[size];
-            data[0] = (uint)bits[0];
-            if (size > 1)
+            else
             {
-                data[1] = (uint)bits[1];
-            }
-            if (size > 2)
-            {
-                data[2] = (uint)bits[2];
+                _sign = (short)((bits[3] & DecimalSignMask) != 0 ? -1 : 1);
+                _data = new uint[size];
+                _data[0] = (uint)bits[0];
+                if (size > 1)
+                {
+                    _data[1] = (uint)bits[1];
+                }
+                if (size > 2)
+                {
+                    _data[2] = (uint)bits[2];
+                }
             }
         }
 
@@ -2212,26 +2218,26 @@ namespace System.Numerics
             int len = value.Length;
             if (len == 0 || (len == 1 && value[0] == 0))
             {
-                sign = 0;
-                data = ZERO;
+                _sign = 0;
+                _data = ZERO;
                 return;
             }
             if ((value[len - 1] & 0x80) != 0)
             {
-                sign = -1;
+                _sign = -1;
             }
             else
             {
-                sign = 1;
+                _sign = 1;
             }
-            if (sign == 1)
+            if (_sign == 1)
             {
                 while (value[len - 1] == 0)
                 {
                     if (--len == 0)
                     {
-                        sign = 0;
-                        data = ZERO;
+                        _sign = 0;
+                        _data = ZERO;
                         return;
                     }
                 }
@@ -2241,11 +2247,11 @@ namespace System.Numerics
                 {
                     ++size;
                 }
-                data = new uint[size];
+                _data = new uint[size];
                 int j = 0;
                 for (int i = 0; i < full_words; ++i)
                 {
-                    data[i] = (uint)value[j++] |
+                    _data[i] = (uint)value[j++] |
                               (uint)(value[j++] << 8) |
                               (uint)(value[j++] << 16) |
                               (uint)(value[j++] << 24);
@@ -2253,10 +2259,10 @@ namespace System.Numerics
                 size = len & 0x3;
                 if (size > 0)
                 {
-                    int idx = data.Length - 1;
+                    int idx = _data.Length - 1;
                     for (int i = 0; i < size; ++i)
                     {
-                        data[idx] |= (uint)(value[j++] << (i * 8));
+                        _data[idx] |= (uint)(value[j++] << (i * 8));
                     }
                 }
             }
@@ -2268,7 +2274,7 @@ namespace System.Numerics
                 {
                     ++size;
                 }
-                data = new uint[size];
+                _data = new uint[size];
                 uint word, borrow = 1;
                 ulong sub = 0;
                 int j = 0;
@@ -2281,7 +2287,7 @@ namespace System.Numerics
                     sub = (ulong)word - borrow;
                     word = (uint)sub;
                     borrow = (uint)(sub >> 32) & 0x1u;
-                    data[i] = ~word;
+                    _data[i] = ~word;
                 }
                 size = len & 0x3;
                 if (size > 0)
@@ -2296,7 +2302,7 @@ namespace System.Numerics
                     sub = word - borrow;
                     word = (uint)sub;
                     borrow = (uint)(sub >> 32) & 0x1u;
-                    data[data.Length - 1] = ~word & store_mask;
+                    _data[_data.Length - 1] = ~word & store_mask;
                 }
                 if (borrow != 0) //FIXME I believe this can't happen, can someone write a test for it?
                 {
@@ -2307,15 +2313,15 @@ namespace System.Numerics
 
         private BigInteger(short sign, uint[] data)
         {
-            this.sign = sign;
-            this.data = data;
+            _sign = sign;
+            _data = data;
         }
 
         public bool IsEven
         {
             get
             {
-                return sign == 0 || (data[0] & 0x1) == 0;
+                return _sign == 0 || (_data[0] & 0x1) == 0;
             }
         }
 
@@ -2323,7 +2329,7 @@ namespace System.Numerics
         {
             get
             {
-                return sign == 1 && data.Length == 1 && data[0] == 1;
+                return _sign == 1 && _data.Length == 1 && _data[0] == 1;
             }
         }
 
@@ -2332,14 +2338,14 @@ namespace System.Numerics
             get
             {
                 bool foundBit = false;
-                if (sign != 1)
+                if (_sign != 1)
                 {
                     return false;
                 }
                 //This function is pop count == 1 for positive numbers
-                for (int i = 0; i < data.Length; ++i)
+                for (int i = 0; i < _data.Length; ++i)
                 {
-                    int p = PopulationCount(data[i]);
+                    int p = PopulationCount(_data[i]);
                     if (p > 0)
                     {
                         if (p > 1 || foundBit)
@@ -2357,7 +2363,7 @@ namespace System.Numerics
         {
             get
             {
-                return sign == 0;
+                return _sign == 0;
             }
         }
 
@@ -2365,7 +2371,7 @@ namespace System.Numerics
         {
             get
             {
-                return sign;
+                return _sign;
             }
         }
 
@@ -2390,15 +2396,15 @@ namespace System.Numerics
         [CLSCompliantAttribute(false)]
         public int CompareTo(ulong other)
         {
-            if (sign < 0)
+            if (_sign < 0)
             {
                 return -1;
             }
-            if (sign == 0)
+            if (_sign == 0)
             {
                 return other == 0 ? 0 : -1;
             }
-            if (data.Length > 2)
+            if (_data.Length > 2)
             {
                 return 1;
             }
@@ -2409,7 +2415,7 @@ namespace System.Numerics
 
         public int CompareTo(long other)
         {
-            int ls = sign;
+            int ls = _sign;
             int rs = Math.Sign(other);
             if (ls != rs)
             {
@@ -2419,9 +2425,9 @@ namespace System.Numerics
             {
                 return 0;
             }
-            if (data.Length > 2)
+            if (_data.Length > 2)
             {
-                return sign;
+                return _sign;
             }
             if (other < 0)
             {
@@ -2448,19 +2454,19 @@ namespace System.Numerics
 
         public bool Equals(BigInteger other)
         {
-            if (sign != other.sign)
+            if (_sign != other._sign)
             {
                 return false;
             }
-            int alen = data != null ? data.Length : 0;
-            int blen = other.data != null ? other.data.Length : 0;
+            int alen = _data != null ? _data.Length : 0;
+            int blen = other._data != null ? other._data.Length : 0;
             if (alen != blen)
             {
                 return false;
             }
             for (int i = 0; i < alen; ++i)
             {
-                if (data[i] != other.data[i])
+                if (_data[i] != other._data[i])
                 {
                     return false;
                 }
@@ -2481,28 +2487,28 @@ namespace System.Numerics
 
         public override int GetHashCode()
         {
-            uint hash = (uint)(sign * 0x01010101u);
-            int len = data != null ? data.Length : 0;
+            uint hash = (uint)(_sign * 0x01010101u);
+            int len = _data != null ? _data.Length : 0;
             for (int i = 0; i < len; ++i)
             {
-                hash ^= data[i];
+                hash ^= _data[i];
             }
             return (int)hash;
         }
 
         public byte[] ToByteArray()
         {
-            if (sign == 0)
+            if (_sign == 0)
             {
                 return new byte[1];
             }
             //number of bytes not counting upper word
-            int bytes = (data.Length - 1) * 4;
+            int bytes = (_data.Length - 1) * 4;
             bool needExtraZero = false;
-            uint topWord = data[data.Length - 1];
+            uint topWord = _data[_data.Length - 1];
             int extra;
             //if the topmost bit is set we need an extra
-            if (sign == 1)
+            if (_sign == 1)
             {
                 extra = TopByte(topWord);
                 uint mask = 0x80u << ((extra - 1) * 8);
@@ -2516,13 +2522,13 @@ namespace System.Numerics
                 extra = TopByte(topWord);
             }
             byte[] res = new byte[bytes + extra + (needExtraZero ? 1 : 0)];
-            if (sign == 1)
+            if (_sign == 1)
             {
                 int j = 0;
-                int end = data.Length - 1;
+                int end = _data.Length - 1;
                 for (int i = 0; i < end; ++i)
                 {
-                    uint word = data[i];
+                    uint word = _data[i];
                     res[j++] = (byte)word;
                     res[j++] = (byte)(word >> 8);
                     res[j++] = (byte)(word >> 16);
@@ -2537,12 +2543,12 @@ namespace System.Numerics
             else
             {
                 int j = 0;
-                int end = data.Length - 1;
+                int end = _data.Length - 1;
                 uint carry = 1, word;
                 ulong add;
                 for (int i = 0; i < end; ++i)
                 {
-                    word = data[i];
+                    word = _data[i];
                     add = (ulong)~word + carry;
                     word = (uint)add;
                     carry = (uint)(add >> 32);
@@ -2627,9 +2633,9 @@ namespace System.Numerics
         private int LongCompare(uint low, uint high)
         {
             uint h = 0;
-            if (data.Length > 1)
+            if (_data.Length > 1)
             {
-                h = data[1];
+                h = _data[1];
             }
             if (h > high)
             {
@@ -2639,7 +2645,7 @@ namespace System.Numerics
             {
                 return -1;
             }
-            uint l = data[0];
+            uint l = _data[0];
             if (l > low)
             {
                 return 1;
@@ -2662,23 +2668,23 @@ namespace System.Numerics
             {
                 throw new ArgumentException("There is no such thing as radix one notation", "radix");
             }
-            if (sign == 0)
+            if (_sign == 0)
             {
                 return "0";
             }
-            if (data.Length == 1 && data[0] == 1)
+            if (_data.Length == 1 && _data[0] == 1)
             {
-                return sign == 1 ? "1" : "-1";
+                return _sign == 1 ? "1" : "-1";
             }
-            List<char> digits = new List<char>(1 + ((data.Length * 3) / 10));
+            List<char> digits = new List<char>(1 + ((_data.Length * 3) / 10));
             BigInteger a;
-            if (sign == 1)
+            if (_sign == 1)
             {
                 a = this;
             }
             else
             {
-                uint[] dt = data;
+                uint[] dt = _data;
                 if (radix > 10)
                 {
                     dt = MakeTwoComplement(dt);
@@ -2691,7 +2697,7 @@ namespace System.Numerics
                 a = DivRem(a, radix, out rem);
                 digits.Add(CharacterSet[(int)rem]);
             }
-            if (sign == -1 && radix == 10)
+            if (_sign == -1 && radix == 10)
             {
                 NumberFormatInfo info = null;
                 if (provider != null)
@@ -2712,7 +2718,7 @@ namespace System.Numerics
                 }
             }
             char last = digits[digits.Count - 1];
-            if (sign == 1 && radix > 10 && (last < '0' || last > '9'))
+            if (_sign == 1 && radix > 10 && (last < '0' || last > '9'))
             {
                 digits.Add('0');
             }
