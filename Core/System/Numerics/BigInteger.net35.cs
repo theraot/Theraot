@@ -2216,96 +2216,93 @@ namespace System.Numerics
                 throw new ArgumentNullException("value");
             }
             int valueLength = value.Length;
-            if ((value[valueLength - 1] & 0x80) != 0)
-            {
-                _sign = -1;
-            }
-            else
-            {
-                _sign = 1;
-            }
             if (valueLength == 0 || (valueLength == 1 && value[0] == 0))
             {
                 _sign = 0;
                 _data = ZERO;
                 return;
             }
-            if (_sign == 1)
-            {
-                while (valueLength > 0 && value[valueLength - 1] == 0)
-                {
-                    valueLength--;
-                }
-                if (valueLength == 0)
-                {
-                    _sign = 0;
-                    _data = ZERO;
-                    return;
-                }
-            }
-            int wordCount, dataSize;
-            wordCount = valueLength / 4;
-            dataSize = wordCount;
-            int extraBytes = (valueLength & 0x3);
-            if (extraBytes != 0)
-            {
-                dataSize++;
-            }
-            _data = new uint[dataSize];
-            if (_sign == 1)
-            {
-                int j = 0;
-                for (int i = 0; i < wordCount; ++i)
-                {
-                    _data[i] = (uint)value[j++] |
-                              (uint)(value[j++] << 8) |
-                              (uint)(value[j++] << 16) |
-                              (uint)(value[j++] << 24);
-                }
-                dataSize = valueLength & 0x3;
-                if (dataSize > 0)
-                {
-                    int idx = _data.Length - 1;
-                    for (int i = 0; i < dataSize; ++i)
-                    {
-                        _data[idx] |= (uint)(value[j++] << (i * 8));
-                    }
-                }
-            }
             else
             {
-                uint word, borrow = 1;
-                ulong sub = 0;
-                int j = 0;
-                for (int i = 0; i < wordCount; ++i)
+                _sign = (short)((value[valueLength - 1] & 0x80) == 0 ? 1 : -1);
+                if (_sign == 1)
                 {
-                    word = (uint)value[j++] |
-                           (uint)(value[j++] << 8) |
-                           (uint)(value[j++] << 16) |
-                           (uint)(value[j++] << 24);
-                    sub = (ulong)word - borrow;
-                    word = (uint)sub;
-                    borrow = (uint)(sub >> 32) & 0x1u;
-                    _data[i] = ~word;
-                }
-                dataSize = valueLength & 0x3;
-                if (dataSize > 0)
-                {
-                    word = 0;
-                    uint store_mask = 0;
-                    for (int i = 0; i < dataSize; ++i)
+                    //Remove leading zeroes
+                    while (valueLength > 0 && value[valueLength - 1] == 0)
                     {
-                        word |= (uint)(value[j++] << (i * 8));
-                        store_mask = (store_mask << 8) | 0xFF;
+                        valueLength--;
                     }
-                    sub = word - borrow;
-                    word = (uint)sub;
-                    borrow = (uint)(sub >> 32) & 0x1u;
-                    _data[_data.Length - 1] = ~word & store_mask;
+                    if (valueLength == 0)
+                    {
+                        _sign = 0;
+                        _data = ZERO;
+                        return;
+                    }
                 }
-                if (borrow != 0) //FIXME I believe this can't happen, can someone write a test for it?
+                int wordCount, dataSize;
+                wordCount = valueLength / 4;
+                dataSize = wordCount;
+                int extraBytes = (valueLength & 0x3);
+                if (extraBytes != 0)
                 {
-                    throw new Exception("non zero final carry");
+                    dataSize++;
+                }
+                _data = new uint[dataSize];
+                if (_sign == 1)
+                {
+                    int j = 0;
+                    for (int i = 0; i < wordCount; ++i)
+                    {
+                        _data[i] = (uint)value[j++] |
+                                  (uint)(value[j++] << 8) |
+                                  (uint)(value[j++] << 16) |
+                                  (uint)(value[j++] << 24);
+                    }
+                    dataSize = valueLength & 0x3;
+                    if (dataSize > 0)
+                    {
+                        int idx = _data.Length - 1;
+                        for (int i = 0; i < dataSize; ++i)
+                        {
+                            _data[idx] |= (uint)(value[j++] << (i * 8));
+                        }
+                    }
+                }
+                else
+                {
+                    uint word, borrow = 1;
+                    ulong sub = 0;
+                    int j = 0;
+                    for (int i = 0; i < wordCount; ++i)
+                    {
+                        word = (uint)value[j++] |
+                               (uint)(value[j++] << 8) |
+                               (uint)(value[j++] << 16) |
+                               (uint)(value[j++] << 24);
+                        sub = (ulong)word - borrow;
+                        word = (uint)sub;
+                        borrow = (uint)(sub >> 32) & 0x1u;
+                        _data[i] = ~word;
+                    }
+                    dataSize = valueLength & 0x3;
+                    if (dataSize > 0)
+                    {
+                        word = 0;
+                        uint store_mask = 0;
+                        for (int i = 0; i < dataSize; ++i)
+                        {
+                            word |= (uint)(value[j++] << (i * 8));
+                            store_mask = (store_mask << 8) | 0xFF;
+                        }
+                        sub = word - borrow;
+                        word = (uint)sub;
+                        borrow = (uint)(sub >> 32) & 0x1u;
+                        _data[_data.Length - 1] = ~word & store_mask;
+                    }
+                    if (borrow != 0) //FIXME I believe this can't happen, can someone write a test for it?
+                    {
+                        throw new Exception("non zero final carry");
+                    }
                 }
             }
         }
