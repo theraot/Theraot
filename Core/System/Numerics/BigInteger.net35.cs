@@ -2254,10 +2254,11 @@ namespace System.Numerics
                     int dataIndex = 0;
                     for (int wordIndex = 0; wordIndex < wordCount; ++wordIndex)
                     {
-                        _data[wordIndex] = (uint)value[dataIndex++] |
-                                  (uint)(value[dataIndex++] << 8) |
-                                  (uint)(value[dataIndex++] << 16) |
-                                  (uint)(value[dataIndex++] << 24);
+                        _data[wordIndex] = (uint)value[dataIndex]
+                            | (uint)(value[dataIndex + 1] << 8)
+                            | (uint)(value[dataIndex + 2] << 16)
+                            | (uint)(value[dataIndex + 3] << 24);
+                        dataIndex += 4;
                     }
                     if (hasExtraBytes)
                     {
