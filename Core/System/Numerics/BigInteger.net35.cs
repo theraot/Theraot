@@ -2351,7 +2351,6 @@ namespace System.Numerics
         {
             get
             {
-                bool foundBit = false;
                 if (_sign != 1)
                 {
                     return false;
@@ -2359,19 +2358,20 @@ namespace System.Numerics
                 else
                 {
                     //This function is pop count == 1 for positive numbers
+                    bool result = false;
                     for (int dataIndex = 0; dataIndex < _data.Length; dataIndex++)
                     {
                         int population = Theraot.Core.NumericHelper.PopulationCount(_data[dataIndex]);
                         if (population > 0)
                         {
-                            if (population > 1 || foundBit)
+                            if (population > 1 || result)
                             {
                                 return false;
                             }
-                            foundBit = true;
+                            result = true;
                         }
                     }
-                    return foundBit;
+                    return result;
                 }
             }
         }
