@@ -102,11 +102,20 @@ namespace System.Numerics
 
         public static int Compare(BigInteger left, BigInteger right)
         {
-            int ls = left._sign;
-            int rs = right._sign;
-            if (ls != rs)
+            int leftSign = left._sign;
+            int rightSign = right._sign;
+            if (leftSign == rightSign)
             {
-                if (ls > rs)
+                int result = CoreCompare(left._data, right._data);
+                if (leftSign < 0)
+                {
+                    result = -result;
+                }
+                return result;
+            }
+            else
+            {
+                if (leftSign > rightSign)
                 {
                     return 1;
                 }
@@ -115,12 +124,6 @@ namespace System.Numerics
                     return -1;
                 }
             }
-            int r = CoreCompare(left._data, right._data);
-            if (ls < 0)
-            {
-                r = -r;
-            }
-            return r;
         }
 
         public static BigInteger Divide(BigInteger dividend, BigInteger divisor)
