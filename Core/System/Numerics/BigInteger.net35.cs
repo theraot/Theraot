@@ -2239,20 +2239,15 @@ namespace System.Numerics
                         return;
                     }
                 }
-                int wordCount, dataSize;
-                wordCount = valueLength / 4;
-                dataSize = wordCount;
                 int extraBytes = (valueLength & 0x3);
                 bool hasExtraBytes = extraBytes > 0;
-                if (hasExtraBytes)
-                {
-                    dataSize++;
-                }
+                int wordCount = valueLength / 4;
+                int dataSize = hasExtraBytes ? wordCount + 1 : wordCount;
+                uint word;
+                int dataIndex = 0;
                 _data = new uint[dataSize];
                 if (_sign == 1)
                 {
-                    uint word;
-                    int dataIndex = 0;
                     for (int wordIndex = 0; wordIndex < wordCount; ++wordIndex)
                     {
                         word = (uint)value[dataIndex]
@@ -2286,9 +2281,8 @@ namespace System.Numerics
                 }
                 else
                 {
-                    uint word, borrow = 1;
+                    uint borrow = 1;
                     ulong sub = 0;
-                    int dataIndex = 0;
                     for (int wordIndex = 0; wordIndex < wordCount; wordIndex++)
                     {
                         word = (uint)value[dataIndex++] |
