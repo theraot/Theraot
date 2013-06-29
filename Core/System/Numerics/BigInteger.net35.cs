@@ -2254,18 +2254,19 @@ namespace System.Numerics
                     int dataIndex = 0;
                     for (int wordIndex = 0; wordIndex < wordCount; ++wordIndex)
                     {
-                        _data[wordIndex] = (uint)value[dataIndex]
+                        var word = (uint)value[dataIndex]
                             | (uint)(value[dataIndex + 1] << 8)
                             | (uint)(value[dataIndex + 2] << 16)
                             | (uint)(value[dataIndex + 3] << 24);
+                        _data[wordIndex] = word;
                         dataIndex += 4;
                     }
                     if (hasExtraBytes)
                     {
-                        int idx = _data.Length - 1;
+                        int lastDataIndex = _data.Length - 1;
                         for (int i = 0; i < extraBytes; ++i)
                         {
-                            _data[idx] |= (uint)(value[dataIndex++] << (i * 8));
+                            _data[lastDataIndex] |= (uint)(value[dataIndex++] << (i * 8));
                         }
                     }
                 }
