@@ -315,6 +315,7 @@ namespace System.Numerics
                 return value._sign == -1 ? float.NegativeInfinity : float.PositiveInfinity;
             }
         }
+
         [CLSCompliantAttribute(false)]
         public static explicit operator ushort(BigInteger value)
         {
@@ -361,6 +362,7 @@ namespace System.Numerics
             }
             return -((((long)high) << 32) | (long)low);
         }
+
         public static explicit operator short(BigInteger value)
         {
             int val = (int)value;
@@ -370,6 +372,7 @@ namespace System.Numerics
             }
             return (short)val;
         }
+
         [CLSCompliantAttribute(false)]
         public static explicit operator sbyte(BigInteger value)
         {
@@ -380,6 +383,7 @@ namespace System.Numerics
             }
             return (sbyte)val;
         }
+
         public static BigInteger GreatestCommonDivisor(BigInteger left, BigInteger right)
         {
             if (left._sign != 0 && left._data.Length == 1 && left._data[0] == 1)
@@ -2315,10 +2319,6 @@ namespace System.Numerics
                         }
                         difference = word - borrow;
                         borrow = (uint)(difference >> 32) & 0x1u;
-                        Console.WriteLine(difference);
-                        Console.WriteLine(difference >> 32);
-                        Console.WriteLine((uint)(difference >> 32));
-                        Console.WriteLine((uint)(difference >> 32) & 0x1u);
                         _data[lastDataIndex] = ~(uint)difference & mask;
                     }
                 }
