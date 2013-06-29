@@ -2264,10 +2264,23 @@ namespace System.Numerics
                     if (hasExtraBytes)
                     {
                         int lastDataIndex = _data.Length - 1;
-                        for (int i = 0; i < extraBytes; ++i)
+                        uint word = 0;
+                        if (extraBytes == 3)
                         {
-                            _data[lastDataIndex] |= (uint)(value[dataIndex++] << (i * 8));
+                            word |= (uint)(value[dataIndex++] << (0 * 8));
+                            word |= (uint)(value[dataIndex++] << (1 * 8));
+                            word |= (uint)(value[dataIndex++] << (2 * 8));
                         }
+                        else if (extraBytes == 2)
+                        {
+                            word |= (uint)(value[dataIndex++] << (0 * 8));
+                            word |= (uint)(value[dataIndex++] << (1 * 8));
+                        }
+                        else if (extraBytes == 1)
+                        {
+                            word |= (uint)(value[dataIndex++] << (0 * 8));
+                        }
+                        _data[lastDataIndex] = word;
                     }
                 }
                 else
