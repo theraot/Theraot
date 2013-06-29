@@ -203,12 +203,15 @@ namespace System.Numerics
 
         public static explicit operator byte(BigInteger value)
         {
-            uint val = (uint)value;
-            if (val > byte.MaxValue)
+            uint uintValue = (uint)value;
+            if (uintValue > byte.MaxValue)
             {
                 throw new OverflowException();
             }
-            return (byte)val;
+            else
+            {
+                return (byte)uintValue;
+            }
         }
 
         public static explicit operator decimal(BigInteger value)
@@ -217,25 +220,31 @@ namespace System.Numerics
             {
                 return decimal.Zero;
             }
-            uint[] data = value._data;
-            if (data.Length > 3)
+            else
             {
-                throw new OverflowException();
+                uint[] data = value._data;
+                if (data.Length > 3)
+                {
+                    throw new OverflowException();
+                }
+                else
+                {
+                    int low = 0, middle = 0, high = 0;
+                    if (data.Length > 2)
+                    {
+                        high = (int)data[2];
+                    }
+                    if (data.Length > 1)
+                    {
+                        middle = (int)data[1];
+                    }
+                    if (data.Length > 0)
+                    {
+                        low = (int)data[0];
+                    }
+                    return new decimal(low, middle, high, value._sign < 0, 0);
+                }
             }
-            int lo = 0, mi = 0, hi = 0;
-            if (data.Length > 2)
-            {
-                hi = (int)data[2];
-            }
-            if (data.Length > 1)
-            {
-                mi = (int)data[1];
-            }
-            if (data.Length > 0)
-            {
-                lo = (int)data[0];
-            }
-            return new decimal(lo, mi, hi, value._sign < 0, 0);
         }
 
         [CLSCompliantAttribute(false)]
@@ -245,17 +254,23 @@ namespace System.Numerics
             {
                 return 0;
             }
-            if (value._data.Length > 2 || value._sign == -1)
+            else
             {
-                throw new OverflowException();
+                if (value._data.Length > 2 || value._sign == -1)
+                {
+                    throw new OverflowException();
+                }
+                uint low = value._data[0];
+                if (value._data.Length == 1)
+                {
+                    return low;
+                }
+                else
+                {
+                    uint high = value._data[1];
+                    return (((ulong)high) << 32) | low;
+                }
             }
-            uint low = value._data[0];
-            if (value._data.Length == 1)
-            {
-                return low;
-            }
-            uint high = value._data[1];
-            return (((ulong)high) << 32) | low;
         }
 
         [CLSCompliantAttribute(false)]
@@ -265,11 +280,14 @@ namespace System.Numerics
             {
                 return 0;
             }
-            if (value._data.Length > 1 || value._sign == -1)
+            else if (value._data.Length > 1 || value._sign == -1)
             {
                 throw new OverflowException();
             }
-            return value._data[0];
+            else
+            {
+                return value._data[0];
+            }
         }
 
         public static explicit operator double(BigInteger value)
