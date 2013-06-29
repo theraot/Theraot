@@ -191,6 +191,22 @@ namespace Theraot.Core
             return (int)((value * 0x0101010101010101UL) >> 56);
         }
 
+        public static int PopulationCount(int value)
+        {
+            unchecked
+            {
+                return PopulationCount((uint)value);
+            }
+        }
+
+        public static int PopulationCount(long value)
+        {
+            unchecked
+            {
+                return PopulationCount((ulong)value);
+            }
+        }
+
         public static float Round(this float number, int decimals)
         {
             return (float)Math.Round((double)number, decimals);
