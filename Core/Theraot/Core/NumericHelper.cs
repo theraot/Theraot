@@ -538,7 +538,7 @@ namespace Theraot.Core
                     {
                         while (true)
                         {
-                            if ((_mantissa & (1L << 52)) == 1)
+                            if ((_mantissa & (1L << 52)) != 0)
                             {
                                 break;
                             }
