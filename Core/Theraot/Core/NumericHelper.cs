@@ -526,59 +526,45 @@ namespace Theraot.Core
             }
             else
             {
-                //return (sign > 0 ? 1 : - 1) * (double)mantissa * Math.Pow(2, exponent);
                 ulong _mantissa = (ulong)mantissa;
-                if ((_mantissa & 0xffe0000000000000L) != 0)
+                exponent += 1075;
+                if (mantissa != 0)
                 {
-                    throw new ArgumentOutOfRangeException("mantissa", "The mantissa is invalid");
-                }
-                else
-                {
-                    if (mantissa != 0)
+                    while (true)
                     {
-                        while (true)
+                        if ((_mantissa & (1L << 52)) != 0 || exponent == 1)
                         {
-                            if ((_mantissa & (1L << 52)) != 0)
-                            {
-                                break;
-                            }
-                            else
-                            {
-                                var tmp = _mantissa << 1;
-                                _mantissa = tmp;
-                                exponent--;
-                            }
-                        }
-                    }
-                    exponent += 1075;
-                    if (exponent == 1 & mantissa != 0)
-                    {
-                        
-                        exponent = 0;
-                    }
-                    else
-                    {
-                        /*_mantissa = _mantissa << 1;
-                        exponent--;*/
-                        _mantissa = _mantissa & 0xfffffffffffffL;
-                    }
-                    if ((exponent & 0x7ffL) != exponent)
-                    {
-                        throw new ArgumentOutOfRangeException("exponent", "The exponent is invalid");
-                    }
-                    else
-                    {
-                        if (_mantissa < 0 || (_mantissa & 0xfffffffffffffL) != _mantissa)
-                        {
-                            throw new ArgumentOutOfRangeException("mantissa", "The mantissa is invalid");
+                            break;
                         }
                         else
                         {
-                            unchecked
-                            {
-                                long bits = (long)((ulong)_mantissa | (ulong)((ulong)exponent << 52));
-                                return BitConverter.Int64BitsToDouble(bits);
-                            }
+                            var tmp = _mantissa << 1;
+                            _mantissa = tmp;
+                            exponent--;
+                        }
+                    }
+                }
+                if (exponent == 1 && (_mantissa & (1L << 52)) == 0)
+                {
+                    exponent = 0;
+                }
+                _mantissa = _mantissa & 0xfffffffffffffL;
+                if ((exponent & 0x7ffL) != exponent)
+                {
+                    throw new ArgumentOutOfRangeException("exponent", "The exponent is invalid");
+                }
+                else
+                {
+                    if (_mantissa < 0 || (_mantissa & 0xfffffffffffffL) != _mantissa)
+                    {
+                        throw new ArgumentOutOfRangeException("mantissa", "The mantissa is invalid");
+                    }
+                    else
+                    {
+                        unchecked
+                        {
+                            long bits = (long)((ulong)_mantissa | (ulong)((ulong)exponent << 52));
+                            return BitConverter.Int64BitsToDouble(bits);
                         }
                     }
                 }
