@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Theraot.Core
 {
-    public static class NumericHelper
+    public static partial class NumericHelper
     {
         [CLSCompliantAttribute(false)]
         public static IEnumerable<sbyte> Bits(this sbyte value)

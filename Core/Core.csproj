@@ -201,6 +201,7 @@
     <Compile Include="Theraot\Core\FuncHelper._.cs" />
     <Compile Include="Theraot\Core\ICloneable.cs" />
     <Compile Include="Theraot\Core\ICloner.cs" />
+    <Compile Include="Theraot\Core\NumericHelper.BinaryString.cs" />
     <Compile Include="Theraot\Core\NumericHelper.cs" />
     <Compile Include="Theraot\Core\OrderedEnumerable.cs" />
     <Compile Include="System\Runtime\CompilerServices\ExtensionAttribute.net20.cs" />
