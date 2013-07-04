@@ -538,17 +538,15 @@ namespace Theraot.Core
                     {
                         while (true)
                         {
-                            var tmp = _mantissa << 1;
-                            if ((tmp & (1L << 52)) == 0)
+                            if ((_mantissa & (1L << 52)) == 1)
                             {
-                                _mantissa = tmp;
-                                exponent--;
+                                break;
                             }
                             else
                             {
+                                var tmp = _mantissa << 1;
                                 _mantissa = tmp;
                                 exponent--;
-                                break;
                             }
                         }
                     }
