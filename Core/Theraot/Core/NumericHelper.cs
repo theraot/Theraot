@@ -563,8 +563,12 @@ namespace Theraot.Core
                     {
                         unchecked
                         {
-                            long bits = (long)((ulong)_mantissa | (ulong)((ulong)exponent << 52));
-                            return BitConverter.Int64BitsToDouble(bits);
+                            ulong bits = (ulong)_mantissa | (ulong)((ulong)exponent << 52);
+                            if (sign < 0)
+                            {
+                                bits |= 0x8000000000000000uL;
+                            }
+                            return BitConverter.Int64BitsToDouble((long)bits);
                         }
                     }
                 }
