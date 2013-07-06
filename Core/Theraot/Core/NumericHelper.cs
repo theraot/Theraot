@@ -537,7 +537,7 @@ namespace Theraot.Core
                 {
                     while (true)
                     {
-                        if ((_mantissa & (1L << 52)) != 0 || exponent == 1)
+                        if ((_mantissa & (0xfff0000000000000L)) != 0 || exponent == 1)
                         {
                             break;
                         }
@@ -553,31 +553,43 @@ namespace Theraot.Core
                 {
                     exponent = 0;
                 }
-                _mantissa = _mantissa & 0xfffffffffffffL;
-                if ((exponent & 0x7ffL) != exponent)
+                while (_mantissa >= 0x1fffffffffffffL)
                 {
-                    throw new ArgumentOutOfRangeException("exponent", "The exponent is invalid");
+                    bool took = false;
+                    if ((_mantissa & 1) != 0)
+                    {
+                        took = true;
+                    }
+                    _mantissa >>= 1;
+                    if (took && (_mantissa & 1) == 0)
+                    {
+                        _mantissa++;
+                    }
+                    exponent++;
+                }
+                _mantissa = _mantissa & 0xfffffffffffffL;
+                if (exponent != 2047 && (exponent & 0x7ffL) == exponent && (_mantissa & 0xfffffffffffffL) == _mantissa)
+                {
+                    unchecked
+                    {
+                        ulong bits = (ulong)_mantissa | (ulong)((ulong)exponent << 52);
+                        if (sign < 0)
+                        {
+                            bits |= 0x8000000000000000uL;
+                        }
+                        return BitConverter.Int64BitsToDouble((long)bits);
+                    }
                 }
                 else
                 {
-                    if (_mantissa < 0 || (_mantissa & 0xfffffffffffffL) != _mantissa)
-                    {
-                        throw new ArgumentOutOfRangeException("mantissa", "The mantissa is invalid");
-                    }
-                    else
-                    {
-                        unchecked
-                        {
-                            ulong bits = (ulong)_mantissa | (ulong)((ulong)exponent << 52);
-                            if (sign < 0)
-                            {
-                                bits |= 0x8000000000000000uL;
-                            }
-                            return BitConverter.Int64BitsToDouble((long)bits);
-                        }
-                    }
+                    return sign > 0 ? double.PositiveInfinity : double.NegativeInfinity;
                 }
             }
+        }
+
+        public static long BuildLong(int hi, int lo)
+        {
+            return unchecked ((long)BuildUlong((uint)hi, (uint)lo));
         }
 
         [CLSCompliantAttribute(false)]
