@@ -553,19 +553,20 @@ namespace Theraot.Core
                 {
                     exponent = 0;
                 }
-                while (_mantissa >= 0x1fffffffffffffL)
+                bool took = false;
+                while (_mantissa > 0x1fffffffffffffL)
                 {
-                    bool took = false;
+                    took = false;
                     if ((_mantissa & 1) != 0)
                     {
                         took = true;
                     }
                     _mantissa >>= 1;
-                    if (took && (_mantissa & 1) == 0)
-                    {
-                        _mantissa++;
-                    }
                     exponent++;
+                }
+                if (took)
+                {
+                    _mantissa++;
                 }
                 _mantissa = _mantissa & 0xfffffffffffffL;
                 if (exponent != 2047 && (exponent & 0x7ffL) == exponent && (_mantissa & 0xfffffffffffffL) == _mantissa)
