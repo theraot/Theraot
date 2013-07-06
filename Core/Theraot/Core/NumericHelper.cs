@@ -526,9 +526,14 @@ namespace Theraot.Core
             }
             else
             {
+                if (mantissa < 0)
+                {
+                    mantissa = -mantissa;
+                    sign = -sign;
+                }
                 ulong _mantissa = (ulong)mantissa;
                 exponent += 1075;
-                if (mantissa != 0)
+                if (_mantissa != 0)
                 {
                     while (true)
                     {
