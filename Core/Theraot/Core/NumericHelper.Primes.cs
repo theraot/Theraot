@@ -719,44 +719,50 @@ namespace Theraot.Core
         {
             if (number == 0)
             {
-                throw new ArgumentException("The  logarithm  of  zero  is  not  defined.");
+                throw new ArgumentException("The logarithm of zero is not defined.");
             }
             if (number <= 0)
             {
-                throw new ArgumentException("The  logarithm  of  negative  numbers  are  imaginary.");
+                throw new ArgumentException("The logarithm of a negative number is imaginary.");
             }
             else
             {
-                int result = 0;
-                int test = 1;
-                while (true)
-                {
-                    if (number == test)
-                    {
-                        return result;
-                    }
-                    if (number < test)
-                    {
-                        return result - 1;
-                    }
-                    test = test << 1;
-                    result++;
-                }
+                number |= (number >> 1);
+                number |= (number >> 2);
+                number |= (number >> 4);
+                number |= (number >> 8);
+                number |= (number >> 16);
+                return (PopulationCount(number >> 1));
             }
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
         public static int NextPowerOf2(int number)
         {
-            int result = 1;
-            while (true)
+            if (number < 0)
             {
-                if (number <= result)
-                {
-                    return result;
-                }
-                result = result << 1;
+                return 1;
             }
+            else
+            {
+                uint _number;
+                unchecked
+                {
+                    _number = (uint)number;
+                }
+                return (int)NextPowerOf2(_number);
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static uint NextPowerOf2(uint number)
+        {
+            number |= (number >> 1);
+            number |= (number >> 2);
+            number |= (number >> 4);
+            number |= (number >> 8);
+            number |= (number >> 16);
+            return(number+1);
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
