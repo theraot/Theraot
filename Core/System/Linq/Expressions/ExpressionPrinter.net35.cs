@@ -338,46 +338,66 @@ namespace System.Linq.Expressions
                 case ExpressionType.Add:
                 case ExpressionType.AddChecked:
                     return "+";
+
                 case ExpressionType.AndAlso:
                     return "&&";
+
                 case ExpressionType.Coalesce:
                     return "??";
+
                 case ExpressionType.Divide:
                     return "/";
+
                 case ExpressionType.Equal:
                     return "=";
+
                 case ExpressionType.ExclusiveOr:
                     return "^";
+
                 case ExpressionType.GreaterThan:
                     return ">";
+
                 case ExpressionType.GreaterThanOrEqual:
                     return ">=";
+
                 case ExpressionType.LeftShift:
                     return "<<";
+
                 case ExpressionType.LessThan:
                     return "<";
+
                 case ExpressionType.LessThanOrEqual:
                     return "<=";
+
                 case ExpressionType.Modulo:
                     return "%";
+
                 case ExpressionType.Multiply:
                 case ExpressionType.MultiplyChecked:
                     return "*";
+
                 case ExpressionType.NotEqual:
                     return "!=";
+
                 case ExpressionType.OrElse:
                     return "||";
+
                 case ExpressionType.Power:
                     return "^";
+
                 case ExpressionType.RightShift:
                     return ">>";
+
                 case ExpressionType.Subtract:
                 case ExpressionType.SubtractChecked:
                     return "-";
+
                 case ExpressionType.And:
                     return IsBoolean(binary) ? "And" : "&";
+
                 case ExpressionType.Or:
                     return IsBoolean(binary) ? "Or" : "|";
+
                 default:
                     return null;
             }

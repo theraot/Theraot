@@ -47,7 +47,7 @@ namespace Theraot.Core
         {
             return As
             (
-                source, 
+                source,
                 () =>
                 {
                     return def;
@@ -107,7 +107,7 @@ namespace Theraot.Core
         {
             return Cast
             (
-                source, 
+                source,
                 () =>
                 {
                     return def;

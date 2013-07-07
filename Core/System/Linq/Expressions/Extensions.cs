@@ -141,8 +141,10 @@ namespace System.Linq.Expressions
             {
                 case MemberTypes.Field:
                     return onfield((FieldInfo)self);
+
                 case MemberTypes.Property:
                     return onprop((PropertyInfo)self);
+
                 default:
                     throw new ArgumentException();
             }

@@ -146,14 +146,14 @@ namespace System.Linq.Expressions
             }
         }
 
-        private void EmitIfNotNull (EmitContext emitContext, Action<EmitContext> emit)
+        private void EmitIfNotNull(EmitContext emitContext, Action<EmitContext> emit)
         {
             if (_value == null)
             {
-                emitContext.ILGenerator.Emit (OpCodes.Ldnull);
+                emitContext.ILGenerator.Emit(OpCodes.Ldnull);
                 return;
             }
-            emit (emitContext);
+            emit(emitContext);
         }
 
         private void EmitNullableConstant(EmitContext emitContext, Type type, object value)

@@ -1,6 +1,5 @@
 ﻿#if NET20 || NET30 || NET35
 
-using System.Collections;
 using System.Collections.Generic;
 
 namespace System.Collections.Concurrent

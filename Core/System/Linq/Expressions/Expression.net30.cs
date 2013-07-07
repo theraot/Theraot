@@ -1070,52 +1070,76 @@ namespace System.Linq.Expressions
             {
                 case ExpressionType.Add:
                     return Add(left, right, method);
+
                 case ExpressionType.AddChecked:
                     return AddChecked(left, right, method);
+
                 case ExpressionType.AndAlso:
                     return AndAlso(left, right);
+
                 case ExpressionType.ArrayIndex:
                     return ArrayIndex(left, right);
+
                 case ExpressionType.Coalesce:
                     return Coalesce(left, right, conversion);
+
                 case ExpressionType.Divide:
                     return Divide(left, right, method);
+
                 case ExpressionType.Equal:
                     return Equal(left, right, liftToNull, method);
+
                 case ExpressionType.ExclusiveOr:
                     return ExclusiveOr(left, right, method);
+
                 case ExpressionType.GreaterThan:
                     return GreaterThan(left, right, liftToNull, method);
+
                 case ExpressionType.GreaterThanOrEqual:
                     return GreaterThanOrEqual(left, right, liftToNull, method);
+
                 case ExpressionType.LeftShift:
                     return LeftShift(left, right, method);
+
                 case ExpressionType.LessThan:
                     return LessThan(left, right, liftToNull, method);
+
                 case ExpressionType.LessThanOrEqual:
                     return LessThanOrEqual(left, right, liftToNull, method);
+
                 case ExpressionType.Modulo:
                     return Modulo(left, right, method);
+
                 case ExpressionType.Multiply:
                     return Multiply(left, right, method);
+
                 case ExpressionType.MultiplyChecked:
                     return MultiplyChecked(left, right, method);
+
                 case ExpressionType.NotEqual:
                     return NotEqual(left, right, liftToNull, method);
+
                 case ExpressionType.OrElse:
                     return OrElse(left, right);
+
                 case ExpressionType.Power:
                     return Power(left, right, method);
+
                 case ExpressionType.RightShift:
                     return RightShift(left, right, method);
+
                 case ExpressionType.Subtract:
                     return Subtract(left, right, method);
+
                 case ExpressionType.SubtractChecked:
                     return SubtractChecked(left, right, method);
+
                 case ExpressionType.And:
                     return And(left, right, method);
+
                 case ExpressionType.Or:
                     return Or(left, right, method);
+
                 default:
                     throw new ArgumentException("MakeBinary expect a binary node type");
             }
@@ -1161,22 +1185,31 @@ namespace System.Linq.Expressions
             {
                 case ExpressionType.ArrayLength:
                     return ArrayLength(operand);
+
                 case ExpressionType.Convert:
                     return Convert(operand, type, method);
+
                 case ExpressionType.ConvertChecked:
                     return ConvertChecked(operand, type, method);
+
                 case ExpressionType.Negate:
                     return Negate(operand, method);
+
                 case ExpressionType.NegateChecked:
                     return NegateChecked(operand, method);
+
                 case ExpressionType.Not:
                     return Not(operand, method);
+
                 case ExpressionType.Quote:
                     return Quote(operand);
+
                 case ExpressionType.TypeAs:
                     return TypeAs(operand, type);
+
                 case ExpressionType.UnaryPlus:
                     return UnaryPlus(operand, method);
+
                 default:
                     throw new ArgumentException("MakeUnary expect an unary operator");
             }

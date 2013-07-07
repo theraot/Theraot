@@ -52,14 +52,6 @@ namespace System.Numerics
             }
         }
 
-        private double MagnitudeSquared
-        {
-            get
-            {
-                return (_imaginary * _imaginary) + (_real * _real);
-            }
-        }
-
         public double Magnitude
         {
             get
@@ -81,6 +73,14 @@ namespace System.Numerics
             get
             {
                 return _real;
+            }
+        }
+
+        private double MagnitudeSquared
+        {
+            get
+            {
+                return (_imaginary * _imaginary) + (_real * _real);
             }
         }
 

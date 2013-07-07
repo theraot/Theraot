@@ -25,11 +25,11 @@ namespace Theraot.Core
         [CLSCompliantAttribute(false)]
         public static uint BinaryReverse(this uint value)
         {
-            value = (((value & 0xaaaaaaaa) >> 1) | ((value & 0x55555555) << 1));
-            value = (((value & 0xcccccccc) >> 2) | ((value & 0x33333333) << 2));
-            value = (((value & 0xf0f0f0f0) >> 4) | ((value & 0x0f0f0f0f) << 4));
-            value = (((value & 0xff00ff00) >> 8) | ((value & 0x00ff00ff) << 8));
-            return ((value >> 16) | (value << 16));
+            value = ((value & 0xaaaaaaaa) >> 1) | ((value & 0x55555555) << 1);
+            value = ((value & 0xcccccccc) >> 2) | ((value & 0x33333333) << 2);
+            value = ((value & 0xf0f0f0f0) >> 4) | ((value & 0x0f0f0f0f) << 4);
+            value = ((value & 0xff00ff00) >> 8) | ((value & 0x00ff00ff) << 8);
+            return (value >> 16) | (value << 16);
         }
 
         [CLSCompliantAttribute(false)]
@@ -572,24 +572,24 @@ namespace Theraot.Core
         [CLSCompliantAttribute(false)]
         public static int LeadingZeroCount(this uint value)
         {
-            value |= (value >> 1);
-            value |= (value >> 2);
-            value |= (value >> 4);
-            value |= (value >> 8);
-            value |= (value >> 16);
-            return (sizeof(int) * 8 - PopulationCount(value));
+            value |= value >> 1;
+            value |= value >> 2;
+            value |= value >> 4;
+            value |= value >> 8;
+            value |= value >> 16;
+            return (sizeof(int) * 8) - PopulationCount(value);
         }
 
         [CLSCompliantAttribute(false)]
         public static int LeadingZeroCount(this ulong value)
         {
-            value |= (value >> 1);
-            value |= (value >> 2);
-            value |= (value >> 4);
-            value |= (value >> 8);
-            value |= (value >> 16);
-            value |= (value >> 32);
-            return (sizeof(long) * 8 - PopulationCount(value));
+            value |= value >> 1;
+            value |= value >> 2;
+            value |= value >> 4;
+            value |= value >> 8;
+            value |= value >> 16;
+            value |= value >> 32;
+            return (sizeof(long) * 8) - PopulationCount(value);
         }
 
         //Gem from Hacker's Delight

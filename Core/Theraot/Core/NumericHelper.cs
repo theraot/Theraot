@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Theraot.Core
 {
@@ -86,7 +85,7 @@ namespace Theraot.Core
 
         public static long BuildLong(int hi, int lo)
         {
-            return unchecked ((long)BuildUlong((uint)hi, (uint)lo));
+            return unchecked((long)BuildUlong((uint)hi, (uint)lo));
         }
 
         [CLSCompliantAttribute(false)]
@@ -180,7 +179,7 @@ namespace Theraot.Core
             {
                 long bits = BitConverter.DoubleToInt64Bits(value);
                 sign = (bits < 0) ? -1 : 1;
-                exponent = (int) ((bits >> 52) & 0x7ffL);
+                exponent = (int)((bits >> 52) & 0x7ffL);
                 if (exponent == 2047)
                 {
                     throw new ArgumentException("The value is NaN, PositiveInfinity or NegativeInfinity");
@@ -231,12 +230,12 @@ namespace Theraot.Core
             }
             else
             {
-                number |= (number >> 1);
-                number |= (number >> 2);
-                number |= (number >> 4);
-                number |= (number >> 8);
-                number |= (number >> 16);
-                return (PopulationCount(number >> 1));
+                number |= number >> 1;
+                number |= number >> 2;
+                number |= number >> 4;
+                number |= number >> 8;
+                number |= number >> 16;
+                return PopulationCount(number >> 1);
             }
         }
 
@@ -261,12 +260,12 @@ namespace Theraot.Core
         [CLSCompliantAttribute(false)]
         public static uint NextPowerOf2(uint number)
         {
-            number |= (number >> 1);
-            number |= (number >> 2);
-            number |= (number >> 4);
-            number |= (number >> 8);
-            number |= (number >> 16);
-            return (number + 1);
+            number |= number >> 1;
+            number |= number >> 2;
+            number |= number >> 4;
+            number |= number >> 8;
+            number |= number >> 16;
+            return number + 1;
         }
 
         public static float Round(this float number, int decimals)

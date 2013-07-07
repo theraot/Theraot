@@ -316,13 +316,12 @@ namespace System.Numerics
                 if (32 - off + 32 < 52)
                 {
                     mantissa = (mantissa << off) | (value._data[index - 2] >> (32 - off));
-                    return Theraot.Core.NumericHelper.BuildDouble(value._sign, mantissa, ((value._data.Length - 2) * 32 - off));
+                    return Theraot.Core.NumericHelper.BuildDouble(value._sign, mantissa, ((value._data.Length - 2) * 32) - off);
                 }
                 else
                 {
                     return Theraot.Core.NumericHelper.BuildDouble(value._sign, mantissa, (value._data.Length - 2) * 32);
                 }
-                
             }
         }
 
@@ -2285,7 +2284,7 @@ namespace System.Numerics
                         return;
                     }
                 }
-                int extraBytes = (valueLength & 0x3);
+                int extraBytes = valueLength & 0x3;
                 bool hasExtraBytes = extraBytes > 0;
                 int wordCount = valueLength / 4;
                 int dataSize = hasExtraBytes ? wordCount + 1 : wordCount;
@@ -2706,9 +2705,11 @@ namespace System.Numerics
                 case 'r':
                 case 'R':
                     return ToStringWithPadding(format, 10, provider);
+
                 case 'x':
                 case 'X':
                     return ToStringWithPadding(format, 16, null);
+
                 default:
                     throw new FormatException(string.Format("format '{0}' not implemented", format));
             }

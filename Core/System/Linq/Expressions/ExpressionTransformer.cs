@@ -55,6 +55,7 @@ namespace System.Linq.Expressions
                 case ExpressionType.TypeAs:
                 case ExpressionType.UnaryPlus:
                     return VisitUnary((UnaryExpression)exp);
+
                 case ExpressionType.Add:
                 case ExpressionType.AddChecked:
                 case ExpressionType.Subtract:
@@ -80,31 +81,44 @@ namespace System.Linq.Expressions
                 case ExpressionType.LeftShift:
                 case ExpressionType.ExclusiveOr:
                     return VisitBinary((BinaryExpression)exp);
+
                 case ExpressionType.TypeIs:
                     return VisitTypeIs((TypeBinaryExpression)exp);
+
                 case ExpressionType.Conditional:
                     return VisitConditional((ConditionalExpression)exp);
+
                 case ExpressionType.Constant:
                     return VisitConstant((ConstantExpression)exp);
+
                 case ExpressionType.Parameter:
                     return VisitParameter((ParameterExpression)exp);
+
                 case ExpressionType.MemberAccess:
                     return VisitMemberAccess((MemberExpression)exp);
+
                 case ExpressionType.Call:
                     return VisitMethodCall((MethodCallExpression)exp);
+
                 case ExpressionType.Lambda:
                     return VisitLambda((LambdaExpression)exp);
+
                 case ExpressionType.New:
                     return VisitNew((NewExpression)exp);
+
                 case ExpressionType.NewArrayInit:
                 case ExpressionType.NewArrayBounds:
                     return VisitNewArray((NewArrayExpression)exp);
+
                 case ExpressionType.Invoke:
                     return VisitInvocation((InvocationExpression)exp);
+
                 case ExpressionType.MemberInit:
                     return VisitMemberInit((MemberInitExpression)exp);
+
                 case ExpressionType.ListInit:
                     return VisitListInit((ListInitExpression)exp);
+
                 default:
                     throw new Exception(string.Format("Unhandled expression type: '{0}'", exp.NodeType));
             }
@@ -135,10 +149,13 @@ namespace System.Linq.Expressions
             {
                 case MemberBindingType.Assignment:
                     return VisitMemberAssignment((MemberAssignment)binding);
+
                 case MemberBindingType.MemberBinding:
                     return VisitMemberMemberBinding((MemberMemberBinding)binding);
+
                 case MemberBindingType.ListBinding:
                     return VisitMemberListBinding((MemberListBinding)binding);
+
                 default:
                     throw new Exception(string.Format("Unhandled binding type '{0}'", binding.BindingType));
             }

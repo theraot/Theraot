@@ -4,8 +4,6 @@ using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 
-using Theraot.Collections;
-
 namespace Theraot.Core
 {
     [global::System.Diagnostics.DebuggerNonUserCode]
@@ -306,7 +304,7 @@ namespace Theraot.Core
                 return _text.Substring(characterCount);
             }
         }
-        
+
         public static string Implode(string separator, params object[] values)
         {
             if (separator == null)
@@ -638,6 +636,7 @@ namespace Theraot.Core
             }
             return true;
         }
+
         public static bool Like(this string text, Regex regex, int startAt)
         {
             return regex.IsMatch(text, startAt);
