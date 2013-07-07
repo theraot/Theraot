@@ -3,8 +3,7 @@
 namespace Theraot.Core
 {
     [global::System.Diagnostics.DebuggerNonUserCode]
-
-    public static class IntHelper
+    public static partial class NumericHelper
     {
         private static readonly int[] smallPrimes = new int[]
         {
@@ -666,7 +665,6 @@ namespace Theraot.Core
         };
 
         [global::System.Diagnostics.DebuggerNonUserCode]
-
         public static bool IsPrime(int number)
         {
             if (number < 0)
@@ -717,7 +715,6 @@ namespace Theraot.Core
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
-
         public static int Log2(int number)
         {
             if (number == 0)
@@ -749,7 +746,6 @@ namespace Theraot.Core
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
-
         public static int NextPowerOf2(int number)
         {
             int result = 1;
@@ -764,7 +760,6 @@ namespace Theraot.Core
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
-
         public static int NextPrime(int fromNumber)
         {
             if (fromNumber < 2)
@@ -804,7 +799,6 @@ namespace Theraot.Core
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
-
         private static int Sqrt(int number)
         {
             //  Newton's  method  aproximation  for  positive  integers
