@@ -611,5 +611,34 @@ namespace Theraot.Core
         {
             return Theraot.Core.StringHelper.Concat(Theraot.Core.NumericHelper.BitsBinary(value), input => input.ToString());
         }
+
+        //Gem from The Aggregate Magic Algorithms
+        [CLSCompliantAttribute(false)]
+        public static int TrailingZeroCount(this uint value)
+        {
+            return PopulationCount((value & -value) - 1);
+        }
+
+        public static int TrailingZeroCount(this int value)
+        {
+            uint _value;
+            unchecked
+            {
+                _value = (uint)value;
+            }
+            return PopulationCount((_value & -_value) - 1);
+        }
+
+        //Gem from The Aggregate Magic Algorithms
+        [CLSCompliantAttribute(false)]
+        private static uint HighestBit(this uint value)
+        {
+            value = value | value >> 1;
+            value = value | value >> 2;
+            value = value | value >> 4;
+            value = value | value >> 8;
+            value = value | value >> 16;
+            return value & ~(value >> 1);
+        }
     }
 }
