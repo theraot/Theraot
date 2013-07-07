@@ -192,6 +192,57 @@ namespace Theraot.Core
             }
         }
 
+        [global::System.Diagnostics.DebuggerNonUserCode]
+        public static int Log2(int number)
+        {
+            if (number == 0)
+            {
+                throw new ArgumentException("The logarithm of zero is not defined.");
+            }
+            if (number <= 0)
+            {
+                throw new ArgumentException("The logarithm of a negative number is imaginary.");
+            }
+            else
+            {
+                number |= (number >> 1);
+                number |= (number >> 2);
+                number |= (number >> 4);
+                number |= (number >> 8);
+                number |= (number >> 16);
+                return (PopulationCount(number >> 1));
+            }
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCode]
+        public static int NextPowerOf2(int number)
+        {
+            if (number < 0)
+            {
+                return 1;
+            }
+            else
+            {
+                uint _number;
+                unchecked
+                {
+                    _number = (uint)number;
+                }
+                return (int)NextPowerOf2(_number);
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static uint NextPowerOf2(uint number)
+        {
+            number |= (number >> 1);
+            number |= (number >> 2);
+            number |= (number >> 4);
+            number |= (number >> 8);
+            number |= (number >> 16);
+            return (number + 1);
+        }
+
         public static float Round(this float number, int decimals)
         {
             return (float)Math.Round((double)number, decimals);
@@ -250,6 +301,23 @@ namespace Theraot.Core
         public static decimal Round(this decimal number, MidpointRounding mode)
         {
             return Math.Round(number, mode);
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCode]
+        private static int Sqrt(int number)
+        {
+            //  Newton's  method  aproximation  for  positive  integers
+            //  if  (number  ==  0)  return  0;
+            int x, _x = number >> 1;
+            while (true)
+            {
+                x = (_x + (number / _x)) >> 1;
+                if (x >= _x)
+                {
+                    return _x;
+                }
+                _x = x;
+            }
         }
     }
 }
