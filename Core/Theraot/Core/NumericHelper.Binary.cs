@@ -518,6 +518,26 @@ namespace Theraot.Core
             }
         }
 
+        [CLSCompliantAttribute(false)]
+        public static int LeadingZeroCount(this uint value)
+        {
+            value |= (value >> 1);
+            value |= (value >> 2);
+            value |= (value >> 4);
+            value |= (value >> 8);
+            value |= (value >> 16);
+            return (sizeof(int) * 8 - PopulationCount(value));
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static int LeadingZeroCount(this int value)
+        {
+            unchecked
+            {
+                return LeadingZeroCount((uint)value);
+            }
+        }
+
         //Gem from Hacker's Delight
         //Returns the number of bits set in @value
         [CLSCompliantAttribute(false)]
