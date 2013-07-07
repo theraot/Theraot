@@ -6,6 +6,41 @@ namespace Theraot.Core
 {
     public static partial class NumericHelper
     {
+        public static int BinaryReverse(this int value)
+        {
+            unchecked
+            {
+                return (int)BinaryReverse((uint)value);
+            }
+        }
+
+        public static long BinaryReverse(this long value)
+        {
+            unchecked
+            {
+                return (long)BinaryReverse((ulong)value);
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static uint BinaryReverse(this uint value)
+        {
+            value = (((value & 0xaaaaaaaa) >> 1) | ((value & 0x55555555) << 1));
+            value = (((value & 0xcccccccc) >> 2) | ((value & 0x33333333) << 2));
+            value = (((value & 0xf0f0f0f0) >> 4) | ((value & 0x0f0f0f0f) << 4));
+            value = (((value & 0xff00ff00) >> 8) | ((value & 0x00ff00ff) << 8));
+            return ((value >> 16) | (value << 16));
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static ulong BinaryReverse(this ulong value)
+        {
+            uint lo;
+            uint hi;
+            GetParts(value, out lo, out hi);
+            return BuildUlong(BinaryReverse(lo), BinaryReverse(hi));
+        }
+
         [CLSCompliantAttribute(false)]
         public static IEnumerable<sbyte> Bits(this sbyte value)
         {
@@ -518,6 +553,22 @@ namespace Theraot.Core
             }
         }
 
+        public static int LeadingZeroCount(this int value)
+        {
+            unchecked
+            {
+                return LeadingZeroCount((uint)value);
+            }
+        }
+
+        public static int LeadingZeroCount(this long value)
+        {
+            unchecked
+            {
+                return LeadingZeroCount((ulong)value);
+            }
+        }
+
         [CLSCompliantAttribute(false)]
         public static int LeadingZeroCount(this uint value)
         {
@@ -530,12 +581,15 @@ namespace Theraot.Core
         }
 
         [CLSCompliantAttribute(false)]
-        public static int LeadingZeroCount(this int value)
+        public static int LeadingZeroCount(this ulong value)
         {
-            unchecked
-            {
-                return LeadingZeroCount((uint)value);
-            }
+            value |= (value >> 1);
+            value |= (value >> 2);
+            value |= (value >> 4);
+            value |= (value >> 8);
+            value |= (value >> 16);
+            value |= (value >> 32);
+            return (sizeof(long) * 8 - PopulationCount(value));
         }
 
         //Gem from Hacker's Delight
@@ -632,33 +686,26 @@ namespace Theraot.Core
             return Theraot.Core.StringHelper.Concat(Theraot.Core.NumericHelper.BitsBinary(value), input => input.ToString());
         }
 
-        //Gem from The Aggregate Magic Algorithms
+        public static int TrailingZeroCount(this int value)
+        {
+            return LeadingZeroCount(BinaryReverse(value));
+        }
+
+        public static int TrailingZeroCount(this long value)
+        {
+            return LeadingZeroCount(BinaryReverse(value));
+        }
+
         [CLSCompliantAttribute(false)]
         public static int TrailingZeroCount(this uint value)
         {
-            return PopulationCount((value & -value) - 1);
+            return LeadingZeroCount(BinaryReverse(value));
         }
 
-        public static int TrailingZeroCount(this int value)
-        {
-            uint _value;
-            unchecked
-            {
-                _value = (uint)value;
-            }
-            return PopulationCount((_value & -_value) - 1);
-        }
-
-        //Gem from The Aggregate Magic Algorithms
         [CLSCompliantAttribute(false)]
-        private static uint HighestBit(this uint value)
+        public static int TrailingZeroCount(this ulong value)
         {
-            value = value | value >> 1;
-            value = value | value >> 2;
-            value = value | value >> 4;
-            value = value | value >> 8;
-            value = value | value >> 16;
-            return value & ~(value >> 1);
+            return LeadingZeroCount(BinaryReverse(value));
         }
     }
 }
