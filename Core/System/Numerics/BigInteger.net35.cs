@@ -292,14 +292,37 @@ namespace System.Numerics
 
         public static explicit operator double(BigInteger value)
         {
-            //FIXME
-            try
+            if (value._data.Length == 0)
             {
-                return double.Parse(value.ToString(), System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+                return 0.0;
             }
-            catch (OverflowException)
+            else if (value._data.Length == 1)
             {
-                return value._sign == -1 ? double.NegativeInfinity : double.PositiveInfinity;
+                return Theraot.Core.NumericHelper.BuildDouble(value._sign, value._data[0], 0);
+            }
+            else if (value._data.Length == 2)
+            {
+                unchecked
+                {
+                    return Theraot.Core.NumericHelper.BuildDouble(value._sign, Theraot.Core.NumericHelper.BuildUlong(value._data[1], value._data[0]), 0);
+                }
+            }
+            else
+            {
+                int index = value._data.Length - 1;
+                uint _value = value._data[index];
+                var off = Theraot.Core.NumericHelper.LeadingZeroCount(_value);
+                ulong mantissa = ((ulong)_value << 32) | value._data[index - 1];
+                if (32 - off + 32 < 52)
+                {
+                    mantissa = (mantissa << off) | (value._data[index - 2] >> (32 - off));
+                    return Theraot.Core.NumericHelper.BuildDouble(value._sign, mantissa, ((value._data.Length - 2) * 32 - off));
+                }
+                else
+                {
+                    return Theraot.Core.NumericHelper.BuildDouble(value._sign, mantissa, (value._data.Length - 2) * 32);
+                }
+                
             }
         }
 

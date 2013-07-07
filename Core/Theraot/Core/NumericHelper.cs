@@ -19,19 +19,32 @@ namespace Theraot.Core
                     sign = -sign;
                 }
                 ulong _mantissa = (ulong)mantissa;
+                return BuildDouble(sign, _mantissa, exponent);
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static double BuildDouble(int sign, ulong mantissa, int exponent)
+        {
+            if (sign == 0)
+            {
+                return 0.0;
+            }
+            else
+            {
+                ulong _mantissa = (ulong)mantissa;
                 exponent += 1075;
                 if (_mantissa != 0)
                 {
                     while (true)
                     {
-                        if ((_mantissa & (0xfff0000000000000L)) != 0 || exponent == 1)
+                        if ((_mantissa & 0xfff0000000000000L) != 0 || exponent == 1)
                         {
                             break;
                         }
                         else
                         {
-                            var tmp = _mantissa << 1;
-                            _mantissa = tmp;
+                            _mantissa <<= 1;
                             exponent--;
                         }
                     }
@@ -40,15 +53,19 @@ namespace Theraot.Core
                 {
                     exponent = 0;
                 }
-                uint divisor = 1;
-                while (_mantissa > 0x1fffffffffffffL)
+                bool addOne = false;
+                while (_mantissa >= 0x1fffffffffffffL)
                 {
-                    divisor >>= 1;
+                    addOne = (_mantissa & 1) == 1;
+                    _mantissa >>= 1;
                     exponent++;
                 }
-                _mantissa = _mantissa / divisor;
+                if (addOne)
+                {
+                    _mantissa++;
+                }
                 _mantissa = _mantissa & 0xfffffffffffffL;
-                if (exponent != 2047 && (exponent & 0x7ffL) == exponent && (_mantissa & 0xfffffffffffffL) == _mantissa)
+                if (exponent != 2047 && (exponent & 0x7ffL) == exponent)
                 {
                     unchecked
                     {
