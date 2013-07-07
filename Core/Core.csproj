@@ -203,6 +203,7 @@
     <Compile Include="Theraot\Core\ICloner.cs" />
     <Compile Include="Theraot\Core\NumericHelper.Binary.cs" />
     <Compile Include="Theraot\Core\NumericHelper.cs" />
+    <Compile Include="Theraot\Core\NumericHelper.Primes.cs" />
     <Compile Include="Theraot\Core\OrderedEnumerable.cs" />
     <Compile Include="System\Runtime\CompilerServices\ExtensionAttribute.net20.cs" />
     <Compile Include="System\Tuple8.net35.cs" />
@@ -221,7 +222,6 @@
     <Compile Include="Theraot\Collections\Specialized\NullAwareDictionary.cs" />
     <Compile Include="Theraot\Collections\Specialized\OrderedCollection.cs" />
     <Compile Include="Theraot\Core\ComparerExtensions.cs" />
-    <Compile Include="Theraot\Core\IntHelper.cs" />
     <Compile Include="Theraot\Core\Reference.cs" />
     <Compile Include="Theraot\Core\TraceRoute.cs" />
     <Compile Include="Theraot\Core\TracertNode.cs" />

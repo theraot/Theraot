@@ -22,7 +22,7 @@ namespace Theraot.Threading
         /// <param name="keyComparer">The key comparer.</param>
         public FixedSizeHashBucket(int capacity, IEqualityComparer<TKey> keyComparer)
         {
-            _capacity = IntHelper.NextPowerOf2(capacity);
+            _capacity = NumericHelper.NextPowerOf2(capacity);
             _entries = new Bucket<KeyValuePair<TKey, TValue>>(_capacity);
             _keyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
         }

@@ -5,7 +5,6 @@ namespace Theraot.Core
 {
     public static partial class NumericHelper
     {
-        [CLSCompliantAttribute(false)]
         public static double BuildDouble(int sign, long mantissa, int exponent)
         {
             if (sign == 0)
