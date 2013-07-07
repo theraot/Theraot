@@ -35,17 +35,15 @@ namespace Theraot.Core
                 exponent += 1075;
                 if (_mantissa != 0)
                 {
-                    while (true)
+                    int offset = LeadingZeroCount(_mantissa) - 11;
+                    if (offset > 0)
                     {
-                        if ((_mantissa & 0xfff0000000000000L) != 0 || exponent == 1)
+                        if (offset >= exponent)
                         {
-                            break;
+                            offset = exponent - 1;
                         }
-                        else
-                        {
-                            _mantissa <<= 1;
-                            exponent--;
-                        }
+                        _mantissa <<= offset;
+                        exponent -= offset;
                     }
                 }
                 if (exponent == 1 && (_mantissa & (1L << 52)) == 0)
