@@ -149,6 +149,15 @@ namespace Theraot.Core
             }
         }
 
+        public static void GetParts(long value, out int lo, out int hi)
+        {
+            unchecked
+            {
+                lo = (int)value;
+                hi = (int)((ulong)value >> 32);
+            }
+        }
+
         [CLSCompliantAttribute(false)]
         public static void GetParts(ulong value, out uint lo, out uint hi)
         {
