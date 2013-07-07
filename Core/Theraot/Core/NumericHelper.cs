@@ -31,52 +31,58 @@ namespace Theraot.Core
             }
             else
             {
-                ulong _mantissa = (ulong)mantissa;
-                exponent += 1075;
-                if (_mantissa != 0)
+                if (exponent > int.MaxValue - 1075)
                 {
-                    int offset = LeadingZeroCount(_mantissa) - 11;
-                    if (offset > 0)
-                    {
-                        if (offset >= exponent)
-                        {
-                            offset = exponent - 1;
-                        }
-                        _mantissa <<= offset;
-                        exponent -= offset;
-                    }
-                }
-                if (exponent == 1 && (_mantissa & (1L << 52)) == 0)
-                {
-                    exponent = 0;
-                }
-                bool addOne = false;
-                while (_mantissa >= 0x1fffffffffffffL)
-                {
-                    addOne = (_mantissa & 1) == 1;
-                    _mantissa >>= 1;
-                    exponent++;
-                }
-                if (addOne)
-                {
-                    _mantissa++;
-                }
-                _mantissa = _mantissa & 0xfffffffffffffL;
-                if (exponent != 2047 && (exponent & 0x7ffL) == exponent)
-                {
-                    unchecked
-                    {
-                        ulong bits = (ulong)_mantissa | (ulong)((ulong)exponent << 52);
-                        if (sign < 0)
-                        {
-                            bits |= 0x8000000000000000uL;
-                        }
-                        return BitConverter.Int64BitsToDouble((long)bits);
-                    }
+                    return sign > 0 ? double.PositiveInfinity : double.NegativeInfinity;
                 }
                 else
                 {
-                    return sign > 0 ? double.PositiveInfinity : double.NegativeInfinity;
+                    exponent += 1075;
+                    if (mantissa != 0)
+                    {
+                        int offset = LeadingZeroCount(mantissa) - 11;
+                        if (offset > 0)
+                        {
+                            if (offset >= exponent)
+                            {
+                                offset = exponent - 1;
+                            }
+                            mantissa <<= offset;
+                            exponent -= offset;
+                        }
+                    }
+                    if (exponent == 1 && (mantissa & (1L << 52)) == 0)
+                    {
+                        exponent = 0;
+                    }
+                    bool addOne = false;
+                    while ((mantissa >> 52) > 1)
+                    {
+                        addOne = (mantissa & 1) == 1;
+                        mantissa >>= 1;
+                        exponent++;
+                    }
+                    if (addOne)
+                    {
+                        mantissa++;
+                    }
+                    mantissa = mantissa & 0xfffffffffffffL;
+                    if (exponent != 2047 && (exponent & 0x7ffL) == exponent)
+                    {
+                        unchecked
+                        {
+                            ulong bits = (ulong)mantissa | (ulong)((ulong)exponent << 52);
+                            if (sign < 0)
+                            {
+                                bits |= 0x8000000000000000uL;
+                            }
+                            return BitConverter.Int64BitsToDouble((long)bits);
+                        }
+                    }
+                    else
+                    {
+                        return sign > 0 ? double.PositiveInfinity : double.NegativeInfinity;
+                    }
                 }
             }
         }
