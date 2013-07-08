@@ -302,10 +302,7 @@ namespace System.Numerics
             }
             else if (value._data.Length == 2)
             {
-                unchecked
-                {
-                    return Theraot.Core.NumericHelper.BuildDouble(value._sign, Theraot.Core.NumericHelper.BuildUlong(value._data[1], value._data[0]), 0);
-                }
+                return Theraot.Core.NumericHelper.BuildDouble(value._sign, Theraot.Core.NumericHelper.BuildUlong(value._data[1], value._data[0]), 0);
             }
             else
             {
@@ -313,15 +310,9 @@ namespace System.Numerics
                 uint _value = value._data[index];
                 var off = Theraot.Core.NumericHelper.LeadingZeroCount(_value);
                 ulong mantissa = ((ulong)_value << 32) | value._data[index - 1];
-                if (32 - off + 32 < 52)
-                {
-                    mantissa = (mantissa << off) | (value._data[index - 2] >> (32 - off));
-                    return Theraot.Core.NumericHelper.BuildDouble(value._sign, mantissa, ((value._data.Length - 2) * 32) - off);
-                }
-                else
-                {
-                    return Theraot.Core.NumericHelper.BuildDouble(value._sign, mantissa, (value._data.Length - 2) * 32);
-                }
+                int missing = 52 - off; //52 - 32 - off + 32
+                mantissa = (mantissa << missing) | (value._data[index - 2] >> (32 - missing));
+                return Theraot.Core.NumericHelper.BuildDouble(value._sign, mantissa, ((value._data.Length - 2) * 32) - missing);
             }
         }
 
