@@ -465,7 +465,10 @@ namespace System.Numerics
             {
                 throw new OverflowException();
             }
-            return (short)val;
+            else
+            {
+                return (short)val;
+            }
         }
 
         [CLSCompliantAttribute(false)]
@@ -476,7 +479,10 @@ namespace System.Numerics
             {
                 throw new OverflowException();
             }
-            return (sbyte)val;
+            else
+            {
+                return (sbyte)val;
+            }
         }
 
         public static BigInteger GreatestCommonDivisor(BigInteger left, BigInteger right)
