@@ -4,80 +4,6 @@ namespace Theraot.Core
 {
     public static partial class NumericHelper
     {
-        public static float BuildSingle(int sign, int mantissa, int exponent)
-        {
-            if (sign == 0 || mantissa == 0)
-            {
-                return 0.0f;
-            }
-            else
-            {
-                if (mantissa < 0)
-                {
-                    mantissa = -mantissa;
-                    sign = -sign;
-                }
-                uint _mantissa = (uint)mantissa;
-                return BuildSingle(sign, _mantissa, exponent);
-            }
-        }
-
-        [CLSCompliantAttribute(false)]
-        public static float BuildSingle(int sign, uint mantissa, int exponent)
-        {
-            if (sign == 0 || mantissa == 0)
-            {
-                return 0.0f;
-            }
-            else
-            {
-                if (exponent > int.MaxValue - 150)
-                {
-                    return sign > 0 ? float.PositiveInfinity : float.NegativeInfinity;
-                }
-                else
-                {
-                    exponent += 150;
-                    int offset = LeadingZeroCount(mantissa) - 8;
-                    if (offset < 0)
-                    {
-                        mantissa >>= -offset;
-                        exponent += -offset;
-                    }
-                    else
-                    {
-                        if (offset >= exponent)
-                        {
-                            mantissa <<= exponent - 1;
-                            exponent = 0;
-                        }
-                        else
-                        {
-                            mantissa <<= offset;
-                            exponent -= offset;
-                        }
-                    }
-                    mantissa = mantissa & 0x7fffff;
-                    if ((exponent & 0xff) == exponent)
-                    {
-                        unchecked
-                        {
-                            uint bits = (uint)mantissa | (uint)((uint)exponent << 23);
-                            if (sign < 0)
-                            {
-                                bits |= 0x80000000u;
-                            }
-                            return UInt32AsSingle(bits);
-                        }
-                    }
-                    else
-                    {
-                        return sign > 0 ? float.PositiveInfinity : float.NegativeInfinity;
-                    }
-                }
-            }
-        }
-
         public static double BuildDouble(int sign, long mantissa, int exponent)
         {
             if (sign == 0 || mantissa == 0)
@@ -155,6 +81,80 @@ namespace Theraot.Core
         public static long BuildInt64(int hi, int lo)
         {
             return unchecked((long)BuildUInt64((uint)hi, (uint)lo));
+        }
+
+        public static float BuildSingle(int sign, int mantissa, int exponent)
+        {
+            if (sign == 0 || mantissa == 0)
+            {
+                return 0.0f;
+            }
+            else
+            {
+                if (mantissa < 0)
+                {
+                    mantissa = -mantissa;
+                    sign = -sign;
+                }
+                uint _mantissa = (uint)mantissa;
+                return BuildSingle(sign, _mantissa, exponent);
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static float BuildSingle(int sign, uint mantissa, int exponent)
+        {
+            if (sign == 0 || mantissa == 0)
+            {
+                return 0.0f;
+            }
+            else
+            {
+                if (exponent > int.MaxValue - 150)
+                {
+                    return sign > 0 ? float.PositiveInfinity : float.NegativeInfinity;
+                }
+                else
+                {
+                    exponent += 150;
+                    int offset = LeadingZeroCount(mantissa) - 8;
+                    if (offset < 0)
+                    {
+                        mantissa >>= -offset;
+                        exponent += -offset;
+                    }
+                    else
+                    {
+                        if (offset >= exponent)
+                        {
+                            mantissa <<= exponent - 1;
+                            exponent = 0;
+                        }
+                        else
+                        {
+                            mantissa <<= offset;
+                            exponent -= offset;
+                        }
+                    }
+                    mantissa = mantissa & 0x7fffff;
+                    if ((exponent & 0xff) == exponent)
+                    {
+                        unchecked
+                        {
+                            uint bits = (uint)mantissa | (uint)((uint)exponent << 23);
+                            if (sign < 0)
+                            {
+                                bits |= 0x80000000u;
+                            }
+                            return UInt32AsSingle(bits);
+                        }
+                    }
+                    else
+                    {
+                        return sign > 0 ? float.PositiveInfinity : float.NegativeInfinity;
+                    }
+                }
+            }
         }
 
         [CLSCompliantAttribute(false)]
