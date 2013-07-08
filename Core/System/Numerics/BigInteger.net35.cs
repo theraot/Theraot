@@ -312,7 +312,14 @@ namespace System.Numerics
                 var off = Theraot.Core.NumericHelper.LeadingZeroCount(_value);
                 ulong mantissa = ((ulong)_value << 32) | value._data[index - 1];
                 int missing = 52 - off; //52 - 32 - off + 32
-                mantissa = (mantissa << missing) | (value._data[index - 2] >> (32 - missing));
+                //if (missing > 0)
+                //{
+                    mantissa = (mantissa << missing) | (value._data[index - 2] >> (32 - missing));
+                //}
+                //else
+                //{
+                    mantissa >>= -missing;
+                //}
                 return Theraot.Core.NumericHelper.BuildDouble(value._sign, mantissa, ((value._data.Length - 2) * 32) - missing);
             }
         }
@@ -361,14 +368,29 @@ namespace System.Numerics
 
         public static explicit operator float(BigInteger value)
         {
-            //FIXME
-            try
+            if (value._data.Length == 0)
             {
-                return float.Parse(value.ToString(), System.Globalization.CultureInfo.InvariantCulture.NumberFormat);
+                return 0.0f;
             }
-            catch (OverflowException)
+            else if (value._data.Length == 1)
             {
-                return value._sign == -1 ? float.NegativeInfinity : float.PositiveInfinity;
+                return Theraot.Core.NumericHelper.BuildSingle(value._sign, value._data[0], 0);
+            }
+            else
+            {
+                int index = value._data.Length - 1;
+                uint mantissa = value._data[index];
+                var off = Theraot.Core.NumericHelper.LeadingZeroCount(mantissa);
+                int missing = 23 - (32 - off);
+                //if (missing > 0)
+                //{
+                    mantissa = (mantissa << missing) | (value._data[index - 1] >> (32 - missing));
+                //}
+                //else
+                //{
+                //    mantissa >>= -missing;
+                //}
+                return Theraot.Core.NumericHelper.BuildSingle(value._sign, mantissa, ((value._data.Length - 1) * 32) - missing);
             }
         }
 
