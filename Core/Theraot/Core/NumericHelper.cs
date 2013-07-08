@@ -6,7 +6,7 @@ namespace Theraot.Core
     {
         public static double BuildDouble(int sign, long mantissa, int exponent)
         {
-            if (sign == 0)
+            if (sign == 0 || mantissa == 0)
             {
                 return 0.0;
             }
@@ -25,7 +25,7 @@ namespace Theraot.Core
         [CLSCompliantAttribute(false)]
         public static double BuildDouble(int sign, ulong mantissa, int exponent)
         {
-            if (sign == 0)
+            if (sign == 0 || mantissa == 0)
             {
                 return 0.0;
             }
@@ -38,30 +38,23 @@ namespace Theraot.Core
                 else
                 {
                     exponent += 1075;
-                    if (mantissa != 0)
+                    int offset = LeadingZeroCount(mantissa) - 11;
+                    if (offset < 0)
                     {
-                        int offset = LeadingZeroCount(mantissa) - 11;
-                        if (offset > 0)
+                        mantissa >>= -offset;
+                        exponent += -offset;
+                    }
+                    else
+                    {
+                        if (offset >= exponent)
                         {
-                            if (offset >= exponent)
-                            {
-                                offset = exponent - 1;
-                            }
+                            mantissa <<= exponent - 1;
+                            exponent = 0;
+                        }
+                        else
+                        {
                             mantissa <<= offset;
                             exponent -= offset;
-                        }
-                    }
-                    if (exponent == 1 && (mantissa & (1L << 52)) == 0)
-                    {
-                        exponent = 0;
-                    }
-                    if (mantissa != 0)
-                    {
-                        int offset = 11 - LeadingZeroCount(mantissa);
-                        if (offset > 0)
-                        {
-                            mantissa >>= offset;
-                            exponent += offset;
                         }
                     }
                     mantissa = mantissa & 0xfffffffffffffL;
