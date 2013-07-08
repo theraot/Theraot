@@ -4,6 +4,80 @@ namespace Theraot.Core
 {
     public static partial class NumericHelper
     {
+        public static float BuildSingle(int sign, int mantissa, int exponent)
+        {
+            if (sign == 0 || mantissa == 0)
+            {
+                return 0.0f;
+            }
+            else
+            {
+                if (mantissa < 0)
+                {
+                    mantissa = -mantissa;
+                    sign = -sign;
+                }
+                uint _mantissa = (uint)mantissa;
+                return BuildSingle(sign, _mantissa, exponent);
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static float BuildSingle(int sign, uint mantissa, int exponent)
+        {
+            if (sign == 0 || mantissa == 0)
+            {
+                return 0.0f;
+            }
+            else
+            {
+                if (exponent > int.MaxValue - 150)
+                {
+                    return sign > 0 ? float.PositiveInfinity : float.NegativeInfinity;
+                }
+                else
+                {
+                    exponent += 150;
+                    int offset = LeadingZeroCount(mantissa) - 8;
+                    if (offset < 0)
+                    {
+                        mantissa >>= -offset;
+                        exponent += -offset;
+                    }
+                    else
+                    {
+                        if (offset >= exponent)
+                        {
+                            mantissa <<= exponent - 1;
+                            exponent = 0;
+                        }
+                        else
+                        {
+                            mantissa <<= offset;
+                            exponent -= offset;
+                        }
+                    }
+                    mantissa = mantissa & 0x7fffff;
+                    if (exponent != 2047 && (exponent & 0x7ff) == exponent)
+                    {
+                        unchecked
+                        {
+                            uint bits = (uint)mantissa | (uint)((uint)exponent << 23);
+                            if (sign < 0)
+                            {
+                                bits |= 0x80000000u;
+                            }
+                            return UInt32AsSingle(bits);
+                        }
+                    }
+                    else
+                    {
+                        return sign > 0 ? float.PositiveInfinity : float.NegativeInfinity;
+                    }
+                }
+            }
+        }
+
         public static double BuildDouble(int sign, long mantissa, int exponent)
         {
             if (sign == 0 || mantissa == 0)
@@ -159,6 +233,56 @@ namespace Theraot.Core
             {
                 lo = (uint)value;
                 hi = (uint)(value >> 32);
+            }
+        }
+
+        public static void GetParts(float value, out int sign, out int mantissa, out int exponent)
+        {
+            if (value == 0.0)
+            {
+                sign = 0;
+                mantissa = 0;
+                exponent = 1;
+            }
+            else
+            {
+                int bits = SingleAsInt32(value);
+                sign = (bits < 0) ? -1 : 1;
+                exponent = (int)((bits >> 23) & 0x7ff);
+                if (exponent == 2047)
+                {
+                    throw new ArgumentException("The value is NaN, PositiveInfinity or NegativeInfinity");
+                }
+                else
+                {
+                    mantissa = bits & 0xffffff;
+                    if (exponent == 0)
+                    {
+                        // Subnormal numbers; exponent is effectively one higher,
+                        // but there's no extra normalisation bit in the mantissa
+                        exponent = 1;
+                    }
+                    else
+                    {
+                        // Normal numbers; leave exponent as it is but add extra
+                        // bit to the front of the mantissa
+                        mantissa = mantissa | (1 << 23);
+                    }
+
+                    // Bias the exponent. It's actually biased by 127, but we're
+                    // treating the mantissa as m.0 rather than 0.m, so we need
+                    // to subtract another 23 from it.
+                    exponent -= 150;
+
+                    if (mantissa != 0)
+                    {
+                        while ((mantissa & 1) == 0)
+                        {
+                            mantissa >>= 1;
+                            exponent++;
+                        }
+                    }
+                }
             }
         }
 
