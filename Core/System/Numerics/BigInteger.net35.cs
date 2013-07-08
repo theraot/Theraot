@@ -3,6 +3,7 @@
 // System.Numerics.BigInteger
 
 // Rodrigo Kumpera (rkumpera@novell.com)
+// Alfonso J. Ramos (theraot@gmail.com)
 
 // Copyright (C) 2010 Novell, Inc (http://www.novell.com)
 
