@@ -381,7 +381,7 @@ namespace System.Numerics
                 int index = value._data.Length - 1;
                 uint mantissa = value._data[index];
                 var off = Theraot.Core.NumericHelper.LeadingZeroCount(mantissa);
-                int missing = x - 9; //23 - (32 - off);
+                int missing = off - 9; //23 - (32 - off);
                 //if (missing > 0)
                 //{
                     mantissa = (mantissa << missing) | (value._data[index - 1] >> (32 - missing));
