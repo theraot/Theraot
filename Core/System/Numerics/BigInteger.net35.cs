@@ -330,7 +330,7 @@ namespace System.Numerics
             {
                 return 0;
             }
-            if (value._data.Length > 1)
+            else if (value._data.Length > 1)
             {
                 throw new OverflowException();
             }
@@ -348,7 +348,7 @@ namespace System.Numerics
                         return (int)data;
                     }
                 }
-                else if (value._sign == -1)
+                else
                 {
                     if (data > 0x80000000u)
                     {
@@ -358,10 +358,6 @@ namespace System.Numerics
                     {
                         return -(int)data;
                     }
-                }
-                else
-                {
-                    return 0;
                 }
             }
         }
@@ -402,7 +398,10 @@ namespace System.Numerics
             {
                 throw new OverflowException();
             }
-            return (ushort)val;
+            else
+            {
+                return (ushort)val;
+            }
         }
 
         public static explicit operator long(BigInteger value)
@@ -411,34 +410,52 @@ namespace System.Numerics
             {
                 return 0;
             }
-            if (value._data.Length > 2)
+            else if (value._data.Length > 2)
             {
                 throw new OverflowException();
             }
-            uint low = value._data[0];
-            if (value._data.Length == 1)
+            else
             {
-                if (value._sign == 1)
+                uint low = value._data[0];
+                if (value._data.Length == 1)
                 {
-                    return (long)low;
+                    if (value._sign == 1)
+                    {
+                        return (long)low;
+                    }
+                    else
+                    {
+                        long result = (long)low;
+                        return -result;
+                    }
                 }
-                long res = (long)low;
-                return -res;
-            }
-            uint high = value._data[1];
-            if (value._sign == 1)
-            {
-                if (high >= 0x80000000u)
+                else
                 {
-                    throw new OverflowException();
+                    uint high = value._data[1];
+                    if (value._sign == 1)
+                    {
+                        if (high >= 0x80000000u)
+                        {
+                            throw new OverflowException();
+                        }
+                        else
+                        {
+                            return Theraot.Core.NumericHelper.BuildInt64(high, low);
+                        }
+                    }
+                    else
+                    {
+                        if (high > 0x80000000u)
+                        {
+                            throw new OverflowException();
+                        }
+                        else
+                        {
+                            return -Theraot.Core.NumericHelper.BuildInt64(high, low);
+                        }
+                    }
                 }
-                return (((long)high) << 32) | low;
             }
-            if (high > 0x80000000u)
-            {
-                throw new OverflowException();
-            }
-            return -((((long)high) << 32) | (long)low);
         }
 
         public static explicit operator short(BigInteger value)
