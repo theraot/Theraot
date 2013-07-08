@@ -55,16 +55,14 @@ namespace Theraot.Core
                     {
                         exponent = 0;
                     }
-                    bool addOne = false;
-                    while ((mantissa >> 52) > 1)
+                    if (mantissa != 0)
                     {
-                        addOne = (mantissa & 1) == 1;
-                        mantissa >>= 1;
-                        exponent++;
-                    }
-                    if (addOne)
-                    {
-                        mantissa++;
+                        int offset = LeadingZeroCount(mantissa) - 11;
+                        if (offset > 0)
+                        {
+                            mantissa <<= offset;
+                            exponent += offset;
+                        }
                     }
                     mantissa = mantissa & 0xfffffffffffffL;
                     if (exponent != 2047 && (exponent & 0x7ffL) == exponent)
