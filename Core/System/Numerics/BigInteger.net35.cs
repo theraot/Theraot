@@ -303,7 +303,7 @@ namespace System.Numerics
             }
             else if (value._data.Length == 2)
             {
-                return Theraot.Core.NumericHelper.BuildDouble(value._sign, Theraot.Core.NumericHelper.BuildUlong(value._data[1], value._data[0]), 0);
+                return Theraot.Core.NumericHelper.BuildDouble(value._sign, Theraot.Core.NumericHelper.BuildUInt64(value._data[1], value._data[0]), 0);
             }
             else
             {

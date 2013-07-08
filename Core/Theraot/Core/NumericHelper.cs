@@ -78,13 +78,13 @@ namespace Theraot.Core
             }
         }
 
-        public static long BuildLong(int hi, int lo)
+        public static long BuildInt64(int hi, int lo)
         {
-            return unchecked((long)BuildUlong((uint)hi, (uint)lo));
+            return unchecked((long)BuildUInt64((uint)hi, (uint)lo));
         }
 
         [CLSCompliantAttribute(false)]
-        public static ulong BuildUlong(uint hi, uint lo)
+        public static ulong BuildUInt64(uint hi, uint lo)
         {
             return (ulong)hi << 32 | (ulong)lo;
         }

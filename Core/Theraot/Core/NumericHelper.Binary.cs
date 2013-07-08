@@ -38,7 +38,7 @@ namespace Theraot.Core
             uint lo;
             uint hi;
             GetParts(value, out lo, out hi);
-            return BuildUlong(BinaryReverse(lo), BinaryReverse(hi));
+            return BuildUInt64(BinaryReverse(lo), BinaryReverse(hi));
         }
 
         [CLSCompliantAttribute(false)]
@@ -553,6 +553,30 @@ namespace Theraot.Core
             }
         }
 
+        public static long DoubleAsInt64(double value)
+        {
+            return BitConverter.DoubleToInt64Bits(value);
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static ulong DoubleAsUInt64(double value)
+        {
+            unchecked
+            {
+                return (ulong)BitConverter.DoubleToInt64Bits(value);
+            }
+        }
+
+        public static float Int32AsSingle(int value)
+        {
+            return BitConverter.ToSingle(BitConverter.GetBytes(value), 0);
+        }
+
+        public static double Int64AsDouble(long value)
+        {
+            return BitConverter.Int64BitsToDouble(value);
+        }
+
         public static int LeadingZeroCount(this int value)
         {
             unchecked
@@ -632,6 +656,20 @@ namespace Theraot.Core
             }
         }
 
+        public static int SingleAsInt32(float value)
+        {
+            return BitConverter.ToInt32(BitConverter.GetBytes(value), 0);
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static uint SingleAsUInt32(float value)
+        {
+            unchecked
+            {
+                return (uint)BitConverter.ToInt32(BitConverter.GetBytes(value), 0);
+            }
+        }
+
         public static string ToStringBinary(this double value)
         {
             return ToStringBinary(BitConverter.DoubleToInt64Bits(value));
@@ -706,6 +744,21 @@ namespace Theraot.Core
         public static int TrailingZeroCount(this ulong value)
         {
             return LeadingZeroCount(BinaryReverse(value));
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static float UInt32AsSingle(uint value)
+        {
+            return BitConverter.ToSingle(BitConverter.GetBytes(value), 0);
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static double UInt64AsDouble(ulong value)
+        {
+            unchecked
+            {
+                return BitConverter.Int64BitsToDouble((long)value);
+            }
         }
     }
 }
