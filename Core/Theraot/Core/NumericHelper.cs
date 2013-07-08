@@ -57,10 +57,10 @@ namespace Theraot.Core
                     }
                     if (mantissa != 0)
                     {
-                        int offset = LeadingZeroCount(mantissa) - 11;
+                        int offset = 11 - LeadingZeroCount(mantissa);
                         if (offset > 0)
                         {
-                            mantissa <<= offset;
+                            mantissa >>= offset;
                             exponent += offset;
                         }
                     }
