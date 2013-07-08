@@ -80,7 +80,13 @@ namespace Theraot.Core
 
         public static long BuildInt64(int hi, int lo)
         {
-            return unchecked((long)BuildUInt64((uint)hi, (uint)lo));
+            return unchecked((long)((ulong)(uint)hi << 32 | (ulong)(uint)lo));
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static long BuildInt64(uint hi, uint lo)
+        {
+            return unchecked((long)((ulong)hi << 32 | (ulong)lo));
         }
 
         public static float BuildSingle(int sign, int mantissa, int exponent)
