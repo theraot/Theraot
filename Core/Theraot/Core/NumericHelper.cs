@@ -58,7 +58,7 @@ namespace Theraot.Core
                         }
                     }
                     mantissa = mantissa & 0x7fffff;
-                    if (exponent != 2047 && (exponent & 0x7ff) == exponent)
+                    if ((exponent & 0xff) == exponent)
                     {
                         unchecked
                         {
@@ -132,7 +132,7 @@ namespace Theraot.Core
                         }
                     }
                     mantissa = mantissa & 0xfffffffffffffL;
-                    if (exponent != 2047 && (exponent & 0x7ffL) == exponent)
+                    if ((exponent & 0x7ffL) == exponent)
                     {
                         unchecked
                         {
@@ -248,7 +248,7 @@ namespace Theraot.Core
             {
                 int bits = SingleAsInt32(value);
                 sign = (bits < 0) ? -1 : 1;
-                exponent = (int)((bits >> 23) & 0x7ff);
+                exponent = (int)((bits >> 23) & 0xff);
                 if (exponent == 2047)
                 {
                     throw new ArgumentException("The value is NaN, PositiveInfinity or NegativeInfinity");
