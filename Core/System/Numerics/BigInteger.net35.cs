@@ -327,24 +327,36 @@ namespace System.Numerics
             {
                 throw new OverflowException();
             }
-            uint data = value._data[0];
-            if (value._sign == 1)
+            else
             {
-                if (data > (uint)int.MaxValue)
+                uint data = value._data[0];
+                if (value._sign == 1)
                 {
-                    throw new OverflowException();
+                    if (data > (uint)int.MaxValue)
+                    {
+                        throw new OverflowException();
+                    }
+                    else
+                    {
+                        return (int)data;
+                    }
                 }
-                return (int)data;
-            }
-            else if (value._sign == -1)
-            {
-                if (data > 0x80000000u)
+                else if (value._sign == -1)
                 {
-                    throw new OverflowException();
+                    if (data > 0x80000000u)
+                    {
+                        throw new OverflowException();
+                    }
+                    else
+                    {
+                        return -(int)data;
+                    }
                 }
-                return -(int)data;
+                else
+                {
+                    return 0;
+                }
             }
-            return 0;
         }
 
         public static explicit operator float(BigInteger value)
