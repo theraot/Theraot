@@ -312,14 +312,14 @@ namespace System.Numerics
                 var off = Theraot.Core.NumericHelper.LeadingZeroCount(_value);
                 ulong mantissa = ((ulong)_value << 32) | value._data[index - 1];
                 int missing = 52 - off; //52 - 32 - off + 32
-                //if (missing > 0)
-                //{
+                if (missing > 0)
+                {
                     mantissa = (mantissa << missing) | (value._data[index - 2] >> (32 - missing));
-                //}
-                //else
-                //{
-                //    mantissa >>= -missing;
-                //}
+                }
+                else
+                {
+                    mantissa >>= -missing;
+                }
                 return Theraot.Core.NumericHelper.BuildDouble(value._sign, mantissa, ((value._data.Length - 2) * 32) - missing);
             }
         }
@@ -378,14 +378,14 @@ namespace System.Numerics
                 uint mantissa = value._data[index];
                 var off = Theraot.Core.NumericHelper.LeadingZeroCount(mantissa);
                 int missing = off - 9; //23 - (32 - off);
-                //if (missing > 0)
-                //{
+                if (missing > 0)
+                {
                     mantissa = (mantissa << missing) | (value._data[index - 1] >> (32 - missing));
-                //}
-                //else
-                //{
-                //    mantissa >>= -missing;
-                //}
+                }
+                else
+                {
+                    mantissa >>= -missing;
+                }
                 return Theraot.Core.NumericHelper.BuildSingle(value._sign, mantissa, ((value._data.Length - 1) * 32) - missing);
             }
         }
