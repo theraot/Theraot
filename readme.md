@@ -1,6 +1,9 @@
 Theraot's Libraries
 ===
 
+Theraot's Libraries are an ongoing effort to ease the work on .NET, including a backport of recent .NET features to .NET 2.0 among other things.
+
+---
 Introduction
 ---
 
@@ -29,9 +32,11 @@ Theraot's Libraries...
     - System.Collections.Generic.HashSet: Done
     - System.Collections.Generic.SortedSet: Done
     - System.Collections.StructuralComparison: Done
-    - System.Collections.Linq & System.Collections.Linq.Expressions: Nearly Done [Mostly taken from Mono]
+    - System.Collections.Linq: Nearly Done [Mostly taken from Mono]
+    - System.Collections.Linq.Expressions: Nearly Done [Mostly taken from Mono]
     - System.Numerics: Done [Taken from Mono]^1
-    - System.Runtime.CompilerServices.DynamicAttribute & System.Runtime.CompilerServices.ExtensionAttribute: Done
+    - System.Runtime.CompilerServices.DynamicAttribute: Done
+    - System.Runtime.CompilerServices.ExtensionAttribute: Done
     - System.Therading.ThreadLocal: Done
     - System.Threading.Tasks: Planned
     - System.Action: Done
@@ -43,8 +48,60 @@ Theraot's Libraries...
   - uses less than 1MB in disk
   - keeps a consistent code style in the whole code^2
     
-^1: I mantain my copy of System.Numerics that was taken from Mono. I have provided the optimization for the cast from BigInteger to Double.
-^2: I intent to keep the code readeable, yet documentation is low priority at this point. 
+^1: I mantain my copy of System.Numerics that was taken from Mono. I have provided the optimization for the cast from BigInteger to float and double.
+
+^2: I intent to keep the code readable, yet documentation is low priority at this point. 
+
+---
+Extended Features
+---
+
+Not everything in the code is a backport, some parts are utility and helper methods that has been developed along side the backport effort.
+
+This are some parts worth of mention:
+
+    - Theraot.Collections
+        - Specialized
+            - AVLTree
+            - NullAwareDictionary
+        - Extensions : A huge plus beyond Linq
+        - Progressive* : A set of classes that walk an IEnumerable<T> on demand and cache the result
+    - Theraot.Core
+        - ActionHelper : Lazy static Noop and Throw Actions
+        - FuncHelper : Lazy static Default, Return and Throw Funcs
+        - NumericHelper : A lot of functions from integer square root to primality test including extracting mantissa and exp from double value and more.
+        - StringHelper : A lot of functions from Append to Implode and more.
+        - TypeHelper : A bunch of type related helper functions
+     - Theraot.Threading
+        - Some code from the project HashBucket
+        - Disposable : A general purpose disposable object with Action callback.
+        - DisposableAkin : Same as above, but can only be disposed by the same thread that created it ^1.
+        - IExtendedDisposable : A IDisposible that you can query to know if it was disposed ^2.
+        - NoTrackingThreadLocal & TrackingThreadLocal : The backends for the backport of System.Threading.ThreadLocal
+        - SingleTimeExecution : A thread-safe way to wrap code to be called only once.
+        - ThreadinHelper : Provides unique ids for managed threads, generic VolatileRead and *Write, and conditional SpinWait.
+        
+^1: This actually makes the implementation simpler and more efficient.
+
+^2: Do not rely on the IsDisposed property as it may change any moment if another thread call Dispose, use DisposedConditional instead.
+
+---
+FAT Features
+---
+
+Some code in this libraries has been developed for past or future features but is not currently used as part of the backports, so they are only provided in "FAT" builds.
+
+This are some parts worth of mention:
+
+    - Theraot.Core
+        - ICloneable<T> & ICloner<T> & CloneHelper : Generalization of ICloneable as generic
+        - TraceRoute & TraceNode : A Network Traceroute implementation
+    - Theraot.Threading
+        - Some code from the project HashBucket
+        - CritialDisposible : A variant of Disposible that inherits from CritialFinalizerObject ^1.
+        - Work : a task scheduler implementation, intended to be part of the backport of System.Threading.Tasks
+
+^1: In theory you shouldn't need it, if you need it, chances are something else is wrong.
 
 ---
 
@@ -60,9 +117,7 @@ There are a few things that are beyond the scope of my work:
 Compiling
 ---
 
-The preferred way to compile the code is with Visual Studio because it uses a modern version of C# and targets old versions of .NET. Compiling with Mono may require additional steps.
-
-The code should compile without need of modification in Visual Studio 2012 for any version of .NET from .NET 2.0 to .NET 4.5 , if it does not please contact me and report the issues.
+The compiling configuration has been set for ease of batch building from Visual Studio, building from Xamarin Studio is also supported.
 
 ---
 Help
