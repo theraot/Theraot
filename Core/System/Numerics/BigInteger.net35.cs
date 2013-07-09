@@ -318,7 +318,7 @@ namespace System.Numerics
                 //}
                 //else
                 //{
-                    mantissa >>= -missing;
+                //    mantissa >>= -missing;
                 //}
                 return Theraot.Core.NumericHelper.BuildDouble(value._sign, mantissa, ((value._data.Length - 2) * 32) - missing);
             }
