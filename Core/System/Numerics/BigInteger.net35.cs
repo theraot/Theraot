@@ -487,67 +487,79 @@ namespace System.Numerics
 
         public static BigInteger GreatestCommonDivisor(BigInteger left, BigInteger right)
         {
-            if (left._sign != 0 && left._data.Length == 1 && left._data[0] == 1)
+            if
+                (
+                    (
+                        left._sign != 0 &&
+                        left._data.Length == 1 &&
+                        left._data[0] == 1
+                    )
+                    || (
+                        right._sign != 0 &&
+                        right._data.Length == 1 &&
+                        right._data[0] == 1
+                    )
+                )
             {
                 return new BigInteger(1, ONE);
             }
-            if (right._sign != 0 && right._data.Length == 1 && right._data[0] == 1)
-            {
-                return new BigInteger(1, ONE);
-            }
-            if (left.IsZero)
+            else if (left.IsZero)
             {
                 return Abs(right);
             }
-            if (right.IsZero)
+            else if (right.IsZero)
             {
                 return Abs(left);
             }
-            BigInteger x = new BigInteger(1, left._data);
-            BigInteger y = new BigInteger(1, right._data);
-            BigInteger g = y;
-            while (x._data.Length > 1)
+            else
             {
-                g = x;
-                x = y % x;
-                y = g;
-            }
-            if (x.IsZero)
-            {
-                return g;
-            }
-            // TODO: should we have something here if we can convert to long?
-            // Now we can just do it with single precision. I am using the binary gcd method,
-            // as it should be faster.
-            uint yy = x._data[0];
-            uint xx = (uint)(y % yy);
-            int t = 0;
-            while (((xx | yy) & 1) == 0)
-            {
-                xx >>= 1;
-                yy >>= 1;
-                t++;
-            }
-            while (xx != 0)
-            {
-                while ((xx & 1) == 0)
+                BigInteger a = new BigInteger(1, left._data);
+                BigInteger b = new BigInteger(1, right._data);
+                BigInteger result = b;
+                //Division based Euclidean Algorithm until a is small
+                while (a._data.Length > 1)
+                {
+                    result = a;
+                    a = b % a;
+                    b = result;
+                }
+                if (a.IsZero)
+                {
+                    return result;
+                }
+                // TODO: should we have something here if we can convert to long?
+                // Now we can just do it with single precision. I am using the binary gcd method,
+                // as it should be faster.
+                uint yy = a._data[0];
+                uint xx = (uint)(b % yy);
+                int t = 0;
+                while (((xx | yy) & 1) == 0)
                 {
                     xx >>= 1;
-                }
-                while ((yy & 1) == 0)
-                {
                     yy >>= 1;
+                    t++;
                 }
-                if (xx >= yy)
+                while (xx != 0)
                 {
-                    xx = (xx - yy) >> 1;
+                    while ((xx & 1) == 0)
+                    {
+                        xx >>= 1;
+                    }
+                    while ((yy & 1) == 0)
+                    {
+                        yy >>= 1;
+                    }
+                    if (xx >= yy)
+                    {
+                        xx = (xx - yy) >> 1;
+                    }
+                    else
+                    {
+                        yy = (yy - xx) >> 1;
+                    }
                 }
-                else
-                {
-                    yy = (yy - xx) >> 1;
-                }
+                return yy << t;
             }
-            return yy << t;
         }
 
         public static implicit operator BigInteger(int value)
@@ -836,27 +848,33 @@ namespace System.Numerics
             {
                 throw new DivideByZeroException();
             }
-            if (dividend._sign == 0)
+            else if (dividend._sign == 0)
             {
                 return dividend;
             }
-            uint[] quotient;
-            uint[] remainder_value;
-            DivModUnsigned(dividend._data, divisor._data, out quotient, out remainder_value);
-            int i;
-            for (i = remainder_value.Length - 1; i >= 0 && remainder_value[i] == 0; --i)
+            else
             {
-                //Empty
+                uint[] quotient_value;
+                uint[] remainder_value;
+                DivModUnsigned(dividend._data, divisor._data, out quotient_value, out remainder_value);
+                int index;
+                for (index = remainder_value.Length - 1; index >= 0 && remainder_value[index] == 0; --index)
+                {
+                    //Empty
+                }
+                if (index == -1)
+                {
+                    return new BigInteger(0, ZERO);
+                }
+                else
+                {
+                    if (index < remainder_value.Length - 1)
+                    {
+                        remainder_value = Resize(remainder_value, index + 1);
+                    }
+                    return new BigInteger(dividend._sign, remainder_value);
+                }
             }
-            if (i == -1)
-            {
-                return new BigInteger(0, ZERO);
-            }
-            if (i < remainder_value.Length - 1)
-            {
-                remainder_value = Resize(remainder_value, i + 1);
-            }
-            return new BigInteger(dividend._sign, remainder_value);
         }
 
         public static BigInteger operator &(BigInteger left, BigInteger right)
@@ -1712,51 +1730,51 @@ namespace System.Numerics
             return res;
         }
 
-        private static void DivModUnsigned(uint[] u, uint[] v, out uint[] q, out uint[] r)
+        private static void DivModUnsigned(uint[] dividend, uint[] divisor, out uint[] quotient, out uint[] remainder)
         {
-            int m = u.Length;
-            int n = v.Length;
-            if (n <= 1)
+            int length_dividend = dividend.Length;
+            int length_divisor = divisor.Length;
+            if (length_divisor <= 1)
             {
                 //  Divide by single digit
-                ulong rem = 0;
-                uint v0 = v[0];
-                q = new uint[m];
-                r = new uint[1];
-                for (int j = m - 1; j >= 0; j--)
+                ulong _remainder = 0;
+                uint _divisor = divisor[0];
+                quotient = new uint[length_dividend];
+                remainder = new uint[1];
+                for (int index_dividend = length_dividend - 1; index_dividend >= 0; index_dividend--)
                 {
-                    rem *= Base;
-                    rem += u[j];
-                    ulong div = rem / v0;
-                    rem -= div * v0;
-                    q[j] = (uint)div;
+                    _remainder *= Base;
+                    _remainder += dividend[index_dividend];
+                    ulong div = _remainder / _divisor;
+                    _remainder -= div * _divisor;
+                    quotient[index_dividend] = (uint)div;
                 }
-                r[0] = (uint)rem;
+                remainder[0] = (uint)_remainder;
             }
-            else if (m >= n)
+            else if (length_dividend >= length_divisor)
             {
-                int shift = GetNormalizeShift(v[n - 1]);
-                uint[] un = new uint[m + 1];
-                uint[] vn = new uint[n];
-                Normalize(u, m, un, shift);
-                Normalize(v, n, vn, shift);
-                q = new uint[m - n + 1];
-                r = null;
+                int shift = GetNormalizeShift(divisor[length_divisor - 1]);
+                uint[] un = new uint[length_dividend + 1];
+                uint[] vn = new uint[length_divisor];
+                Normalize(dividend, length_dividend, un, shift);
+                Normalize(divisor, length_divisor, vn, shift);
+                quotient = new uint[length_dividend - length_divisor + 1];
+                remainder = null;
                 //  Main division loop
-                for (int j = m - n; j >= 0; j--)
+                for (int index_dividend = length_dividend - length_divisor; index_dividend >= 0; index_dividend--)
                 {
                     ulong rr, qq;
-                    int i;
-                    rr = (Base * un[j + n]) + un[j + n - 1];
-                    qq = rr / vn[n - 1];
-                    rr -= qq * vn[n - 1];
+                    int index_divisor;
+                    rr = (Base * un[index_dividend + length_divisor]) + un[index_dividend + length_divisor - 1];
+                    qq = rr / vn[length_divisor - 1];
+                    rr -= qq * vn[length_divisor - 1];
                     for (;;)
                     {
                         // Estimate too big ?
-                        if ((qq >= Base) || ((qq * vn[n - 2]) > ((rr * Base) + un[j + n - 2])))
+                        if ((qq >= Base) || ((qq * vn[length_divisor - 2]) > ((rr * Base) + un[index_dividend + length_divisor - 2])))
                         {
                             qq--;
-                            rr += (ulong)vn[n - 1];
+                            rr += (ulong)vn[length_divisor - 1];
                             if (rr < Base)
                             {
                                 continue;
@@ -1767,40 +1785,40 @@ namespace System.Numerics
                     //  Multiply and subtract
                     long b = 0;
                     long t = 0;
-                    for (i = 0; i < n; i++)
+                    for (index_divisor = 0; index_divisor < length_divisor; index_divisor++)
                     {
-                        ulong p = vn[i] * qq;
-                        t = (long)un[i + j] - (long)(uint)p - b;
-                        un[i + j] = (uint)t;
+                        ulong p = vn[index_divisor] * qq;
+                        t = (long)un[index_divisor + index_dividend] - (long)(uint)p - b;
+                        un[index_divisor + index_dividend] = (uint)t;
                         p >>= 32;
                         t >>= 32;
                         b = (long)p - t;
                     }
-                    t = (long)un[j + n] - b;
-                    un[j + n] = (uint)t;
+                    t = (long)un[index_dividend + length_divisor] - b;
+                    un[index_dividend + length_divisor] = (uint)t;
                     //  Store the calculated value
-                    q[j] = (uint)qq;
-                    //  Add back vn[0..n] to un[j..j+n]
+                    quotient[index_dividend] = (uint)qq;
+                    //  Add back vn[0..n] to un[index_dividend..index_dividend+n]
                     if (t < 0)
                     {
-                        q[j]--;
+                        quotient[index_dividend]--;
                         ulong c = 0;
-                        for (i = 0; i < n; i++)
+                        for (index_divisor = 0; index_divisor < length_divisor; index_divisor++)
                         {
-                            c = (ulong)vn[i] + un[j + i] + c;
-                            un[j + i] = (uint)c;
+                            c = (ulong)vn[index_divisor] + un[index_dividend + index_divisor] + c;
+                            un[index_dividend + index_divisor] = (uint)c;
                             c >>= 32;
                         }
-                        c += (ulong)un[j + n];
-                        un[j + n] = (uint)c;
+                        c += (ulong)un[index_dividend + length_divisor];
+                        un[index_dividend + length_divisor] = (uint)c;
                     }
                 }
-                Unnormalize(un, out r, shift);
+                Unnormalize(un, out remainder, shift);
             }
             else
             {
-                q = new uint[] { 0 };
-                r = u;
+                quotient = new uint[] { 0 };
+                remainder = dividend;
             }
         }
 
