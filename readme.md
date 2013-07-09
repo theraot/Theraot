@@ -60,26 +60,26 @@ Not everything in the code is a backport, some parts are utility and helper meth
 
 This are some parts worth of mention:
 
-    - Theraot.Collections
-        - Specialized
-            - AVLTree
-            - NullAwareDictionary
-        - Extensions : A huge plus beyond Linq
-        - Progressive* : A set of classes that walk an IEnumerable<T> on demand and cache the result
-    - Theraot.Core
-        - ActionHelper : Lazy static Noop and Throw Actions
-        - FuncHelper : Lazy static Default, Return and Throw Funcs
-        - NumericHelper : A lot of functions from integer square root to primality test including extracting mantissa and exp from double value and more.
-        - StringHelper : A lot of functions from Append to Implode and more.
-        - TypeHelper : A bunch of type related helper functions
-     - Theraot.Threading
-        - Some code from the project HashBucket
-        - Disposable : A general purpose disposable object with Action callback.
-        - DisposableAkin : Same as above, but can only be disposed by the same thread that created it ^1.
-        - IExtendedDisposable : A IDisposible that you can query to know if it was disposed ^2.
-        - NoTrackingThreadLocal & TrackingThreadLocal : The backends for the backport of System.Threading.ThreadLocal
-        - SingleTimeExecution : A thread-safe way to wrap code to be called only once.
-        - ThreadinHelper : Provides unique ids for managed threads, generic VolatileRead and *Write, and conditional SpinWait.
+  - Theraot.Collections
+    - Specialized
+      - AVLTree
+      - NullAwareDictionary
+    - Extensions : A huge plus beyond Linq
+    - Progressive* : A set of classes that walk an IEnumerable<T> on demand and cache the result
+  - Theraot.Core
+    - ActionHelper : Lazy static Noop and Throw Actions
+    - FuncHelper : Lazy static Default, Return and Throw Funcs
+    - NumericHelper : A lot of functions from integer square root to primality test including extracting mantissa and exp from double value and more.
+    - StringHelper : A lot of functions from Append to Implode and more.
+    - TypeHelper : A bunch of type related helper functions
+  - Theraot.Threading
+    - Some code from the project HashBucket
+    - Disposable : A general purpose disposable object with Action callback.
+    - DisposableAkin : Same as above, but can only be disposed by the same thread that created it ^1.
+    - IExtendedDisposable : A IDisposible that you can query to know if it was disposed ^2.
+    - NoTrackingThreadLocal & TrackingThreadLocal : The backends for the backport of System.Threading.ThreadLocal
+    - SingleTimeExecution : A thread-safe way to wrap code to be called only once.
+    - ThreadinHelper : Provides unique ids for managed threads, generic VolatileRead and *Write, and conditional SpinWait.
         
 ^1: This actually makes the implementation simpler and more efficient.
 
@@ -93,13 +93,13 @@ Some code in this libraries has been developed for past or future features but i
 
 This are some parts worth of mention:
 
-    - Theraot.Core
-        - ICloneable<T> & ICloner<T> & CloneHelper : Generalization of ICloneable as generic
-        - TraceRoute & TraceNode : A Network Traceroute implementation
-    - Theraot.Threading
-        - Some code from the project HashBucket
-        - CritialDisposible : A variant of Disposible that inherits from CritialFinalizerObject ^1.
-        - Work : a task scheduler implementation, intended to be part of the backport of System.Threading.Tasks
+  - Theraot.Core
+    - ICloneable<T> & ICloner<T> & CloneHelper : Generalization of ICloneable as generic
+    - TraceRoute & TraceNode : A Network Traceroute implementation
+  - Theraot.Threading
+    - Some code from the project HashBucket
+    - CritialDisposible : A variant of Disposible that inherits from CritialFinalizerObject ^1.
+    - Work : a task scheduler implementation, intended to be part of the backport of System.Threading.Tasks
 
 ^1: In theory you shouldn't need it, if you need it, chances are something else is wrong.
 
