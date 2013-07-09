@@ -22,7 +22,7 @@ namespace Theraot.Threading
         /// <param name="comparer">The comparer.</param>
         public FixedSizeSetBucket(int capacity, IEqualityComparer<T> comparer)
         {
-            _capacity = IntHelper.NextPowerOf2(capacity);
+            _capacity = NumericHelper.NextPowerOf2(capacity);
             _entries = new Bucket<T>(_capacity);
             _comparer = comparer ?? EqualityComparer<T>.Default;
         }
