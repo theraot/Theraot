@@ -848,31 +848,34 @@ namespace System.Numerics
             {
                 throw new DivideByZeroException();
             }
-            else if (dividend._sign == 0)
-            {
-                return dividend;
-            }
             else
             {
-                uint[] quotient_value;
-                uint[] remainder_value;
-                DivModUnsigned(dividend._data, divisor._data, out quotient_value, out remainder_value);
-                int index;
-                for (index = remainder_value.Length - 1; index >= 0 && remainder_value[index] == 0; --index)
+                if (dividend._sign == 0)
                 {
-                    //Empty
-                }
-                if (index == -1)
-                {
-                    return new BigInteger(0, ZERO);
+                    return dividend;
                 }
                 else
                 {
-                    if (index < remainder_value.Length - 1)
+                    uint[] quotientData;
+                    uint[] remainderData;
+                    DivModUnsigned(dividend._data, divisor._data, out quotientData, out remainderData);
+                    int index;
+                    for (index = remainderData.Length - 1; index >= 0 && remainderData[index] == 0; --index)
                     {
-                        remainder_value = Resize(remainder_value, index + 1);
+                        //Empty
                     }
-                    return new BigInteger(dividend._sign, remainder_value);
+                    if (index == -1)
+                    {
+                        return new BigInteger(0, ZERO);
+                    }
+                    else
+                    {
+                        if (index < remainderData.Length - 1)
+                        {
+                            remainderData = Resize(remainderData, index + 1);
+                        }
+                        return new BigInteger(dividend._sign, remainderData);
+                    }
                 }
             }
         }
