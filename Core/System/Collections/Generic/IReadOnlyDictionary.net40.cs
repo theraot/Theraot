@@ -1,7 +1,7 @@
-﻿namespace System.Collections.Generic
-{
-#if NET40 || NET20 || NET30 || NET35
+﻿#if NET20 || NET30 || NET35 || NET40
 
+namespace System.Collections.Generic
+{
     [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix", Justification = "By Design")]
     [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "By Design")]
     public partial interface IReadOnlyDictionary<TKey, TValue> : IReadOnlyCollection<KeyValuePair<TKey, TValue>>, IEnumerable<KeyValuePair<TKey, TValue>>, IEnumerable
@@ -31,6 +31,6 @@
 
         bool TryGetValue(TKey key, out TValue value);
     }
+}
 
 #endif
-}
