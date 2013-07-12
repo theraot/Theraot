@@ -88,7 +88,7 @@ namespace Theraot.Threading
             }
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", Justification = "By Design")]
+        //[global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", Justification = "By Design")]
         public static T VolatileRead<T>(ref T address)
             where T : class
         {
@@ -97,7 +97,7 @@ namespace Theraot.Threading
             return copy;
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", Justification = "By Design")]
+        //[global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", Justification = "By Design")]
         public static void VolatileWrite<T>(ref T address, T value)
             where T : class
         {
