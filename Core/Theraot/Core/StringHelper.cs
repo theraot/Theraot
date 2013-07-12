@@ -623,6 +623,7 @@ namespace Theraot.Core
 
         public static bool IsNullOrWhiteSpace(this string value)
         {
+            //Added in .NET 4.0
             if (string.IsNullOrEmpty(value))
             {
                 return true;

@@ -6,6 +6,7 @@ namespace Theraot.Core
     {
         public static bool HasFlag(this Enum value, Enum flag)
         {
+            //Added in .NET 4.0
             Type type = value.GetType();
             if (!flag.GetType().Equals(type))
             {
