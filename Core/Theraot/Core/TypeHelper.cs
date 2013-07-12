@@ -310,6 +310,33 @@ namespace Theraot.Core
             return false;
         }
 
+        public static bool IsPrimitiveIntegerType(this Type type)
+        {
+            if (type.IsPrimitive)
+            {
+                if
+                (
+                    type.Equals(typeof(bool))
+                    || type.Equals(typeof(char))
+                    || type.Equals(typeof(IntPtr))
+                    || type.Equals(typeof(UIntPtr))
+                    || type.Equals(typeof(double))
+                    || type.Equals(typeof(float))
+                )
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         public static bool IsNullable(this Type type)
         {
             return !ReferenceEquals(Nullable.GetUnderlyingType(type), null);
