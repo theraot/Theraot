@@ -28,22 +28,23 @@ Theraot's Libraries...
   - can be built for .NET 2.0, 3.0, 3.5, 4.0 and 4.5 with the help of conditional compilation to keep only the required code for the particular version.
   - includes code from HashBucket (another project of mine).
   - includes (among others) the following types to be used in old versions of .NET back to .NET 2.0:
+    - System.Action: Done
     - System.Collections.Concurrent: Work in progress
     - System.Collections.Generic.HashSet: Done
     - System.Collections.Generic.SortedSet: Done
-    - System.Collections.StructuralComparison: Done
     - System.Collections.Linq: Nearly Done [Mostly taken from Mono]
     - System.Collections.Linq.Expressions: Nearly Done [Mostly taken from Mono]
+    - System.Collections.ObjectModel.ReadOnlyDictionary : Done
+    - System.Collections.StructuralComparison: Done
+    - System.Func: Done
+    - System.IObservable: Done
+    - System.IObserver: Done
+    - System.Lazy: Done
     - System.Numerics: Done [Taken from Mono]^1
     - System.Runtime.CompilerServices.DynamicAttribute: Done
     - System.Runtime.CompilerServices.ExtensionAttribute: Done
     - System.Therading.ThreadLocal: Done
     - System.Threading.Tasks: Planned
-    - System.Action: Done
-    - System.Func: Done
-    - System.IObservable: Done
-    - System.IObserver: Done
-    - System.Lazy: Done
     - System.Tuple: Done
   - uses less than 1MB in disk
   - keeps a consistent code style in the whole code^2
@@ -86,7 +87,7 @@ This are some parts worth of mention:
 ^2: Do not rely on the IsDisposed property as it may change any moment if another thread call Dispose, use DisposedConditional instead.
 
 ---
-FAT Features
+"FAT" Features
 ---
 
 Some code in this libraries has been developed for past or future features but is not currently used as part of the backports, so they are only provided in "FAT" builds.
