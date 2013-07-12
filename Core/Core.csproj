@@ -13,6 +13,7 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -132,7 +133,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <LangVersion>5</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
@@ -290,6 +291,7 @@
       <DependentUpon>ActionHelper.tt</DependentUpon>
     </Compile>
     <Compile Include="Theraot\Core\CloneHelper.cs" />
+    <Compile Include="Theraot\Core\EnumHelper.cs" />
     <Compile Include="Theraot\Core\EqualityComparerHelper1.cs" />
     <Compile Include="Theraot\Core\EnumerableHelper.cs" />
     <Compile Include="Theraot\Core\EqualityComparerHelper.cs" />
