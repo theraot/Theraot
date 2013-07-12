@@ -225,6 +225,11 @@
     <Compile Include="Theraot\Collections\ConvertedObserver.cs" />
     <Compile Include="Theraot\Collections\EmptyList.cs" />
     <Compile Include="Theraot\Collections\Extensions.numeric.cs" />
+    <Compile Include="Theraot\Collections\Extensions.zip.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Extensions.zip.tt</DependentUpon>
+    </Compile>
     <Compile Include="Theraot\Collections\FilteredConvertedObserver.cs" />
     <Compile Include="Theraot\Collections\FilteredObserver.cs" />
     <Compile Include="Theraot\Collections\IExtendedGrouping.cs" />
@@ -325,6 +330,7 @@
     <Compile Include="Theraot\Collections\Specialized\OrderedCollection.cs" />
     <Compile Include="Theraot\Core\ComparerExtensions.cs" />
     <Compile Include="Theraot\Core\Reference.cs" />
+    <Compile Include="Theraot\Core\StreamExtensions.cs" />
     <Compile Include="Theraot\Core\TraceRoute.cs" />
     <Compile Include="Theraot\Core\TracertNode.cs" />
     <Compile Include="Theraot\Core\TupleEqualityComparer.cs">
@@ -484,6 +490,10 @@
     </MonoDevelop>
   </ProjectExtensions>
   <ItemGroup>
+    <None Include="Theraot\Collections\Extensions.zip.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Extensions.zip.cs</LastGenOutput>
+    </None>
     <None Include="Theraot\Core\ActionHelper.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ActionHelper.cs</LastGenOutput>
