@@ -45,6 +45,7 @@ Theraot's Libraries...
     - System.Runtime.CompilerServices.ExtensionAttribute: Done
     - System.Therading.ThreadLocal: Done
     - System.Threading.Tasks: Planned
+    - System.Therading.Volatile: Done
     - System.Tuple: Done
   - uses less than 1MB in disk
   - keeps a consistent code style in the whole code^2
