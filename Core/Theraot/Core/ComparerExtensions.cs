@@ -32,6 +32,7 @@ namespace Theraot.Core
 
         public static IComparer<T> ToComparer<T>(this Comparison<T> comparison)
         {
+            //Replacement for Comparer.Create(Comparison<T>) added in .NET 4.5
             return new CustomComparer<T>(comparison);
         }
 
