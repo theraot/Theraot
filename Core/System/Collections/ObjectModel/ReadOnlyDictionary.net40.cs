@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NET40 || NET20 || NET30 || NET35
+
 using System.Collections.Generic;
 
 using Theraot.Collections.Specialized;
@@ -299,3 +300,5 @@ namespace System.Collections.ObjectModel
         }
     }
 }
+
+#endif
