@@ -51,9 +51,14 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public static implicit operator T(Needle<T> needle)
+        public static explicit operator T(Needle<T> needle)
         {
             return ToT(needle);
+        }
+
+        public static implicit operator Needle<T>(T field)
+        {
+            return new Needle<T>(field);
         }
 
         public static bool operator !=(Needle<T> left, Needle<T> right)
@@ -88,7 +93,22 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                return false;
+                if (obj is T)
+                {
+                    var target = _target;
+                    if (IsAlive)
+                    {
+                        return EqualityComparer<T>.Default.Equals(target, (T)_obj);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
             }
         }
 
