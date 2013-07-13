@@ -1,0 +1,23 @@
+﻿<#@ template language="C#" debug="true" hostSpecific="true" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ include file="DisposableTemplate.ttinclude" #><#=
+    getText
+    (
+        false,
+        true,
+        true,
+        "Theraot.Threading.Needles",
+        "Capsule<T>",
+        new KeyValuePair<string, string>[]
+        {
+        },
+        new KeyValuePair<string, string>[]
+        {
+            new KeyValuePair<string, string>("this", "Kill")
+        },
+        new string[]
+        {
+        }
+    )
+#>

@@ -1,0 +1,7 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ assembly name="$(SolutionDir)\Core\bin\Release_NET45_FAT\Theraot.Core.dll" #>
+<#@ output extension=".ttinclude" #><#
+    string path = System.IO.Path.Combine("..", System.IO.Path.Combine("..", System.IO.Path.Combine("..", System.IO.Path.Combine("..", "SharedTemplates"))));
+    string filePath = System.IO.Path.Combine(path, "DisposableTemplate.tt");
+    Write(System.IO.File.ReadAllText(System.IO.Path.Combine(Host.ResolvePath("."), filePath)).Replace("@Path", path));
+#>
