@@ -59,6 +59,34 @@ namespace Theraot.Threading.Needles
                 _canCreate = TypeHelper.TryGetCreate<Func<T>, TNeedle>(out _create);
                 if (!_canCreate)
                 {
+                    Func<T, TNeedle> tmpA;
+                    _canCreate = TypeHelper.TryGetCreate<T, TNeedle>(out tmpA);
+                    if (_canCreate)
+                    {
+                        _create =
+                        (target) =>
+                        {
+                            return tmpA(target.Invoke());
+                        };
+                    }
+                    else
+                    {
+                        Func<TNeedle> tmpB;
+                        _canCreate = TypeHelper.TryGetCreate<TNeedle>(out tmpB);
+                        if (_canCreate)
+                        {
+                            _create =
+                            (target) =>
+                            {
+                                var needle = tmpB.Invoke();
+                                needle.Value = target.Invoke();
+                                return needle;
+                            };
+                        }
+                    }
+                }
+                if (!_canCreate)
+                {
                     _create =
                     _ =>
                     {
@@ -91,6 +119,19 @@ namespace Theraot.Threading.Needles
             static DeferredReadOnlyNeedleCreator()
             {
                 _canCreate = TypeHelper.TryGetCreate<Func<T>, TNeedle>(out _create);
+                if (!_canCreate)
+                {
+                    Func<T, TNeedle> tmp;
+                    _canCreate = TypeHelper.TryGetCreate<T, TNeedle>(out tmp);
+                    if (_canCreate)
+                    {
+                        _create =
+                        (target) =>
+                        {
+                            return tmp(target.Invoke());
+                        };
+                    }
+                }
                 if (!_canCreate)
                 {
                     _create =
@@ -127,26 +168,38 @@ namespace Theraot.Threading.Needles
                 _canCreate = TypeHelper.TryGetCreate<T, TNeedle>(out _create);
                 if (!_canCreate)
                 {
-                    Func<TNeedle> create;
-                    _canCreate = TypeHelper.TryGetCreate<TNeedle>(out create);
+                    Func<TNeedle> tmpA;
+                    _canCreate = TypeHelper.TryGetCreate<TNeedle>(out tmpA);
                     if (_canCreate)
                     {
                         _create =
                         (target) =>
                         {
-                            var needle = create();
+                            var needle = tmpA.Invoke();
                             needle.Value = target;
                             return needle;
                         };
                     }
                     else
                     {
+                        Func<Func<T>, TNeedle> tmpB;
+                        _canCreate = TypeHelper.TryGetCreate<Func<T>, TNeedle>(out tmpB);
+                        if (_canCreate)
+                        {
+                            _create =
+                            (target) =>
+                            {
+                                return tmpB(() => target);
+                            };
+                        }
+                    }
+                    if (!_canCreate)
+                    {
                         _create =
                         _ =>
                         {
                             throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
                         };
-                        _canCreate = false;
                     }
                 }
             }
@@ -177,12 +230,24 @@ namespace Theraot.Threading.Needles
                 _canCreate = TypeHelper.TryGetCreate<T, TNeedle>(out _create);
                 if (!_canCreate)
                 {
+                    Func<Func<T>, TNeedle> tmp;
+                    _canCreate = TypeHelper.TryGetCreate<Func<T>, TNeedle>(out tmp);
+                    if (_canCreate)
+                    {
+                        _create =
+                        (target) =>
+                        {
+                            return tmp(() => target);
+                        };
+                    }
+                }
+                if (!_canCreate)
+                {
                     _create =
                     _ =>
                     {
                         throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
                     };
-                    _canCreate = false;
                 }
             }
 
