@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Threading;
@@ -10,17 +11,19 @@ namespace Theraot.Threading.Needles
         where T : class
     {
         private GCHandle _handle;
+        private int _hashCode;
         private int _managedDisposal;
         private bool _trackResurrection;
 
         public WeakNeedle()
         {
-            //Empty
+            _hashCode = base.GetHashCode();
         }
 
         public WeakNeedle(bool trackResurrection)
         {
             _trackResurrection = trackResurrection;
+            _hashCode = base.GetHashCode();
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
@@ -35,6 +38,14 @@ namespace Theraot.Threading.Needles
         {
             _trackResurrection = trackResurrection;
             Allocate(target, _trackResurrection);
+            if (IsAliveExtracted())
+            {
+                _hashCode = target.GetHashCode();
+            }
+            else
+            {
+                _hashCode = base.GetHashCode();
+            }
         }
 
         public virtual bool IsAlive
@@ -49,14 +60,7 @@ namespace Theraot.Threading.Needles
                         },
                         () =>
                         {
-                            if (!_handle.IsAllocated)
-                            {
-                                return false;
-                            }
-                            else
-                            {
-                                return !ReferenceEquals(_handle.Target, null);
-                            }
+                            return IsAliveExtracted();
                         }
                     );
             }
@@ -108,6 +112,66 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        public static explicit operator T(WeakNeedle<T> needle)
+        {
+            if (ReferenceEquals(needle, null))
+            {
+                throw new ArgumentNullException("needle");
+            }
+            else
+            {
+                return needle.Value;
+            }
+        }
+
+        public static implicit operator WeakNeedle<T>(T field)
+        {
+            return new WeakNeedle<T>(field);
+        }
+
+        public static bool operator !=(WeakNeedle<T> left, WeakNeedle<T> right)
+        {
+            return NotEqualsExtracted(left, right);
+        }
+
+        public static bool operator ==(WeakNeedle<T> left, WeakNeedle<T> right)
+        {
+            return EqualsExtracted(left, right);
+        }
+
+        public override bool Equals(object obj)
+        {
+            var _obj = obj as WeakNeedle<T>;
+            if (!ReferenceEquals(null, _obj))
+            {
+                return EqualsExtracted(_obj, _obj);
+            }
+            else
+            {
+                if (obj is T)
+                {
+                    var target = Value;
+                    if (IsAlive)
+                    {
+                        return EqualityComparer<T>.Default.Equals(target, (T)obj);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            return _hashCode;
+        }
+
         public void Release()
         {
             Dispose();
@@ -151,6 +215,60 @@ namespace Theraot.Threading.Needles
         protected virtual GCHandle GetNewHandle(T value, bool trackResurrection)
         {
             return GCHandle.Alloc(value, trackResurrection ? GCHandleType.WeakTrackResurrection : GCHandleType.Weak);
+        }
+
+        private static bool EqualsExtracted(WeakNeedle<T> left, WeakNeedle<T> right)
+        {
+            var _left = left.Value;
+            if (left.IsAlive)
+            {
+                var _right = right.Value;
+                if (right.IsAlive)
+                {
+                    return EqualityComparer<T>.Default.Equals(_left, _right);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return !right.IsAlive;
+            }
+        }
+
+        private static bool NotEqualsExtracted(WeakNeedle<T> left, WeakNeedle<T> right)
+        {
+            var _left = left.Value;
+            if (left.IsAlive)
+            {
+                var _right = right.Value;
+                if (right.IsAlive)
+                {
+                    return !EqualityComparer<T>.Default.Equals(_left, _right);
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                return right.IsAlive;
+            }
+        }
+
+        private bool IsAliveExtracted()
+        {
+            if (!_handle.IsAllocated)
+            {
+                return false;
+            }
+            else
+            {
+                return !ReferenceEquals(_handle.Target, null);
+            }
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]

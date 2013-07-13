@@ -53,7 +53,14 @@ namespace Theraot.Threading.Needles
 
         public static explicit operator T(Needle<T> needle)
         {
-            return ToT(needle);
+            if (ReferenceEquals(needle, null))
+            {
+                throw new ArgumentNullException("needle");
+            }
+            else
+            {
+                return needle.Value;
+            }
         }
 
         public static implicit operator Needle<T>(T field)
@@ -71,19 +78,6 @@ namespace Theraot.Threading.Needles
             return EqualsExtracted(left, right);
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes", Justification = "By Design")]
-        public static T ToT(Needle<T> needle)
-        {
-            if (needle == null)
-            {
-                throw new ArgumentNullException("needle");
-            }
-            else
-            {
-                return needle.Value;
-            }
-        }
-
         public override bool Equals(object obj)
         {
             var _obj = obj as Needle<T>;
@@ -98,7 +92,7 @@ namespace Theraot.Threading.Needles
                     var target = _target;
                     if (IsAlive)
                     {
-                        return EqualityComparer<T>.Default.Equals(target, (T)_obj);
+                        return EqualityComparer<T>.Default.Equals(target, (T)obj);
                     }
                     else
                     {
