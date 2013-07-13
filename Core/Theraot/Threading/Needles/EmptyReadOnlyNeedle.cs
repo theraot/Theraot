@@ -17,7 +17,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public bool IsAlive
+        bool IReadOnlyNeedle<T>.IsAlive
         {
             get
             {
@@ -25,7 +25,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public T Value
+        T IReadOnlyNeedle<T>.Value
         {
             get
             {
