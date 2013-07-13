@@ -1,8 +1,10 @@
+using System;
+using System.Collections.Generic;
 namespace Theraot.Threading.Needles
 {
     [global::System.Diagnostics.DebuggerNonUserCode]
     [global::System.ComponentModel.ImmutableObject(true)]
-    public sealed class DefaultNeedle<T> : INeedle<T>
+    public sealed class DefaultNeedle<T> : IReadOnlyNeedle<T>
     {
         private static readonly DefaultNeedle<T> _instance = new DefaultNeedle<T>();
 
@@ -20,7 +22,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public bool IsAlive
+        bool IReadOnlyNeedle<T>.IsAlive
         {
             get
             {
@@ -34,32 +36,45 @@ namespace Theraot.Threading.Needles
             {
                 return default(T);
             }
-            set
+        }
+
+        public static explicit operator T(DefaultNeedle<T> needle)
+        {
+            if (needle == null)
             {
-                //Empty
+                throw new ArgumentNullException("needle");
             }
+            else
+            {
+                return needle.Value;
+            }
+        }
+
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+        public static bool operator !=(DefaultNeedle<T> left, DefaultNeedle<T> right)
+        {
+            return false;
+        }
+
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+        public static bool operator ==(DefaultNeedle<T> left, DefaultNeedle<T> right)
+        {
+            return true;
         }
 
         public override bool Equals(object obj)
         {
-            if (obj is DefaultNeedle<T>)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return obj is EmptyReadOnlyNeedle<T>;
         }
 
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return EqualityComparer<T>.Default.GetHashCode(default(T));
         }
 
-        void INeedle<T>.Release()
+        public override string ToString()
         {
-            //Empty
+            return Value.ToString();
         }
     }
 }
