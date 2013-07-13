@@ -8,7 +8,7 @@
         true,
         true,
         "Theraot.Threading.Needles",
-        "Capsule<T>",
+        "ReadOnlyDisposableNeedle<T>",
         new KeyValuePair<string, string>[]
         {
         },

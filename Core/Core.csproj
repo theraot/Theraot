@@ -229,12 +229,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CacheNeedle.disposable.tt</DependentUpon>
     </Compile>
-    <Compile Include="Theraot\Threading\Needles\Capsule.cs" />
-    <Compile Include="Theraot\Threading\Needles\Capsule.disposable.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Capsule.disposable.tt</DependentUpon>
-    </Compile>
     <Compile Include="Theraot\Threading\Needles\Decision.cs" />
     <Compile Include="Theraot\Threading\Needles\DefaultNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\EmptyReadOnlyNeedle.cs" />
@@ -252,6 +246,12 @@
     <Compile Include="Theraot\Threading\Needles\LazyNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\Needle.cs" />
     <Compile Include="Theraot\Threading\Needles\NeedleHelper.cs" />
+    <Compile Include="Theraot\Threading\Needles\ReadOnlyDisposableNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\ReadOnlyDisposableNeedle.disposable.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReadOnlyDisposableNeedle.disposable.tt</DependentUpon>
+    </Compile>
     <Compile Include="Theraot\Threading\Needles\ReadOnlyNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\SpecialNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\WeakDelegateNeedle.cs" />
@@ -559,10 +559,6 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>CacheNeedle.disposable.cs</LastGenOutput>
     </None>
-    <None Include="Theraot\Threading\Needles\Capsule.disposable.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Capsule.disposable.cs</LastGenOutput>
-    </None>
     <None Include="Theraot\Threading\Needles\DisposableTemplate.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>DisposableTemplate.ttinclude</LastGenOutput>
@@ -575,6 +571,10 @@
     <None Include="Theraot\Threading\Needles\LazyDisposableNeedle.disposable.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>LazyDisposableNeedle.disposable.cs</LastGenOutput>
+    </None>
+    <None Include="Theraot\Threading\Needles\ReadOnlyDisposableNeedle.disposable.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ReadOnlyDisposableNeedle.disposable.cs</LastGenOutput>
     </None>
     <None Include="Theraot\Threading\Needles\WeakNeedle.disposable.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

@@ -1,17 +1,17 @@
 namespace Theraot.Threading.Needles
 {
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public sealed partial class Capsule<T> : IReadOnlyNeedle<T>
+    public sealed partial class ReadOnlyDisposableNeedle<T> : IReadOnlyNeedle<T>
     {
         private bool _isAlive;
         private T _target;
 
-        public Capsule()
+        public ReadOnlyDisposableNeedle()
         {
             _isAlive = false;
         }
 
-        public Capsule(T target)
+        public ReadOnlyDisposableNeedle(T target)
         {
             _isAlive = true;
             _target = target;
