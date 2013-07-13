@@ -38,7 +38,7 @@ namespace Theraot.Threading.Needles
         {
             _trackResurrection = trackResurrection;
             Allocate(target, _trackResurrection);
-            if (IsAlive)
+            if (IsAliveExtracted())
             {
                 _hashCode = target.GetHashCode();
             }
@@ -52,21 +52,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                if (!_handle.IsAllocated)
-                {
-                    return false;
-                }
-                else
-                {
-                    try
-                    {
-                        return !ReferenceEquals(_handle.Target, null);
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        return false;
-                    }
-                }
+                return IsAliveExtracted();
             }
         }
 
@@ -80,6 +66,7 @@ namespace Theraot.Threading.Needles
 
         public virtual T Value
         {
+            [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
             get
             {
                 if (!_handle.IsAllocated)
@@ -257,6 +244,26 @@ namespace Theraot.Threading.Needles
             else
             {
                 return right.IsAlive;
+            }
+        }
+
+        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
+        private bool IsAliveExtracted()
+        {
+            if (!_handle.IsAllocated)
+            {
+                return false;
+            }
+            else
+            {
+                try
+                {
+                    return !ReferenceEquals(_handle.Target, null);
+                }
+                catch (InvalidOperationException)
+                {
+                    return false;
+                }
             }
         }
 

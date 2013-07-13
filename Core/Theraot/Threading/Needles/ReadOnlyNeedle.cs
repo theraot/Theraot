@@ -16,6 +16,7 @@ namespace Theraot.Threading.Needles
 
         bool IReadOnlyNeedle<T>.IsAlive
         {
+            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns True")]
             get
             {
                 return true;
