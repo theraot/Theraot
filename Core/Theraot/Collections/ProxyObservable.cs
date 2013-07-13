@@ -8,11 +8,11 @@ namespace Theraot.Collections
     [Serializable]
     public sealed class ProxyObservable<T> : IObservable<T>, IObserver<T>, IProxyObservable<T>
     {
-        private readonly List<IObserver<T>> _observers;
+        private readonly HashSet<IObserver<T>> _observers;
 
         public ProxyObservable()
         {
-            _observers = new List<IObserver<T>>();
+            _observers = new HashSet<IObserver<T>>();
         }
 
         public void OnCompleted()
