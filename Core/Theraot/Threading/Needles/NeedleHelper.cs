@@ -124,31 +124,30 @@ namespace Theraot.Threading.Needles
             [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "Expensive Initialization")]
             static NeedleCreator()
             {
-                if (TypeHelper.HasConstructor<T, TNeedle>())
+                _canCreate = TypeHelper.TryGetCreate<T, TNeedle>(out _create);
+                if (!_canCreate)
                 {
-                    _create = TypeHelper.GetCreate<T, TNeedle>();
-                    _canCreate = true;
-                }
-                else if (TypeHelper.HasConstructor<TNeedle>())
-                {
-                    var create = TypeHelper.GetCreate<TNeedle>();
-                    _create =
-                    (target) =>
+                    Func<TNeedle> create;
+                    _canCreate = TypeHelper.TryGetCreate<TNeedle>(out create);
+                    if (_canCreate)
                     {
-                        var needle = create();
-                        needle.Value = target;
-                        return needle;
-                    };
-                    _canCreate = true;
-                }
-                else
-                {
-                    _create =
-                    _ =>
+                        _create =
+                        (target) =>
+                        {
+                            var needle = create();
+                            needle.Value = target;
+                            return needle;
+                        };
+                    }
+                    else
                     {
-                        throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
-                    };
-                    _canCreate = false;
+                        _create =
+                        _ =>
+                        {
+                            throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
+                        };
+                        _canCreate = false;
+                    }
                 }
             }
 
@@ -175,18 +174,15 @@ namespace Theraot.Threading.Needles
             [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "Expensive Initialization")]
             static ReadOnlyNeedleCreator()
             {
-                _canCreate = TypeHelper.HasConstructor<T, TNeedle>();
-                if (_canCreate)
-                {
-                    _create = TypeHelper.GetCreate<T, TNeedle>();
-                }
-                else
+                _canCreate = TypeHelper.TryGetCreate<T, TNeedle>(out _create);
+                if (!_canCreate)
                 {
                     _create =
                     _ =>
                     {
                         throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
                     };
+                    _canCreate = false;
                 }
             }
 
