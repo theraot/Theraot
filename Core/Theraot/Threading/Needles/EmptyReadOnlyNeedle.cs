@@ -54,5 +54,10 @@ namespace Theraot.Threading.Needles
         {
             return false.GetHashCode();
         }
+
+        public override string ToString()
+        {
+            return "<Dead Needle>";
+        }
     }
 }

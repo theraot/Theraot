@@ -98,6 +98,19 @@ namespace Theraot.Threading.Needles
             return EqualityComparer<T>.Default.GetHashCode(_target);
         }
 
+        public override string ToString()
+        {
+            var target = Value;
+            if (_isAlive)
+            {
+                return target.ToString();
+            }
+            else
+            {
+                return "<Dead Needle>";
+            }
+        }
+
         private void Kill()
         {
             _isAlive = false;

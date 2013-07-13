@@ -117,6 +117,19 @@ namespace Theraot.Threading.Needles
             OnRelease();
         }
 
+        public override string ToString()
+        {
+            var target = Value;
+            if (IsAlive)
+            {
+                return target.ToString();
+            }
+            else
+            {
+                return "<Dead Needle>";
+            }
+        }
+
         protected virtual void OnRelease()
         {
             //Emtpy

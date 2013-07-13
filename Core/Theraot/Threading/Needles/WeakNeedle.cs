@@ -165,6 +165,19 @@ namespace Theraot.Threading.Needles
             Dispose();
         }
 
+        public override string ToString()
+        {
+            var target = Value;
+            if (IsAlive)
+            {
+                return target.ToString();
+            }
+            else
+            {
+                return "<Dead Needle>";
+            }
+        }
+
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
         protected void Allocate(T value, bool trackResurrection)
         {

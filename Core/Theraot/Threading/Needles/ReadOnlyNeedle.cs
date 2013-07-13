@@ -93,5 +93,10 @@ namespace Theraot.Threading.Needles
         {
             return EqualityComparer<T>.Default.GetHashCode(_target);
         }
+
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
     }
 }
