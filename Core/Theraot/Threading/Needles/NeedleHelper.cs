@@ -9,13 +9,6 @@ namespace Theraot.Threading.Needles
     public static class NeedleHelper
     {
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "False Positive")]
-        public static bool CanCreateConversionNeedle<TInput, TOutput, TNeedle>()
-            where TNeedle : INeedle<TOutput>
-        {
-            return ConversionNeedleCreator<TInput, TOutput, TNeedle>.CanCreate;
-        }
-
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "False Positive")]
         public static bool CanCreateNeedle<T, TNeedle>()
             where TNeedle : INeedle<T>
         {
@@ -27,16 +20,6 @@ namespace Theraot.Threading.Needles
             where TNeedle : IReadOnlyNeedle<T>
         {
             return ReadOnlyNeedleCreator<T, TNeedle>.CanCreate;
-        }
-
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "False Positive")]
-        public static void CheckCanCreateConversionNeedle<TInput, TOutput, TNeedle>()
-            where TNeedle : INeedle<TOutput>
-        {
-            if (!ConversionNeedleCreator<TInput, TOutput, TNeedle>.CanCreate)
-            {
-                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0} that receives a {1}", typeof(TNeedle).Name, typeof(TInput).Name));
-            }
         }
 
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "False Positive")]
@@ -57,13 +40,6 @@ namespace Theraot.Threading.Needles
             {
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
             }
-        }
-
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "False Positive")]
-        public static TNeedle CreateConversionNeedle<TInput, TOutput, TNeedle>(TInput input)
-            where TNeedle : INeedle<TOutput>
-        {
-            return ConversionNeedleCreator<TInput, TOutput, TNeedle>.Create(input);
         }
 
         public static TNeedle CreateNeedle<T, TNeedle>(T target)
@@ -89,44 +65,6 @@ namespace Theraot.Threading.Needles
             var _needle = Check.NotNullArgument(needle, "needle");
             target = _needle.Value;
             return _needle.IsAlive;
-        }
-
-        private static class ConversionNeedleCreator<TInput, TOutput, TNeedle>
-            where TNeedle : INeedle<TOutput>
-        {
-            private static bool _canCreate;
-            private static Func<TInput, TNeedle> _create;
-
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "Expensive Initialization")]
-            static ConversionNeedleCreator()
-            {
-                _canCreate = TypeHelper.HasConstructor<TInput, TNeedle>();
-                if (_canCreate)
-                {
-                    _create = TypeHelper.GetCreate<TInput, TNeedle>();
-                }
-                else
-                {
-                    _create =
-                    _ =>
-                    {
-                        throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0} that receives {1}", typeof(TNeedle).Name, typeof(TInput).Name));
-                    };
-                }
-            }
-
-            public static bool CanCreate
-            {
-                get
-                {
-                    return _canCreate;
-                }
-            }
-
-            public static TNeedle Create(TInput input)
-            {
-                return _create.Invoke(input);
-            }
         }
 
         private static class NeedleCreator<T, TNeedle>
