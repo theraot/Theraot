@@ -20,7 +20,7 @@
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;FAT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -236,6 +236,8 @@
     <Compile Include="Theraot\Threading\Needles\ICacheNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\INeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\IReadOnlyNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\ITransactionNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\ITransactionResource.cs" />
     <Compile Include="Theraot\Threading\Needles\LazyDisposableNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\LazyDisposableNeedle.disposable.cs">
       <AutoGen>True</AutoGen>
@@ -254,6 +256,9 @@
     </Compile>
     <Compile Include="Theraot\Threading\Needles\ReadOnlyNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\SpecialNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\Transaction.cs" />
+    <Compile Include="Theraot\Threading\Needles\TransactionExtensions.cs" />
+    <Compile Include="Theraot\Threading\Needles\TransactionNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\WeakDelegateNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\WeakNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\WeakNeedle.disposable.cs">

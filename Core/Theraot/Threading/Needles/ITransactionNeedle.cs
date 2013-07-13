@@ -1,3 +1,5 @@
+#if FAT
+
 namespace Theraot.Threading.Needles
 {
     public interface ITransactionNeedle<T> : ITransactionResource, INeedle<T>
@@ -5,3 +7,5 @@ namespace Theraot.Threading.Needles
         //Empty
     }
 }
+
+#endif

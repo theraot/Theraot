@@ -1,3 +1,5 @@
+#if FAT
+
 using System;
 
 namespace Theraot.Threading.Needles
@@ -11,3 +13,5 @@ namespace Theraot.Threading.Needles
         void Rollback();
     }
 }
+
+#endif
