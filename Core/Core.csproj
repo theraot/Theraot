@@ -229,7 +229,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CacheNeedle.disposable.tt</DependentUpon>
     </Compile>
-    <Compile Include="Theraot\Threading\Needles\Decision.cs" />
     <Compile Include="Theraot\Threading\Needles\DefaultNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\EmptyReadOnlyNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\FutureDisposableNeedle.cs" />
@@ -246,6 +245,7 @@
     <Compile Include="Theraot\Threading\Needles\LazyNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\Needle.cs" />
     <Compile Include="Theraot\Threading\Needles\NeedleHelper.cs" />
+    <Compile Include="Theraot\Threading\Needles\NotNull.cs" />
     <Compile Include="Theraot\Threading\Needles\ReadOnlyDisposableNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\ReadOnlyDisposableNeedle.disposable.cs">
       <AutoGen>True</AutoGen>
