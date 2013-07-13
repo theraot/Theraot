@@ -38,7 +38,7 @@ namespace Theraot.Threading.Needles
         {
             _trackResurrection = trackResurrection;
             Allocate(target, _trackResurrection);
-            if (IsAliveExtracted())
+            if (IsAlive)
             {
                 _hashCode = target.GetHashCode();
             }
@@ -52,17 +52,21 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return DisposedConditional
-                    (
-                        () =>
-                        {
-                            return false;
-                        },
-                        () =>
-                        {
-                            return IsAliveExtracted();
-                        }
-                    );
+                if (!_handle.IsAllocated)
+                {
+                    return false;
+                }
+                else
+                {
+                    try
+                    {
+                        return !ReferenceEquals(_handle.Target, null);
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        return false;
+                    }
+                }
             }
         }
 
@@ -78,32 +82,29 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return DisposedConditional<T>
-                    (
-                        () =>
+                if (!_handle.IsAllocated)
+                {
+                    return default(T);
+                }
+                else
+                {
+                    try
+                    {
+                        object obj = _handle.Target;
+                        if (obj == null)
                         {
                             return default(T);
-                        },
-                        () =>
-                        {
-                            try
-                            {
-                                object obj = _handle.Target;
-                                if (obj == null)
-                                {
-                                    return default(T);
-                                }
-                                else
-                                {
-                                    return (T)obj;
-                                }
-                            }
-                            catch (InvalidOperationException)
-                            {
-                                return default(T);
-                            }
                         }
-                    );
+                        else
+                        {
+                            return (T)obj;
+                        }
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        return default(T);
+                    }
+                }
             }
             [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
             set
@@ -256,18 +257,6 @@ namespace Theraot.Threading.Needles
             else
             {
                 return right.IsAlive;
-            }
-        }
-
-        private bool IsAliveExtracted()
-        {
-            if (!_handle.IsAllocated)
-            {
-                return false;
-            }
-            else
-            {
-                return !ReferenceEquals(_handle.Target, null);
             }
         }
 
