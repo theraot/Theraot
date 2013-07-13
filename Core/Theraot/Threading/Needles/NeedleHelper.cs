@@ -8,6 +8,18 @@ namespace Theraot.Threading.Needles
     [global::System.Diagnostics.DebuggerNonUserCode]
     public static class NeedleHelper
     {
+        public static bool CanCreateDeferredNeedle<T, TNeedle>()
+            where TNeedle : INeedle<T>
+        {
+            return DeferredNeedleCreator<T, TNeedle>.CanCreate;
+        }
+
+        public static bool CanCreateDeferredReadOnlyNeedle<T, TNeedle>()
+            where TNeedle : IReadOnlyNeedle<T>
+        {
+            return DeferredReadOnlyNeedleCreator<T, TNeedle>.CanCreate;
+        }
+
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "False Positive")]
         public static bool CanCreateNeedle<T, TNeedle>()
             where TNeedle : INeedle<T>
@@ -22,6 +34,18 @@ namespace Theraot.Threading.Needles
             return ReadOnlyNeedleCreator<T, TNeedle>.CanCreate;
         }
 
+        public static TNeedle CreateDeferredNeedle<T, TNeedle>(Func<T> target)
+            where TNeedle : INeedle<T>
+        {
+            return DeferredNeedleCreator<T, TNeedle>.Create(target);
+        }
+
+        public static TNeedle CreateDeferredReadOnlyNeedle<T, TNeedle>(Func<T> target)
+            where TNeedle : IReadOnlyNeedle<T>
+        {
+            return DeferredReadOnlyNeedleCreator<T, TNeedle>.Create(target);
+        }
+
         public static TNeedle CreateNeedle<T, TNeedle>(T target)
             where TNeedle : INeedle<T>
         {
@@ -33,13 +57,7 @@ namespace Theraot.Threading.Needles
         {
             return ReadOnlyNeedleCreator<T, TNeedle>.Create(target);
         }
-
-        public static LazyDisposableNeedle<T> Deferred<T>(this Func<T> disposable)
-            where T : IDisposable
-        {
-            return new LazyDisposableNeedle<T>(disposable);
-        }
-
+        
         public static bool TryGet<T>(this IReadOnlyNeedle<T> needle, out T target)
         {
             var _needle = Check.NotNullArgument(needle, "needle");
