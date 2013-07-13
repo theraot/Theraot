@@ -12,7 +12,7 @@ namespace Theraot.Threading.Needles
     {
         public static T Read<T>(this Func<T> source)
         {
-            var transaction = Transaction._currentTransaction;
+            var transaction = Transaction.CurrentTransaction;
             if (transaction == null)
             {
                 return source.Invoke();
@@ -35,7 +35,7 @@ namespace Theraot.Threading.Needles
 
         public static T Read<T>(this Func<T> source, IEqualityComparer<T> comparer)
         {
-            var transaction = Transaction._currentTransaction;
+            var transaction = Transaction.CurrentTransaction;
             if (transaction == null)
             {
                 return source.Invoke();
@@ -58,7 +58,7 @@ namespace Theraot.Threading.Needles
 
         public static void Write<T>(Action<T> target, T value)
         {
-            var transaction = Transaction._currentTransaction;
+            var transaction = Transaction.CurrentTransaction;
             if (transaction == null)
             {
                 target.Invoke(value);

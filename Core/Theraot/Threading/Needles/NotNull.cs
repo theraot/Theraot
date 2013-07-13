@@ -7,7 +7,7 @@ namespace Theraot.Threading.Needles
     public sealed class NotNull<T> : Needle<T>
     {
         public NotNull(T target)
-            :base (target)
+            : base (target)
         {
             if (ReferenceEquals(target, null))
             {

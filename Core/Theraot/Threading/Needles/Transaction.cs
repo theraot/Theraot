@@ -11,7 +11,7 @@ namespace Theraot.Threading.Needles
     public class Transaction
     {
         [ThreadStatic]
-        internal static Transaction _currentTransaction;
+        private static Transaction _currentTransaction;
 
         private readonly Transaction _parentTransaction;
         private readonly Dictionary<object, ITransactionResource> _resources;
@@ -21,6 +21,18 @@ namespace Theraot.Threading.Needles
             _resources = new Dictionary<object, ITransactionResource>();
             _parentTransaction = _currentTransaction;
             _currentTransaction = this;
+        }
+
+        internal static Transaction CurrentTransaction
+        {
+            get
+            {
+                return _currentTransaction;
+            }
+            set
+            {
+                _currentTransaction = value;
+            }
         }
 
         public static Transaction Create()
