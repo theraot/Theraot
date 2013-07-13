@@ -19,14 +19,7 @@ namespace Theraot.Collections
         {
             foreach (var item in _observers)
             {
-                try
-                {
-                    item.OnCompleted();
-                }
-                catch
-                {
-                    //Pokemon
-                }
+                item.OnCompleted();
             }
         }
 
@@ -34,14 +27,7 @@ namespace Theraot.Collections
         {
             foreach (var item in _observers)
             {
-                try
-                {
-                    item.OnError(error);
-                }
-                catch
-                {
-                    //Pokemon
-                }
+                item.OnError(error);
             }
         }
 
@@ -49,14 +35,7 @@ namespace Theraot.Collections
         {
             foreach (var item in _observers)
             {
-                try
-                {
-                    item.OnNext(value);
-                }
-                catch
-                {
-                    //Pokemon
-                }
+                item.OnNext(value);
             }
         }
 
