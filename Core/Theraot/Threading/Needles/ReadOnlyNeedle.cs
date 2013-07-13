@@ -5,7 +5,7 @@ namespace Theraot.Threading.Needles
 {
     [System.Serializable]
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public struct ReadOnlyNeedle<T> : IReadOnlyNeedle<T>, IEquatable<ReadOnlyNeedle<T>>
+    public class ReadOnlyNeedle<T> : IReadOnlyNeedle<T>, IEquatable<ReadOnlyNeedle<T>>
     {
         private readonly T _target;
 
@@ -14,7 +14,7 @@ namespace Theraot.Threading.Needles
             _target = target;
         }
 
-        public bool IsAlive
+        bool IReadOnlyNeedle<T>.IsAlive
         {
             get
             {
@@ -27,6 +27,23 @@ namespace Theraot.Threading.Needles
             get
             {
                 return _target;
+            }
+        }
+
+        public static implicit operator ReadOnlyNeedle<T>(T field)
+        {
+            return new ReadOnlyNeedle<T>(field);
+        }
+
+        public static explicit operator T(ReadOnlyNeedle<T> needle)
+        {
+            if (needle == null)
+            {
+                throw new ArgumentNullException("needle");
+            }
+            else
+            {
+                return needle.Value;
             }
         }
 
@@ -44,11 +61,18 @@ namespace Theraot.Threading.Needles
         {
             if (obj is ReadOnlyNeedle<T>)
             {
-                return EqualityComparer<ReadOnlyNeedle<T>>.Default.Equals(this, (ReadOnlyNeedle<T>)obj);
+                return EqualityComparer<T>.Default.Equals(_target, ((ReadOnlyNeedle<T>)obj)._target);
             }
             else
             {
-                return false;
+                if (obj is T)
+                {
+                    return EqualityComparer<T>.Default.Equals(_target, (T)obj);
+                }
+                else
+                {
+                    return false;
+                }
             }
         }
 

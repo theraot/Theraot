@@ -223,7 +223,6 @@
     <Compile Include="System\Runtime\CompilerServices\StrongBox.net30.cs" />
     <Compile Include="System\Threading\AggregateException.net35.cs" />
     <Compile Include="Theraot\Threading\Guard.cs" />
-    <Compile Include="Theraot\Threading\Needles\Box.cs" />
     <Compile Include="Theraot\Threading\Needles\CacheNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\CacheNeedle.disposable.cs">
       <AutoGen>True</AutoGen>
