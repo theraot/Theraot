@@ -16,7 +16,7 @@ namespace Theraot.Threading.Needles
         private readonly Transaction _parentTransaction;
         private readonly Dictionary<object, ITransactionResource> _resources;
 
-        public Transaction()
+        private Transaction()
         {
             _resources = new Dictionary<object, ITransactionResource>();
             _parentTransaction = _currentTransaction;
@@ -29,10 +29,6 @@ namespace Theraot.Threading.Needles
             {
                 return _currentTransaction;
             }
-            set
-            {
-                _currentTransaction = value;
-            }
         }
 
         public static Transaction Create()
@@ -40,9 +36,9 @@ namespace Theraot.Threading.Needles
             return new Transaction();
         }
 
-        public static Transaction GetTransaction(bool createIfNotExists)
+        public static Transaction GetTransaction(bool createNew)
         {
-            if (createIfNotExists && _currentTransaction == null)
+            if (createNew)
             {
                 return new Transaction();
             }
