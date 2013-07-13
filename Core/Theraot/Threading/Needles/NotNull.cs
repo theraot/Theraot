@@ -2,9 +2,36 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Theraot.Core.Theraot.Threading.Needles
+namespace Theraot.Threading.Needles
 {
-    class NotNull
+    public sealed class NotNull<T> : Needle<T>
     {
+        public NotNull(T target)
+            :base (target)
+        {
+            if (ReferenceEquals(target, null))
+            {
+                throw new ArgumentNullException("NotNull cannot have a null value.");
+            }
+        }
+
+        public override T Value
+        {
+            get
+            {
+                return base.Value;
+            }
+            set
+            {
+                if (ReferenceEquals(value, null))
+                {
+                    throw new ArgumentNullException("NotNull cannot have a null value.");
+                }
+                else
+                {
+                    SetTarget(value);
+                }
+            }
+        }
     }
 }
