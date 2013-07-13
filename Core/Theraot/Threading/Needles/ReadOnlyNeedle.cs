@@ -30,11 +30,6 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public static implicit operator ReadOnlyNeedle<T>(T field)
-        {
-            return new ReadOnlyNeedle<T>(field);
-        }
-
         public static explicit operator T(ReadOnlyNeedle<T> needle)
         {
             if (needle == null)
@@ -45,6 +40,11 @@ namespace Theraot.Threading.Needles
             {
                 return needle.Value;
             }
+        }
+
+        public static implicit operator ReadOnlyNeedle<T>(T field)
+        {
+            return new ReadOnlyNeedle<T>(field);
         }
 
         public static bool operator !=(ReadOnlyNeedle<T> left, ReadOnlyNeedle<T> right)
