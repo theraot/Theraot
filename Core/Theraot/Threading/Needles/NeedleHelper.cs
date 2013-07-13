@@ -22,26 +22,6 @@ namespace Theraot.Threading.Needles
             return ReadOnlyNeedleCreator<T, TNeedle>.CanCreate;
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "False Positive")]
-        public static void CheckCanCreateNeedle<T, TNeedle>()
-            where TNeedle : INeedle<T>
-        {
-            if (!NeedleCreator<T, TNeedle>.CanCreate)
-            {
-                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
-            }
-        }
-
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "False Positive")]
-        public static void CheckCanCreateReadOnlyNeedle<T, TNeedle>()
-            where TNeedle : IReadOnlyNeedle<T>
-        {
-            if (!ReadOnlyNeedleCreator<T, TNeedle>.CanCreate)
-            {
-                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
-            }
-        }
-
         public static TNeedle CreateNeedle<T, TNeedle>(T target)
             where TNeedle : INeedle<T>
         {
