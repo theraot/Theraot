@@ -38,6 +38,20 @@ namespace Theraot.Core
             }
         }
 
+        public static bool TryGetCreate<TReturn>(out Func<TReturn> create)
+        {
+            if (ConstructorHelper<TReturn>.HasConstructor)
+            {
+                create = ConstructorHelper<TReturn>.Create;
+                return true;
+            }
+            else
+            {
+                create = null;
+                return false;
+            }
+        }
+
         public static Func<TReturn> GetCreateOrDefault<TReturn>()
         {
             return ConstructorHelper<TReturn>.CreateOrDefault;
@@ -124,6 +138,20 @@ namespace Theraot.Core
             else
             {
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with the type argument {1}", typeof(TReturn), typeof(T).Name));
+            }
+        }
+
+        public static bool TryGetCreate<T, TReturn>(out Func<T, TReturn> create)
+        {
+            if (ConstructorHelper<T, TReturn>.HasConstructor)
+            {
+                create = ConstructorHelper<T, TReturn>.Create;
+                return true;
+            }
+            else
+            {
+                create = null;
+                return false;
             }
         }
 
@@ -216,6 +244,20 @@ namespace Theraot.Core
             }
         }
 
+        public static bool TryGetCreate<T1, T2, TReturn>(out Func<T1, T2, TReturn> create)
+        {
+            if (ConstructorHelper<T1, T2, TReturn>.HasConstructor)
+            {
+                create = ConstructorHelper<T1, T2, TReturn>.Create;
+                return true;
+            }
+            else
+            {
+                create = null;
+                return false;
+            }
+        }
+
         public static Func<T1, T2, TReturn> GetCreateOrDefault<T1, T2, TReturn>()
         {
             return ConstructorHelper<T1, T2, TReturn>.CreateOrDefault;
@@ -302,6 +344,20 @@ namespace Theraot.Core
             else
             {
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with the type arguments {1}, {2}, {3}", typeof(TReturn), typeof(T1).Name, typeof(T2).Name, typeof(T3).Name));
+            }
+        }
+
+        public static bool TryGetCreate<T1, T2, T3, TReturn>(out Func<T1, T2, T3, TReturn> create)
+        {
+            if (ConstructorHelper<T1, T2, T3, TReturn>.HasConstructor)
+            {
+                create = ConstructorHelper<T1, T2, T3, TReturn>.Create;
+                return true;
+            }
+            else
+            {
+                create = null;
+                return false;
             }
         }
 
@@ -394,6 +450,20 @@ namespace Theraot.Core
             }
         }
 
+        public static bool TryGetCreate<T1, T2, T3, T4, TReturn>(out Func<T1, T2, T3, T4, TReturn> create)
+        {
+            if (ConstructorHelper<T1, T2, T3, T4, TReturn>.HasConstructor)
+            {
+                create = ConstructorHelper<T1, T2, T3, T4, TReturn>.Create;
+                return true;
+            }
+            else
+            {
+                create = null;
+                return false;
+            }
+        }
+
         public static Func<T1, T2, T3, T4, TReturn> GetCreateOrDefault<T1, T2, T3, T4, TReturn>()
         {
             return ConstructorHelper<T1, T2, T3, T4, TReturn>.CreateOrDefault;
@@ -480,6 +550,20 @@ namespace Theraot.Core
             else
             {
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with the type arguments {1}, {2}, {3}, {4}, {5}", typeof(TReturn), typeof(T1).Name, typeof(T2).Name, typeof(T3).Name, typeof(T4).Name, typeof(T5).Name));
+            }
+        }
+
+        public static bool TryGetCreate<T1, T2, T3, T4, T5, TReturn>(out Func<T1, T2, T3, T4, T5, TReturn> create)
+        {
+            if (ConstructorHelper<T1, T2, T3, T4, T5, TReturn>.HasConstructor)
+            {
+                create = ConstructorHelper<T1, T2, T3, T4, T5, TReturn>.Create;
+                return true;
+            }
+            else
+            {
+                create = null;
+                return false;
             }
         }
 
@@ -572,6 +656,20 @@ namespace Theraot.Core
             }
         }
 
+        public static bool TryGetCreate<T1, T2, T3, T4, T5, T6, TReturn>(out Func<T1, T2, T3, T4, T5, T6, TReturn> create)
+        {
+            if (ConstructorHelper<T1, T2, T3, T4, T5, T6, TReturn>.HasConstructor)
+            {
+                create = ConstructorHelper<T1, T2, T3, T4, T5, T6, TReturn>.Create;
+                return true;
+            }
+            else
+            {
+                create = null;
+                return false;
+            }
+        }
+
         public static Func<T1, T2, T3, T4, T5, T6, TReturn> GetCreateOrDefault<T1, T2, T3, T4, T5, T6, TReturn>()
         {
             return ConstructorHelper<T1, T2, T3, T4, T5, T6, TReturn>.CreateOrDefault;
@@ -658,6 +756,20 @@ namespace Theraot.Core
             else
             {
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with the type arguments {1}, {2}, {3}, {4}, {5}, {6}, {7}", typeof(TReturn), typeof(T1).Name, typeof(T2).Name, typeof(T3).Name, typeof(T4).Name, typeof(T5).Name, typeof(T6).Name, typeof(T7).Name));
+            }
+        }
+
+        public static bool TryGetCreate<T1, T2, T3, T4, T5, T6, T7, TReturn>(out Func<T1, T2, T3, T4, T5, T6, T7, TReturn> create)
+        {
+            if (ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, TReturn>.HasConstructor)
+            {
+                create = ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, TReturn>.Create;
+                return true;
+            }
+            else
+            {
+                create = null;
+                return false;
             }
         }
 
@@ -750,6 +862,20 @@ namespace Theraot.Core
             }
         }
 
+        public static bool TryGetCreate<T1, T2, T3, T4, T5, T6, T7, T8, TReturn>(out Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> create)
+        {
+            if (ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, TReturn>.HasConstructor)
+            {
+                create = ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, TReturn>.Create;
+                return true;
+            }
+            else
+            {
+                create = null;
+                return false;
+            }
+        }
+
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> GetCreateOrDefault<T1, T2, T3, T4, T5, T6, T7, T8, TReturn>()
         {
             return ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, TReturn>.CreateOrDefault;
@@ -836,6 +962,20 @@ namespace Theraot.Core
             else
             {
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with the type arguments {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}", typeof(TReturn), typeof(T1).Name, typeof(T2).Name, typeof(T3).Name, typeof(T4).Name, typeof(T5).Name, typeof(T6).Name, typeof(T7).Name, typeof(T8).Name, typeof(T9).Name));
+            }
+        }
+
+        public static bool TryGetCreate<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn>(out Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> create)
+        {
+            if (ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn>.HasConstructor)
+            {
+                create = ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn>.Create;
+                return true;
+            }
+            else
+            {
+                create = null;
+                return false;
             }
         }
 
@@ -928,6 +1068,20 @@ namespace Theraot.Core
             }
         }
 
+        public static bool TryGetCreate<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn>(out Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> create)
+        {
+            if (ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn>.HasConstructor)
+            {
+                create = ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn>.Create;
+                return true;
+            }
+            else
+            {
+                create = null;
+                return false;
+            }
+        }
+
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> GetCreateOrDefault<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn>()
         {
             return ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn>.CreateOrDefault;
@@ -1014,6 +1168,20 @@ namespace Theraot.Core
             else
             {
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with the type arguments {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}", typeof(TReturn), typeof(T1).Name, typeof(T2).Name, typeof(T3).Name, typeof(T4).Name, typeof(T5).Name, typeof(T6).Name, typeof(T7).Name, typeof(T8).Name, typeof(T9).Name, typeof(T10).Name, typeof(T11).Name));
+            }
+        }
+
+        public static bool TryGetCreate<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn>(out Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> create)
+        {
+            if (ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn>.HasConstructor)
+            {
+                create = ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn>.Create;
+                return true;
+            }
+            else
+            {
+                create = null;
+                return false;
             }
         }
 
@@ -1106,6 +1274,20 @@ namespace Theraot.Core
             }
         }
 
+        public static bool TryGetCreate<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn>(out Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> create)
+        {
+            if (ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn>.HasConstructor)
+            {
+                create = ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn>.Create;
+                return true;
+            }
+            else
+            {
+                create = null;
+                return false;
+            }
+        }
+
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> GetCreateOrDefault<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn>()
         {
             return ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn>.CreateOrDefault;
@@ -1192,6 +1374,20 @@ namespace Theraot.Core
             else
             {
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with the type arguments {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}", typeof(TReturn), typeof(T1).Name, typeof(T2).Name, typeof(T3).Name, typeof(T4).Name, typeof(T5).Name, typeof(T6).Name, typeof(T7).Name, typeof(T8).Name, typeof(T9).Name, typeof(T10).Name, typeof(T11).Name, typeof(T12).Name, typeof(T13).Name));
+            }
+        }
+
+        public static bool TryGetCreate<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn>(out Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> create)
+        {
+            if (ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn>.HasConstructor)
+            {
+                create = ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn>.Create;
+                return true;
+            }
+            else
+            {
+                create = null;
+                return false;
             }
         }
 
@@ -1284,6 +1480,20 @@ namespace Theraot.Core
             }
         }
 
+        public static bool TryGetCreate<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn>(out Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> create)
+        {
+            if (ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn>.HasConstructor)
+            {
+                create = ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn>.Create;
+                return true;
+            }
+            else
+            {
+                create = null;
+                return false;
+            }
+        }
+
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> GetCreateOrDefault<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn>()
         {
             return ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn>.CreateOrDefault;
@@ -1373,6 +1583,20 @@ namespace Theraot.Core
             }
         }
 
+        public static bool TryGetCreate<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn>(out Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> create)
+        {
+            if (ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn>.HasConstructor)
+            {
+                create = ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn>.Create;
+                return true;
+            }
+            else
+            {
+                create = null;
+                return false;
+            }
+        }
+
         public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> GetCreateOrDefault<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn>()
         {
             return ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn>.CreateOrDefault;
@@ -1459,6 +1683,20 @@ namespace Theraot.Core
             else
             {
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with the type arguments {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}", typeof(TReturn), typeof(T1).Name, typeof(T2).Name, typeof(T3).Name, typeof(T4).Name, typeof(T5).Name, typeof(T6).Name, typeof(T7).Name, typeof(T8).Name, typeof(T9).Name, typeof(T10).Name, typeof(T11).Name, typeof(T12).Name, typeof(T13).Name, typeof(T14).Name, typeof(T15).Name, typeof(T16).Name));
+            }
+        }
+
+        public static bool TryGetCreate<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn>(out Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> create)
+        {
+            if (ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn>.HasConstructor)
+            {
+                create = ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn>.Create;
+                return true;
+            }
+            else
+            {
+                create = null;
+                return false;
             }
         }
 

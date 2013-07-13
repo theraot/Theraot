@@ -41,6 +41,20 @@ namespace Theraot.Core
             }
         }
 
+        public static bool TryGetCreate<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>(out Func<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn> create)
+        {
+            if (ConstructorHelper<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>.HasConstructor)
+            {
+                create = ConstructorHelper<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>.Create;
+                return true;
+            }
+            else
+            {
+                create = null;
+                return false;
+            }
+        }
+
         public static Func<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn> GetCreateOrDefault<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>()
         {
             return ConstructorHelper<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>.CreateOrDefault;
