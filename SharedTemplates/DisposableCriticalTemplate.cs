@@ -97,7 +97,7 @@ namespace @NamespaceName
             {
                 if (!whenNotDisposed == null)
                 {
-                    ThreadingHelper.SpinWaitExchangeIgnoringRelative(-1, ref _status, 1);
+                    ThreadingHelper.SpinWaitExchangeRelative(ref _status, 1, -1);
                     if (_status == -1)
                     {
                         if (!whenDisposed == null)
@@ -143,7 +143,7 @@ namespace @NamespaceName
                 }
                 else
                 {
-                    ThreadingHelper.SpinWaitExchangeIgnoringRelative(-1, ref _status, 1);
+                    ThreadingHelper.SpinWaitExchangeRelative(ref _status, 1, -1);
                     if (_status == -1)
                     {
                         if (whenDisposed == null)
@@ -216,7 +216,7 @@ namespace @NamespaceName
             }
             else
             {
-                ThreadingHelper.SpinWaitExchangeIgnoring(-1, ref _status, -1, 0);
+                ThreadingHelper.SpinWaitExchange(ref _status, -1, 0, -1);
                 if (_status == -1)
                 {
                     return false;
