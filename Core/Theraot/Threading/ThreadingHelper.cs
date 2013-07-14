@@ -295,38 +295,6 @@ namespace Theraot.Threading
             }
         }
 
-        public static void SpinWaitExchangeRelative(ref int check, int value)
-        {
-            int backCount = GetBackCount();
-            var tmp = Thread.VolatileRead(ref check);
-            if (Interlocked.CompareExchange(ref check, tmp + value, tmp) == tmp)
-            {
-                return;
-            }
-            else
-            {
-            retry:
-                tmp = Thread.VolatileRead(ref check);
-                if (Interlocked.CompareExchange(ref check, tmp + value, tmp) == tmp)
-                {
-                    return;
-                }
-                else
-                {
-                    if (backCount == 0)
-                    {
-                        Thread.Sleep(0);
-                    }
-                    else
-                    {
-                        Thread.SpinWait(IntSpinWaitHint);
-                        backCount--;
-                    }
-                    goto retry;
-                }
-            }
-        }
-
         public static void SpinWaitExchangeRelative(ref int check, int value, int ignoreComparand)
         {
             int backCount = GetBackCount();
@@ -361,46 +329,6 @@ namespace Theraot.Threading
             }
         }
         
-        public static bool SpinWaitExchangeRelative(ref int check, int value, IComparable<TimeSpan> timeout)
-        {
-            int backCount = GetBackCount();
-            var tmp = Thread.VolatileRead(ref check);
-            if (Interlocked.CompareExchange(ref check, tmp + value, tmp) == tmp)
-            {
-                return true;
-            }
-            else
-            {
-            retry:
-                tmp = Thread.VolatileRead(ref check);
-                if (Interlocked.CompareExchange(ref check, tmp + value, tmp) == tmp)
-                {
-                    return true;
-                }
-                else
-                {
-                     var start = DateTime.Now;
-                     if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-                     {
-                         if (backCount == 0)
-                         {
-                             Thread.Sleep(0);
-                         }
-                         else
-                         {
-                             Thread.SpinWait(IntSpinWaitHint);
-                             backCount--;
-                         }
-                         goto retry;
-                     }
-                     else
-                     {
-                         return false;
-                     }
-                }
-            }
-        }
-
         public static bool SpinWaitExchangeRelative(ref int check, int value, int ignoreComparand, IComparable<TimeSpan> timeout)
         {
             int backCount = GetBackCount();
