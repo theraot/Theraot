@@ -257,7 +257,6 @@
     <Compile Include="Theraot\Threading\Needles\ReadOnlyNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\SpecialNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\Transaction.cs" />
-    <Compile Include="Theraot\Threading\Needles\TransactionExtensions.cs" />
     <Compile Include="Theraot\Threading\Needles\TransactionNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\WeakDelegateNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\WeakNeedle.cs" />

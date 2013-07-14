@@ -80,6 +80,19 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        public T Read<T>(Func<T> source)
+        {
+            var transaction = Transaction.CurrentTransaction;
+            if (transaction == null)
+            {
+                return source.Invoke();
+            }
+            else
+            {
+                return TransactionNeedle<T>.Read(source).Value;
+            }
+        }
+
         public void SetResource(object key, ITransactionResource value)
         {
             _resources[key] = value;
@@ -96,6 +109,19 @@ namespace Theraot.Threading.Needles
             {
                 resource = null;
                 return false;
+            }
+        }
+
+        public void Write<T>(Action<T> target, T value)
+        {
+            var transaction = Transaction.CurrentTransaction;
+            if (transaction == null)
+            {
+                target.Invoke(value);
+            }
+            else
+            {
+                TransactionNeedle<T>.Write(target).Value = value;
             }
         }
     }
