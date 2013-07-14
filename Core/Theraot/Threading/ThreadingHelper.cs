@@ -49,36 +49,6 @@ namespace Theraot.Threading
             }
         }
 
-        public static void SpinWait(ref bool check, bool comparand)
-        {
-            int backCount = GetBackCount();
-            if (Volatile.Read(ref check) == comparand)
-            {
-                return;
-            }
-            else
-            {
-            retry:
-                if (Volatile.Read(ref check) == comparand)
-                {
-                    return;
-                }
-                else
-                {
-                    if (backCount == 0)
-                    {
-                        Thread.Sleep(0);
-                    }
-                    else
-                    {
-                        Thread.SpinWait(IntSpinWaitHint);
-                        backCount--;
-                    }
-                    goto retry;
-                }
-            }
-        }
-
         public static void SpinWait(Func<bool> verification)
         {
             int backCount = GetBackCount();
@@ -147,68 +117,6 @@ namespace Theraot.Threading
             }
         }
 
-        public static void SpinWaitExchange(ref int check, int value, int comparand)
-        {
-            int backCount = GetBackCount();
-            if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
-            {
-                return;
-            }
-            else
-            {
-            retry:
-                if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
-                {
-                    return;
-                }
-                else
-                {
-                    if (backCount == 0)
-                    {
-                        Thread.Sleep(0);
-                    }
-                    else
-                    {
-                        Thread.SpinWait(IntSpinWaitHint);
-                        backCount--;
-                    }
-                    goto retry;
-                }
-            }
-        }
-
-        public static void SpinWaitExchange(ref int check, int value)
-        {
-            int backCount = GetBackCount();
-            var tmp = Thread.VolatileRead(ref check);
-            if (Interlocked.CompareExchange(ref check, value, tmp) == tmp)
-            {
-                return;
-            }
-            else
-            {
-            retry:
-                tmp = Thread.VolatileRead(ref check);
-                if (Interlocked.CompareExchange(ref check, value, tmp) == tmp)
-                {
-                    return;
-                }
-                else
-                {
-                    if (backCount == 0)
-                    {
-                        Thread.Sleep(0);
-                    }
-                    else
-                    {
-                        Thread.SpinWait(IntSpinWaitHint);
-                        backCount--;
-                    }
-                    goto retry;
-                }
-            }
-        }
-
         public static void SpinWaitExchangeIgnoring(int ignoreComparand, ref int check, int value, int comparand)
         {
             int backCount = GetBackCount();
@@ -221,72 +129,6 @@ namespace Theraot.Threading
             {
             retry:
                 tmp = Interlocked.CompareExchange(ref check, value, comparand);
-                if (tmp == comparand || tmp == ignoreComparand)
-                {
-                    return;
-                }
-                else
-                {
-                    if (backCount == 0)
-                    {
-                        Thread.Sleep(0);
-                    }
-                    else
-                    {
-                        Thread.SpinWait(IntSpinWaitHint);
-                        backCount--;
-                    }
-                    goto retry;
-                }
-            }
-        }
-
-        public static void SpinWaitExchangeIgnoring(int ignoreComparand, ref int check, int value)
-        {
-            int backCount = GetBackCount();
-            var tmpA = Thread.VolatileRead(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, value, tmpA);
-            if (tmpB == tmpA || tmpB == ignoreComparand)
-            {
-                return;
-            }
-            else
-            {
-            retry:
-                tmpA = Thread.VolatileRead(ref check);
-                tmpB = Interlocked.CompareExchange(ref check, value, tmpA);
-                if (tmpB == tmpA || tmpB == ignoreComparand)
-                {
-                    return;
-                }
-                else
-                {
-                    if (backCount == 0)
-                    {
-                        Thread.Sleep(0);
-                    }
-                    else
-                    {
-                        Thread.SpinWait(IntSpinWaitHint);
-                        backCount--;
-                    }
-                    goto retry;
-                }
-            }
-        }
-
-        public static void SpinWaitExchangeIgnoringRelative(int ignoreComparand, ref int check, int value, int comparand)
-        {
-            int backCount = GetBackCount();
-            var tmp = Interlocked.CompareExchange(ref check, Thread.VolatileRead(ref check) + value, comparand);
-            if (tmp == comparand || tmp == ignoreComparand)
-            {
-                return;
-            }
-            else
-            {
-            retry:
-                tmp = Interlocked.CompareExchange(ref check, Thread.VolatileRead(ref check) + value, comparand);
                 if (tmp == comparand || tmp == ignoreComparand)
                 {
                     return;
@@ -341,67 +183,6 @@ namespace Theraot.Threading
             }
         }
 
-        public static void SpinWaitExchangeRelative(ref int check, int value, int comparand)
-        {
-            int backCount = GetBackCount();
-            if (Interlocked.CompareExchange(ref check, Thread.VolatileRead(ref check) + value, comparand) == comparand)
-            {
-                return;
-            }
-            else
-            {
-            retry:
-                if (Interlocked.CompareExchange(ref check, Thread.VolatileRead(ref check) + value, comparand) == comparand)
-                {
-                    return;
-                }
-                else
-                {
-                    if (backCount == 0)
-                    {
-                        Thread.Sleep(0);
-                    }
-                    else
-                    {
-                        Thread.SpinWait(IntSpinWaitHint);
-                        backCount--;
-                    }
-                    goto retry;
-                }
-            }
-        }
-
-        public static void SpinWaitExchangeRelative(ref int check, int value)
-        {
-            int backCount = GetBackCount();
-            var tmp = Thread.VolatileRead(ref check);
-            if (Interlocked.CompareExchange(ref check, Thread.VolatileRead(ref check) + value, tmp) == tmp)
-            {
-                return;
-            }
-            else
-            {
-            retry:
-                if (Interlocked.CompareExchange(ref check, Thread.VolatileRead(ref check) + value, tmp) == tmp)
-                {
-                    return;
-                }
-                else
-                {
-                    if (backCount == 0)
-                    {
-                        Thread.Sleep(0);
-                    }
-                    else
-                    {
-                        Thread.SpinWait(IntSpinWaitHint);
-                        backCount--;
-                    }
-                    goto retry;
-                }
-            }
-        }
-        
         //[global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", Justification = "By Design")]
         public static T VolatileRead<T>(ref T address)
             where T : class
