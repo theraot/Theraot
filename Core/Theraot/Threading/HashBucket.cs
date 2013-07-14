@@ -557,8 +557,11 @@ namespace Theraot.Threading
                         // _status is 2 only for a short period.
                         // Still, it happens, so this is needed for correctness.
                         // Going completely wait-free adds complexity with deminished value.
-                        Thread.Sleep(0);
                         Thread.SpinWait(INT_SpinWaitHint);
+                        if (Thread.VolatileRead(ref _status) == 2)
+                        {
+                            Thread.Sleep(0);
+                        }
                         break;
 
                     case 3:

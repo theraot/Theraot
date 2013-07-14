@@ -321,16 +321,23 @@ namespace Theraot.Threading
                         break;
 
                     case 2:
-                        Thread.Sleep(0);
                         Thread.SpinWait(INT_SpinWaitHint);
+                        if (Thread.VolatileRead(ref _status) == 2)
+                        {
+                            Thread.Sleep(0);
+                        }
                         break;
 
                     case 3:
                         _revision++;
-                        while (Thread.VolatileRead(ref _workingThreads) > 0)
+                        if (Thread.VolatileRead(ref _workingThreads) > 0)
                         {
-                            Thread.Sleep(0);
                             Thread.SpinWait(INT_SpinWaitHint);
+                            while (Thread.VolatileRead(ref _workingThreads) > 0)
+                            {
+                                Thread.Sleep(0);
+                                Thread.SpinWait(INT_SpinWaitHint);
+                            }
                         }
                         var old = _entriesOld;
                         if (old != null)
