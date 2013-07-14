@@ -177,7 +177,7 @@ namespace Theraot.Threading
             }
         }
 
-        public static void SpinWaitExchange(ref int check, int value, int comparand, int ignoreComparand)
+        public static void SpinWaitExchange(int ignoreComparand, ref int check, int value, int comparand)
         {
             int backCount = GetBackCount();
             var tmp = Interlocked.CompareExchange(ref check, value, comparand);
@@ -241,7 +241,7 @@ namespace Theraot.Threading
             }
         }
 
-        public static void SpinWaitExchange(ref int check, int value, int ignoreComparand)
+        public static void SpinWaitExchange(int ignoreComparand, ref int check, int value)
         {
             int backCount = GetBackCount();
             var tmpA = Thread.VolatileRead(ref check);
@@ -305,7 +305,7 @@ namespace Theraot.Threading
             }
         }
 
-        public static void SpinWaitExchangeRelative(ref int check, int value, int comparand, int ignoreComparand)
+        public static void SpinWaitExchangeRelative(int ignoreComparand, ref int check, int value, int comparand)
         {
             int backCount = GetBackCount();
             var tmp = Interlocked.CompareExchange(ref check, Thread.VolatileRead(ref check) + value, comparand);
