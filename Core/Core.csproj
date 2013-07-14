@@ -249,6 +249,11 @@
     <Compile Include="Theraot\Threading\Needles\NeedleHelper.cs" />
     <Compile Include="Theraot\Threading\Needles\NotNull.cs" />
     <Compile Include="Theraot\Threading\Needles\ReadOnlyDisposableNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\TransactionNeedle.disposable.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TransactionNeedle.disposable.tt</DependentUpon>
+    </Compile>
     <Compile Include="Theraot\Threading\Needles\ReadOnlyDisposableNeedle.disposable.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -562,6 +567,10 @@
     <None Include="Theraot\Threading\Needles\CacheNeedle.disposable.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>CacheNeedle.disposable.cs</LastGenOutput>
+    </None>
+    <None Include="Theraot\Threading\Needles\TransactionNeedle.disposable.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>TransactionNeedle.disposable.cs</LastGenOutput>
     </None>
     <None Include="Theraot\Threading\Needles\DisposableTemplate.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

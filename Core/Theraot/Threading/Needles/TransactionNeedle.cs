@@ -8,7 +8,7 @@ using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
-    public sealed class TransactionNeedle<T> : ITransactionNeedle<T>
+    public sealed partial class TransactionNeedle<T> : ITransactionNeedle<T>
     {
         private readonly Func<T> _source;
         private readonly Action<T> _target;
@@ -16,6 +16,7 @@ namespace Theraot.Threading.Needles
         private T _original;
         private int _taken;
         private ThreadLocal<T> _value;
+
         private TransactionNeedle(Func<T> source, Action<T> target)
         {
             _source = source;
@@ -142,6 +143,11 @@ namespace Theraot.Threading.Needles
                     return resource as TransactionNeedle<T>;
                 }
             }
+        }
+
+        private void OnDispose()
+        {
+            _value.Dispose();
         }
     }
 }
