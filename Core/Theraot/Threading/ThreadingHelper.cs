@@ -49,6 +49,44 @@ namespace Theraot.Threading
             }
         }
 
+        public static bool SpinWait(ref int check, int comparand, IComparable<TimeSpan> timeout)
+        {
+            int backCount = GetBackCount();
+            if (Thread.VolatileRead(ref check) == comparand)
+            {
+                return true;
+            }
+            else
+            {
+            retry:
+                if (Thread.VolatileRead(ref check) == comparand)
+                {
+                    return true;
+                }
+                else
+                {
+                    var start = DateTime.Now;
+                    if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
+                    {
+                        if (backCount == 0)
+                        {
+                            Thread.Sleep(0);
+                        }
+                        else
+                        {
+                            Thread.SpinWait(IntSpinWaitHint);
+                            backCount--;
+                        }
+                        goto retry;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
         public static void SpinWait(Func<bool> verification)
         {
             int backCount = GetBackCount();
@@ -117,6 +155,36 @@ namespace Theraot.Threading
             }
         }
 
+        public static void SpinWaitExchange(ref int check, int value, int comparand)
+        {
+            int backCount = GetBackCount();
+            if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
+            {
+                return;
+            }
+            else
+            {
+            retry:
+                if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
+                {
+                    return;
+                }
+                else
+                {
+                    if (backCount == 0)
+                    {
+                        Thread.Sleep(0);
+                    }
+                    else
+                    {
+                        Thread.SpinWait(IntSpinWaitHint);
+                        backCount--;
+                    }
+                    goto retry;
+                }
+            }
+        }
+
         public static void SpinWaitExchange(ref int check, int value, int comparand, int ignoreComparand)
         {
             int backCount = GetBackCount();
@@ -130,6 +198,116 @@ namespace Theraot.Threading
             retry:
                 tmp = Interlocked.CompareExchange(ref check, value, comparand);
                 if (tmp == comparand || tmp == ignoreComparand)
+                {
+                    return;
+                }
+                else
+                {
+                    if (backCount == 0)
+                    {
+                        Thread.Sleep(0);
+                    }
+                    else
+                    {
+                        Thread.SpinWait(IntSpinWaitHint);
+                        backCount--;
+                    }
+                    goto retry;
+                }
+            }
+        }
+
+        public static bool SpinWaitExchange(ref int check, int value, int comparand, IComparable<TimeSpan> timeout)
+        {
+            int backCount = GetBackCount();
+            if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
+            {
+                return true;
+            }
+            else
+            {
+            retry:
+                if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
+                {
+                    return true;
+                }
+                else
+                {
+                    var start = DateTime.Now;
+                    if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
+                    {
+                        if (backCount == 0)
+                        {
+                            Thread.Sleep(0);
+                        }
+                        else
+                        {
+                            Thread.SpinWait(IntSpinWaitHint);
+                            backCount--;
+                        }
+                        goto retry;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        public static bool SpinWaitExchange(ref int check, int value, int comparand, int ignoreComparand, IComparable<TimeSpan> timeout)
+        {
+            int backCount = GetBackCount();
+            var tmp = Interlocked.CompareExchange(ref check, value, comparand);
+            if (tmp == comparand || tmp == ignoreComparand)
+            {
+                return true;
+            }
+            else
+            {
+            retry:
+                tmp = Interlocked.CompareExchange(ref check, value, comparand);
+                if (tmp == comparand || tmp == ignoreComparand)
+                {
+                    return true;
+                }
+                else
+                {
+                    var start = DateTime.Now;
+                    if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
+                    {
+                        if (backCount == 0)
+                        {
+                            Thread.Sleep(0);
+                        }
+                        else
+                        {
+                            Thread.SpinWait(IntSpinWaitHint);
+                            backCount--;
+                        }
+                        goto retry;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        public static void SpinWaitExchangeRelative(ref int check, int value)
+        {
+            int backCount = GetBackCount();
+            var tmp = Thread.VolatileRead(ref check);
+            if (Interlocked.CompareExchange(ref check, tmp + value, tmp) == tmp)
+            {
+                return;
+            }
+            else
+            {
+            retry:
+                tmp = Thread.VolatileRead(ref check);
+                if (Interlocked.CompareExchange(ref check, tmp + value, tmp) == tmp)
                 {
                     return;
                 }
@@ -179,6 +357,88 @@ namespace Theraot.Threading
                         backCount--;
                     }
                     goto retry;
+                }
+            }
+        }
+        
+        public static bool SpinWaitExchangeRelative(ref int check, int value, IComparable<TimeSpan> timeout)
+        {
+            int backCount = GetBackCount();
+            var tmp = Thread.VolatileRead(ref check);
+            if (Interlocked.CompareExchange(ref check, tmp + value, tmp) == tmp)
+            {
+                return true;
+            }
+            else
+            {
+            retry:
+                tmp = Thread.VolatileRead(ref check);
+                if (Interlocked.CompareExchange(ref check, tmp + value, tmp) == tmp)
+                {
+                    return true;
+                }
+                else
+                {
+                     var start = DateTime.Now;
+                     if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
+                     {
+                         if (backCount == 0)
+                         {
+                             Thread.Sleep(0);
+                         }
+                         else
+                         {
+                             Thread.SpinWait(IntSpinWaitHint);
+                             backCount--;
+                         }
+                         goto retry;
+                     }
+                     else
+                     {
+                         return false;
+                     }
+                }
+            }
+        }
+
+        public static bool SpinWaitExchangeRelative(ref int check, int value, int ignoreComparand, IComparable<TimeSpan> timeout)
+        {
+            int backCount = GetBackCount();
+            var tmpA = Thread.VolatileRead(ref check);
+            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+            if (tmpB == tmpA || tmpB == ignoreComparand)
+            {
+                return true;
+            }
+            else
+            {
+            retry:
+                tmpA = Thread.VolatileRead(ref check);
+                tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+                if (tmpB == tmpA || tmpB == ignoreComparand)
+                {
+                    return true;
+                }
+                else
+                {
+                     var start = DateTime.Now;
+                     if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
+                     {
+                         if (backCount == 0)
+                         {
+                             Thread.Sleep(0);
+                         }
+                         else
+                         {
+                             Thread.SpinWait(IntSpinWaitHint);
+                             backCount--;
+                         }
+                         goto retry;
+                     }
+                     else
+                     {
+                         return true;
+                     }
                 }
             }
         }
