@@ -234,7 +234,7 @@ namespace @NamespaceName
             }
             else
             {
-                ThreadingHelper.SpinWait(() => _status == -1 || System.Threading.Interlocked.CompareExchange(ref _status, -1, 0) == 0);
+                ThreadingHelper.SpinWaitExchange(-1, ref _status, -1, 0);
                 if (_status == -1)
                 {
                     return false;

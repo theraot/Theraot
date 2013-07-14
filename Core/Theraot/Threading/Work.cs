@@ -109,7 +109,7 @@ namespace Theraot.Threading
             private AutoResetEvent _event;
             private int _id;
             private LazyBucket<Thread> _threads;
-            private volatile bool _waitRequest;
+            private bool _waitRequest;
             private volatile bool _work;
             private int _workingDedicatedThreadCount;
             private int _workingTotalThreadCount;
@@ -218,9 +218,9 @@ namespace Theraot.Threading
                 {
                     try
                     {
-                        if (_waitRequest)
+                        if (Volatile.Read(ref _waitRequest))
                         {
-                            ThreadingHelper.SpinWait(() => !_waitRequest);
+                            ThreadingHelper.SpinWait(ref _waitRequest, false);
                         }
                         Interlocked.Increment(ref _workingTotalThreadCount);
                         Work item;
@@ -333,10 +333,10 @@ namespace Theraot.Threading
                                 Interlocked.Increment(ref _workingDedicatedThreadCount);
                             }
                         }
-                        if (_waitRequest)
+                        if (Volatile.Read(ref _waitRequest))
                         {
                             Interlocked.Decrement(ref _workingTotalThreadCount);
-                            ThreadingHelper.SpinWait(() => !_waitRequest);
+                            ThreadingHelper.SpinWait(ref _waitRequest, false);
                             Interlocked.Increment(ref _workingTotalThreadCount);
                         }
                     }
@@ -357,7 +357,7 @@ namespace Theraot.Threading
                 if (item._exclusive)
                 {
                     _waitRequest = true;
-                    ThreadingHelper.SpinWait(() => Thread.VolatileRead(ref _workingTotalThreadCount) == 1);
+                    ThreadingHelper.SpinWait(ref _workingTotalThreadCount, 1);
                     item.Execute();
                     _waitRequest = false;
                 }

@@ -97,28 +97,7 @@ namespace @NamespaceName
             {
                 if (!whenNotDisposed == null)
                 {
-                    ThreadingHelper.SpinWait
-                    (
-                        () =>
-                        {
-                            var status = _status;
-                            if (status == -1)
-                            {
-                                return true;
-                            }
-                            else
-                            {
-                                if (System.Threading.Interlocked.CompareExchange(ref _status, _status++, status) == status)
-                                {
-                                    return true;
-                                }
-                                else
-                                {
-                                    return false;
-                                }
-                            }
-                        }
-                    );
+                    ThreadingHelper.SpinWaitExchangeRelative(-1, ref _status, 1);
                     if (_status == -1)
                     {
                         if (!whenDisposed == null)
@@ -164,28 +143,7 @@ namespace @NamespaceName
                 }
                 else
                 {
-                    ThreadingHelper.SpinWait
-                    (
-                        () =>
-                        {
-                            var status = _status;
-                            if (status != -1)
-                            {
-                                if (System.Threading.Interlocked.CompareExchange(ref _status, _status++, status) == status)
-                                {
-                                    return true;
-                                }
-                                else
-                                {
-                                    return false;
-                                }
-                            }
-                            else
-                            {
-                                return true;
-                            }
-                        }
-                    );
+                    ThreadingHelper.SpinWaitExchangeRelative(-1, ref _status, 1);
                     if (_status == -1)
                     {
                         if (whenDisposed == null)
@@ -258,7 +216,7 @@ namespace @NamespaceName
             }
             else
             {
-                ThreadingHelper.SpinWait(() => _status == -1 || System.Threading.Interlocked.CompareExchange(ref _status, -1, 0) == 0);
+                ThreadingHelper.SpinWaitExchange(-1, ref _status, -1, 0);
                 if (_status == -1)
                 {
                     return false;
