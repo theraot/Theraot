@@ -109,7 +109,7 @@ namespace Theraot.Threading
             private AutoResetEvent _event;
             private int _id;
             private LazyBucket<Thread> _threads;
-            private bool _waitRequest;
+            private int _waitRequest;
             private volatile bool _work;
             private int _workingDedicatedThreadCount;
             private int _workingTotalThreadCount;
@@ -218,9 +218,9 @@ namespace Theraot.Threading
                 {
                     try
                     {
-                        if (Volatile.Read(ref _waitRequest))
+                        if (Thread.VolatileRead(ref _waitRequest) == 1)
                         {
-                            ThreadingHelper.SpinWait(ref _waitRequest, false);
+                            ThreadingHelper.SpinWait(ref _waitRequest, 0);
                         }
                         Interlocked.Increment(ref _workingTotalThreadCount);
                         Work item;
@@ -333,10 +333,10 @@ namespace Theraot.Threading
                                 Interlocked.Increment(ref _workingDedicatedThreadCount);
                             }
                         }
-                        if (Volatile.Read(ref _waitRequest))
+                        if (Thread.VolatileRead(ref _waitRequest) == 1)
                         {
                             Interlocked.Decrement(ref _workingTotalThreadCount);
-                            ThreadingHelper.SpinWait(ref _waitRequest, false);
+                            ThreadingHelper.SpinWait(ref _waitRequest, 0);
                             Interlocked.Increment(ref _workingTotalThreadCount);
                         }
                     }
@@ -356,10 +356,10 @@ namespace Theraot.Threading
             {
                 if (item._exclusive)
                 {
-                    _waitRequest = true;
+                    Thread.VolatileWrite(ref _waitRequest, 1);
                     ThreadingHelper.SpinWait(ref _workingTotalThreadCount, 1);
                     item.Execute();
-                    _waitRequest = false;
+                    Thread.VolatileWrite(ref _waitRequest, 0);
                 }
                 else
                 {
