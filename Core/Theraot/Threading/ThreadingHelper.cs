@@ -209,6 +209,72 @@ namespace Theraot.Threading
             }
         }
 
+        public static void SpinWaitExchange(ref int check, int value)
+        {
+            int backCount = GetBackCount();
+            var tmp = Thread.VolatileRead(ref check);
+            if (Interlocked.CompareExchange(ref check, value, tmp) == tmp)
+            {
+                return;
+            }
+            else
+            {
+            retry:
+                tmp = Thread.VolatileRead(ref check);
+                if (Interlocked.CompareExchange(ref check, value, tmp) == tmp)
+                {
+                    return;
+                }
+                else
+                {
+                    if (backCount == 0)
+                    {
+                        Thread.Sleep(0);
+                    }
+                    else
+                    {
+                        Thread.SpinWait(IntSpinWaitHint);
+                        backCount--;
+                    }
+                    goto retry;
+                }
+            }
+        }
+
+        public static void SpinWaitExchange(ref int check, int value, int ignoreComparand)
+        {
+            int backCount = GetBackCount();
+            var tmpA = Thread.VolatileRead(ref check);
+            var tmpB = Interlocked.CompareExchange(ref check, value, tmpA);
+            if (tmpB == tmpA || tmpB == ignoreComparand)
+            {
+                return;
+            }
+            else
+            {
+            retry:
+                tmpA = Thread.VolatileRead(ref check);
+                tmpB = Interlocked.CompareExchange(ref check, value, tmpA);
+                if (tmpB == tmpA || tmpB == ignoreComparand)
+                {
+                    return;
+                }
+                else
+                {
+                    if (backCount == 0)
+                    {
+                        Thread.Sleep(0);
+                    }
+                    else
+                    {
+                        Thread.SpinWait(IntSpinWaitHint);
+                        backCount--;
+                    }
+                    goto retry;
+                }
+            }
+        }
+
         public static void SpinWaitExchangeRelative(ref int check, int value, int comparand)
         {
             int backCount = GetBackCount();
