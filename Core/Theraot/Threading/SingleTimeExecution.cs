@@ -282,28 +282,7 @@ namespace Theraot.Threading
 
         private void PreventExecution()
         {
-            ThreadingHelper.SpinWait
-            (
-                () =>
-                {
-                    var status = _status;
-                    if (status != -1)
-                    {
-                        if (Interlocked.CompareExchange(ref _status, _status++, status) == status)
-                        {
-                            return true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        return true;
-                    }
-                }
-            );
+            ThreadingHelper.SpinWaitExchangeIgnoringRelative(-1, ref _status, 1);
         }
     }
 }

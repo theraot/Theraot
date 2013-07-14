@@ -42,28 +42,7 @@ namespace Theraot.Threading
             {
                 if (!ReferenceEquals(whenNotDisposed, null))
                 {
-                    ThreadingHelper.SpinWait
-                    (
-                        () =>
-                        {
-                            var status = _status;
-                            if (status == -1)
-                            {
-                                return true;
-                            }
-                            else
-                            {
-                                if (System.Threading.Interlocked.CompareExchange(ref _status, _status++, status) == status)
-                                {
-                                    return true;
-                                }
-                                else
-                                {
-                                    return false;
-                                }
-                            }
-                        }
-                    );
+                    ThreadingHelper.SpinWaitExchangeIgnoringRelative(-1, ref _status, 1);
                     if (_status == -1)
                     {
                         if (!ReferenceEquals(whenDisposed, null))
@@ -108,28 +87,7 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    ThreadingHelper.SpinWait
-                    (
-                        () =>
-                        {
-                            var status = _status;
-                            if (status != -1)
-                            {
-                                if (System.Threading.Interlocked.CompareExchange(ref _status, _status++, status) == status)
-                                {
-                                    return true;
-                                }
-                                else
-                                {
-                                    return false;
-                                }
-                            }
-                            else
-                            {
-                                return true;
-                            }
-                        }
-                    );
+                    ThreadingHelper.SpinWaitExchangeIgnoringRelative(-1, ref _status, 1);
                     if (_status == -1)
                     {
                         if (ReferenceEquals(whenDisposed, null))
