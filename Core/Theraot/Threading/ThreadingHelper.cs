@@ -6,10 +6,9 @@ namespace Theraot.Threading
     [global::System.Diagnostics.DebuggerNonUserCode]
     public static class ThreadingHelper
     {
+        private static readonly RuntimeUniqueIdProdiver _threadIdProvider = new RuntimeUniqueIdProdiver();
         private static readonly int IntSleepCountHint = 5;
         private static readonly int IntSpinWaitHint = 20;
-        private static readonly RuntimeUniqueIdProdiver _threadIdProvider = new RuntimeUniqueIdProdiver();
-
         private static NoTrackingThreadLocal<RuntimeUniqueIdProdiver.UniqueId> _threadRuntimeUniqueId = new NoTrackingThreadLocal<RuntimeUniqueIdProdiver.UniqueId>(_threadIdProvider.GetNextId);
 
         public static RuntimeUniqueIdProdiver.UniqueId ThreadUniqueId
@@ -17,6 +16,66 @@ namespace Theraot.Threading
             get
             {
                 return _threadRuntimeUniqueId.Value;
+            }
+        }
+
+        public static void SpinWait(ref int check, int comparand)
+        {
+            int backCount = GetBackCount();
+            if (Thread.VolatileRead(ref check) == comparand)
+            {
+                return;
+            }
+            else
+            {
+            retry:
+                if (Thread.VolatileRead(ref check) == comparand)
+                {
+                    return;
+                }
+                else
+                {
+                    if (backCount == 0)
+                    {
+                        Thread.Sleep(0);
+                    }
+                    else
+                    {
+                        Thread.SpinWait(IntSpinWaitHint);
+                        backCount--;
+                    }
+                    goto retry;
+                }
+            }
+        }
+
+        public static void SpinWait(ref bool check, bool comparand)
+        {
+            int backCount = GetBackCount();
+            if (Volatile.Read(ref check) == comparand)
+            {
+                return;
+            }
+            else
+            {
+            retry:
+                if (Volatile.Read(ref check) == comparand)
+                {
+                    return;
+                }
+                else
+                {
+                    if (backCount == 0)
+                    {
+                        Thread.Sleep(0);
+                    }
+                    else
+                    {
+                        Thread.SpinWait(IntSpinWaitHint);
+                        backCount--;
+                    }
+                    goto retry;
+                }
             }
         }
 
@@ -84,6 +143,130 @@ namespace Theraot.Threading
                     {
                         return false;
                     }
+                }
+            }
+        }
+
+        public static void SpinWaitExchange(ref int check, int value, int comparand)
+        {
+            int backCount = GetBackCount();
+            if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
+            {
+                return;
+            }
+            else
+            {
+            retry:
+                if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
+                {
+                    return;
+                }
+                else
+                {
+                    if (backCount == 0)
+                    {
+                        Thread.Sleep(0);
+                    }
+                    else
+                    {
+                        Thread.SpinWait(IntSpinWaitHint);
+                        backCount--;
+                    }
+                    goto retry;
+                }
+            }
+        }
+
+        public static void SpinWaitExchange(ref int check, int value, int comparand, int ignoreComparand)
+        {
+            int backCount = GetBackCount();
+            var tmp = Interlocked.CompareExchange(ref check, value, comparand);
+            if (tmp == comparand || tmp == ignoreComparand)
+            {
+                return;
+            }
+            else
+            {
+            retry:
+                tmp = Interlocked.CompareExchange(ref check, value, comparand);
+                if (tmp == comparand || tmp == ignoreComparand)
+                {
+                    return;
+                }
+                else
+                {
+                    if (backCount == 0)
+                    {
+                        Thread.Sleep(0);
+                    }
+                    else
+                    {
+                        Thread.SpinWait(IntSpinWaitHint);
+                        backCount--;
+                    }
+                    goto retry;
+                }
+            }
+        }
+
+        public static void SpinWaitExchangeRelative(ref int check, int value, int comparand)
+        {
+            int backCount = GetBackCount();
+            if (Interlocked.CompareExchange(ref check, Thread.VolatileRead(ref check) + value, comparand) == comparand)
+            {
+                return;
+            }
+            else
+            {
+            retry:
+                if (Interlocked.CompareExchange(ref check, Thread.VolatileRead(ref check) + value, comparand) == comparand)
+                {
+                    return;
+                }
+                else
+                {
+                    if (backCount == 0)
+                    {
+                        Thread.Sleep(0);
+                    }
+                    else
+                    {
+                        Thread.SpinWait(IntSpinWaitHint);
+                        backCount--;
+                    }
+                    goto retry;
+                }
+            }
+        }
+
+        public static void SpinWaitExchangeRelative(ref int check, int value, int comparand, int ignoreComparand)
+        {
+            int backCount = GetBackCount();
+            var tmp = Interlocked.CompareExchange(ref check, Thread.VolatileRead(ref check) + value, comparand);
+            if (tmp == comparand || tmp == ignoreComparand)
+            {
+                return;
+            }
+            else
+            {
+            retry:
+                tmp = Interlocked.CompareExchange(ref check, Thread.VolatileRead(ref check) + value, comparand);
+                if (tmp == comparand || tmp == ignoreComparand)
+                {
+                    return;
+                }
+                else
+                {
+                    if (backCount == 0)
+                    {
+                        Thread.Sleep(0);
+                    }
+                    else
+                    {
+                        Thread.SpinWait(IntSpinWaitHint);
+                        backCount--;
+                    }
+                    goto retry;
                 }
             }
         }
