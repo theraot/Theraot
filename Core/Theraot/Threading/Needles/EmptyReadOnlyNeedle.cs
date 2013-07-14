@@ -4,7 +4,7 @@ namespace Theraot.Threading.Needles
 {
     [global::System.Diagnostics.DebuggerNonUserCode]
     [global::System.ComponentModel.ImmutableObject(true)]
-    public struct EmptyReadOnlyNeedle<T> : IReadOnlyNeedle<T>
+    public class EmptyReadOnlyNeedle<T> : IReadOnlyNeedle<T>
     {
         private static readonly EmptyReadOnlyNeedle<T> _instance = new EmptyReadOnlyNeedle<T>();
 
