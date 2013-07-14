@@ -10,7 +10,6 @@ namespace Theraot.Threading.Needles
 {
     public sealed class TransactionNeedle<T> : ITransactionNeedle<T>
     {
-        private readonly IEqualityComparer<T> _comparer;
         private readonly Func<T> _source;
         private readonly Action<T> _target;
 
@@ -82,7 +81,7 @@ namespace Theraot.Threading.Needles
             else
             {
                 Interlocked.Increment(ref _taken);
-                if (_comparer.Equals(_original, _value.Value))
+                if (EqualityComparer<T>.Default.Equals(_original, _value.Value))
                 {
                     return DisposableAkin.Create(() => Interlocked.Decrement(ref _taken));
                 }
