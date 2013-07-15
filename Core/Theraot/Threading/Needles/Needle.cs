@@ -193,7 +193,7 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                if (ReferenceEquals(_target, value))
+                if (ReferenceEquals(_target, value) || ReferenceEquals(this, value))
                 {
                     return true;
                 }
@@ -242,7 +242,7 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                if (!ReferenceEquals(_target, value))
+                if (!ReferenceEquals(_target, value) && !ReferenceEquals(this, value))
                 {
                     IUnifiableNeedle<T> tmp = value as IUnifiableNeedle<T>;
                     if (ReferenceEquals(tmp, null) || !tmp.TryUnify(ref _target))
@@ -282,7 +282,7 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                if (!ReferenceEquals(_target, value))
+                if (!ReferenceEquals(_target, value) && !ReferenceEquals(this, value))
                 {
                     if (value.TryUnify(ref _target))
                     {
