@@ -19,7 +19,7 @@ namespace Theraot.Threading.Needles
             private int _taken;
             private ThreadLocal<T> _value;
             private Transact _transaction;
-            private Needles.Needle<Thread> _owner;
+            private Needles.Needle<Thread> _owner = new Needles.Needle<Thread>();
 
             private Needle(Func<T> source, Action<T> target)
             {
