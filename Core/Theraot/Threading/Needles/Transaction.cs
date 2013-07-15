@@ -48,18 +48,30 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        private bool Check()
+        public static T Read<T>(Func<T> source)
         {
-            bool check;
-            foreach (var resource in _resources.Values)
+            var transaction = Transaction.CurrentTransaction;
+            if (transaction == null)
             {
-                if (!resource.Check())
-                {
-                    check = false;
-                }
+                return source.Invoke();
             }
-            check = true;
-            return check;
+            else
+            {
+                return Needle<T>.Read(source).Value;
+            }
+        }
+
+        public static void Write<T>(Action<T> target, T value)
+        {
+            var transaction = Transaction.CurrentTransaction;
+            if (transaction == null)
+            {
+                target.Invoke(value);
+            }
+            else
+            {
+                Needle<T>.Write(target).Value = value;
+            }
         }
 
         public bool Commit()
@@ -124,17 +136,18 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public T Read<T>(Func<T> source)
+        private bool Check()
         {
-            var transaction = Transaction.CurrentTransaction;
-            if (transaction == null)
+            bool check;
+            foreach (var resource in _resources.Values)
             {
-                return source.Invoke();
+                if (!resource.Check())
+                {
+                    check = false;
+                }
             }
-            else
-            {
-                return Needle<T>.Read(source).Value;
-            }
+            check = true;
+            return check;
         }
 
         private void SetResource(object key, IResource value)
@@ -153,19 +166,6 @@ namespace Theraot.Threading.Needles
             {
                 resource = null;
                 return false;
-            }
-        }
-
-        public void Write<T>(Action<T> target, T value)
-        {
-            var transaction = Transaction.CurrentTransaction;
-            if (transaction == null)
-            {
-                target.Invoke(value);
-            }
-            else
-            {
-                Needle<T>.Write(target).Value = value;
             }
         }
     }
