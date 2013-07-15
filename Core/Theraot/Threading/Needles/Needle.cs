@@ -104,6 +104,11 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        public bool Equals(Needle<T> other)
+        {
+            return EqualsExtracted(this, other);
+        }
+
         public override int GetHashCode()
         {
             return _hashCode;
@@ -167,6 +172,7 @@ namespace Theraot.Threading.Needles
                 _target.Value = value;
             }
         }
+
         private static bool EqualsExtracted(Needle<T> left, Needle<T> right)
         {
             if (ReferenceEquals(left, null))
