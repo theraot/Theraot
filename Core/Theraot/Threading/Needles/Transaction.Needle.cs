@@ -8,146 +8,149 @@ using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
-    public sealed partial class TransactionNeedle<T> : ITransactionResource, INeedle<T>
+    public sealed partial class Transaction
     {
-        private readonly Func<T> _source;
-        private readonly Action<T> _target;
-
-        private T _original;
-        private int _taken;
-        private ThreadLocal<T> _value;
-
-        private TransactionNeedle(Func<T> source, Action<T> target)
+        public sealed partial class TransactionNeedle<T> : IResource, INeedle<T>
         {
-            _source = source;
-            _target = target;
-            if (!ReferenceEquals(_source, null))
-            {
-                _original = _source.Invoke();
-                _value = new ThreadLocal<T>(_source);
-            }
-        }
+            private readonly Func<T> _source;
+            private readonly Action<T> _target;
 
-        bool IReadOnlyNeedle<T>.IsAlive
-        {
-            get
-            {
-                return true;
-            }
-        }
+            private T _original;
+            private int _taken;
+            private ThreadLocal<T> _value;
 
-        public T Value
-        {
-            get
+            private TransactionNeedle(Func<T> source, Action<T> target)
             {
-                return _value.Value;
-            }
-            set
-            {
-                _value.Value = value;
-            }
-        }
-
-        public bool Commit()
-        {
-            if (Interlocked.CompareExchange(ref _taken, 1, 0) == 0)
-            {
-                try
+                _source = source;
+                _target = target;
+                if (!ReferenceEquals(_source, null))
                 {
-                    _target.Invoke(_value.Value);
+                    _original = _source.Invoke();
+                    _value = new ThreadLocal<T>(_source);
+                }
+            }
+
+            bool IReadOnlyNeedle<T>.IsAlive
+            {
+                get
+                {
                     return true;
                 }
-                finally
+            }
+
+            public T Value
+            {
+                get
                 {
-                    Interlocked.Decrement(ref _taken);
+                    return _value.Value;
+                }
+                set
+                {
+                    _value.Value = value;
                 }
             }
-            else
-            {
-                return false;
-            }
-        }
 
-        void INeedle<T>.Release()
-        {
-            //Empty
-        }
-
-        public IDisposable Lock()
-        {
-            if (ReferenceEquals(_source, null))
+            void INeedle<T>.Release()
             {
-                return DisposableAkin.Create();
+                //Empty
             }
-            else
+
+            bool IResource.Commit()
             {
-                Interlocked.Increment(ref _taken);
-                if (EqualityComparer<T>.Default.Equals(_original, _value.Value))
+                if (Interlocked.CompareExchange(ref _taken, 1, 0) == 0)
                 {
-                    return DisposableAkin.Create(() => Interlocked.Decrement(ref _taken));
+                    try
+                    {
+                        _target.Invoke(_value.Value);
+                        return true;
+                    }
+                    finally
+                    {
+                        Interlocked.Decrement(ref _taken);
+                    }
                 }
                 else
                 {
-                    Interlocked.Decrement(ref _taken);
-                    return null;
+                    return false;
                 }
             }
-        }
 
-        public void Rollback()
-        {
-            _value.Value = _source.Invoke();
-        }
-
-        internal static TransactionNeedle<T> Read(Func<T> source)
-        {
-            var transaction = Transaction.CurrentTransaction;
-            if (transaction == null)
+            IDisposable IResource.Lock()
             {
-                throw new InvalidOperationException("There is no current transaction.");
-            }
-            else
-            {
-                ITransactionResource resource;
-                if (transaction.TryGetResource(source, out resource))
+                if (ReferenceEquals(_source, null))
                 {
-                    return resource as TransactionNeedle<T>;
+                    return DisposableAkin.Create();
                 }
                 else
                 {
-                    resource = new TransactionNeedle<T>(source, null);
-                    transaction.SetResource(source, resource);
-                    return resource as TransactionNeedle<T>;
+                    Interlocked.Increment(ref _taken);
+                    if (EqualityComparer<T>.Default.Equals(_original, _value.Value))
+                    {
+                        return DisposableAkin.Create(() => Interlocked.Decrement(ref _taken));
+                    }
+                    else
+                    {
+                        Interlocked.Decrement(ref _taken);
+                        return null;
+                    }
                 }
             }
-        }
 
-        internal static TransactionNeedle<T> Write(Action<T> target)
-        {
-            var transaction = Transaction.CurrentTransaction;
-            if (transaction == null)
+            void IResource.Rollback()
             {
-                throw new InvalidOperationException("There is no current transaction.");
+                _value.Value = _source.Invoke();
             }
-            else
+
+            internal static TransactionNeedle<T> Read(Func<T> source)
             {
-                ITransactionResource resource;
-                if (transaction.TryGetResource(target, out resource))
+                var transaction = Transaction.CurrentTransaction;
+                if (transaction == null)
                 {
-                    return resource as TransactionNeedle<T>;
+                    throw new InvalidOperationException("There is no current transaction.");
                 }
                 else
                 {
-                    resource = new TransactionNeedle<T>(null, target);
-                    transaction.SetResource(target, resource);
-                    return resource as TransactionNeedle<T>;
+                    IResource resource;
+                    if (transaction.TryGetResource(source, out resource))
+                    {
+                        return resource as TransactionNeedle<T>;
+                    }
+                    else
+                    {
+                        resource = new TransactionNeedle<T>(source, null);
+                        transaction.SetResource(source, resource);
+                        return resource as TransactionNeedle<T>;
+                    }
                 }
             }
-        }
 
-        private void OnDispose()
-        {
-            _value.Dispose();
+            internal static TransactionNeedle<T> Write(Action<T> target)
+            {
+                var transaction = Transaction.CurrentTransaction;
+                if (transaction == null)
+                {
+                    throw new InvalidOperationException("There is no current transaction.");
+                }
+                else
+                {
+                    IResource resource;
+                    if (transaction.TryGetResource(target, out resource))
+                    {
+                        return resource as TransactionNeedle<T>;
+                    }
+                    else
+                    {
+                        resource = new TransactionNeedle<T>(null, target);
+                        transaction.SetResource(target, resource);
+                        return resource as TransactionNeedle<T>;
+                    }
+                }
+            }
+
+            private void OnDispose()
+            {
+                _value.Dispose();
+            }
         }
     }
 }

@@ -8,17 +8,17 @@ using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
-    public class Transaction
+    public sealed partial class Transaction
     {
         [ThreadStatic]
         private static Transaction _currentTransaction;
 
         private readonly Transaction _parentTransaction;
-        private readonly Dictionary<object, ITransactionResource> _resources;
+        private readonly Dictionary<object, IResource> _resources;
 
         private Transaction()
         {
-            _resources = new Dictionary<object, ITransactionResource>();
+            _resources = new Dictionary<object, IResource>();
             _parentTransaction = _currentTransaction;
             _currentTransaction = this;
         }
@@ -93,12 +93,12 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public void SetResource(object key, ITransactionResource value)
+        private void SetResource(object key, IResource value)
         {
             _resources[key] = value;
         }
 
-        public bool TryGetResource(object key, out ITransactionResource resource)
+        private bool TryGetResource(object key, out IResource resource)
         {
             try
             {

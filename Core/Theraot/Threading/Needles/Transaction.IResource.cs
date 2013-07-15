@@ -4,13 +4,16 @@ using System;
 
 namespace Theraot.Threading.Needles
 {
-    public interface ITransactionResource
+    public sealed partial class Transaction
     {
-        bool Commit();
+        private interface IResource
+        {
+            bool Commit();
 
-        IDisposable Lock();
+            IDisposable Lock();
 
-        void Rollback();
+            void Rollback();
+        }
     }
 }
 

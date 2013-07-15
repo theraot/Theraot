@@ -7,86 +7,89 @@ using Theraot.Threading;
 
 namespace Theraot.Threading.Needles
 {
-    public sealed partial class TransactionNeedle<T> : IDisposable
+    public sealed partial class Transaction
     {
-        private int _status;
-
-        [global::System.Diagnostics.DebuggerNonUserCode]
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
-        ~TransactionNeedle()
+        public sealed partial class TransactionNeedle<T> : IDisposable
         {
-            try
-            {
-                //Empty
-            }
-            finally
+            private int _status;
+
+            [global::System.Diagnostics.DebuggerNonUserCode]
+            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
+            ~TransactionNeedle()
             {
                 try
                 {
-                    Dispose(false);
-                }
-                catch
-                {
-                    //Pokemon
-                }
-            }
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCode]
-        public void Dispose()
-        {
-            try
-            {
-                Dispose(true);
-            }
-            finally
-            {
-                GC.SuppressFinalize(this);
-            }
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCode]
-        private void Dispose(bool disposeManagedResources)
-        {
-            if (TakeDisposalExecution())
-            {
-                try
-                {
-                    if (disposeManagedResources)
-                    {
-                        this.OnDispose();
-                    }
+                    //Empty
                 }
                 finally
                 {
                     try
                     {
-                        //Empty
+                        Dispose(false);
                     }
-                    finally
+                    catch
                     {
-                        _value = null;
+                        //Pokemon
                     }
                 }
             }
-        }
 
-        private bool TakeDisposalExecution()
-        {
-            if (_status == -1)
+            [global::System.Diagnostics.DebuggerNonUserCode]
+            public void Dispose()
             {
-                return false;
+                try
+                {
+                    Dispose(true);
+                }
+                finally
+                {
+                    GC.SuppressFinalize(this);
+                }
             }
-            else
+
+            [global::System.Diagnostics.DebuggerNonUserCode]
+            private void Dispose(bool disposeManagedResources)
             {
-                ThreadingHelper.SpinWaitExchange(ref _status, -1, 0, -1);
+                if (TakeDisposalExecution())
+                {
+                    try
+                    {
+                        if (disposeManagedResources)
+                        {
+                            this.OnDispose();
+                        }
+                    }
+                    finally
+                    {
+                        try
+                        {
+                            //Empty
+                        }
+                        finally
+                        {
+                            _value = null;
+                        }
+                    }
+                }
+            }
+
+            private bool TakeDisposalExecution()
+            {
                 if (_status == -1)
                 {
                     return false;
                 }
                 else
                 {
-                    return true;
+                    ThreadingHelper.SpinWaitExchange(ref _status, -1, 0, -1);
+                    if (_status == -1)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
                 }
             }
         }
