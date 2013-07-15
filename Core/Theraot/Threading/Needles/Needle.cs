@@ -170,6 +170,11 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        internal INeedle<T> CompareExchange(INeedle<T> value, INeedle<T> comparand)
+        {
+            return Interlocked.CompareExchange(ref _target, value, comparand);
+        }
+
         protected virtual void OnRelease()
         {
             _target = null;
