@@ -10,7 +10,7 @@ namespace Theraot.Threading.Needles
 {
     public sealed partial class Transaction
     {
-        public sealed partial class TransactionNeedle<T> : IResource, INeedle<T>
+        public sealed partial class Needle<T> : IResource, INeedle<T>
         {
             private readonly Func<T> _source;
             private readonly Action<T> _target;
@@ -19,7 +19,7 @@ namespace Theraot.Threading.Needles
             private int _taken;
             private ThreadLocal<T> _value;
 
-            private TransactionNeedle(Func<T> source, Action<T> target)
+            private Needle(Func<T> source, Action<T> target)
             {
                 _source = source;
                 _target = target;
@@ -101,7 +101,7 @@ namespace Theraot.Threading.Needles
                 _value.Value = _source.Invoke();
             }
 
-            internal static TransactionNeedle<T> Read(Func<T> source)
+            internal static Needle<T> Read(Func<T> source)
             {
                 var transaction = Transaction.CurrentTransaction;
                 if (transaction == null)
@@ -113,18 +113,18 @@ namespace Theraot.Threading.Needles
                     IResource resource;
                     if (transaction.TryGetResource(source, out resource))
                     {
-                        return resource as TransactionNeedle<T>;
+                        return resource as Needle<T>;
                     }
                     else
                     {
-                        resource = new TransactionNeedle<T>(source, null);
+                        resource = new Needle<T>(source, null);
                         transaction.SetResource(source, resource);
-                        return resource as TransactionNeedle<T>;
+                        return resource as Needle<T>;
                     }
                 }
             }
 
-            internal static TransactionNeedle<T> Write(Action<T> target)
+            internal static Needle<T> Write(Action<T> target)
             {
                 var transaction = Transaction.CurrentTransaction;
                 if (transaction == null)
@@ -136,13 +136,13 @@ namespace Theraot.Threading.Needles
                     IResource resource;
                     if (transaction.TryGetResource(target, out resource))
                     {
-                        return resource as TransactionNeedle<T>;
+                        return resource as Needle<T>;
                     }
                     else
                     {
-                        resource = new TransactionNeedle<T>(null, target);
+                        resource = new Needle<T>(null, target);
                         transaction.SetResource(target, resource);
-                        return resource as TransactionNeedle<T>;
+                        return resource as Needle<T>;
                     }
                 }
             }

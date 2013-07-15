@@ -9,13 +9,13 @@ namespace Theraot.Threading.Needles
 {
     public sealed partial class Transaction
     {
-        public sealed partial class TransactionNeedle<T> : IDisposable
+        public sealed partial class Needle<T> : IDisposable
         {
             private int _status;
 
             [global::System.Diagnostics.DebuggerNonUserCode]
             [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
-            ~TransactionNeedle()
+            ~Needle()
             {
                 try
                 {

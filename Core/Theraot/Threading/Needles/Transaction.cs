@@ -89,7 +89,7 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                return TransactionNeedle<T>.Read(source).Value;
+                return Needle<T>.Read(source).Value;
             }
         }
 
@@ -121,7 +121,7 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                TransactionNeedle<T>.Write(target).Value = value;
+                Needle<T>.Write(target).Value = value;
             }
         }
     }
