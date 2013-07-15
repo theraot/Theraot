@@ -115,8 +115,7 @@ namespace Theraot.Threading.Needles
             return _hashCode;
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Empty")]
-        void INeedle<T>.Release()
+        public void Release()
         {
             OnRelease();
         }
@@ -134,7 +133,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public void Unify(ref INeedle<T> value)
+        public bool TryUnify(ref INeedle<T> value)
         {
             if (ReferenceEquals(value, null))
             {
@@ -148,11 +147,37 @@ namespace Theraot.Threading.Needles
                 {
                     value = _target;
                 }
+                return true;
             }
             else
             {
-                _target = value;
-                Thread.MemoryBarrier();
+                if (ReferenceEquals(_target, value))
+                {
+                    return true;
+                }
+                else
+                {
+                    Needle<T> tmp = value as Needle<T>;
+                    if (!ReferenceEquals(tmp, null))
+                    {
+                        tmp.TryUnify(ref _target);
+                        Thread.MemoryBarrier();
+                        return true;
+                    }
+                    else
+                    {
+                        tmp = _target as Needle<T>;
+                        if (!ReferenceEquals(tmp, null))
+                        {
+                            tmp.TryUnify(ref value);
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                }
             }
         }
 
