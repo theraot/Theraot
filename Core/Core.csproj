@@ -230,7 +230,6 @@
       <DependentUpon>CacheNeedle.disposable.tt</DependentUpon>
     </Compile>
     <Compile Include="Theraot\Threading\Needles\DefaultNeedle.cs" />
-    <Compile Include="Theraot\Threading\Needles\EmptyReadOnlyNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\FutureDisposableNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\FutureNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\ICacheNeedle.cs" />

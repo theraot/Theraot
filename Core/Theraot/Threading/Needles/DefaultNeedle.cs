@@ -64,7 +64,7 @@ namespace Theraot.Threading.Needles
 
         public override bool Equals(object obj)
         {
-            return obj is EmptyReadOnlyNeedle<T>;
+            return obj is DefaultNeedle<T>;
         }
 
         public override int GetHashCode()
