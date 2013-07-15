@@ -11,19 +11,19 @@ namespace Theraot.Threading.Needles
     public sealed partial class Transact
     {
         [ThreadStatic]
-        private static Transaction _currentTransaction;
+        private static Transact _currentTransaction;
 
-        private readonly Transaction _parentTransaction;
+        private readonly Transact _parentTransaction;
         private readonly Dictionary<object, IResource> _resources;
         
-        private Transaction()
+        private Transact()
         {
             _resources = new Dictionary<object, IResource>();
             _parentTransaction = _currentTransaction;
             _currentTransaction = this;
         }
 
-        internal static Transaction CurrentTransaction
+        internal static Transact CurrentTransaction
         {
             get
             {
@@ -31,16 +31,16 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public static Transaction Create()
+        public static Transact Create()
         {
-            return new Transaction();
+            return new Transact();
         }
 
-        public static Transaction GetTransaction(bool createNew)
+        public static Transact GetTransaction(bool createNew)
         {
             if (createNew)
             {
-                return new Transaction();
+                return new Transact();
             }
             else
             {
@@ -50,7 +50,7 @@ namespace Theraot.Threading.Needles
 
         public static T Read<T>(Func<T> source)
         {
-            var transaction = Transaction.CurrentTransaction;
+            var transaction = Transact.CurrentTransaction;
             if (transaction == null)
             {
                 return source.Invoke();
@@ -63,7 +63,7 @@ namespace Theraot.Threading.Needles
 
         public static void Write<T>(Action<T> target, T value)
         {
-            var transaction = Transaction.CurrentTransaction;
+            var transaction = Transact.CurrentTransaction;
             if (transaction == null)
             {
                 target.Invoke(value);

@@ -18,12 +18,12 @@ namespace Theraot.Threading.Needles
             private T _original;
             private int _taken;
             private ThreadLocal<T> _value;
-            private Transaction _transaction;
+            private Transact _transaction;
             private Needles.Needle<Thread> _owner;
 
             private Needle(Func<T> source, Action<T> target)
             {
-                _transaction = Transaction.CurrentTransaction;
+                _transaction = Transact.CurrentTransaction;
                 if (ReferenceEquals(_transaction, null))
                 {
                     throw new InvalidOperationException("Can't create a needle without an active Transaction.");
@@ -116,7 +116,7 @@ namespace Theraot.Threading.Needles
 
             internal static Needle<T> Read(Func<T> source)
             {
-                var transaction = Transaction.CurrentTransaction;
+                var transaction = Transact.CurrentTransaction;
                 if (transaction == null)
                 {
                     throw new InvalidOperationException("There is no current transaction.");
@@ -139,7 +139,7 @@ namespace Theraot.Threading.Needles
 
             internal static Needle<T> Write(Action<T> target)
             {
-                var transaction = Transaction.CurrentTransaction;
+                var transaction = Transact.CurrentTransaction;
                 if (transaction == null)
                 {
                     throw new InvalidOperationException("There is no current transaction.");
