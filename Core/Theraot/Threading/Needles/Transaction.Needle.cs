@@ -18,15 +18,25 @@ namespace Theraot.Threading.Needles
             private T _original;
             private int _taken;
             private ThreadLocal<T> _value;
+            private Transaction _transaction;
+            private Needles.Needle<Thread> _owner;
 
             private Needle(Func<T> source, Action<T> target)
             {
-                _source = source;
-                _target = target;
-                if (!ReferenceEquals(_source, null))
+                _transaction = Transaction.CurrentTransaction;
+                if (ReferenceEquals(_transaction, null))
                 {
-                    _original = _source.Invoke();
-                    _value = new ThreadLocal<T>(_source);
+                    throw new InvalidOperationException("Can't create a needle without an active Transaction.");
+                }
+                else
+                {
+                    _source = source;
+                    _target = target;
+                    if (!ReferenceEquals(_source, null))
+                    {
+                        _original = _source.Invoke();
+                        _value = new ThreadLocal<T>(_source);
+                    }
                 }
             }
 
@@ -75,25 +85,28 @@ namespace Theraot.Threading.Needles
                 }
             }
 
-            IDisposable IResource.Lock()
+            bool IResource.Check()
             {
                 if (ReferenceEquals(_source, null))
                 {
-                    return DisposableAkin.Create();
+                    return true;
                 }
                 else
                 {
-                    Interlocked.Increment(ref _taken);
                     if (EqualityComparer<T>.Default.Equals(_original, _value.Value))
                     {
-                        return DisposableAkin.Create(() => Interlocked.Decrement(ref _taken));
+                        return true;
                     }
                     else
                     {
-                        Interlocked.Decrement(ref _taken);
-                        return null;
+                        return false;
                     }
                 }
+            }
+
+            void IResource.Capture(ref Needles.Needle<Thread> thread)
+            {
+                _owner.Unify(ref thread);
             }
 
             void IResource.Rollback()

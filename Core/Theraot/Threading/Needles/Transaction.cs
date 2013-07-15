@@ -15,7 +15,7 @@ namespace Theraot.Threading.Needles
 
         private readonly Transaction _parentTransaction;
         private readonly Dictionary<object, IResource> _resources;
-
+        
         private Transaction()
         {
             _resources = new Dictionary<object, IResource>();
@@ -48,35 +48,79 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        private bool Check()
+        {
+            bool check;
+            foreach (var resource in _resources.Values)
+            {
+                if (!resource.Check())
+                {
+                    check = false;
+                }
+            }
+            check = true;
+            return check;
+        }
+
         public bool Commit()
         {
-            var disposal = new List<IDisposable>();
-            try
+            if (Check())
             {
-                foreach (var resource in _resources.Values)
+                Needles.Needle<Thread> thread = null;
+                if (_resources.Count > 0)
                 {
-                    var dispose = resource.Lock();
-                    if (dispose == null)
+                    foreach (var resource in _resources.Values)
                     {
-                        return false;
+                        resource.Capture(ref thread);
+                    }
+                    //Should not be null
+                    thread = thread.Simplify();
+                    if
+                    (
+                        ReferenceEquals
+                        (
+                            thread.CompareExchange
+                            (
+                                new StructNeedle<Thread>(Thread.CurrentThread),
+                                null
+                            ),
+                            null
+                        )
+                    )
+                    {
+                        try
+                        {
+                            if (Check())
+                            {
+                                foreach (var resource in _resources.Values)
+                                {
+                                    resource.Commit();
+                                }
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        }
+                        finally
+                        {
+                            thread.Value = null;
+                        }
                     }
                     else
                     {
-                        disposal.Add(dispose);
+                        return false;
                     }
                 }
-                foreach (var resource in _resources.Values)
+                else
                 {
-                    resource.Commit();
+                    return true;
                 }
-                return true;
             }
-            finally
+            else
             {
-                foreach (var item in disposal)
-                {
-                    item.Dispose();
-                }
+                return false;
             }
         }
 

@@ -1,6 +1,7 @@
 #if FAT
 
 using System;
+using System.Threading;
 
 namespace Theraot.Threading.Needles
 {
@@ -8,9 +9,11 @@ namespace Theraot.Threading.Needles
     {
         private interface IResource
         {
+            bool Check();
+
             bool Commit();
 
-            IDisposable Lock();
+            void Capture(ref Needles.Needle<Thread> thread);
 
             void Rollback();
         }
