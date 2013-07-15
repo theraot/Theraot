@@ -28,7 +28,8 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return !ReferenceEquals(_target, null);
+                var target = _target;
+                return !ReferenceEquals(_target, null) && target.IsAlive;
             }
         }
 
