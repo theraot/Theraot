@@ -72,9 +72,8 @@ namespace Theraot.Core
 
         private static PropertyInfo GetProperty(Type type, Type equalityComparerType)
         {
-            Type[] genericTypeArguments = type.GetGenericArguments();
-            Type generticType = equalityComparerType.MakeGenericType(genericTypeArguments);
-            return generticType.GetProperty("Default", BindingFlags.Public | BindingFlags.Static);
+            Type finalType = equalityComparerType.MakeGenericType(type);
+            return finalType.GetProperty("Default", BindingFlags.Public | BindingFlags.Static);
         }
 
         private static PropertyInfo GetPropertyDelegated(Type type, Type equalityComparerType)
