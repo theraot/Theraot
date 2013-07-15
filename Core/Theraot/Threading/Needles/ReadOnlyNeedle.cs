@@ -7,19 +7,28 @@ namespace Theraot.Threading.Needles
     [global::System.Diagnostics.DebuggerNonUserCode]
     public class ReadOnlyNeedle<T> : IReadOnlyNeedle<T>, IEquatable<ReadOnlyNeedle<T>>
     {
-        private readonly T _target;
+        private readonly INeedle<T> _target;
+
+        public ReadOnlyNeedle()
+        {
+            _target = null;
+        }
 
         public ReadOnlyNeedle(T target)
+        {
+            _target = new StructNeedle<T>(target);
+        }
+
+        public ReadOnlyNeedle(INeedle<T> target)
         {
             _target = target;
         }
 
-        bool IReadOnlyNeedle<T>.IsAlive
+        public bool IsAlive
         {
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns True")]
             get
             {
-                return true;
+                return !ReferenceEquals(_target, null);
             }
         }
 
@@ -27,7 +36,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return _target;
+                return (T)_target;
             }
         }
 
@@ -50,53 +59,78 @@ namespace Theraot.Threading.Needles
 
         public static bool operator !=(ReadOnlyNeedle<T> left, ReadOnlyNeedle<T> right)
         {
-            return !EqualityComparer<T>.Default.Equals(left._target, right._target);
+            return NotEqualsExtracted(left, right);
         }
 
         public static bool operator ==(ReadOnlyNeedle<T> left, ReadOnlyNeedle<T> right)
         {
-            return EqualityComparer<T>.Default.Equals(left._target, right._target);
+            return EqualsExtracted(left, right);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj is ReadOnlyNeedle<T>)
+            var _obj = obj as ReadOnlyNeedle<T>;
+            if (!ReferenceEquals(null, _obj))
             {
-                return EqualityComparer<T>.Default.Equals(_target, ((ReadOnlyNeedle<T>)obj)._target);
+                return EqualsExtracted(this, _obj);
             }
             else
             {
-                if (obj is T)
+                return _target.Equals(obj);
+            }
+        }
+
+        public bool Equals(ReadOnlyNeedle<T> other)
+        {
+            return EqualsExtracted(this, other);
+        }
+
+        public override int GetHashCode()
+        {
+            return EqualityComparer<T>.Default.GetHashCode((T)_target);
+        }
+
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
+
+        private static bool EqualsExtracted(ReadOnlyNeedle<T> left, ReadOnlyNeedle<T> right)
+        {
+            if (ReferenceEquals(left, null))
+            {
+                if (ReferenceEquals(right, null))
                 {
-                    return EqualityComparer<T>.Default.Equals(_target, (T)obj);
+                    return true;
                 }
                 else
                 {
                     return false;
                 }
             }
+            else
+            {
+                return left._target.Equals(left._target);
+            }
         }
 
-        public bool Equals(ReadOnlyNeedle<T> other)
+        private static bool NotEqualsExtracted(ReadOnlyNeedle<T> left, ReadOnlyNeedle<T> right)
         {
-            if (ReferenceEquals(null, other))
+            if (ReferenceEquals(left, null))
             {
-                return false;
+                if (ReferenceEquals(right, null))
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
             }
             else
             {
-                return EqualityComparer<T>.Default.Equals(_target, other.Value);
+                return !left._target.Equals(left._target);
             }
-        }
-
-        public override int GetHashCode()
-        {
-            return EqualityComparer<T>.Default.GetHashCode(_target);
-        }
-
-        public override string ToString()
-        {
-            return Value.ToString();
         }
     }
 }
