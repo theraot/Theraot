@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace Theraot.Threading.Needles
 {
-    public sealed partial class Transaction
+    public sealed partial class Transact
     {
         private interface IResource
         {
