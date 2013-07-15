@@ -121,6 +121,16 @@ namespace Theraot.Threading.Needles
             OnRelease();
         }
 
+        public Needle<T> Simplify()
+        {
+            var result = this;
+            while (result._target is Needle<T>)
+            {
+                result = result._target as Needle<T>;
+            }
+            return result;
+        }
+
         public override string ToString()
         {
             var target = Value;
@@ -138,7 +148,7 @@ namespace Theraot.Threading.Needles
         {
             if (ReferenceEquals(value, null))
             {
-                value = this;
+                value = this.Simplify();
             }
             else
             {
