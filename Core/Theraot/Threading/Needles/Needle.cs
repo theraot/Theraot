@@ -134,171 +134,30 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        private bool TryUnifyExtracted<TNeedle>(ref TNeedle value)
-            where TNeedle : INeedle<T>
-        {
-            if (_target is TNeedle)
-            {
-                value = (TNeedle)_target;
-                return true;
-            }
-            else
-            {
-                if (NeedleHelper.CanCreateNestedNeedle<T, TNeedle>())
-                {
-                    value = NeedleHelper.CreateNestedNeedle<T, TNeedle>(this);
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-        }
-
-        public bool TryUnify<TNeedle>(ref TNeedle value)
-            where TNeedle : INeedle<T>
+        public void Unify(ref Needle<T> value)
         {
             if (ReferenceEquals(value, null))
             {
-                if (ReferenceEquals(_target, null))
+                value = this;
+            }
+            else
+            {
+                if (!ReferenceEquals(this, value))
                 {
-                    Func<TNeedle> tmp;
-                    if (TypeHelper.TryGetCreate(out tmp))
+                    if (ReferenceEquals(_target, null))
                     {
-                        value = tmp.Invoke();
                         _target = value;
-                        Thread.MemoryBarrier();
-                        return true;
                     }
                     else
                     {
-                        _target = new Needle<T>();
-                        Thread.MemoryBarrier();
-                        return TryUnifyExtracted<TNeedle>(ref value);
-                    }
-                }
-                else
-                {
-                    Needle<T> tmp = value as Needle<T>;
-                    if (ReferenceEquals(tmp, null) && tmp.TryUnify(ref _target))
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return TryUnifyExtracted<TNeedle>(ref value);
-                    }
-                }
-            }
-            else
-            {
-                if (ReferenceEquals(_target, value) || ReferenceEquals(this, value))
-                {
-                    return true;
-                }
-                else
-                {
-                    Needle<T> tmp = value as Needle<T>;
-                    if (ReferenceEquals(tmp, null) || !tmp.TryUnify(ref _target))
-                    {
-                        tmp = _target as Needle<T>;
-                        if (ReferenceEquals(tmp, null) && tmp.TryUnify(ref value))
+                        if (!(_target is Needle<T>))
                         {
-                            return true;
+                            _target = new Needle<T>(_target);
                         }
-                        else
-                        {
-                            return TryUnifyExtracted<TNeedle>(ref value);
-                        }
-                    }
-                    else
-                    {
-                        Thread.MemoryBarrier();
-                        return true;
+                        ((Needle<T>)_target).Unify(ref value);
                     }
                 }
             }
-        }
-
-        public bool TryUnify(ref INeedle<T> value)
-        {
-            if (ReferenceEquals(value, null))
-            {
-                if (ReferenceEquals(_target, null))
-                {
-                    _target = new Needle<T>();
-                    Thread.MemoryBarrier();
-                    value = _target;
-                }
-                else
-                {
-                    Needle<T> tmp = value as Needle<T>;
-                    if (!ReferenceEquals(tmp, null) || !tmp.TryUnify(ref _target))
-                    {
-                        value = _target;
-                    }
-                }
-            }
-            else
-            {
-                if (!ReferenceEquals(_target, value) && !ReferenceEquals(this, value))
-                {
-                    Needle<T> tmp = value as Needle<T>;
-                    if (ReferenceEquals(tmp, null) || !tmp.TryUnify(ref _target))
-                    {
-                        tmp = _target as Needle<T>;
-                        if (!ReferenceEquals(tmp, null) || !tmp.TryUnify(ref value))
-                        {
-                            value = _target;
-                        }
-                    }
-                    else
-                    {
-                        Thread.MemoryBarrier();
-                    }
-                }
-            }
-            return true;
-        }
-
-        public bool TryUnify(ref Needle<T> value)
-        {
-            if (ReferenceEquals(value, null))
-            {
-                if (ReferenceEquals(_target, null))
-                {
-                    value = new Needle<T>();
-                    _target = value;
-                    Thread.MemoryBarrier();
-                }
-                else
-                {
-                    if (!value.TryUnify(ref _target))
-                    {
-                        value = new Needle<T>(_target);
-                    }
-                }
-            }
-            else
-            {
-                if (!ReferenceEquals(_target, value) && !ReferenceEquals(this, value))
-                {
-                    if (value.TryUnify(ref _target))
-                    {
-                        Thread.MemoryBarrier();
-                    }
-                    else
-                    {
-                        Needle<T> tmp = _target as Needle<T>;
-                        if (!ReferenceEquals(tmp, null) || !tmp.TryUnify(ref value))
-                        {
-                            value = new Needle<T>(_target);
-                        }
-                    }
-                }
-            }
-            return true;
         }
 
         protected virtual void OnRelease()
