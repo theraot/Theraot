@@ -52,10 +52,22 @@ namespace Theraot.Threading.Needles
             return NeedleCreator<T, TNeedle>.Create(target);
         }
 
+        public static TNeedle CreateNestedNeedle<T, TNeedle, TNestedNeedle>(INeedle<T> target)
+           where TNeedle : INeedle<T>
+        {
+            return NestedNeedleCreator<T, TNeedle>.Create(target);
+        }
+
         public static TNeedle CreateReadOnlyNeedle<T, TNeedle>(T target)
             where TNeedle : IReadOnlyNeedle<T>
         {
             return ReadOnlyNeedleCreator<T, TNeedle>.Create(target);
+        }
+        
+        public static TNeedle CreateReadOnlyNestedNeedle<T, TNeedle>(IReadOnlyNeedle<T> target)
+            where TNeedle : IReadOnlyNeedle<T>
+        {
+            return NestedReadOnlyNeedleCreator<T, TNeedle>.Create(target);
         }
         
         public static bool TryGet<T>(this IReadOnlyNeedle<T> needle, out T target)
@@ -231,6 +243,100 @@ namespace Theraot.Threading.Needles
             }
 
             public static TNeedle Create(T target)
+            {
+                return _create.Invoke(target);
+            }
+        }
+
+        private static class NestedNeedleCreator<T, TNeedle>
+        where TNeedle : INeedle<T>
+        {
+            private static bool _canCreate;
+            private static Func<INeedle<T>, TNeedle> _create;
+
+            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "Expensive Initialization")]
+            static NestedNeedleCreator()
+            {
+                _canCreate = TypeHelper.TryGetCreate<INeedle<T>, TNeedle>(out _create);
+                if (!_canCreate)
+                {
+                    Func<Func<INeedle<T>>, TNeedle> tmp;
+                    _canCreate = TypeHelper.TryGetCreate<Func<INeedle<T>>, TNeedle>(out tmp);
+                    if (_canCreate)
+                    {
+                        _create =
+                        (target) =>
+                        {
+                            return tmp(() => target);
+                        };
+                    }
+                    if (!_canCreate)
+                    {
+                        _create =
+                        _ =>
+                        {
+                            throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
+                        };
+                    }
+                }
+            }
+
+            public static bool CanCreate
+            {
+                get
+                {
+                    return _canCreate;
+                }
+            }
+
+            public static TNeedle Create(INeedle<T> target)
+            {
+                return _create.Invoke(target);
+            }
+        }
+
+        private static class NestedReadOnlyNeedleCreator<T, TNeedle>
+            where TNeedle : IReadOnlyNeedle<T>
+        {
+            private static bool _canCreate;
+            private static Func<IReadOnlyNeedle<T>, TNeedle> _create;
+
+            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "Expensive Initialization")]
+            static NestedReadOnlyNeedleCreator()
+            {
+                _canCreate = TypeHelper.TryGetCreate<IReadOnlyNeedle<T>, TNeedle>(out _create);
+                if (!_canCreate)
+                {
+                    Func<Func<IReadOnlyNeedle<T>>, TNeedle> tmp;
+                    _canCreate = TypeHelper.TryGetCreate<Func<IReadOnlyNeedle<T>>, TNeedle>(out tmp);
+                    if (_canCreate)
+                    {
+                        _create =
+                        (target) =>
+                        {
+                            return tmp(() => target);
+                        };
+                    }
+                }
+                if (!_canCreate)
+                {
+                    _create =
+                    _ =>
+                    {
+                        throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
+                    };
+                }
+            }
+
+            public static bool CanCreate
+            {
+                get
+                {
+                    return _canCreate;
+                }
+            }
+
+            public static TNeedle Create(IReadOnlyNeedle<T> target)
             {
                 return _create.Invoke(target);
             }
