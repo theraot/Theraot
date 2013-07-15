@@ -145,7 +145,11 @@ namespace Theraot.Threading.Needles
                 }
                 else
                 {
-                    value = _target;
+                    Needle<T> tmp = value as Needle<T>;
+                    if (ReferenceEquals(tmp, null) || !tmp.TryUnify(ref _target))
+                    {
+                        value = _target;
+                    }
                 }
                 return true;
             }
@@ -158,9 +162,8 @@ namespace Theraot.Threading.Needles
                 else
                 {
                     Needle<T> tmp = value as Needle<T>;
-                    if (!ReferenceEquals(tmp, null))
+                    if (!ReferenceEquals(tmp, null) && tmp.TryUnify(ref _target))
                     {
-                        tmp.TryUnify(ref _target);
                         Thread.MemoryBarrier();
                         return true;
                     }
@@ -169,8 +172,52 @@ namespace Theraot.Threading.Needles
                         tmp = _target as Needle<T>;
                         if (!ReferenceEquals(tmp, null))
                         {
-                            tmp.TryUnify(ref value);
-                            return true;
+                            return tmp.TryUnify(ref value);
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+
+        public bool TryUnify(ref Needle<T> value)
+        {
+            if (ReferenceEquals(value, null))
+            {
+                if (ReferenceEquals(_target, null))
+                {
+                    value = new Needle<T>();
+                    _target = value;
+                    Thread.MemoryBarrier();
+                    return true;
+                }
+                else
+                {
+                    return value.TryUnify(ref _target);
+                }
+            }
+            else
+            {
+                if (ReferenceEquals(_target, value))
+                {
+                    return true;
+                }
+                else
+                {
+                    if (value.TryUnify(ref _target))
+                    {
+                        Thread.MemoryBarrier();
+                        return true;
+                    }
+                    else
+                    {
+                        Needle<T> tmp = _target as Needle<T>;
+                        if (!ReferenceEquals(tmp, null))
+                        {
+                            return tmp.TryUnify(ref value);
                         }
                         else
                         {
