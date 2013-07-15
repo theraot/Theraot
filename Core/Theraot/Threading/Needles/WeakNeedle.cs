@@ -132,7 +132,7 @@ namespace Theraot.Threading.Needles
             var _obj = obj as WeakNeedle<T>;
             if (!ReferenceEquals(null, _obj))
             {
-                return EqualsExtracted(_obj, _obj);
+                return EqualsExtracted(this, _obj);
             }
             else
             {
