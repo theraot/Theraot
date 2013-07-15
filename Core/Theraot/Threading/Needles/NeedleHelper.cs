@@ -62,7 +62,7 @@ namespace Theraot.Threading.Needles
             return NeedleCreator<T, TNeedle>.Create(target);
         }
 
-        public static TNeedle CreateNestedNeedle<T, TNeedle, TNestedNeedle>(INeedle<T> target)
+        public static TNeedle CreateNestedNeedle<T, TNeedle>(INeedle<T> target)
            where TNeedle : INeedle<T>
         {
             return NestedNeedleCreator<T, TNeedle>.Create(target);
