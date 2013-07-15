@@ -36,6 +36,66 @@
     <Prefer32Bit>false</Prefer32Bit>
     <LangVersion>5</LangVersion>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET20|AnyCPU'">
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug_NET20\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FAT;NET20</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <LangVersion>5</LangVersion>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET30|AnyCPU'">
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug_NET30\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FAT;NET30</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
+    <LangVersion>5</LangVersion>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET35|AnyCPU'">
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug_NET35\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FAT;NET35</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <LangVersion>5</LangVersion>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET40|AnyCPU'">
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug_NET40\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FAT;NET40</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <LangVersion>5</LangVersion>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET45|AnyCPU'">
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug_NET45\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FAT;NET45</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <LangVersion>5</LangVersion>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_NET20|AnyCPU' ">
     <Optimize>True</Optimize>
     <OutputPath>bin\Release_NET20\</OutputPath>
@@ -133,7 +193,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <LangVersion>5</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
@@ -519,13 +579,13 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+    Other similar extension points exist, see Microsoft.Common.targets.
+ <Target Name="BeforeBuild">
+ </Target>
+ <Target Name="AfterBuild">
+ </Target>
+ -->
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>
