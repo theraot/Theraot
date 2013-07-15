@@ -9,15 +9,28 @@ namespace Theraot.Threading.Needles
     public class Needle<T> : INeedle<T>
     {
         private int _hashCode;
-        private T _target;
+        private INeedle<T> _target;
 
         public Needle()
         {
-            _target = default(T);
+            _target = null;
             _hashCode = base.GetHashCode();
         }
 
         public Needle(T target)
+        {
+            _target = new StructNeedle<T>(target);
+            if (IsAlive)
+            {
+                _hashCode = target.GetHashCode();
+            }
+            else
+            {
+                _hashCode = base.GetHashCode();
+            }
+        }
+
+        public Needle(INeedle<T> target)
         {
             _target = target;
             if (IsAlive)
@@ -43,7 +56,7 @@ namespace Theraot.Threading.Needles
             get
             {
                 Thread.MemoryBarrier();
-                return _target;
+                return (T)_target;
             }
             set
             {
@@ -87,22 +100,7 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                if (obj is T)
-                {
-                    var target = _target;
-                    if (IsAlive)
-                    {
-                        return EqualityComparer<T>.Default.Equals(target, (T)obj);
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    return false;
-                }
+                return _target.Equals(obj);
             }
         }
 
@@ -130,26 +128,52 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        public void Unify(ref INeedle<T> value)
+        {
+            if (ReferenceEquals(value, null))
+            {
+                if (ReferenceEquals(_target, null))
+                {
+                    _target = new Needle<T>();
+                    Thread.MemoryBarrier();
+                    value = _target;
+                }
+                else
+                {
+                    value = _target;
+                }
+            }
+            else
+            {
+                _target = value;
+                Thread.MemoryBarrier();
+            }
+        }
+
         protected virtual void OnRelease()
         {
-            //Emtpy
+            _target = null;
         }
 
         protected void SetTarget(T value)
         {
-            _target = value;
-            Thread.MemoryBarrier();
+            if (ReferenceEquals(_target, null))
+            {
+                _target = new StructNeedle<T>(value);
+                Thread.MemoryBarrier();
+            }
+            else
+            {
+                _target.Value = value;
+            }
         }
-
         private static bool EqualsExtracted(Needle<T> left, Needle<T> right)
         {
-            var _left = left.Value;
-            if (left.IsAlive)
+            if (ReferenceEquals(left, null))
             {
-                var _right = right.Value;
-                if (right.IsAlive)
+                if (ReferenceEquals(right, null))
                 {
-                    return EqualityComparer<T>.Default.Equals(_left, _right);
+                    return true;
                 }
                 else
                 {
@@ -158,19 +182,17 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                return !right.IsAlive;
+                return left._target.Equals(left._target);
             }
         }
 
         private static bool NotEqualsExtracted(Needle<T> left, Needle<T> right)
         {
-            var _left = left.Value;
-            if (left.IsAlive)
+            if (ReferenceEquals(left, null))
             {
-                var _right = right.Value;
-                if (right.IsAlive)
+                if (ReferenceEquals(right, null))
                 {
-                    return !EqualityComparer<T>.Default.Equals(_left, _right);
+                    return false;
                 }
                 else
                 {
@@ -179,7 +201,7 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                return right.IsAlive;
+                return !left._target.Equals(left._target);
             }
         }
     }
