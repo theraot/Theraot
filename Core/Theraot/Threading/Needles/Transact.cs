@@ -16,7 +16,7 @@ namespace Theraot.Threading.Needles
         private readonly Transact _parentTransaction;
         private readonly Dictionary<object, IResource> _resources;
         
-        private Transact()
+        public Transact()
         {
             _resources = new Dictionary<object, IResource>();
             _parentTransaction = _currentTransaction;
@@ -34,18 +34,6 @@ namespace Theraot.Threading.Needles
         public static Transact Create()
         {
             return new Transact();
-        }
-
-        public static Transact GetTransaction(bool createNew)
-        {
-            if (createNew)
-            {
-                return new Transact();
-            }
-            else
-            {
-                return _currentTransaction;
-            }
         }
 
         public static T Read<T>(Func<T> source)
