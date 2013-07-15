@@ -236,7 +236,6 @@
     <Compile Include="Theraot\Threading\Needles\ICacheNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\INeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\IReadOnlyNeedle.cs" />
-    <Compile Include="Theraot\Threading\Needles\ITransactionResource.cs" />
     <Compile Include="Theraot\Threading\Needles\LazyDisposableNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\LazyDisposableNeedle.disposable.cs">
       <AutoGen>True</AutoGen>
@@ -256,8 +255,9 @@
     <Compile Include="Theraot\Threading\Needles\ReadOnlyNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\SpecialNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\Transaction.cs" />
-    <Compile Include="Theraot\Threading\Needles\TransactionNeedle.cs" />
-    <Compile Include="Theraot\Threading\Needles\TransactionNeedle.disposable.cs" />
+    <Compile Include="Theraot\Threading\Needles\Transaction.IResource.cs" />
+    <Compile Include="Theraot\Threading\Needles\Transaction.Needle.cs" />
+    <Compile Include="Theraot\Threading\Needles\Transaction.Needle.disposable.cs" />
     <Compile Include="Theraot\Threading\Needles\WeakDelegateNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\WeakNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\WeakNeedle.disposable.cs">
