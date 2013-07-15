@@ -7,7 +7,7 @@ namespace Theraot.Threading.Needles
 {
     [Serializable]
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public class Needle<T> : INeedle<T>, IUnifiableNeedle<T>
+    public class Needle<T> : INeedle<T>
     {
         private int _hashCode;
         private INeedle<T> _target;
@@ -180,7 +180,7 @@ namespace Theraot.Threading.Needles
                 }
                 else
                 {
-                    IUnifiableNeedle<T> tmp = value as IUnifiableNeedle<T>;
+                    Needle<T> tmp = value as Needle<T>;
                     if (ReferenceEquals(tmp, null) && tmp.TryUnify(ref _target))
                     {
                         return true;
@@ -199,10 +199,10 @@ namespace Theraot.Threading.Needles
                 }
                 else
                 {
-                    IUnifiableNeedle<T> tmp = value as IUnifiableNeedle<T>;
+                    Needle<T> tmp = value as Needle<T>;
                     if (ReferenceEquals(tmp, null) || !tmp.TryUnify(ref _target))
                     {
-                        tmp = _target as IUnifiableNeedle<T>;
+                        tmp = _target as Needle<T>;
                         if (ReferenceEquals(tmp, null) && tmp.TryUnify(ref value))
                         {
                             return true;
@@ -233,7 +233,7 @@ namespace Theraot.Threading.Needles
                 }
                 else
                 {
-                    IUnifiableNeedle<T> tmp = value as IUnifiableNeedle<T>;
+                    Needle<T> tmp = value as Needle<T>;
                     if (!ReferenceEquals(tmp, null) || !tmp.TryUnify(ref _target))
                     {
                         value = _target;
@@ -244,10 +244,10 @@ namespace Theraot.Threading.Needles
             {
                 if (!ReferenceEquals(_target, value) && !ReferenceEquals(this, value))
                 {
-                    IUnifiableNeedle<T> tmp = value as IUnifiableNeedle<T>;
+                    Needle<T> tmp = value as Needle<T>;
                     if (ReferenceEquals(tmp, null) || !tmp.TryUnify(ref _target))
                     {
-                        tmp = _target as IUnifiableNeedle<T>;
+                        tmp = _target as Needle<T>;
                         if (!ReferenceEquals(tmp, null) || !tmp.TryUnify(ref value))
                         {
                             value = _target;

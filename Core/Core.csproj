@@ -235,7 +235,6 @@
     <Compile Include="Theraot\Threading\Needles\ICacheNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\INeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\IReadOnlyNeedle.cs" />
-    <Compile Include="Theraot\Threading\Needles\IUnifiableNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\LazyDisposableNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\LazyDisposableNeedle.disposable.cs">
       <AutoGen>True</AutoGen>
