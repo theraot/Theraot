@@ -8,7 +8,7 @@ using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
-    public sealed partial class Transaction
+    public sealed partial class Transact
     {
         public sealed partial class Needle<T> : IResource, INeedle<T>
         {
