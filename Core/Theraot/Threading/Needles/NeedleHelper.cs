@@ -20,20 +20,30 @@ namespace Theraot.Threading.Needles
             return DeferredReadOnlyNeedleCreator<T, TNeedle>.CanCreate;
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "False Positive")]
         public static bool CanCreateNeedle<T, TNeedle>()
             where TNeedle : INeedle<T>
         {
             return NeedleCreator<T, TNeedle>.CanCreate;
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "False Positive")]
+        public static bool CanCreateNestedNeedle<T, TNeedle>()
+            where TNeedle : INeedle<T>
+        {
+            return NestedNeedleCreator<T, TNeedle>.CanCreate;
+        }
+
+        public static bool CanCreateNestedReadOnlyNeedle<T, TNeedle>()
+            where TNeedle : IReadOnlyNeedle<T>
+        {
+            return NestedReadOnlyNeedleCreator<T, TNeedle>.CanCreate;
+        }
+
         public static bool CanCreateReadOnlyNeedle<T, TNeedle>()
             where TNeedle : IReadOnlyNeedle<T>
         {
             return ReadOnlyNeedleCreator<T, TNeedle>.CanCreate;
         }
-
+        
         public static TNeedle CreateDeferredNeedle<T, TNeedle>(Func<T> target)
             where TNeedle : INeedle<T>
         {
