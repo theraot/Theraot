@@ -132,7 +132,7 @@ namespace Theraot.Threading.Needles
             var _obj = obj as WeakNeedle<T>;
             if (!ReferenceEquals(null, _obj))
             {
-                return EqualsExtracted(this, _obj);
+                return EqualsExtractedExtracted(this, _obj);
             }
             else
             {
@@ -220,6 +220,32 @@ namespace Theraot.Threading.Needles
 
         private static bool EqualsExtracted(WeakNeedle<T> left, WeakNeedle<T> right)
         {
+            if (ReferenceEquals(left, null))
+            {
+                if (ReferenceEquals(right, null))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                if (ReferenceEquals(right, null))
+                {
+                    return false;
+                }
+                else
+                {
+                    return EqualsExtractedExtracted(left, right);
+                }
+            }
+        }
+
+        private static bool EqualsExtractedExtracted(WeakNeedle<T> left, WeakNeedle<T> right)
+        {
             var _left = left.Value;
             if (left.IsAlive)
             {
@@ -240,6 +266,32 @@ namespace Theraot.Threading.Needles
         }
 
         private static bool NotEqualsExtracted(WeakNeedle<T> left, WeakNeedle<T> right)
+        {
+            if (ReferenceEquals(left, null))
+            {
+                if (ReferenceEquals(right, null))
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                if (ReferenceEquals(right, null))
+                {
+                    return true;
+                }
+                else
+                {
+                    return NotEqualsExtractedExtracted(left, right);
+                }
+            }
+        }
+
+        private static bool NotEqualsExtractedExtracted(WeakNeedle<T> left, WeakNeedle<T> right)
         {
             var _left = left.Value;
             if (left.IsAlive)
