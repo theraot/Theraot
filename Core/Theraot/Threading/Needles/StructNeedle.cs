@@ -7,7 +7,7 @@ namespace Theraot.Threading.Needles
 {
     [Serializable]
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public struct StructNeedle<T> : INeedle<T>
+    public struct StructNeedle<T> : INeedle<T>, IUnifiableNeedle<T>
     {
         private T _target;
 
@@ -112,6 +112,53 @@ namespace Theraot.Threading.Needles
             else
             {
                 return "<Dead Needle>";
+            }
+        }
+
+        public bool TryUnify(ref INeedle<T> value)
+        {
+            if (ReferenceEquals(value, null))
+            {
+                value = new Needle<T>(this);
+                return true;
+            }
+            else
+            {
+                if (ReferenceEquals(_target, value))
+                {
+                    return true;
+                }
+                else
+                {
+                    if (value is StructNeedle<T> && ReferenceEquals(_target, ((StructNeedle<T>)value)._target))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        var tmp = _target as IUnifiableNeedle<T>;
+                        if (!ReferenceEquals(tmp, null))
+                        {
+                            return tmp.TryUnify(ref value);
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+
+        public bool TryUnify(ref StructNeedle<T> value)
+        {
+            if (ReferenceEquals(_target, ((StructNeedle<T>)value)._target))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
