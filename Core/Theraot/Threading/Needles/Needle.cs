@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
@@ -133,6 +134,93 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        private bool TryUnifyExtracted<TNeedle>(ref TNeedle value)
+            where TNeedle : INeedle<T>
+        {
+            if (_target is TNeedle)
+            {
+                value = (TNeedle)_target;
+                return true;
+            }
+            else
+            {
+                if (NeedleHelper.CanCreateNestedNeedle<T, TNeedle>())
+                {
+                    value = NeedleHelper.CreateNestedNeedle<T, TNeedle>(this);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
+        public bool TryUnify<TNeedle>(ref TNeedle value)
+            where TNeedle : INeedle<T>
+        {
+            if (ReferenceEquals(value, null))
+            {
+                if (ReferenceEquals(_target, null))
+                {
+                    Func<TNeedle> tmp;
+                    if (TypeHelper.TryGetCreate(out tmp))
+                    {
+                        value = tmp.Invoke();
+                        _target = value;
+                        Thread.MemoryBarrier();
+                        return true;
+                    }
+                    else
+                    {
+                        _target = new Needle<T>();
+                        Thread.MemoryBarrier();
+                        return TryUnifyExtracted<TNeedle>(ref value);
+                    }
+                }
+                else
+                {
+                    IUnifiableNeedle<T> tmp = value as IUnifiableNeedle<T>;
+                    if (ReferenceEquals(tmp, null) && tmp.TryUnify(ref _target))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return TryUnifyExtracted<TNeedle>(ref value);
+                    }
+                }
+            }
+            else
+            {
+                if (ReferenceEquals(_target, value))
+                {
+                    return true;
+                }
+                else
+                {
+                    IUnifiableNeedle<T> tmp = value as IUnifiableNeedle<T>;
+                    if (ReferenceEquals(tmp, null) || !tmp.TryUnify(ref _target))
+                    {
+                        tmp = _target as IUnifiableNeedle<T>;
+                        if (ReferenceEquals(tmp, null) && tmp.TryUnify(ref value))
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return TryUnifyExtracted<TNeedle>(ref value);
+                        }
+                    }
+                    else
+                    {
+                        Thread.MemoryBarrier();
+                        return true;
+                    }
+                }
+            }
+        }
+
         public bool TryUnify(ref INeedle<T> value)
         {
             if (ReferenceEquals(value, null))
@@ -146,41 +234,32 @@ namespace Theraot.Threading.Needles
                 else
                 {
                     IUnifiableNeedle<T> tmp = value as IUnifiableNeedle<T>;
-                    if (ReferenceEquals(tmp, null) || !tmp.TryUnify(ref _target))
+                    if (!ReferenceEquals(tmp, null) || !tmp.TryUnify(ref _target))
                     {
                         value = _target;
                     }
                 }
-                return true;
             }
             else
             {
-                if (ReferenceEquals(_target, value))
-                {
-                    return true;
-                }
-                else
+                if (!ReferenceEquals(_target, value))
                 {
                     IUnifiableNeedle<T> tmp = value as IUnifiableNeedle<T>;
-                    if (!ReferenceEquals(tmp, null) && tmp.TryUnify(ref _target))
+                    if (ReferenceEquals(tmp, null) || !tmp.TryUnify(ref _target))
                     {
-                        Thread.MemoryBarrier();
-                        return true;
+                        tmp = _target as IUnifiableNeedle<T>;
+                        if (!ReferenceEquals(tmp, null) || !tmp.TryUnify(ref value))
+                        {
+                            value = _target;
+                        }
                     }
                     else
                     {
-                        tmp = _target as IUnifiableNeedle<T>;
-                        if (!ReferenceEquals(tmp, null))
-                        {
-                            return tmp.TryUnify(ref value);
-                        }
-                        else
-                        {
-                            return false;
-                        }
+                        Thread.MemoryBarrier();
                     }
                 }
             }
+            return true;
         }
 
         public bool TryUnify(ref Needle<T> value)
@@ -192,40 +271,34 @@ namespace Theraot.Threading.Needles
                     value = new Needle<T>();
                     _target = value;
                     Thread.MemoryBarrier();
-                    return true;
                 }
                 else
                 {
-                    return value.TryUnify(ref _target);
+                    if (!value.TryUnify(ref _target))
+                    {
+                        value = new Needle<T>(_target);
+                    }
                 }
             }
             else
             {
-                if (ReferenceEquals(_target, value))
-                {
-                    return true;
-                }
-                else
+                if (!ReferenceEquals(_target, value))
                 {
                     if (value.TryUnify(ref _target))
                     {
                         Thread.MemoryBarrier();
-                        return true;
                     }
                     else
                     {
                         Needle<T> tmp = _target as Needle<T>;
-                        if (!ReferenceEquals(tmp, null))
+                        if (!ReferenceEquals(tmp, null) || !tmp.TryUnify(ref value))
                         {
-                            return tmp.TryUnify(ref value);
-                        }
-                        else
-                        {
-                            return false;
+                            value = new Needle<T>(_target);
                         }
                     }
                 }
             }
+            return true;
         }
 
         protected virtual void OnRelease()

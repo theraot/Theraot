@@ -6,6 +6,6 @@ namespace Theraot.Threading.Needles
 {
     interface IUnifiableNeedle<T> : INeedle<T>
     {
-        bool TryUnify(ref INeedle<T> value);
+        bool TryUnify<TNeedle>(ref TNeedle value) where TNeedle: INeedle<T>;
     }
 }

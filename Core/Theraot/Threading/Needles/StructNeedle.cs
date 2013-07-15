@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
@@ -115,39 +116,24 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public bool TryUnify(ref INeedle<T> value)
+        public bool TryUnify<TNeedle>(ref TNeedle value)
+            where TNeedle : INeedle<T>
         {
-            if (ReferenceEquals(value, null))
+            if (NeedleHelper.CanCreateNestedNeedle<T, TNeedle>())
             {
-                value = new Needle<T>(this);
+                value = NeedleHelper.CreateNestedNeedle<T, TNeedle>(this);
                 return true;
             }
             else
             {
-                if (ReferenceEquals(_target, value))
-                {
-                    return true;
-                }
-                else
-                {
-                    if (value is StructNeedle<T> && ReferenceEquals(_target, ((StructNeedle<T>)value)._target))
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        var tmp = _target as IUnifiableNeedle<T>;
-                        if (!ReferenceEquals(tmp, null))
-                        {
-                            return tmp.TryUnify(ref value);
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    }
-                }
+                return false;
             }
+        }
+
+        public bool TryUnify(ref INeedle<T> value)
+        {
+            value = new Needle<T>(this);
+            return true;
         }
 
         public bool TryUnify(ref StructNeedle<T> value)
