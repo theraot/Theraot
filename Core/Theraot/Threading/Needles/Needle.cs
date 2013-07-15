@@ -6,7 +6,7 @@ namespace Theraot.Threading.Needles
 {
     [Serializable]
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public class Needle<T> : INeedle<T>
+    public class Needle<T> : INeedle<T>, IUnifiableNeedle<T>
     {
         private int _hashCode;
         private INeedle<T> _target;
@@ -145,7 +145,7 @@ namespace Theraot.Threading.Needles
                 }
                 else
                 {
-                    Needle<T> tmp = value as Needle<T>;
+                    IUnifiableNeedle<T> tmp = value as IUnifiableNeedle<T>;
                     if (ReferenceEquals(tmp, null) || !tmp.TryUnify(ref _target))
                     {
                         value = _target;
@@ -161,7 +161,7 @@ namespace Theraot.Threading.Needles
                 }
                 else
                 {
-                    Needle<T> tmp = value as Needle<T>;
+                    IUnifiableNeedle<T> tmp = value as IUnifiableNeedle<T>;
                     if (!ReferenceEquals(tmp, null) && tmp.TryUnify(ref _target))
                     {
                         Thread.MemoryBarrier();
@@ -169,7 +169,7 @@ namespace Theraot.Threading.Needles
                     }
                     else
                     {
-                        tmp = _target as Needle<T>;
+                        tmp = _target as IUnifiableNeedle<T>;
                         if (!ReferenceEquals(tmp, null))
                         {
                             return tmp.TryUnify(ref value);
