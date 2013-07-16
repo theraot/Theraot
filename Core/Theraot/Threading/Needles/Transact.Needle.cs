@@ -34,12 +34,8 @@ namespace Theraot.Threading.Needles
                     if (!ReferenceEquals(_source, null))
                     {
                         _original = _source.Invoke();
-                        _value = new ThreadLocal<T>(_source);
                     }
-                    else
-                    {
-                        _value = new ThreadLocal<T>();
-                    }
+                    _value = new ThreadLocal<T>();
                 }
             }
 
@@ -55,7 +51,22 @@ namespace Theraot.Threading.Needles
             {
                 get
                 {
-                    return _value.Value;
+                    if (_value.IsValueCreated)
+                    {
+                        return _value.Value;
+                    }
+                    else
+                    {
+                        if (ReferenceEquals(_source, null))
+                        {
+                            throw new InvalidOperationException("Unable to read write only needle");
+                        }
+                        else
+                        {
+                            _value.Value = _original;
+                            return _original;
+                        }
+                    }
                 }
                 set
                 {

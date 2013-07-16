@@ -46,9 +46,9 @@ namespace Theraot.Threading.Needles
             else
             {
                 IResource resource;
-                if (!transaction.TryGetResource(source, out resource))
+                if (!transaction._resources.TryGetValue(source, out resource))
                 {
-                    resource = transaction.TryAddResource(source, new Needle<T>(source, null));
+                    resource = transaction._resources.TryAdd(source, new Needle<T>(source, null));
                 }
                 return (resource as Needle<T>).Value;
             }
@@ -64,9 +64,9 @@ namespace Theraot.Threading.Needles
             else
             {
                 IResource resource;
-                if (!transaction.TryGetResource(target, out resource))
+                if (!transaction._resources.TryGetValue(target, out resource))
                 {
-                    resource = transaction.TryAddResource(target, new Needle<T>(null, target));
+                    resource = transaction._resources.TryAdd(target, new Needle<T>(null, target));
                 }
                 (resource as Needle<T>).Value = value;
             }
@@ -151,16 +151,6 @@ namespace Theraot.Threading.Needles
         private void Rollback()
         {
             //Empty
-        }
-
-        private IResource TryAddResource(Delegate key, IResource value)
-        {
-            return _resources.TryAdd(key, value);
-        }
-
-        private bool TryGetResource(Delegate key, out IResource resource)
-        {
-            return _resources.TryGetValue(key, out resource);
         }
     }
 }
