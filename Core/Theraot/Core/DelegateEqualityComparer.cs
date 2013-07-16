@@ -47,6 +47,11 @@ namespace Theraot.Core
             {
                 hash = (hash << 5) - hash + tmp;
             }
+            var target = obj.Target;
+            if (!ReferenceEquals(target, null))
+            {
+                hash = hash ^ target.GetHashCode();
+            }
             return hash;
         }
 
