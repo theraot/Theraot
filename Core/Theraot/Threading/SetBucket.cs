@@ -1,4 +1,5 @@
 #if FAT
+
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -170,7 +171,7 @@ namespace Theraot.Threading
             while (true)
             {
                 revision = _revision;
-                if (IsOperationSafe() == 0)
+                if (IsOperationSafe())
                 {
                     bool isCollision = false;
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
@@ -185,7 +186,7 @@ namespace Theraot.Threading
                     finally
                     {
                         var isOperationSafe = IsOperationSafe(entries, revision);
-                        if (isOperationSafe == 0)
+                        if (isOperationSafe)
                         {
                             if (result)
                             {
@@ -196,8 +197,8 @@ namespace Theraot.Threading
                             {
                                 if (isCollision)
                                 {
-                                    var oldStatus = Interlocked.CompareExchange(ref _status, 1, 0);
-                                    if (oldStatus == 0)
+                                    var oldStatus = Interlocked.CompareExchange(ref _status, (int)BucketStatus.GrowRequested, (int)BucketStatus.Free);
+                                    if (oldStatus == (int)BucketStatus.Free)
                                     {
                                         _revision++;
                                     }
@@ -228,7 +229,7 @@ namespace Theraot.Threading
         {
             _entriesOld = null;
             _entriesNew = new FixedSizeSetBucket<T>(INT_DefaultCapacity, _comparer);
-            Thread.VolatileWrite(ref _status, 0);
+            Thread.VolatileWrite(ref _status, (int)BucketStatus.Free);
             Thread.VolatileWrite(ref _count, 0);
             _revision++;
         }
@@ -247,7 +248,7 @@ namespace Theraot.Threading
             while (true)
             {
                 revision = _revision;
-                if (IsOperationSafe() == 0)
+                if (IsOperationSafe())
                 {
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
                     bool done = false;
@@ -261,7 +262,7 @@ namespace Theraot.Threading
                     finally
                     {
                         var isOperationSafe = IsOperationSafe(entries, revision);
-                        if (isOperationSafe == 0)
+                        if (isOperationSafe)
                         {
                             done = true;
                         }
@@ -303,7 +304,7 @@ namespace Theraot.Threading
             while (true)
             {
                 revision = _revision;
-                if (IsOperationSafe() == 0)
+                if (IsOperationSafe())
                 {
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
                     bool done = false;
@@ -317,7 +318,7 @@ namespace Theraot.Threading
                     finally
                     {
                         var isOperationSafe = IsOperationSafe(entries, revision);
-                        if (isOperationSafe == 0)
+                        if (isOperationSafe)
                         {
                             if (result)
                             {
@@ -359,7 +360,7 @@ namespace Theraot.Threading
             while (true)
             {
                 revision = _revision;
-                if (IsOperationSafe() == 0)
+                if (IsOperationSafe())
                 {
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
                     bool done = false;
@@ -375,7 +376,7 @@ namespace Theraot.Threading
                     finally
                     {
                         var isOperationSafe = IsOperationSafe(entries, revision);
-                        if (isOperationSafe == 0)
+                        if (isOperationSafe)
                         {
                             done = true;
                         }
@@ -423,7 +424,7 @@ namespace Theraot.Threading
 
         private void CooperativeGrow()
         {
-            int status = 0;
+            int status;
             do
             {
                 status = Thread.VolatileRead(ref _status);
@@ -433,19 +434,22 @@ namespace Theraot.Threading
                     case 1:
 
                         // This area is only accessed by one thread, if that thread is aborted, we are doomed.
-                        // This class is not abort safe, aside from a thread being aborted here, a thread being aborted on status == 2 will mean lost items
+                        // This class is not abort safe
+                        // If a thread is being aborted here it's pending operation will be lost and there is risk of a livelock
                         var priority = Thread.CurrentThread.Priority;
-                        oldStatus = Interlocked.CompareExchange(ref _status, 2, 1);
-                        if (oldStatus == 1)
+                        oldStatus = Interlocked.CompareExchange(ref _status, (int)BucketStatus.Waiting, (int)BucketStatus.GrowRequested);
+                        if (oldStatus == (int)BucketStatus.GrowRequested)
                         {
                             try
                             {
                                 // The progress of other threads depend of this one, we should not allow a priority inversion.
                                 Thread.CurrentThread.Priority = ThreadPriority.Highest;
+                                //_copyPosition is set to -1. _copyPosition is incremented before it is used, so the first time it is used it will be 0.
                                 Thread.VolatileWrite(ref _copyPosition, -1);
+                                //The new capacity is twice the old capacity, the capacity must be a power of two.;
                                 var newCapacity = _entriesNew.Capacity * 2;
                                 _entriesOld = Interlocked.Exchange(ref _entriesNew, new FixedSizeSetBucket<T>(newCapacity, _comparer));
-                                oldStatus = Interlocked.CompareExchange(ref _status, 3, 2);
+                                oldStatus = Interlocked.CompareExchange(ref _status, (int)BucketStatus.Copy, (int)BucketStatus.Waiting);
                             }
                             finally
                             {
@@ -475,7 +479,8 @@ namespace Theraot.Threading
                         var old = _entriesOld;
                         if (old != null)
                         {
-                            // This class is not abort safe, aside from a thread being aborted here (causing lost items) a thread being aborted on status == 1 will mean a livelock
+                            // This class is not abort safe
+                            // If a thread is being aborted here it will causing lost items.
                             _revision++;
                             Interlocked.Increment(ref _copyingThreads);
                             T item;
@@ -494,7 +499,7 @@ namespace Theraot.Threading
                                     }
                                 }
                             }
-                            Interlocked.CompareExchange(ref _status, 4, 3);
+                            Interlocked.CompareExchange(ref _status, (int)BucketStatus.CopyCleanup, (int)BucketStatus.Copy);
                             _revision++;
                             Interlocked.Decrement(ref _copyingThreads);
                         }
@@ -503,12 +508,12 @@ namespace Theraot.Threading
                     case 4:
 
                         // Our copy is finished, we don't need the old storage anymore
-                        oldStatus = Interlocked.CompareExchange(ref _status, 2, 4);
-                        if (oldStatus == 4)
+                        oldStatus = Interlocked.CompareExchange(ref _status, (int)BucketStatus.Waiting, (int)BucketStatus.CopyCleanup);
+                        if (oldStatus == (int)BucketStatus.CopyCleanup)
                         {
                             _revision++;
                             Interlocked.Exchange(ref _entriesOld, null);
-                            Interlocked.CompareExchange(ref _status, 0, 2);
+                            Interlocked.CompareExchange(ref _status, (int)BucketStatus.Free, (int)BucketStatus.Waiting);
                         }
                         break;
 
@@ -519,63 +524,61 @@ namespace Theraot.Threading
             while (status != 0);
         }
 
-        private int IsOperationSafe(object entries, int revision)
+        private bool IsOperationSafe(object entries, int revision)
         {
-            int result = 5;
             bool check = _revision != revision;
             if (check)
             {
-                result = 4;
+                return false;
             }
             else
             {
                 var newEntries = Interlocked.CompareExchange(ref _entriesNew, null, null);
-                if (entries != newEntries)
+                if (entries == newEntries)
                 {
-                    result = 3;
-                }
-                else
-                {
-                    var newStatus = Interlocked.CompareExchange(ref _status, 0, 0);
-                    if (newStatus != 0)
-                    {
-                        result = 2;
-                    }
-                    else
+                    var newStatus = Interlocked.CompareExchange(ref _status, (int)BucketStatus.Free, (int)BucketStatus.Free);
+                    if (newStatus == (int)BucketStatus.Free)
                     {
                         if (Thread.VolatileRead(ref _copyingThreads) > 0)
                         {
                             _revision++;
-                            result = 1;
+                            return false;
                         }
                         else
                         {
-                            result = 0;
+                            return true;
                         }
                     }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
                 }
             }
-            return result;
         }
 
-        private int IsOperationSafe()
+        private bool IsOperationSafe()
         {
-            var newStatus = Interlocked.CompareExchange(ref _status, 0, 0);
-            if (newStatus != 0)
-            {
-                return 2;
-            }
-            else
+            var newStatus = Interlocked.CompareExchange(ref _status, (int)BucketStatus.Free, (int)BucketStatus.Free);
+            if (newStatus == (int)BucketStatus.Free)
             {
                 if (Thread.VolatileRead(ref _copyingThreads) > 0)
                 {
                     _revision++;
-                    return 1;
+                    return false;
                 }
                 else
                 {
-                    return 0;
+                    return true;
                 }
+            }
+            else
+            {
+                return false;
             }
         }
 
@@ -632,4 +635,5 @@ namespace Theraot.Threading
         //  This can be added by a wrapper.
     }
 }
+
 #endif
