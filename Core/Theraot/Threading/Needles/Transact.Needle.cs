@@ -127,7 +127,7 @@ namespace Theraot.Threading.Needles
                     else
                     {
                         resource = new Needle<T>(source, null);
-                        transaction.SetResource(source, resource);
+                        resource = transaction.SetResource(source, resource);
                         return resource as Needle<T>;
                     }
                 }
@@ -150,7 +150,7 @@ namespace Theraot.Threading.Needles
                     else
                     {
                         resource = new Needle<T>(null, target);
-                        transaction.SetResource(target, resource);
+                        resource = transaction.SetResource(target, resource);
                         return resource as Needle<T>;
                     }
                 }
