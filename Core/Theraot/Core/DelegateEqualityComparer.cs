@@ -33,28 +33,49 @@ namespace Theraot.Core
 
         private static bool CompareInternal(Delegate x, Delegate y)
         {
-            if (!ReferenceEquals(x.Target, y.Target))
+            if (ReferenceEquals(x, null))
             {
-                return false;
+                if (ReferenceEquals(y, null))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             {
-                var leftBody = x.Method.GetMethodBody().GetILAsByteArray();
-                var rightBody = y.Method.GetMethodBody().GetILAsByteArray();
-                if (leftBody.Length != rightBody.Length)
+                if (ReferenceEquals(y, null))
                 {
                     return false;
                 }
                 else
                 {
-                    for (var index = 0; index < leftBody.Length; index++)
+                    if (!ReferenceEquals(x.Target, y.Target))
                     {
-                        if (leftBody[index] != rightBody[index])
+                        return false;
+                    }
+                    else
+                    {
+                        var leftBody = x.Method.GetMethodBody().GetILAsByteArray();
+                        var rightBody = y.Method.GetMethodBody().GetILAsByteArray();
+                        if (leftBody.Length != rightBody.Length)
                         {
                             return false;
                         }
+                        else
+                        {
+                            for (var index = 0; index < leftBody.Length; index++)
+                            {
+                                if (leftBody[index] != rightBody[index])
+                                {
+                                    return false;
+                                }
+                            }
+                            return true;
+                        }
                     }
-                    return true;
                 }
             }
         }
