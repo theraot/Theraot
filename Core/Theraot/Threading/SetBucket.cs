@@ -431,7 +431,7 @@ namespace Theraot.Threading
                 int oldStatus;
                 switch (status)
                 {
-                    case 1:
+                    case (int)BucketStatus.GrowRequested:
 
                         // This area is only accessed by one thread, if that thread is aborted, we are doomed.
                         // This class is not abort safe
@@ -459,7 +459,7 @@ namespace Theraot.Threading
                         }
                         break;
 
-                    case 2:
+                    case (int)BucketStatus.Waiting:
 
                         // This is the whole reason why this datastructure is not wait free.
                         // Testing shows that it is uncommon that a thread enters here.
@@ -473,7 +473,7 @@ namespace Theraot.Threading
                         }
                         break;
 
-                    case 3:
+                    case (int)BucketStatus.Copy:
 
                         // It is time to cooperate to copy the old storage to the new one
                         var old = _entriesOld;
@@ -505,7 +505,7 @@ namespace Theraot.Threading
                         }
                         break;
 
-                    case 4:
+                    case (int)BucketStatus.CopyCleanup:
 
                         // Our copy is finished, we don't need the old storage anymore
                         oldStatus = Interlocked.CompareExchange(ref _status, (int)BucketStatus.Waiting, (int)BucketStatus.CopyCleanup);
