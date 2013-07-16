@@ -28,7 +28,26 @@ namespace Theraot.Core
 
         public int GetHashCode(Delegate obj)
         {
-            return obj.Method.GetHashCode();
+            int hash = 0;
+            int tmp = 0;
+            var body = obj.Method.GetMethodBody().GetILAsByteArray();
+            for (var index = 0; index < body.Length; index++)
+            {
+                if (index % 4 == 0)
+                {
+                    hash = (hash << 5) - hash + tmp;
+                    tmp = body[index];
+                }
+                else
+                {
+                    tmp = tmp << 8 | body[index];
+                }
+            }
+            if (tmp != 0)
+            {
+                hash = (hash << 5) - hash + tmp;
+            }
+            return hash;
         }
 
         private static bool CompareInternal(Delegate x, Delegate y)
