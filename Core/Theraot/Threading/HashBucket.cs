@@ -407,13 +407,9 @@ namespace Theraot.Threading
                     bool done = false;
                     try
                     {
-                        if (TryAddExtracted(key, value, entries, out previous) != -1)
+                        if (TryAddExtracted(key, value, entries, out previous, out isCollision) != -1)
                         {
                             result = true;
-                        }
-                        else
-                        {
-                            isCollision = !_keyComparer.Equals(previous.Key, key);
                         }
                     }
                     finally
@@ -778,15 +774,17 @@ namespace Theraot.Threading
             return -1;
         }
 
-        private int TryAddExtracted(TKey key, TValue value, FixedSizeHashBucket<TKey, TValue> entries, out KeyValuePair<TKey, TValue> previous)
+        private int TryAddExtracted(TKey key, TValue value, FixedSizeHashBucket<TKey, TValue> entries, out KeyValuePair<TKey, TValue> previous, out bool isCollision)
         {
+            isCollision = true;
             previous = default(KeyValuePair<TKey, TValue>);
             if (entries != null)
             {
                 for (int attempts = 0; attempts < _maxProbing; attempts++)
                 {
                     int index = entries.TryAdd(key, value, attempts, out previous);
-                    if (index != -1)
+                    isCollision = _keyComparer.Equals(previous.Key, key);
+                    if (index != -1 || !isCollision)
                     {
                         return index;
                     }
