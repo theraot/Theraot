@@ -2,8 +2,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
-
 using Theraot.Core;
 
 namespace Theraot.Threading.Needles
@@ -14,11 +14,11 @@ namespace Theraot.Threading.Needles
         private static Transact _currentTransaction;
 
         private readonly Transact _parentTransaction;
-        private readonly Dictionary<object, IResource> _resources;
+        private readonly HashBucket<Delegate, IResource> _resources;
         
         public Transact()
         {
-            _resources = new Dictionary<object, IResource>();
+            _resources = new HashBucket<Delegate, IResource>(DelegateEqualityComparer.Instance);
             _parentTransaction = _currentTransaction;
             _currentTransaction = this;
         }
@@ -62,6 +62,11 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        private void Rollback()
+        {
+            //Empty
+        }
+
         public bool Commit()
         {
             if (Check())
@@ -69,9 +74,9 @@ namespace Theraot.Threading.Needles
                 Needles.Needle<Thread> thread = null;
                 if (_resources.Count > 0)
                 {
-                    foreach (var resource in _resources.Values)
+                    foreach (var resource in _resources.Pairs)
                     {
-                        resource.Capture(ref thread);
+                        resource.Value.Capture(ref thread);
                     }
                     //Should not be null
                     thread = thread.Simplify();
@@ -92,9 +97,9 @@ namespace Theraot.Threading.Needles
                         {
                             if (Check())
                             {
-                                foreach (var resource in _resources.Values)
+                                foreach (var resource in _resources.Pairs)
                                 {
-                                    resource.Commit();
+                                    resource.Value.Commit();
                                 }
                                 return true;
                             }
@@ -127,9 +132,9 @@ namespace Theraot.Threading.Needles
         private bool Check()
         {
             bool check;
-            foreach (var resource in _resources.Values)
+            foreach (var resource in _resources.Pairs)
             {
-                if (!resource.Check())
+                if (!resource.Value.Check())
                 {
                     check = false;
                 }
@@ -138,12 +143,12 @@ namespace Theraot.Threading.Needles
             return check;
         }
 
-        private void SetResource(object key, IResource value)
+        private void SetResource(Delegate key, IResource value)
         {
-            _resources[key] = value;
+            _resources.Set(key, value);
         }
 
-        private bool TryGetResource(object key, out IResource resource)
+        private bool TryGetResource(Delegate key, out IResource resource)
         {
             try
             {

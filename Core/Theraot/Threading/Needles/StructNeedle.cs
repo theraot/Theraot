@@ -7,7 +7,7 @@ using Theraot.Core;
 namespace Theraot.Threading.Needles
 {
     [Serializable]
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    //[global::System.Diagnostics.DebuggerNonUserCode]
     public struct StructNeedle<T> : INeedle<T>
     {
         private T _target;
