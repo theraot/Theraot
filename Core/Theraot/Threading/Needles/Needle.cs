@@ -6,7 +6,7 @@ using Theraot.Core;
 namespace Theraot.Threading.Needles
 {
     [Serializable]
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    //[global::System.Diagnostics.DebuggerNonUserCode]
     public class Needle<T> : INeedle<T>
     {
         private int _hashCode;
@@ -58,7 +58,7 @@ namespace Theraot.Threading.Needles
             get
             {
                 Thread.MemoryBarrier();
-                return (T)_target;
+                return _target.Value;
             }
             set
             {

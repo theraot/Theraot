@@ -2,8 +2,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
-
 using Theraot.Core;
 
 namespace Theraot.Threading.Needles
@@ -16,7 +16,6 @@ namespace Theraot.Threading.Needles
             private readonly Action<T> _target;
 
             private T _original;
-            private int _taken;
             private ThreadLocal<T> _value;
             private Transact _transaction;
             private Needles.Needle<Thread> _owner = new Needles.Needle<Thread>();
@@ -31,11 +30,15 @@ namespace Theraot.Threading.Needles
                 else
                 {
                     _source = source;
-                    _target = target;
+                    _target = target ?? ActionHelper.GetNoopAction<T>();
                     if (!ReferenceEquals(_source, null))
                     {
                         _original = _source.Invoke();
                         _value = new ThreadLocal<T>(_source);
+                    }
+                    else
+                    {
+                        _value = new ThreadLocal<T>();
                     }
                 }
             }
@@ -67,17 +70,10 @@ namespace Theraot.Threading.Needles
 
             bool IResource.Commit()
             {
-                if (Interlocked.CompareExchange(ref _taken, 1, 0) == 0)
+                if (_owner.Value.Equals(Thread.CurrentThread))
                 {
-                    try
-                    {
-                        _target.Invoke(_value.Value);
-                        return true;
-                    }
-                    finally
-                    {
-                        Interlocked.Decrement(ref _taken);
-                    }
+                    _target.Invoke(_value.Value);
+                    return true;
                 }
                 else
                 {
