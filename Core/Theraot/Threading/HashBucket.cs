@@ -386,6 +386,77 @@ namespace Theraot.Threading
         }
 
         /// <summary>
+        /// Attempts to add the specified key and associated value.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>The value found in the destination after the attempt, regardless of collisions.</returns>
+        public TValue TryAdd(TKey key, TValue value)
+        {
+            bool result = false;
+            int revision;
+            KeyValuePair<TKey, TValue> previous = default(KeyValuePair<TKey, TValue>);
+            TValue found = value;
+            while (true)
+            {
+                revision = _revision;
+                if (IsOperationSafe())
+                {
+                    bool isCollision = false;
+                    var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
+                    bool done = false;
+                    try
+                    {
+                        if (TryAddExtracted(key, value, entries, out previous) != -1)
+                        {
+                            result = true;
+                        }
+                        else
+                        {
+                            isCollision = !_keyComparer.Equals(previous.Key, key);
+                        }
+                    }
+                    finally
+                    {
+                        var isOperationSafe = IsOperationSafe(entries, revision);
+                        if (isOperationSafe)
+                        {
+                            if (result)
+                            {
+                                Interlocked.Increment(ref _count);
+                                done = true;
+                            }
+                            else
+                            {
+                                if (isCollision)
+                                {
+                                    var oldStatus = Interlocked.CompareExchange(ref _status, (int)BucketStatus.GrowRequested, (int)BucketStatus.Free);
+                                    if (oldStatus == (int)BucketStatus.Free)
+                                    {
+                                        _revision++;
+                                    }
+                                }
+                                else
+                                {
+                                    done = true;
+                                    found = previous.Value;
+                                }
+                            }
+                        }
+                    }
+                    if (done)
+                    {
+                        return found;
+                    }
+                }
+                else
+                {
+                    CooperativeGrow();
+                }
+            }
+        }
+
+        /// <summary>
         /// Tries to retrieve the key and associated value at the specified index.
         /// </summary>
         /// <param name="index">The index.</param>
@@ -698,6 +769,23 @@ namespace Theraot.Threading
                 for (int attempts = 0; attempts < _maxProbing; attempts++)
                 {
                     int index = entries.Set(key, value, attempts, out isNew);
+                    if (index != -1)
+                    {
+                        return index;
+                    }
+                }
+            }
+            return -1;
+        }
+
+        private int TryAddExtracted(TKey key, TValue value, FixedSizeHashBucket<TKey, TValue> entries, out KeyValuePair<TKey, TValue> previous)
+        {
+            previous = default(KeyValuePair<TKey, TValue>);
+            if (entries != null)
+            {
+                for (int attempts = 0; attempts < _maxProbing; attempts++)
+                {
+                    int index = entries.TryAdd(key, value, attempts, out previous);
                     if (index != -1)
                     {
                         return index;

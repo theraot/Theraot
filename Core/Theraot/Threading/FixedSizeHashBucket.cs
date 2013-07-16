@@ -298,6 +298,40 @@ namespace Theraot.Threading
         }
 
         /// <summary>
+        /// Attempts to add the specified key and associated value at the default index.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="previous">Set to the value found in the destination in case of collision.</param>
+        /// <returns>The index where the key and associated value were added.</returns>
+        public int TryAdd(TKey key, TValue value, out KeyValuePair<TKey, TValue> previous)
+        {
+            return TryAdd(key, value, 0, out previous);
+        }
+
+        /// <summary>
+        /// Attempts to add the specified key and associated value.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="offset">The offset from the default index.</param>
+        /// <param name="previous">Set to the value found in the destination in case of collision.</param>
+        /// <returns>The index where the key and associated value were added.</returns>
+        public int TryAdd(TKey key, TValue value, int offset, out KeyValuePair<TKey, TValue> previous)
+        {
+            int index = Index(key, offset);
+            var entry = new KeyValuePair<TKey, TValue>(key, value);
+            if (_entries.Insert(index, entry, out previous))
+            {
+                return index;
+            }
+            else
+            {
+                return -1;
+            }
+        }
+
+        /// <summary>
         /// Tries the retrieve the key and value at an specified index.
         /// </summary>
         /// <param name="index">The index.</param>
