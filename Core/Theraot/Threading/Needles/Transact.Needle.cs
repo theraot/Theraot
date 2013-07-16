@@ -16,9 +16,9 @@ namespace Theraot.Threading.Needles
             private readonly Action<T> _target;
 
             private T _original;
-            private ThreadLocal<T> _value;
-            private Transact _transaction;
             private Needles.Needle<Thread> _owner = new Needles.Needle<Thread>();
+            private Transact _transaction;
+            private ThreadLocal<T> _value;
 
             private Needle(Func<T> source, Action<T> target)
             {
@@ -68,17 +68,9 @@ namespace Theraot.Threading.Needles
                 //Empty
             }
 
-            bool IResource.Commit()
+            void IResource.Capture(ref Needles.Needle<Thread> thread)
             {
-                if (_owner.Value.Equals(Thread.CurrentThread))
-                {
-                    _target.Invoke(_value.Value);
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                _owner.Unify(ref thread);
             }
 
             bool IResource.Check()
@@ -100,9 +92,17 @@ namespace Theraot.Threading.Needles
                 }
             }
 
-            void IResource.Capture(ref Needles.Needle<Thread> thread)
+            bool IResource.Commit()
             {
-                _owner.Unify(ref thread);
+                if (_owner.Value.Equals(Thread.CurrentThread))
+                {
+                    _target.Invoke(_value.Value);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
 
             void IResource.Rollback()

@@ -50,16 +50,9 @@ namespace Theraot.Threading.Needles
         {
             if (TakeDisposalExecution())
             {
-                try
+                if (disposeManagedResources)
                 {
-                    if (disposeManagedResources)
-                    {
-                        Rollback();
-                    }
-                }
-                finally
-                {
-                    //Empty
+                    Rollback();
                 }
             }
         }

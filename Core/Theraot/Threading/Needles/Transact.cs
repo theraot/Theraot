@@ -62,11 +62,6 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        private void Rollback()
-        {
-            //Empty
-        }
-
         public bool Commit()
         {
             if (Check())
@@ -141,6 +136,11 @@ namespace Theraot.Threading.Needles
             }
             check = true;
             return check;
+        }
+
+        private void Rollback()
+        {
+            //Empty
         }
 
         private IResource TryAddResource(Delegate key, IResource value)
