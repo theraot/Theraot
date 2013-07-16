@@ -317,6 +317,7 @@
     <Compile Include="Theraot\Threading\Needles\SpecialNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\StructNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\Transact.cs" />
+    <Compile Include="Theraot\Threading\Needles\Transact.disposable.cs" />
     <Compile Include="Theraot\Threading\Needles\Transact.IResource.cs" />
     <Compile Include="Theraot\Threading\Needles\Transact.Needle.cs" />
     <Compile Include="Theraot\Threading\Needles\Transact.Needle.disposable.cs" />

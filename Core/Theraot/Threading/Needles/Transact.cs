@@ -150,16 +150,7 @@ namespace Theraot.Threading.Needles
 
         private bool TryGetResource(Delegate key, out IResource resource)
         {
-            try
-            {
-                resource = _resources[key];
-                return true;
-            }
-            catch
-            {
-                resource = null;
-                return false;
-            }
+            return _resources.TryGetValue(key, out resource);
         }
     }
 }
