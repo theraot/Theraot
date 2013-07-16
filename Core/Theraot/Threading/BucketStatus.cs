@@ -1,5 +1,3 @@
-#if FAT
-
 namespace Theraot.Threading
 {
     internal enum BucketStatus
@@ -11,5 +9,3 @@ namespace Theraot.Threading
         CopyCleanup = 4
     }
 }
-
-#endif
