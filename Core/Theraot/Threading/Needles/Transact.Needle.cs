@@ -20,7 +20,7 @@ namespace Theraot.Threading.Needles
             private Transact _transaction;
             private ThreadLocal<T> _value;
 
-            private Needle(Func<T> source, Action<T> target)
+            internal Needle(Func<T> source, Action<T> target)
             {
                 _transaction = Transact.CurrentTransaction;
                 if (ReferenceEquals(_transaction, null))
@@ -108,42 +108,6 @@ namespace Theraot.Threading.Needles
             void IResource.Rollback()
             {
                 _value.Value = _source.Invoke();
-            }
-
-            internal static Needle<T> Read(Func<T> source)
-            {
-                var transaction = Transact.CurrentTransaction;
-                if (transaction == null)
-                {
-                    throw new InvalidOperationException("There is no current transaction.");
-                }
-                else
-                {
-                    IResource resource;
-                    if (!transaction.TryGetResource(source, out resource))
-                    {
-                        resource = transaction.TryAddResource(source, new Needle<T>(source, null));
-                    }
-                    return resource as Needle<T>;
-                }
-            }
-
-            internal static Needle<T> Write(Action<T> target)
-            {
-                var transaction = Transact.CurrentTransaction;
-                if (transaction == null)
-                {
-                    throw new InvalidOperationException("There is no current transaction.");
-                }
-                else
-                {
-                    IResource resource;
-                    if (!transaction.TryGetResource(target, out resource))
-                    {
-                        resource = transaction.TryAddResource(target, new Needle<T>(null, target));
-                    }
-                    return resource as Needle<T>;
-                }
             }
 
             private void OnDispose()

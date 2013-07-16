@@ -45,7 +45,12 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                return Needle<T>.Read(source).Value;
+                IResource resource;
+                if (!transaction.TryGetResource(source, out resource))
+                {
+                    resource = transaction.TryAddResource(source, new Needle<T>(source, null));
+                }
+                return (resource as Needle<T>).Value;
             }
         }
 
@@ -58,7 +63,12 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                Needle<T>.Write(target).Value = value;
+                IResource resource;
+                if (!transaction.TryGetResource(target, out resource))
+                {
+                    resource = transaction.TryAddResource(target, new Needle<T>(null, target));
+                }
+                (resource as Needle<T>).Value = value;
             }
         }
 
