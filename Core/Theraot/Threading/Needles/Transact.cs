@@ -143,26 +143,9 @@ namespace Theraot.Threading.Needles
             return check;
         }
 
-        private IResource SetResource(Delegate key, IResource value)
+        private IResource TryAddResource(Delegate key, IResource value)
         {
-            retry:
-            try
-            {
-                _resources.Add(key, value);
-                return value;
-            }
-            catch (ArgumentException)
-            {
-                if (_resources.TryGetValue(key, out value))
-                {
-                    return value;
-                }
-                else
-                {
-                    //Should not happen unless the value has been deleted
-                    goto retry;
-                }
-            }
+            return _resources.TryAdd(key, value);
         }
 
         private bool TryGetResource(Delegate key, out IResource resource)

@@ -120,16 +120,11 @@ namespace Theraot.Threading.Needles
                 else
                 {
                     IResource resource;
-                    if (transaction.TryGetResource(source, out resource))
+                    if (!transaction.TryGetResource(source, out resource))
                     {
-                        return resource as Needle<T>;
+                        resource = transaction.TryAddResource(source, new Needle<T>(source, null));
                     }
-                    else
-                    {
-                        resource = new Needle<T>(source, null);
-                        resource = transaction.SetResource(source, resource);
-                        return resource as Needle<T>;
-                    }
+                    return resource as Needle<T>;
                 }
             }
 
@@ -143,16 +138,11 @@ namespace Theraot.Threading.Needles
                 else
                 {
                     IResource resource;
-                    if (transaction.TryGetResource(target, out resource))
+                    if (!transaction.TryGetResource(target, out resource))
                     {
-                        return resource as Needle<T>;
+                        resource = transaction.TryAddResource(target, new Needle<T>(null, target));
                     }
-                    else
-                    {
-                        resource = new Needle<T>(null, target);
-                        resource = transaction.SetResource(target, resource);
-                        return resource as Needle<T>;
-                    }
+                    return resource as Needle<T>;
                 }
             }
 
