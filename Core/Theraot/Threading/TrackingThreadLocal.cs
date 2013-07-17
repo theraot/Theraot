@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-
 using Theraot.Collections;
+using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
 
 namespace Theraot.Threading

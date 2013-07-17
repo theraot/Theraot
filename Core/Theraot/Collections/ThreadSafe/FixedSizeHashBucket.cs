@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Theraot.Core;
 
-namespace Theraot.Threading
+namespace Theraot.Collections.ThreadSafe
 {
     /// <summary>
     /// Represent a fixed size thread-safe wait-free hash based dictionary.

@@ -1,9 +1,10 @@
 #if FAT
+
 ﻿using System.Collections.Generic;
 using System.Threading;
 using Theraot.Core;
 
-namespace Theraot.Threading
+namespace Theraot.Collections.ThreadSafe
 {
     /// <summary>
     /// Represents a thread-safe wait-free fixed size circular bucket.
@@ -120,4 +121,5 @@ namespace Theraot.Threading
         }
     }
 }
+
 #endif

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 
-namespace Theraot.Threading
+namespace Theraot.Collections.ThreadSafe
 {
     /// <summary>
     /// Represent a thread-safe wait-free fixed size bucket.

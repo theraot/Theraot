@@ -1,9 +1,10 @@
 #if FAT
+
 ﻿using System.Collections.Generic;
 using System.Threading;
 using Theraot.Core;
 
-namespace Theraot.Threading
+namespace Theraot.Collections.ThreadSafe
 {
     /// <summary>
     /// Represent a fixed size thread-safe wait-free queue.
@@ -217,4 +218,5 @@ namespace Theraot.Threading
         }
     }
 }
+
 #endif

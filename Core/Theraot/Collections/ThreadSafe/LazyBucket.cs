@@ -1,8 +1,9 @@
 #if FAT
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 
-namespace Theraot.Threading
+namespace Theraot.Collections.ThreadSafe
 {
     /// <summary>
     /// Represent a thread-safe wait-free fixed size bucket with lazy initialization.
@@ -243,4 +244,5 @@ namespace Theraot.Threading
         }
     }
 }
+
 #endif

@@ -283,7 +283,7 @@
     <Compile Include="System\Runtime\CompilerServices\StrongBox.net30.cs" />
     <Compile Include="System\Threading\AggregateException.net35.cs" />
     <Compile Include="Theraot\Core\DelegateEqualityComparer.cs" />
-    <Compile Include="Theraot\Threading\BucketStatus.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\BucketStatus.cs" />
     <Compile Include="Theraot\Threading\Guard.cs" />
     <Compile Include="Theraot\Threading\Needles\CacheNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\CacheNeedle.disposable.cs">
@@ -470,15 +470,15 @@
     <Compile Include="System\Collections\Specialized\NotifyCollectionChangedEventArgs.net35.cs" />
     <Compile Include="System\Collections\Specialized\NotifyCollectionChangedEventHandler.net35.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Theraot\Threading\Bucket.cs" />
-    <Compile Include="Theraot\Threading\BucketHelper.cs" />
-    <Compile Include="Theraot\Threading\CircularBucket.cs" />
-    <Compile Include="Theraot\Threading\FixedSizeSetBucket.cs" />
-    <Compile Include="Theraot\Threading\QueueBucket.cs" />
-    <Compile Include="Theraot\Threading\FixedSizeQueueBucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\Bucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\BucketHelper.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\CircularBucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\FixedSizeSetBucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\QueueBucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\FixedSizeQueueBucket.cs" />
     <Compile Include="Theraot\Threading\IThreadLocal.cs" />
-    <Compile Include="Theraot\Threading\LazyBucket.cs" />
-    <Compile Include="Theraot\Threading\SetBucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\LazyBucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\SetBucket.cs" />
     <Compile Include="Theraot\Threading\TrackingThreadLocal.cs" />
     <Compile Include="Theraot\Threading\CriticalDisposable.cs">
       <SubType>Code</SubType>
@@ -500,8 +500,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Theraot\Threading\DisposableExtensions.cs" />
-    <Compile Include="Theraot\Threading\HashBucket.cs" />
-    <Compile Include="Theraot\Threading\FixedSizeHashBucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\HashBucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\FixedSizeHashBucket.cs" />
     <Compile Include="Theraot\Threading\IExtendedDisposable.cs" />
     <Compile Include="Theraot\Core\Check.cs" />
     <Compile Include="Theraot\Collections\Extensions.add.cs" />
@@ -648,7 +648,5 @@
       <LastGenOutput>WeakNeedle.disposable.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Theraot\Collections\ThreadSafe\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>
