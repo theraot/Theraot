@@ -648,5 +648,7 @@
       <LastGenOutput>WeakNeedle.disposable.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Theraot\Collections\ThreadSafe\" />
+  </ItemGroup>
 </Project>
