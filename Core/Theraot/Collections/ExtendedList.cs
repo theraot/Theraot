@@ -11,7 +11,7 @@ namespace Theraot.Collections
     [global::System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
     [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "By Design")]
-    public sealed class ExtendedList<T> : IExtendedList<T>, IList<T>, ICollection<T>, IEnumerable<T>, ICloneable, ICloneable<ExtendedList<T>>
+    public sealed class ExtendedList<T> : IExtendedList<T>, IList<T>, ICollection<T>, IEnumerable<T>, ICloneable, ICloneable<ExtendedList<T>>, IEqualityComparer<T>
     {
         private readonly IEqualityComparer<T> _comparer;
         private readonly IExtendedReadOnlyList<T> _readOnly;
@@ -103,7 +103,7 @@ namespace Theraot.Collections
 
         public ExtendedList<T> Clone()
         {
-            return new ExtendedList<T>(this);
+            return new ExtendedList<T>(this as IEnumerable<T>);
         }
 
         public bool Contains(T item)
@@ -262,6 +262,16 @@ namespace Theraot.Collections
         private ExtendedReadOnlyList<T> CreateReadOnly()
         {
             return new ExtendedReadOnlyList<T>(this);
+        }
+
+        public bool Equals(T x, T y)
+        {
+            return _comparer.Equals(x, y);
+        }
+
+        public int GetHashCode(T obj)
+        {
+            return _comparer.GetHashCode(obj);
         }
     }
 }

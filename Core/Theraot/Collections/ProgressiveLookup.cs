@@ -539,7 +539,7 @@ namespace Theraot.Collections
 
         [System.Serializable]
         [global::System.Diagnostics.DebuggerNonUserCode]
-        private sealed class Grouping : IExtendedGrouping<TKey, TValue>, IExtendedReadOnlyCollection<TValue>, IExtendedCollection<TValue>, ICollection<TValue>, IGrouping<TKey, TValue>
+        private sealed class Grouping : IExtendedGrouping<TKey, TValue>, IExtendedReadOnlyCollection<TValue>, IExtendedCollection<TValue>, ICollection<TValue>, IGrouping<TKey, TValue>, IEqualityComparer<TValue>
         {
             private readonly ICollection<TValue> _cache;
             private readonly IEqualityComparer<TValue> _comparer;
@@ -690,6 +690,16 @@ namespace Theraot.Collections
             System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
             {
                 return GetEnumerator();
+            }
+
+            public bool Equals(TValue x, TValue y)
+            {
+                return _comparer.Equals(x, y);
+            }
+
+            public int GetHashCode(TValue obj)
+            {
+                return _comparer.GetHashCode(obj);
             }
         }
     }
