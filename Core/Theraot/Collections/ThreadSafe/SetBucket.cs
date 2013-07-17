@@ -164,8 +164,10 @@ namespace Theraot.Collections.ThreadSafe
         /// Adds the specified item.
         /// </summary>
         /// <param name="item">The item.</param>
-        /// <exception cref="System.ArgumentException">the item is already present</exception>
-        public void Add(T item)
+        /// <returns>
+        ///   <c>true</c> if the specified element is added; otherwise, <c>false</c>.
+        /// </returns>
+        public bool Add(T item)
         {
             bool result = false;
             int revision;
@@ -206,14 +208,14 @@ namespace Theraot.Collections.ThreadSafe
                                 }
                                 else
                                 {
-                                    throw new ArgumentException("the item is already present");
+                                    done = true;
                                 }
                             }
                         }
                     }
                     if (done)
                     {
-                        return;
+                        return result;
                     }
                 }
                 else
