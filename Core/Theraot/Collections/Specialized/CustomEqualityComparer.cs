@@ -1,4 +1,5 @@
 #if FAT
+
 using System;
 using System.Collections.Generic;
 
@@ -18,6 +19,27 @@ namespace Theraot.Collections.Specialized
             _getHashCode = Check.NotNullArgument(getHashCode, "getHasCode");
         }
 
+        public CustomEqualityComparer(IComparer<T> comparer, Func<T, int> getHashCode)
+        {
+            var  _comparer = Check.NotNullArgument(comparer, "comparer");
+            _comparison = (x, y) => _comparer.Compare(x, y) == 0;
+            _getHashCode = Check.NotNullArgument(getHashCode, "getHasCode");
+        }
+
+        public CustomEqualityComparer(Func<T, T, int> comparison, Func<T, int> getHashCode)
+        {
+            var  __comparison = Check.NotNullArgument(comparison, "comparison");
+            _comparison = (x, y) => __comparison.Invoke(x, y) == 0;
+            _getHashCode = Check.NotNullArgument(getHashCode, "getHasCode");
+        }
+
+        public CustomEqualityComparer(Comparison<T> comparison, Func<T, int> getHashCode)
+        {
+            var  __comparison = Check.NotNullArgument(comparison, "comparison");
+            _comparison = (x, y) => __comparison.Invoke(x, y) == 0;
+            _getHashCode = Check.NotNullArgument(getHashCode, "getHasCode");
+        }
+
         public bool Equals(T x, T y)
         {
             return _comparison.Invoke(x, y);
@@ -29,4 +51,5 @@ namespace Theraot.Collections.Specialized
         }
     }
 }
+
 #endif
