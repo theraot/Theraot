@@ -1,4 +1,5 @@
 #if FAT
+
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,7 +7,7 @@ using Theraot.Core;
 
 namespace Theraot.Collections
 {
-    //TODO
+    //TODO each call  to Keys or Values returns a new object
     [System.Serializable]
     [global::System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
@@ -338,4 +339,5 @@ namespace Theraot.Collections
         }
     }
 }
+
 #endif
