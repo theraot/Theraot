@@ -243,7 +243,7 @@ namespace Theraot.Collections.ThreadSafe
             return _entries.TryGet(index, out item);
         }
 
-        //Hack
+        //HACK
         internal int Set(T item, int offset, out bool isNew)
         {
             int index = Index(item, offset);
