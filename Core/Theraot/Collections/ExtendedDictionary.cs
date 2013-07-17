@@ -7,17 +7,16 @@ using Theraot.Core;
 
 namespace Theraot.Collections
 {
-    //TODO each call  to Keys or Values returns a new object
     [System.Serializable]
     [global::System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
     public sealed class ExtendedDictionary<TKey, TValue> : IExtendedDictionary<TKey, TValue>, IDictionary<TKey, TValue>, ICollection<KeyValuePair<TKey, TValue>>
     {
         private readonly IEqualityComparer<TKey> _keyComparer;
-        private readonly ExtendedReadOnlyCollection<TKey> _keysReadonly;
+        private readonly IReadOnlyCollection<TKey> _keysReadonly;
         private readonly IExtendedReadOnlyDictionary<TKey, TValue> _readOnly;
         private readonly IEqualityComparer<TValue> _valueComparer;
-        private readonly ExtendedReadOnlyCollection<TValue> _valuesReadonly;
+        private readonly IReadOnlyCollection<TValue> _valuesReadonly;
         private readonly Dictionary<TKey, TValue> _wrapped;
 
         public ExtendedDictionary()
@@ -26,8 +25,8 @@ namespace Theraot.Collections
             _valueComparer = EqualityComparer<TValue>.Default;
             _wrapped = new Dictionary<TKey, TValue>();
             _readOnly = new ExtendedReadOnlyDictionary<TKey, TValue>(this);
-            _keysReadonly = new ExtendedReadOnlyCollection<TKey>(_wrapped.Keys);
-            _valuesReadonly = new ExtendedReadOnlyCollection<TValue>(_wrapped.Values);
+            _keysReadonly = new Specialized.DelegatedCollection<TKey>(() => _wrapped.Keys).AsReadOnly;
+            _valuesReadonly = new Specialized.DelegatedCollection<TValue>(() => _wrapped.Values).AsReadOnly;
         }
 
         public ExtendedDictionary(IEnumerable<KeyValuePair<TKey, TValue>> prototype)
