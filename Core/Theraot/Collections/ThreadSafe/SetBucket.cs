@@ -14,7 +14,7 @@ namespace Theraot.Collections.ThreadSafe
     /// <remarks>
     /// Consider wrapping this class to implement <see cref="ISet{T}" /> or any other desired interface.
     /// </remarks>
-    public sealed class SetBucket<T> : IEnumerable<T>
+    public sealed class SetBucket<T> : IEnumerable<T>, ICollection<T>
     {
         private const int INT_DefaultCapacity = 64;
         private const int INT_DefaultMaxProbing = 1;
@@ -146,6 +146,14 @@ namespace Theraot.Collections.ThreadSafe
             get
             {
                 return _count;
+            }
+        }
+
+        bool ICollection<T>.IsReadOnly
+        {
+            get
+            {
+                return false;
             }
         }
 
@@ -282,6 +290,12 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
+            entries.CopyTo(array, arrayIndex);
+        }
+
         /// <summary>
         /// Returns an <see cref="System.Collections.Generic.IEnumerator{T}" /> that allows to iterate through the collection.
         /// </summary>
@@ -291,6 +305,11 @@ namespace Theraot.Collections.ThreadSafe
         public IEnumerator<T> GetEnumerator()
         {
             return _entriesNew.GetEnumerable().GetEnumerator();
+        }
+
+        void ICollection<T>.Add(T item)
+        {
+            Add(item);
         }
 
         /// <summary>
