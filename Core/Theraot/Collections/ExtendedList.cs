@@ -63,19 +63,19 @@ namespace Theraot.Collections
             }
         }
 
-        public bool IsReadOnly
-        {
-            get
-            {
-                return false;
-            }
-        }
-
         IReadOnlyCollection<T> IExtendedCollection<T>.AsReadOnly
         {
             get
             {
                 return _readOnly;
+            }
+        }
+
+        public bool IsReadOnly
+        {
+            get
+            {
+                return false;
             }
         }
 
@@ -132,9 +132,19 @@ namespace Theraot.Collections
             _wrapped.CopyTo(array, arrayIndex, countLimit);
         }
 
+        public bool Equals(T x, T y)
+        {
+            return _comparer.Equals(x, y);
+        }
+
         public IEnumerator<T> GetEnumerator()
         {
             return _wrapped.GetEnumerator();
+        }
+
+        public int GetHashCode(T obj)
+        {
+            return _comparer.GetHashCode(obj);
         }
 
         object ICloneable.Clone()
@@ -262,16 +272,6 @@ namespace Theraot.Collections
         private ExtendedReadOnlyList<T> CreateReadOnly()
         {
             return new ExtendedReadOnlyList<T>(this);
-        }
-
-        public bool Equals(T x, T y)
-        {
-            return _comparer.Equals(x, y);
-        }
-
-        public int GetHashCode(T obj)
-        {
-            return _comparer.GetHashCode(obj);
         }
     }
 }

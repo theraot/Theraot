@@ -1,6 +1,6 @@
 #if FAT
 
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading;
 using Theraot.Core;
 
@@ -200,6 +200,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             return _bucket.TryGet(index, out item);
         }
+
         //HACK
         internal bool Set(int index, T item, out bool isNew)
         {
