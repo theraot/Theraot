@@ -282,7 +282,7 @@
     <Compile Include="System\Runtime\CompilerServices\IStrongBox.cs" />
     <Compile Include="System\Runtime\CompilerServices\StrongBox.net30.cs" />
     <Compile Include="System\Threading\AggregateException.net35.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\WeakDelegateSetCollection.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\WeakDelegateSet.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\WeakEvent.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\WeakSet.cs" />
     <Compile Include="Theraot\Core\DelegateEqualityComparer.cs" />
