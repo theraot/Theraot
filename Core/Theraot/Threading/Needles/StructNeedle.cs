@@ -7,8 +7,8 @@ using Theraot.Core;
 namespace Theraot.Threading.Needles
 {
     [Serializable]
-    //[global::System.Diagnostics.DebuggerNonUserCode]
-    public struct StructNeedle<T> : INeedle<T>
+    [global::System.Diagnostics.DebuggerNonUserCode]
+    public struct StructNeedle<T> : INeedle<T>, IEquatable<StructNeedle<T>>
     {
         private T _target;
 
@@ -91,6 +91,11 @@ namespace Theraot.Threading.Needles
                     return false;
                 }
             }
+        }
+
+        public bool Equals(StructNeedle<T> other)
+        {
+            return EqualsExtracted(this, other);
         }
 
         public override int GetHashCode()
