@@ -25,9 +25,9 @@ namespace Theraot.Collections.ThreadSafe
         /// <param name="capacity">The capacity.</param>
         public Bucket(int capacity)
         {
-            _capacity = capacity;
             _count = 0;
             _entries = ArrayPool<object>.GetArray(_capacity);
+            _capacity = _entries.Length;
         }
 
         ~Bucket()
