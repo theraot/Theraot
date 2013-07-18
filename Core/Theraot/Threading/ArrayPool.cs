@@ -19,7 +19,7 @@ namespace Theraot.Threading
 
         static ArrayPool()
         {
-            _recycle = new Work.Context(INT_WorkCapacityHint, 1);
+            _recycle = new Work.Context("Recycler", INT_WorkCapacityHint, 1);
             _data = new LazyNeedle<LazyBucket<QueueBucket<T[]>>>
             (
                 () =>
