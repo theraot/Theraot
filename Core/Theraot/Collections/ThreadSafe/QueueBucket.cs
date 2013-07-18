@@ -378,7 +378,7 @@ namespace Theraot.Collections.ThreadSafe
                         break;
 
                     case (int)BucketStatus.CopyCleanup:
-                        oldStatus = Interlocked.CompareExchange(ref _status, (int)BucketStatus.Waiting, 4);
+                        oldStatus = Interlocked.CompareExchange(ref _status, (int)BucketStatus.Waiting, (int)BucketStatus.CopyCleanup);
                         if (oldStatus == (int)BucketStatus.CopyCleanup)
                         {
                             _revision++;
