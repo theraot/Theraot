@@ -14,7 +14,7 @@ namespace Theraot.Threading
 
         public ReentryGuard()
         {
-            _workQueue = new NotNull<NoTrackingThreadLocal<Tuple<ExtendedQueue<Action>,Guard>>>
+            _workQueue = new NotNull<NoTrackingThreadLocal<Tuple<ExtendedQueue<Action>, Guard>>>
                 (
                     new NoTrackingThreadLocal<Tuple<ExtendedQueue<Action>, Guard>>
                     (
