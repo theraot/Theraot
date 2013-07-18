@@ -266,8 +266,7 @@ namespace Theraot.Threading
                         var threadIndex = Interlocked.Increment(ref _dedidatedThreadCount) - 1;
                         if (threadIndex < _threads.Capacity)
                         {
-                            Thread thread;
-                            _threads.TryGet(threadIndex, out thread);
+                            Thread thread = _threads.Get(threadIndex);
                             thread.Start();
                         }
                         else

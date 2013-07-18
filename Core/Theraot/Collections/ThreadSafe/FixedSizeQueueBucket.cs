@@ -96,7 +96,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             get
             {
-                return _bucket.Values;
+                return _bucket.GetValues();
             }
         }
 

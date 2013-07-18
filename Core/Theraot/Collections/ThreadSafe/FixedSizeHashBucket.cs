@@ -67,7 +67,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             get
             {
-                return _entries.Values;
+                return _entries.GetValues();
             }
         }
 

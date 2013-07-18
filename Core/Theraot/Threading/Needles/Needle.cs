@@ -6,8 +6,8 @@ using Theraot.Core;
 namespace Theraot.Threading.Needles
 {
     [Serializable]
-    //[global::System.Diagnostics.DebuggerNonUserCode]
-    public class Needle<T> : INeedle<T>
+    [global::System.Diagnostics.DebuggerNonUserCode]
+    public class Needle<T> : INeedle<T>, IEquatable<Needle<T>>
     {
         private int _hashCode;
         private INeedle<T> _target;

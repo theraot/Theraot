@@ -6,7 +6,7 @@ namespace Theraot.Threading.Needles
 {
     [Serializable]
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public class LazyNeedle<T> : Needle<T>, ICacheNeedle<T>
+    public class LazyNeedle<T> : Needle<T>, ICacheNeedle<T>, IEquatable<LazyNeedle<T>>
     {
         private int _isValueCreated;
         private Func<T> _valueFactory;
@@ -20,7 +20,7 @@ namespace Theraot.Threading.Needles
         public LazyNeedle(Func<T> valueFactory, T target)
             : base(target)
         {
-            Func<T> __valueFactory = Check.NotNullArgument(valueFactory, "valueFactory");
+            Func<T> __valueFactory = valueFactory ?? (() => target);
             Thread thread = null;
             var waitHandle = new ManualResetEvent(false);
             int preIsValueCreated = 0;
@@ -134,6 +134,18 @@ namespace Theraot.Threading.Needles
                         goto back;
                     }
                 }
+            }
+        }
+
+        public bool Equals(LazyNeedle<T> other)
+        {
+            if (ReferenceEquals(other, null))
+            {
+                return false;
+            }
+            else
+            {
+                return base.Equals(other as Needle<T>);
             }
         }
     }
