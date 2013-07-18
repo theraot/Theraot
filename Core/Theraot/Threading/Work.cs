@@ -103,7 +103,7 @@ namespace Theraot.Threading
         public sealed class Context : IDisposable
         {
             private const int INT_InitialWorkCapacityHint = 128;
-            private static Context _defaultContext = new Context(INT_InitialWorkCapacityHint, Environment.ProcessorCount, false);
+            private static Context _defaultContext = new Context(INT_InitialWorkCapacityHint, Environment.ProcessorCount, "Default Context", false);
 
             private static int _lastId;
             private int _dedidatedThreadCount;
@@ -118,24 +118,42 @@ namespace Theraot.Threading
             private QueueBucket<Work> _works;
 
             public Context()
-                : this(INT_InitialWorkCapacityHint, Environment.ProcessorCount, true)
+                : this(INT_InitialWorkCapacityHint, Environment.ProcessorCount, null, true)
             {
                 //Empty
             }
 
             public Context(int initialWorkCapacity)
-                : this(initialWorkCapacity, Environment.ProcessorCount, true)
+                : this(initialWorkCapacity, Environment.ProcessorCount, null, true)
             {
                 //Empty
             }
 
             public Context(int initialWorkCapacity, int dedicatedThreads)
-                : this(initialWorkCapacity, dedicatedThreads, true)
+                : this(initialWorkCapacity, dedicatedThreads, null, true)
             {
                 //Empty
             }
 
-            private Context(int initialWorkCapacity, int dedicatedThreads, bool disposable)
+            public Context(string name)
+                : this(INT_InitialWorkCapacityHint, Environment.ProcessorCount, Check.NotNullArgument(name, "name"), true)
+            {
+                //Empty
+            }
+
+            public Context(string name, int initialWorkCapacity)
+                : this(initialWorkCapacity, Environment.ProcessorCount, Check.NotNullArgument(name, "name"), true)
+            {
+                //Empty
+            }
+
+            public Context(string name, int initialWorkCapacity, int dedicatedThreads)
+                : this(initialWorkCapacity, dedicatedThreads, Check.NotNullArgument(name, "name"), true)
+            {
+                //Empty
+            }
+
+            private Context(int initialWorkCapacity, int dedicatedThreads, string name, bool disposable)
             {
                 if (dedicatedThreads < 0)
                 {
@@ -144,13 +162,26 @@ namespace Theraot.Threading
                 else
                 {
                     _works = new QueueBucket<Work>(initialWorkCapacity);
+                    Converter<int, Thread> valueFactory = null;
+                    if (StringHelper.IsNullOrWhiteSpace(name))
+                    {
+                        valueFactory = input => new Thread(DoWorks)
+                        {
+                            Name = string.Format("Dedicated Thread {0} on Work.Context {1}", input, _id),
+                            IsBackground = true
+                        };
+                    }
+                    else
+                    {
+                        valueFactory = input => new Thread(DoWorks)
+                        {
+                            Name = string.Format("Dedicated Thread {0} on ", input, name),
+                            IsBackground = true
+                        };
+                    }
                     _threads = new LazyBucket<Thread>
                         (
-                            input => new Thread(DoWorks)
-                            {
-                                Name = string.Format("Dedicated Thread {0} on Work.Context {1}", input, _id),
-                                IsBackground = true
-                            },
+                            valueFactory,
                             dedicatedThreads
                         );
                     _id = Interlocked.Increment(ref _lastId) - 1;
