@@ -153,8 +153,7 @@ namespace Theraot.Threading.Needles
         {
             if (!ReferenceEquals(_currentTransaction, null))
             {
-                _currentTransaction.Dispose();
-                _currentTransaction = null;
+                _currentTransaction = _currentTransaction._parentTransaction;
                 GC.Collect();
             }
         }
