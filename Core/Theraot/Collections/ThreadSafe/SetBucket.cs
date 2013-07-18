@@ -548,7 +548,7 @@ namespace Theraot.Collections.ThreadSafe
                         break;
                 }
             }
-            while (status != 0);
+            while (status != (int)BucketStatus.Free);
         }
 
         private bool IsOperationSafe(object entries, int revision)
