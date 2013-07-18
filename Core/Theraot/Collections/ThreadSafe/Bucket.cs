@@ -26,7 +26,7 @@ namespace Theraot.Collections.ThreadSafe
         public Bucket(int capacity)
         {
             _count = 0;
-            _entries = ArrayPool<object>.GetArray(_capacity);
+            _entries = ArrayPool<object>.GetArray(capacity);
             _capacity = _entries.Length;
         }
 
