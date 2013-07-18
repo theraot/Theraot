@@ -14,56 +14,62 @@ namespace Theraot.Threading
         private const int INT_MinCapacity = 16;
         private const int INT_WorkCapacityHint = 16;
 
-        private static LazyNeedle<LazyBucket<QueueBucket<T[]>>> _data;
+        private static LazyBucket<QueueBucket<T[]>> _data;
         private static Work.Context _recycle;
+        private static int _done;
+        private static Guard _guard;
 
         static ArrayPool()
         {
             _recycle = new Work.Context("Recycler", INT_WorkCapacityHint, 1);
-            _data = new LazyNeedle<LazyBucket<QueueBucket<T[]>>>
+            _data = new LazyBucket<QueueBucket<T[]>>
             (
-                () =>
+                input =>
                 {
-                    return new LazyBucket<QueueBucket<T[]>>
-                    (
-                        input =>
-                        {
-                            return new QueueBucket<T[]>();
-                        },
-                        NumericHelper.Log2(INT_MaxCapacity) - NumericHelper.Log2(INT_MinCapacity)
-                    );
-                }
+                    return new QueueBucket<T[]>();
+                },
+                NumericHelper.Log2(INT_MaxCapacity) - NumericHelper.Log2(INT_MinCapacity)
             );
-            GC.KeepAlive(_data.Value);
+            _guard = new Guard();
+            Thread.MemoryBarrier();
+            Thread.VolatileWrite(ref _done, 1);
         }
 
         public static bool DonateArray(T[] array)
         {
-            int capacity = array.Length;
-            if (NumericHelper.PopulationCount(capacity) == 1)
+            if (ReferenceEquals(array, null))
             {
-                if (capacity < INT_MinCapacity || capacity > INT_MaxCapacity)
-                {
-                    //Rejected
-                    return false;
-                }
-                else
-                {
-                    _recycle.AddWork
-                    (
-                        () =>
-                        {
-                            Array.Clear(array, 0, capacity);
-                            QueueBucket<T[]> bucket = GetBucket(capacity);
-                            bucket.Enqueue(array);
-                        }
-                    );
-                    return true;
-                }
+                //Ignore
+                return false;
             }
             else
             {
-                throw new ArgumentException("The size of the array must be a power of two.", "array");
+                int capacity = array.Length;
+                if (NumericHelper.PopulationCount(capacity) == 1)
+                {
+                    if (capacity < INT_MinCapacity || capacity > INT_MaxCapacity)
+                    {
+                        //Rejected
+                        return false;
+                    }
+                    else
+                    {
+                        _recycle.AddWork
+                        (
+                            () =>
+                            {
+                                Array.Clear(array, 0, capacity);
+                                QueueBucket<T[]> bucket = GetBucket(capacity);
+                                bucket.Enqueue(array);
+                            }
+                        );
+                        return true;
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException("The size of the array must be a power of two.", "array");
+                }
             }
         }
 
@@ -85,15 +91,23 @@ namespace Theraot.Threading
                     capacity = NumericHelper.NextPowerOf2(capacity);
                 }
             }
-            if (_data.IsCached)
+            if (Thread.VolatileRead(ref _done) == 1)
             {
-                QueueBucket<T[]> bucket = GetBucket(capacity);
-                T[] result;
-                if (!bucket.TryDequeue(out result))
+                IDisposable engagement;
+                if (_guard.Enter(out engagement)) using(engagement)
                 {
-                    result = new T[capacity];
+                    QueueBucket<T[]> bucket = GetBucket(capacity);
+                    T[] result;
+                    if (!bucket.TryDequeue(out result))
+                    {
+                        result = new T[capacity];
+                    }
+                    return result;
                 }
-                return result;
+                else
+                {
+                    return new T[capacity];
+                }
             }
             else
             {
@@ -103,8 +117,7 @@ namespace Theraot.Threading
 
         private static QueueBucket<T[]> GetBucket(int capacity)
         {
-            LazyBucket<QueueBucket<T[]>> data = _data.Value;
-            return data.Get (NumericHelper.Log2(capacity) - NumericHelper.Log2(INT_MinCapacity));
+            return _data.Get (NumericHelper.Log2(capacity) - NumericHelper.Log2(INT_MinCapacity));
         }
     }
 }
