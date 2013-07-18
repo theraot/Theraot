@@ -165,19 +165,41 @@ namespace Theraot.Threading
                     Converter<int, Thread> valueFactory = null;
                     if (StringHelper.IsNullOrWhiteSpace(name))
                     {
-                        valueFactory = input => new Thread(DoWorks)
+                        if (dedicatedThreads == 1)
                         {
-                            Name = string.Format("Dedicated Thread {0} on Work.Context {1}", input, _id),
-                            IsBackground = true
-                        };
+                            valueFactory = input => new Thread(DoWorks)
+                            {
+                                Name = string.Format("Dedicated Thread on Work.Context {1}", input, _id),
+                                IsBackground = true
+                            };
+                        }
+                        else if (dedicatedThreads > 1)
+                        {
+                            valueFactory = input => new Thread(DoWorks)
+                            {
+                                Name = string.Format("Dedicated Thread {0} on Work.Context {1}", input, _id),
+                                IsBackground = true
+                            };
+                        }
                     }
                     else
                     {
-                        valueFactory = input => new Thread(DoWorks)
+                        if (dedicatedThreads == 1)
                         {
-                            Name = string.Format("Dedicated Thread {0} on ", input, name),
-                            IsBackground = true
-                        };
+                            valueFactory = input => new Thread(DoWorks)
+                            {
+                                Name = string.Format("Dedicated Thread on ", input, name),
+                                IsBackground = true
+                            };
+                        }
+                        else if (dedicatedThreads > 1)
+                        {
+                            valueFactory = input => new Thread(DoWorks)
+                            {
+                                Name = string.Format("Dedicated Thread {0} on ", input, name),
+                                IsBackground = true
+                            };
+                        }
                     }
                     _threads = new LazyBucket<Thread>
                         (
