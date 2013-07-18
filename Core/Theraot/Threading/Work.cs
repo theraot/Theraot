@@ -299,24 +299,6 @@ namespace Theraot.Threading
                 }
             }
 
-            private void ActivateDedicatedThreads()
-            {
-                var threadIndex = Interlocked.Increment(ref _dedidatedThreadCount) - 1;
-                if (threadIndex < _threads.Capacity)
-                {
-                    Thread thread = _threads.Get(threadIndex);
-                    thread.Start();
-                }
-                else
-                {
-                    Thread.VolatileWrite(ref _dedidatedThreadCount, _threads.Capacity);
-                    if (Thread.VolatileRead(ref _workingDedicatedThreadCount) < _threads.Count)
-                    {
-                        _event.Set();
-                    }
-                }
-            }
-
             internal void ScheduleWork(Work work)
             {
                 if (_work)
@@ -343,6 +325,23 @@ namespace Theraot.Threading
                 }
             }
 
+            private void ActivateDedicatedThreads()
+            {
+                var threadIndex = Interlocked.Increment(ref _dedidatedThreadCount) - 1;
+                if (threadIndex < _threads.Capacity)
+                {
+                    Thread thread = _threads.Get(threadIndex);
+                    thread.Start();
+                }
+                else
+                {
+                    Thread.VolatileWrite(ref _dedidatedThreadCount, _threads.Capacity);
+                    if (Thread.VolatileRead(ref _workingDedicatedThreadCount) < _threads.Count)
+                    {
+                        _event.Set();
+                    }
+                }
+            }
             private void DisposeExtracted()
             {
                 try
