@@ -151,7 +151,12 @@ namespace Theraot.Threading.Needles
 
         private void Rollback()
         {
-            //Empty
+            if (!ReferenceEquals(_currentTransaction, null))
+            {
+                _currentTransaction.Dispose();
+                _currentTransaction = null;
+                GC.Collect();
+            }
         }
     }
 }
