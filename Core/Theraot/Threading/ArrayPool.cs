@@ -12,14 +12,12 @@ namespace Theraot.Threading
     {
         private const int INT_MaxCapacity = 1024;
         private const int INT_MinCapacity = 16;
-        private const int INT_WorkCapacityHint = 16;
         private const int INT_PoolSize = 16;
-
+        private const int INT_WorkCapacityHint = 16;
         private static LazyBucket<FixedSizeQueueBucket<T[]>> _data;
-        private static Work.Context _recycle;
         private static int _done;
         private static Guard _guard;
-
+        private static Work.Context _recycle;
         static ArrayPool()
         {
             _recycle = new Work.Context("Recycler", INT_WorkCapacityHint, 1);
@@ -59,9 +57,13 @@ namespace Theraot.Threading
                         (
                             () =>
                             {
-                                Array.Clear(array, 0, capacity);
-                                var bucket = GetBucket(capacity);
-                                bucket.Enqueue(array);
+                                int index = GetIndex(capacity);
+                                if (index < _data.Capacity)
+                                {
+                                    Array.Clear(array, 0, capacity);
+                                    var bucket = _data.Get(index);
+                                    bucket.Enqueue(array);
+                                }
                             }
                         ).Start();
                         return true;
@@ -99,11 +101,19 @@ namespace Theraot.Threading
                 {
                     using (engagement)
                     {
-                        var bucket = GetBucket(capacity);
                         T[] result;
-                        if (!bucket.TryDequeue(out result))
+                        int index = GetIndex(capacity);
+                        if (index >= _data.Capacity)
                         {
                             result = new T[capacity];
+                        }
+                        else
+                        {
+                            var bucket = _data.Get(index);
+                            if (!bucket.TryDequeue(out result))
+                            {
+                                result = new T[capacity];
+                            }
                         }
                         return result;
                     }
@@ -119,9 +129,9 @@ namespace Theraot.Threading
             }
         }
 
-        private static FixedSizeQueueBucket<T[]> GetBucket(int capacity)
+        private static int GetIndex(int capacity)
         {
-            return _data.Get (NumericHelper.Log2(capacity) - NumericHelper.Log2(INT_MinCapacity));
+            return NumericHelper.Log2(capacity) - NumericHelper.Log2(INT_MinCapacity);
         }
     }
 }
