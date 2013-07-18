@@ -1,5 +1,6 @@
 #if FAT
 
+using System;
 using System.Collections.Generic;
 using Theraot.Core;
 
@@ -64,12 +65,17 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         /// Gets the values contained in this object.
         /// </summary>
-        public IList<T> Values
+        public IList<T> GetValues()
         {
-            get
-            {
-                return _entries.GetValues();
-            }
+            return _entries.GetValues();
+        }
+
+        /// <summary>
+        /// Gets the values contained in this object.
+        /// </summary>
+        public IList<TOutput> GetValues<TOutput>(Converter<T, TOutput> converter)
+        {
+            return _entries.GetValues<TOutput>(converter);
         }
 
         /// <summary>

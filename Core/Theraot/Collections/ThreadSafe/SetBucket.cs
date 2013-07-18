@@ -160,12 +160,17 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         /// Gets the items and associated values contained in this object.
         /// </summary>
-        public IList<T> Values
+        public IList<T> GetValues()
         {
-            get
-            {
-                return _entriesNew.Values;
-            }
+            return _entriesNew.GetValues();
+        }
+
+        /// <summary>
+        /// Gets the values contained in this object.
+        /// </summary>
+        public IList<TOutput> GetValues<TOutput>(Converter<T, TOutput> converter)
+        {
+            return _entriesNew.GetValues<TOutput>(converter);
         }
 
         /// <summary>

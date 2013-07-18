@@ -60,12 +60,17 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         /// Gets the values contained in this object.
         /// </summary>
-        public IList<T> Values
+        public IList<T> GetValues()
         {
-            get
-            {
-                return _wrapped.GetValues<T>(input => input.Value);
-            }
+            return _wrapped.GetValues<T>(input => input.Value);
+        }
+
+        /// <summary>
+        /// Gets the values contained in this object.
+        /// </summary>
+        public IList<TOutput> GetValues<TOutput>(Converter<T, TOutput> converter)
+        {
+            return _wrapped.GetValues<TOutput>(input => converter.Invoke(input.Value));
         }
 
         /// <summary>
@@ -78,7 +83,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="System.ArgumentException">array;The array can not contain the number of elements.</exception>
         public void CopyTo(T[] array, int arrayIndex)
         {
-            Values.CopyTo(array, arrayIndex);
+            GetValues().CopyTo(array, arrayIndex);
         }
 
         /// <summary>

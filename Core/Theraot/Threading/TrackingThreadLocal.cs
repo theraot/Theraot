@@ -112,7 +112,7 @@ namespace Theraot.Threading
         {
             get
             {
-                return _slots.Pairs.ConvertAll(input => input.Value);
+                return _slots.GetPairs().ConvertAll(input => input.Value);
             }
         }
 

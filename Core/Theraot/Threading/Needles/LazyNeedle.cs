@@ -66,6 +66,18 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        public bool Equals(LazyNeedle<T> other)
+        {
+            if (ReferenceEquals(other, null))
+            {
+                return false;
+            }
+            else
+            {
+                return base.Equals(other as Needle<T>);
+            }
+        }
+
         public override int GetHashCode()
         {
             return base.GetHashCode();
@@ -134,18 +146,6 @@ namespace Theraot.Threading.Needles
                         goto back;
                     }
                 }
-            }
-        }
-
-        public bool Equals(LazyNeedle<T> other)
-        {
-            if (ReferenceEquals(other, null))
-            {
-                return false;
-            }
-            else
-            {
-                return base.Equals(other as Needle<T>);
             }
         }
     }

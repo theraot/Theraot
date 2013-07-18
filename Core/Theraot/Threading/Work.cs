@@ -169,7 +169,7 @@ namespace Theraot.Threading
                         {
                             valueFactory = input => new Thread(DoWorks)
                             {
-                                Name = string.Format("Dedicated Thread on Work.Context {1}", input, _id),
+                                Name = string.Format("Dedicated Thread on Work.Context {0}", _id),
                                 IsBackground = true
                             };
                         }
@@ -188,7 +188,7 @@ namespace Theraot.Threading
                         {
                             valueFactory = input => new Thread(DoWorks)
                             {
-                                Name = string.Format("Dedicated Thread on ", input, name),
+                                Name = string.Format("Dedicated Thread on {0}", name),
                                 IsBackground = true
                             };
                         }
@@ -196,7 +196,7 @@ namespace Theraot.Threading
                         {
                             valueFactory = input => new Thread(DoWorks)
                             {
-                                Name = string.Format("Dedicated Thread {0} on ", input, name),
+                                Name = string.Format("Dedicated Thread {0} on {1}", input, name),
                                 IsBackground = true
                             };
                         }

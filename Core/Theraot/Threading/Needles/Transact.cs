@@ -80,7 +80,7 @@ namespace Theraot.Threading.Needles
                 Needles.Needle<Thread> thread = null;
                 if (_resources.Count > 0)
                 {
-                    foreach (var resource in _resources.Pairs)
+                    foreach (var resource in _resources.GetPairs())
                     {
                         resource.Value.Capture(ref thread);
                     }
@@ -103,7 +103,7 @@ namespace Theraot.Threading.Needles
                         {
                             if (Check())
                             {
-                                foreach (var resource in _resources.Pairs)
+                                foreach (var resource in _resources.GetPairs())
                                 {
                                     resource.Value.Commit();
                                 }
@@ -138,7 +138,7 @@ namespace Theraot.Threading.Needles
         private bool Check()
         {
             bool check;
-            foreach (var resource in _resources.Pairs)
+            foreach (var resource in _resources.GetPairs())
             {
                 if (!resource.Value.Check())
                 {

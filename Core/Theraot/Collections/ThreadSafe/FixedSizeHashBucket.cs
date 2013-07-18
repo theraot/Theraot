@@ -63,12 +63,9 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         /// Gets the values contained in this object.
         /// </summary>
-        public IList<KeyValuePair<TKey, TValue>> Pairs
+        public IList<KeyValuePair<TKey, TValue>> GetPairs()
         {
-            get
-            {
-                return _entries.GetValues();
-            }
+            return _entries.GetValues();
         }
 
         /// <summary>
