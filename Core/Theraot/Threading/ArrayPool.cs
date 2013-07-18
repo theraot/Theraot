@@ -10,8 +10,8 @@ namespace Theraot.Threading
 {
     internal class ArrayPool<T>
     {
-        private const int INT_MinCapacity = 16;
         private const int INT_MaxCapacity = 1024;
+        private const int INT_MinCapacity = 16;
         private const int INT_WorkCapacityHint = 16;
 
         private static LazyNeedle<LazyBucket<QueueBucket<T[]>>> _data;
@@ -37,10 +37,37 @@ namespace Theraot.Threading
             GC.KeepAlive(_data.Value);
         }
 
-        private static QueueBucket<T[]> GetBucket(int capacity)
+        public static bool DonateArray(T[] array)
         {
-            LazyBucket<QueueBucket<T[]>> data = _data.Value;
-            return data.Get (NumericHelper.Log2(capacity) - NumericHelper.Log2(INT_MinCapacity));
+            int capacity = array.Length;
+            if (NumericHelper.PopulationCount(capacity) == 1)
+            {
+                if (capacity < INT_MinCapacity || capacity > INT_MaxCapacity)
+                {
+                    //Rejected
+                    return false;
+                }
+                else
+                {
+                    _recycle.AddWork
+                    (
+                        () =>
+                        {
+                            for (int index = 0; index < capacity; index++)
+                            {
+                                array[index] = default(T);
+                            }
+                            QueueBucket<T[]> bucket = GetBucket(capacity);
+                            bucket.Enqueue(array);
+                        }
+                    );
+                    return true;
+                }
+            }
+            else
+            {
+                throw new ArgumentException("The size of the array must be a power of two.", "array");
+            }
         }
 
         public static T[] GetArray(int capacity)
@@ -77,37 +104,10 @@ namespace Theraot.Threading
             }
         }
 
-        public static bool DonateArray(T[] array)
+        private static QueueBucket<T[]> GetBucket(int capacity)
         {
-            int capacity = array.Length;
-            if (NumericHelper.PopulationCount(capacity) == 1)
-            {
-                if (capacity < INT_MinCapacity || capacity > INT_MaxCapacity)
-                {
-                    //Rejected
-                    return false;
-                }
-                else
-                {
-                    _recycle.AddWork
-                    (
-                        () =>
-                        {
-                            for (int index = 0; index < capacity; index++)
-                            {
-                                array[index] = default(T);
-                            }
-                            QueueBucket<T[]> bucket = GetBucket(capacity);
-                            bucket.Enqueue(array);
-                        }
-                    );
-                    return true;
-                }
-            }
-            else
-            {
-                throw new ArgumentException("The size of the array must be a power of two.", "array");
-            }
+            LazyBucket<QueueBucket<T[]>> data = _data.Value;
+            return data.Get (NumericHelper.Log2(capacity) - NumericHelper.Log2(INT_MinCapacity));
         }
     }
 }
