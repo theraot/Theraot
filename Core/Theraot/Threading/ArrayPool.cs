@@ -60,7 +60,7 @@ namespace Theraot.Threading
                             () =>
                             {
                                 Array.Clear(array, 0, capacity);
-                                FixedSizeQueueBucket<T[]> bucket = GetBucket(capacity);
+                                var bucket = GetBucket(capacity);
                                 bucket.Enqueue(array);
                             }
                         ).Start();
