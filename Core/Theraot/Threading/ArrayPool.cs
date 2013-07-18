@@ -95,15 +95,18 @@ namespace Theraot.Threading
             if (Thread.VolatileRead(ref _done) == 1)
             {
                 IDisposable engagement;
-                if (_guard.Enter(out engagement)) using(engagement)
+                if (_guard.Enter(out engagement))
                 {
-                    var bucket = GetBucket(capacity);
-                    T[] result;
-                    if (!bucket.TryDequeue(out result))
+                    using (engagement)
                     {
-                        result = new T[capacity];
+                        var bucket = GetBucket(capacity);
+                        T[] result;
+                        if (!bucket.TryDequeue(out result))
+                        {
+                            result = new T[capacity];
+                        }
+                        return result;
                     }
-                    return result;
                 }
                 else
                 {
