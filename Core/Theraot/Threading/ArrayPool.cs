@@ -53,10 +53,7 @@ namespace Theraot.Threading
                     (
                         () =>
                         {
-                            for (int index = 0; index < capacity; index++)
-                            {
-                                array[index] = default(T);
-                            }
+                            Array.Clear(array, 0, capacity);
                             QueueBucket<T[]> bucket = GetBucket(capacity);
                             bucket.Enqueue(array);
                         }
