@@ -1,4 +1,3 @@
-#if FAT
 using System;
 using System.Runtime.ConstrainedExecution;
 using System.Threading;
@@ -127,4 +126,3 @@ namespace Theraot.Threading
         }
     }
 }
-#endif
