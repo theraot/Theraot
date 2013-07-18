@@ -10,23 +10,20 @@ namespace Theraot.Threading
     [global::System.Diagnostics.DebuggerNonUserCode]
     public sealed class ReentryGuard
     {
-        private LazyNeedle<NoTrackingThreadLocal<Tuple<ExtendedQueue<Action>, Guard>>> _workQueue;
+        private NoTrackingThreadLocal<Tuple<ExtendedQueue<Action>, Guard>> _workQueue;
 
         public ReentryGuard()
         {
-            _workQueue = new LazyNeedle<NoTrackingThreadLocal<Tuple<ExtendedQueue<Action>, Guard>>>
+            _workQueue = new NoTrackingThreadLocal<Tuple<ExtendedQueue<Action>, Guard>>
             (
-                () => new NoTrackingThreadLocal<Tuple<ExtendedQueue<Action>, Guard>>
-                (
-                    () => new Tuple<ExtendedQueue<Action>, Guard>(new ExtendedQueue<Action>(), new Guard())
-                )
+                () => new Tuple<ExtendedQueue<Action>, Guard>(new ExtendedQueue<Action>(), new Guard())
             );
         }
 
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Pokemon")]
         public void Execute(Action action)
         {
-            var local = _workQueue.Value.Value;
+            var local = _workQueue.Value;
             IDisposable engagement;
             if (local.Item2.Enter(out engagement))
             {
