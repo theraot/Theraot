@@ -62,7 +62,7 @@ namespace Theraot.Threading
                                 QueueBucket<T[]> bucket = GetBucket(capacity);
                                 bucket.Enqueue(array);
                             }
-                        );
+                        ).Start();
                         return true;
                     }
                 }
