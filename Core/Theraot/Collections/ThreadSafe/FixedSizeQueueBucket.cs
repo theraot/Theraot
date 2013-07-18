@@ -23,7 +23,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <param name="capacity">The capacity.</param>
         public FixedSizeQueueBucket(int capacity)
         {
-            _capacity = NumericHelper.NextPowerOf2(capacity);
+            _capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
             _preCount = 0;
             _indexEnqueue = 0;
             _indexDequeue = 0;

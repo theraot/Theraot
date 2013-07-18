@@ -88,7 +88,7 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    capacity = NumericHelper.NextPowerOf2(capacity);
+                    capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
                 }
             }
             if (Thread.VolatileRead(ref _done) == 1)
