@@ -57,12 +57,19 @@ namespace Theraot.Threading
                         (
                             () =>
                             {
-                                int index = GetIndex(capacity);
-                                if (index < _data.Capacity)
+                                IDisposable engagement;
+                                if (_guard.Enter(out engagement))
                                 {
-                                    Array.Clear(array, 0, capacity);
-                                    var bucket = _data.Get(index);
-                                    bucket.Enqueue(array);
+                                    using (engagement)
+                                    {
+                                        int index = GetIndex(capacity);
+                                        if (index < _data.Capacity)
+                                        {
+                                            Array.Clear(array, 0, capacity);
+                                            var bucket = _data.Get(index);
+                                            bucket.Enqueue(array);
+                                        }
+                                    }
                                 }
                             }
                         ).Start();
