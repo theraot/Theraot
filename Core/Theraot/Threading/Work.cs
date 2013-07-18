@@ -101,6 +101,8 @@ namespace Theraot.Threading
         public sealed class Context : IDisposable
         {
             private const int INT_InitialWorkCapacityHint = 128;
+            private const int INT_LoopCountHint = 4;
+            private const int INT_SpinWaitHint = 16;
             private static Context _defaultContext = new Context(INT_InitialWorkCapacityHint, Environment.ProcessorCount, "Default Context", false);
 
             private static int _lastId;
@@ -297,10 +299,32 @@ namespace Theraot.Threading
                 }
             }
 
+            private void ActivateDedicatedThreads()
+            {
+                var threadIndex = Interlocked.Increment(ref _dedidatedThreadCount) - 1;
+                if (threadIndex < _threads.Capacity)
+                {
+                    Thread thread = _threads.Get(threadIndex);
+                    thread.Start();
+                }
+                else
+                {
+                    Thread.VolatileWrite(ref _dedidatedThreadCount, _threads.Capacity);
+                    if (Thread.VolatileRead(ref _workingDedicatedThreadCount) < _threads.Count)
+                    {
+                        _event.Set();
+                    }
+                }
+            }
+
             internal void ScheduleWork(Work work)
             {
                 if (_work)
                 {
+                    if (_works.Count == _works.Capacity)
+                    {
+                        ActivateDedicatedThreads();
+                    }
                     _works.Enqueue(work);
                     if (_threads.Capacity == 0)
                     {
@@ -314,20 +338,7 @@ namespace Theraot.Threading
                     }
                     else
                     {
-                        var threadIndex = Interlocked.Increment(ref _dedidatedThreadCount) - 1;
-                        if (threadIndex < _threads.Capacity)
-                        {
-                            Thread thread = _threads.Get(threadIndex);
-                            thread.Start();
-                        }
-                        else
-                        {
-                            Thread.VolatileWrite(ref _dedidatedThreadCount, _threads.Capacity);
-                            if (Thread.VolatileRead(ref _workingDedicatedThreadCount) < _threads.Count)
-                            {
-                                _event.Set();
-                            }
-                        }
+                        ActivateDedicatedThreads();
                     }
                 }
             }
@@ -360,6 +371,7 @@ namespace Theraot.Threading
 
             private void DoWorks()
             {
+                int count = INT_LoopCountHint;
                 try
                 {
                     Interlocked.Increment(ref _workingTotalThreadCount);
@@ -373,16 +385,25 @@ namespace Theraot.Threading
                         }
                         else if (_works.Count == 0)
                         {
-                            try
+                            if (count > 0)
                             {
-                                Interlocked.Decrement(ref _workingDedicatedThreadCount);
-                                Interlocked.Decrement(ref _workingTotalThreadCount);
-                                _event.WaitOne();
+                                count--;
+                                Thread.SpinWait(INT_SpinWaitHint);
                             }
-                            finally
+                            else
                             {
-                                Interlocked.Increment(ref _workingTotalThreadCount);
-                                Interlocked.Increment(ref _workingDedicatedThreadCount);
+                                try
+                                {
+                                    Interlocked.Decrement(ref _workingDedicatedThreadCount);
+                                    Interlocked.Decrement(ref _workingTotalThreadCount);
+                                    _event.WaitOne();
+                                    count = INT_LoopCountHint;
+                                }
+                                finally
+                                {
+                                    Interlocked.Increment(ref _workingTotalThreadCount);
+                                    Interlocked.Increment(ref _workingDedicatedThreadCount);
+                                }
                             }
                         }
                         if (Thread.VolatileRead(ref _waitRequest) == 1)
