@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using Theraot.Threading;
 
 namespace Theraot.Collections.ThreadSafe
 {
@@ -26,7 +27,12 @@ namespace Theraot.Collections.ThreadSafe
         {
             _capacity = capacity;
             _count = 0;
-            _entries = new object[_capacity];
+            _entries = ArrayPool<object>.GetArray(_capacity);
+        }
+
+        ~Bucket()
+        {
+            ArrayPool<object>.DonateArray(_entries);
         }
 
         /// <summary>
@@ -48,53 +54,6 @@ namespace Theraot.Collections.ThreadSafe
             get
             {
                 return _count;
-            }
-        }
-
-        /// <summary>
-        /// Gets the values contained in this object.
-        /// </summary>
-        public IList<T> GetValues()
-        {
-            var result = new List<T>();
-            for (int index = 0; index < _entries.Length; index++)
-            {
-                var entry = Interlocked.CompareExchange(ref _entries[index], null, null);
-                if (entry != null)
-                {
-                    if (!ReferenceEquals(entry, BucketHelper.Null))
-                    {
-                        result.Add((T)entry);
-                    }
-                }
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// Gets the values contained in this object.
-        /// </summary>
-        public IList<TOutput> GetValues<TOutput>(Converter<T, TOutput> converter)
-        {
-            if (ReferenceEquals(converter, null))
-            {
-                throw new ArgumentNullException("converter");
-            }
-            else
-            {
-                var result = new List<TOutput>();
-                for (int index = 0; index < _entries.Length; index++)
-                {
-                    var entry = Interlocked.CompareExchange(ref _entries[index], null, null);
-                    if (entry != null)
-                    {
-                        if (!ReferenceEquals(entry, BucketHelper.Null))
-                        {
-                            result.Add(converter.Invoke((T)entry));
-                        }
-                    }
-                }
-                return result;
             }
         }
 
@@ -165,6 +124,53 @@ namespace Theraot.Collections.ThreadSafe
                         yield return (T)entry;
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Gets the values contained in this object.
+        /// </summary>
+        public IList<T> GetValues()
+        {
+            var result = new List<T>();
+            for (int index = 0; index < _entries.Length; index++)
+            {
+                var entry = Interlocked.CompareExchange(ref _entries[index], null, null);
+                if (entry != null)
+                {
+                    if (!ReferenceEquals(entry, BucketHelper.Null))
+                    {
+                        result.Add((T)entry);
+                    }
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Gets the values contained in this object.
+        /// </summary>
+        public IList<TOutput> GetValues<TOutput>(Converter<T, TOutput> converter)
+        {
+            if (ReferenceEquals(converter, null))
+            {
+                throw new ArgumentNullException("converter");
+            }
+            else
+            {
+                var result = new List<TOutput>();
+                for (int index = 0; index < _entries.Length; index++)
+                {
+                    var entry = Interlocked.CompareExchange(ref _entries[index], null, null);
+                    if (entry != null)
+                    {
+                        if (!ReferenceEquals(entry, BucketHelper.Null))
+                        {
+                            result.Add(converter.Invoke((T)entry));
+                        }
+                    }
+                }
+                return result;
             }
         }
 
