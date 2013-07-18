@@ -7,7 +7,7 @@ using System.Threading;
 namespace Theraot.Threading.Needles
 {
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public partial class WeakNeedle<T> : INeedle<T>
+    public partial class WeakNeedle<T> : INeedle<T>, IEquatable<WeakNeedle<T>>
         where T : class
     {
         private GCHandle _handle;
@@ -152,6 +152,18 @@ namespace Theraot.Threading.Needles
                 {
                     return false;
                 }
+            }
+        }
+
+        public bool Equals(WeakNeedle<T> other)
+        {
+            if (ReferenceEquals(other, null))
+            {
+                return false;
+            }
+            else
+            {
+                return EqualsExtractedExtracted(this, other);
             }
         }
 
