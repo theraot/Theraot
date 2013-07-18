@@ -13,8 +13,9 @@ namespace Theraot.Threading
         private const int INT_MaxCapacity = 1024;
         private const int INT_MinCapacity = 16;
         private const int INT_WorkCapacityHint = 16;
+        private const int INT_PoolSize = 16;
 
-        private static LazyBucket<QueueBucket<T[]>> _data;
+        private static LazyBucket<FixedSizeQueueBucket<T[]>> _data;
         private static Work.Context _recycle;
         private static int _done;
         private static Guard _guard;
@@ -22,11 +23,11 @@ namespace Theraot.Threading
         static ArrayPool()
         {
             _recycle = new Work.Context("Recycler", INT_WorkCapacityHint, 1);
-            _data = new LazyBucket<QueueBucket<T[]>>
+            _data = new LazyBucket<FixedSizeQueueBucket<T[]>>
             (
                 input =>
                 {
-                    return new QueueBucket<T[]>();
+                    return new FixedSizeQueueBucket<T[]>(INT_PoolSize);
                 },
                 NumericHelper.Log2(INT_MaxCapacity) - NumericHelper.Log2(INT_MinCapacity)
             );
@@ -59,7 +60,7 @@ namespace Theraot.Threading
                             () =>
                             {
                                 Array.Clear(array, 0, capacity);
-                                QueueBucket<T[]> bucket = GetBucket(capacity);
+                                FixedSizeQueueBucket<T[]> bucket = GetBucket(capacity);
                                 bucket.Enqueue(array);
                             }
                         ).Start();
@@ -96,7 +97,7 @@ namespace Theraot.Threading
                 IDisposable engagement;
                 if (_guard.Enter(out engagement)) using(engagement)
                 {
-                    QueueBucket<T[]> bucket = GetBucket(capacity);
+                    var bucket = GetBucket(capacity);
                     T[] result;
                     if (!bucket.TryDequeue(out result))
                     {
@@ -115,7 +116,7 @@ namespace Theraot.Threading
             }
         }
 
-        private static QueueBucket<T[]> GetBucket(int capacity)
+        private static FixedSizeQueueBucket<T[]> GetBucket(int capacity)
         {
             return _data.Get (NumericHelper.Log2(capacity) - NumericHelper.Log2(INT_MinCapacity));
         }
