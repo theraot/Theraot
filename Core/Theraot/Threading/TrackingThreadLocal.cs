@@ -134,6 +134,11 @@ namespace Theraot.Threading
             return string.Format(System.Globalization.CultureInfo.InvariantCulture, "[ThreadLocal: IsValueCreated={0}, Value={1}]", IsValueCreated, Value);
         }
 
+        public void Uncreate()
+        {
+            _slots.Remove(Thread.CurrentThread);
+        }
+
         [global::System.Diagnostics.DebuggerNonUserCode]
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2004:RemoveCallsToGCKeepAlive", Justification = "By Design")]
         private void Dispose(bool disposeManagedResources)
