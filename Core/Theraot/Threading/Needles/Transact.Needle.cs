@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using Theraot.Core;
@@ -10,73 +11,56 @@ namespace Theraot.Threading.Needles
 {
     public sealed partial class Transact
     {
-        public sealed partial class Needle<T> : IResource, INeedle<T>
+        public sealed partial class Needle<T> : Theraot.Threading.Needles.Needle<T>, IResource
         {
-            private readonly Func<T> _source;
-            private readonly Action<T> _target;
-
-            private T _original;
             private Needles.Needle<Thread> _owner = new Needles.Needle<Thread>();
             private Transact _transaction;
-            private ThreadLocal<T> _value;
+            private TrackingThreadLocal<T> _read;
+            private TrackingThreadLocal<T> _write;
 
-            internal Needle(Func<T> source, Action<T> target)
+            public Needle(T value)
+                : base(value)
             {
                 _transaction = Transact.CurrentTransaction;
-                if (ReferenceEquals(_transaction, null))
-                {
-                    throw new InvalidOperationException("Can't create a needle without an active Transaction.");
-                }
-                else
-                {
-                    _source = source;
-                    _target = target ?? ActionHelper.GetNoopAction<T>();
-                    if (!ReferenceEquals(_source, null))
-                    {
-                        _original = _source.Invoke();
-                    }
-                    _value = new ThreadLocal<T>();
-                }
+                _read = new TrackingThreadLocal<T>(() => base.Value);
+                _write = new TrackingThreadLocal<T>();
             }
 
-            bool IReadOnlyNeedle<T>.IsAlive
+            public override T Value
             {
                 get
                 {
-                    return true;
-                }
-            }
-
-            public T Value
-            {
-                get
-                {
-                    if (_value.IsValueCreated)
+                    _transaction = Transact.CurrentTransaction;
+                    if (ReferenceEquals(_transaction, null))
                     {
-                        return _value.Value;
+                        return base.Value;
                     }
                     else
                     {
-                        if (ReferenceEquals(_source, null))
+                        if (_transaction._writeLog.Contains(this))
                         {
-                            throw new InvalidOperationException("Unable to read write only needle");
+                            return _write.Value;
                         }
                         else
                         {
-                            _value.Value = _original;
-                            return _original;
+                            _transaction._readLog.Add(this);
+                            return _read.Value;
                         }
                     }
                 }
                 set
                 {
-                    _value.Value = value;
+                    _transaction = Transact.CurrentTransaction;
+                    if (ReferenceEquals(_transaction, null))
+                    {
+                        base.Value = value;
+                    }
+                    else
+                    {
+                        _write.Value = value;
+                        _transaction._writeLog.Add(this);
+                    }
                 }
-            }
-
-            void INeedle<T>.Release()
-            {
-                //Empty
             }
 
             void IResource.Capture(ref Needles.Needle<Thread> thread)
@@ -86,28 +70,14 @@ namespace Theraot.Threading.Needles
 
             bool IResource.Check()
             {
-                if (ReferenceEquals(_source, null))
-                {
-                    return true;
-                }
-                else
-                {
-                    if (EqualityComparer<T>.Default.Equals(_original, _value.Value))
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
+                return EqualityComparer<T>.Default.Equals(base.Value, _read.Value);
             }
 
             bool IResource.Commit()
             {
                 if (_owner.Value.Equals(Thread.CurrentThread))
                 {
-                    _target.Invoke(_value.Value);
+                    base.Value = _write.Value;
                     return true;
                 }
                 else
@@ -118,12 +88,14 @@ namespace Theraot.Threading.Needles
 
             void IResource.Rollback()
             {
-                _value.Value = _source.Invoke();
+                _read.Uncreate();
+                _write.Uncreate();
             }
 
             private void OnDispose()
             {
-                _value.Dispose();
+                _read.Dispose();
+                _write.Dispose();
             }
         }
     }

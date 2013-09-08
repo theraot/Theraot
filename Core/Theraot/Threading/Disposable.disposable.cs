@@ -131,7 +131,7 @@ namespace Theraot.Threading
                 {
                     try
                     {
-                        _release();
+                        _release.Invoke();
                     }
                     finally
                     {

@@ -67,7 +67,8 @@ namespace Theraot.Threading.Needles
                         }
                         finally
                         {
-                            _value = null;
+                            _read = null;
+                            _write = null;
                         }
                     }
                 }
