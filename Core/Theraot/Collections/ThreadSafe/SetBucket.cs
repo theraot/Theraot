@@ -367,6 +367,34 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        /// <summary>
+        /// Removes the items where the value satisfies the predicate.
+        /// </summary>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns>
+        /// The number or removed items.
+        /// </returns>
+        public int RemoveWhere(Predicate<T> predicate)
+        {
+            T value;
+            int result = 0;
+            var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
+            for (int index = 0; index < entries.Capacity; index++)
+            {
+                if (entries.TryGet(index, out value))
+                {
+                    if (predicate(value))
+                    {
+                        if (entries.Remove(value) != -1)
+                        {
+                            result++;
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
