@@ -337,6 +337,12 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+        {
+            var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
+            entries.CopyTo(array, arrayIndex);
+        }
+
         /// <summary>
         /// Returns an <see cref="System.Collections.Generic.IEnumerator{T}" /> that allows to iterate through the collection.
         /// </summary>

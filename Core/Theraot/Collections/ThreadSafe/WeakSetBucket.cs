@@ -255,6 +255,24 @@ namespace Theraot.Collections.ThreadSafe
             return _wrapped.RemoveWhere(input => !input.IsAlive);
         }
 
+        public int RemoveWhere(Predicate<T> predicate)
+        {
+            return _wrapped.RemoveWhere
+            (
+                input =>
+                {
+                    if (input.IsAlive)
+                    {
+                        return predicate (input.Value);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            );
+        }
+
         public bool SetEquals(IEnumerable<T> other)
         {
             return Extensions.SetEquals(this, other);
@@ -268,6 +286,21 @@ namespace Theraot.Collections.ThreadSafe
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public bool TryGet(int index, out T item)
+        {
+            TNeedle needle;
+            var result = _wrapped.TryGet(index, out needle);
+            item = needle.Value;
+            if (needle.IsAlive)
+            {
+                return result;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public void UnionWith(IEnumerable<T> other)

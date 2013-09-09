@@ -13,7 +13,7 @@ namespace Theraot.Collections.ThreadSafe
 {
     [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
-    public class WeakHashBucket<TKey, TValue, TNeedle> : IEnumerable<KeyValuePair<TKey, TValue>>, ICollection<KeyValuePair<TKey, TValue>>, IEnumerable<KeyValuePair<TKey, TValue>>, IDictionary<TKey, TValue>, IEqualityComparer<TKey>
+    public class WeakHashBucket<TKey, TValue, TNeedle> : IEnumerable<KeyValuePair<TKey, TValue>>, ICollection<KeyValuePair<TKey, TValue>>, IEqualityComparer<TKey>
         where TKey : class
         where TNeedle : WeakNeedle<TKey>
     {
@@ -163,6 +163,16 @@ namespace Theraot.Collections.ThreadSafe
             return _wrapped.TryAdd(NeedleHelper.CreateNeedle<TKey, TNeedle>(item.Key), item.Value);
         }
 
+        public void Add(TKey key, TValue value)
+        {
+            _wrapped.Add(NeedleHelper.CreateNeedle<TKey, TNeedle>(key), value);
+        }
+
+        public TValue CharyAdd(TKey key, TValue value)
+        {
+            return _wrapped.CharyAdd(NeedleHelper.CreateNeedle<TKey, TNeedle>(key), value);
+        }
+
         public void Clear()
         {
             _wrapped.Clear();
@@ -195,11 +205,6 @@ namespace Theraot.Collections.ThreadSafe
             return _comparer.Equals(x, y);
         }
 
-        public void ExceptWith(IEnumerable<KeyValuePair<TKey, TValue>> other)
-        {
-            Extensions.ExceptWith(this, other);
-        }
-
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
             return _wrapped.ConvertProgressiveFiltered(input => new KeyValuePair<TKey, TValue>(input.Key.Value, input.Value), input => input.Key.IsAlive).GetEnumerator();
@@ -215,39 +220,9 @@ namespace Theraot.Collections.ThreadSafe
             _wrapped.Add(NeedleHelper.CreateNeedle<TKey, TNeedle>(item.Key), item.Value);
         }
 
-        public void IntersectWith(IEnumerable<KeyValuePair<TKey, TValue>> other)
+        public bool Remove(TKey key)
         {
-            Extensions.IntersectWith(this, other);
-        }
-
-        public bool IsProperSubsetOf(IEnumerable<KeyValuePair<TKey, TValue>> other)
-        {
-            return Extensions.IsProperSubsetOf(this, other);
-        }
-
-        public bool IsProperSupersetOf(IEnumerable<KeyValuePair<TKey, TValue>> other)
-        {
-            return Extensions.IsProperSupersetOf(this, other);
-        }
-
-        public bool IsSubsetOf(IEnumerable<KeyValuePair<TKey, TValue>> other)
-        {
-            return Extensions.IsSubsetOf(this, other);
-        }
-
-        public bool IsSupersetOf(IEnumerable<KeyValuePair<TKey, TValue>> other)
-        {
-            return Extensions.IsSupersetOf(this, other);
-        }
-
-        public bool Overlaps(IEnumerable<KeyValuePair<TKey, TValue>> other)
-        {
-            return Extensions.Overlaps(this, other);
-        }
-
-        public bool Remove(TKey item)
-        {
-            return _wrapped.Remove(NeedleHelper.CreateNeedle<TKey, TNeedle>(item));
+            return _wrapped.Remove(NeedleHelper.CreateNeedle<TKey, TNeedle>(key));
         }
 
         public int RemoveDeadItems()
@@ -255,14 +230,27 @@ namespace Theraot.Collections.ThreadSafe
             return _wrapped.RemoveWhereKey(key => !key.IsAlive);
         }
 
-        public bool SetEquals(IEnumerable<KeyValuePair<TKey, TValue>> other)
+        public int RemoveWhereKey(Predicate<TKey> predicate)
         {
-            return Extensions.SetEquals(this, other);
+            return _wrapped.RemoveWhereKey
+            (
+                key =>
+                {
+                    if (key.IsAlive)
+                    {
+                        return predicate.Invoke(key.Value);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            );
         }
 
-        public void SymmetricExceptWith(IEnumerable<KeyValuePair<TKey, TValue>> other)
+        public void Set(TKey key, TValue value)
         {
-            Extensions.SymmetricExceptWith(this, other);
+            _wrapped.Set(NeedleHelper.CreateNeedle<TKey, TNeedle>(key), value);
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
@@ -270,9 +258,34 @@ namespace Theraot.Collections.ThreadSafe
             return GetEnumerator();
         }
 
-        public void UnionWith(IEnumerable<KeyValuePair<TKey, TValue>> other)
+        public bool TryAdd(TKey key, TValue value)
         {
-            Extensions.UnionWith(this, other);
+            return _wrapped.TryAdd(NeedleHelper.CreateNeedle<TKey, TNeedle>(key), value);
+        }
+
+        public bool TryGet(TKey key, out TValue value)
+        {
+            return _wrapped.TryGetValue(NeedleHelper.CreateNeedle<TKey, TNeedle>(key), out value);
+        }
+
+        public bool TryGet(int index, out TKey key, out TValue value)
+        {
+            TNeedle needle;
+            var result = _wrapped.TryGet(index, out needle, out value);
+            key = needle.Value;
+            if (needle.IsAlive)
+            {
+                return result;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool TryGetValue(TKey key, out TValue value)
+        {
+            return _wrapped.TryGetValue(NeedleHelper.CreateNeedle<TKey, TNeedle>(key), out value);
         }
 
         protected virtual WeakHashBucket<TKey, TValue, TNeedle> OnClone()
