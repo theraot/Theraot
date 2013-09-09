@@ -23,6 +23,11 @@ namespace Theraot.Collections.ThreadSafe
 
         public WeakSet()
         {
+            _comparer = EqualityComparer<T>.Default;
+            _wrapped = new SetBucket<TNeedle>
+            (
+                new ConversionEqualityComparer<TNeedle, T>(_comparer, input => input.Value)
+            );
             RegisterForAutoRemoveDeadItems();
         }
 
@@ -66,6 +71,11 @@ namespace Theraot.Collections.ThreadSafe
 
         public WeakSet(bool autoRemoveDeadItems)
         {
+            _comparer = EqualityComparer<T>.Default;
+            _wrapped = new SetBucket<TNeedle>
+            (
+                new ConversionEqualityComparer<TNeedle, T>(_comparer, input => input.Value)
+            );
             if (autoRemoveDeadItems)
             {
                 RegisterForAutoRemoveDeadItems();
