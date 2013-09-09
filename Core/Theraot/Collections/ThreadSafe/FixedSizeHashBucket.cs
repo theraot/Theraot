@@ -305,6 +305,43 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
+        /// <param name="isCollision">if set to <c>true</c> the attempt resulted in a collision.</param>
+        /// <returns>The index where the key and associated value were added.</returns>
+        public int TryAdd(TKey key, TValue value, out bool isCollision)
+        {
+            return TryAdd(key, value, 0, out isCollision);
+        }
+
+        /// <summary>
+        /// Attempts to add the specified key and associated value.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="offset">The offset from the default index.</param>
+        /// <param name="isCollision">if set to <c>true</c> the attempt resulted in a collision.</param>
+        /// <returns>The index where the key and associated value were added.</returns>
+        public int TryAdd(TKey key, TValue value, int offset, out bool isCollision)
+        {
+            int index = Index(key, offset);
+            var entry = new KeyValuePair<TKey, TValue>(key, value);
+            KeyValuePair<TKey, TValue> previous;
+            if (_entries.Insert(index, entry, out previous))
+            {
+                isCollision = false;
+                return index;
+            }
+            else
+            {
+                isCollision = !_keyComparer.Equals(previous.Key, key);
+                return -1;
+            }
+        }
+
+        /// <summary>
+        /// Attempts to add the specified key and associated value at the default index.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
         /// <param name="previous">Set to the value found in the destination in case of collision.</param>
         /// <returns>The index where the key and associated value were added.</returns>
         public int TryAdd(TKey key, TValue value, out KeyValuePair<TKey, TValue> previous)

@@ -213,6 +213,73 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
+        /// Attempts to add the specified key and associated value. The value is added if the key is not found.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>The value found in the destination after the attempt, regardless of collisions.</returns>
+        public TValue CharyAdd(TKey key, TValue value)
+        {
+            bool result = false;
+            int revision;
+            KeyValuePair<TKey, TValue> previous = default(KeyValuePair<TKey, TValue>);
+            TValue found = value;
+            while (true)
+            {
+                revision = _revision;
+                if (IsOperationSafe())
+                {
+                    bool isCollision = false;
+                    var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
+                    bool done = false;
+                    try
+                    {
+                        if (CharyAddExtracted(key, value, entries, out previous, out isCollision) != -1)
+                        {
+                            result = true;
+                        }
+                    }
+                    finally
+                    {
+                        var isOperationSafe = IsOperationSafe(entries, revision);
+                        if (isOperationSafe)
+                        {
+                            if (result)
+                            {
+                                Interlocked.Increment(ref _count);
+                                done = true;
+                            }
+                            else
+                            {
+                                if (isCollision)
+                                {
+                                    var oldStatus = Interlocked.CompareExchange(ref _status, (int)BucketStatus.GrowRequested, (int)BucketStatus.Free);
+                                    if (oldStatus == (int)BucketStatus.Free)
+                                    {
+                                        _revision++;
+                                    }
+                                }
+                                else
+                                {
+                                    done = true;
+                                    found = previous.Value;
+                                }
+                            }
+                        }
+                    }
+                    if (done)
+                    {
+                        return found;
+                    }
+                }
+                else
+                {
+                    CooperativeGrow();
+                }
+            }
+        }
+
+        /// <summary>
         /// Removes all the elements.
         /// </summary>
         public void Clear()
@@ -339,6 +406,35 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
+        /// Removes the keys and associated values where the key satisfies the predicate.
+        /// </summary>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns>
+        /// The number or removed pairs of keys and associated values.
+        /// </returns>
+        public int RemoveWhereKey(Predicate<TKey> predicate)
+        {
+            TKey key;
+            TValue value;
+            int result = 0;
+            var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
+            for (int index = 0; index < entries.Capacity; index++)
+            {
+                if (entries.TryGet(index, out key, out value))
+                {
+                    if (predicate(key))
+                    {
+                        if (entries.Remove(key) != -1)
+                        {
+                            result++;
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
         /// Sets the value associated with the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
@@ -385,17 +481,17 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Attempts to add the specified key and associated value.
+        /// Attempts to add the specified key and associated value. The value is added if the key is not found.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
-        /// <returns>The value found in the destination after the attempt, regardless of collisions.</returns>
-        public TValue TryAdd(TKey key, TValue value)
+        /// <returns>
+        ///   <c>true</c> if the specified key and associated value were added; otherwise, <c>false</c>.
+        /// </returns>
+        public bool TryAdd(TKey key, TValue value)
         {
             bool result = false;
             int revision;
-            KeyValuePair<TKey, TValue> previous = default(KeyValuePair<TKey, TValue>);
-            TValue found = value;
             while (true)
             {
                 revision = _revision;
@@ -406,7 +502,7 @@ namespace Theraot.Collections.ThreadSafe
                     bool done = false;
                     try
                     {
-                        if (TryAddExtracted(key, value, entries, out previous, out isCollision) != -1)
+                        if (TryAddExtracted(key, value, entries, out isCollision) != -1)
                         {
                             result = true;
                         }
@@ -434,14 +530,13 @@ namespace Theraot.Collections.ThreadSafe
                                 else
                                 {
                                     done = true;
-                                    found = previous.Value;
                                 }
                             }
                         }
                     }
                     if (done)
                     {
-                        return found;
+                        return result;
                     }
                 }
                 else
@@ -561,6 +656,25 @@ namespace Theraot.Collections.ThreadSafe
                 for (int attempts = 0; attempts < _maxProbing; attempts++)
                 {
                     int index = entries.Add(key, value, attempts, out isCollision);
+                    if (index != -1 || !isCollision)
+                    {
+                        return index;
+                    }
+                }
+            }
+            return -1;
+        }
+
+        private int CharyAddExtracted(TKey key, TValue value, FixedSizeHashBucket<TKey, TValue> entries, out KeyValuePair<TKey, TValue> previous, out bool isCollision)
+        {
+            isCollision = true;
+            previous = default(KeyValuePair<TKey, TValue>);
+            if (entries != null)
+            {
+                for (int attempts = 0; attempts < _maxProbing; attempts++)
+                {
+                    int index = entries.TryAdd(key, value, attempts, out previous);
+                    isCollision = _keyComparer.Equals(previous.Key, key);
                     if (index != -1 || !isCollision)
                     {
                         return index;
@@ -773,16 +887,14 @@ namespace Theraot.Collections.ThreadSafe
             return -1;
         }
 
-        private int TryAddExtracted(TKey key, TValue value, FixedSizeHashBucket<TKey, TValue> entries, out KeyValuePair<TKey, TValue> previous, out bool isCollision)
+        private int TryAddExtracted(TKey key, TValue value, FixedSizeHashBucket<TKey, TValue> entries, out bool isCollision)
         {
             isCollision = true;
-            previous = default(KeyValuePair<TKey, TValue>);
             if (entries != null)
             {
                 for (int attempts = 0; attempts < _maxProbing; attempts++)
                 {
-                    int index = entries.TryAdd(key, value, attempts, out previous);
-                    isCollision = _keyComparer.Equals(previous.Key, key);
+                    int index = entries.TryAdd(key, value, attempts, out isCollision);
                     if (index != -1 || !isCollision)
                     {
                         return index;
@@ -791,7 +903,6 @@ namespace Theraot.Collections.ThreadSafe
             }
             return -1;
         }
-
         private bool TryGetExtracted(int index, FixedSizeHashBucket<TKey, TValue> entries, out TKey key, out TValue value)
         {
             value = default(TValue);

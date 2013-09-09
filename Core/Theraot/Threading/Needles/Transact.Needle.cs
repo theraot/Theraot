@@ -41,7 +41,7 @@ namespace Theraot.Threading.Needles
                         else
                         {
                             var tmp = base.Value;
-                            _transaction._readLog.TryAdd(this, tmp);
+                            _transaction._readLog.CharyAdd(this, tmp);
                             return tmp;
                         }
                     }
