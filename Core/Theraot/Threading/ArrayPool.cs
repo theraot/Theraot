@@ -18,6 +18,7 @@ namespace Theraot.Threading
         private static int _done;
         private static Guard _guard;
         private static Work.Context _recycle;
+
         static ArrayPool()
         {
             _recycle = new Work.Context("Recycler", INT_WorkCapacityHint, 1);
