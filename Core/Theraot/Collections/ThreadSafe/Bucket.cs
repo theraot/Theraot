@@ -15,10 +15,8 @@ namespace Theraot.Collections.ThreadSafe
     public sealed class Bucket<T> : IEnumerable<T>
     {
         private readonly int _capacity;
-        private readonly object[] _entries;
-
         private int _count;
-
+        private object[] _entries;
         /// <summary>
         /// Initializes a new instance of the <see cref="Bucket{T}" /> class.
         /// </summary>
@@ -32,7 +30,7 @@ namespace Theraot.Collections.ThreadSafe
 
         ~Bucket()
         {
-            ArrayPool<object>.DonateArray(_entries);
+            RecycleExtracted();
         }
 
         /// <summary>
@@ -396,10 +394,22 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        internal void Recycle()
+        {
+            RecycleExtracted();
+            GC.SuppressFinalize(this);
+        }
+
         private bool InsertExtracted(int index, object item, out object previous)
         {
             previous = Interlocked.CompareExchange(ref _entries[index], item ?? BucketHelper.Null, null);
             return previous == null;
+        }
+
+        private void RecycleExtracted()
+        {
+            ArrayPool<object>.DonateArray(_entries);
+            _entries = null;
         }
 
         private bool RemoveAtExtracted(int index, out object previous)

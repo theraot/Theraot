@@ -149,14 +149,6 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Gets the keys and associated values contained in this object.
-        /// </summary>
-        public IList<KeyValuePair<TKey, TValue>> GetPairs()
-        {
-            return _entriesNew.GetPairs();
-        }
-
-        /// <summary>
         /// Adds the specified key and associated value.
         /// </summary>
         /// <param name="key">The key.</param>
@@ -225,8 +217,9 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public void Clear()
         {
-            _entriesOld = null;
-            _entriesNew = new FixedSizeHashBucket<TKey, TValue>(INT_DefaultCapacity, _keyComparer);
+            BucketHelper.Recycle(ref _entriesOld);
+            var displaced = Interlocked.Exchange(ref _entriesNew, new FixedSizeHashBucket<TKey, TValue>(INT_DefaultCapacity, _keyComparer));
+            BucketHelper.Recycle(ref displaced);
             Thread.VolatileWrite(ref _status, (int)BucketStatus.Free);
             Thread.VolatileWrite(ref _count, 0);
             _revision++;
@@ -286,6 +279,14 @@ namespace Theraot.Collections.ThreadSafe
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
             return _entriesNew.GetKeyValuePairEnumerable().GetEnumerator();
+        }
+
+        /// <summary>
+        /// Gets the keys and associated values contained in this object.
+        /// </summary>
+        public IList<KeyValuePair<TKey, TValue>> GetPairs()
+        {
+            return _entriesNew.GetPairs();
         }
 
         /// <summary>

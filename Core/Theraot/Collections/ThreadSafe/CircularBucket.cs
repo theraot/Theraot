@@ -16,9 +16,8 @@ namespace Theraot.Collections.ThreadSafe
     /// </remarks>
     public sealed class CircularBucket<T> : IEnumerable<T>
     {
-        private readonly Bucket<T> _bucket;
         private readonly int _capacity;
-
+        private readonly Bucket<T> _entries;
         private int _index;
 
         /// <summary>
@@ -29,7 +28,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             _capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
             _index = -1;
-            _bucket = new Bucket<T>(_capacity);
+            _entries = new Bucket<T>(_capacity);
         }
 
         /// <summary>
@@ -50,24 +49,8 @@ namespace Theraot.Collections.ThreadSafe
         {
             get
             {
-                return _bucket.Count;
+                return _entries.Count;
             }
-        }
-
-        /// <summary>
-        /// Gets the values contained in this object.
-        /// </summary>
-        public IList<T> GetValues()
-        {
-            return _bucket.GetValues();
-        }
-
-        /// <summary>
-        /// Gets the values contained in this object.
-        /// </summary>
-        public IList<TOutput> GetValues<TOutput>(Converter<T, TOutput> converter)
-        {
-            return _bucket.GetValues<TOutput>(converter);
         }
 
         /// <summary>
@@ -79,7 +62,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             var index = Interlocked.Increment(ref _index) & (_capacity - 1);
             bool isNew;
-            _bucket.Set(index, item, out isNew);
+            _entries.Set(index, item, out isNew);
             return index;
         }
 
@@ -91,7 +74,23 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            return _bucket.GetEnumerator();
+            return _entries.GetEnumerator();
+        }
+
+        /// <summary>
+        /// Gets the values contained in this object.
+        /// </summary>
+        public IList<T> GetValues()
+        {
+            return _entries.GetValues();
+        }
+
+        /// <summary>
+        /// Gets the values contained in this object.
+        /// </summary>
+        public IList<TOutput> GetValues<TOutput>(Converter<T, TOutput> converter)
+        {
+            return _entries.GetValues<TOutput>(converter);
         }
 
         /// <summary>
@@ -104,7 +103,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool RemoveAt(int index)
         {
-            return _bucket.RemoveAt(index);
+            return _entries.RemoveAt(index);
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
@@ -123,7 +122,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool TryGet(int index, out T value)
         {
-            return _bucket.TryGet(index, out value);
+            return _entries.TryGet(index, out value);
         }
     }
 }

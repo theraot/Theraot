@@ -29,6 +29,11 @@ namespace Theraot.Collections.ThreadSafe
             _comparer = comparer ?? EqualityComparer<T>.Default;
         }
 
+        ~FixedSizeSetBucket()
+        {
+            RecycleExtracted();
+        }
+
         /// <summary>
         /// Gets the capacity.
         /// </summary>
@@ -60,22 +65,6 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return _entries.Count;
             }
-        }
-
-        /// <summary>
-        /// Gets the values contained in this object.
-        /// </summary>
-        public IList<T> GetValues()
-        {
-            return _entries.GetValues();
-        }
-
-        /// <summary>
-        /// Gets the values contained in this object.
-        /// </summary>
-        public IList<TOutput> GetValues<TOutput>(Converter<T, TOutput> converter)
-        {
-            return _entries.GetValues<TOutput>(converter);
         }
 
         /// <summary>
@@ -176,6 +165,22 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
+        /// Gets the values contained in this object.
+        /// </summary>
+        public IList<T> GetValues()
+        {
+            return _entries.GetValues();
+        }
+
+        /// <summary>
+        /// Gets the values contained in this object.
+        /// </summary>
+        public IList<TOutput> GetValues<TOutput>(Converter<T, TOutput> converter)
+        {
+            return _entries.GetValues<TOutput>(converter);
+        }
+
+        /// <summary>
         /// Determinates the index for a given item.
         /// </summary>
         /// <param name="item">The item.</param>
@@ -249,6 +254,12 @@ namespace Theraot.Collections.ThreadSafe
             return _entries.TryGet(index, out item);
         }
 
+        internal void Recycle()
+        {
+            RecycleExtracted();
+            GC.SuppressFinalize(this);
+        }
+
         //HACK
         internal int Set(T item, int offset, out bool isNew)
         {
@@ -263,6 +274,11 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return -1;
             }
+        }
+
+        private void RecycleExtracted()
+        {
+            BucketHelper.Recycle(ref _entries);
         }
     }
 }

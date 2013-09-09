@@ -13,9 +13,8 @@ namespace Theraot.Collections.ThreadSafe
     /// </remarks>
     public sealed class LazyBucket<T> : IEnumerable<T>
     {
+        private Bucket<LazyNeedle<T>> _entries;
         private Converter<int, T> _valueFactory;
-        private Bucket<LazyNeedle<T>> _wrapped;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Bucket{T}" /> class.
         /// </summary>
@@ -29,8 +28,13 @@ namespace Theraot.Collections.ThreadSafe
             else
             {
                 _valueFactory = valueFactory;
-                _wrapped = new Bucket<LazyNeedle<T>>(capacity);
+                _entries = new Bucket<LazyNeedle<T>>(capacity);
             }
+        }
+
+        ~LazyBucket()
+        {
+            RecycleExtracted();
         }
 
         /// <summary>
@@ -40,7 +44,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             get
             {
-                return _wrapped.Capacity;
+                return _entries.Capacity;
             }
         }
 
@@ -51,24 +55,8 @@ namespace Theraot.Collections.ThreadSafe
         {
             get
             {
-                return _wrapped.Count;
+                return _entries.Count;
             }
-        }
-
-        /// <summary>
-        /// Gets the values contained in this object.
-        /// </summary>
-        public IList<T> GetValues()
-        {
-            return _wrapped.GetValues<T>(input => input.Value);
-        }
-
-        /// <summary>
-        /// Gets the values contained in this object.
-        /// </summary>
-        public IList<TOutput> GetValues<TOutput>(Converter<T, TOutput> converter)
-        {
-            return _wrapped.GetValues<TOutput>(input => converter.Invoke(input.Value));
         }
 
         /// <summary>
@@ -85,6 +73,27 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
+        /// Tries to retrieve the item at the specified index.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        public T Get(int index)
+        {
+            LazyNeedle<T> _previous;
+            var newItem = new LazyNeedle<T>(() => _valueFactory.Invoke(index));
+            if (_entries.Insert(index, newItem, out _previous))
+            {
+                return newItem.Value;
+            }
+            else
+            {
+                //_previous should be null because null is never added
+                return _previous.Value;
+            }
+        }
+
+        /// <summary>
         /// Returns an enumerator that iterates through a collection.
         /// </summary>
         /// <returns>
@@ -92,7 +101,23 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            return Extensions.ConvertProgressiveFiltered<LazyNeedle<T>, T>(_wrapped, input => input.Value, input => input.IsCached).GetEnumerator();
+            return Extensions.ConvertProgressiveFiltered<LazyNeedle<T>, T>(_entries, input => input.Value, input => input.IsCached).GetEnumerator();
+        }
+
+        /// <summary>
+        /// Gets the values contained in this object.
+        /// </summary>
+        public IList<T> GetValues()
+        {
+            return _entries.GetValues<T>(input => input.Value);
+        }
+
+        /// <summary>
+        /// Gets the values contained in this object.
+        /// </summary>
+        public IList<TOutput> GetValues<TOutput>(Converter<T, TOutput> converter)
+        {
+            return _entries.GetValues<TOutput>(input => converter.Invoke(input.Value));
         }
 
         /// <summary>
@@ -110,7 +135,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public bool Insert(int index, T item)
         {
-            return _wrapped.Insert(index, new LazyNeedle<T>(null, item));
+            return _entries.Insert(index, new LazyNeedle<T>(null, item));
         }
 
         /// <summary>
@@ -130,7 +155,7 @@ namespace Theraot.Collections.ThreadSafe
         public bool Insert(int index, T item, out T previous)
         {
             LazyNeedle<T> _previous;
-            if (_wrapped.Insert(index, new LazyNeedle<T>(null, item), out _previous))
+            if (_entries.Insert(index, new LazyNeedle<T>(null, item), out _previous))
             {
                 previous = default(T);
                 return true;
@@ -160,7 +185,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool RemoveAt(int index)
         {
-            return _wrapped.RemoveAt(index);
+            return _entries.RemoveAt(index);
         }
 
         /// <summary>
@@ -175,7 +200,7 @@ namespace Theraot.Collections.ThreadSafe
         public bool RemoveAt(int index, out T previous)
         {
             LazyNeedle<T> _previous;
-            if (_wrapped.RemoveAt(index, out _previous))
+            if (_entries.RemoveAt(index, out _previous))
             {
                 //_previous should be null because null is never added
                 if (_previous.IsCached)
@@ -207,7 +232,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool Set(int index, T item, out bool isNew)
         {
-            return _wrapped.Set(index, new LazyNeedle<T>(null, item), out isNew);
+            return _entries.Set(index, new LazyNeedle<T>(null, item), out isNew);
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
@@ -215,25 +240,15 @@ namespace Theraot.Collections.ThreadSafe
             return GetEnumerator();
         }
 
-        /// <summary>
-        /// Tries to retrieve the item at the specified index.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <returns>The value.</returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
-        public T Get(int index)
+        internal void Recycle()
         {
-            LazyNeedle<T> _previous;
-            var newItem = new LazyNeedle<T>(() => _valueFactory.Invoke(index));
-            if (_wrapped.Insert(index, newItem, out _previous))
-            {
-                return newItem.Value;
-            }
-            else
-            {
-                //_previous should be null because null is never added
-                return _previous.Value;
-            }
+            RecycleExtracted();
+            GC.SuppressFinalize(this);
+        }
+
+        private void RecycleExtracted()
+        {
+            BucketHelper.Recycle(ref _entries);
         }
     }
 }

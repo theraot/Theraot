@@ -10,9 +10,8 @@ namespace Theraot.Collections.ThreadSafe
     /// </summary>
     internal sealed class FixedSizeQueueBucket<T> : IEnumerable<T>
     {
-        private readonly Bucket<T> _bucket;
         private readonly int _capacity;
-
+        private Bucket<T> _entries;
         private int _indexDequeue;
         private int _indexEnqueue;
         private int _preCount;
@@ -27,7 +26,12 @@ namespace Theraot.Collections.ThreadSafe
             _preCount = 0;
             _indexEnqueue = 0;
             _indexDequeue = 0;
-            _bucket = new Bucket<T>(_capacity);
+            _entries = new Bucket<T>(_capacity);
+        }
+
+        ~FixedSizeQueueBucket()
+        {
+            RecycleExtracted();
         }
 
         /// <summary>
@@ -48,7 +52,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             get
             {
-                return _bucket.Count;
+                return _entries.Count;
             }
         }
 
@@ -89,22 +93,6 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Gets the values contained in this object.
-        /// </summary>
-        public IList<T> GetValues()
-        {
-            return _bucket.GetValues();
-        }
-
-        /// <summary>
-        /// Gets the values contained in this object.
-        /// </summary>
-        public IList<TOutput> GetValues<TOutput>(Converter<T, TOutput> converter)
-        {
-            return _bucket.GetValues<TOutput>(converter);
-        }
-
-        /// <summary>
         /// Attempts to Adds the specified item at the front.
         /// </summary>
         /// <param name="item">The item.</param>
@@ -113,13 +101,13 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool Enqueue(T item)
         {
-            if (_bucket.Count < _capacity)
+            if (_entries.Count < _capacity)
             {
                 var preCount = Interlocked.Increment(ref _preCount);
                 if (preCount <= _capacity)
                 {
                     var index = (Interlocked.Increment(ref _indexEnqueue) - 1) & (_capacity - 1);
-                    if (_bucket.Insert(index, item))
+                    if (_entries.Insert(index, item))
                     {
                         return true;
                     }
@@ -137,7 +125,23 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            return _bucket.GetEnumerator();
+            return _entries.GetEnumerator();
+        }
+
+        /// <summary>
+        /// Gets the values contained in this object.
+        /// </summary>
+        public IList<T> GetValues()
+        {
+            return _entries.GetValues();
+        }
+
+        /// <summary>
+        /// Gets the values contained in this object.
+        /// </summary>
+        public IList<TOutput> GetValues<TOutput>(Converter<T, TOutput> converter)
+        {
+            return _entries.GetValues<TOutput>(converter);
         }
 
         /// <summary>
@@ -148,7 +152,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             T item;
             int index = Interlocked.Add(ref _indexEnqueue, 0);
-            if (index < _capacity && index > 0 && _bucket.TryGet(index, out item))
+            if (index < _capacity && index > 0 && _entries.TryGet(index, out item))
             {
                 return item;
             }
@@ -172,13 +176,13 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool TryDequeue(out T item)
         {
-            if (_bucket.Count > 0)
+            if (_entries.Count > 0)
             {
                 var preCount = Interlocked.Decrement(ref _preCount);
                 if (preCount >= 0)
                 {
                     var index = (Interlocked.Increment(ref _indexDequeue) - 1) & (_capacity - 1);
-                    if (_bucket.RemoveAt(index, out item))
+                    if (_entries.RemoveAt(index, out item))
                     {
                         return true;
                     }
@@ -202,13 +206,19 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public bool TryGet(int index, out T item)
         {
-            return _bucket.TryGet(index, out item);
+            return _entries.TryGet(index, out item);
+        }
+
+        internal void Recycle()
+        {
+            RecycleExtracted();
+            GC.SuppressFinalize(this);
         }
 
         //HACK
         internal bool Set(int index, T item, out bool isNew)
         {
-            if (_bucket.Set(index, item, out isNew))
+            if (_entries.Set(index, item, out isNew))
             {
                 if (isNew)
                 {
@@ -220,6 +230,11 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return false;
             }
+        }
+
+        private void RecycleExtracted()
+        {
+            BucketHelper.Recycle(ref _entries);
         }
     }
 }

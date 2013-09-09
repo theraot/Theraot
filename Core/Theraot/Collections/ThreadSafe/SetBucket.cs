@@ -158,22 +158,6 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Gets the items and associated values contained in this object.
-        /// </summary>
-        public IList<T> GetValues()
-        {
-            return _entriesNew.GetValues();
-        }
-
-        /// <summary>
-        /// Gets the values contained in this object.
-        /// </summary>
-        public IList<TOutput> GetValues<TOutput>(Converter<T, TOutput> converter)
-        {
-            return _entriesNew.GetValues<TOutput>(converter);
-        }
-
-        /// <summary>
         /// Adds the specified item.
         /// </summary>
         /// <param name="item">The item.</param>
@@ -243,8 +227,9 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public void Clear()
         {
-            _entriesOld = null;
-            _entriesNew = new FixedSizeSetBucket<T>(INT_DefaultCapacity, _comparer);
+            BucketHelper.Recycle(ref _entriesOld);
+            var displaced = Interlocked.Exchange(ref _entriesNew, new FixedSizeSetBucket<T>(INT_DefaultCapacity, _comparer));
+            BucketHelper.Recycle(ref displaced);
             Thread.VolatileWrite(ref _status, (int)BucketStatus.Free);
             Thread.VolatileWrite(ref _count, 0);
             _revision++;
@@ -310,6 +295,22 @@ namespace Theraot.Collections.ThreadSafe
         public IEnumerator<T> GetEnumerator()
         {
             return _entriesNew.GetEnumerable().GetEnumerator();
+        }
+
+        /// <summary>
+        /// Gets the items and associated values contained in this object.
+        /// </summary>
+        public IList<T> GetValues()
+        {
+            return _entriesNew.GetValues();
+        }
+
+        /// <summary>
+        /// Gets the values contained in this object.
+        /// </summary>
+        public IList<TOutput> GetValues<TOutput>(Converter<T, TOutput> converter)
+        {
+            return _entriesNew.GetValues<TOutput>(converter);
         }
 
         void ICollection<T>.Add(T item)

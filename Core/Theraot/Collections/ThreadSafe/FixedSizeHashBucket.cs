@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Theraot.Core;
 
 namespace Theraot.Collections.ThreadSafe
@@ -25,6 +26,11 @@ namespace Theraot.Collections.ThreadSafe
             _capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
             _entries = new Bucket<KeyValuePair<TKey, TValue>>(_capacity);
             _keyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
+        }
+
+        ~FixedSizeHashBucket()
+        {
+            RecycleExtracted();
         }
 
         /// <summary>
@@ -58,14 +64,6 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return _keyComparer;
             }
-        }
-
-        /// <summary>
-        /// Gets the values contained in this object.
-        /// </summary>
-        public IList<KeyValuePair<TKey, TValue>> GetPairs()
-        {
-            return _entries.GetValues();
         }
 
         /// <summary>
@@ -181,6 +179,14 @@ namespace Theraot.Collections.ThreadSafe
                     yield return entry;
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets the values contained in this object.
+        /// </summary>
+        public IList<KeyValuePair<TKey, TValue>> GetPairs()
+        {
+            return _entries.GetValues();
         }
 
         /// <summary>
@@ -394,6 +400,17 @@ namespace Theraot.Collections.ThreadSafe
                 value = default(TValue);
                 return -1;
             }
+        }
+
+        internal void Recycle()
+        {
+            RecycleExtracted();
+            GC.SuppressFinalize(this);
+        }
+
+        private void RecycleExtracted()
+        {
+            BucketHelper.Recycle(ref _entries);
         }
     }
 }
