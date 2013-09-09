@@ -159,6 +159,19 @@ namespace Theraot.Collections.ThreadSafe
             _wrapped.Add(NeedleHelper.CreateNeedle<TKey, TNeedle>(key), value);
         }
 
+        public int AddRange(IEnumerable<KeyValuePair<TKey, TValue>> items)
+        {
+            int count = 0;
+            foreach (var item in Check.NotNullArgument(items, "items"))
+            {
+                if (Add(item))
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+
         public TValue CharyAdd(TKey key, TValue value)
         {
             return _wrapped.CharyAdd(NeedleHelper.CreateNeedle<TKey, TNeedle>(key), value);
@@ -172,6 +185,20 @@ namespace Theraot.Collections.ThreadSafe
         public WeakHashBucket<TKey, TValue, TNeedle> Clone()
         {
             return OnClone();
+        }
+
+        public bool Contains(KeyValuePair<TKey, TValue> item)
+        {
+            var key = item.Key;
+            TValue value;
+            if (_wrapped.TryGetValue(NeedleHelper.CreateNeedle<TKey, TNeedle>(key), out value))
+            {
+                return EqualityComparer<TValue>.Default.Equals(value, item.Value);
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public bool ContainsKey(TKey key)
@@ -296,20 +323,6 @@ namespace Theraot.Collections.ThreadSafe
             {
                 GCMonitor.Collected -= _eventHandler;
                 _eventHandler = null;
-            }
-        }
-
-        public bool Contains(KeyValuePair<TKey, TValue> item)
-        {
-            var key = item.Key;
-            TValue value;
-            if (_wrapped.TryGetValue(NeedleHelper.CreateNeedle<TKey, TNeedle>(key), out value))
-            {
-                return EqualityComparer<TValue>.Default.Equals(value, item.Value);
-            }
-            else
-            {
-                return false;
             }
         }
     }
