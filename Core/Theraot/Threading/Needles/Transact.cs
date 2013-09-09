@@ -17,13 +17,13 @@ namespace Theraot.Threading.Needles
         private static Transact _currentTransaction;
 
         private readonly Transact _parentTransaction;
-        private readonly HashBucket<IResource, object> _readLog;
-        private readonly HashBucket<IResource, object> _writeLog;
+        private readonly WeakHashBucket<IResource, object, WeakNeedle<IResource>> _readLog;
+        private readonly WeakHashBucket<IResource, object, WeakNeedle<IResource>> _writeLog;
 
         public Transact()
         {
-            _writeLog = new HashBucket<IResource, object>();
-            _readLog = new HashBucket<IResource, object>();
+            _writeLog = new WeakHashBucket<IResource, object, WeakNeedle<IResource>>();
+            _readLog = new WeakHashBucket<IResource, object, WeakNeedle<IResource>>();
             _parentTransaction = _currentTransaction;
             _currentTransaction = this;
         }
