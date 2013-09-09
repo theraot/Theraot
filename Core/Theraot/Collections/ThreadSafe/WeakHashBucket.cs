@@ -141,15 +141,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
-        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
-        {
-            get
-            {
-                return false;
-            }
-        }
-
         protected HashBucket<TNeedle, TValue> Wrapped
         {
             get
@@ -213,11 +204,6 @@ namespace Theraot.Collections.ThreadSafe
         public int GetHashCode(TKey obj)
         {
             return _comparer.GetHashCode(obj);
-        }
-
-        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
-        {
-            _wrapped.Add(NeedleHelper.CreateNeedle<TKey, TNeedle>(item.Key), item.Value);
         }
 
         public bool Remove(TKey key)
