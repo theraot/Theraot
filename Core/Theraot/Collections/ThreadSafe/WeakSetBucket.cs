@@ -13,7 +13,7 @@ namespace Theraot.Collections.ThreadSafe
 {
     [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
-    public class WeakSetBucket<T, TNeedle> : ICollection<T>, IEnumerable<T>, ISet<T>, IEqualityComparer<T>
+    public class WeakSet<T, TNeedle> : ICollection<T>, IEnumerable<T>, ISet<T>, IEqualityComparer<T>
         where T : class
         where TNeedle : WeakNeedle<T>
     {
@@ -21,40 +21,40 @@ namespace Theraot.Collections.ThreadSafe
         private readonly SetBucket<TNeedle> _wrapped;
         private EventHandler _eventHandler;
 
-        public WeakSetBucket()
+        public WeakSet()
         {
             RegisterForAutoRemoveDeadItems();
         }
 
-        public WeakSetBucket(IEnumerable<T> prototype)
+        public WeakSet(IEnumerable<T> prototype)
             : this()
         {
             Check.NotNullArgument(prototype, "prototype");
             this.AddRange(prototype);
         }
 
-        public WeakSetBucket(T[] prototype)
+        public WeakSet(T[] prototype)
             : this()
         {
             Check.NotNullArgument(prototype, "prototype");
             this.AddRange(prototype);
         }
 
-        public WeakSetBucket(IEnumerable<T> prototype, IEqualityComparer<T> comparer)
+        public WeakSet(IEnumerable<T> prototype, IEqualityComparer<T> comparer)
             : this(comparer)
         {
             Check.NotNullArgument(prototype, "prototype");
             this.AddRange(prototype);
         }
 
-        public WeakSetBucket(T[] prototype, IEqualityComparer<T> comparer)
+        public WeakSet(T[] prototype, IEqualityComparer<T> comparer)
             : this(comparer)
         {
             Check.NotNullArgument(prototype, "prototype");
             this.AddRange(prototype);
         }
 
-        public WeakSetBucket(IEqualityComparer<T> comparer)
+        public WeakSet(IEqualityComparer<T> comparer)
         {
             _comparer = comparer ?? EqualityComparer<T>.Default;
             _wrapped = new SetBucket<TNeedle>
@@ -64,7 +64,7 @@ namespace Theraot.Collections.ThreadSafe
             RegisterForAutoRemoveDeadItems();
         }
 
-        public WeakSetBucket(bool autoRemoveDeadItems)
+        public WeakSet(bool autoRemoveDeadItems)
         {
             if (autoRemoveDeadItems)
             {
@@ -72,21 +72,21 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public WeakSetBucket(IEnumerable<T> prototype, bool autoRemoveDeadItems)
+        public WeakSet(IEnumerable<T> prototype, bool autoRemoveDeadItems)
             : this(autoRemoveDeadItems)
         {
             Check.NotNullArgument(prototype, "prototype");
             this.AddRange(prototype);
         }
 
-        public WeakSetBucket(T[] prototype, bool autoRemoveDeadItems)
+        public WeakSet(T[] prototype, bool autoRemoveDeadItems)
             : this(autoRemoveDeadItems)
         {
             Check.NotNullArgument(prototype, "prototype");
             this.AddRange(prototype);
         }
 
-        public WeakSetBucket(IEnumerable<T> prototype, IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
+        public WeakSet(IEnumerable<T> prototype, IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
             : this(comparer, autoRemoveDeadItems)
         {
             Check.NotNullArgument(prototype, "prototype");
@@ -94,14 +94,14 @@ namespace Theraot.Collections.ThreadSafe
             RegisterForAutoRemoveDeadItems();
         }
 
-        public WeakSetBucket(T[] prototype, IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
+        public WeakSet(T[] prototype, IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
             : this(comparer, autoRemoveDeadItems)
         {
             Check.NotNullArgument(prototype, "prototype");
             this.AddRange(prototype);
         }
 
-        public WeakSetBucket(IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
+        public WeakSet(IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
         {
             _comparer = comparer ?? EqualityComparer<T>.Default;
             _wrapped = new SetBucket<TNeedle>
@@ -168,7 +168,7 @@ namespace Theraot.Collections.ThreadSafe
             _wrapped.Clear();
         }
 
-        public WeakSetBucket<T, TNeedle> Clone()
+        public WeakSet<T, TNeedle> Clone()
         {
             return OnClone();
         }
@@ -214,6 +214,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             _wrapped.Add(NeedleHelper.CreateNeedle<T, TNeedle>(item));
         }
+
         public void IntersectWith(IEnumerable<T> other)
         {
             Extensions.IntersectWith(this, other);
@@ -251,14 +252,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public int RemoveDeadItems()
         {
-            return Extensions.RemoveWhere<TNeedle>
-                (
-                    _wrapped,
-                    items =>
-                    {
-                        return items.WhereMatch(input => !input.IsAlive);
-                    }
-                );
+            return _wrapped.RemoveWhere(input => !input.IsAlive);
         }
 
         public bool SetEquals(IEnumerable<T> other)
@@ -281,10 +275,11 @@ namespace Theraot.Collections.ThreadSafe
             Extensions.UnionWith(this, other);
         }
 
-        protected virtual WeakSetBucket<T, TNeedle> OnClone()
+        protected virtual WeakSet<T, TNeedle> OnClone()
         {
-            return new WeakSetBucket<T, TNeedle>(this as IEnumerable<T>, _comparer);
+            return new WeakSet<T, TNeedle>(this as IEnumerable<T>, _comparer);
         }
+
         private void GarbageCollected(object sender, EventArgs e)
         {
             RemoveDeadItems();
