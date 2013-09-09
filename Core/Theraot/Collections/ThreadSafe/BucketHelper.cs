@@ -1,6 +1,6 @@
 ﻿namespace Theraot.Collections.ThreadSafe
 {
-    internal static class BucketHelper
+    internal static partial class BucketHelper
     {
         private static readonly object _null;
 
@@ -14,15 +14,6 @@
             get
             {
                 return _null;
-            }
-        }
-
-        public static void Recycle<T>(ref FixedSizeSetBucket<T> entries) //Needed
-        {
-            if (!ReferenceEquals(entries, null))
-            {
-                entries.Recycle();
-                entries = null;
             }
         }
 
@@ -52,5 +43,21 @@
                 entries = null;
             }
         }
+    }
+
+    internal static partial class BucketHelper
+    {
+#if FAT
+
+        public static void Recycle<T>(ref FixedSizeSetBucket<T> entries) //Needed
+        {
+            if (!ReferenceEquals(entries, null))
+            {
+                entries.Recycle();
+                entries = null;
+            }
+        }
+
+#endif
     }
 }
