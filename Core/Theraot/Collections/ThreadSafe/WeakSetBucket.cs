@@ -163,6 +163,19 @@ namespace Theraot.Collections.ThreadSafe
             return _wrapped.Add(NeedleHelper.CreateNeedle<T, TNeedle>(item));
         }
 
+        public int AddRange(IEnumerable<T> items)
+        {
+            int count = 0;
+            foreach (var item in Check.NotNullArgument(items, "items"))
+            {
+                if (Add(item))
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+
         public void Clear()
         {
             _wrapped.Clear();
