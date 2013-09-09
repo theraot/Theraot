@@ -14,16 +14,12 @@ namespace Theraot.Threading.Needles
         public sealed partial class Needle<T> : Theraot.Threading.Needles.Needle<T>, IResource
         {
             private Needles.Needle<Thread> _owner = new Needles.Needle<Thread>();
-            private TrackingThreadLocal<T> _read;
             private Transact _transaction;
-            private TrackingThreadLocal<T> _write;
 
             public Needle(T value)
                 : base(value)
             {
                 _transaction = Transact.CurrentTransaction;
-                _read = new TrackingThreadLocal<T>(() => base.Value);
-                _write = new TrackingThreadLocal<T>();
             }
 
             public override T Value
@@ -37,14 +33,16 @@ namespace Theraot.Threading.Needles
                     }
                     else
                     {
-                        if (_transaction._writeLog.Contains(this))
+                        object value;
+                        if (_transaction._writeLog.TryGetValue(this, out value))
                         {
-                            return _write.Value;
+                            return (T)value;
                         }
                         else
                         {
-                            _transaction._readLog.Add(this);
-                            return _read.Value;
+                            var tmp = base.Value;
+                            _transaction._readLog.TryAdd(this, tmp);
+                            return tmp;
                         }
                     }
                 }
@@ -57,8 +55,7 @@ namespace Theraot.Threading.Needles
                     }
                     else
                     {
-                        _write.Value = value;
-                        _transaction._writeLog.Add(this);
+                        _transaction._writeLog.Set(this, value);
                     }
                 }
             }
@@ -70,14 +67,28 @@ namespace Theraot.Threading.Needles
 
             bool IResource.Check()
             {
-                return EqualityComparer<T>.Default.Equals(base.Value, _read.Value);
+                _transaction = Transact.CurrentTransaction;
+                object value;
+                if (_transaction._writeLog.TryGetValue(this, out value))
+                {
+                    return EqualityComparer<T>.Default.Equals(base.Value, (T)value);
+                }
+                else
+                {
+                    return false;
+                }
             }
 
             bool IResource.Commit()
             {
+                _transaction = Transact.CurrentTransaction;
                 if (_owner.Value.Equals(Thread.CurrentThread))
                 {
-                    base.Value = _write.Value;
+                    object value;
+                    if (_transaction._writeLog.TryGetValue(this, out value))
+                    {
+                        base.Value = (T)value;
+                    }
                     return true;
                 }
                 else
@@ -88,14 +99,14 @@ namespace Theraot.Threading.Needles
 
             void IResource.Rollback()
             {
-                _read.Clear();
-                _write.Clear();
+                OnDispose();
             }
 
             private void OnDispose()
             {
-                _read.Dispose();
-                _write.Dispose();
+                _transaction = Transact.CurrentTransaction;
+                _transaction._readLog.Remove(this);
+                _transaction._writeLog.Remove(this);
             }
         }
     }

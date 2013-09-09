@@ -52,24 +52,9 @@ namespace Theraot.Threading.Needles
             {
                 if (TakeDisposalExecution())
                 {
-                    try
+                    if (disposeManagedResources)
                     {
-                        if (disposeManagedResources)
-                        {
-                            this.OnDispose();
-                        }
-                    }
-                    finally
-                    {
-                        try
-                        {
-                            //Empty
-                        }
-                        finally
-                        {
-                            _read = null;
-                            _write = null;
-                        }
+                        this.OnDispose();
                     }
                 }
             }

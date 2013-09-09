@@ -17,13 +17,13 @@ namespace Theraot.Threading.Needles
         private static Transact _currentTransaction;
 
         private readonly Transact _parentTransaction;
-        private readonly SetBucket<IResource> _readLog;
-        private readonly SetBucket<IResource> _writeLog;
+        private readonly HashBucket<IResource, object> _readLog;
+        private readonly HashBucket<IResource, object> _writeLog;
 
         public Transact()
         {
-            _writeLog = new SetBucket<IResource>();
-            _readLog = new SetBucket<IResource>();
+            _writeLog = new HashBucket<IResource, object>();
+            _readLog = new HashBucket<IResource, object>();
             _parentTransaction = _currentTransaction;
             _currentTransaction = this;
         }
@@ -50,11 +50,11 @@ namespace Theraot.Threading.Needles
                 {
                     foreach (var resource in _writeLog)
                     {
-                        resource.Capture(ref thread);
+                        resource.Key.Capture(ref thread);
                     }
                     foreach (var resource in _readLog)
                     {
-                        resource.Capture(ref thread);
+                        resource.Key.Capture(ref thread);
                     }
                     //Should not be null
                     thread = thread.Simplify();
@@ -77,7 +77,7 @@ namespace Theraot.Threading.Needles
                             {
                                 foreach (var resource in _writeLog)
                                 {
-                                    resource.Commit();
+                                    resource.Key.Commit();
                                 }
                                 return true;
                             }
@@ -112,7 +112,7 @@ namespace Theraot.Threading.Needles
             bool check;
             foreach (var resource in _readLog)
             {
-                if (!resource.Check())
+                if (!resource.Key.Check())
                 {
                     check = false;
                 }
@@ -125,17 +125,11 @@ namespace Theraot.Threading.Needles
         {
             if (!ReferenceEquals(_currentTransaction, null))
             {
-                foreach (var resource in _readLog)
-                {
-                    resource.Rollback();
-                }
-                foreach (var resource in _writeLog)
-                {
-                    resource.Rollback();
-                }
-                _currentTransaction = _currentTransaction._parentTransaction;
+                _readLog.Clear();
+                _writeLog.Clear();
+                Transact parentTransaction = _currentTransaction._parentTransaction;
                 _currentTransaction.Dispose();
-                //GC.Collect();
+                _currentTransaction = parentTransaction;
             }
         }
     }
