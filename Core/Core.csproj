@@ -312,6 +312,7 @@
     <Compile Include="Theraot\Threading\Needles\Needle.cs" />
     <Compile Include="Theraot\Threading\Needles\NeedleHelper.cs" />
     <Compile Include="Theraot\Threading\Needles\NotNull.cs" />
+    <Compile Include="Theraot\Threading\Needles\PromiseNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\ReadOnlyDisposableNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\ReadOnlyDisposableNeedle.disposable.cs">
       <AutoGen>True</AutoGen>
