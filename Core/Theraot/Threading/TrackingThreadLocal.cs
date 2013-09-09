@@ -116,6 +116,11 @@ namespace Theraot.Threading
             }
         }
 
+        public void Clear()
+        {
+            _slots.Clear();
+        }
+
         [global::System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {
@@ -138,7 +143,6 @@ namespace Theraot.Threading
         {
             _slots.Remove(Thread.CurrentThread);
         }
-
         [global::System.Diagnostics.DebuggerNonUserCode]
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2004:RemoveCallsToGCKeepAlive", Justification = "By Design")]
         private void Dispose(bool disposeManagedResources)

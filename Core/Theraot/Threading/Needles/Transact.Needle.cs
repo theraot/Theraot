@@ -14,8 +14,8 @@ namespace Theraot.Threading.Needles
         public sealed partial class Needle<T> : Theraot.Threading.Needles.Needle<T>, IResource
         {
             private Needles.Needle<Thread> _owner = new Needles.Needle<Thread>();
-            private Transact _transaction;
             private TrackingThreadLocal<T> _read;
+            private Transact _transaction;
             private TrackingThreadLocal<T> _write;
 
             public Needle(T value)
@@ -88,8 +88,8 @@ namespace Theraot.Threading.Needles
 
             void IResource.Rollback()
             {
-                _read.Uncreate();
-                _write.Uncreate();
+                _read.Clear();
+                _write.Clear();
             }
 
             private void OnDispose()
