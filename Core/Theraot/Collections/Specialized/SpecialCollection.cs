@@ -7,7 +7,7 @@ using Theraot.Core;
 
 namespace Theraot.Collections.Specialized
 {
-    [DebuggerNonUserCode]
+    [global::System.Diagnostics.DebuggerNonUserCode]
     public partial class SpecialCollection<T> : IEnumerable<T>, IReadOnlyCollection<T>
     {
         private readonly Func<T, bool> _contains;

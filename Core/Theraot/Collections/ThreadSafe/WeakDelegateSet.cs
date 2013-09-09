@@ -10,7 +10,7 @@ using Theraot.Threading.Needles;
 
 namespace Theraot.Collections.ThreadSafe
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [global::System.Diagnostics.DebuggerNonUserCode]
     public sealed class WeakDelegateSet : WeakSet<Delegate, WeakDelegateNeedle>
     {
         private readonly Action<object[]> _invoke;

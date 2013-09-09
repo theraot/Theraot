@@ -8,7 +8,7 @@ using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Threading
 {
-    [System.Diagnostics.DebuggerNonUserCode]
+    [global::System.Diagnostics.DebuggerNonUserCode]
     public static partial class GCMonitor
     {
         private static AutoResetEvent collectedEvent;
@@ -101,7 +101,7 @@ namespace Theraot.Threading
             collectedEvent.WaitOne();
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        [global::System.Diagnostics.DebuggerNonUserCode]
         private sealed class GCProbe : CriticalFinalizerObject
         {
             ~GCProbe()
