@@ -17,9 +17,9 @@ namespace Theraot.Threading.Needles
         private static Transact _currentTransaction;
 
         private readonly Transact _parentTransaction;
-        private readonly SetBucket<IResource> _writeLog;
         private readonly SetBucket<IResource> _readLog;
-        
+        private readonly SetBucket<IResource> _writeLog;
+
         public Transact()
         {
             _writeLog = new SetBucket<IResource>();

@@ -9,11 +9,11 @@ namespace Theraot.Threading.Needles
     {
         private interface IResource
         {
+            void Capture(ref Needles.Needle<Thread> thread);
+
             bool Check();
 
             bool Commit();
-
-            void Capture(ref Needles.Needle<Thread> thread);
 
             void Rollback();
         }
