@@ -284,7 +284,7 @@
     <Compile Include="System\Threading\AggregateException.net35.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\WeakDelegateSet.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\WeakEvent.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\WeakSet.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\WeakSetBucket.cs" />
     <Compile Include="Theraot\Core\DelegateEqualityComparer.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\BucketStatus.cs" />
     <Compile Include="Theraot\Threading\GCMonitor.cs" />
