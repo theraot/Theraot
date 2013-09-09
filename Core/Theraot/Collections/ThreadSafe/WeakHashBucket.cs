@@ -13,7 +13,7 @@ namespace Theraot.Collections.ThreadSafe
 {
     [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
-    public class WeakHashBucket<TKey, TValue, TNeedle> : IEnumerable<KeyValuePair<TKey, TValue>>, ICollection<KeyValuePair<TKey, TValue>>, IEqualityComparer<TKey>
+    public class WeakHashBucket<TKey, TValue, TNeedle> : IEnumerable<KeyValuePair<TKey, TValue>>, IEqualityComparer<TKey>
         where TKey : class
         where TNeedle : WeakNeedle<TKey>
     {
@@ -310,6 +310,20 @@ namespace Theraot.Collections.ThreadSafe
             {
                 GCMonitor.Collected -= _eventHandler;
                 _eventHandler = null;
+            }
+        }
+
+        public bool Contains(KeyValuePair<TKey, TValue> item)
+        {
+            var key = item.Key;
+            TValue value;
+            if (_wrapped.TryGetValue(NeedleHelper.CreateNeedle<TKey, TNeedle>(key), out value))
+            {
+                return EqualityComparer<TValue>.Default.Equals(value, item.Value);
+            }
+            else
+            {
+                return false;
             }
         }
     }
