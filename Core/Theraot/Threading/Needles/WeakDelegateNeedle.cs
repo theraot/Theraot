@@ -14,13 +14,27 @@ namespace Theraot.Threading.Needles
             : base(Check.NotNullArgument(handler, "handler"))
         {
             var _handler = Check.NotNullArgument(handler, "handler");
-            _hashCode = _handler.Method.GetHashCode();
+            if (ReferenceEquals(_handler.Target, null))
+            {
+                _hashCode = _handler.Method.GetHashCode();
+            }
+            else
+            {
+                _hashCode = _handler.Method.GetHashCode() ^ _handler.Target.GetHashCode();
+            }
         }
 
         public WeakDelegateNeedle(MethodInfo methodInfo, object target)
             : base(BuilDelegate(methodInfo, target))
         {
-            _hashCode = methodInfo.GetHashCode();
+            if (ReferenceEquals(target, null))
+            {
+                _hashCode = methodInfo.GetHashCode();
+            }
+            else
+            {
+                _hashCode = methodInfo.GetHashCode() ^ target.GetHashCode();
+            }
         }
 
         public MethodInfo Method
