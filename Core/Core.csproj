@@ -286,6 +286,7 @@
     <Compile Include="Theraot\Collections\ThreadSafe\WeakEvent.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\WeakHashBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\WeakSetBucket.cs" />
+    <Compile Include="Theraot\Core\DelegateDeepEqualityComparer.cs" />
     <Compile Include="Theraot\Core\DelegateEqualityComparer.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\BucketStatus.cs" />
     <Compile Include="Theraot\Threading\GCMonitor.cs" />

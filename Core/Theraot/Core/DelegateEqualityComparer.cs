@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Theraot.Core
 {
     public sealed class DelegateEqualityComparer : IEqualityComparer<Delegate>
     {
-        private static readonly DelegateEqualityComparer _instance = new DelegateEqualityComparer();
+        private static readonly DelegateEqualityComparer _default = new DelegateEqualityComparer();
 
         private DelegateEqualityComparer()
         {
             //Empty
         }
 
-        public static DelegateEqualityComparer Instance
+        public static DelegateEqualityComparer Default
         {
             get
             {
-                return _instance;
+                return _default;
             }
         }
 
@@ -28,31 +27,14 @@ namespace Theraot.Core
 
         public int GetHashCode(Delegate obj)
         {
-            int hash = 0;
-            int tmp = 0;
-            var body = obj.Method.GetMethodBody().GetILAsByteArray();
-            for (var index = 0; index < body.Length; index++)
+            if (ReferenceEquals(obj.Target, null))
             {
-                if (index % 4 == 0)
-                {
-                    hash = (hash << 5) - hash + tmp;
-                    tmp = body[index];
-                }
-                else
-                {
-                    tmp = tmp << 8 | body[index];
-                }
+                return obj.Method.GetHashCode();
             }
-            if (tmp != 0)
+            else
             {
-                hash = (hash << 5) - hash + tmp;
+                return obj.Method.GetHashCode() ^ obj.Target.GetHashCode();
             }
-            var target = obj.Target;
-            if (!ReferenceEquals(target, null))
-            {
-                hash = hash ^ target.GetHashCode();
-            }
-            return hash;
         }
 
         private static bool CompareInternal(Delegate x, Delegate y)
@@ -82,23 +64,7 @@ namespace Theraot.Core
                     }
                     else
                     {
-                        var leftBody = x.Method.GetMethodBody().GetILAsByteArray();
-                        var rightBody = y.Method.GetMethodBody().GetILAsByteArray();
-                        if (leftBody.Length != rightBody.Length)
-                        {
-                            return false;
-                        }
-                        else
-                        {
-                            for (var index = 0; index < leftBody.Length; index++)
-                            {
-                                if (leftBody[index] != rightBody[index])
-                                {
-                                    return false;
-                                }
-                            }
-                            return true;
-                        }
+                        return x.Method == y.Method;
                     }
                 }
             }
