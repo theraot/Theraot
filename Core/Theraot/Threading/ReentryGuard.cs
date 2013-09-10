@@ -1,6 +1,5 @@
 ﻿using System;
 using Theraot.Collections;
-using Theraot.Collections.ThreadSafe;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
@@ -8,15 +7,15 @@ namespace Theraot.Threading
     [global::System.Diagnostics.DebuggerNonUserCode]
     public sealed class ReentryGuard
     {
-        private NotNull<NoTrackingThreadLocal<Tuple<QueueBucket<Action>, Guard>>> _workQueue;
+        private NotNull<NoTrackingThreadLocal<Tuple<ExtendedQueue<Action>, Guard>>> _workQueue;
 
         public ReentryGuard()
         {
-            _workQueue = new NotNull<NoTrackingThreadLocal<Tuple<QueueBucket<Action>, Guard>>>
+            _workQueue = new NotNull<NoTrackingThreadLocal<Tuple<ExtendedQueue<Action>, Guard>>>
                 (
-                    new NoTrackingThreadLocal<Tuple<QueueBucket<Action>, Guard>>
+                    new NoTrackingThreadLocal<Tuple<ExtendedQueue<Action>, Guard>>
                     (
-                        () => new Tuple<QueueBucket<Action>, Guard>(new QueueBucket<Action>(), new Guard())
+                        () => new Tuple<ExtendedQueue<Action>, Guard>(new ExtendedQueue<Action>(), new Guard())
                     )
                 );
         }
@@ -60,7 +59,7 @@ namespace Theraot.Threading
             return result;
         }
 
-        private static IPromise AddExecution(Action action, Tuple<QueueBucket<Action>, Guard> local)
+        private static IPromise AddExecution(Action action, Tuple<ExtendedQueue<Action>, Guard> local)
         {
             IPromised promised;
             var result = new PromiseNeedle(out promised, false);
@@ -82,7 +81,7 @@ namespace Theraot.Threading
             return result;
         }
 
-        private static IPromise<T> AddExecution<T>(Func<T> action, Tuple<QueueBucket<Action>, Guard> local)
+        private static IPromise<T> AddExecution<T>(Func<T> action, Tuple<ExtendedQueue<Action>, Guard> local)
         {
             IPromised<T> promised;
             var result = new PromiseNeedle<T>(out promised, false);
@@ -103,7 +102,7 @@ namespace Theraot.Threading
             return result;
         }
 
-        private static Action ExecutePending(Tuple<QueueBucket<Action>, Guard> local)
+        private static Action ExecutePending(Tuple<ExtendedQueue<Action>, Guard> local)
         {
             Action action;
             while (local.Item1.TryTake(out action))
