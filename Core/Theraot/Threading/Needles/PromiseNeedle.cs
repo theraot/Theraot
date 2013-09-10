@@ -83,15 +83,15 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return IsCached;
+                return IsLoaded;
             }
         }
 
-        public bool IsCached
+        public bool IsLoaded
         {
             get
             {
-                return _internal.IsCached;
+                return _internal.IsLoaded;
             }
         }
 
@@ -134,7 +134,7 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                if (_internal.IsCached)
+                if (_internal.IsLoaded)
                 {
                     return _internal.Value.Equals(obj);
                 }
@@ -249,7 +249,7 @@ namespace Theraot.Threading.Needles
                 }
             }
 
-            public bool IsCached
+            public bool IsLoaded
             {
                 get
                 {
@@ -279,9 +279,9 @@ namespace Theraot.Threading.Needles
 
             public bool Equals(Internal other)
             {
-                if (IsCached)
+                if (IsLoaded)
                 {
-                    if (other.IsCached)
+                    if (other.IsLoaded)
                     {
                         if (ReferenceEquals(_error, null))
                         {
@@ -313,7 +313,7 @@ namespace Theraot.Threading.Needles
                 }
                 else
                 {
-                    if (other.IsCached)
+                    if (other.IsLoaded)
                     {
                         return false;
                     }
@@ -358,7 +358,7 @@ namespace Theraot.Threading.Needles
 
             public override string ToString()
             {
-                if (IsCached)
+                if (IsLoaded)
                 {
                     if (ReferenceEquals(_error, null))
                     {
@@ -430,7 +430,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return _internal.IsCached;
+                return _internal.IsLoaded;
             }
         }
 
@@ -499,7 +499,7 @@ namespace Theraot.Threading.Needles
                 }
             }
 
-            public bool IsCached
+            public bool IsLoaded
             {
                 get
                 {
@@ -540,7 +540,7 @@ namespace Theraot.Threading.Needles
 
             public override string ToString()
             {
-                if (IsCached)
+                if (IsLoaded)
                 {
                     if (ReferenceEquals(_error, null))
                     {

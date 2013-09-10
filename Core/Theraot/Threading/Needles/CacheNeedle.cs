@@ -67,7 +67,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public bool IsCached
+        public bool IsLoaded
         {
             get
             {
@@ -79,7 +79,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                if (IsCached)
+                if (IsLoaded)
                 {
                     return base.Value;
                 }
