@@ -2,7 +2,7 @@ using System;
 
 namespace Theraot.Threading.Needles
 {
-    public interface IPromise
+    public interface IPromise : IExpected
     {
         Exception Error { get; }
 
