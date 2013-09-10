@@ -19,6 +19,10 @@ namespace Theraot.Core
             {
                 property = GetPropertyDelegated(type, typeof(EqualityComparer<>));
             }
+            else if (type.IsAssignableTo(typeof(Delegate)))
+            {
+                property = GetPropertyDelegated(type, typeof(DelegateEqualityComparer));
+            }
             else if (type.IsGenericInstanceOf(typeof(KeyValuePair<,>)))
             {
                 property = GetProperty(type, typeof(KeyValuePairEqualityComparer<,>));
