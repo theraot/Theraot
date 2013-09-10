@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
-using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
@@ -87,11 +85,27 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        public bool IsCanceled
+        {
+            get
+            {
+                return _internal.IsCanceled;
+            }
+        }
+
         public bool IsCompleted
         {
             get
             {
                 return _internal.IsCompleted;
+            }
+        }
+
+        public bool IsFaulted
+        {
+            get
+            {
+                return _internal.IsFaulted;
             }
         }
 
@@ -211,9 +225,7 @@ namespace Theraot.Threading.Needles
         private class Internal : IPromised<T>, IObserver<T>, IReadOnlyNeedle<T>, ICacheNeedle<T>, IEquatable<Internal>
         {
             private Exception _error;
-
             private int _isValueCreated;
-
             private T _target;
 
             private ManualResetEvent _waitHandle;
@@ -401,22 +413,6 @@ namespace Theraot.Threading.Needles
                 _waitHandle.WaitOne();
             }
         }
-
-        public bool IsCanceled
-        {
-            get
-            {
-                return _internal.IsCanceled;
-            }
-        }
-
-        public bool IsFaulted
-        {
-            get
-            {
-                return _internal.IsFaulted;
-            }
-        }
     }
 
     [Serializable]
@@ -468,11 +464,27 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        public bool IsCanceled
+        {
+            get
+            {
+                return _internal.IsCanceled;
+            }
+        }
+
         public bool IsCompleted
         {
             get
             {
                 return _internal.IsCompleted;
+            }
+        }
+
+        public bool IsFaulted
+        {
+            get
+            {
+                return _internal.IsFaulted;
             }
         }
 
@@ -623,22 +635,6 @@ namespace Theraot.Threading.Needles
             public void Wait()
             {
                 _waitHandle.WaitOne();
-            }
-        }
-
-        public bool IsCanceled
-        {
-            get
-            {
-                return _internal.IsCanceled;
-            }
-        }
-
-        public bool IsFaulted
-        {
-            get
-            {
-                return _internal.IsFaulted;
             }
         }
     }
