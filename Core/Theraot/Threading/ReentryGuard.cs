@@ -33,12 +33,15 @@ namespace Theraot.Threading
         {
             var local = _workQueue.Value.Value;
             var result = AddExecution(action, local);
-            IDisposable engagement;
-            if (local.Item2.Enter(out engagement))
+            if (local.Item1.Count > 0)
             {
-                using (engagement)
+                IDisposable engagement;
+                if (local.Item2.Enter(out engagement))
                 {
-                    ExecutePending(local);
+                    using (engagement)
+                    {
+                        ExecutePending(local);
+                    }
                 }
             }
             return result;
@@ -48,12 +51,15 @@ namespace Theraot.Threading
         {
             var local = _workQueue.Value.Value;
             var result = AddExecution<T>(action, local);
-            IDisposable engagement;
-            if (local.Item2.Enter(out engagement))
+            if (local.Item1.Count > 0)
             {
-                using (engagement)
+                IDisposable engagement;
+                if (local.Item2.Enter(out engagement))
                 {
-                    ExecutePending(local);
+                    using (engagement)
+                    {
+                        ExecutePending(local);
+                    }
                 }
             }
             return result;
@@ -102,14 +108,16 @@ namespace Theraot.Threading
             return result;
         }
 
-        private static Action ExecutePending(Tuple<ExtendedQueue<Action>, Guard> local)
+        private static void ExecutePending(Tuple<ExtendedQueue<Action>, Guard> local)
         {
-            Action action;
-            while (local.Item1.TryTake(out action))
+            if (local.Item1.Count > 0)
             {
-                action.Invoke();
+                Action action;
+                while (local.Item1.TryTake(out action))
+                {
+                    action.Invoke();
+                }
             }
-            return action;
         }
     }
 }
