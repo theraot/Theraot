@@ -7,11 +7,11 @@ namespace Theraot.Threading
     [global::System.Diagnostics.DebuggerNonUserCode]
     public sealed class ReentryGuard
     {
-        private NotNull<NoTrackingThreadLocal<Tuple<ExtendedQueue<Action>, Guard>>> _workQueue;
+        private StructNeedle<NoTrackingThreadLocal<Tuple<ExtendedQueue<Action>, Guard>>> _workQueue;
 
         public ReentryGuard()
         {
-            _workQueue = new NotNull<NoTrackingThreadLocal<Tuple<ExtendedQueue<Action>, Guard>>>
+            _workQueue = new StructNeedle<NoTrackingThreadLocal<Tuple<ExtendedQueue<Action>, Guard>>>
                 (
                     new NoTrackingThreadLocal<Tuple<ExtendedQueue<Action>, Guard>>
                     (
