@@ -103,7 +103,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo == null;
+                    return constructorInfo != null;
                 }
             }
 
@@ -214,7 +214,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo == null;
+                    return constructorInfo != null;
                 }
             }
 
@@ -226,7 +226,7 @@ namespace Theraot.Core
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(_emptyObjects);
+                    return (TReturn)constructorInfo.Invoke(new object[]{obj});
                 }
             }
         }
@@ -325,7 +325,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo == null;
+                    return constructorInfo != null;
                 }
             }
 
@@ -337,7 +337,7 @@ namespace Theraot.Core
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(_emptyObjects);
+                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2});
                 }
             }
         }
@@ -436,7 +436,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo == null;
+                    return constructorInfo != null;
                 }
             }
 
@@ -448,7 +448,7 @@ namespace Theraot.Core
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(_emptyObjects);
+                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3});
                 }
             }
         }
@@ -547,7 +547,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo == null;
+                    return constructorInfo != null;
                 }
             }
 
@@ -559,7 +559,7 @@ namespace Theraot.Core
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(_emptyObjects);
+                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4});
                 }
             }
         }
@@ -658,7 +658,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo == null;
+                    return constructorInfo != null;
                 }
             }
 
@@ -670,7 +670,7 @@ namespace Theraot.Core
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(_emptyObjects);
+                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5});
                 }
             }
         }
@@ -769,7 +769,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo == null;
+                    return constructorInfo != null;
                 }
             }
 
@@ -781,7 +781,7 @@ namespace Theraot.Core
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(_emptyObjects);
+                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6});
                 }
             }
         }
@@ -880,7 +880,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo == null;
+                    return constructorInfo != null;
                 }
             }
 
@@ -892,7 +892,7 @@ namespace Theraot.Core
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(_emptyObjects);
+                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7});
                 }
             }
         }
@@ -991,7 +991,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo == null;
+                    return constructorInfo != null;
                 }
             }
 
@@ -1003,7 +1003,7 @@ namespace Theraot.Core
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(_emptyObjects);
+                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8});
                 }
             }
         }
@@ -1102,7 +1102,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo == null;
+                    return constructorInfo != null;
                 }
             }
 
@@ -1114,7 +1114,7 @@ namespace Theraot.Core
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(_emptyObjects);
+                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9});
                 }
             }
         }
@@ -1213,7 +1213,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo == null;
+                    return constructorInfo != null;
                 }
             }
 
@@ -1225,7 +1225,7 @@ namespace Theraot.Core
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(_emptyObjects);
+                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10});
                 }
             }
         }
@@ -1324,7 +1324,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo == null;
+                    return constructorInfo != null;
                 }
             }
 
@@ -1336,7 +1336,7 @@ namespace Theraot.Core
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(_emptyObjects);
+                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11});
                 }
             }
         }
@@ -1435,7 +1435,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo == null;
+                    return constructorInfo != null;
                 }
             }
 
@@ -1447,7 +1447,7 @@ namespace Theraot.Core
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(_emptyObjects);
+                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12});
                 }
             }
         }
@@ -1546,7 +1546,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo == null;
+                    return constructorInfo != null;
                 }
             }
 
@@ -1558,7 +1558,7 @@ namespace Theraot.Core
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(_emptyObjects);
+                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13});
                 }
             }
         }
@@ -1657,7 +1657,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo == null;
+                    return constructorInfo != null;
                 }
             }
 
@@ -1669,7 +1669,7 @@ namespace Theraot.Core
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(_emptyObjects);
+                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14});
                 }
             }
         }
@@ -1768,7 +1768,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo == null;
+                    return constructorInfo != null;
                 }
             }
 
@@ -1780,7 +1780,7 @@ namespace Theraot.Core
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(_emptyObjects);
+                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15});
                 }
             }
         }
@@ -1879,7 +1879,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo == null;
+                    return constructorInfo != null;
                 }
             }
 
@@ -1891,7 +1891,7 @@ namespace Theraot.Core
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(_emptyObjects);
+                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16});
                 }
             }
         }

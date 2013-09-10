@@ -106,7 +106,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo == null;
+                    return constructorInfo != null;
                 }
             }
 
@@ -118,7 +118,8 @@ namespace Theraot.Core
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(_emptyObjects);
+                    <# if (indice == 0) { #>return (TReturn)constructorInfo.Invoke(_emptyObjects);<# } else { #>return (TReturn)constructorInfo.Invoke(new object[]{<# if (indice != 0) { if (indice == 1) #>obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>arg<#=subindice#><#}}#>});<# } #>
+
                 }
             }
         }
