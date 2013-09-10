@@ -165,6 +165,11 @@ namespace Theraot.Threading.Needles
             return string.Format("{Promise: {0}}", _internal.ToString());
         }
 
+        public void Wait()
+        {
+            _internal.Wait();
+        }
+
         private static bool EqualsExtracted(PromiseNeedle<T> left, PromiseNeedle<T> right)
         {
             if (ReferenceEquals(left, null))
@@ -236,7 +241,7 @@ namespace Theraot.Threading.Needles
             {
                 get
                 {
-                    _waitHandle.WaitOne();
+                    Wait();
                     return _error;
                 }
             }
@@ -261,7 +266,7 @@ namespace Theraot.Threading.Needles
             {
                 get
                 {
-                    _waitHandle.WaitOne();
+                    Wait();
                     if (ReferenceEquals(_error, null))
                     {
                         return _target;
@@ -374,6 +379,11 @@ namespace Theraot.Threading.Needles
                     return "[Not Created]";
                 }
             }
+
+            public void Wait()
+            {
+                _waitHandle.WaitOne();
+            }
         }
     }
 
@@ -444,6 +454,11 @@ namespace Theraot.Threading.Needles
             return string.Format("{Promise: {0}}", _internal.ToString());
         }
 
+        public void Wait()
+        {
+            _internal.Wait();
+        }
+
         private class Internal : IPromised
         {
             private Exception _error;
@@ -466,7 +481,7 @@ namespace Theraot.Threading.Needles
             {
                 get
                 {
-                    _waitHandle.WaitOne();
+                    Wait();
                     return _error;
                 }
             }
@@ -555,6 +570,11 @@ namespace Theraot.Threading.Needles
                 {
                     return "[Not Created]";
                 }
+            }
+
+            public void Wait()
+            {
+                _waitHandle.WaitOne();
             }
         }
     }

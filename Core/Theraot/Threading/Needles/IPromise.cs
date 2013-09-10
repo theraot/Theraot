@@ -5,6 +5,8 @@ namespace Theraot.Threading.Needles
     public interface IPromise
     {
         Exception Error { get; }
+
+        void Wait();
     }
 
     public interface IPromise<out T> : IPromise, IReadOnlyNeedle<T>
