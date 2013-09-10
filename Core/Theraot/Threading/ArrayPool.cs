@@ -95,11 +95,11 @@ namespace Theraot.Threading
                     capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
                 }
             }
-            if (Thread.VolatileRead(ref _done) == 1)
+            if (Thread.VolatileRead(ref _done) == 1 && !_guard.IsTaken)
             {
                 var promise = _guard.Execute
                 (
-                    ()=>
+                    () =>
                     {
                         T[] result;
                         int index = GetIndex(capacity);
