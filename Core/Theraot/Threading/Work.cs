@@ -5,17 +5,15 @@ using Theraot.Core;
 
 namespace Theraot.Threading
 {
-    public sealed class Work : ICloneable
+    public sealed partial class Work : ICloneable
     {
         [ThreadStatic]
         private static Work _current;
 
-        private static int _lastId;
         private readonly Action _action;
         private readonly WorkContext _context;
         private readonly bool _exclusive;
         private int _done;
-        private int _id;
         private Exception _resultException;
 
         internal Work(Action action, bool exclusive, WorkContext context)
@@ -26,7 +24,6 @@ namespace Theraot.Threading
             }
             else
             {
-                _id = Interlocked.Increment(ref _lastId) - 1;
                 _context = context;
                 _action = action ?? ActionHelper.GetNoopAction();
                 _exclusive = exclusive;
@@ -54,14 +51,6 @@ namespace Theraot.Threading
             get
             {
                 return _exclusive;
-            }
-        }
-
-        public int Id
-        {
-            get
-            {
-                return _id;
             }
         }
 
@@ -105,5 +94,21 @@ namespace Theraot.Threading
                 Interlocked.Exchange(ref _current, oldCurrent);
             }
         }
+    }
+
+    public sealed partial class Work : ICloneable
+    {
+#if DEBUG || FAT
+        private static int _lastId;
+        private int _id = Interlocked.Increment(ref _lastId) - 1;
+
+        public int Id
+        {
+            get
+            {
+                return _id;
+            }
+        }
+#endif
     }
 }
