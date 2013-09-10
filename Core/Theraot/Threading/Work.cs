@@ -2,10 +2,11 @@ using System;
 using System.Threading;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
+using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
 {
-    public sealed partial class Work : ICloneable
+    public sealed partial class Work : ICloneable, IPromise
     {
         [ThreadStatic]
         private static Work _current;
@@ -13,8 +14,8 @@ namespace Theraot.Threading
         private readonly Action _action;
         private readonly WorkContext _context;
         private readonly bool _exclusive;
-        private int _done;
-        private Exception _resultException;
+        private PromiseNeedle _result;
+        private IPromised _promised;
 
         internal Work(Action action, bool exclusive, WorkContext context)
         {
@@ -27,6 +28,7 @@ namespace Theraot.Threading
                 _context = context;
                 _action = action ?? ActionHelper.GetNoopAction();
                 _exclusive = exclusive;
+                _result = new PromiseNeedle(out _promised, false);
             }
         }
 
@@ -38,11 +40,11 @@ namespace Theraot.Threading
             }
         }
 
-        public bool Done
+        public bool IsReady
         {
             get
             {
-                return Thread.VolatileRead(ref _done) == 1;
+                return _result.IsReady;
             }
         }
 
@@ -71,7 +73,7 @@ namespace Theraot.Threading
 
         public void Wait()
         {
-            while (Thread.VolatileRead(ref _done) == 0)
+            while (!_result.IsReady)
             {
                 _context.DoOneWork();
             }
@@ -83,15 +85,23 @@ namespace Theraot.Threading
             try
             {
                 _action.Invoke();
+                _promised.OnCompleted();
             }
-            catch (Exception exc)
+            catch (Exception exception)
             {
-                _resultException = exc;
+                _promised.OnError(exception);
             }
             finally
             {
-                Thread.VolatileWrite(ref _done, 1);
                 Interlocked.Exchange(ref _current, oldCurrent);
+            }
+        }
+
+        public Exception Error
+        {
+            get
+            {
+                return _result.Error;
             }
         }
     }
