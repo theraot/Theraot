@@ -286,7 +286,7 @@ namespace Theraot.Threading.Needles
             {
                 get
                 {
-                    return ReferenceEquals(_error, null);
+                    return !ReferenceEquals(_error, null);
                 }
             }
 
@@ -578,7 +578,7 @@ namespace Theraot.Threading.Needles
             {
                 get
                 {
-                    return ReferenceEquals(_error, null);
+                    return !ReferenceEquals(_error, null);
                 }
             }
 
