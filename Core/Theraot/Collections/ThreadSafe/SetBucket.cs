@@ -16,6 +16,8 @@ namespace Theraot.Collections.ThreadSafe
     /// </remarks>
     public sealed class SetBucket<T> : IEnumerable<T>, ICollection<T>
     {
+        //TODO: throw ArgumentException when trying to add items with same hash
+
         private const int INT_DefaultCapacity = 64;
         private const int INT_DefaultMaxProbing = 1;
         private const int INT_SpinWaitHint = 80;
