@@ -8,10 +8,10 @@ using System.Text;
 namespace Theraot.Core
 {
     public static partial class TypeHelper
-    {
-<#
+    {<#
     for (var indice = 0; indice < 17; indice++)
     {#>
+
         public static TReturn Create<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>(<# if (indice != 0) { if (indice == 1) #>T obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#> arg<#=subindice#><#}}#>)
         {
             if (ConstructorHelper<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>.HasConstructor)
@@ -112,7 +112,14 @@ namespace Theraot.Core
 
             public static TReturn InvokeConstructor(<# if (indice != 0) { if (indice == 1) #>T obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#> arg<#=subindice#><#}}#>)
             {
-                return (TReturn)constructorInfo.Invoke(_emptyObjects);
+                if (constructorInfo == null)
+                {
+                    throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with <# if (indice == 0) {#>no type arguments.<# } else { if (indice == 1) #>the type argument {1}<# else {#>the type arguments <# for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>{<#=subindice#>}<#}}}#>", typeof(TReturn)<# if (indice != 0)#>, <# { if (indice == 1) #>typeof(T).Name<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>typeof(T<#=subindice#>).Name<#}}#>));
+                }
+                else
+                {
+                    return (TReturn)constructorInfo.Invoke(_emptyObjects);
+                }
             }
         }
 <#
