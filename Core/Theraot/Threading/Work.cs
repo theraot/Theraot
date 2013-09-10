@@ -12,13 +12,13 @@ namespace Theraot.Threading
 
         private static int _lastId;
         private readonly Action _action;
-        private readonly Context _context;
+        private readonly WorkContext _context;
         private readonly bool _exclusive;
         private int _done;
         private int _id;
         private Exception _resultException;
 
-        private Work(Action action, bool exclusive, Context context)
+        internal Work(Action action, bool exclusive, WorkContext context)
         {
             if (ReferenceEquals(context, null))
             {
@@ -46,6 +46,14 @@ namespace Theraot.Threading
             get
             {
                 return Thread.VolatileRead(ref _done) == 1;
+            }
+        }
+
+        internal bool Exclusive
+        {
+            get
+            {
+                return _exclusive;
             }
         }
 
@@ -80,7 +88,7 @@ namespace Theraot.Threading
             }
         }
 
-        private void Execute()
+        internal void Execute()
         {
             var oldCurrent = Interlocked.Exchange(ref _current, this);
             try
@@ -97,320 +105,192 @@ namespace Theraot.Threading
                 Interlocked.Exchange(ref _current, oldCurrent);
             }
         }
+    }
 
-        public sealed class Context : IDisposable
+    public sealed class WorkContext : IDisposable
+    {
+        private const int INT_InitialWorkCapacityHint = 128;
+        private const int INT_LoopCountHint = 4;
+        private const int INT_SpinWaitHint = 16;
+        private static WorkContext _defaultContext = new WorkContext(INT_InitialWorkCapacityHint, Environment.ProcessorCount, "Default Context", false);
+
+        private static int _lastId;
+        private int _dedidatedThreadCount;
+        private bool _disposable;
+        private AutoResetEvent _event;
+        private int _id;
+        private LazyBucket<Thread> _threads;
+        private int _waitRequest;
+        private volatile bool _work;
+        private int _workingDedicatedThreadCount;
+        private int _workingTotalThreadCount;
+        private QueueBucket<Work> _works;
+
+        public WorkContext()
+            : this(INT_InitialWorkCapacityHint, Environment.ProcessorCount, null, true)
         {
-            private const int INT_InitialWorkCapacityHint = 128;
-            private const int INT_LoopCountHint = 4;
-            private const int INT_SpinWaitHint = 16;
-            private static Context _defaultContext = new Context(INT_InitialWorkCapacityHint, Environment.ProcessorCount, "Default Context", false);
+            //Empty
+        }
 
-            private static int _lastId;
-            private int _dedidatedThreadCount;
-            private bool _disposable;
-            private AutoResetEvent _event;
-            private int _id;
-            private LazyBucket<Thread> _threads;
-            private int _waitRequest;
-            private volatile bool _work;
-            private int _workingDedicatedThreadCount;
-            private int _workingTotalThreadCount;
-            private QueueBucket<Work> _works;
+        public WorkContext(int initialWorkCapacity)
+            : this(initialWorkCapacity, Environment.ProcessorCount, null, true)
+        {
+            //Empty
+        }
 
-            public Context()
-                : this(INT_InitialWorkCapacityHint, Environment.ProcessorCount, null, true)
+        public WorkContext(int initialWorkCapacity, int dedicatedThreads)
+            : this(initialWorkCapacity, dedicatedThreads, null, true)
+        {
+            //Empty
+        }
+
+        public WorkContext(string name)
+            : this(INT_InitialWorkCapacityHint, Environment.ProcessorCount, Check.NotNullArgument(name, "name"), true)
+        {
+            //Empty
+        }
+
+        public WorkContext(string name, int initialWorkCapacity)
+            : this(initialWorkCapacity, Environment.ProcessorCount, Check.NotNullArgument(name, "name"), true)
+        {
+            //Empty
+        }
+
+        public WorkContext(string name, int initialWorkCapacity, int dedicatedThreads)
+            : this(initialWorkCapacity, dedicatedThreads, Check.NotNullArgument(name, "name"), true)
+        {
+            //Empty
+        }
+
+        private WorkContext(int initialWorkCapacity, int dedicatedThreads, string name, bool disposable)
+        {
+            if (dedicatedThreads < 0)
             {
-                //Empty
+                throw new ArgumentOutOfRangeException("dedicatedThreads", "dedicatedThreads < 0");
             }
-
-            public Context(int initialWorkCapacity)
-                : this(initialWorkCapacity, Environment.ProcessorCount, null, true)
+            else
             {
-                //Empty
-            }
-
-            public Context(int initialWorkCapacity, int dedicatedThreads)
-                : this(initialWorkCapacity, dedicatedThreads, null, true)
-            {
-                //Empty
-            }
-
-            public Context(string name)
-                : this(INT_InitialWorkCapacityHint, Environment.ProcessorCount, Check.NotNullArgument(name, "name"), true)
-            {
-                //Empty
-            }
-
-            public Context(string name, int initialWorkCapacity)
-                : this(initialWorkCapacity, Environment.ProcessorCount, Check.NotNullArgument(name, "name"), true)
-            {
-                //Empty
-            }
-
-            public Context(string name, int initialWorkCapacity, int dedicatedThreads)
-                : this(initialWorkCapacity, dedicatedThreads, Check.NotNullArgument(name, "name"), true)
-            {
-                //Empty
-            }
-
-            private Context(int initialWorkCapacity, int dedicatedThreads, string name, bool disposable)
-            {
-                if (dedicatedThreads < 0)
+                _works = new QueueBucket<Work>(initialWorkCapacity);
+                Converter<int, Thread> valueFactory = null;
+                if (StringHelper.IsNullOrWhiteSpace(name))
                 {
-                    throw new ArgumentOutOfRangeException("dedicatedThreads", "dedicatedThreads < 0");
+                    if (dedicatedThreads == 1)
+                    {
+                        valueFactory = input => new Thread(DoWorks)
+                        {
+                            Name = string.Format("Dedicated Thread on Work.Context {0}", _id),
+                            IsBackground = true
+                        };
+                    }
+                    else if (dedicatedThreads > 1)
+                    {
+                        valueFactory = input => new Thread(DoWorks)
+                        {
+                            Name = string.Format("Dedicated Thread {0} on Work.Context {1}", input, _id),
+                            IsBackground = true
+                        };
+                    }
                 }
                 else
                 {
-                    _works = new QueueBucket<Work>(initialWorkCapacity);
-                    Converter<int, Thread> valueFactory = null;
-                    if (StringHelper.IsNullOrWhiteSpace(name))
+                    if (dedicatedThreads == 1)
                     {
-                        if (dedicatedThreads == 1)
+                        valueFactory = input => new Thread(DoWorks)
                         {
-                            valueFactory = input => new Thread(DoWorks)
-                            {
-                                Name = string.Format("Dedicated Thread on Work.Context {0}", _id),
-                                IsBackground = true
-                            };
-                        }
-                        else if (dedicatedThreads > 1)
-                        {
-                            valueFactory = input => new Thread(DoWorks)
-                            {
-                                Name = string.Format("Dedicated Thread {0} on Work.Context {1}", input, _id),
-                                IsBackground = true
-                            };
-                        }
+                            Name = string.Format("Dedicated Thread on {0}", name),
+                            IsBackground = true
+                        };
                     }
-                    else
+                    else if (dedicatedThreads > 1)
                     {
-                        if (dedicatedThreads == 1)
+                        valueFactory = input => new Thread(DoWorks)
                         {
-                            valueFactory = input => new Thread(DoWorks)
-                            {
-                                Name = string.Format("Dedicated Thread on {0}", name),
-                                IsBackground = true
-                            };
-                        }
-                        else if (dedicatedThreads > 1)
-                        {
-                            valueFactory = input => new Thread(DoWorks)
-                            {
-                                Name = string.Format("Dedicated Thread {0} on {1}", input, name),
-                                IsBackground = true
-                            };
-                        }
+                            Name = string.Format("Dedicated Thread {0} on {1}", input, name),
+                            IsBackground = true
+                        };
                     }
-                    _threads = new LazyBucket<Thread>
-                        (
-                            valueFactory,
-                            dedicatedThreads
-                        );
-                    _id = Interlocked.Increment(ref _lastId) - 1;
-                    _event = new AutoResetEvent(false);
-                    _work = true;
-                    _disposable = disposable;
                 }
+                _threads = new LazyBucket<Thread>
+                    (
+                        valueFactory,
+                        dedicatedThreads
+                    );
+                _id = Interlocked.Increment(ref _lastId) - 1;
+                _event = new AutoResetEvent(false);
+                _work = true;
+                _disposable = disposable;
             }
+        }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
-            ~Context()
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
+        ~WorkContext()
+        {
+            try
+            {
+                //Empty
+            }
+            finally
             {
                 try
-                {
-                    //Empty
-                }
-                finally
-                {
-                    try
-                    {
-                        DisposeExtracted();
-                    }
-                    catch
-                    {
-                        //Pokemon
-                    }
-                }
-            }
-
-            public static Context DefaultContext
-            {
-                get
-                {
-                    return _defaultContext;
-                }
-            }
-
-            public int Id
-            {
-                get
-                {
-                    return _id;
-                }
-            }
-
-            public Work AddWork(Action action)
-            {
-                return new Work(action, false, this);
-            }
-
-            public Work AddWork(Action action, bool exclusive)
-            {
-                return new Work(action, exclusive, this);
-            }
-
-            public void Dispose()
-            {
-                if (_disposable)
                 {
                     DisposeExtracted();
                 }
+                catch
+                {
+                    //Pokemon
+                }
             }
+        }
 
-            public void DoOneWork()
+        public static WorkContext DefaultContext
+        {
+            get
             {
-                if (_work)
-                {
-                    try
-                    {
-                        if (Thread.VolatileRead(ref _waitRequest) == 1)
-                        {
-                            ThreadingHelper.SpinWait(ref _waitRequest, 0);
-                        }
-                        Interlocked.Increment(ref _workingTotalThreadCount);
-                        Work item;
-                        if (_works.TryDequeue(out item))
-                        {
-                            Execute(item);
-                        }
-                    }
-                    catch
-                    {
-                        // Pokemon
-                    }
-                    finally
-                    {
-                        Interlocked.Decrement(ref _workingTotalThreadCount);
-                    }
-                }
-                else
-                {
-                    throw new ObjectDisposedException(GetType().ToString());
-                }
+                return _defaultContext;
             }
+        }
 
-            internal void ScheduleWork(Work work)
+        public int Id
+        {
+            get
             {
-                if (_work)
-                {
-                    if (_works.Count == _works.Capacity)
-                    {
-                        ActivateDedicatedThreads();
-                    }
-                    _works.Enqueue(work);
-                    if (_threads.Capacity == 0)
-                    {
-                        ThreadPool.QueueUserWorkItem
-                        (
-                            _ =>
-                            {
-                                DoOneWork();
-                            }
-                        );
-                    }
-                    else
-                    {
-                        ActivateDedicatedThreads();
-                    }
-                }
+                return _id;
             }
+        }
 
-            private void ActivateDedicatedThreads()
+        public Work AddWork(Action action)
+        {
+            return new Work(action, false, this);
+        }
+
+        public Work AddWork(Action action, bool exclusive)
+        {
+            return new Work(action, exclusive, this);
+        }
+
+        public void Dispose()
+        {
+            if (_disposable)
             {
-                var threadIndex = Interlocked.Increment(ref _dedidatedThreadCount) - 1;
-                if (threadIndex < _threads.Capacity)
-                {
-                    Thread thread = _threads.Get(threadIndex);
-                    thread.Start();
-                }
-                else
-                {
-                    Thread.VolatileWrite(ref _dedidatedThreadCount, _threads.Capacity);
-                    if (Thread.VolatileRead(ref _workingDedicatedThreadCount) < _threads.Count)
-                    {
-                        _event.Set();
-                    }
-                }
+                DisposeExtracted();
             }
-            private void DisposeExtracted()
+        }
+
+        public void DoOneWork()
+        {
+            if (_work)
             {
                 try
                 {
-                    _work = false;
-                    while (Thread.VolatileRead(ref _dedidatedThreadCount) > 0)
+                    if (Thread.VolatileRead(ref _waitRequest) == 1)
                     {
-                        _event.Set();
+                        ThreadingHelper.SpinWait(ref _waitRequest, 0);
                     }
-                    _event.Close();
-                }
-                finally
-                {
-                    try
-                    {
-                        //Empty
-                    }
-                    finally
-                    {
-                        _work = false;
-                        _threads = null;
-                        GC.SuppressFinalize(this);
-                    }
-                }
-            }
-
-            private void DoWorks()
-            {
-                int count = INT_LoopCountHint;
-                try
-                {
                     Interlocked.Increment(ref _workingTotalThreadCount);
-                    Interlocked.Increment(ref _workingDedicatedThreadCount);
-                    while (_work)
+                    Work item;
+                    if (_works.TryDequeue(out item))
                     {
-                        Work item;
-                        if (_works.TryDequeue(out item))
-                        {
-                            Execute(item);
-                        }
-                        else if (_works.Count == 0)
-                        {
-                            if (count > 0)
-                            {
-                                count--;
-                                Thread.SpinWait(INT_SpinWaitHint);
-                            }
-                            else
-                            {
-                                try
-                                {
-                                    Interlocked.Decrement(ref _workingDedicatedThreadCount);
-                                    Interlocked.Decrement(ref _workingTotalThreadCount);
-                                    _event.WaitOne();
-                                    count = INT_LoopCountHint;
-                                }
-                                finally
-                                {
-                                    Interlocked.Increment(ref _workingTotalThreadCount);
-                                    Interlocked.Increment(ref _workingDedicatedThreadCount);
-                                }
-                            }
-                        }
-                        if (Thread.VolatileRead(ref _waitRequest) == 1)
-                        {
-                            Interlocked.Decrement(ref _workingTotalThreadCount);
-                            ThreadingHelper.SpinWait(ref _waitRequest, 0);
-                            Interlocked.Increment(ref _workingTotalThreadCount);
-                        }
+                        Execute(item);
                     }
                 }
                 catch
@@ -419,24 +299,152 @@ namespace Theraot.Threading
                 }
                 finally
                 {
-                    Interlocked.Decrement(ref _workingDedicatedThreadCount);
                     Interlocked.Decrement(ref _workingTotalThreadCount);
                 }
             }
-
-            private void Execute(Work item)
+            else
             {
-                if (item._exclusive)
+                throw new ObjectDisposedException(GetType().ToString());
+            }
+        }
+
+        internal void ScheduleWork(Work work)
+        {
+            if (_work)
+            {
+                if (_works.Count == _works.Capacity)
                 {
-                    Thread.VolatileWrite(ref _waitRequest, 1);
-                    ThreadingHelper.SpinWait(ref _workingTotalThreadCount, 1);
-                    item.Execute();
-                    Thread.VolatileWrite(ref _waitRequest, 0);
+                    ActivateDedicatedThreads();
+                }
+                _works.Enqueue(work);
+                if (_threads.Capacity == 0)
+                {
+                    ThreadPool.QueueUserWorkItem
+                    (
+                        _ =>
+                        {
+                            DoOneWork();
+                        }
+                    );
                 }
                 else
                 {
-                    item.Execute();
+                    ActivateDedicatedThreads();
                 }
+            }
+        }
+
+        private void ActivateDedicatedThreads()
+        {
+            var threadIndex = Interlocked.Increment(ref _dedidatedThreadCount) - 1;
+            if (threadIndex < _threads.Capacity)
+            {
+                Thread thread = _threads.Get(threadIndex);
+                thread.Start();
+            }
+            else
+            {
+                Thread.VolatileWrite(ref _dedidatedThreadCount, _threads.Capacity);
+                if (Thread.VolatileRead(ref _workingDedicatedThreadCount) < _threads.Count)
+                {
+                    _event.Set();
+                }
+            }
+        }
+        private void DisposeExtracted()
+        {
+            try
+            {
+                _work = false;
+                while (Thread.VolatileRead(ref _dedidatedThreadCount) > 0)
+                {
+                    _event.Set();
+                }
+                _event.Close();
+            }
+            finally
+            {
+                try
+                {
+                    //Empty
+                }
+                finally
+                {
+                    _work = false;
+                    _threads = null;
+                    GC.SuppressFinalize(this);
+                }
+            }
+        }
+
+        private void DoWorks()
+        {
+            int count = INT_LoopCountHint;
+            try
+            {
+                Interlocked.Increment(ref _workingTotalThreadCount);
+                Interlocked.Increment(ref _workingDedicatedThreadCount);
+                while (_work)
+                {
+                    Work item;
+                    if (_works.TryDequeue(out item))
+                    {
+                        Execute(item);
+                    }
+                    else if (_works.Count == 0)
+                    {
+                        if (count > 0)
+                        {
+                            count--;
+                            Thread.SpinWait(INT_SpinWaitHint);
+                        }
+                        else
+                        {
+                            try
+                            {
+                                Interlocked.Decrement(ref _workingDedicatedThreadCount);
+                                Interlocked.Decrement(ref _workingTotalThreadCount);
+                                _event.WaitOne();
+                                count = INT_LoopCountHint;
+                            }
+                            finally
+                            {
+                                Interlocked.Increment(ref _workingTotalThreadCount);
+                                Interlocked.Increment(ref _workingDedicatedThreadCount);
+                            }
+                        }
+                    }
+                    if (Thread.VolatileRead(ref _waitRequest) == 1)
+                    {
+                        Interlocked.Decrement(ref _workingTotalThreadCount);
+                        ThreadingHelper.SpinWait(ref _waitRequest, 0);
+                        Interlocked.Increment(ref _workingTotalThreadCount);
+                    }
+                }
+            }
+            catch
+            {
+                // Pokemon
+            }
+            finally
+            {
+                Interlocked.Decrement(ref _workingDedicatedThreadCount);
+                Interlocked.Decrement(ref _workingTotalThreadCount);
+            }
+        }
+
+        private void Execute(Work item)
+        {
+            if (item.Exclusive)
+            {
+                Thread.VolatileWrite(ref _waitRequest, 1);
+                ThreadingHelper.SpinWait(ref _workingTotalThreadCount, 1);
+                item.Execute();
+                Thread.VolatileWrite(ref _waitRequest, 0);
+            }
+            else
+            {
+                item.Execute();
             }
         }
     }

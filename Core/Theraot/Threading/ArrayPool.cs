@@ -14,11 +14,11 @@ namespace Theraot.Threading
         private static LazyBucket<FixedSizeQueueBucket<T[]>> _data;
         private static int _done;
         private static ReentryGuard _guard;
-        private static Work.Context _recycle;
+        private static WorkContext _recycle;
 
         static ArrayPool()
         {
-            _recycle = new Work.Context("Recycler", INT_WorkCapacityHint, 1);
+            _recycle = new WorkContext("Recycler", INT_WorkCapacityHint, 1);
             _data = new LazyBucket<FixedSizeQueueBucket<T[]>>
             (
                 input =>
