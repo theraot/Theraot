@@ -7,40 +7,91 @@ namespace Theraot.Threading.Needles
 {
     [Serializable]
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public sealed class PromiseNeedle<T> : IReadOnlyNeedle<T>, ICacheNeedle<T>, IEquatable<LazyNeedle<T>>
+    public sealed class PromiseNeedle<T> : IPromise<T>, IReadOnlyNeedle<T>, ICacheNeedle<T>, IEquatable<PromiseNeedle<T>>
     {
-        private T _target;
-        private int _isValueCreated;
+        private int _hashCode;
+        private Internal _internal;
 
-        private ManualResetEvent _waitHandle;
-
-        public PromiseNeedle(out Action<T> set)
+        public PromiseNeedle(bool done)
         {
-            _waitHandle = new ManualResetEvent(false);
-            set = input =>
+            _internal = new Internal();
+            if (done)
             {
-                _target = input;
-                Thread.VolatileWrite(ref _isValueCreated, 1);
-                _waitHandle.Set();
-            };
+                _internal.OnCompleted();
+            }
+            _hashCode = base.GetHashCode();
         }
 
-        public PromiseNeedle(out Action<T> set, T target)
+        public PromiseNeedle(T target)
         {
-            Thread.VolatileWrite(ref _isValueCreated, 1);
-            _waitHandle = new ManualResetEvent(true);
-            _target = target;
-            set = input =>
+            _internal = new Internal(target);
+            _hashCode = target.GetHashCode();
+        }
+
+        public PromiseNeedle(Exception exception)
+        {
+            _internal = new Internal(exception);
+            _hashCode = exception.GetHashCode();
+        }
+
+        public PromiseNeedle(out IPromised<T> promised, bool done)
+        {
+            _internal = new Internal();
+            if (done)
             {
-                _target = input;
-            };
+                _internal.OnCompleted();
+            }
+            promised = _internal;
+            _hashCode = base.GetHashCode();
+        }
+
+        public PromiseNeedle(out IPromised<T> promised, T target)
+        {
+            _internal = new Internal(target);
+            promised = _internal;
+            _hashCode = target.GetHashCode();
+        }
+
+        public PromiseNeedle(out IPromised<T> promised, Exception exception)
+        {
+            _internal = new Internal(exception);
+            promised = _internal;
+            _hashCode = exception.GetHashCode();
+        }
+
+        public Exception Error
+        {
+            get
+            {
+                return _internal.Error;
+            }
+        }
+
+        T INeedle<T>.Value
+        {
+            get
+            {
+                return Value;
+            }
+            set
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        bool IReadOnlyNeedle<T>.IsAlive
+        {
+            get
+            {
+                return IsCached;
+            }
         }
 
         public bool IsCached
         {
             get
             {
-                return Thread.VolatileRead(ref _isValueCreated) == 1;
+                return _internal.IsCached;
             }
         }
 
@@ -48,8 +99,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                _waitHandle.WaitOne();
-                return _target;
+                return _internal.Value;
             }
         }
 
@@ -84,7 +134,14 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                return _target.Equals(obj);
+                if (_internal.IsCached)
+                {
+                    return _internal.Value.Equals(obj);
+                }
+                else
+                {
+                    return false;
+                }
             }
         }
 
@@ -93,51 +150,19 @@ namespace Theraot.Threading.Needles
             return EqualsExtracted(this, other);
         }
 
-        public override bool Equals(object obj)
-        {
-            var _obj = obj as LazyNeedle<T>;
-            if (!ReferenceEquals(null, _obj))
-            {
-                return base.Equals(obj);
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public bool Equals(LazyNeedle<T> other)
-        {
-            if (ReferenceEquals(other, null))
-            {
-                return false;
-            }
-            else
-            {
-                return base.Equals(other as Needle<T>);
-            }
-        }
-
         public override int GetHashCode()
         {
-            return EqualityComparer<T>.Default.GetHashCode((T)_target);
+            return _hashCode;
         }
 
-        public override int GetHashCode()
+        void INeedle<T>.Release()
         {
-            return base.GetHashCode();
+            //Empty
         }
 
         public override string ToString()
         {
-            if (Thread.VolatileRead(ref _isValueCreated) == 0)
-            {
-                return "{Promise: [Not Created]}";
-            }
-            else
-            {
-                return string.Format("{Promise: {0}}", _target);
-            }
+            return string.Format("{Promise: {0}}", _internal.ToString());
         }
 
         private static bool EqualsExtracted(PromiseNeedle<T> left, PromiseNeedle<T> right)
@@ -155,7 +180,7 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                return left._target.Equals(left._target);
+                return left.Equals(right);
             }
         }
 
@@ -174,15 +199,362 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                return !left._target.Equals(left._target);
+                return !left.Equals(right);
             }
         }
 
-        bool IReadOnlyNeedle<T>.IsAlive
+        private class Internal : IPromised<T>, IObserver<T>, IReadOnlyNeedle<T>, ICacheNeedle<T>, IEquatable<Internal>
+        {
+            private Exception _error;
+
+            private int _isValueCreated;
+
+            private T _target;
+
+            private ManualResetEvent _waitHandle;
+
+            public Internal()
+            {
+                _waitHandle = new ManualResetEvent(false);
+            }
+
+            public Internal(T value)
+            {
+                _target = value;
+                Thread.VolatileWrite(ref _isValueCreated, 1);
+                _waitHandle = new ManualResetEvent(true);
+            }
+
+            public Internal(Exception error)
+            {
+                _error = error;
+                Thread.VolatileWrite(ref _isValueCreated, 1);
+                _waitHandle = new ManualResetEvent(true);
+            }
+
+            public Exception Error
+            {
+                get
+                {
+                    _waitHandle.WaitOne();
+                    return _error;
+                }
+            }
+
+            bool IReadOnlyNeedle<T>.IsAlive
+            {
+                get
+                {
+                    return Thread.VolatileRead(ref _isValueCreated) == 1;
+                }
+            }
+
+            public bool IsCached
+            {
+                get
+                {
+                    return Thread.VolatileRead(ref _isValueCreated) == 1;
+                }
+            }
+
+            public T Value
+            {
+                get
+                {
+                    _waitHandle.WaitOne();
+                    if (ReferenceEquals(_error, null))
+                    {
+                        return _target;
+                    }
+                    else
+                    {
+                        throw _error;
+                    }
+                }
+                set
+                {
+                    OnNext(value);
+                }
+            }
+
+            public bool Equals(Internal other)
+            {
+                if (IsCached)
+                {
+                    if (other.IsCached)
+                    {
+                        if (ReferenceEquals(_error, null))
+                        {
+                            if (ReferenceEquals(other._error, null))
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            if (ReferenceEquals(other._error, null))
+                            {
+                                return false;
+                            }
+                            else
+                            {
+                                return _target.Equals(other._target);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    if (other.IsCached)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            public void OnCompleted()
+            {
+                _target = default(T);
+                _error = null;
+                Thread.VolatileWrite(ref _isValueCreated, 1);
+                _waitHandle.Set();
+            }
+
+            public void OnError(Exception error)
+            {
+                _target = default(T);
+                _error = error;
+                Thread.VolatileWrite(ref _isValueCreated, 1);
+                _waitHandle.Set();
+            }
+
+            public void OnNext(T value)
+            {
+                _target = value;
+                _error = null;
+                Thread.VolatileWrite(ref _isValueCreated, 1);
+                _waitHandle.Set();
+            }
+
+            public void Release()
+            {
+                Thread.VolatileWrite(ref _isValueCreated, 0);
+                _waitHandle.Reset();
+                _target = default(T);
+                _error = null;
+            }
+
+            public override string ToString()
+            {
+                if (IsCached)
+                {
+                    if (ReferenceEquals(_error, null))
+                    {
+                        return _target.ToString();
+                    }
+                    else
+                    {
+                        return _error.ToString();
+                    }
+                }
+                else
+                {
+                    return "[Not Created]";
+                }
+            }
+        }
+    }
+
+    [Serializable]
+    [global::System.Diagnostics.DebuggerNonUserCode]
+    public sealed class PromiseNeedle : IPromise
+    {
+        private int _hashCode;
+        private Internal _internal;
+
+        public PromiseNeedle(bool done)
+        {
+            _internal = new Internal();
+            if (done)
+            {
+                _internal.OnCompleted();
+            }
+            _hashCode = base.GetHashCode();
+        }
+
+        public PromiseNeedle(Exception exception)
+        {
+            _internal = new Internal(exception);
+            _hashCode = exception.GetHashCode();
+        }
+
+        public PromiseNeedle(out IPromised promised, bool done)
+        {
+            _internal = new Internal();
+            if (done)
+            {
+                _internal.OnCompleted();
+            }
+            promised = _internal;
+            _hashCode = base.GetHashCode();
+        }
+
+        public PromiseNeedle(out IPromised promised, Exception exception)
+        {
+            _internal = new Internal(exception);
+            promised = _internal;
+            _hashCode = exception.GetHashCode();
+        }
+
+        public Exception Error
         {
             get
             {
-                return IsCached;
+                return _internal.Error;
+            }
+        }
+
+        public bool IsCached
+        {
+            get
+            {
+                return _internal.IsCached;
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            return _hashCode;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{Promise: {0}}", _internal.ToString());
+        }
+
+        private class Internal : IPromised
+        {
+            private Exception _error;
+            private int _isValueCreated;
+            private ManualResetEvent _waitHandle;
+
+            public Internal()
+            {
+                _waitHandle = new ManualResetEvent(false);
+            }
+
+            public Internal(Exception error)
+            {
+                _error = error;
+                Thread.VolatileWrite(ref _isValueCreated, 1);
+                _waitHandle = new ManualResetEvent(true);
+            }
+
+            public Exception Error
+            {
+                get
+                {
+                    _waitHandle.WaitOne();
+                    return _error;
+                }
+            }
+
+            object INeedle<object>.Value
+            {
+                get
+                {
+                    throw new NotSupportedException();
+                }
+                set
+                {
+                    throw new NotSupportedException();
+                }
+            }
+
+            bool IReadOnlyNeedle<object>.IsAlive
+            {
+                get
+                {
+                    return false;
+                }
+            }
+
+            object IReadOnlyNeedle<object>.Value
+            {
+                get
+                {
+                    throw new NotSupportedException();
+                }
+            }
+
+            public bool IsCached
+            {
+                get
+                {
+                    return Thread.VolatileRead(ref _isValueCreated) == 1;
+                }
+            }
+
+            void INeedle<object>.Release()
+            {
+                //Empty
+            }
+
+            void IObserver<object>.OnNext(object value)
+            {
+                //Empty
+            }
+
+            public void OnCompleted()
+            {
+                _error = null;
+                Thread.VolatileWrite(ref _isValueCreated, 1);
+                _waitHandle.Set();
+            }
+
+            public void OnError(Exception error)
+            {
+                _error = error;
+                Thread.VolatileWrite(ref _isValueCreated, 1);
+                _waitHandle.Set();
+            }
+
+            public void Release()
+            {
+                Thread.VolatileWrite(ref _isValueCreated, 0);
+                _waitHandle.Reset();
+                _error = null;
+            }
+
+            public override string ToString()
+            {
+                if (IsCached)
+                {
+                    if (ReferenceEquals(_error, null))
+                    {
+                        return "[Done]";
+                    }
+                    else
+                    {
+                        return _error.ToString();
+                    }
+                }
+                else
+                {
+                    return "[Not Created]";
+                }
             }
         }
     }
