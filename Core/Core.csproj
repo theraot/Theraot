@@ -565,6 +565,7 @@
     <Compile Include="Theraot\Threading\VersionProvider.cs" />
     <Compile Include="Theraot\Collections\IExtendedReadOnlySet.cs" />
     <Compile Include="Theraot\Threading\Work.cs" />
+    <Compile Include="Theraot\Threading\WorkContext.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
