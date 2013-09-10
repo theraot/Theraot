@@ -21,6 +21,15 @@ namespace Theraot.Threading
                 );
         }
 
+        public bool IsTaken
+        {
+            get
+            {
+                var local = _workQueue.Value.Value;
+                return local.Item2.IsTaken;
+            }
+        }
+
         public IPromise Execute(Action action)
         {
             var local = _workQueue.Value.Value;

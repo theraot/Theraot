@@ -7,6 +7,14 @@ namespace Theraot.Threading
     {
         private int _value;
 
+        public bool IsTaken
+        {
+            get
+            {
+                return Thread.VolatileRead(ref _value) == 1;
+            }
+        }
+
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", Justification = "By Design")]
         public bool Enter(out IDisposable engagement)
         {
