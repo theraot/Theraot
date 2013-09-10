@@ -82,7 +82,7 @@ namespace Theraot.Collections.ThreadSafe
         /// Adds the specified item at the front.
         /// </summary>
         /// <param name="item">The item.</param>
-        public void Enqueue(T item)
+        public void Add(T item)
         {
             bool result = false;
             while (true)
@@ -94,7 +94,7 @@ namespace Theraot.Collections.ThreadSafe
                     try
                     {
                         Interlocked.Increment(ref _workingThreads);
-                        if (entries.Enqueue(item))
+                        if (entries.Add(item))
                         {
                             result = true;
                         }
@@ -205,7 +205,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the item was taken; otherwise, <c>false</c>.
         /// </returns>
-        public bool TryDequeue(out T item)
+        public bool TryTake(out T item)
         {
             item = default(T);
             bool result = false;
@@ -219,7 +219,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         Interlocked.Increment(ref _workingThreads);
                         T tmpItem;
-                        if (entries.TryDequeue(out tmpItem))
+                        if (entries.TryTake(out tmpItem))
                         {
                             item = tmpItem;
                             result = true;

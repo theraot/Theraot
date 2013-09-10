@@ -62,7 +62,7 @@ namespace Theraot.Threading
                                     {
                                         Array.Clear(array, 0, capacity);
                                         var bucket = _data.Get(index);
-                                        bucket.Enqueue(array);
+                                        bucket.Add(array);
                                     }
                                 });
                             }
@@ -110,7 +110,7 @@ namespace Theraot.Threading
                         else
                         {
                             var bucket = _data.Get(index);
-                            if (!bucket.TryDequeue(out result))
+                            if (!bucket.TryTake(out result))
                             {
                                 result = new T[capacity];
                             }

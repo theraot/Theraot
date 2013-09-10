@@ -99,7 +99,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the item was added; otherwise, <c>false</c>.
         /// </returns>
-        public bool Enqueue(T item)
+        public bool Add(T item)
         {
             if (_entries.Count < _capacity)
             {
@@ -174,7 +174,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the item was taken; otherwise, <c>false</c>.
         /// </returns>
-        public bool TryDequeue(out T item)
+        public bool TryTake(out T item)
         {
             if (_entries.Count > 0)
             {

@@ -186,7 +186,7 @@ namespace Theraot.Threading
                     }
                     Interlocked.Increment(ref _workingTotalThreadCount);
                     Work item;
-                    if (_works.TryDequeue(out item))
+                    if (_works.TryTake(out item))
                     {
                         Execute(item);
                     }
@@ -214,7 +214,7 @@ namespace Theraot.Threading
                 {
                     ActivateDedicatedThreads();
                 }
-                _works.Enqueue(work);
+                _works.Add(work);
                 if (_threads.Capacity == 0)
                 {
                     ThreadPool.QueueUserWorkItem
@@ -285,7 +285,7 @@ namespace Theraot.Threading
                 while (_work)
                 {
                     Work item;
-                    if (_works.TryDequeue(out item))
+                    if (_works.TryTake(out item))
                     {
                         Execute(item);
                     }
