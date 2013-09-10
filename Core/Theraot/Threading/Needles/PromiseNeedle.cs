@@ -83,15 +83,15 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return IsLoaded;
+                return IsReady;
             }
         }
 
-        public bool IsLoaded
+        public bool IsReady
         {
             get
             {
-                return _internal.IsLoaded;
+                return _internal.IsReady;
             }
         }
 
@@ -134,7 +134,7 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                if (_internal.IsLoaded)
+                if (_internal.IsReady)
                 {
                     return _internal.Value.Equals(obj);
                 }
@@ -254,7 +254,7 @@ namespace Theraot.Threading.Needles
                 }
             }
 
-            public bool IsLoaded
+            public bool IsReady
             {
                 get
                 {
@@ -284,9 +284,9 @@ namespace Theraot.Threading.Needles
 
             public bool Equals(Internal other)
             {
-                if (IsLoaded)
+                if (IsReady)
                 {
-                    if (other.IsLoaded)
+                    if (other.IsReady)
                     {
                         if (ReferenceEquals(_error, null))
                         {
@@ -318,7 +318,7 @@ namespace Theraot.Threading.Needles
                 }
                 else
                 {
-                    if (other.IsLoaded)
+                    if (other.IsReady)
                     {
                         return false;
                     }
@@ -363,7 +363,7 @@ namespace Theraot.Threading.Needles
 
             public override string ToString()
             {
-                if (IsLoaded)
+                if (IsReady)
                 {
                     if (ReferenceEquals(_error, null))
                     {
@@ -436,11 +436,11 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public bool IsLoaded
+        public bool IsReady
         {
             get
             {
-                return _internal.IsLoaded;
+                return _internal.IsReady;
             }
         }
 
@@ -514,7 +514,7 @@ namespace Theraot.Threading.Needles
                 }
             }
 
-            public bool IsLoaded
+            public bool IsReady
             {
                 get
                 {
@@ -555,7 +555,7 @@ namespace Theraot.Threading.Needles
 
             public override string ToString()
             {
-                if (IsLoaded)
+                if (IsReady)
                 {
                     if (ReferenceEquals(_error, null))
                     {

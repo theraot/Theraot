@@ -101,7 +101,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            return Extensions.ConvertProgressiveFiltered<LazyNeedle<T>, T>(_entries, input => input.Value, input => input.IsLoaded).GetEnumerator();
+            return Extensions.ConvertProgressiveFiltered<LazyNeedle<T>, T>(_entries, input => input.Value, input => input.IsReady).GetEnumerator();
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace Theraot.Collections.ThreadSafe
             else
             {
                 //_previous should be null because null is never added
-                if (_previous.IsLoaded)
+                if (_previous.IsReady)
                 {
                     previous = _previous.Value;
                 }
@@ -203,7 +203,7 @@ namespace Theraot.Collections.ThreadSafe
             if (_entries.RemoveAt(index, out _previous))
             {
                 //_previous should be null because null is never added
-                if (_previous.IsLoaded)
+                if (_previous.IsReady)
                 {
                     previous = _previous.Value;
                 }

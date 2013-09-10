@@ -31,7 +31,7 @@ namespace Theraot.Threading.Needles
                 };
         }
 
-        public bool IsLoaded
+        public bool IsReady
         {
             get
             {
