@@ -8,7 +8,7 @@ namespace Theraot.Threading.Needles
     [global::System.Diagnostics.DebuggerNonUserCode]
     public class LazyNeedle<T> : Needle<T>, ICacheNeedle<T>, IEquatable<LazyNeedle<T>>
     {
-        private int _isValueCreated;
+        private int _isCompleted;
         private Func<T> _valueFactory;
 
         public LazyNeedle(Func<T> valueFactory)
@@ -51,7 +51,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return Thread.VolatileRead(ref _isValueCreated) == 1;
+                return Thread.VolatileRead(ref _isCompleted) == 1;
             }
         }
 
@@ -65,7 +65,7 @@ namespace Theraot.Threading.Needles
             set
             {
                 SetTarget(value);
-                Interlocked.Exchange(ref _isValueCreated, 1);
+                Interlocked.Exchange(ref _isCompleted, 1);
             }
         }
 
@@ -107,7 +107,7 @@ namespace Theraot.Threading.Needles
         protected virtual void Initialize(Action beforeInitialize)
         {
             var _beforeInitialize = Check.NotNullArgument(beforeInitialize, "beforeInitialize");
-            if (Thread.VolatileRead(ref _isValueCreated) == 0)
+            if (Thread.VolatileRead(ref _isCompleted) == 0)
             {
                 try
                 {
@@ -130,7 +130,7 @@ namespace Theraot.Threading.Needles
                     thread = Thread.CurrentThread;
                     var _target = valueFactory.Invoke();
                     SetTarget(_target);
-                    Thread.VolatileWrite(ref _isValueCreated, 1);
+                    Thread.VolatileWrite(ref _isCompleted, 1);
                     return _target;
                 }
                 catch (Exception)
