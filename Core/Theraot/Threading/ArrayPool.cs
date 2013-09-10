@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
-using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
 {
@@ -16,7 +13,7 @@ namespace Theraot.Threading
         private const int INT_WorkCapacityHint = 16;
         private static LazyBucket<FixedSizeQueueBucket<T[]>> _data;
         private static int _done;
-        private static Guard _guard;
+        private static ReentryGuard _guard;
         private static Work.Context _recycle;
 
         static ArrayPool()
@@ -30,7 +27,7 @@ namespace Theraot.Threading
                 },
                 NumericHelper.Log2(INT_MaxCapacity) - NumericHelper.Log2(INT_MinCapacity)
             );
-            _guard = new Guard();
+            _guard = new ReentryGuard();
             Thread.MemoryBarrier();
             Thread.VolatileWrite(ref _done, 1);
         }
@@ -58,20 +55,16 @@ namespace Theraot.Threading
                         (
                             () =>
                             {
-                                IDisposable engagement;
-                                if (_guard.Enter(out engagement))
+                                _guard.Execute(() =>
                                 {
-                                    using (engagement)
+                                    int index = GetIndex(capacity);
+                                    if (index < _data.Capacity)
                                     {
-                                        int index = GetIndex(capacity);
-                                        if (index < _data.Capacity)
-                                        {
-                                            Array.Clear(array, 0, capacity);
-                                            var bucket = _data.Get(index);
-                                            bucket.Enqueue(array);
-                                        }
+                                        Array.Clear(array, 0, capacity);
+                                        var bucket = _data.Get(index);
+                                        bucket.Enqueue(array);
                                     }
-                                }
+                                });
                             }
                         ).Start();
                         return true;
@@ -104,10 +97,9 @@ namespace Theraot.Threading
             }
             if (Thread.VolatileRead(ref _done) == 1)
             {
-                IDisposable engagement;
-                if (_guard.Enter(out engagement))
-                {
-                    using (engagement)
+                var promise = _guard.Execute
+                (
+                    ()=>
                     {
                         T[] result;
                         int index = GetIndex(capacity);
@@ -125,11 +117,8 @@ namespace Theraot.Threading
                         }
                         return result;
                     }
-                }
-                else
-                {
-                    return new T[capacity];
-                }
+                );
+                return promise.Value;
             }
             else
             {
