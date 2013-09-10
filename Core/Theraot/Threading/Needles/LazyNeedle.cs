@@ -6,10 +6,11 @@ namespace Theraot.Threading.Needles
 {
     [Serializable]
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public class LazyNeedle<T> : Needle<T>, ICacheNeedle<T>, IEquatable<LazyNeedle<T>>
+    public class LazyNeedle<T> : Needle<T>, ICacheNeedle<T>, IEquatable<LazyNeedle<T>>, IPromise<T>
     {
         private int _isCompleted;
         private Func<T> _valueFactory;
+        private StructNeedle<ManualResetEvent> _waitHandle;
 
         public LazyNeedle(Func<T> valueFactory)
             : this(valueFactory, default(T))
@@ -22,12 +23,12 @@ namespace Theraot.Threading.Needles
         {
             Func<T> __valueFactory = valueFactory ?? (() => target);
             Thread thread = null;
-            var waitHandle = new ManualResetEvent(false);
+            _waitHandle = new StructNeedle<ManualResetEvent>(new ManualResetEvent(false));
             int preIsValueCreated = 0;
             _valueFactory =
                 () =>
                 {
-                    return FullMode(__valueFactory, waitHandle, ref thread, ref preIsValueCreated);
+                    return FullMode(__valueFactory, ref thread, ref preIsValueCreated);
                 };
         }
 
@@ -44,6 +45,14 @@ namespace Theraot.Threading.Needles
             get
             {
                 return false;
+            }
+        }
+
+        Exception IPromise.Error
+        {
+            get
+            {
+                return null;
             }
         }
 
@@ -66,6 +75,14 @@ namespace Theraot.Threading.Needles
             {
                 SetTarget(value);
                 Interlocked.Exchange(ref _isCompleted, 1);
+            }
+        }
+
+        protected ManualResetEvent WaitHandle
+        {
+            get
+            {
+                return _waitHandle.Value;
             }
         }
 
@@ -104,6 +121,11 @@ namespace Theraot.Threading.Needles
             _valueFactory.Invoke();
         }
 
+        public void Wait()
+        {
+            _waitHandle.Value.WaitOne();
+        }
+
         protected virtual void Initialize(Action beforeInitialize)
         {
             var _beforeInitialize = Check.NotNullArgument(beforeInitialize, "beforeInitialize");
@@ -120,7 +142,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        private T FullMode(Func<T> valueFactory, ManualResetEvent waitHandle, ref Thread thread, ref int preIsValueCreated)
+        private T FullMode(Func<T> valueFactory, ref Thread thread, ref int preIsValueCreated)
         {
         back:
             if (Interlocked.CompareExchange(ref preIsValueCreated, 1, 0) == 0)
@@ -140,7 +162,7 @@ namespace Theraot.Threading.Needles
                 }
                 finally
                 {
-                    waitHandle.Set();
+                    _waitHandle.Value.Set();
                     thread = null;
                 }
             }
@@ -152,7 +174,7 @@ namespace Theraot.Threading.Needles
                 }
                 else
                 {
-                    waitHandle.WaitOne();
+                    _waitHandle.Value.WaitOne();
                     if (Thread.VolatileRead(ref preIsValueCreated) == 1)
                     {
                         return base.Value;
