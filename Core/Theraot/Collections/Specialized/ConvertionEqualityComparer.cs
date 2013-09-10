@@ -20,12 +20,12 @@ namespace Theraot.Collections.Specialized
 
         public bool Equals(TInput x, TInput y)
         {
-            return _comparer.Equals(_converter(x), _converter(y));
+            return _comparer.Equals(_converter.Invoke(x), _converter.Invoke(y));
         }
 
         public int GetHashCode(TInput obj)
         {
-            return _comparer.GetHashCode(_converter(obj));
+            return _comparer.GetHashCode(_converter.Invoke(obj));
         }
     }
 }
