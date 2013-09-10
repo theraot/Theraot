@@ -21,7 +21,7 @@ namespace Theraot.Core
             }
             else if (type.IsAssignableTo(typeof(Delegate)))
             {
-                property = GetPropertyDelegated(type, typeof(DelegateEqualityComparer));
+                property = typeof(DelegateEqualityComparer).GetProperty("Default", BindingFlags.Public | BindingFlags.Static);
             }
             else if (type.IsGenericInstanceOf(typeof(KeyValuePair<,>)))
             {
