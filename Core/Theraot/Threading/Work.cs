@@ -14,8 +14,9 @@ namespace Theraot.Threading
         private readonly Action _action;
         private readonly WorkContext _context;
         private readonly bool _exclusive;
-        private PromiseNeedle _result;
-        private IPromised _promised;
+        private Exception _error;
+        private int _isCompleted;
+        private ManualResetEvent _waitHandle;
 
         internal Work(Action action, bool exclusive, WorkContext context)
         {
@@ -28,7 +29,7 @@ namespace Theraot.Threading
                 _context = context;
                 _action = action ?? ActionHelper.GetNoopAction();
                 _exclusive = exclusive;
-                _result = new PromiseNeedle(out _promised, false);
+                _waitHandle = new ManualResetEvent(false);
             }
         }
 
@@ -44,7 +45,7 @@ namespace Theraot.Threading
         {
             get
             {
-                return _result.IsCompleted;
+                return Thread.VolatileRead(ref _isCompleted) == 1;
             }
         }
 
@@ -73,7 +74,7 @@ namespace Theraot.Threading
 
         public void Wait()
         {
-            while (!_result.IsCompleted)
+            while (Thread.VolatileRead(ref _isCompleted) != 1)
             {
                 _context.DoOneWork();
             }
@@ -85,11 +86,14 @@ namespace Theraot.Threading
             try
             {
                 _action.Invoke();
-                _promised.OnCompleted();
+                Thread.VolatileWrite(ref _isCompleted, 1);
+                _waitHandle.Set();
             }
             catch (Exception exception)
             {
-                _promised.OnError(exception);
+                _error = exception;
+                Thread.VolatileWrite(ref _isCompleted, 1);
+                _waitHandle.Set();
             }
             finally
             {
@@ -101,7 +105,7 @@ namespace Theraot.Threading
         {
             get
             {
-                return _result.Error;
+                return _error;
             }
         }
 
@@ -109,7 +113,7 @@ namespace Theraot.Threading
         {
             get
             {
-                return _result.IsCanceled;
+                return false;
             }
         }
 
@@ -117,7 +121,7 @@ namespace Theraot.Threading
         {
             get
             {
-                return _result.IsFaulted;
+                return !ReferenceEquals(_error, null);
             }
         }
     }
