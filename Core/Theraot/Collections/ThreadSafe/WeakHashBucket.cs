@@ -23,7 +23,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public WeakHashBucket()
         {
-            _comparer = EqualityComparer<TKey>.Default;
+            _comparer = EqualityComparerHelper<TKey>.Default;
             _wrapped = new HashBucket<TNeedle, TValue>
             (
                 new ConversionEqualityComparer<TNeedle, TKey>(_comparer, input => input.Value)
@@ -61,7 +61,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public WeakHashBucket(IEqualityComparer<TKey> comparer)
         {
-            _comparer = comparer ?? EqualityComparer<TKey>.Default;
+            _comparer = comparer ?? EqualityComparerHelper<TKey>.Default;
             _wrapped = new HashBucket<TNeedle, TValue>
             (
                 new ConversionEqualityComparer<TNeedle, TKey>(_comparer, input => input.Value)
@@ -71,7 +71,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public WeakHashBucket(bool autoRemoveDeadItems)
         {
-            _comparer = EqualityComparer<TKey>.Default;
+            _comparer = EqualityComparerHelper<TKey>.Default;
             _wrapped = new HashBucket<TNeedle, TValue>
             (
                 new ConversionEqualityComparer<TNeedle, TKey>(_comparer, input => input.Value)
@@ -113,7 +113,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public WeakHashBucket(IEqualityComparer<TKey> comparer, bool autoRemoveDeadItems)
         {
-            _comparer = comparer ?? EqualityComparer<TKey>.Default;
+            _comparer = comparer ?? EqualityComparerHelper<TKey>.Default;
             _wrapped = new HashBucket<TNeedle, TValue>
             (
                 new ConversionEqualityComparer<TNeedle, TKey>(_comparer, input => input.Value)

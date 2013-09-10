@@ -23,7 +23,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public WeakSet()
         {
-            _comparer = EqualityComparer<T>.Default;
+            _comparer = EqualityComparerHelper<T>.Default;
             _wrapped = new SetBucket<TNeedle>
             (
                 new ConversionEqualityComparer<TNeedle, T>(_comparer, input => input.Value)
@@ -61,7 +61,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public WeakSet(IEqualityComparer<T> comparer)
         {
-            _comparer = comparer ?? EqualityComparer<T>.Default;
+            _comparer = comparer ?? EqualityComparerHelper<T>.Default;
             _wrapped = new SetBucket<TNeedle>
             (
                 new ConversionEqualityComparer<TNeedle, T>(_comparer, input => input.Value)
@@ -71,7 +71,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public WeakSet(bool autoRemoveDeadItems)
         {
-            _comparer = EqualityComparer<T>.Default;
+            _comparer = EqualityComparerHelper<T>.Default;
             _wrapped = new SetBucket<TNeedle>
             (
                 new ConversionEqualityComparer<TNeedle, T>(_comparer, input => input.Value)
@@ -113,7 +113,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public WeakSet(IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
         {
-            _comparer = comparer ?? EqualityComparer<T>.Default;
+            _comparer = comparer ?? EqualityComparerHelper<T>.Default;
             _wrapped = new SetBucket<TNeedle>
             (
                 new ConversionEqualityComparer<TNeedle, T>(_comparer, input => input.Value)
