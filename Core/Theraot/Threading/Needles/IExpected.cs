@@ -2,7 +2,17 @@ namespace Theraot.Threading.Needles
 {
     public interface IExpected
     {
-        bool IsReady
+        bool IsCanceled
+        {
+            get;
+        }
+
+        bool IsCompleted
+        {
+            get;
+        }
+
+        bool IsFaulted
         {
             get;
         }

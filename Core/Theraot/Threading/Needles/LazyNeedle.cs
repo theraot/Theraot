@@ -31,7 +31,23 @@ namespace Theraot.Threading.Needles
                 };
         }
 
-        public bool IsReady
+        bool IExpected.IsCanceled
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        bool IExpected.IsFaulted
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public bool IsCompleted
         {
             get
             {

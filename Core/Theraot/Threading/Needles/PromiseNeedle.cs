@@ -83,15 +83,15 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return IsReady;
+                return IsCompleted;
             }
         }
 
-        public bool IsReady
+        public bool IsCompleted
         {
             get
             {
-                return _internal.IsReady;
+                return _internal.IsCompleted;
             }
         }
 
@@ -134,7 +134,7 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                if (_internal.IsReady)
+                if (_internal.IsCompleted)
                 {
                     return _internal.Value.Equals(obj);
                 }
@@ -254,11 +254,27 @@ namespace Theraot.Threading.Needles
                 }
             }
 
-            public bool IsReady
+            public bool IsCanceled
+            {
+                get
+                {
+                    return false;
+                }
+            }
+
+            public bool IsCompleted
             {
                 get
                 {
                     return Thread.VolatileRead(ref _isValueCreated) == 1;
+                }
+            }
+
+            public bool IsFaulted
+            {
+                get
+                {
+                    return ReferenceEquals(_error, null);
                 }
             }
 
@@ -284,9 +300,9 @@ namespace Theraot.Threading.Needles
 
             public bool Equals(Internal other)
             {
-                if (IsReady)
+                if (IsCompleted)
                 {
-                    if (other.IsReady)
+                    if (other.IsCompleted)
                     {
                         if (ReferenceEquals(_error, null))
                         {
@@ -318,7 +334,7 @@ namespace Theraot.Threading.Needles
                 }
                 else
                 {
-                    if (other.IsReady)
+                    if (other.IsCompleted)
                     {
                         return false;
                     }
@@ -363,7 +379,7 @@ namespace Theraot.Threading.Needles
 
             public override string ToString()
             {
-                if (IsReady)
+                if (IsCompleted)
                 {
                     if (ReferenceEquals(_error, null))
                     {
@@ -383,6 +399,22 @@ namespace Theraot.Threading.Needles
             public void Wait()
             {
                 _waitHandle.WaitOne();
+            }
+        }
+
+        public bool IsCanceled
+        {
+            get
+            {
+                return _internal.IsCanceled;
+            }
+        }
+
+        public bool IsFaulted
+        {
+            get
+            {
+                return _internal.IsFaulted;
             }
         }
     }
@@ -436,11 +468,11 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public bool IsReady
+        public bool IsCompleted
         {
             get
             {
-                return _internal.IsReady;
+                return _internal.IsCompleted;
             }
         }
 
@@ -514,11 +546,27 @@ namespace Theraot.Threading.Needles
                 }
             }
 
-            public bool IsReady
+            public bool IsCanceled
+            {
+                get
+                {
+                    return false;
+                }
+            }
+
+            public bool IsCompleted
             {
                 get
                 {
                     return Thread.VolatileRead(ref _isValueCreated) == 1;
+                }
+            }
+
+            public bool IsFaulted
+            {
+                get
+                {
+                    return ReferenceEquals(_error, null);
                 }
             }
 
@@ -555,7 +603,7 @@ namespace Theraot.Threading.Needles
 
             public override string ToString()
             {
-                if (IsReady)
+                if (IsCompleted)
                 {
                     if (ReferenceEquals(_error, null))
                     {
@@ -575,6 +623,22 @@ namespace Theraot.Threading.Needles
             public void Wait()
             {
                 _waitHandle.WaitOne();
+            }
+        }
+
+        public bool IsCanceled
+        {
+            get
+            {
+                return _internal.IsCanceled;
+            }
+        }
+
+        public bool IsFaulted
+        {
+            get
+            {
+                return _internal.IsFaulted;
             }
         }
     }

@@ -40,11 +40,11 @@ namespace Theraot.Threading
             }
         }
 
-        public bool IsReady
+        public bool IsCompleted
         {
             get
             {
-                return _result.IsReady;
+                return _result.IsCompleted;
             }
         }
 
@@ -73,7 +73,7 @@ namespace Theraot.Threading
 
         public void Wait()
         {
-            while (!_result.IsReady)
+            while (!_result.IsCompleted)
             {
                 _context.DoOneWork();
             }
@@ -102,6 +102,22 @@ namespace Theraot.Threading
             get
             {
                 return _result.Error;
+            }
+        }
+
+        public bool IsCanceled
+        {
+            get
+            {
+                return _result.IsCanceled;
+            }
+        }
+
+        public bool IsFaulted
+        {
+            get
+            {
+                return _result.IsFaulted;
             }
         }
     }
