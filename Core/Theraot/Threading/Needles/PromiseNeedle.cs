@@ -225,7 +225,7 @@ namespace Theraot.Threading.Needles
         private class Internal : IPromised<T>, IObserver<T>, IReadOnlyNeedle<T>, ICacheNeedle<T>, IEquatable<Internal>
         {
             private Exception _error;
-            private int _isValueCreated;
+            private int _isCompleted;
             private T _target;
 
             private ManualResetEvent _waitHandle;
@@ -238,14 +238,14 @@ namespace Theraot.Threading.Needles
             public Internal(T value)
             {
                 _target = value;
-                Thread.VolatileWrite(ref _isValueCreated, 1);
+                Thread.VolatileWrite(ref _isCompleted, 1);
                 _waitHandle = new ManualResetEvent(true);
             }
 
             public Internal(Exception error)
             {
                 _error = error;
-                Thread.VolatileWrite(ref _isValueCreated, 1);
+                Thread.VolatileWrite(ref _isCompleted, 1);
                 _waitHandle = new ManualResetEvent(true);
             }
 
@@ -262,7 +262,7 @@ namespace Theraot.Threading.Needles
             {
                 get
                 {
-                    return Thread.VolatileRead(ref _isValueCreated) == 1;
+                    return Thread.VolatileRead(ref _isCompleted) == 1;
                 }
             }
 
@@ -278,7 +278,7 @@ namespace Theraot.Threading.Needles
             {
                 get
                 {
-                    return Thread.VolatileRead(ref _isValueCreated) == 1;
+                    return Thread.VolatileRead(ref _isCompleted) == 1;
                 }
             }
 
@@ -361,7 +361,7 @@ namespace Theraot.Threading.Needles
             {
                 _target = default(T);
                 _error = null;
-                Thread.VolatileWrite(ref _isValueCreated, 1);
+                Thread.VolatileWrite(ref _isCompleted, 1);
                 _waitHandle.Set();
             }
 
@@ -369,7 +369,7 @@ namespace Theraot.Threading.Needles
             {
                 _target = default(T);
                 _error = error;
-                Thread.VolatileWrite(ref _isValueCreated, 1);
+                Thread.VolatileWrite(ref _isCompleted, 1);
                 _waitHandle.Set();
             }
 
@@ -377,13 +377,13 @@ namespace Theraot.Threading.Needles
             {
                 _target = value;
                 _error = null;
-                Thread.VolatileWrite(ref _isValueCreated, 1);
+                Thread.VolatileWrite(ref _isCompleted, 1);
                 _waitHandle.Set();
             }
 
             public void Release()
             {
-                Thread.VolatileWrite(ref _isValueCreated, 0);
+                Thread.VolatileWrite(ref _isCompleted, 0);
                 _waitHandle.Reset();
                 _target = default(T);
                 _error = null;
@@ -506,7 +506,7 @@ namespace Theraot.Threading.Needles
         private class Internal : IPromised
         {
             private Exception _error;
-            private int _isValueCreated;
+            private int _isCompleted;
             private ManualResetEvent _waitHandle;
 
             public Internal()
@@ -517,7 +517,7 @@ namespace Theraot.Threading.Needles
             public Internal(Exception error)
             {
                 _error = error;
-                Thread.VolatileWrite(ref _isValueCreated, 1);
+                Thread.VolatileWrite(ref _isCompleted, 1);
                 _waitHandle = new ManualResetEvent(true);
             }
 
@@ -570,7 +570,7 @@ namespace Theraot.Threading.Needles
             {
                 get
                 {
-                    return Thread.VolatileRead(ref _isValueCreated) == 1;
+                    return Thread.VolatileRead(ref _isCompleted) == 1;
                 }
             }
 
@@ -595,20 +595,20 @@ namespace Theraot.Threading.Needles
             public void OnCompleted()
             {
                 _error = null;
-                Thread.VolatileWrite(ref _isValueCreated, 1);
+                Thread.VolatileWrite(ref _isCompleted, 1);
                 _waitHandle.Set();
             }
 
             public void OnError(Exception error)
             {
                 _error = error;
-                Thread.VolatileWrite(ref _isValueCreated, 1);
+                Thread.VolatileWrite(ref _isCompleted, 1);
                 _waitHandle.Set();
             }
 
             public void Release()
             {
-                Thread.VolatileWrite(ref _isValueCreated, 0);
+                Thread.VolatileWrite(ref _isCompleted, 0);
                 _waitHandle.Reset();
                 _error = null;
             }
