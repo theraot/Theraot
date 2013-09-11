@@ -30,7 +30,11 @@ namespace Theraot.Collections.ThreadSafe
 
         ~Bucket()
         {
-            RecycleExtracted();
+            //Do not recycle on AppDomain Unload
+            if (!AppDomain.CurrentDomain.IsFinalizingForUnload())
+            {
+                RecycleExtracted();
+            }
         }
 
         /// <summary>

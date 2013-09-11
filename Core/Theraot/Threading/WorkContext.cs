@@ -158,7 +158,15 @@ namespace Theraot.Threading
 
         public Work AddWork(Action action)
         {
-            return new Work(action, false, this);
+            //Fail on AppDomain Unload
+            if (AppDomain.CurrentDomain.IsFinalizingForUnload())
+            {
+                return null;
+            }
+            else
+            {
+                return new Work(action, false, this);
+            }
         }
 
         public Work AddWork(Action action, bool exclusive)

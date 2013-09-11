@@ -69,7 +69,11 @@ namespace Theraot.Threading
 
         public void Start()
         {
-            _context.ScheduleWork(this);
+            //Fail on AppDomain Unload
+            if (!AppDomain.CurrentDomain.IsFinalizingForUnload())
+            {
+                _context.ScheduleWork(this);
+            }
         }
 
         public void Wait()
