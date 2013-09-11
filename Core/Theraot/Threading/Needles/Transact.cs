@@ -83,6 +83,7 @@ namespace Theraot.Threading.Needles
                             }
                             else
                             {
+                                //the resources has been modified by another thread
                                 return false;
                             }
                         }
@@ -93,6 +94,7 @@ namespace Theraot.Threading.Needles
                     }
                     else
                     {
+                        //could not adquire the resources
                         return false;
                     }
                 }
@@ -103,6 +105,7 @@ namespace Theraot.Threading.Needles
             }
             else
             {
+                //the resources has been modified by another thread
                 return false;
             }
         }
