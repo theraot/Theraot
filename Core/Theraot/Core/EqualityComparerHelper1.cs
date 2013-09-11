@@ -1,9 +1,11 @@
 #if FAT
-﻿using System;
+
+using System;
 using System.Collections.Generic;
 using System.Reflection;
-
 using Theraot.Collections;
+using Theraot.Collections.Specialized;
+using Theraot.Threading.Needles;
 
 namespace Theraot.Core
 {
@@ -14,6 +16,7 @@ namespace Theraot.Core
         static EqualityComparerHelper()
         {
             var type = typeof(T);
+            Type tmp;
             PropertyInfo property = null;
             if (type.IsImplementationOf(typeof(IEquatable<>).MakeGenericType(type)))
             {
@@ -22,6 +25,13 @@ namespace Theraot.Core
             else if (type.IsAssignableTo(typeof(Delegate)))
             {
                 property = typeof(DelegateEqualityComparer).GetProperty("Default", BindingFlags.Public | BindingFlags.Static);
+            }
+            else if (type.IsGenericImplementationOf(typeof(INeedle<>), out tmp))
+            {
+                var types = tmp.GetGenericArguments();
+                var conversionType = typeof(NeedleConversionEqualityComparer<,>).MakeGenericType(new Type[] { tmp, types[0] });
+                _default = (IEqualityComparer<T>)(conversionType.Create(GetPropertyDelegated(types[0], typeof(EqualityComparerHelper<>)).GetValue(null, null)));
+                return;
             }
             else if (type.IsGenericInstanceOf(typeof(KeyValuePair<,>)))
             {
@@ -88,4 +98,5 @@ namespace Theraot.Core
         }
     }
 }
+
 #endif
