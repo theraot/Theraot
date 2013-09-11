@@ -23,7 +23,7 @@ namespace Theraot.Threading.Needles
 
         public override void Initialize()
         {
-            Initialize(() => UnDispose());
+            Initialize(() => UnDispose()); //TODO: Review
         }
 
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", Justification = "False Positive")]
@@ -45,7 +45,7 @@ namespace Theraot.Threading.Needles
                     }
                     finally
                     {
-                        UnDispose();
+                        UnDispose(); //TODO: Review
                     }
                 }
             );
