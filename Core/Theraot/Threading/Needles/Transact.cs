@@ -109,16 +109,14 @@ namespace Theraot.Threading.Needles
 
         private bool Check()
         {
-            bool check;
             foreach (var resource in _readLog)
             {
                 if (!resource.Key.Check())
                 {
-                    check = false;
+                    return false;
                 }
             }
-            check = true;
-            return check;
+            return true;
         }
 
         private void Rollback()

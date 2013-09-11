@@ -69,7 +69,7 @@ namespace Theraot.Threading.Needles
             {
                 _transaction = Transact.CurrentTransaction;
                 object value;
-                if (_transaction._writeLog.TryGetValue(this, out value))
+                if (_transaction._readLog.TryGetValue(this, out value))
                 {
                     return EqualityComparer<T>.Default.Equals(base.Value, (T)value);
                 }
