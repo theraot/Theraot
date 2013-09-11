@@ -1,3 +1,5 @@
+#if FAT
+
 using System;
 using System.Collections.Generic;
 using Theraot.Core;
@@ -6,24 +8,13 @@ using Theraot.Threading.Needles;
 namespace Theraot.Collections.Specialized
 {
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public sealed class NeedleConversionEqualityComparer<TNeedle, T> : IEqualityComparer<TNeedle>
+    public sealed class NeedleConversionEqualityComparer<TNeedle, T> : ConversionEqualityComparer<TNeedle, T>, IEqualityComparer<TNeedle>
         where TNeedle : INeedle<T>
     {
-        private IEqualityComparer<T> _comparer;
-
         public NeedleConversionEqualityComparer(IEqualityComparer<T> comparer)
+            : base(comparer, Conversion)
         {
-            _comparer = comparer ?? EqualityComparer<T>.Default;
-        }
-
-        public bool Equals(TNeedle x, TNeedle y)
-        {
-            return _comparer.Equals(Conversion(x), Conversion(y));
-        }
-
-        public int GetHashCode(TNeedle obj)
-        {
-            return _comparer.GetHashCode(Conversion(obj));
+            //Empty
         }
 
         private static T Conversion(TNeedle needle)
@@ -39,3 +30,5 @@ namespace Theraot.Collections.Specialized
         }
     }
 }
+
+#endif
