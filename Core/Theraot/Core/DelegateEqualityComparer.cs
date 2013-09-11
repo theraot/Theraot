@@ -27,13 +27,20 @@ namespace Theraot.Core
 
         public int GetHashCode(Delegate obj)
         {
-            if (ReferenceEquals(obj.Target, null))
+            if (ReferenceEquals(obj, null))
             {
-                return obj.Method.GetHashCode();
+                return 0;
             }
             else
             {
-                return obj.Method.GetHashCode() ^ obj.Target.GetHashCode();
+                if (ReferenceEquals(obj.Target, null))
+                {
+                    return obj.Method.GetHashCode();
+                }
+                else
+                {
+                    return obj.Method.GetHashCode() ^ obj.Target.GetHashCode();
+                }
             }
         }
 
