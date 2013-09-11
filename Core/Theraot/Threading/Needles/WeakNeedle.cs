@@ -201,22 +201,25 @@ namespace Theraot.Threading.Needles
                 {
                     GC.ReRegisterForFinalize(this);
                 }
-                UnDispose(); //TODO: Review
+                UnDispose();
             }
             else
             {
-                var newHandle = GetNewHandle(value, trackResurrection);
-                GCHandle oldHandle = _handle;
-                _handle = newHandle;
-                if (oldHandle.IsAllocated)
+                using (suspention)
                 {
-                    try
+                    var newHandle = GetNewHandle(value, trackResurrection);
+                    GCHandle oldHandle = _handle;
+                    _handle = newHandle;
+                    if (oldHandle.IsAllocated)
                     {
-                        oldHandle.Free();
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        //Empty
+                        try
+                        {
+                            oldHandle.Free();
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            //Empty
+                        }
                     }
                 }
             }
