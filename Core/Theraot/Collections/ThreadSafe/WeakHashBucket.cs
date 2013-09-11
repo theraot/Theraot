@@ -22,10 +22,7 @@ namespace Theraot.Collections.ThreadSafe
         public WeakHashBucket()
         {
             _comparer = EqualityComparerHelper<TKey>.Default;
-            _wrapped = new HashBucket<TNeedle, TValue>
-            (
-                new ConversionEqualityComparer<TNeedle, TKey>(_comparer, Conversion)
-            );
+            _wrapped = new HashBucket<TNeedle, TValue>(EqualityComparerHelper<TNeedle>.Default);
             RegisterForAutoRemoveDeadItems();
         }
 
@@ -60,20 +57,14 @@ namespace Theraot.Collections.ThreadSafe
         public WeakHashBucket(IEqualityComparer<TKey> comparer)
         {
             _comparer = comparer ?? EqualityComparerHelper<TKey>.Default;
-            _wrapped = new HashBucket<TNeedle, TValue>
-            (
-                new ConversionEqualityComparer<TNeedle, TKey>(_comparer, Conversion)
-            );
+            _wrapped = new HashBucket<TNeedle, TValue>(EqualityComparerHelper<TNeedle>.Default);
             RegisterForAutoRemoveDeadItems();
         }
 
         public WeakHashBucket(bool autoRemoveDeadItems)
         {
             _comparer = EqualityComparerHelper<TKey>.Default;
-            _wrapped = new HashBucket<TNeedle, TValue>
-            (
-                new ConversionEqualityComparer<TNeedle, TKey>(_comparer, Conversion)
-            );
+            _wrapped = new HashBucket<TNeedle, TValue>(EqualityComparerHelper<TNeedle>.Default);
             if (autoRemoveDeadItems)
             {
                 RegisterForAutoRemoveDeadItems();
@@ -112,10 +103,7 @@ namespace Theraot.Collections.ThreadSafe
         public WeakHashBucket(IEqualityComparer<TKey> comparer, bool autoRemoveDeadItems)
         {
             _comparer = comparer ?? EqualityComparerHelper<TKey>.Default;
-            _wrapped = new HashBucket<TNeedle, TValue>
-            (
-                new ConversionEqualityComparer<TNeedle, TKey>(_comparer, Conversion)
-            );
+            _wrapped = new HashBucket<TNeedle, TValue>(EqualityComparerHelper<TNeedle>.Default);
             if (autoRemoveDeadItems)
             {
                 RegisterForAutoRemoveDeadItems();
@@ -312,18 +300,6 @@ namespace Theraot.Collections.ThreadSafe
         protected virtual WeakHashBucket<TKey, TValue, TNeedle> OnClone()
         {
             return new WeakHashBucket<TKey, TValue, TNeedle>(this as IEnumerable<KeyValuePair<TKey, TValue>>, _comparer);
-        }
-
-        private static TKey Conversion(TNeedle input)
-        {
-            if (ReferenceEquals(input, null))
-            {
-                return null;
-            }
-            else
-            {
-                return input.Value;
-            }
         }
 
         private void GarbageCollected(object sender, EventArgs e)

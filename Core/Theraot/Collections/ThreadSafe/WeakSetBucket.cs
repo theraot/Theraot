@@ -22,10 +22,7 @@ namespace Theraot.Collections.ThreadSafe
         public WeakSet()
         {
             _comparer = EqualityComparerHelper<T>.Default;
-            _wrapped = new SetBucket<TNeedle>
-            (
-                new ConversionEqualityComparer<TNeedle, T>(_comparer, Conversion)
-            );
+            _wrapped = new SetBucket<TNeedle>(EqualityComparerHelper<TNeedle>.Default);
             RegisterForAutoRemoveDeadItems();
         }
 
@@ -60,20 +57,14 @@ namespace Theraot.Collections.ThreadSafe
         public WeakSet(IEqualityComparer<T> comparer)
         {
             _comparer = comparer ?? EqualityComparerHelper<T>.Default;
-            _wrapped = new SetBucket<TNeedle>
-            (
-                new ConversionEqualityComparer<TNeedle, T>(_comparer, Conversion)
-            );
+            _wrapped = new SetBucket<TNeedle>(EqualityComparerHelper<TNeedle>.Default);
             RegisterForAutoRemoveDeadItems();
         }
 
         public WeakSet(bool autoRemoveDeadItems)
         {
             _comparer = EqualityComparerHelper<T>.Default;
-            _wrapped = new SetBucket<TNeedle>
-            (
-                new ConversionEqualityComparer<TNeedle, T>(_comparer, Conversion)
-            );
+            _wrapped = new SetBucket<TNeedle>(EqualityComparerHelper<TNeedle>.Default);
             if (autoRemoveDeadItems)
             {
                 RegisterForAutoRemoveDeadItems();
@@ -112,10 +103,7 @@ namespace Theraot.Collections.ThreadSafe
         public WeakSet(IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
         {
             _comparer = comparer ?? EqualityComparerHelper<T>.Default;
-            _wrapped = new SetBucket<TNeedle>
-            (
-                new ConversionEqualityComparer<TNeedle, T>(_comparer, Conversion)
-            );
+            _wrapped = new SetBucket<TNeedle>(EqualityComparerHelper<TNeedle>.Default);
             if (autoRemoveDeadItems)
             {
                 RegisterForAutoRemoveDeadItems();
@@ -332,18 +320,6 @@ namespace Theraot.Collections.ThreadSafe
         protected virtual WeakSet<T, TNeedle> OnClone()
         {
             return new WeakSet<T, TNeedle>(this as IEnumerable<T>, _comparer);
-        }
-
-        private static T Conversion(TNeedle input)
-        {
-            if (ReferenceEquals(input, null))
-            {
-                return null;
-            }
-            else
-            {
-                return input.Value;
-            }
         }
 
         private void GarbageCollected(object sender, EventArgs e)
