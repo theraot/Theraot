@@ -231,12 +231,11 @@ namespace Theraot.Collections.ThreadSafe
                 revision = _revision;
                 if (IsOperationSafe())
                 {
-                    bool isCollision = false;
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
                     bool done = false;
                     try
                     {
-                        if (CharyAddExtracted(key, value, entries, out previous, out isCollision) != -1)
+                        if (CharyAddExtracted(key, value, entries, out previous) != -1)
                         {
                             result = true;
                         }
@@ -253,19 +252,8 @@ namespace Theraot.Collections.ThreadSafe
                             }
                             else
                             {
-                                if (isCollision)
-                                {
-                                    var oldStatus = Interlocked.CompareExchange(ref _status, (int)BucketStatus.GrowRequested, (int)BucketStatus.Free);
-                                    if (oldStatus == (int)BucketStatus.Free)
-                                    {
-                                        _revision++;
-                                    }
-                                }
-                                else
-                                {
-                                    done = true;
-                                    found = previous.Value;
-                                }
+                                done = true;
+                                found = previous.Value;
                             }
                         }
                     }
@@ -673,9 +661,9 @@ namespace Theraot.Collections.ThreadSafe
             return -1;
         }
 
-        private int CharyAddExtracted(TKey key, TValue value, FixedSizeHashBucket<TKey, TValue> entries, out KeyValuePair<TKey, TValue> previous, out bool isCollision)
+        private int CharyAddExtracted(TKey key, TValue value, FixedSizeHashBucket<TKey, TValue> entries, out KeyValuePair<TKey, TValue> previous)
         {
-            isCollision = true;
+            var isCollision = true;
             previous = default(KeyValuePair<TKey, TValue>);
             if (entries != null)
             {
