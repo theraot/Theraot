@@ -193,35 +193,33 @@ namespace Theraot.Threading.Needles
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
         protected void Allocate(T value, bool trackResurrection)
         {
-            DisposedConditional
-                (
-                    () =>
+            var suspention = SuspendDisposal();
+            if (ReferenceEquals(suspention, null))
+            {
+                _handle = GetNewHandle(value, trackResurrection);
+                if (Interlocked.CompareExchange(ref _managedDisposal, 0, 1) == 1)
+                {
+                    GC.ReRegisterForFinalize(this);
+                }
+                UnDispose(); //TODO: Review
+            }
+            else
+            {
+                var newHandle = GetNewHandle(value, trackResurrection);
+                GCHandle oldHandle = _handle;
+                _handle = newHandle;
+                if (oldHandle.IsAllocated)
+                {
+                    try
                     {
-                        _handle = GetNewHandle(value, trackResurrection);
-                        if (Interlocked.CompareExchange(ref _managedDisposal, 0, 1) == 1)
-                        {
-                            GC.ReRegisterForFinalize(this);
-                        }
-                        UnDispose();
-                    },
-                    () =>
-                    {
-                        var newHandle = GetNewHandle(value, trackResurrection);
-                        GCHandle oldHandle = _handle;
-                        _handle = newHandle;
-                        if (oldHandle.IsAllocated)
-                        {
-                            try
-                            {
-                                oldHandle.Free();
-                            }
-                            catch (InvalidOperationException)
-                            {
-                                //Empty
-                            }
-                        }
+                        oldHandle.Free();
                     }
-                );
+                    catch (InvalidOperationException)
+                    {
+                        //Empty
+                    }
+                }
+            }
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
