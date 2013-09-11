@@ -29,7 +29,8 @@ namespace Theraot.Threading.Needles
                     _transaction = Transact.CurrentTransaction;
                     if (ReferenceEquals(_transaction, null))
                     {
-                        return base.Value;
+                        var tmp = base.Value;
+                        return tmp;
                     }
                     else
                     {
