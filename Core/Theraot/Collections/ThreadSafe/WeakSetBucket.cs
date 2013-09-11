@@ -2,9 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using Theraot.Collections;
 using Theraot.Collections.Specialized;
-using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
 using Theraot.Threading;
 using Theraot.Threading.Needles;
@@ -26,7 +24,7 @@ namespace Theraot.Collections.ThreadSafe
             _comparer = EqualityComparerHelper<T>.Default;
             _wrapped = new SetBucket<TNeedle>
             (
-                new ConversionEqualityComparer<TNeedle, T>(_comparer, input => input.Value)
+                new ConversionEqualityComparer<TNeedle, T>(_comparer, Conversion)
             );
             RegisterForAutoRemoveDeadItems();
         }
@@ -64,7 +62,7 @@ namespace Theraot.Collections.ThreadSafe
             _comparer = comparer ?? EqualityComparerHelper<T>.Default;
             _wrapped = new SetBucket<TNeedle>
             (
-                new ConversionEqualityComparer<TNeedle, T>(_comparer, input => input.Value)
+                new ConversionEqualityComparer<TNeedle, T>(_comparer, Conversion)
             );
             RegisterForAutoRemoveDeadItems();
         }
@@ -74,7 +72,7 @@ namespace Theraot.Collections.ThreadSafe
             _comparer = EqualityComparerHelper<T>.Default;
             _wrapped = new SetBucket<TNeedle>
             (
-                new ConversionEqualityComparer<TNeedle, T>(_comparer, input => input.Value)
+                new ConversionEqualityComparer<TNeedle, T>(_comparer, Conversion)
             );
             if (autoRemoveDeadItems)
             {
@@ -116,7 +114,7 @@ namespace Theraot.Collections.ThreadSafe
             _comparer = comparer ?? EqualityComparerHelper<T>.Default;
             _wrapped = new SetBucket<TNeedle>
             (
-                new ConversionEqualityComparer<TNeedle, T>(_comparer, input => input.Value)
+                new ConversionEqualityComparer<TNeedle, T>(_comparer, Conversion)
             );
             if (autoRemoveDeadItems)
             {
@@ -286,7 +284,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     if (input.IsAlive)
                     {
-                        return predicate (input.Value);
+                        return predicate(input.Value);
                     }
                     else
                     {
@@ -334,6 +332,18 @@ namespace Theraot.Collections.ThreadSafe
         protected virtual WeakSet<T, TNeedle> OnClone()
         {
             return new WeakSet<T, TNeedle>(this as IEnumerable<T>, _comparer);
+        }
+
+        private static T Conversion(TNeedle input)
+        {
+            if (ReferenceEquals(input, null))
+            {
+                return null;
+            }
+            else
+            {
+                return input.Value;
+            }
         }
 
         private void GarbageCollected(object sender, EventArgs e)

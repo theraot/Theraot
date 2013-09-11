@@ -2,9 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using Theraot.Collections;
 using Theraot.Collections.Specialized;
-using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
 using Theraot.Threading;
 using Theraot.Threading.Needles;
@@ -26,7 +24,7 @@ namespace Theraot.Collections.ThreadSafe
             _comparer = EqualityComparerHelper<TKey>.Default;
             _wrapped = new HashBucket<TNeedle, TValue>
             (
-                new ConversionEqualityComparer<TNeedle, TKey>(_comparer, input => input.Value)
+                new ConversionEqualityComparer<TNeedle, TKey>(_comparer, Conversion)
             );
             RegisterForAutoRemoveDeadItems();
         }
@@ -64,7 +62,7 @@ namespace Theraot.Collections.ThreadSafe
             _comparer = comparer ?? EqualityComparerHelper<TKey>.Default;
             _wrapped = new HashBucket<TNeedle, TValue>
             (
-                new ConversionEqualityComparer<TNeedle, TKey>(_comparer, input => input.Value)
+                new ConversionEqualityComparer<TNeedle, TKey>(_comparer, Conversion)
             );
             RegisterForAutoRemoveDeadItems();
         }
@@ -74,7 +72,7 @@ namespace Theraot.Collections.ThreadSafe
             _comparer = EqualityComparerHelper<TKey>.Default;
             _wrapped = new HashBucket<TNeedle, TValue>
             (
-                new ConversionEqualityComparer<TNeedle, TKey>(_comparer, input => input.Value)
+                new ConversionEqualityComparer<TNeedle, TKey>(_comparer, Conversion)
             );
             if (autoRemoveDeadItems)
             {
@@ -116,7 +114,7 @@ namespace Theraot.Collections.ThreadSafe
             _comparer = comparer ?? EqualityComparerHelper<TKey>.Default;
             _wrapped = new HashBucket<TNeedle, TValue>
             (
-                new ConversionEqualityComparer<TNeedle, TKey>(_comparer, input => input.Value)
+                new ConversionEqualityComparer<TNeedle, TKey>(_comparer, Conversion)
             );
             if (autoRemoveDeadItems)
             {
@@ -314,6 +312,18 @@ namespace Theraot.Collections.ThreadSafe
         protected virtual WeakHashBucket<TKey, TValue, TNeedle> OnClone()
         {
             return new WeakHashBucket<TKey, TValue, TNeedle>(this as IEnumerable<KeyValuePair<TKey, TValue>>, _comparer);
+        }
+
+        private static TKey Conversion(TNeedle input)
+        {
+            if (ReferenceEquals(input, null))
+            {
+                return null;
+            }
+            else
+            {
+                return input.Value;
+            }
         }
 
         private void GarbageCollected(object sender, EventArgs e)
