@@ -77,7 +77,11 @@ namespace Theraot.Threading.Needles
                             {
                                 foreach (var resource in _writeLog)
                                 {
-                                    resource.Key.Commit();
+                                    if (!resource.Key.Commit())
+                                    {
+                                        //unexpected
+                                        return false;
+                                    }
                                 }
                                 return true;
                             }
