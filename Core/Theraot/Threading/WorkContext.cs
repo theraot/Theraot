@@ -14,6 +14,7 @@ namespace Theraot.Threading
 
         private static int _lastId;
         private int _dedidatedThreadCount;
+        private int _dedidatedThreadMax;
         private bool _disposable;
         private AutoResetEvent _event;
         private int _id;
@@ -68,11 +69,12 @@ namespace Theraot.Threading
             }
             else
             {
+                _dedidatedThreadMax = dedicatedThreads;
                 _works = new QueueBucket<Work>(initialWorkCapacity);
                 Converter<int, Thread> valueFactory = null;
                 if (StringHelper.IsNullOrWhiteSpace(name))
                 {
-                    if (dedicatedThreads == 1)
+                    if (_dedidatedThreadMax == 1)
                     {
                         valueFactory = input => new Thread(DoWorks)
                         {
@@ -80,7 +82,7 @@ namespace Theraot.Threading
                             IsBackground = true
                         };
                     }
-                    else if (dedicatedThreads > 1)
+                    else if (_dedidatedThreadMax > 1)
                     {
                         valueFactory = input => new Thread(DoWorks)
                         {
@@ -91,7 +93,7 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    if (dedicatedThreads == 1)
+                    if (_dedidatedThreadMax == 1)
                     {
                         valueFactory = input => new Thread(DoWorks)
                         {
@@ -99,7 +101,7 @@ namespace Theraot.Threading
                             IsBackground = true
                         };
                     }
-                    else if (dedicatedThreads > 1)
+                    else if (_dedidatedThreadMax > 1)
                     {
                         valueFactory = input => new Thread(DoWorks)
                         {
@@ -243,20 +245,21 @@ namespace Theraot.Threading
         private void ActivateDedicatedThreads()
         {
             var threadIndex = Interlocked.Increment(ref _dedidatedThreadCount) - 1;
-            if (threadIndex < _threads.Capacity)
+            if (threadIndex < _dedidatedThreadMax)
             {
                 Thread thread = _threads.Get(threadIndex);
                 thread.Start();
             }
             else
             {
-                Thread.VolatileWrite(ref _dedidatedThreadCount, _threads.Capacity);
+                Thread.VolatileWrite(ref _dedidatedThreadCount, _dedidatedThreadMax);
                 if (Thread.VolatileRead(ref _workingDedicatedThreadCount) < _threads.Count)
                 {
                     _event.Set();
                 }
             }
         }
+
         private void DisposeExtracted()
         {
             try
