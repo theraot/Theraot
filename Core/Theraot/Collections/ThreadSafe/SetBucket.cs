@@ -387,7 +387,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     if (predicate(value))
                     {
-                        if (entries.Remove(value) != -1)
+                        if (RemoveExtracted(value, entries))
                         {
                             result++;
                         }
