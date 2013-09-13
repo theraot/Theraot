@@ -420,7 +420,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     if (predicate(key))
                     {
-                        if (entries.Remove(key) != -1)
+                        if (RemoveExtracted(key, entries))
                         {
                             result++;
                         }

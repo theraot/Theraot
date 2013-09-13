@@ -312,8 +312,10 @@ namespace System.Collections.Generic
                 {
                     if (match(item.Key))
                     {
-                        _wrapped.Remove(item.Key);
-                        removeCount++;
+                        if (_wrapped.Remove(item.Key))
+                        {
+                            removeCount++;
+                        }
                     }
                 }
                 return removeCount;
