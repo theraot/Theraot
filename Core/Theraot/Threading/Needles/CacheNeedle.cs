@@ -67,6 +67,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
         bool IExpected.IsCanceled
         {
             get
@@ -75,6 +76,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
         bool IExpected.IsFaulted
         {
             get

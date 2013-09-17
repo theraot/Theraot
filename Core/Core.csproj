@@ -325,7 +325,6 @@
       <DependentUpon>ReadOnlyDisposableNeedle.disposable.tt</DependentUpon>
     </Compile>
     <Compile Include="Theraot\Threading\Needles\ReadOnlyNeedle.cs" />
-    <Compile Include="Theraot\Threading\Needles\SpecialNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\StructNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\Transact.cs" />
     <Compile Include="Theraot\Threading\Needles\Transact.disposable.cs" />

@@ -10,6 +10,8 @@ namespace Theraot.Threading.Needles
     {
         private int _isCompleted;
         private Func<T> _valueFactory;
+
+        //Leaking ManualResetEvent
         private StructNeedle<ManualResetEvent> _waitHandle;
 
         public LazyNeedle(Func<T> valueFactory)
@@ -32,6 +34,7 @@ namespace Theraot.Threading.Needles
                 };
         }
 
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
         bool IExpected.IsCanceled
         {
             get
@@ -40,6 +43,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
         bool IExpected.IsFaulted
         {
             get
@@ -48,6 +52,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns null")]
         Exception IPromise.Error
         {
             get

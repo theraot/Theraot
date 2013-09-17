@@ -191,7 +191,7 @@ namespace Theraot.Threading.Needles
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
-        protected void Allocate(T value, bool trackResurrection)
+        private void Allocate(T value, bool trackResurrection)
         {
             var suspention = SuspendDisposal();
             if (ReferenceEquals(suspention, null))
@@ -227,7 +227,7 @@ namespace Theraot.Threading.Needles
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
-        protected virtual GCHandle GetNewHandle(T value, bool trackResurrection)
+        private GCHandle GetNewHandle(T value, bool trackResurrection)
         {
             return GCHandle.Alloc(value, trackResurrection ? GCHandleType.WeakTrackResurrection : GCHandleType.Weak);
         }

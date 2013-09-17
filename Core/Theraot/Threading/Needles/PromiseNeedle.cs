@@ -176,7 +176,7 @@ namespace Theraot.Threading.Needles
 
         public override string ToString()
         {
-            return string.Format("{Promise: {0}}", _internal.ToString());
+            return string.Format("{{Promise: {0}}}", _internal.ToString());
         }
 
         public void Wait()
@@ -222,13 +222,15 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        [Serializable]
         private class Internal : IPromised<T>, IObserver<T>, IReadOnlyNeedle<T>, ICacheNeedle<T>, IEquatable<Internal>
         {
             private Exception _error;
             private int _isCompleted;
             private T _target;
 
-            private ManualResetEvent _waitHandle;
+            //Leaking ManualResetEvent
+            private StructNeedle<ManualResetEvent> _waitHandle;
 
             public Internal()
             {
@@ -362,7 +364,7 @@ namespace Theraot.Threading.Needles
                 _target = default(T);
                 _error = null;
                 Thread.VolatileWrite(ref _isCompleted, 1);
-                _waitHandle.Set();
+                _waitHandle.Value.Set();
             }
 
             public void OnError(Exception error)
@@ -370,7 +372,7 @@ namespace Theraot.Threading.Needles
                 _target = default(T);
                 _error = error;
                 Thread.VolatileWrite(ref _isCompleted, 1);
-                _waitHandle.Set();
+                _waitHandle.Value.Set();
             }
 
             public void OnNext(T value)
@@ -378,13 +380,13 @@ namespace Theraot.Threading.Needles
                 _target = value;
                 _error = null;
                 Thread.VolatileWrite(ref _isCompleted, 1);
-                _waitHandle.Set();
+                _waitHandle.Value.Set();
             }
 
             public void Release()
             {
                 Thread.VolatileWrite(ref _isCompleted, 0);
-                _waitHandle.Reset();
+                _waitHandle.Value.Reset();
                 _target = default(T);
                 _error = null;
             }
@@ -410,7 +412,7 @@ namespace Theraot.Threading.Needles
 
             public void Wait()
             {
-                _waitHandle.WaitOne();
+                _waitHandle.Value.WaitOne();
             }
         }
     }
@@ -495,7 +497,7 @@ namespace Theraot.Threading.Needles
 
         public override string ToString()
         {
-            return string.Format("{Promise: {0}}", _internal.ToString());
+            return string.Format("{{Promise: {0}}}", _internal.ToString());
         }
 
         public void Wait()
@@ -503,11 +505,14 @@ namespace Theraot.Threading.Needles
             _internal.Wait();
         }
 
+        [Serializable]
         private class Internal : IPromised
         {
             private Exception _error;
             private int _isCompleted;
-            private ManualResetEvent _waitHandle;
+
+            //Leaking ManualResetEvent
+            private StructNeedle<ManualResetEvent> _waitHandle;
 
             public Internal()
             {
@@ -596,20 +601,20 @@ namespace Theraot.Threading.Needles
             {
                 _error = null;
                 Thread.VolatileWrite(ref _isCompleted, 1);
-                _waitHandle.Set();
+                _waitHandle.Value.Set();
             }
 
             public void OnError(Exception error)
             {
                 _error = error;
                 Thread.VolatileWrite(ref _isCompleted, 1);
-                _waitHandle.Set();
+                _waitHandle.Value.Set();
             }
 
             public void Release()
             {
                 Thread.VolatileWrite(ref _isCompleted, 0);
-                _waitHandle.Reset();
+                _waitHandle.Value.Reset();
                 _error = null;
             }
 
@@ -634,7 +639,7 @@ namespace Theraot.Threading.Needles
 
             public void Wait()
             {
-                _waitHandle.WaitOne();
+                _waitHandle.Value.WaitOne();
             }
         }
     }
