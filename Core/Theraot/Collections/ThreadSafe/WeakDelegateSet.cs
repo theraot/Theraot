@@ -11,7 +11,7 @@ using Theraot.Threading.Needles;
 namespace Theraot.Collections.ThreadSafe
 {
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public sealed class WeakDelegateSet : WeakSet<Delegate, WeakDelegateNeedle>
+    public sealed class WeakDelegateSet : WeakSetBucket<Delegate, WeakDelegateNeedle>
     {
         private readonly Action<object[]> _invoke;
 
@@ -110,7 +110,7 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
-        protected override WeakSet<Delegate, WeakDelegateNeedle> OnClone()
+        protected override WeakSetBucket<Delegate, WeakDelegateNeedle> OnClone()
         {
             return Clone();
         }
