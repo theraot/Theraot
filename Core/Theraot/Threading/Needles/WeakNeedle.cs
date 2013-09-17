@@ -196,6 +196,7 @@ namespace Theraot.Threading.Needles
             var suspention = SuspendDisposal();
             if (ReferenceEquals(suspention, null))
             {
+                ReleaseExtracted();
                 _handle = GetNewHandle(value, trackResurrection);
                 if (Interlocked.CompareExchange(ref _managedDisposal, 0, 1) == 1)
                 {
@@ -207,11 +208,11 @@ namespace Theraot.Threading.Needles
             {
                 using (suspention)
                 {
-                    var newHandle = GetNewHandle(value, trackResurrection);
-                    GCHandle oldHandle = _handle;
-                    _handle = newHandle;
+                    var oldHandle = _handle;
+                    _handle = GetNewHandle(value, trackResurrection);
                     if (oldHandle.IsAllocated)
                     {
+                        oldHandle.Free();
                         try
                         {
                             oldHandle.Free();
@@ -328,20 +329,28 @@ namespace Theraot.Threading.Needles
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
         private bool IsAliveExtracted()
         {
-            if (!_handle.IsAllocated)
-            {
-                return false;
-            }
-            else
+            if (_handle.IsAllocated)
             {
                 try
                 {
-                    return !ReferenceEquals(_handle.Target, null);
+                    if (ReferenceEquals(_handle.Target, null))
+                    {
+                        _handle.Free();
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
                 }
                 catch (InvalidOperationException)
                 {
                     return false;
                 }
+            }
+            else
+            {
+                return false;
             }
         }
 
@@ -351,6 +360,14 @@ namespace Theraot.Threading.Needles
             if (_handle.IsAllocated)
             {
                 _handle.Free();
+                try
+                {
+                    _handle.Free();
+                }
+                catch (InvalidOperationException)
+                {
+                    //Empty
+                }
             }
         }
 
