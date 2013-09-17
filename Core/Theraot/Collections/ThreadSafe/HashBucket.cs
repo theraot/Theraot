@@ -249,8 +249,8 @@ namespace Theraot.Collections.ThreadSafe
                         else
                         {
                             found = previous.Value;
-                            return found;
                         }
+                        return found;
                     }
                 }
                 else
@@ -452,7 +452,6 @@ namespace Theraot.Collections.ThreadSafe
             for (int index = 0; index < entries.Capacity; index++)
             {
             retry:
-                bool _retry = false;
                 revision = _revision;
                 if (IsOperationSafe())
                 {
@@ -487,7 +486,7 @@ namespace Theraot.Collections.ThreadSafe
                         }
                         else
                         {
-                            _retry = true;
+                            goto retry;
                         }
                     }
                 }
@@ -495,10 +494,6 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     CooperativeGrow();
                     goto retry;
-                }
-                if (_retry)
-                {
-                    goto again;
                 }
             }
             return removed;
@@ -526,7 +521,6 @@ namespace Theraot.Collections.ThreadSafe
             for (int index = 0; index < entries.Capacity; index++)
             {
             retry:
-                bool _retry = false;
                 revision = _revision;
                 if (IsOperationSafe())
                 {
@@ -562,7 +556,7 @@ namespace Theraot.Collections.ThreadSafe
                         }
                         else
                         {
-                            _retry = true;
+                            goto retry;
                         }
                     }
                 }
@@ -570,10 +564,6 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     CooperativeGrow();
                     goto retry;
-                }
-                if (_retry)
-                {
-                    goto again;
                 }
             }
         }
