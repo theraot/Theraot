@@ -236,6 +236,60 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        /// <summary>
+        /// Attempts to removes the specified item at the default index.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// The index where the item was set; -1 otherwise.
+        /// </returns>
+        public int Remove(T item, out T value)
+        {
+            return Remove(item, 0, out value);
+        }
+
+        /// <summary>
+        /// Attempts to removes the specified item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="offset">The offset from the default index.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// The index where the item was set; -1 otherwise.
+        /// </returns>
+        public int Remove(T item, int offset, out T value)
+        {
+            int index = Index(item, offset);
+            T entry;
+            if (_entries.TryGet(index, out entry))
+            {
+                if (_comparer.Equals(entry, item))
+                {
+                    if (_entries.RemoveAt(index))
+                    {
+                        value = entry;
+                        return index;
+                    }
+                    else
+                    {
+                        value = default(T);
+                        return -1;
+                    }
+                }
+                else
+                {
+                    value = default(T);
+                    return -1;
+                }
+            }
+            else
+            {
+                value = default(T);
+                return -1;
+            }
+        }
+
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();

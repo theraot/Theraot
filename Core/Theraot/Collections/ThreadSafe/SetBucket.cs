@@ -358,6 +358,52 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
+        /// Removes the specified item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified item was removed; otherwise, <c>false</c>.
+        /// </returns>
+        public bool Remove(T item, out T value)
+        {
+            bool result = false;
+            int revision;
+            while (true)
+            {
+                revision = _revision;
+                if (IsOperationSafe())
+                {
+                    bool isOperationSafe;
+                    var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
+                    try
+                    {
+                        if (RemoveExtracted(item, entries, out value))
+                        {
+                            result = true;
+                        }
+                    }
+                    finally
+                    {
+                        isOperationSafe = IsOperationSafe(entries, revision);
+                    }
+                    if (isOperationSafe)
+                    {
+                        if (result)
+                        {
+                            Interlocked.Decrement(ref _count);
+                        }
+                        return result;
+                    }
+                }
+                else
+                {
+                    CooperativeGrow();
+                }
+            }
+        }
+
+        /// <summary>
         /// Removes the items where the value satisfies the predicate.
         /// </summary>
         /// <param name="predicate">The predicate.</param>
@@ -757,7 +803,7 @@ namespace Theraot.Collections.ThreadSafe
                 return false;
             }
         }
-
+        
         private bool RemoveExtracted(T item, FixedSizeSetBucket<T> entries)
         {
             if (entries != null)
@@ -765,6 +811,22 @@ namespace Theraot.Collections.ThreadSafe
                 for (int attempts = 0; attempts < _maxProbing; attempts++)
                 {
                     if (entries.Remove(item, attempts) != -1)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private bool RemoveExtracted(T item, FixedSizeSetBucket<T> entries, out T value)
+        {
+            value = default(T);
+            if (entries != null)
+            {
+                for (int attempts = 0; attempts < _maxProbing; attempts++)
+                {
+                    if (entries.Remove(item, attempts, out value) != -1)
                     {
                         return true;
                     }
