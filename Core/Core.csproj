@@ -298,6 +298,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CacheNeedle.disposable.tt</DependentUpon>
     </Compile>
+    <Compile Include="Theraot\Threading\Needles\PromiseNeedle1.cs" />
     <Compile Include="Theraot\Threading\Needles\DefaultNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\FutureDisposableNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\FutureNeedle.cs" />
