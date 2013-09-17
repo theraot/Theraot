@@ -462,15 +462,16 @@ namespace Theraot.Collections.ThreadSafe
                     }
                     try
                     {
-                        if (entries.TryGet(index, out key, out value))
+                        if (entries.TryGet(index, out key, out value) && predicate(key))
                         {
-                            if (predicate(key))
+                            if (RemoveExtracted(key, entries))
                             {
-                                if (RemoveExtracted(key, entries))
-                                {
-                                    result = true;
-                                }
+                                result = true;
                             }
+                        }
+                        else
+                        {
+                            continue;
                         }
                     }
                     finally
@@ -531,15 +532,16 @@ namespace Theraot.Collections.ThreadSafe
                     }
                     try
                     {
-                        if (entries.TryGet(index, out key, out value))
+                        if (entries.TryGet(index, out key, out value) && predicate(key))
                         {
-                            if (predicate(key))
+                            if (RemoveExtracted(key, entries))
                             {
-                                if (RemoveExtracted(key, entries))
-                                {
-                                    result = true;
-                                }
+                                result = true;
                             }
+                        }
+                        else
+                        {
+                            continue;
                         }
                     }
                     finally
