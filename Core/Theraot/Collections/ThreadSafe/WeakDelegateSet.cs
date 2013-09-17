@@ -102,8 +102,9 @@ namespace Theraot.Collections.ThreadSafe
         public bool Remove(MethodInfo method, object target)
         {
             Check.NotNullArgument(method, "method");
-            foreach (var item in Extensions.RemoveWhereEnumerable(Wrapped, _item => _item.Equals(method, target)))
+            foreach (var item in Wrapped.RemoveWhereEnumerable(_item => _item.Equals(method, target)))
             {
+                item.Dispose();
                 return true;
             }
             return false;

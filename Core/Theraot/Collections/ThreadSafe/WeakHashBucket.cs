@@ -175,7 +175,12 @@ namespace Theraot.Collections.ThreadSafe
 
         public void Clear()
         {
-            _wrapped.Clear();
+            var displaced = _wrapped.ClearEnumerable();
+            foreach (var item in displaced)
+            {
+                item.Key.Dispose();
+            }
+            BucketHelper.Recycle(ref displaced);
         }
 
         public WeakHashBucket<TKey, TValue, TNeedle> Clone()
@@ -231,7 +236,18 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool Remove(TKey key)
         {
-            return _wrapped.Remove(NeedleHelper.CreateNeedle<TKey, TNeedle>(key));
+            TNeedle pass = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
+            TValue found;
+            if (_wrapped.Remove(pass, out found))
+            {
+                pass.Dispose();
+                return true;
+            }
+            else
+            {
+                pass.Dispose();
+                return false;
+            }
         }
 
         public int RemoveDeadItems()
