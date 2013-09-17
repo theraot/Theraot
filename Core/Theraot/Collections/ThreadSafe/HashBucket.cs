@@ -444,13 +444,13 @@ namespace Theraot.Collections.ThreadSafe
         {
             TKey key;
             TValue value;
-            bool result = false;
             int removed = 0;
             int revision;
         again:
             var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
             for (int index = 0; index < entries.Capacity; index++)
             {
+                bool result = false;
             retry:
                 revision = _revision;
                 if (IsOperationSafe())
@@ -513,13 +513,13 @@ namespace Theraot.Collections.ThreadSafe
         {
             TKey key;
             TValue value;
-            bool result = false;
             int removed = 0;
             int revision;
         again:
             var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
             for (int index = 0; index < entries.Capacity; index++)
             {
+                bool result = false;
             retry:
                 revision = _revision;
                 if (IsOperationSafe())
