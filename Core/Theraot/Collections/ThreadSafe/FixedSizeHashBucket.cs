@@ -261,6 +261,57 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
+        /// Attempts to removes the specified key at the default index.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        /// The index where the value was set; -1 otherwise.
+        /// </returns>
+        public int Remove(TKey key, out TValue value)
+        {
+            return Remove(key, 0, out value);
+        }
+
+        /// <summary>
+        /// Attempts to removes the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="offset">The offset from the default index.</param>
+        /// <returns>The index where the value was set; -1 otherwise.</returns>
+        public int Remove(TKey key, int offset, out TValue value)
+        {
+            int index = Index(key, offset);
+            KeyValuePair<TKey, TValue> entry;
+            if (_entries.TryGet(index, out entry))
+            {
+                if (_keyComparer.Equals(entry.Key, key))
+                {
+                    if (_entries.RemoveAt(index))
+                    {
+                        value = entry.Value;
+                        return index;
+                    }
+                    else
+                    {
+                        value = default(TValue);
+                        return -1;
+                    }
+                }
+                else
+                {
+                    value = default(TValue);
+                    return -1;
+                }
+            }
+            else
+            {
+                value = default(TValue);
+                return -1;
+            }
+        }
+
+        /// <summary>
         /// Sets the value associated with the specified key.
         /// </summary>
         /// <param name="key">The key.</param>

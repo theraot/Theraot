@@ -165,9 +165,9 @@ namespace Theraot.Collections.ThreadSafe
                 revision = _revision;
                 if (IsOperationSafe())
                 {
+                    bool isOperationSafe;
                     bool isCollision = false;
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
-                    bool done = false;
                     try
                     {
                         if (AddExtracted(key, value, entries, out isCollision) != -1)
@@ -177,34 +177,30 @@ namespace Theraot.Collections.ThreadSafe
                     }
                     finally
                     {
-                        var isOperationSafe = IsOperationSafe(entries, revision);
-                        if (isOperationSafe)
+                        isOperationSafe = IsOperationSafe(entries, revision);
+                    }
+                    if (isOperationSafe)
+                    {
+                        if (result)
                         {
-                            if (result)
+                            Interlocked.Increment(ref _count);
+                            return;
+                        }
+                        else
+                        {
+                            if (isCollision)
                             {
-                                Interlocked.Increment(ref _count);
-                                done = true;
+                                var oldStatus = Interlocked.CompareExchange(ref _status, (int)BucketStatus.GrowRequested, (int)BucketStatus.Free);
+                                if (oldStatus == (int)BucketStatus.Free)
+                                {
+                                    _revision++;
+                                }
                             }
                             else
                             {
-                                if (isCollision)
-                                {
-                                    var oldStatus = Interlocked.CompareExchange(ref _status, (int)BucketStatus.GrowRequested, (int)BucketStatus.Free);
-                                    if (oldStatus == (int)BucketStatus.Free)
-                                    {
-                                        _revision++;
-                                    }
-                                }
-                                else
-                                {
-                                    throw new ArgumentException("the key is already present");
-                                }
+                                throw new ArgumentException("the key is already present");
                             }
                         }
-                    }
-                    if (done)
-                    {
-                        return;
                     }
                 }
                 else
@@ -231,8 +227,8 @@ namespace Theraot.Collections.ThreadSafe
                 revision = _revision;
                 if (IsOperationSafe())
                 {
+                    bool isOperationSafe;
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
-                    bool done = false;
                     try
                     {
                         if (CharyAddExtracted(key, value, entries, out previous) != -1)
@@ -242,24 +238,19 @@ namespace Theraot.Collections.ThreadSafe
                     }
                     finally
                     {
-                        var isOperationSafe = IsOperationSafe(entries, revision);
-                        if (isOperationSafe)
-                        {
-                            if (result)
-                            {
-                                Interlocked.Increment(ref _count);
-                                done = true;
-                            }
-                            else
-                            {
-                                done = true;
-                                found = previous.Value;
-                            }
-                        }
+                        isOperationSafe = IsOperationSafe(entries, revision);
                     }
-                    if (done)
+                    if (isOperationSafe)
                     {
-                        return found;
+                        if (result)
+                        {
+                            Interlocked.Increment(ref _count);
+                        }
+                        else
+                        {
+                            found = previous.Value;
+                            return found;
+                        }
                     }
                 }
                 else
@@ -276,10 +267,10 @@ namespace Theraot.Collections.ThreadSafe
         {
             BucketHelper.Recycle(ref _entriesOld);
             var displaced = Interlocked.Exchange(ref _entriesNew, new FixedSizeHashBucket<TKey, TValue>(INT_DefaultCapacity, _keyComparer));
-            BucketHelper.Recycle(ref displaced);
             Thread.VolatileWrite(ref _status, (int)BucketStatus.Free);
             Thread.VolatileWrite(ref _count, 0);
             _revision++;
+            BucketHelper.Recycle(ref displaced);
         }
 
         /// <summary>
@@ -298,8 +289,8 @@ namespace Theraot.Collections.ThreadSafe
                 revision = _revision;
                 if (IsOperationSafe())
                 {
+                    bool isOperationSafe;
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
-                    bool done = false;
                     try
                     {
                         if (ContainsKeyExtracted(key, entries))
@@ -309,13 +300,9 @@ namespace Theraot.Collections.ThreadSafe
                     }
                     finally
                     {
-                        var isOperationSafe = IsOperationSafe(entries, revision);
-                        if (isOperationSafe)
-                        {
-                            done = true;
-                        }
+                        isOperationSafe = IsOperationSafe(entries, revision);
                     }
-                    if (done)
+                    if (isOperationSafe)
                     {
                         return result;
                     }
@@ -368,8 +355,8 @@ namespace Theraot.Collections.ThreadSafe
                 revision = _revision;
                 if (IsOperationSafe())
                 {
+                    bool isOperationSafe;
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
-                    bool done = false;
                     try
                     {
                         if (RemoveExtracted(key, entries))
@@ -379,18 +366,60 @@ namespace Theraot.Collections.ThreadSafe
                     }
                     finally
                     {
-                        var isOperationSafe = IsOperationSafe(entries, revision);
-                        if (isOperationSafe)
+                        isOperationSafe = IsOperationSafe(entries, revision);
+                    }
+                    if (isOperationSafe)
+                    {
+                        if (result)
                         {
-                            if (result)
-                            {
-                                Interlocked.Decrement(ref _count);
-                            }
-                            done = true;
+                            Interlocked.Decrement(ref _count);
+                        }
+                        return result;
+                    }
+                }
+                else
+                {
+                    CooperativeGrow();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Removes the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified key was removed; otherwise, <c>false</c>.
+        /// </returns>
+        public bool Remove(TKey key, out TValue value)
+        {
+            bool result = false;
+            int revision;
+            while (true)
+            {
+                revision = _revision;
+                if (IsOperationSafe())
+                {
+                    bool isOperationSafe;
+                    var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
+                    try
+                    {
+                        if (RemoveExtracted(key, entries, out value))
+                        {
+                            result = true;
                         }
                     }
-                    if (done)
+                    finally
                     {
+                        isOperationSafe = IsOperationSafe(entries, revision);
+                    }
+                    if (isOperationSafe)
+                    {
+                        if (result)
+                        {
+                            Interlocked.Decrement(ref _count);
+                        }
                         return result;
                     }
                 }
@@ -408,26 +437,145 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         /// The number or removed pairs of keys and associated values.
         /// </returns>
+        /// <remarks>
+        /// It is not guaranteed that all the pairs of keys and associated values that satisfies the predicate will be removed.
+        /// </remarks>
         public int RemoveWhereKey(Predicate<TKey> predicate)
         {
             TKey key;
             TValue value;
-            int result = 0;
+            bool result = false;
+            int removed = 0;
+            int revision;
+        again:
             var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
             for (int index = 0; index < entries.Capacity; index++)
             {
-                if (entries.TryGet(index, out key, out value))
+            retry:
+                bool _retry = false;
+                revision = _revision;
+                if (IsOperationSafe())
                 {
-                    if (predicate(key))
+                    bool isOperationSafe;
+                    if (ThreadingHelper.VolatileRead(ref _entriesNew) != entries)
                     {
-                        if (RemoveExtracted(key, entries))
+                        goto again;
+                    }
+                    try
+                    {
+                        if (entries.TryGet(index, out key, out value))
                         {
-                            result++;
+                            if (predicate(key))
+                            {
+                                if (RemoveExtracted(key, entries))
+                                {
+                                    result = true;
+                                }
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        isOperationSafe = IsOperationSafe(entries, revision);
+                    }
+                    if (isOperationSafe)
+                    {
+                        if (result)
+                        {
+                            Interlocked.Decrement(ref _count);
+                            removed++;
+                        }
+                        else
+                        {
+                            _retry = true;
                         }
                     }
                 }
+                else
+                {
+                    CooperativeGrow();
+                    goto retry;
+                }
+                if (_retry)
+                {
+                    goto again;
+                }
             }
-            return result;
+            return removed;
+        }
+
+        /// <summary>
+        /// Removes the keys and associated values where the key satisfies the predicate.
+        /// </summary>
+        /// <param name="predicate">The predicate.</param>
+        /// <returns>
+        /// An <see cref="IEnumerable{TValue}" /> that allows to iterate over the removed pairs of keys and associated values.
+        /// </returns>
+        /// <remarks>
+        /// It is not guaranteed that all the pairs of keys and associated values that satisfies the predicate will be removed.
+        /// </remarks>
+        public IEnumerable<TValue> RemoveWhereKeyEnumerable(Predicate<TKey> predicate)
+        {
+            TKey key;
+            TValue value;
+            bool result = false;
+            int removed = 0;
+            int revision;
+        again:
+            var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
+            for (int index = 0; index < entries.Capacity; index++)
+            {
+            retry:
+                bool _retry = false;
+                revision = _revision;
+                if (IsOperationSafe())
+                {
+                    bool isOperationSafe;
+                    if (ThreadingHelper.VolatileRead(ref _entriesNew) != entries)
+                    {
+                        goto again;
+                    }
+                    try
+                    {
+                        if (entries.TryGet(index, out key, out value))
+                        {
+                            if (predicate(key))
+                            {
+                                if (RemoveExtracted(key, entries))
+                                {
+                                    result = true;
+                                }
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        isOperationSafe = IsOperationSafe(entries, revision);
+                    }
+                    if (isOperationSafe)
+                    {
+                        if (result)
+                        {
+                            Interlocked.Decrement(ref _count);
+                            removed++;
+                            yield return value;
+                        }
+                        else
+                        {
+                            _retry = true;
+                        }
+                    }
+                }
+                else
+                {
+                    CooperativeGrow();
+                    goto retry;
+                }
+                if (_retry)
+                {
+                    goto again;
+                }
+            }
         }
 
         /// <summary>
@@ -493,9 +641,9 @@ namespace Theraot.Collections.ThreadSafe
                 revision = _revision;
                 if (IsOperationSafe())
                 {
+                    bool isOperationSafe;
                     bool isCollision = false;
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
-                    bool done = false;
                     try
                     {
                         if (TryAddExtracted(key, value, entries, out isCollision) != -1)
@@ -505,34 +653,30 @@ namespace Theraot.Collections.ThreadSafe
                     }
                     finally
                     {
-                        var isOperationSafe = IsOperationSafe(entries, revision);
-                        if (isOperationSafe)
+                        isOperationSafe = IsOperationSafe(entries, revision);
+                    }
+                    if (isOperationSafe)
+                    {
+                        if (result)
                         {
-                            if (result)
+                            Interlocked.Increment(ref _count);
+                            return result;
+                        }
+                        else
+                        {
+                            if (isCollision)
                             {
-                                Interlocked.Increment(ref _count);
-                                done = true;
+                                var oldStatus = Interlocked.CompareExchange(ref _status, (int)BucketStatus.GrowRequested, (int)BucketStatus.Free);
+                                if (oldStatus == (int)BucketStatus.Free)
+                                {
+                                    _revision++;
+                                }
                             }
                             else
                             {
-                                if (isCollision)
-                                {
-                                    var oldStatus = Interlocked.CompareExchange(ref _status, (int)BucketStatus.GrowRequested, (int)BucketStatus.Free);
-                                    if (oldStatus == (int)BucketStatus.Free)
-                                    {
-                                        _revision++;
-                                    }
-                                }
-                                else
-                                {
-                                    done = true;
-                                }
+                                return result;
                             }
                         }
-                    }
-                    if (done)
-                    {
-                        return result;
                     }
                 }
                 else
@@ -562,8 +706,8 @@ namespace Theraot.Collections.ThreadSafe
                 revision = _revision;
                 if (IsOperationSafe())
                 {
+                    bool isOperationSafe;
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
-                    bool done = false;
                     try
                     {
                         TValue tmpValue;
@@ -577,13 +721,9 @@ namespace Theraot.Collections.ThreadSafe
                     }
                     finally
                     {
-                        var isOperationSafe = IsOperationSafe(entries, revision);
-                        if (isOperationSafe)
-                        {
-                            done = true;
-                        }
+                        isOperationSafe = IsOperationSafe(entries, revision);
                     }
-                    if (done)
+                    if (isOperationSafe)
                     {
                         return result;
                     }
@@ -613,8 +753,8 @@ namespace Theraot.Collections.ThreadSafe
                 revision = _revision;
                 if (IsOperationSafe())
                 {
+                    bool isOperationSafe;
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
-                    bool done = false;
                     try
                     {
                         TValue tmpValue;
@@ -626,13 +766,9 @@ namespace Theraot.Collections.ThreadSafe
                     }
                     finally
                     {
-                        var isOperationSafe = IsOperationSafe(entries, revision);
-                        if (isOperationSafe)
-                        {
-                            done = true;
-                        }
+                        isOperationSafe = IsOperationSafe(entries, revision);
                     }
-                    if (done)
+                    if (isOperationSafe)
                     {
                         return result;
                     }
@@ -642,6 +778,22 @@ namespace Theraot.Collections.ThreadSafe
                     CooperativeGrow();
                 }
             }
+        }
+
+        /// <summary>
+        /// Removes all the elements.
+        /// </summary>
+        /// <returns>
+        /// An <see cref="FixedSizeHashBucket{TKey, TValue}" /> that with the removed pairs of keys and associated values.
+        /// </returns>
+        internal FixedSizeHashBucket<TKey, TValue> ClearEnumerable()
+        {
+            BucketHelper.Recycle(ref _entriesOld);
+            var displaced = Interlocked.Exchange(ref _entriesNew, new FixedSizeHashBucket<TKey, TValue>(INT_DefaultCapacity, _keyComparer));
+            Thread.VolatileWrite(ref _status, (int)BucketStatus.Free);
+            Thread.VolatileWrite(ref _count, 0);
+            _revision++;
+            return displaced;
         }
 
         private int AddExtracted(TKey key, TValue value, FixedSizeHashBucket<TKey, TValue> entries, out bool isCollision)
@@ -866,6 +1018,22 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
+        private bool RemoveExtracted(TKey key, FixedSizeHashBucket<TKey, TValue> entries, out TValue value)
+        {
+            value = default(TValue);
+            if (entries != null)
+            {
+                for (int attempts = 0; attempts < _maxProbing; attempts++)
+                {
+                    if (entries.Remove(key, attempts, out value) != -1)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         private int SetExtracted(TKey key, TValue value, FixedSizeHashBucket<TKey, TValue> entries, out bool isNew)
         {
             isNew = false;
@@ -899,6 +1067,7 @@ namespace Theraot.Collections.ThreadSafe
             }
             return -1;
         }
+
         private bool TryGetExtracted(int index, FixedSizeHashBucket<TKey, TValue> entries, out TKey key, out TValue value)
         {
             value = default(TValue);
