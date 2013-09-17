@@ -16,7 +16,9 @@ namespace Theraot.Threading
         private readonly bool _exclusive;
         private Exception _error;
         private int _isCompleted;
-        private ManualResetEvent _waitHandle;
+
+        //Leaking ManualResetEvent
+        private StructNeedle<ManualResetEvent> _waitHandle;
 
         internal Work(Action action, bool exclusive, WorkContext context)
         {
@@ -91,13 +93,13 @@ namespace Theraot.Threading
             {
                 _action.Invoke();
                 Thread.VolatileWrite(ref _isCompleted, 1);
-                _waitHandle.Set();
+                _waitHandle.Value.Set();
             }
             catch (Exception exception)
             {
                 _error = exception;
                 Thread.VolatileWrite(ref _isCompleted, 1);
-                _waitHandle.Set();
+                _waitHandle.Value.Set();
             }
             finally
             {
