@@ -190,48 +190,6 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
-        private void Allocate(T value, bool trackResurrection)
-        {
-            var suspention = SuspendDisposal();
-            if (ReferenceEquals(suspention, null))
-            {
-                ReleaseExtracted();
-                _handle = GetNewHandle(value, trackResurrection);
-                if (Interlocked.CompareExchange(ref _managedDisposal, 0, 1) == 1)
-                {
-                    GC.ReRegisterForFinalize(this);
-                }
-                UnDispose();
-            }
-            else
-            {
-                using (suspention)
-                {
-                    var oldHandle = _handle;
-                    _handle = GetNewHandle(value, trackResurrection);
-                    if (oldHandle.IsAllocated)
-                    {
-                        oldHandle.Free();
-                        try
-                        {
-                            oldHandle.Free();
-                        }
-                        catch (InvalidOperationException)
-                        {
-                            //Empty
-                        }
-                    }
-                }
-            }
-        }
-
-        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
-        private GCHandle GetNewHandle(T value, bool trackResurrection)
-        {
-            return GCHandle.Alloc(value, trackResurrection ? GCHandleType.WeakTrackResurrection : GCHandleType.Weak);
-        }
-
         private static bool EqualsExtracted(WeakNeedle<T> left, WeakNeedle<T> right)
         {
             if (ReferenceEquals(left, null))
@@ -324,6 +282,48 @@ namespace Theraot.Threading.Needles
             {
                 return right.IsAlive;
             }
+        }
+
+        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
+        private void Allocate(T value, bool trackResurrection)
+        {
+            var suspention = SuspendDisposal();
+            if (ReferenceEquals(suspention, null))
+            {
+                ReleaseExtracted();
+                _handle = GetNewHandle(value, trackResurrection);
+                if (Interlocked.CompareExchange(ref _managedDisposal, 0, 1) == 1)
+                {
+                    GC.ReRegisterForFinalize(this);
+                }
+                UnDispose();
+            }
+            else
+            {
+                using (suspention)
+                {
+                    var oldHandle = _handle;
+                    _handle = GetNewHandle(value, trackResurrection);
+                    if (oldHandle.IsAllocated)
+                    {
+                        oldHandle.Free();
+                        try
+                        {
+                            oldHandle.Free();
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            //Empty
+                        }
+                    }
+                }
+            }
+        }
+
+        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
+        private GCHandle GetNewHandle(T value, bool trackResurrection)
+        {
+            return GCHandle.Alloc(value, trackResurrection ? GCHandleType.WeakTrackResurrection : GCHandleType.Weak);
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]

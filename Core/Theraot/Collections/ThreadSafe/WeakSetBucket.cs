@@ -174,7 +174,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public void Clear()
         {
-            var displaced =  _wrapped.ClearEnumerable();
+            var displaced = _wrapped.ClearEnumerable();
             foreach (var item in displaced)
             {
                 item.Dispose();

@@ -15,6 +15,7 @@ namespace Theraot.Collections.ThreadSafe
     {
         private Bucket<LazyNeedle<T>> _entries;
         private Converter<int, T> _valueFactory;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Bucket{T}" /> class.
         /// </summary>

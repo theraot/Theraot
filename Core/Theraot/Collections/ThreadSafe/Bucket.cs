@@ -17,6 +17,7 @@ namespace Theraot.Collections.ThreadSafe
         private readonly int _capacity;
         private int _count;
         private object[] _entries;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Bucket{T}" /> class.
         /// </summary>

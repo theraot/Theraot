@@ -1,6 +1,5 @@
 using System;
 using System.Threading;
-using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
 using Theraot.Threading.Needles;
 
@@ -43,11 +42,35 @@ namespace Theraot.Threading
             }
         }
 
+        public Exception Error
+        {
+            get
+            {
+                return _error;
+            }
+        }
+
+        public bool IsCanceled
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public bool IsCompleted
         {
             get
             {
                 return Thread.VolatileRead(ref _isCompleted) == 1;
+            }
+        }
+
+        public bool IsFaulted
+        {
+            get
+            {
+                return !ReferenceEquals(_error, null);
             }
         }
 
@@ -106,30 +129,6 @@ namespace Theraot.Threading
                 Interlocked.Exchange(ref _current, oldCurrent);
             }
         }
-
-        public Exception Error
-        {
-            get
-            {
-                return _error;
-            }
-        }
-
-        public bool IsCanceled
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        public bool IsFaulted
-        {
-            get
-            {
-                return !ReferenceEquals(_error, null);
-            }
-        }
     }
 
     public sealed partial class Work : ICloneable
@@ -145,6 +144,7 @@ namespace Theraot.Threading
                 return _id;
             }
         }
+
 #endif
     }
 }
