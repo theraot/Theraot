@@ -31,7 +31,7 @@ namespace Theraot.Threading
                 var newSlot = new LockNeedleSlot<T>(this);
                 while (_slots.Count < _slots.Capacity)
                 {
-                    var index = Interlocked.Increment(ref _current) & 32;
+                    var index = Interlocked.Increment(ref _current) & 31;
                     if (_slots.Insert(index, newSlot))
                     {
                         newSlot.Id = 1 << index;
