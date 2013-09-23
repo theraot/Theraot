@@ -32,7 +32,7 @@ namespace Theraot.Threading
             }
         }
 
-        public bool IsAlive
+        bool IReadOnlyNeedle<T>.IsAlive
         {
             get
             {
@@ -122,7 +122,7 @@ namespace Theraot.Threading
         public override string ToString()
         {
             var target = Value;
-            if (IsAlive)
+            if ((this as IReadOnlyNeedle<T>).IsAlive)
             {
                 return target.ToString();
             }

@@ -17,9 +17,12 @@ namespace Theraot.Threading
             _context = context;
         }
 
-        public bool IsAlive
+        bool IReadOnlyNeedle<T>.IsAlive
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                return !ReferenceEquals(_target, null);
+            }
         }
 
         public T Value
