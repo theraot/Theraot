@@ -292,6 +292,9 @@
     <Compile Include="Theraot\Collections\ThreadSafe\BucketStatus.cs" />
     <Compile Include="Theraot\Threading\GCMonitor.cs" />
     <Compile Include="Theraot\Threading\Guard.cs" />
+    <Compile Include="Theraot\Threading\LockNeedle.cs" />
+    <Compile Include="Theraot\Threading\LockNeedleContext.cs" />
+    <Compile Include="Theraot\Threading\LockNeedleSlot.cs" />
     <Compile Include="Theraot\Threading\Needles\CacheNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\CacheNeedle.disposable.cs">
       <AutoGen>True</AutoGen>
