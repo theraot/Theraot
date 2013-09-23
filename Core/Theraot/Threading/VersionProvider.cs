@@ -30,7 +30,7 @@ namespace Theraot.Threading
         }
 
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "By Design")]
-        public sealed class VersionToken
+        public sealed class VersionToken : IComparable<VersionToken>
         {
             private long _number;
             private VersionProvider _provider;
@@ -39,6 +39,26 @@ namespace Theraot.Threading
             internal VersionToken(VersionProvider provider)
             {
                 _provider = provider;
+            }
+
+            public int CompareTo(VersionToken other)
+            {
+                if (ReferenceEquals(other, null))
+                {
+                    return 1;
+                }
+                else
+                {
+                    var check = _target.CompareTo(other._target);
+                    if (check == 0)
+                    {
+                        return _number.CompareTo(other._number);
+                    }
+                    else
+                    {
+                        return check;
+                    }
+                }
             }
 
             public void UpdateIfNeeded(Action update)
@@ -62,9 +82,10 @@ namespace Theraot.Threading
             }
         }
 
-        private sealed class Target
+        private sealed class Target : IComparable<Target>
         {
             private long _number = long.MinValue;
+            private long _time = DateTime.Now.Ticks;
 
             internal Target(out Func<bool> tryAdvance)
             {
@@ -76,6 +97,18 @@ namespace Theraot.Threading
                 get
                 {
                     return _number;
+                }
+            }
+
+            public int CompareTo(Target other)
+            {
+                if (ReferenceEquals(other, null))
+                {
+                    return 1;
+                }
+                else
+                {
+                    return _time.CompareTo(other._time);
                 }
             }
 
