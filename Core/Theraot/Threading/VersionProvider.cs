@@ -83,6 +83,12 @@ namespace Theraot.Threading
                 }
             }
 
+            public void Reset()
+            {
+                _target = null;
+                _number = 0;
+            }
+
             public void UpdateIfNeeded(Action update)
             {
                 if (update == null)
