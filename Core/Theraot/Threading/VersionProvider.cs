@@ -1,4 +1,5 @@
 #if FAT
+
 using System;
 using System.Threading;
 
@@ -6,22 +7,36 @@ namespace Theraot.Threading
 {
     public sealed class VersionProvider
     {
-        private Target _current;
-        private Func<bool> _tryAdvance;
+        private Target _target;
+
+        private Advancer _tryAdvance;
 
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", Justification = "By Design")]
         public VersionProvider(out Action nextVersion)
         {
-            _current = new Target(out _tryAdvance);
+            _target = new Target(out _tryAdvance);
             nextVersion = Advance;
         }
 
+        private delegate bool Advancer(out long number);
+
         public void Advance()
         {
-            if (!_tryAdvance.Invoke())
+            long number;
+            if (!_tryAdvance.Invoke(out number))
             {
-                _current = new Target(out _tryAdvance);
+                _target = new Target(out _tryAdvance);
             }
+        }
+
+        public VersionToken AdvanceNewToken()
+        {
+            long number;
+            if (!_tryAdvance.Invoke(out number))
+            {
+                _target = new Target(out _tryAdvance);
+            }
+            return new VersionToken(this, _target, number);
         }
 
         public VersionToken CreateToken()
@@ -39,6 +54,13 @@ namespace Theraot.Threading
             internal VersionToken(VersionProvider provider)
             {
                 _provider = provider;
+            }
+
+            internal VersionToken(VersionProvider provider, Target target, long number)
+            {
+                _provider = provider;
+                _target = target;
+                _number = number;
             }
 
             public int CompareTo(VersionToken other)
@@ -69,7 +91,7 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    var nextTarget = _provider._current;
+                    var nextTarget = _provider._target;
                     if
                     (
                         !ReferenceEquals(Interlocked.Exchange<Target>(ref _target, nextTarget), nextTarget) ||
@@ -87,7 +109,7 @@ namespace Theraot.Threading
             private long _number = long.MinValue;
             private long _time = DateTime.Now.Ticks;
 
-            internal Target(out Func<bool> tryAdvance)
+            internal Target(out Advancer tryAdvance)
             {
                 tryAdvance = TryAdvance;
             }
@@ -112,19 +134,21 @@ namespace Theraot.Threading
                 }
             }
 
-            private bool TryAdvance()
+            private bool TryAdvance(out long number)
             {
                 if (_number == long.MaxValue)
                 {
+                    number = 0;
                     return false;
                 }
                 else
                 {
-                    _number++;
+                    number = Interlocked.Increment(ref _number);
                     return true;
                 }
             }
         }
     }
 }
+
 #endif
