@@ -17,7 +17,7 @@ namespace Theraot.Collections.ThreadSafe
     {
         private readonly IEqualityComparer<TKey> _comparer;
         private readonly HashBucket<TNeedle, TValue> _wrapped;
-        private EventHandler _eventHandler;
+        private WeakNeedle<EventHandler> _eventHandler;
 
         public WeakHashBucket()
         {
@@ -325,17 +325,32 @@ namespace Theraot.Collections.ThreadSafe
 
         private void RegisterForAutoRemoveDeadItems()
         {
-            _eventHandler = new EventHandler(GarbageCollected);
-            GCMonitor.Collected += _eventHandler;
+            EventHandler eventHandler;
+            if (ReferenceEquals(_eventHandler, null))
+            {
+                eventHandler = new EventHandler(GarbageCollected);
+                _eventHandler = new WeakNeedle<EventHandler>(eventHandler);
+            }
+            else
+            {
+                eventHandler = _eventHandler.Value;
+                if (!_eventHandler.IsAlive)
+                {
+                    eventHandler = new EventHandler(GarbageCollected);
+                    _eventHandler.Value = eventHandler;
+                }
+            }
+            GCMonitor.Collected += eventHandler;
         }
 
         private void UnRegisterForAutoRemoveDeadItems()
         {
-            if (!object.ReferenceEquals(_eventHandler, null))
+            EventHandler eventHandler;
+            if (_eventHandler.Retrieve(out eventHandler))
             {
-                GCMonitor.Collected -= _eventHandler;
-                _eventHandler = null;
+                GCMonitor.Collected -= eventHandler;
             }
+            _eventHandler = null;
         }
     }
 }
