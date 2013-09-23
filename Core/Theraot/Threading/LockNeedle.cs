@@ -163,7 +163,7 @@ namespace Theraot.Threading
             }
         }
 
-        internal bool UnLock(int id)
+        internal bool Unlock(int id)
         {
             if (Interlocked.CompareExchange(ref _lock, 0, id) == id)
             {

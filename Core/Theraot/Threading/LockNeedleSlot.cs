@@ -1,6 +1,5 @@
 using System;
 using System.Threading;
-using Theraot.Collections.ThreadSafe;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
@@ -79,6 +78,11 @@ namespace Theraot.Threading
             }
         }
 
+        public bool Lock(LockNeedle<T> token)
+        {
+            return token.Lock(_id);
+        }
+
         public void Release()
         {
             ThreadingHelper.VolatileWrite(ref _thread, null);
@@ -88,6 +92,11 @@ namespace Theraot.Threading
         public void Release(LockNeedle<T> token)
         {
             token.Release(_id);
+        }
+
+        public bool Unlock(LockNeedle<T> token)
+        {
+            return token.Unlock(_id);
         }
 
         internal bool Claim()
