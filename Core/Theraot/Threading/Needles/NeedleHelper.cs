@@ -43,7 +43,7 @@ namespace Theraot.Threading.Needles
         {
             return ReadOnlyNeedleCreator<T, TNeedle>.CanCreate;
         }
-        
+
         public static TNeedle CreateDeferredNeedle<T, TNeedle>(Func<T> target)
             where TNeedle : INeedle<T>
         {
@@ -73,13 +73,36 @@ namespace Theraot.Threading.Needles
         {
             return ReadOnlyNeedleCreator<T, TNeedle>.Create(target);
         }
-        
+
         public static TNeedle CreateReadOnlyNestedNeedle<T, TNeedle>(IReadOnlyNeedle<T> target)
             where TNeedle : IReadOnlyNeedle<T>
         {
             return NestedReadOnlyNeedleCreator<T, TNeedle>.Create(target);
         }
-        
+
+        public static bool Retrieve<T, TNeedle>(this TNeedle needle, out T value)
+            where TNeedle : INeedle<T>
+        {
+            if (!ReferenceEquals(needle, null))
+            {
+                value = needle.Value;
+                if (needle.IsAlive)
+                {
+                    needle.Release();
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                value = default(T);
+                return false;
+            }
+        }
+
         public static bool TryGet<T>(this IReadOnlyNeedle<T> needle, out T target)
         {
             var _needle = Check.NotNullArgument(needle, "needle");
