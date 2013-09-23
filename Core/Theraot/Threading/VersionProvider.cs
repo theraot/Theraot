@@ -8,7 +8,6 @@ namespace Theraot.Threading
     public sealed class VersionProvider
     {
         private Target _target;
-
         private Advancer _tryAdvance;
 
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", Justification = "By Design")]
@@ -18,7 +17,7 @@ namespace Theraot.Threading
             nextVersion = Advance;
         }
 
-        private delegate bool Advancer(out long number);
+        internal delegate bool Advancer(out long number);
 
         public void Advance()
         {
@@ -110,7 +109,7 @@ namespace Theraot.Threading
             }
         }
 
-        private sealed class Target : IComparable<Target>
+        internal sealed class Target : IComparable<Target>
         {
             private long _number = long.MinValue;
             private long _time = DateTime.Now.Ticks;
