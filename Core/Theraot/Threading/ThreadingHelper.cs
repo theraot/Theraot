@@ -328,7 +328,7 @@ namespace Theraot.Threading
                 }
             }
         }
-        
+
         public static bool SpinWaitExchangeRelative(ref int check, int value, int ignoreComparand, IComparable<TimeSpan> timeout)
         {
             int backCount = GetBackCount();
@@ -349,24 +349,24 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                     var start = DateTime.Now;
-                     if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-                     {
-                         if (backCount == 0)
-                         {
-                             Thread.Sleep(0);
-                         }
-                         else
-                         {
-                             Thread.SpinWait(IntSpinWaitHint);
-                             backCount--;
-                         }
-                         goto retry;
-                     }
-                     else
-                     {
-                         return true;
-                     }
+                    var start = DateTime.Now;
+                    if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
+                    {
+                        if (backCount == 0)
+                        {
+                            Thread.Sleep(0);
+                        }
+                        else
+                        {
+                            Thread.SpinWait(IntSpinWaitHint);
+                            backCount--;
+                        }
+                        goto retry;
+                    }
+                    else
+                    {
+                        return true;
+                    }
                 }
             }
         }

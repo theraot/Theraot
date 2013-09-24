@@ -1,8 +1,6 @@
 #if FAT
 
-using System;
 using System.Collections.Generic;
-using Theraot.Core;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Collections.Specialized

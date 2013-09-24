@@ -1,4 +1,5 @@
 #if FAT
+
 namespace Theraot.Factories
 {
     [global::System.Diagnostics.DebuggerNonUserCode]
@@ -43,4 +44,5 @@ namespace Theraot.Factories
         }
     }
 }
+
 #endif

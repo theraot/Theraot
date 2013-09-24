@@ -1,4 +1,5 @@
 ﻿#if FAT
+
 using System;
 using System.Collections.Generic;
 
@@ -100,4 +101,5 @@ namespace Theraot.Factories
         }
     }
 }
+
 #endif

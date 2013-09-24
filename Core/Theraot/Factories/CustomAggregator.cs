@@ -1,5 +1,6 @@
 #if FAT
-﻿using Theraot.Core;
+
+using Theraot.Core;
 
 namespace Theraot.Factories
 {
@@ -34,4 +35,5 @@ namespace Theraot.Factories
         }
     }
 }
+
 #endif

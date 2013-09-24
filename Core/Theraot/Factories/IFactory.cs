@@ -1,4 +1,5 @@
 ﻿#if FAT
+
 namespace Theraot.Factories
 {
     public interface IFactory<out TOutput>
@@ -6,4 +7,5 @@ namespace Theraot.Factories
         TOutput Create();
     }
 }
+
 #endif

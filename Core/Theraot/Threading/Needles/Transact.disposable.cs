@@ -2,9 +2,6 @@
 
 using System;
 
-using Theraot.Core;
-using Theraot.Threading;
-
 namespace Theraot.Threading.Needles
 {
     public sealed partial class Transact : IDisposable

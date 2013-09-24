@@ -1,5 +1,6 @@
 #if FAT
-﻿namespace Theraot.Core
+
+namespace Theraot.Core
 {
     public static class Reference
     {
@@ -28,4 +29,5 @@
         }
     }
 }
+
 #endif

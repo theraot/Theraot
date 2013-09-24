@@ -1,5 +1,6 @@
 #if FAT
-﻿using System;
+
+using System;
 using System.Net;
 using System.Net.NetworkInformation;
 
@@ -81,4 +82,5 @@ namespace Theraot.Core
         }
     }
 }
+
 #endif

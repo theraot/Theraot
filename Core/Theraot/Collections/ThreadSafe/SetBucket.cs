@@ -795,7 +795,7 @@ namespace Theraot.Collections.ThreadSafe
                 return false;
             }
         }
-        
+
         private bool RemoveExtracted(T item, FixedSizeSetBucket<T> entries)
         {
             if (entries != null)

@@ -1,4 +1,5 @@
 #if FAT
+
 using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -101,4 +102,5 @@ namespace Theraot.Core
         }
     }
 }
+
 #endif

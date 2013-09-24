@@ -1,5 +1,6 @@
 #if FAT
-﻿using System.Diagnostics;
+
+using System.Diagnostics;
 
 namespace Theraot.Core
 {
@@ -14,4 +15,5 @@ namespace Theraot.Core
         }
     }
 }
+
 #endif

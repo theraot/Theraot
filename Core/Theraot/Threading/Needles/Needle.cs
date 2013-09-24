@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
-using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
