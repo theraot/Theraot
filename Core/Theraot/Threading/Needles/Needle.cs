@@ -20,14 +20,15 @@ namespace Theraot.Threading.Needles
 
         public Needle(T target)
         {
-            _target = new StructNeedle<T>(target);
-            if (IsAlive)
+            if (ReferenceEquals(target, null))
             {
-                _hashCode = target.GetHashCode();
+                _hashCode = base.GetHashCode();
+                _target = null;
             }
             else
             {
-                _hashCode = base.GetHashCode();
+                _target = new StructNeedle<T>(target);
+                _hashCode = target.GetHashCode();
             }
         }
 
@@ -41,6 +42,7 @@ namespace Theraot.Threading.Needles
             else
             {
                 _hashCode = base.GetHashCode();
+                _target = null;
             }
         }
 
@@ -141,32 +143,6 @@ namespace Theraot.Threading.Needles
             else
             {
                 return "<Dead Needle>";
-            }
-        }
-
-        public void Unify(ref Needle<T> value)
-        {
-            if (ReferenceEquals(value, null))
-            {
-                value = this.Simplify();
-            }
-            else
-            {
-                if (!ReferenceEquals(this, value))
-                {
-                    if (ReferenceEquals(_target, null))
-                    {
-                        _target = value;
-                    }
-                    else
-                    {
-                        if (!(_target is Needle<T>))
-                        {
-                            _target = new Needle<T>(_target);
-                        }
-                        ((Needle<T>)_target).Unify(ref value);
-                    }
-                }
             }
         }
 
