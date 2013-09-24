@@ -15,6 +15,11 @@ namespace Theraot.Threading
             nextVersion = Advance;
         }
 
+        public VersionProvider()
+        {
+            _target = new Target(out _tryAdvance);
+        }
+
         internal delegate bool Advancer(out long number);
 
         public void Advance()
