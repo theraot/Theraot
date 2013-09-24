@@ -97,7 +97,6 @@ namespace Theraot.Threading.Needles
             private Exception _error;
             private int _isCompleted;
 
-            //Leaking ManualResetEvent
             private StructNeedle<ManualResetEvent> _waitHandle;
 
             public Internal()
@@ -110,6 +109,16 @@ namespace Theraot.Threading.Needles
                 _error = error;
                 Thread.VolatileWrite(ref _isCompleted, 1);
                 _waitHandle = new ManualResetEvent(true);
+            }
+
+            ~Internal()
+            {
+                var waitHandle = _waitHandle.Value;
+                if (!ReferenceEquals(waitHandle, null))
+                {
+                    waitHandle.Close();
+                }
+                _waitHandle.Value = null;
             }
 
             public Exception Error

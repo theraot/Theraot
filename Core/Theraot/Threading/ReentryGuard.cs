@@ -7,7 +7,6 @@ namespace Theraot.Threading
     [global::System.Diagnostics.DebuggerNonUserCode]
     public sealed class ReentryGuard
     {
-        //Leaking NoTrackingThreadLocal<T>
         private StructNeedle<NoTrackingThreadLocal<Tuple<ExtendedQueue<Action>, Guard>>> _workQueue;
 
         public ReentryGuard()
@@ -19,6 +18,16 @@ namespace Theraot.Threading
                         () => new Tuple<ExtendedQueue<Action>, Guard>(new ExtendedQueue<Action>(), new Guard())
                     )
                 );
+        }
+
+        ~ReentryGuard()
+        {
+            var workQueue = _workQueue.Value;
+            if (!ReferenceEquals(workQueue, null))
+            {
+                workQueue.Dispose();
+            }
+            _workQueue.Value = null;
         }
 
         public bool IsTaken

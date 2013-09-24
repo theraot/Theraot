@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using Theraot.Collections.Specialized;
 using Theraot.Core;
 using Theraot.Threading;
 using Theraot.Threading.Needles;
@@ -17,7 +16,7 @@ namespace Theraot.Collections.ThreadSafe
     {
         private readonly IEqualityComparer<T> _comparer;
         private readonly SetBucket<TNeedle> _wrapped;
-        //Leaking WeakNeedle
+
         private StructNeedle<WeakNeedle<EventHandler>> _eventHandler;
 
         public WeakSetBucket()
@@ -109,6 +108,16 @@ namespace Theraot.Collections.ThreadSafe
             {
                 RegisterForAutoRemoveDeadItems();
             }
+        }
+
+        ~WeakSetBucket()
+        {
+            var eventHandler = _eventHandler.Value;
+            if (!ReferenceEquals(eventHandler, null))
+            {
+                eventHandler.Release();
+            }
+            _eventHandler.Value = null;
         }
 
         public bool AutoRemoveDeadItems

@@ -11,7 +11,6 @@ namespace Theraot.Threading.Needles
         private int _isCompleted;
         private Func<T> _valueFactory;
 
-        //Leaking ManualResetEvent
         private StructNeedle<ManualResetEvent> _waitHandle;
 
         public LazyNeedle(Func<T> valueFactory)
@@ -32,6 +31,16 @@ namespace Theraot.Threading.Needles
                 {
                     return FullMode(__valueFactory, ref thread, ref preIsValueCreated);
                 };
+        }
+
+        ~LazyNeedle()
+        {
+            var waitHandle = _waitHandle.Value;
+            if (!ReferenceEquals(waitHandle, null))
+            {
+                waitHandle.Close();
+            }
+            _waitHandle.Value = null;
         }
 
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]

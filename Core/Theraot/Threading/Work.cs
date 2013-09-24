@@ -16,7 +16,6 @@ namespace Theraot.Threading
         private Exception _error;
         private int _isCompleted;
 
-        //Leaking ManualResetEvent
         private StructNeedle<ManualResetEvent> _waitHandle;
 
         internal Work(Action action, bool exclusive, WorkContext context)
@@ -32,6 +31,16 @@ namespace Theraot.Threading
                 _exclusive = exclusive;
                 _waitHandle = new ManualResetEvent(false);
             }
+        }
+
+        ~Work()
+        {
+            var waitHandle = _waitHandle.Value;
+            if (!ReferenceEquals(waitHandle, null))
+            {
+                waitHandle.Close();
+            }
+            _waitHandle.Value = null;
         }
 
         public static Work Current
