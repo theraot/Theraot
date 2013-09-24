@@ -17,7 +17,8 @@ namespace Theraot.Collections.ThreadSafe
     {
         private readonly IEqualityComparer<TKey> _comparer;
         private readonly HashBucket<TNeedle, TValue> _wrapped;
-        private WeakNeedle<EventHandler> _eventHandler;
+        //Leaking WeakNeedle
+        private StructNeedle<WeakNeedle<EventHandler>> _eventHandler;
 
         public WeakHashBucket()
         {
@@ -376,14 +377,14 @@ namespace Theraot.Collections.ThreadSafe
         private void RegisterForAutoRemoveDeadItems()
         {
             EventHandler eventHandler;
-            if (ReferenceEquals(_eventHandler, null))
+            if (ReferenceEquals(_eventHandler.Value, null))
             {
                 eventHandler = new EventHandler(GarbageCollected);
                 _eventHandler = new WeakNeedle<EventHandler>(eventHandler);
             }
             else
             {
-                eventHandler = _eventHandler.Value;
+                eventHandler = _eventHandler.Value.Value;
                 if (!_eventHandler.IsAlive)
                 {
                     eventHandler = new EventHandler(GarbageCollected);
@@ -396,7 +397,7 @@ namespace Theraot.Collections.ThreadSafe
         private void UnRegisterForAutoRemoveDeadItems()
         {
             EventHandler eventHandler;
-            if (_eventHandler.Retrieve(out eventHandler))
+            if (_eventHandler.Value.Retrieve(out eventHandler))
             {
                 GCMonitor.Collected -= eventHandler;
             }
