@@ -13,21 +13,20 @@ namespace Theraot.Threading.Needles
     {
         public sealed partial class Needle<T> : Theraot.Threading.Needles.Needle<T>, IResource
         {
-            private Needles.Needle<Thread> _owner = new Needles.Needle<Thread>();
-            private Transact _transaction;
+            private LockNeedle<Transact> _lockNeedle = new LockNeedle<Transact>(Transact._lockContext);
 
             public Needle(T value)
                 : base(value)
             {
-                _transaction = Transact.CurrentTransaction;
+                //Empty
             }
 
             public override T Value
             {
                 get
                 {
-                    _transaction = Transact.CurrentTransaction;
-                    if (ReferenceEquals(_transaction, null))
+                    var transaction = Transact.CurrentTransaction;
+                    if (ReferenceEquals(transaction, null))
                     {
                         var tmp = base.Value;
                         return tmp;
@@ -35,58 +34,78 @@ namespace Theraot.Threading.Needles
                     else
                     {
                         object value;
-                        if (_transaction._writeLog.TryGetValue(this, out value))
+                        if (transaction._writeLog.TryGetValue(this, out value))
                         {
                             return (T)value;
                         }
                         else
                         {
                             var tmp = base.Value;
-                            _transaction._readLog.CharyAdd(this, tmp);
+                            transaction._readLog.CharyAdd(this, tmp);
                             return tmp;
                         }
                     }
                 }
                 set
                 {
-                    _transaction = Transact.CurrentTransaction;
-                    if (ReferenceEquals(_transaction, null))
+                    var transaction = Transact.CurrentTransaction;
+                    if (ReferenceEquals(transaction, null))
                     {
                         base.Value = value;
                     }
                     else
                     {
-                        _transaction._writeLog.Set(this, value);
+                        transaction._writeLog.Set(this, value);
                     }
                 }
             }
 
-            void IResource.Capture(ref Needles.Needle<Thread> thread)
+            bool IResource.Capture()
             {
-                _owner.Unify(ref thread);
-            }
-
-            bool IResource.Check()
-            {
-                _transaction = Transact.CurrentTransaction;
-                object value;
-                if (_transaction._readLog.TryGetValue(this, out value))
-                {
-                    return EqualityComparer<T>.Default.Equals(base.Value, (T)value);
-                }
-                else
+                var transaction = Transact.CurrentTransaction;
+                if (ReferenceEquals(transaction, null))
                 {
                     return false;
                 }
+                else
+                {
+                    var slot = transaction._lockSlot;
+                    if (ReferenceEquals(slot, null))
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        slot.Capture(_lockNeedle);
+                        return true;
+                    }
+                }
+            }
+
+            bool IResource.CheckValue()
+            {
+                var transaction = Transact.CurrentTransaction;
+                object value;
+                if (transaction._readLog.TryGetValue(this, out value))
+                {
+                    return EqualityComparer<T>.Default.Equals(base.Value, (T)value);
+                }
+                return false;
+            }
+
+            bool IResource.CheckCapture()
+            {
+                var transaction = Transact.CurrentTransaction;
+                return ReferenceEquals(_lockNeedle.Value, transaction);
             }
 
             bool IResource.Commit()
             {
-                _transaction = Transact.CurrentTransaction;
-                if (_owner.Value.Equals(Thread.CurrentThread))
+                var transaction = Transact.CurrentTransaction;
+                if (ReferenceEquals(_lockNeedle.Value, transaction))
                 {
                     object value;
-                    if (_transaction._writeLog.TryGetValue(this, out value))
+                    if (transaction._writeLog.TryGetValue(this, out value))
                     {
                         base.Value = (T)value;
                     }
@@ -100,14 +119,19 @@ namespace Theraot.Threading.Needles
 
             void IResource.Rollback()
             {
-                OnDispose();
+                var transaction = Transact.CurrentTransaction;
+                if (!ReferenceEquals(transaction, null))
+                {
+                    transaction._readLog.Remove(this);
+                    transaction._writeLog.Remove(this);
+                }
+                _lockNeedle.Release();
             }
 
             private void OnDispose()
             {
-                _transaction = Transact.CurrentTransaction;
-                _transaction._readLog.Remove(this);
-                _transaction._writeLog.Remove(this);
+                //TODO: Remove from read and write log
+                _lockNeedle.Release();
             }
         }
     }
