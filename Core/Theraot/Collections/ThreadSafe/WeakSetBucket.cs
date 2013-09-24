@@ -156,7 +156,17 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool Add(T item)
         {
-            return _wrapped.Add(NeedleHelper.CreateNeedle<T, TNeedle>(item));
+            TNeedle needle = NeedleHelper.CreateNeedle<T, TNeedle>(item);
+            if (_wrapped.Add(needle))
+            {
+                needle.Dispose();
+                return true;
+            }
+            else
+            {
+                needle.Dispose();
+                return false;
+            }
         }
 
         public int AddRange(IEnumerable<T> items)
@@ -226,7 +236,9 @@ namespace Theraot.Collections.ThreadSafe
 
         void ICollection<T>.Add(T item)
         {
-            _wrapped.Add(NeedleHelper.CreateNeedle<T, TNeedle>(item));
+            TNeedle needle = NeedleHelper.CreateNeedle<T, TNeedle>(item);
+            _wrapped.Add(needle);
+            needle.Dispose();
         }
 
         public void IntersectWith(IEnumerable<T> other)
@@ -261,17 +273,17 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool Remove(T item)
         {
-            TNeedle pass = NeedleHelper.CreateNeedle<T, TNeedle>(item);
+            TNeedle needle = NeedleHelper.CreateNeedle<T, TNeedle>(item);
             TNeedle found;
-            if (_wrapped.Remove(pass, out found))
+            if (_wrapped.Remove(needle, out found))
             {
-                pass.Dispose();
+                needle.Dispose();
                 found.Dispose();
                 return true;
             }
             else
             {
-                pass.Dispose();
+                needle.Dispose();
                 return false;
             }
         }

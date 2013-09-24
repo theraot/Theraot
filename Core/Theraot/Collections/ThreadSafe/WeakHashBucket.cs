@@ -147,12 +147,24 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool Add(KeyValuePair<TKey, TValue> item)
         {
-            return _wrapped.TryAdd(NeedleHelper.CreateNeedle<TKey, TNeedle>(item.Key), item.Value);
+            TNeedle needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(item.Key);
+            if (_wrapped.TryAdd(needle, item.Value))
+            {
+                needle.Dispose();
+                return true;
+            }
+            else
+            {
+                needle.Dispose();
+                return false;
+            }
         }
 
         public void Add(TKey key, TValue value)
         {
-            _wrapped.Add(NeedleHelper.CreateNeedle<TKey, TNeedle>(key), value);
+            TNeedle needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
+            _wrapped.Add(needle, value);
+            needle.Dispose();
         }
 
         public int AddRange(IEnumerable<KeyValuePair<TKey, TValue>> items)
@@ -170,7 +182,10 @@ namespace Theraot.Collections.ThreadSafe
 
         public TValue CharyAdd(TKey key, TValue value)
         {
-            return _wrapped.CharyAdd(NeedleHelper.CreateNeedle<TKey, TNeedle>(key), value);
+            var needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
+            var result = _wrapped.CharyAdd(needle, value);
+            needle.Dispose();
+            return result;
         }
 
         public void Clear()
@@ -192,12 +207,15 @@ namespace Theraot.Collections.ThreadSafe
         {
             var key = item.Key;
             TValue value;
-            if (_wrapped.TryGetValue(NeedleHelper.CreateNeedle<TKey, TNeedle>(key), out value))
+            TNeedle needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
+            if (_wrapped.TryGetValue(needle, out value))
             {
+                needle.Dispose();
                 return EqualityComparer<TValue>.Default.Equals(value, item.Value);
             }
             else
             {
+                needle.Dispose();
                 return false;
             }
         }
@@ -236,16 +254,16 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool Remove(TKey key)
         {
-            TNeedle pass = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
+            TNeedle needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
             TValue found;
-            if (_wrapped.Remove(pass, out found))
+            if (_wrapped.Remove(needle, out found))
             {
-                pass.Dispose();
+                needle.Dispose();
                 return true;
             }
             else
             {
-                pass.Dispose();
+                needle.Dispose();
                 return false;
             }
         }
@@ -275,7 +293,9 @@ namespace Theraot.Collections.ThreadSafe
 
         public void Set(TKey key, TValue value)
         {
-            _wrapped.Set(NeedleHelper.CreateNeedle<TKey, TNeedle>(key), value);
+            TNeedle needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
+            _wrapped.Set(needle, value);
+            needle.Dispose();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
@@ -285,12 +305,32 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool TryAdd(TKey key, TValue value)
         {
-            return _wrapped.TryAdd(NeedleHelper.CreateNeedle<TKey, TNeedle>(key), value);
+            TNeedle needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
+            if (_wrapped.TryAdd(needle, value))
+            {
+                needle.Dispose();
+                return true;
+            }
+            else
+            {
+                needle.Dispose();
+                return false;
+            }
         }
 
         public bool TryGet(TKey key, out TValue value)
         {
-            return _wrapped.TryGetValue(NeedleHelper.CreateNeedle<TKey, TNeedle>(key), out value);
+            TNeedle needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
+            if (_wrapped.TryGetValue(needle, out value))
+            {
+                needle.Dispose();
+                return true;
+            }
+            else
+            {
+                needle.Dispose();
+                return false;
+            }
         }
 
         public bool TryGet(int index, out TKey key, out TValue value)
@@ -310,7 +350,17 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool TryGetValue(TKey key, out TValue value)
         {
-            return _wrapped.TryGetValue(NeedleHelper.CreateNeedle<TKey, TNeedle>(key), out value);
+            TNeedle needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
+            if (_wrapped.TryGetValue(needle, out value))
+            {
+                needle.Dispose();
+                return true;
+            }
+            else
+            {
+                needle.Dispose();
+                return false;
+            }
         }
 
         protected virtual WeakHashBucket<TKey, TValue, TNeedle> OnClone()
