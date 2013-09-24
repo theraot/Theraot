@@ -14,6 +14,7 @@ namespace Theraot.Threading
         public LockNeedleContext()
         {
             _slots = new Bucket<LockNeedleSlot<T>>(32);
+            _version = new VersionProvider();
         }
 
         public bool ClaimSlot(out LockNeedleSlot<T> slot)
