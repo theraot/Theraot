@@ -1771,7 +1771,7 @@ namespace System.Numerics
                     rr = (Base * un[index_dividend + length_divisor]) + un[index_dividend + length_divisor - 1];
                     qq = rr / vn[length_divisor - 1];
                     rr -= qq * vn[length_divisor - 1];
-                    for (; ; )
+                    for (;;)
                     {
                         // Estimate too big ?
                         if ((qq >= Base) || ((qq * vn[length_divisor - 2]) > ((rr * Base) + un[index_dividend + length_divisor - 2])))
