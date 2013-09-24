@@ -49,9 +49,9 @@ namespace Theraot.Threading
                 var capture = Interlocked.Exchange(ref _capture, 0);
                 if
                 (
-                    (@lock != 0 && _context.Read(Thread.VolatileRead(ref _lock), out value))
+                    (@lock != 0 && _context.Read(@lock, out value))
                     ||
-                    (capture != 0 && _context.Read(Thread.VolatileRead(ref _capture), out value))
+                    (capture != 0 && _context.Read(capture, out value))
                 )
                 {
                     _target = value;
