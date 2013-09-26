@@ -23,7 +23,6 @@ namespace Theraot.Threading.Needles
             _readLog = new WeakHashBucket<IResource, object, WeakNeedle<IResource>>();
             _parentTransaction = _currentTransaction;
             _currentTransaction = this;
-            //_lockSlot = _lockContext.ClaimSlot()
         }
 
         internal static Transact CurrentTransaction
