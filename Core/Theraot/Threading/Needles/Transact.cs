@@ -25,7 +25,7 @@ namespace Theraot.Threading.Needles
             _currentTransaction = this;
         }
 
-        internal static Transact CurrentTransaction
+        public static Transact CurrentTransaction
         {
             get
             {
