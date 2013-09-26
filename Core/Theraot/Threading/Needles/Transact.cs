@@ -1,6 +1,7 @@
 #if FAT
 
 using System;
+using System.Threading;
 using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Threading.Needles
@@ -120,22 +121,32 @@ namespace Theraot.Threading.Needles
 
         private void Rollback()
         {
-            if (!ReferenceEquals(_currentTransaction, null))
+            var currentTransaction = _currentTransaction;
+            do
             {
-                _readLog.Clear();
-                _writeLog.Clear();
-                Transact parentTransaction = _currentTransaction._parentTransaction;
-                _currentTransaction.Dispose();
-                _currentTransaction = parentTransaction;
+                currentTransaction = _currentTransaction;
+                if (ReferenceEquals(currentTransaction, this))
+                {
+                    break;
+                }
+                else
+                {
+                    currentTransaction.Dispose();
+                    _currentTransaction = _currentTransaction._parentTransaction;
+                }
             }
-        }
-
-        private void RollBack()
-        {
+            while (true);
             foreach (var resource in _readLog)
             {
                 resource.Key.Rollback();
             }
+            foreach (var resource in _writeLog)
+            {
+                resource.Key.Rollback();
+            }
+            _readLog.Clear();
+            _writeLog.Clear();
+            _currentTransaction = _currentTransaction._parentTransaction;
         }
     }
 }
