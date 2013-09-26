@@ -33,11 +33,6 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public static Transact Create()
-        {
-            return new Transact();
-        }
-
         public bool Commit()
         {
             if (CheckValue())
@@ -111,14 +106,6 @@ namespace Theraot.Threading.Needles
             return true;
         }
 
-        private void RollBack()
-        {
-            foreach (var resource in _readLog)
-            {
-                resource.Key.Rollback();
-            }
-        }
-
         private bool CheckValue()
         {
             foreach (var resource in _readLog)
@@ -140,6 +127,14 @@ namespace Theraot.Threading.Needles
                 Transact parentTransaction = _currentTransaction._parentTransaction;
                 _currentTransaction.Dispose();
                 _currentTransaction = parentTransaction;
+            }
+        }
+
+        private void RollBack()
+        {
+            foreach (var resource in _readLog)
+            {
+                resource.Key.Rollback();
             }
         }
     }
