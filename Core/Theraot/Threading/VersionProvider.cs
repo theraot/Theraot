@@ -73,15 +73,29 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    var check = _target.CompareTo(other._target);
-                    if (check == 0)
+                    if (ReferenceEquals(_target, null))
                     {
-                        return _number.CompareTo(other._number);
+                        if (!ReferenceEquals(other._target, null))
+                        {
+                            return -1;
+                        }
                     }
                     else
                     {
-                        return check;
+                        if (ReferenceEquals(other._target, null))
+                        {
+                            return 1;
+                        }
+                        else
+                        {
+                            var check = _target.CompareTo(other._target);
+                            if (check != 0)
+                            {
+                                return check;
+                            }
+                        }
                     }
+                    return _number.CompareTo(other._number);
                 }
             }
 
