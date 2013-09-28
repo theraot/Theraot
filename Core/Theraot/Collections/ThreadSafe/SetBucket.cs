@@ -681,7 +681,7 @@ namespace Theraot.Collections.ThreadSafe
                         // Still, it happens, so this is needed for correctness.
                         // Going completely wait-free adds complexity with deminished value.
                         Thread.SpinWait(INT_SpinWaitHint);
-                        if (Thread.VolatileRead(ref _status) == 2)
+                        if (Thread.VolatileRead(ref _status) == (int)BucketStatus.Waiting)
                         {
                             Thread.Sleep(0);
                         }
