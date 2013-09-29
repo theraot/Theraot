@@ -121,7 +121,7 @@ namespace Theraot.Threading.Needles
 
         private void Rollback()
         {
-            var currentTransaction = _currentTransaction;
+            Transact currentTransaction;
             do
             {
                 currentTransaction = _currentTransaction;
@@ -132,7 +132,6 @@ namespace Theraot.Threading.Needles
                 else
                 {
                     currentTransaction.Dispose();
-                    _currentTransaction = _currentTransaction._parentTransaction;
                 }
             }
             while (true);
