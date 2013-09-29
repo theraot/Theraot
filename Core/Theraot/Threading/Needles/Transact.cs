@@ -34,6 +34,14 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        public bool IsRoot
+        {
+            get
+            {
+                return ReferenceEquals(_parentTransaction, null);
+            }
+        }
+
         public bool Commit()
         {
             if (CheckValue())
