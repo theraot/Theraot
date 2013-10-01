@@ -369,6 +369,8 @@ namespace Theraot.Collections.ThreadSafe
         {
             bool result = false;
             int revision;
+            value = default(T);
+            T tmpValue;
             while (true)
             {
                 revision = _revision;
@@ -378,8 +380,9 @@ namespace Theraot.Collections.ThreadSafe
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
                     try
                     {
-                        if (RemoveExtracted(item, entries, out value))
+                        if (RemoveExtracted(item, entries, out tmpValue))
                         {
+                            value = tmpValue;
                             result = true;
                         }
                     }

@@ -221,6 +221,7 @@ namespace Theraot.Collections.ThreadSafe
             bool result = false;
             int revision;
             KeyValuePair<TKey, TValue> previous = default(KeyValuePair<TKey, TValue>);
+            KeyValuePair<TKey, TValue> tmpPrevious;
             while (true)
             {
                 revision = _revision;
@@ -230,8 +231,9 @@ namespace Theraot.Collections.ThreadSafe
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
                     try
                     {
-                        if (CharyAddExtracted(key, value, entries, out previous) != -1)
+                        if (CharyAddExtracted(key, value, entries, out tmpPrevious) != -1)
                         {
+                            previous = tmpPrevious;
                             result = true;
                         }
                     }
@@ -391,6 +393,8 @@ namespace Theraot.Collections.ThreadSafe
         {
             bool result = false;
             int revision;
+            value = default(TValue);
+            TValue tmpValue;
             while (true)
             {
                 revision = _revision;
@@ -400,8 +404,9 @@ namespace Theraot.Collections.ThreadSafe
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
                     try
                     {
-                        if (RemoveExtracted(key, entries, out value))
+                        if (RemoveExtracted(key, entries, out tmpValue))
                         {
+                            value = tmpValue;
                             result = true;
                         }
                     }
