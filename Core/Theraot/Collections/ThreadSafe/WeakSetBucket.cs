@@ -164,7 +164,6 @@ namespace Theraot.Collections.ThreadSafe
             TNeedle needle = NeedleHelper.CreateNeedle<T, TNeedle>(item);
             if (_wrapped.Add(needle))
             {
-                needle.Dispose();
                 return true;
             }
             else
@@ -242,8 +241,10 @@ namespace Theraot.Collections.ThreadSafe
         void ICollection<T>.Add(T item)
         {
             TNeedle needle = NeedleHelper.CreateNeedle<T, TNeedle>(item);
-            _wrapped.Add(needle);
-            needle.Dispose();
+            if (!_wrapped.Add(needle))
+            {
+                needle.Dispose();
+            }
         }
 
         public void IntersectWith(IEnumerable<T> other)

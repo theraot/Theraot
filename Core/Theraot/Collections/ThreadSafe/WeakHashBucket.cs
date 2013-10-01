@@ -155,7 +155,6 @@ namespace Theraot.Collections.ThreadSafe
             TNeedle needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(item.Key);
             if (_wrapped.TryAdd(needle, item.Value))
             {
-                needle.Dispose();
                 return true;
             }
             else
@@ -168,8 +167,10 @@ namespace Theraot.Collections.ThreadSafe
         public void Add(TKey key, TValue value)
         {
             TNeedle needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
-            _wrapped.Add(needle, value);
-            needle.Dispose();
+            if (!_wrapped.TryAdd(needle, value))
+            {
+                needle.Dispose();
+            }
         }
 
         public int AddRange(IEnumerable<KeyValuePair<TKey, TValue>> items)
@@ -189,7 +190,10 @@ namespace Theraot.Collections.ThreadSafe
         {
             var needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
             var result = _wrapped.CharyAdd(needle, value);
-            needle.Dispose();
+            if (!ReferenceEquals(needle, result))
+            {
+                needle.Dispose();
+            }
             return result;
         }
 
@@ -300,7 +304,6 @@ namespace Theraot.Collections.ThreadSafe
         {
             TNeedle needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
             _wrapped.Set(needle, value);
-            needle.Dispose();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
@@ -313,7 +316,6 @@ namespace Theraot.Collections.ThreadSafe
             TNeedle needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
             if (_wrapped.TryAdd(needle, value))
             {
-                needle.Dispose();
                 return true;
             }
             else
