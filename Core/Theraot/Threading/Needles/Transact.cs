@@ -84,7 +84,7 @@ namespace Theraot.Threading.Needles
                     {
                         if (rollback)
                         {
-                            Rollback();
+                            Dispose();
                         }
                         _lockSlot.Release();
                         _lockSlot = null;
