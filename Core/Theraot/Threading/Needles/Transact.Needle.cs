@@ -35,9 +35,16 @@ namespace Theraot.Threading.Needles
                         }
                         else
                         {
-                            var tmp = base.Value;
-                            transaction._readLog.CharyAdd(this, tmp);
-                            return tmp;
+                            if (transaction._readLog.TryGetValue(this, out value))
+                            {
+                                return (T)value;
+                            }
+                            else
+                            {
+                                var tmp = base.Value;
+                                transaction._readLog.CharyAdd(this, tmp);
+                                return tmp;
+                            }
                         }
                     }
                 }
