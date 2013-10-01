@@ -215,13 +215,12 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
-        /// <returns>The value found in the destination after the attempt, regardless of collisions.</returns>
-        public TValue CharyAdd(TKey key, TValue value)
+        /// <returns>The pair formed by the key and value that were found in the destination before the attempt, regardless of collisions.</returns>
+        public KeyValuePair<TKey, TValue> CharyAdd(TKey key, TValue value)
         {
             bool result = false;
             int revision;
             KeyValuePair<TKey, TValue> previous = default(KeyValuePair<TKey, TValue>);
-            TValue found = value;
             while (true)
             {
                 revision = _revision;
@@ -246,11 +245,7 @@ namespace Theraot.Collections.ThreadSafe
                         {
                             Interlocked.Increment(ref _count);
                         }
-                        else
-                        {
-                            found = previous.Value;
-                        }
-                        return found;
+                        return previous;
                     }
                 }
                 else

@@ -186,15 +186,19 @@ namespace Theraot.Collections.ThreadSafe
             return count;
         }
 
-        public TValue CharyAdd(TKey key, TValue value)
+        public KeyValuePair<TKey, TValue> CharyAdd(TKey key, TValue value)
         {
             var needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
             var result = _wrapped.CharyAdd(needle, value);
-            if (!ReferenceEquals(needle, result))
+            if (ReferenceEquals(result.Key, null))
+            {
+                return new KeyValuePair<TKey, TValue>(null, result.Value);
+            }
+            else
             {
                 needle.Dispose();
+                return new KeyValuePair<TKey, TValue>(result.Key.Value, result.Value);
             }
-            return result;
         }
 
         public void Clear()
