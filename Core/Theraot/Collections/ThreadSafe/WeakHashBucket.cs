@@ -112,12 +112,7 @@ namespace Theraot.Collections.ThreadSafe
 
         ~WeakHashBucket()
         {
-            var eventHandler = _eventHandler.Value;
-            if (!ReferenceEquals(eventHandler, null))
-            {
-                eventHandler.Release();
-            }
-            _eventHandler.Value = null;
+            UnRegisterForAutoRemoveDeadItems();
         }
 
         public bool AutoRemoveDeadItems
