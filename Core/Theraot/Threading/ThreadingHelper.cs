@@ -185,21 +185,29 @@ namespace Theraot.Threading
             }
         }
 
-        public static void SpinWaitExchange(ref int check, int value, int comparand, int ignoreComparand)
+        public static bool SpinWaitExchange(ref int check, int value, int comparand, int ignoreComparand)
         {
             int backCount = GetBackCount();
             var tmp = Interlocked.CompareExchange(ref check, value, comparand);
-            if (tmp == comparand || tmp == ignoreComparand)
+            if (tmp == comparand)
             {
-                return;
+                return true;
+            }
+            if (tmp == ignoreComparand)
+            {
+                return false;
             }
             else
             {
             retry:
                 tmp = Interlocked.CompareExchange(ref check, value, comparand);
-                if (tmp == comparand || tmp == ignoreComparand)
+                if (tmp == comparand)
                 {
-                    return;
+                    return true;
+                }
+                if (tmp == ignoreComparand)
+                {
+                    return false;
                 }
                 else
                 {
@@ -259,17 +267,25 @@ namespace Theraot.Threading
         {
             int backCount = GetBackCount();
             var tmp = Interlocked.CompareExchange(ref check, value, comparand);
-            if (tmp == comparand || tmp == ignoreComparand)
+            if (tmp == comparand)
             {
                 return true;
+            }
+            if (tmp == ignoreComparand)
+            {
+                return false;
             }
             else
             {
             retry:
                 tmp = Interlocked.CompareExchange(ref check, value, comparand);
-                if (tmp == comparand || tmp == ignoreComparand)
+                if (tmp == comparand)
                 {
                     return true;
+                }
+                if (tmp == ignoreComparand)
+                {
+                    return false;
                 }
                 else
                 {
@@ -295,23 +311,31 @@ namespace Theraot.Threading
             }
         }
 
-        public static void SpinWaitExchangeRelative(ref int check, int value, int ignoreComparand)
+        public static bool SpinWaitExchangeRelative(ref int check, int value, int ignoreComparand)
         {
             int backCount = GetBackCount();
             var tmpA = Thread.VolatileRead(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-            if (tmpB == tmpA || tmpB == ignoreComparand)
+            if (tmpB == tmpA)
             {
-                return;
+                return true;
+            }
+            if (tmpB == ignoreComparand)
+            {
+                return false;
             }
             else
             {
             retry:
                 tmpA = Thread.VolatileRead(ref check);
                 tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-                if (tmpB == tmpA || tmpB == ignoreComparand)
+                if (tmpB == tmpA)
                 {
-                    return;
+                    return true;
+                }
+                if (tmpB == ignoreComparand)
+                {
+                    return false;
                 }
                 else
                 {
@@ -334,18 +358,26 @@ namespace Theraot.Threading
             int backCount = GetBackCount();
             var tmpA = Thread.VolatileRead(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-            if (tmpB == tmpA || tmpB == ignoreComparand)
+            if (tmpB == tmpA)
             {
                 return true;
+            }
+            if (tmpB == ignoreComparand)
+            {
+                return false;
             }
             else
             {
             retry:
                 tmpA = Thread.VolatileRead(ref check);
                 tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-                if (tmpB == tmpA || tmpB == ignoreComparand)
+                if (tmpB == tmpA)
                 {
                     return true;
+                }
+                if (tmpB == ignoreComparand)
+                {
+                    return false;
                 }
                 else
                 {
@@ -365,7 +397,7 @@ namespace Theraot.Threading
                     }
                     else
                     {
-                        return true;
+                        return false;
                     }
                 }
             }
