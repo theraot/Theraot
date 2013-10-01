@@ -23,7 +23,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             _comparer = EqualityComparerHelper<T>.Default;
             _wrapped = new SetBucket<TNeedle>(EqualityComparerHelper<TNeedle>.Default);
-            RegisterForAutoRemoveDeadItems();
+            RegisterForAutoRemoveDeadItemsExtracted();
         }
 
         public WeakSetBucket(IEnumerable<T> prototype)
@@ -58,7 +58,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             _comparer = comparer ?? EqualityComparerHelper<T>.Default;
             _wrapped = new SetBucket<TNeedle>(EqualityComparerHelper<TNeedle>.Default);
-            RegisterForAutoRemoveDeadItems();
+            RegisterForAutoRemoveDeadItemsExtracted();
         }
 
         public WeakSetBucket(bool autoRemoveDeadItems)
@@ -67,7 +67,11 @@ namespace Theraot.Collections.ThreadSafe
             _wrapped = new SetBucket<TNeedle>(EqualityComparerHelper<TNeedle>.Default);
             if (autoRemoveDeadItems)
             {
-                RegisterForAutoRemoveDeadItems();
+                RegisterForAutoRemoveDeadItemsExtracted();
+            }
+            else
+            {
+                GC.SuppressFinalize(this);
             }
         }
 
@@ -90,7 +94,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             Check.NotNullArgument(prototype, "prototype");
             this.AddRange(prototype);
-            RegisterForAutoRemoveDeadItems();
+            RegisterForAutoRemoveDeadItemsExtracted();
         }
 
         public WeakSetBucket(T[] prototype, IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
@@ -106,13 +110,17 @@ namespace Theraot.Collections.ThreadSafe
             _wrapped = new SetBucket<TNeedle>(EqualityComparerHelper<TNeedle>.Default);
             if (autoRemoveDeadItems)
             {
-                RegisterForAutoRemoveDeadItems();
+                RegisterForAutoRemoveDeadItemsExtracted();
+            }
+            else
+            {
+                GC.SuppressFinalize(this);
             }
         }
 
         ~WeakSetBucket()
         {
-            UnRegisterForAutoRemoveDeadItems();
+            UnRegisterForAutoRemoveDeadItemsExtracted();
         }
 
         public bool AutoRemoveDeadItems
@@ -364,11 +372,21 @@ namespace Theraot.Collections.ThreadSafe
 
         private void RegisterForAutoRemoveDeadItems()
         {
+            if (RegisterForAutoRemoveDeadItemsExtracted())
+            {
+                GC.ReRegisterForFinalize(this);
+            }
+        }
+
+        private bool RegisterForAutoRemoveDeadItemsExtracted()
+        {
+            bool result = false;
             EventHandler eventHandler;
             if (ReferenceEquals(_eventHandler.Value, null))
             {
                 eventHandler = new EventHandler(GarbageCollected);
                 _eventHandler = new WeakNeedle<EventHandler>(eventHandler);
+                result = true;
             }
             else
             {
@@ -377,19 +395,35 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     eventHandler = new EventHandler(GarbageCollected);
                     _eventHandler.Value = eventHandler;
+                    result = true;
                 }
             }
             GCMonitor.Collected += eventHandler;
+            return result;
         }
 
         private void UnRegisterForAutoRemoveDeadItems()
+        {
+            if (UnRegisterForAutoRemoveDeadItemsExtracted())
+            {
+                GC.SuppressFinalize(this);
+            }
+        }
+
+        private bool UnRegisterForAutoRemoveDeadItemsExtracted()
         {
             EventHandler eventHandler;
             if (_eventHandler.Value.Retrieve(out eventHandler))
             {
                 GCMonitor.Collected -= eventHandler;
+                _eventHandler = null;
+                return true;
             }
-            _eventHandler = null;
+            else
+            {
+                _eventHandler = null;
+                return false;
+            }
         }
     }
 }
