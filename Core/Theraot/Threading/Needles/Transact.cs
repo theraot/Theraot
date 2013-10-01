@@ -84,7 +84,7 @@ namespace Theraot.Threading.Needles
                     {
                         if (rollback)
                         {
-                            Dispose();
+                            Rollback(false);
                         }
                         _lockSlot.Release();
                         _lockSlot = null;
@@ -127,7 +127,7 @@ namespace Theraot.Threading.Needles
             return true;
         }
 
-        private void Rollback()
+        private void Rollback(bool disposing)
         {
             Transact currentTransaction;
             do
@@ -139,7 +139,14 @@ namespace Theraot.Threading.Needles
                 }
                 else
                 {
-                    currentTransaction.Dispose();
+                    if (disposing)
+                    {
+                        currentTransaction.Dispose();
+                    }
+                    else
+                    {
+                        currentTransaction.Rollback(false);
+                    }
                 }
             }
             while (true);
@@ -153,7 +160,12 @@ namespace Theraot.Threading.Needles
             }
             _readLog.Clear();
             _writeLog.Clear();
-            _currentTransaction = _currentTransaction._parentTransaction;
+            if (disposing)
+            {
+                _readLog.AutoRemoveDeadItems = false;
+                _writeLog.AutoRemoveDeadItems = false;
+                _currentTransaction = _currentTransaction._parentTransaction;
+            }
         }
     }
 }

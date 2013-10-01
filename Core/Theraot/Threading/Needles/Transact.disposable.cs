@@ -49,7 +49,7 @@ namespace Theraot.Threading.Needles
             {
                 if (disposeManagedResources)
                 {
-                    Rollback();
+                    Rollback(true);
                 }
             }
         }
