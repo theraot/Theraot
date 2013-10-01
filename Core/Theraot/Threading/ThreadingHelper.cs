@@ -193,7 +193,7 @@ namespace Theraot.Threading
             {
                 return true;
             }
-            if (tmp == ignoreComparand)
+            else if (tmp == ignoreComparand)
             {
                 return false;
             }
@@ -205,7 +205,7 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                if (tmp == ignoreComparand)
+                else if (tmp == ignoreComparand)
                 {
                     return false;
                 }
@@ -271,7 +271,7 @@ namespace Theraot.Threading
             {
                 return true;
             }
-            if (tmp == ignoreComparand)
+            else if (tmp == ignoreComparand)
             {
                 return false;
             }
@@ -283,7 +283,7 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                if (tmp == ignoreComparand)
+                else if (tmp == ignoreComparand)
                 {
                     return false;
                 }
@@ -320,7 +320,7 @@ namespace Theraot.Threading
             {
                 return true;
             }
-            if (tmpB == ignoreComparand)
+            else if (tmpB == ignoreComparand)
             {
                 return false;
             }
@@ -333,7 +333,7 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                if (tmpB == ignoreComparand)
+                else if (tmpB == ignoreComparand)
                 {
                     return false;
                 }
@@ -362,7 +362,7 @@ namespace Theraot.Threading
             {
                 return true;
             }
-            if (tmpB == ignoreComparand)
+            else if (tmpB == ignoreComparand)
             {
                 return false;
             }
@@ -375,7 +375,7 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                if (tmpB == ignoreComparand)
+                else if (tmpB == ignoreComparand)
                 {
                     return false;
                 }
