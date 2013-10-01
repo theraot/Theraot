@@ -42,15 +42,7 @@ namespace Theraot.Threading
             {
                 if (!ReferenceEquals(whenNotDisposed, null))
                 {
-                    ThreadingHelper.SpinWaitExchangeRelative(ref _status, 1, -1);
-                    if (_status == -1)
-                    {
-                        if (!ReferenceEquals(whenDisposed, null))
-                        {
-                            whenDisposed.Invoke();
-                        }
-                    }
-                    else
+                    if (ThreadingHelper.SpinWaitExchangeRelative(ref _status, 1, -1))
                     {
                         try
                         {
@@ -59,6 +51,13 @@ namespace Theraot.Threading
                         finally
                         {
                             System.Threading.Interlocked.Decrement(ref _status);
+                        }
+                    }
+                    else
+                    {
+                        if (!ReferenceEquals(whenDisposed, null))
+                        {
+                            whenDisposed.Invoke();
                         }
                     }
                 }
@@ -87,19 +86,7 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    ThreadingHelper.SpinWaitExchangeRelative(ref _status, 1, -1);
-                    if (_status == -1)
-                    {
-                        if (ReferenceEquals(whenDisposed, null))
-                        {
-                            return default(TReturn);
-                        }
-                        else
-                        {
-                            return whenDisposed.Invoke();
-                        }
-                    }
-                    else
+                    if (ThreadingHelper.SpinWaitExchangeRelative(ref _status, 1, -1))
                     {
                         try
                         {
@@ -108,6 +95,17 @@ namespace Theraot.Threading
                         finally
                         {
                             System.Threading.Interlocked.Decrement(ref _status);
+                        }
+                    }
+                    else
+                    {
+                        if (ReferenceEquals(whenDisposed, null))
+                        {
+                            return default(TReturn);
+                        }
+                        else
+                        {
+                            return whenDisposed.Invoke();
                         }
                     }
                 }
@@ -158,15 +156,7 @@ namespace Theraot.Threading
             }
             else
             {
-                ThreadingHelper.SpinWaitExchange(ref _status, -1, 0, -1);
-                if (_status == -1)
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+                return ThreadingHelper.SpinWaitExchange(ref _status, -1, 0, -1);
             }
         }
 
