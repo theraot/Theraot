@@ -359,7 +359,6 @@ namespace Theraot.Threading.Needles
         {
             if (_handle.IsAllocated)
             {
-                _handle.Free();
                 try
                 {
                     _handle.Free();
