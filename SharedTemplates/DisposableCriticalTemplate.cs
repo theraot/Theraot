@@ -6,13 +6,13 @@ namespace @NamespaceName
 {
     public partial class @ClassName/*GenericParams*/ : IDisposable, IExtendedDisposable
     {
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         private int _status;
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         private int _surviveGarbageCollection;
 
         [global::System.Diagnostics.DebuggerNonUserCode]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
         ~@ClassName()
         {
@@ -40,7 +40,7 @@ namespace @NamespaceName
             }
         }
 
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         public bool IsDisposed
         {
             [global::System.Diagnostics.DebuggerNonUserCode]
@@ -50,7 +50,7 @@ namespace @NamespaceName
             }
         }
 
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         protected bool SurviveGarbageCollection
         {
             [global::System.Diagnostics.DebuggerNonUserCode]
@@ -66,7 +66,7 @@ namespace @NamespaceName
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         public void Dispose()
         {
             try
@@ -80,7 +80,7 @@ namespace @NamespaceName
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         public void DisposedConditional(Action whenDisposed, Action whenNotDisposed)
         {
             if (_status == -1)
@@ -94,15 +94,7 @@ namespace @NamespaceName
             {
                 if (!whenNotDisposed == null)
                 {
-                    ThreadingHelper.SpinWaitExchangeRelative(ref _status, 1, -1);
-                    if (_status == -1)
-                    {
-                        if (!whenDisposed == null)
-                        {
-                            whenDisposed.Invoke();
-                        }
-                    }
-                    else
+                    if (ThreadingHelper.SpinWaitExchangeRelative(ref _status, 1, -1))
                     {
                         try
                         {
@@ -113,12 +105,19 @@ namespace @NamespaceName
                             System.Threading.Interlocked.Decrement(ref _status);
                         }
                     }
+                    else
+                    {
+                        if (!whenDisposed == null)
+                        {
+                            whenDisposed.Invoke();
+                        }
+                    }
                 }
             }
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         public TReturn DisposedConditional<TReturn>(Func<TReturn> whenDisposed, Func<TReturn> whenNotDisposed)
         {
             if (_status == -1)
@@ -140,19 +139,7 @@ namespace @NamespaceName
                 }
                 else
                 {
-                    ThreadingHelper.SpinWaitExchangeRelative(ref _status, 1, -1);
-                    if (_status == -1)
-                    {
-                        if (whenDisposed == null)
-                        {
-                            return default(TReturn);
-                        }
-                        else
-                        {
-                            return whenDisposed.Invoke();
-                        }
-                    }
-                    else
+                    if (ThreadingHelper.SpinWaitExchangeRelative(ref _status, 1, -1))
                     {
                         try
                         {
@@ -163,12 +150,23 @@ namespace @NamespaceName
                             System.Threading.Interlocked.Decrement(ref _status);
                         }
                     }
+                    else
+                    {
+                        if (whenDisposed == null)
+                        {
+                            return default(TReturn);
+                        }
+                        else
+                        {
+                            return whenDisposed.Invoke();
+                        }
+                    }
                 }
             }
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         protected virtual void Dispose(bool disposeManagedResources)
         {
             if (TakeDisposalExecution())
@@ -195,7 +193,7 @@ namespace @NamespaceName
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         protected void ProtectedCheckDisposed(string exceptionMessegeWhenDisposed)
         {
             if (IsDisposed)
@@ -204,7 +202,7 @@ namespace @NamespaceName
             }
         }
 
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         protected IDisposable SuspendDisposal()
         {
             if (_status == -1)
@@ -213,19 +211,18 @@ namespace @NamespaceName
             }
             else
             {
-                ThreadingHelper.SpinWaitExchangeRelative(ref _status, 1, -1);
-                if (_status == -1)
+                if (ThreadingHelper.SpinWaitExchangeRelative(ref _status, 1, -1))
                 {
-                    return null;
+                    return DisposableAkin.Create(() => System.Threading.Interlocked.Decrement(ref _status));
                 }
                 else
                 {
-                    return DisposableAkin.Create(() => System.Threading.Interlocked.Decrement(ref _status));
+                    return null;
                 }
             }
         }
 
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         protected bool TakeDisposalExecution()
         {
             if (_status == -1)
@@ -234,34 +231,26 @@ namespace @NamespaceName
             }
             else
             {
-                ThreadingHelper.SpinWaitExchange(ref _status, -1, 0, -1);
-                if (_status == -1)
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+                return ThreadingHelper.SpinWaitExchange(ref _status, -1, 0, -1);
             }
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         protected void ThrowDisposedexception()
         {
             throw new ObjectDisposedException(GetType().FullName);
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         protected TReturn ThrowDisposedexception<TReturn>()
         {
             throw new ObjectDisposedException(GetType().FullName);
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         protected bool UnDispose()
         {
             if (System.Threading.Thread.VolatileRead(ref _status) == -1)

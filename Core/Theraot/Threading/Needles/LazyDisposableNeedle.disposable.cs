@@ -6,11 +6,11 @@ namespace Theraot.Threading.Needles
 {
     public partial class LazyDisposableNeedle<T> : IDisposable, IExtendedDisposable
     {
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         private int _status;
 
         [global::System.Diagnostics.DebuggerNonUserCode]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
         ~LazyDisposableNeedle()
         {
@@ -31,7 +31,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         public bool IsDisposed
         {
             [global::System.Diagnostics.DebuggerNonUserCode]
@@ -42,7 +42,7 @@ namespace Theraot.Threading.Needles
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         public void Dispose()
         {
             try
@@ -56,7 +56,7 @@ namespace Theraot.Threading.Needles
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         public void DisposedConditional(Action whenDisposed, Action whenNotDisposed)
         {
             if (_status == -1)
@@ -70,15 +70,7 @@ namespace Theraot.Threading.Needles
             {
                 if (whenNotDisposed != null)
                 {
-                    ThreadingHelper.SpinWaitExchangeRelative(ref _status, 1, -1);
-                    if (_status == -1)
-                    {
-                        if (whenDisposed != null)
-                        {
-                            whenDisposed.Invoke();
-                        }
-                    }
-                    else
+                    if (ThreadingHelper.SpinWaitExchangeRelative(ref _status, 1, -1))
                     {
                         try
                         {
@@ -89,12 +81,19 @@ namespace Theraot.Threading.Needles
                             System.Threading.Interlocked.Decrement(ref _status);
                         }
                     }
+                    else
+                    {
+                        if (whenDisposed != null)
+                        {
+                            whenDisposed.Invoke();
+                        }
+                    }
                 }
             }
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         public TReturn DisposedConditional<TReturn>(Func<TReturn> whenDisposed, Func<TReturn> whenNotDisposed)
         {
             if (_status == -1)
@@ -116,19 +115,7 @@ namespace Theraot.Threading.Needles
                 }
                 else
                 {
-                    ThreadingHelper.SpinWaitExchangeRelative(ref _status, 1, -1);
-                    if (_status == -1)
-                    {
-                        if (whenDisposed == null)
-                        {
-                            return default(TReturn);
-                        }
-                        else
-                        {
-                            return whenDisposed.Invoke();
-                        }
-                    }
-                    else
+                    if (ThreadingHelper.SpinWaitExchangeRelative(ref _status, 1, -1))
                     {
                         try
                         {
@@ -139,12 +126,23 @@ namespace Theraot.Threading.Needles
                             System.Threading.Interlocked.Decrement(ref _status);
                         }
                     }
+                    else
+                    {
+                        if (whenDisposed == null)
+                        {
+                            return default(TReturn);
+                        }
+                        else
+                        {
+                            return whenDisposed.Invoke();
+                        }
+                    }
                 }
             }
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         protected virtual void Dispose(bool disposeManagedResources)
         {
             if (TakeDisposalExecution())
@@ -171,7 +169,7 @@ namespace Theraot.Threading.Needles
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         protected void ProtectedCheckDisposed(string exceptionMessegeWhenDisposed)
         {
             if (IsDisposed)
@@ -180,7 +178,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         protected IDisposable SuspendDisposal()
         {
             if (_status == -1)
@@ -189,19 +187,18 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                ThreadingHelper.SpinWaitExchangeRelative(ref _status, 1, -1);
-                if (_status == -1)
+                if (ThreadingHelper.SpinWaitExchangeRelative(ref _status, 1, -1))
                 {
-                    return null;
+                    return DisposableAkin.Create(() => System.Threading.Interlocked.Decrement(ref _status));
                 }
                 else
                 {
-                    return DisposableAkin.Create(() => System.Threading.Interlocked.Decrement(ref _status));
+                    return null;
                 }
             }
         }
 
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         protected bool TakeDisposalExecution()
         {
             if (_status == -1)
@@ -210,34 +207,26 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                ThreadingHelper.SpinWaitExchange(ref _status, -1, 0, -1);
-                if (_status == -1)
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+                return ThreadingHelper.SpinWaitExchange(ref _status, -1, 0, -1);
             }
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         protected void ThrowDisposedexception()
         {
             throw new ObjectDisposedException(GetType().FullName);
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         protected TReturn ThrowDisposedexception<TReturn>()
         {
             throw new ObjectDisposedException(GetType().FullName);
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
-        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.1")]
+        [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         protected bool UnDispose()
         {
             if (System.Threading.Thread.VolatileRead(ref _status) == -1)
