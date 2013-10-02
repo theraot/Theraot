@@ -26,13 +26,31 @@ namespace Theraot.Collections.ThreadSafe
             //Empty
         }
 
-        public WeakSetBucket(IEnumerable<T> prototype)
-            : this(null as IEqualityComparer<T>, true)
+        public WeakSetBucket(T[] prototype)
+            : this(Check.NotNullArgument(prototype, "prototype").Length, null as IEqualityComparer<T>, true)
+        {
+            this.AddRange(prototype);
+        }
+
+        public WeakSetBucket(T[] prototype, IEqualityComparer<T> comparer)
+            : this(Check.NotNullArgument(prototype, "prototype").Length, comparer, true)
+        {
+            this.AddRange(prototype);
+        }
+
+        public WeakSetBucket(T[] prototype, bool autoRemoveDeadItems)
+            : this(Check.NotNullArgument(prototype, "prototype").Length, null as IEqualityComparer<T>, autoRemoveDeadItems)
         {
             this.AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
-        public WeakSetBucket(T[] prototype)
+        public WeakSetBucket(T[] prototype, IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
+            : this(Check.NotNullArgument(prototype, "prototype").Length, comparer, autoRemoveDeadItems)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakSetBucket(IEnumerable<T> prototype)
             : this(null as IEqualityComparer<T>, true)
         {
             this.AddRange(Check.NotNullArgument(prototype, "prototype"));
@@ -44,31 +62,7 @@ namespace Theraot.Collections.ThreadSafe
             this.AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
-        public WeakSetBucket(T[] prototype, IEqualityComparer<T> comparer)
-            : this(comparer, true)
-        {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
-        }
-
-        public WeakSetBucket(IEqualityComparer<T> comparer)
-            : this (comparer, true)
-        {
-            //Empty
-        }
-
-        public WeakSetBucket(bool autoRemoveDeadItems)
-            : this (null as IEqualityComparer<T>, autoRemoveDeadItems)
-        {
-            //Empty
-        }
-
         public WeakSetBucket(IEnumerable<T> prototype, bool autoRemoveDeadItems)
-            : this(null as IEqualityComparer<T>, autoRemoveDeadItems)
-        {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
-        }
-
-        public WeakSetBucket(T[] prototype, bool autoRemoveDeadItems)
             : this(null as IEqualityComparer<T>, autoRemoveDeadItems)
         {
             this.AddRange(Check.NotNullArgument(prototype, "prototype"));
@@ -80,10 +74,16 @@ namespace Theraot.Collections.ThreadSafe
             this.AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
-        public WeakSetBucket(T[] prototype, IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
-            : this(comparer, autoRemoveDeadItems)
+        public WeakSetBucket(IEqualityComparer<T> comparer)
+            : this(comparer, true)
         {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            //Empty
+        }
+
+        public WeakSetBucket(bool autoRemoveDeadItems)
+            : this(null as IEqualityComparer<T>, autoRemoveDeadItems)
+        {
+            //Empty
         }
 
         public WeakSetBucket(IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
@@ -101,6 +101,231 @@ namespace Theraot.Collections.ThreadSafe
                 needleComparer = new NeedleConversionEqualityComparer<TNeedle, T>(_comparer);
             }
             _wrapped = new SetBucket<TNeedle>(needleComparer);
+            if (autoRemoveDeadItems)
+            {
+                RegisterForAutoRemoveDeadItemsExtracted();
+            }
+            else
+            {
+                GC.SuppressFinalize(this);
+            }
+        }
+
+        public WeakSetBucket(int capacity)
+            : this(capacity, null as IEqualityComparer<T>, true)
+        {
+            //Empty
+        }
+
+        public WeakSetBucket(int capacity, IEnumerable<T> prototype)
+            : this(capacity, null as IEqualityComparer<T>, true)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakSetBucket(int capacity, IEnumerable<T> prototype, IEqualityComparer<T> comparer)
+            : this(capacity, comparer, true)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakSetBucket(int capacity, IEnumerable<T> prototype, bool autoRemoveDeadItems)
+            : this(capacity, null as IEqualityComparer<T>, autoRemoveDeadItems)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakSetBucket(int capacity, IEnumerable<T> prototype, IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
+            : this(capacity, comparer, autoRemoveDeadItems)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakSetBucket(int capacity, IEqualityComparer<T> comparer)
+            : this(capacity, comparer, true)
+        {
+            //Empty
+        }
+
+        public WeakSetBucket(int capacity, bool autoRemoveDeadItems)
+            : this(capacity, null as IEqualityComparer<T>, autoRemoveDeadItems)
+        {
+            //Empty
+        }
+
+        public WeakSetBucket(int capacity, IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
+        {
+            var defaultComparer = EqualityComparerHelper<T>.Default;
+            IEqualityComparer<TNeedle> needleComparer;
+            if (ReferenceEquals(comparer, null) || ReferenceEquals(comparer, defaultComparer))
+            {
+                _comparer = defaultComparer;
+                needleComparer = EqualityComparerHelper<TNeedle>.Default;
+            }
+            else
+            {
+                _comparer = comparer;
+                needleComparer = new NeedleConversionEqualityComparer<TNeedle, T>(_comparer);
+            }
+            _wrapped = new SetBucket<TNeedle>(capacity, needleComparer);
+            if (autoRemoveDeadItems)
+            {
+                RegisterForAutoRemoveDeadItemsExtracted();
+            }
+            else
+            {
+                GC.SuppressFinalize(this);
+            }
+        }
+
+        public WeakSetBucket(int maxProbing)
+            : this(null as IEqualityComparer<T>, true, maxProbing)
+        {
+            //Empty
+        }
+
+        public WeakSetBucket(T[] prototype, int maxProbing)
+            : this(Check.NotNullArgument(prototype, "prototype").Length, null as IEqualityComparer<T>, true, maxProbing)
+        {
+            this.AddRange(prototype);
+        }
+
+        public WeakSetBucket(T[] prototype, IEqualityComparer<T> comparer, int maxProbing)
+            : this(Check.NotNullArgument(prototype, "prototype").Length, comparer, true, maxProbing)
+        {
+            this.AddRange(prototype);
+        }
+
+        public WeakSetBucket(T[] prototype, bool autoRemoveDeadItems, int maxProbing)
+            : this(Check.NotNullArgument(prototype, "prototype").Length, null as IEqualityComparer<T>, autoRemoveDeadItems, maxProbing)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakSetBucket(T[] prototype, IEqualityComparer<T> comparer, bool autoRemoveDeadItems, int maxProbing)
+            : this(Check.NotNullArgument(prototype, "prototype").Length, comparer, autoRemoveDeadItems, maxProbing)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakSetBucket(IEnumerable<T> prototype, int maxProbing)
+            : this(null as IEqualityComparer<T>, true, maxProbing)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakSetBucket(IEnumerable<T> prototype, IEqualityComparer<T> comparer, int maxProbing)
+            : this(comparer, true, maxProbing)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakSetBucket(IEnumerable<T> prototype, bool autoRemoveDeadItems, int maxProbing)
+            : this(null as IEqualityComparer<T>, autoRemoveDeadItems, maxProbing)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakSetBucket(IEnumerable<T> prototype, IEqualityComparer<T> comparer, bool autoRemoveDeadItems, int maxProbing)
+            : this(comparer, autoRemoveDeadItems, maxProbing)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakSetBucket(IEqualityComparer<T> comparer, int maxProbing)
+            : this(comparer, true, maxProbing)
+        {
+            //Empty
+        }
+
+        public WeakSetBucket(bool autoRemoveDeadItems, int maxProbing)
+            : this(null as IEqualityComparer<T>, autoRemoveDeadItems, maxProbing)
+        {
+            //Empty
+        }
+
+        public WeakSetBucket(IEqualityComparer<T> comparer, bool autoRemoveDeadItems, int maxProbing)
+        {
+            var defaultComparer = EqualityComparerHelper<T>.Default;
+            IEqualityComparer<TNeedle> needleComparer;
+            if (ReferenceEquals(comparer, null) || ReferenceEquals(comparer, defaultComparer))
+            {
+                _comparer = defaultComparer;
+                needleComparer = EqualityComparerHelper<TNeedle>.Default;
+            }
+            else
+            {
+                _comparer = comparer;
+                needleComparer = new NeedleConversionEqualityComparer<TNeedle, T>(_comparer);
+            }
+            _wrapped = new SetBucket<TNeedle>(needleComparer, maxProbing);
+            if (autoRemoveDeadItems)
+            {
+                RegisterForAutoRemoveDeadItemsExtracted();
+            }
+            else
+            {
+                GC.SuppressFinalize(this);
+            }
+        }
+
+        public WeakSetBucket(int capacity, int maxProbing)
+            : this(capacity, null as IEqualityComparer<T>, true, maxProbing)
+        {
+            //Empty
+        }
+
+        public WeakSetBucket(int capacity, IEnumerable<T> prototype, int maxProbing)
+            : this(capacity, null as IEqualityComparer<T>, true, maxProbing)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakSetBucket(int capacity, IEnumerable<T> prototype, IEqualityComparer<T> comparer, int maxProbing)
+            : this(capacity, comparer, true, maxProbing)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakSetBucket(int capacity, IEnumerable<T> prototype, bool autoRemoveDeadItems, int maxProbing)
+            : this(capacity, null as IEqualityComparer<T>, autoRemoveDeadItems, maxProbing)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakSetBucket(int capacity, IEnumerable<T> prototype, IEqualityComparer<T> comparer, bool autoRemoveDeadItems, int maxProbing)
+            : this(capacity, comparer, autoRemoveDeadItems, maxProbing)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakSetBucket(int capacity, IEqualityComparer<T> comparer, int maxProbing)
+            : this(capacity, comparer, true, maxProbing)
+        {
+            //Empty
+        }
+
+        public WeakSetBucket(int capacity, bool autoRemoveDeadItems, int maxProbing)
+            : this(capacity, null as IEqualityComparer<T>, autoRemoveDeadItems, maxProbing)
+        {
+            //Empty
+        }
+
+        public WeakSetBucket(int capacity, IEqualityComparer<T> comparer, bool autoRemoveDeadItems, int maxProbing)
+        {
+            var defaultComparer = EqualityComparerHelper<T>.Default;
+            IEqualityComparer<TNeedle> needleComparer;
+            if (ReferenceEquals(comparer, null) || ReferenceEquals(comparer, defaultComparer))
+            {
+                _comparer = defaultComparer;
+                needleComparer = EqualityComparerHelper<TNeedle>.Default;
+            }
+            else
+            {
+                _comparer = comparer;
+                needleComparer = new NeedleConversionEqualityComparer<TNeedle, T>(_comparer);
+            }
+            _wrapped = new SetBucket<TNeedle>(capacity, needleComparer, maxProbing);
             if (autoRemoveDeadItems)
             {
                 RegisterForAutoRemoveDeadItemsExtracted();
@@ -303,19 +528,19 @@ namespace Theraot.Collections.ThreadSafe
         public int RemoveWhere(Predicate<T> predicate)
         {
             return _wrapped.RemoveWhere
-            (
-                input =>
-                {
-                    if (input.IsAlive)
-                    {
-                        return predicate(input.Value);
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            );
+                   (
+                       input =>
+                       {
+                           if (input.IsAlive)
+                           {
+                               return predicate(input.Value);
+                           }
+                           else
+                           {
+                               return false;
+                           }
+                       }
+                   );
         }
 
         public bool SetEquals(IEnumerable<T> other)

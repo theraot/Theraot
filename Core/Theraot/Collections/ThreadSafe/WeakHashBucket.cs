@@ -26,49 +26,43 @@ namespace Theraot.Collections.ThreadSafe
             //Empty
         }
 
+        public WeakHashBucket(KeyValuePair<TKey, TValue>[] prototype)
+            : this(Check.NotNullArgument(prototype, "prototype").Length, null as IEqualityComparer<TKey>, true)
+        {
+            this.AddRange(prototype);
+        }
+
+        public WeakHashBucket(KeyValuePair<TKey, TValue>[] prototype, IEqualityComparer<TKey> comparer)
+            : this(Check.NotNullArgument(prototype, "prototype").Length, comparer, true)
+        {
+            this.AddRange(prototype);
+        }
+
+        public WeakHashBucket(KeyValuePair<TKey, TValue>[] prototype, bool autoRemoveDeadItems)
+            : this(Check.NotNullArgument(prototype, "prototype").Length, null as IEqualityComparer<TKey>, autoRemoveDeadItems)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakHashBucket(KeyValuePair<TKey, TValue>[] prototype, IEqualityComparer<TKey> comparer, bool autoRemoveDeadItems)
+            : this(Check.NotNullArgument(prototype, "prototype").Length, comparer, autoRemoveDeadItems)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
         public WeakHashBucket(IEnumerable<KeyValuePair<TKey, TValue>> prototype)
             : this(null as IEqualityComparer<TKey>, true)
         {
             this.AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
-        public WeakHashBucket(KeyValuePair<TKey, TValue>[] prototype)
-            : this(null as IEqualityComparer<TKey>, true)
-        {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
-        }
-
         public WeakHashBucket(IEnumerable<KeyValuePair<TKey, TValue>> prototype, IEqualityComparer<TKey> comparer)
-            : this(null as IEqualityComparer<TKey>, true)
-        {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
-        }
-
-        public WeakHashBucket(KeyValuePair<TKey, TValue>[] prototype, IEqualityComparer<TKey> comparer)
             : this(comparer, true)
         {
             this.AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
-        public WeakHashBucket(IEqualityComparer<TKey> comparer)
-            : this (comparer, true)
-        {
-            //Empty
-        }
-
-        public WeakHashBucket(bool autoRemoveDeadItems)
-            : this(null as IEqualityComparer<TKey>, autoRemoveDeadItems)
-        {
-            //Empty
-        }
-
         public WeakHashBucket(IEnumerable<KeyValuePair<TKey, TValue>> prototype, bool autoRemoveDeadItems)
-            : this(null as IEqualityComparer<TKey>, autoRemoveDeadItems)
-        {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
-        }
-
-        public WeakHashBucket(KeyValuePair<TKey, TValue>[] prototype, bool autoRemoveDeadItems)
             : this(null as IEqualityComparer<TKey>, autoRemoveDeadItems)
         {
             this.AddRange(Check.NotNullArgument(prototype, "prototype"));
@@ -80,10 +74,16 @@ namespace Theraot.Collections.ThreadSafe
             this.AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
-        public WeakHashBucket(KeyValuePair<TKey, TValue>[] prototype, IEqualityComparer<TKey> comparer, bool autoRemoveDeadItems)
-            : this(comparer, autoRemoveDeadItems)
+        public WeakHashBucket(IEqualityComparer<TKey> comparer)
+            : this(comparer, true)
         {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            //Empty
+        }
+
+        public WeakHashBucket(bool autoRemoveDeadItems)
+            : this(null as IEqualityComparer<TKey>, autoRemoveDeadItems)
+        {
+            //Empty
         }
 
         public WeakHashBucket(IEqualityComparer<TKey> comparer, bool autoRemoveDeadItems)
@@ -101,6 +101,231 @@ namespace Theraot.Collections.ThreadSafe
                 needleComparer = new NeedleConversionEqualityComparer<TNeedle, TKey>(_comparer);
             }
             _wrapped = new HashBucket<TNeedle, TValue>(needleComparer);
+            if (autoRemoveDeadItems)
+            {
+                RegisterForAutoRemoveDeadItemsExtracted();
+            }
+            else
+            {
+                GC.SuppressFinalize(this);
+            }
+        }
+
+        public WeakHashBucket(int capacity)
+            : this(capacity, null as IEqualityComparer<TKey>, true)
+        {
+            //Empty
+        }
+
+        public WeakHashBucket(int capacity, IEnumerable<KeyValuePair<TKey, TValue>> prototype)
+            : this(capacity, null as IEqualityComparer<TKey>, true)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakHashBucket(int capacity, IEnumerable<KeyValuePair<TKey, TValue>> prototype, IEqualityComparer<TKey> comparer)
+            : this(capacity, comparer, true)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakHashBucket(int capacity, IEnumerable<KeyValuePair<TKey, TValue>> prototype, bool autoRemoveDeadItems)
+            : this(capacity, null as IEqualityComparer<TKey>, autoRemoveDeadItems)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakHashBucket(int capacity, IEnumerable<KeyValuePair<TKey, TValue>> prototype, IEqualityComparer<TKey> comparer, bool autoRemoveDeadItems)
+            : this(capacity, comparer, autoRemoveDeadItems)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakHashBucket(int capacity, IEqualityComparer<TKey> comparer)
+            : this(capacity, comparer, true)
+        {
+            //Empty
+        }
+
+        public WeakHashBucket(int capacity, bool autoRemoveDeadItems)
+            : this(capacity, null as IEqualityComparer<TKey>, autoRemoveDeadItems)
+        {
+            //Empty
+        }
+
+        public WeakHashBucket(int capacity, IEqualityComparer<TKey> comparer, bool autoRemoveDeadItems)
+        {
+            var defaultComparer = EqualityComparerHelper<TKey>.Default;
+            IEqualityComparer<TNeedle> needleComparer;
+            if (ReferenceEquals(comparer, null) || ReferenceEquals(comparer, defaultComparer))
+            {
+                _comparer = defaultComparer;
+                needleComparer = EqualityComparerHelper<TNeedle>.Default;
+            }
+            else
+            {
+                _comparer = comparer;
+                needleComparer = new NeedleConversionEqualityComparer<TNeedle, TKey>(_comparer);
+            }
+            _wrapped = new HashBucket<TNeedle, TValue>(capacity, needleComparer);
+            if (autoRemoveDeadItems)
+            {
+                RegisterForAutoRemoveDeadItemsExtracted();
+            }
+            else
+            {
+                GC.SuppressFinalize(this);
+            }
+        }
+
+        public WeakHashBucket(int maxProbing)
+            : this(null as IEqualityComparer<TKey>, true, maxProbing)
+        {
+            //Empty
+        }
+
+        public WeakHashBucket(KeyValuePair<TKey, TValue>[] prototype, int maxProbing)
+            : this(Check.NotNullArgument(prototype, "prototype").Length, null as IEqualityComparer<TKey>, true, maxProbing)
+        {
+            this.AddRange(prototype);
+        }
+
+        public WeakHashBucket(KeyValuePair<TKey, TValue>[] prototype, IEqualityComparer<TKey> comparer, int maxProbing)
+            : this(Check.NotNullArgument(prototype, "prototype").Length, comparer, true, maxProbing)
+        {
+            this.AddRange(prototype);
+        }
+
+        public WeakHashBucket(KeyValuePair<TKey, TValue>[] prototype, bool autoRemoveDeadItems, int maxProbing)
+            : this(Check.NotNullArgument(prototype, "prototype").Length, null as IEqualityComparer<TKey>, autoRemoveDeadItems, maxProbing)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakHashBucket(KeyValuePair<TKey, TValue>[] prototype, IEqualityComparer<TKey> comparer, bool autoRemoveDeadItems, int maxProbing)
+            : this(Check.NotNullArgument(prototype, "prototype").Length, comparer, autoRemoveDeadItems, maxProbing)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakHashBucket(IEnumerable<KeyValuePair<TKey, TValue>> prototype, int maxProbing)
+            : this(null as IEqualityComparer<TKey>, true, maxProbing)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakHashBucket(IEnumerable<KeyValuePair<TKey, TValue>> prototype, IEqualityComparer<TKey> comparer, int maxProbing)
+            : this(comparer, true, maxProbing)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakHashBucket(IEnumerable<KeyValuePair<TKey, TValue>> prototype, bool autoRemoveDeadItems, int maxProbing)
+            : this(null as IEqualityComparer<TKey>, autoRemoveDeadItems, maxProbing)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakHashBucket(IEnumerable<KeyValuePair<TKey, TValue>> prototype, IEqualityComparer<TKey> comparer, bool autoRemoveDeadItems, int maxProbing)
+            : this(comparer, autoRemoveDeadItems, maxProbing)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakHashBucket(IEqualityComparer<TKey> comparer, int maxProbing)
+            : this(comparer, true, maxProbing)
+        {
+            //Empty
+        }
+
+        public WeakHashBucket(bool autoRemoveDeadItems, int maxProbing)
+            : this(null as IEqualityComparer<TKey>, autoRemoveDeadItems, maxProbing)
+        {
+            //Empty
+        }
+
+        public WeakHashBucket(IEqualityComparer<TKey> comparer, bool autoRemoveDeadItems, int maxProbing)
+        {
+            var defaultComparer = EqualityComparerHelper<TKey>.Default;
+            IEqualityComparer<TNeedle> needleComparer;
+            if (ReferenceEquals(comparer, null) || ReferenceEquals(comparer, defaultComparer))
+            {
+                _comparer = defaultComparer;
+                needleComparer = EqualityComparerHelper<TNeedle>.Default;
+            }
+            else
+            {
+                _comparer = comparer;
+                needleComparer = new NeedleConversionEqualityComparer<TNeedle, TKey>(_comparer);
+            }
+            _wrapped = new HashBucket<TNeedle, TValue>(needleComparer, maxProbing);
+            if (autoRemoveDeadItems)
+            {
+                RegisterForAutoRemoveDeadItemsExtracted();
+            }
+            else
+            {
+                GC.SuppressFinalize(this);
+            }
+        }
+
+        public WeakHashBucket(int capacity, int maxProbing)
+            : this(capacity, null as IEqualityComparer<TKey>, true, maxProbing)
+        {
+            //Empty
+        }
+
+        public WeakHashBucket(int capacity, IEnumerable<KeyValuePair<TKey, TValue>> prototype, int maxProbing)
+            : this(capacity, null as IEqualityComparer<TKey>, true, maxProbing)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakHashBucket(int capacity, IEnumerable<KeyValuePair<TKey, TValue>> prototype, IEqualityComparer<TKey> comparer, int maxProbing)
+            : this(capacity, comparer, true, maxProbing)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakHashBucket(int capacity, IEnumerable<KeyValuePair<TKey, TValue>> prototype, bool autoRemoveDeadItems, int maxProbing)
+            : this(capacity, null as IEqualityComparer<TKey>, autoRemoveDeadItems, maxProbing)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakHashBucket(int capacity, IEnumerable<KeyValuePair<TKey, TValue>> prototype, IEqualityComparer<TKey> comparer, bool autoRemoveDeadItems, int maxProbing)
+            : this(capacity, comparer, autoRemoveDeadItems, maxProbing)
+        {
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+        }
+
+        public WeakHashBucket(int capacity, IEqualityComparer<TKey> comparer, int maxProbing)
+            : this(capacity, comparer, true, maxProbing)
+        {
+            //Empty
+        }
+
+        public WeakHashBucket(int capacity, bool autoRemoveDeadItems, int maxProbing)
+            : this(capacity, null as IEqualityComparer<TKey>, autoRemoveDeadItems, maxProbing)
+        {
+            //Empty
+        }
+
+        public WeakHashBucket(int capacity, IEqualityComparer<TKey> comparer, bool autoRemoveDeadItems, int maxProbing)
+        {
+            var defaultComparer = EqualityComparerHelper<TKey>.Default;
+            IEqualityComparer<TNeedle> needleComparer;
+            if (ReferenceEquals(comparer, null) || ReferenceEquals(comparer, defaultComparer))
+            {
+                _comparer = defaultComparer;
+                needleComparer = EqualityComparerHelper<TNeedle>.Default;
+            }
+            else
+            {
+                _comparer = comparer;
+                needleComparer = new NeedleConversionEqualityComparer<TNeedle, TKey>(_comparer);
+            }
+            _wrapped = new HashBucket<TNeedle, TValue>(capacity, needleComparer, maxProbing);
             if (autoRemoveDeadItems)
             {
                 RegisterForAutoRemoveDeadItemsExtracted();
@@ -290,19 +515,19 @@ namespace Theraot.Collections.ThreadSafe
         public int RemoveWhereKey(Predicate<TKey> predicate)
         {
             return _wrapped.RemoveWhereKey
-            (
-                key =>
-                {
-                    if (key.IsAlive)
-                    {
-                        return predicate.Invoke(key.Value);
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            );
+                   (
+                       key =>
+                       {
+                           if (key.IsAlive)
+                           {
+                               return predicate.Invoke(key.Value);
+                           }
+                           else
+                           {
+                               return false;
+                           }
+                       }
+                   );
         }
 
         public void Set(TKey key, TValue value)
