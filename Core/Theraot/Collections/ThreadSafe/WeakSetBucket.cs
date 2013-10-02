@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using Theraot.Collections.Specialized;
 using Theraot.Core;
 using Theraot.Threading;
 using Theraot.Threading.Needles;
@@ -87,8 +88,19 @@ namespace Theraot.Collections.ThreadSafe
 
         public WeakSetBucket(IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
         {
-            _comparer = comparer ?? EqualityComparerHelper<T>.Default;
-            _wrapped = new SetBucket<TNeedle>(EqualityComparerHelper<TNeedle>.Default);
+            var defaultComparer = EqualityComparerHelper<T>.Default;
+            IEqualityComparer<TNeedle> needleComparer;
+            if (ReferenceEquals(comparer, null) || ReferenceEquals(comparer, defaultComparer))
+            {
+                _comparer = defaultComparer;
+                needleComparer = EqualityComparerHelper<TNeedle>.Default;
+            }
+            else
+            {
+                _comparer = comparer;
+                needleComparer = new NeedleConversionEqualityComparer<TNeedle, T>(_comparer);
+            }
+            _wrapped = new SetBucket<TNeedle>(needleComparer);
             if (autoRemoveDeadItems)
             {
                 RegisterForAutoRemoveDeadItemsExtracted();
