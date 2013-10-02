@@ -20,48 +20,43 @@ namespace Theraot.Collections.ThreadSafe
         private StructNeedle<WeakNeedle<EventHandler>> _eventHandler;
 
         public WeakHashBucket()
+            : this(null as IEqualityComparer<TKey>, true)
         {
-            _comparer = EqualityComparerHelper<TKey>.Default;
-            _wrapped = new HashBucket<TNeedle, TValue>(EqualityComparerHelper<TNeedle>.Default);
-            RegisterForAutoRemoveDeadItemsExtracted();
+            //Empty
         }
 
         public WeakHashBucket(IEnumerable<KeyValuePair<TKey, TValue>> prototype)
-            : this()
+            : this(null as IEqualityComparer<TKey>, true)
         {
-            Check.NotNullArgument(prototype, "prototype");
-            this.AddRange(prototype);
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakHashBucket(KeyValuePair<TKey, TValue>[] prototype)
-            : this()
+            : this(null as IEqualityComparer<TKey>, true)
         {
-            Check.NotNullArgument(prototype, "prototype");
-            this.AddRange(prototype);
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakHashBucket(IEnumerable<KeyValuePair<TKey, TValue>> prototype, IEqualityComparer<TKey> comparer)
-            : this(comparer)
+            : this(null as IEqualityComparer<TKey>, true)
         {
-            Check.NotNullArgument(prototype, "prototype");
-            this.AddRange(prototype);
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakHashBucket(KeyValuePair<TKey, TValue>[] prototype, IEqualityComparer<TKey> comparer)
-            : this(comparer)
+            : this(comparer, true)
         {
-            Check.NotNullArgument(prototype, "prototype");
-            this.AddRange(prototype);
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakHashBucket(IEqualityComparer<TKey> comparer)
+            : this (comparer, true)
         {
-            _comparer = comparer ?? EqualityComparerHelper<TKey>.Default;
-            _wrapped = new HashBucket<TNeedle, TValue>(EqualityComparerHelper<TNeedle>.Default);
-            RegisterForAutoRemoveDeadItemsExtracted();
+            //Empty
         }
 
         public WeakHashBucket(bool autoRemoveDeadItems)
+            : this(null as IEqualityComparer<TKey>, autoRemoveDeadItems)
         {
             _comparer = EqualityComparerHelper<TKey>.Default;
             _wrapped = new HashBucket<TNeedle, TValue>(EqualityComparerHelper<TNeedle>.Default);
@@ -76,32 +71,27 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         public WeakHashBucket(IEnumerable<KeyValuePair<TKey, TValue>> prototype, bool autoRemoveDeadItems)
-            : this(autoRemoveDeadItems)
+            : this(null as IEqualityComparer<TKey>, autoRemoveDeadItems)
         {
-            Check.NotNullArgument(prototype, "prototype");
-            this.AddRange(prototype);
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakHashBucket(KeyValuePair<TKey, TValue>[] prototype, bool autoRemoveDeadItems)
-            : this(autoRemoveDeadItems)
+            : this(null as IEqualityComparer<TKey>, autoRemoveDeadItems)
         {
-            Check.NotNullArgument(prototype, "prototype");
-            this.AddRange(prototype);
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakHashBucket(IEnumerable<KeyValuePair<TKey, TValue>> prototype, IEqualityComparer<TKey> comparer, bool autoRemoveDeadItems)
             : this(comparer, autoRemoveDeadItems)
         {
-            Check.NotNullArgument(prototype, "prototype");
-            this.AddRange(prototype);
-            RegisterForAutoRemoveDeadItemsExtracted();
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakHashBucket(KeyValuePair<TKey, TValue>[] prototype, IEqualityComparer<TKey> comparer, bool autoRemoveDeadItems)
             : this(comparer, autoRemoveDeadItems)
         {
-            Check.NotNullArgument(prototype, "prototype");
-            this.AddRange(prototype);
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakHashBucket(IEqualityComparer<TKey> comparer, bool autoRemoveDeadItems)
