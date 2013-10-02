@@ -58,16 +58,7 @@ namespace Theraot.Collections.ThreadSafe
         public WeakHashBucket(bool autoRemoveDeadItems)
             : this(null as IEqualityComparer<TKey>, autoRemoveDeadItems)
         {
-            _comparer = EqualityComparerHelper<TKey>.Default;
-            _wrapped = new HashBucket<TNeedle, TValue>(EqualityComparerHelper<TNeedle>.Default);
-            if (autoRemoveDeadItems)
-            {
-                RegisterForAutoRemoveDeadItemsExtracted();
-            }
-            else
-            {
-                GC.SuppressFinalize(this);
-            }
+            //Empty
         }
 
         public WeakHashBucket(IEnumerable<KeyValuePair<TKey, TValue>> prototype, bool autoRemoveDeadItems)
