@@ -18,7 +18,7 @@ namespace Theraot.Threading
         static GCMonitor()
         {
             collectedEvent = new AutoResetEvent(false);
-            collectedEventHandlers = new WeakDelegateSet(false, false);
+            collectedEventHandlers = new WeakDelegateSet(1024, false, false, 32);
             AppDomain currentAppDomain = AppDomain.CurrentDomain;
             currentAppDomain.ProcessExit += new EventHandler(ReportApplicationDomainExit);
             currentAppDomain.DomainUnload += new EventHandler(ReportApplicationDomainExit);
