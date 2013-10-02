@@ -178,12 +178,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public WeakHashBucket(int maxProbing)
-            : this(null as IEqualityComparer<TKey>, true, maxProbing)
-        {
-            //Empty
-        }
-
         public WeakHashBucket(KeyValuePair<TKey, TValue>[] prototype, int maxProbing)
             : this(Check.NotNullArgument(prototype, "prototype").Length, null as IEqualityComparer<TKey>, true, maxProbing)
         {
