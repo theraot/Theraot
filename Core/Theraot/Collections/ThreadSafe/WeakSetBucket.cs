@@ -20,88 +20,69 @@ namespace Theraot.Collections.ThreadSafe
         private StructNeedle<WeakNeedle<EventHandler>> _eventHandler;
 
         public WeakSetBucket()
+            : this(null as IEqualityComparer<T>, true)
         {
-            _comparer = EqualityComparerHelper<T>.Default;
-            _wrapped = new SetBucket<TNeedle>(EqualityComparerHelper<TNeedle>.Default);
-            RegisterForAutoRemoveDeadItemsExtracted();
+            //Empty
         }
 
         public WeakSetBucket(IEnumerable<T> prototype)
-            : this()
+            : this(null as IEqualityComparer<T>, true)
         {
-            Check.NotNullArgument(prototype, "prototype");
-            this.AddRange(prototype);
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(T[] prototype)
-            : this()
+            : this(null as IEqualityComparer<T>, true)
         {
-            Check.NotNullArgument(prototype, "prototype");
-            this.AddRange(prototype);
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(IEnumerable<T> prototype, IEqualityComparer<T> comparer)
-            : this(comparer)
+            : this(comparer, true)
         {
-            Check.NotNullArgument(prototype, "prototype");
-            this.AddRange(prototype);
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(T[] prototype, IEqualityComparer<T> comparer)
-            : this(comparer)
+            : this(comparer, true)
         {
-            Check.NotNullArgument(prototype, "prototype");
-            this.AddRange(prototype);
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(IEqualityComparer<T> comparer)
+            : this (comparer, true)
         {
-            _comparer = comparer ?? EqualityComparerHelper<T>.Default;
-            _wrapped = new SetBucket<TNeedle>(EqualityComparerHelper<TNeedle>.Default);
-            RegisterForAutoRemoveDeadItemsExtracted();
+            //Empty
         }
 
         public WeakSetBucket(bool autoRemoveDeadItems)
+            : this (null as IEqualityComparer<T>, autoRemoveDeadItems)
         {
-            _comparer = EqualityComparerHelper<T>.Default;
-            _wrapped = new SetBucket<TNeedle>(EqualityComparerHelper<TNeedle>.Default);
-            if (autoRemoveDeadItems)
-            {
-                RegisterForAutoRemoveDeadItemsExtracted();
-            }
-            else
-            {
-                GC.SuppressFinalize(this);
-            }
+            //Empty
         }
 
         public WeakSetBucket(IEnumerable<T> prototype, bool autoRemoveDeadItems)
-            : this(autoRemoveDeadItems)
+            : this(null as IEqualityComparer<T>, autoRemoveDeadItems)
         {
-            Check.NotNullArgument(prototype, "prototype");
-            this.AddRange(prototype);
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(T[] prototype, bool autoRemoveDeadItems)
-            : this(autoRemoveDeadItems)
+            : this(null as IEqualityComparer<T>, autoRemoveDeadItems)
         {
-            Check.NotNullArgument(prototype, "prototype");
-            this.AddRange(prototype);
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(IEnumerable<T> prototype, IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
             : this(comparer, autoRemoveDeadItems)
         {
-            Check.NotNullArgument(prototype, "prototype");
-            this.AddRange(prototype);
-            RegisterForAutoRemoveDeadItemsExtracted();
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(T[] prototype, IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
             : this(comparer, autoRemoveDeadItems)
         {
-            Check.NotNullArgument(prototype, "prototype");
-            this.AddRange(prototype);
+            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
