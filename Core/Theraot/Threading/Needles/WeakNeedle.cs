@@ -64,34 +64,44 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
+        public bool TryGetTarget(out T target)
+        {
+            target = default(T);
+            if (!_handle.IsAllocated)
+            {
+                return false;
+            }
+            else
+            {
+                try
+                {
+                    object obj = _handle.Target;
+                    if (obj == null)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        target = (T)obj;
+                        return true;
+                    }
+                }
+                catch (InvalidOperationException)
+                {
+                    return false;
+                }
+            }
+        }
+
         public virtual T Value
         {
             [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
             get
             {
-                if (!_handle.IsAllocated)
-                {
-                    return default(T);
-                }
-                else
-                {
-                    try
-                    {
-                        object obj = _handle.Target;
-                        if (obj == null)
-                        {
-                            return default(T);
-                        }
-                        else
-                        {
-                            return (T)obj;
-                        }
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        return default(T);
-                    }
-                }
+                T value;
+                TryGetTarget(out value);
+                return value;
             }
             [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
             set
