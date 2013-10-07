@@ -23,6 +23,10 @@ namespace Theraot.Core
             {
                 return SerializerCloner.Instance;
             }
+            else if (TypeHelper.IsValueTypeRecursive(type))
+            {
+                return StructCloner.Instance;
+            }
             else
             {
                 return null;
@@ -98,6 +102,29 @@ namespace Theraot.Core
                 var stream = new MemoryStream();
                 formatter.Serialize(stream, target);
                 return (T)formatter.Deserialize(stream);
+            }
+        }
+
+        private class StructCloner : ICloner<T>
+        {
+            private static ICloner<T> _instance = new StructCloner();
+
+            private StructCloner()
+            {
+                //Empty
+            }
+
+            public static ICloner<T> Instance
+            {
+                get
+                {
+                    return _instance;
+                }
+            }
+
+            public T Clone(T target)
+            {
+                return target;
             }
         }
     }
