@@ -309,6 +309,11 @@ namespace Theraot.Core
             return false;
         }
 
+        public static bool IsNullable(this Type type)
+        {
+            return !ReferenceEquals(Nullable.GetUnderlyingType(type), null);
+        }
+
         public static bool IsPrimitiveIntegerType(this Type type)
         {
             if (type.IsPrimitive)
@@ -336,9 +341,16 @@ namespace Theraot.Core
             }
         }
 
-        public static bool IsNullable(this Type type)
+        public static bool IsValueTypeRecursive(this Type type)
         {
-            return !ReferenceEquals(Nullable.GetUnderlyingType(type), null);
+            if (type == null)
+            {
+                throw new ArgumentNullException("type");
+            }
+            else
+            {
+                return IsValueTypeRecursiveExtracted(type);
+            }
         }
 
         public static Type MakeNullableType(this Type self)
@@ -353,6 +365,12 @@ namespace Theraot.Core
         }
 
         private static bool IsBlittableExtracted(Type type)
+        {
+            var property = typeof(BlittableInfo<>).MakeGenericType(type).GetProperty("Result", BindingFlags.Public | BindingFlags.Static);
+            return (bool)property.GetValue(null, null);
+        }
+
+        private static bool IsValueTypeRecursiveExtracted(Type type)
         {
             var property = typeof(BlittableInfo<>).MakeGenericType(type).GetProperty("Result", BindingFlags.Public | BindingFlags.Static);
             return (bool)property.GetValue(null, null);
@@ -442,6 +460,47 @@ namespace Theraot.Core
                         foreach (FieldInfo field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
                         {
                             if (!IsBlittableExtracted(field.FieldType))
+                            {
+                                _result = false;
+                                return;
+                            }
+                        }
+                        _result = true;
+                    }
+                    else
+                    {
+                        _result = false;
+                    }
+                }
+            }
+
+            public static bool Result
+            {
+                get
+                {
+                    return _result;
+                }
+            }
+        }
+
+        private static class ValueTypeInfo<T>
+        {
+            private static readonly bool _result;
+
+            static ValueTypeInfo()
+            {
+                var type = typeof(T);
+                if (type.IsPrimitive)
+                {
+                    _result = true;
+                }
+                else
+                {
+                    if (type.IsValueType)
+                    {
+                        foreach (FieldInfo field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+                        {
+                            if (!IsValueTypeRecursiveExtracted(field.FieldType))
                             {
                                 _result = false;
                                 return;
