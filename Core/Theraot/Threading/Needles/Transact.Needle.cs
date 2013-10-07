@@ -1,6 +1,8 @@
 #if FAT
 
+using System;
 using System.Collections.Generic;
+using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
@@ -8,12 +10,30 @@ namespace Theraot.Threading.Needles
     {
         public sealed partial class Needle<T> : Theraot.Threading.Needles.Needle<T>, IResource
         {
+            private ICloner<T> _cloner;
             private LockNeedle<Transact> _lockNeedle = new LockNeedle<Transact>(Transact._lockContext);
 
             public Needle(T value)
                 : base(value)
             {
-                //Empty
+                _cloner = CloneHelper<T>.GetCloner();
+                if (ReferenceEquals(_cloner, null))
+                {
+                    throw new InvalidOperationException(string.Format("Unable to get a cloner for {0}", typeof(T).ToString()));
+                }
+            }
+
+            public Needle(T value, ICloner<T> cloner)
+                : base(value)
+            {
+                if (ReferenceEquals(cloner, null))
+                {
+                    throw new ArgumentNullException("cloner");
+                }
+                else
+                {
+                    _cloner = cloner;
+                }
             }
 
             public override T Value
@@ -21,44 +41,12 @@ namespace Theraot.Threading.Needles
                 get
                 {
                     var transaction = Transact.CurrentTransaction;
-                    if (ReferenceEquals(transaction, null))
-                    {
-                        var tmp = base.Value;
-                        return tmp;
-                    }
-                    else
-                    {
-                        object value;
-                        if (transaction._writeLog.TryGetValue(this, out value))
-                        {
-                            return (T)value;
-                        }
-                        else
-                        {
-                            if (transaction._readLog.TryGetValue(this, out value))
-                            {
-                                return (T)value;
-                            }
-                            else
-                            {
-                                var tmp = base.Value;
-                                transaction._readLog.CharyAdd(this, tmp);
-                                return tmp;
-                            }
-                        }
-                    }
+                    return RetrieveValue(transaction);
                 }
                 set
                 {
                     var transaction = Transact.CurrentTransaction;
-                    if (ReferenceEquals(transaction, null))
-                    {
-                        base.Value = value;
-                    }
-                    else
-                    {
-                        transaction._writeLog.Set(this, value);
-                    }
+                    StoreValue(transaction, value);
                 }
             }
 
@@ -84,21 +72,21 @@ namespace Theraot.Threading.Needles
                 }
             }
 
+            bool IResource.CheckCapture()
+            {
+                var transaction = Transact.CurrentTransaction;
+                return ReferenceEquals(_lockNeedle.Value, transaction);
+            }
+
             bool IResource.CheckValue()
             {
                 var transaction = Transact.CurrentTransaction;
                 object value;
                 if (transaction._readLog.TryGetValue(this, out value))
                 {
-                    return EqualityComparer<T>.Default.Equals(base.Value, (T)value);
+                    return EqualityComparer<T>.Default.Equals(RetrieveValue(transaction), (T)value);
                 }
                 return false;
-            }
-
-            bool IResource.CheckCapture()
-            {
-                var transaction = Transact.CurrentTransaction;
-                return ReferenceEquals(_lockNeedle.Value, transaction);
             }
 
             bool IResource.Commit()
@@ -109,7 +97,7 @@ namespace Theraot.Threading.Needles
                     object value;
                     if (transaction._writeLog.TryGetValue(this, out value))
                     {
-                        base.Value = (T)value;
+                        StoreValue(transaction._parentTransaction, (T)value);
                     }
                     return true;
                 }
@@ -134,6 +122,48 @@ namespace Theraot.Threading.Needles
             {
                 //TODO: Remove from read and write log
                 _lockNeedle.Release();
+            }
+
+            private T RetrieveValue(Transact transaction)
+            {
+                if (ReferenceEquals(transaction, null))
+                {
+                    var value = base.Value;
+                    return value;
+                }
+                else
+                {
+                    object value;
+                    if (transaction._writeLog.TryGetValue(this, out value))
+                    {
+                        return (T)value;
+                    }
+                    else
+                    {
+                        if (transaction._readLog.TryGetValue(this, out value))
+                        {
+                            return (T)value;
+                        }
+                        else
+                        {
+                            var clone = _cloner.Clone(RetrieveValue(transaction._parentTransaction));
+                            transaction._readLog.CharyAdd(this, clone);
+                            return clone;
+                        }
+                    }
+                }
+            }
+
+            private void StoreValue(Transact transaction, T value)
+            {
+                if (ReferenceEquals(transaction, null))
+                {
+                    base.Value = value;
+                }
+                else
+                {
+                    transaction._writeLog.Set(this, value);
+                }
             }
         }
     }
