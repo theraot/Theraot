@@ -1,6 +1,5 @@
 ﻿#if NET20 || NET30 || NET35 || NET40
 
-using System;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
@@ -39,7 +38,7 @@ namespace System
             }
         }
 
-        public new T Target
+        public T Target
         {
             [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
             get
@@ -52,6 +51,19 @@ namespace System
             set
             {
                 SetTarget(value);
+            }
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null)
+            {
+                throw new ArgumentNullException("info");
+            }
+            else
+            {
+                info.AddValue("TrackedObject", this.Target, typeof(T));
+                info.AddValue("TrackResurrection", _trackResurrection);
             }
         }
 
