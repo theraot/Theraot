@@ -136,9 +136,9 @@ This are some parts worth of mention:
 
 Note 1: EqualityComparerHelper<T> creates equiality comparers for delegates, and tuples among other types.
 
-Note 1: The notifications of GCMonitor will run in a dedicated thread, make sure to not waste it's time. It is strongly suggested to use it to start async operations.
+Note 2: The notifications of GCMonitor will run in a dedicated thread, make sure to not waste it's time. It is strongly suggested to use it to start async operations.
 
-Note 2: In theory you shouldn't need the CriticalDisposable, if you need it, chances are something else is wrong.
+Note 3: In theory you shouldn't need the CriticalDisposable, if you need it, chances are something else is wrong.
 
 ---
 Needles
