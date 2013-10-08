@@ -53,6 +53,11 @@ namespace Theraot.Core
         {
             _result = _target.Invoke(<# if (indice != 0) { if (indice == 1) #>_obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>_arg<#=subindice#><#}}#>);
         }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
+        }
     }
     <#}
     for (var indice = 0; indice < 17; indice++)
@@ -94,6 +99,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _target.Invoke(<# if (indice != 0) { if (indice == 1) #>_obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>_arg<#=subindice#><#}}#>);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
 <#

@@ -28,6 +28,11 @@ namespace Theraot.Core
         {
             _result = _target.Invoke();
         }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
+        }
     }
     
     [global::System.Diagnostics.DebuggerNonUserCode]
@@ -55,6 +60,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _result = _target.Invoke(_obj);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
     
@@ -85,6 +95,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _result = _target.Invoke(_arg1, _arg2);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
     
@@ -117,6 +132,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _result = _target.Invoke(_arg1, _arg2, _arg3);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
     
@@ -151,6 +171,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _result = _target.Invoke(_arg1, _arg2, _arg3, _arg4);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
     
@@ -187,6 +212,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _result = _target.Invoke(_arg1, _arg2, _arg3, _arg4, _arg5);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
     
@@ -225,6 +255,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _result = _target.Invoke(_arg1, _arg2, _arg3, _arg4, _arg5, _arg6);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
     
@@ -265,6 +300,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _result = _target.Invoke(_arg1, _arg2, _arg3, _arg4, _arg5, _arg6, _arg7);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
     
@@ -307,6 +347,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _result = _target.Invoke(_arg1, _arg2, _arg3, _arg4, _arg5, _arg6, _arg7, _arg8);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
     
@@ -351,6 +396,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _result = _target.Invoke(_arg1, _arg2, _arg3, _arg4, _arg5, _arg6, _arg7, _arg8, _arg9);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
     
@@ -397,6 +447,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _result = _target.Invoke(_arg1, _arg2, _arg3, _arg4, _arg5, _arg6, _arg7, _arg8, _arg9, _arg10);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
     
@@ -445,6 +500,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _result = _target.Invoke(_arg1, _arg2, _arg3, _arg4, _arg5, _arg6, _arg7, _arg8, _arg9, _arg10, _arg11);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
     
@@ -495,6 +555,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _result = _target.Invoke(_arg1, _arg2, _arg3, _arg4, _arg5, _arg6, _arg7, _arg8, _arg9, _arg10, _arg11, _arg12);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
     
@@ -547,6 +612,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _result = _target.Invoke(_arg1, _arg2, _arg3, _arg4, _arg5, _arg6, _arg7, _arg8, _arg9, _arg10, _arg11, _arg12, _arg13);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
     
@@ -601,6 +671,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _result = _target.Invoke(_arg1, _arg2, _arg3, _arg4, _arg5, _arg6, _arg7, _arg8, _arg9, _arg10, _arg11, _arg12, _arg13, _arg14);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
     
@@ -657,6 +732,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _result = _target.Invoke(_arg1, _arg2, _arg3, _arg4, _arg5, _arg6, _arg7, _arg8, _arg9, _arg10, _arg11, _arg12, _arg13, _arg14, _arg15);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
     
@@ -716,6 +796,11 @@ namespace Theraot.Core
         {
             _result = _target.Invoke(_arg1, _arg2, _arg3, _arg4, _arg5, _arg6, _arg7, _arg8, _arg9, _arg10, _arg11, _arg12, _arg13, _arg14, _arg15, _arg16);
         }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
+        }
     }
     
     [global::System.Diagnostics.DebuggerNonUserCode]
@@ -731,6 +816,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _target.Invoke();
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
 
@@ -749,6 +839,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _target.Invoke(_obj);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
 
@@ -769,6 +864,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _target.Invoke(_arg1, _arg2);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
 
@@ -791,6 +891,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _target.Invoke(_arg1, _arg2, _arg3);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
 
@@ -815,6 +920,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _target.Invoke(_arg1, _arg2, _arg3, _arg4);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
 
@@ -841,6 +951,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _target.Invoke(_arg1, _arg2, _arg3, _arg4, _arg5);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
 
@@ -869,6 +984,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _target.Invoke(_arg1, _arg2, _arg3, _arg4, _arg5, _arg6);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
 
@@ -899,6 +1019,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _target.Invoke(_arg1, _arg2, _arg3, _arg4, _arg5, _arg6, _arg7);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
 
@@ -931,6 +1056,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _target.Invoke(_arg1, _arg2, _arg3, _arg4, _arg5, _arg6, _arg7, _arg8);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
 
@@ -965,6 +1095,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _target.Invoke(_arg1, _arg2, _arg3, _arg4, _arg5, _arg6, _arg7, _arg8, _arg9);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
 
@@ -1001,6 +1136,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _target.Invoke(_arg1, _arg2, _arg3, _arg4, _arg5, _arg6, _arg7, _arg8, _arg9, _arg10);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
 
@@ -1039,6 +1179,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _target.Invoke(_arg1, _arg2, _arg3, _arg4, _arg5, _arg6, _arg7, _arg8, _arg9, _arg10, _arg11);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
 
@@ -1079,6 +1224,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _target.Invoke(_arg1, _arg2, _arg3, _arg4, _arg5, _arg6, _arg7, _arg8, _arg9, _arg10, _arg11, _arg12);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
 
@@ -1121,6 +1271,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _target.Invoke(_arg1, _arg2, _arg3, _arg4, _arg5, _arg6, _arg7, _arg8, _arg9, _arg10, _arg11, _arg12, _arg13);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
 
@@ -1165,6 +1320,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _target.Invoke(_arg1, _arg2, _arg3, _arg4, _arg5, _arg6, _arg7, _arg8, _arg9, _arg10, _arg11, _arg12, _arg13, _arg14);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
 
@@ -1211,6 +1371,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _target.Invoke(_arg1, _arg2, _arg3, _arg4, _arg5, _arg6, _arg7, _arg8, _arg9, _arg10, _arg11, _arg12, _arg13, _arg14, _arg15);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
 
@@ -1259,6 +1424,11 @@ namespace Theraot.Core
         public void Invoke()
         {
             _target.Invoke(_arg1, _arg2, _arg3, _arg4, _arg5, _arg6, _arg7, _arg8, _arg9, _arg10, _arg11, _arg12, _arg13, _arg14, _arg15, _arg16);
+        }
+
+        public Action InvokeAction()
+        {
+            return new Action(Invoke);
         }
     }
 }
