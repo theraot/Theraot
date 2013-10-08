@@ -92,11 +92,11 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        protected ManualResetEvent WaitHandle
+        protected INeedle<ManualResetEvent> WaitHandle
         {
             get
             {
-                return _waitHandle.Value;
+                return _waitHandle;
             }
         }
 

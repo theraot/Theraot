@@ -9,8 +9,6 @@ namespace Theraot.Threading.Needles
     public partial class LazyDisposableNeedle<T> : LazyNeedle<T>, ICacheNeedle<T>
         where T : IDisposable
     {
-        //TODO: dispose waithandle
-
         public LazyDisposableNeedle(Func<T> function)
             : base(function)
         {
@@ -43,6 +41,11 @@ namespace Theraot.Threading.Needles
                 {
                     try
                     {
+                        var waitHandle = WaitHandle.Value;
+                        if (!WaitHandle.IsAlive)
+                        {
+                            WaitHandle.Value = new System.Threading.ManualResetEvent(false);
+                        }
                         beforeInitialize.SafeInvoke();
                     }
                     finally
@@ -57,6 +60,12 @@ namespace Theraot.Threading.Needles
         {
             var target = Value;
             target.Dispose();
+            var waitHandle = WaitHandle.Value;
+            if (WaitHandle.IsAlive)
+            {
+                waitHandle.Dispose();
+            }
+            WaitHandle.Release();
             SetTarget(default(T));
         }
     }
