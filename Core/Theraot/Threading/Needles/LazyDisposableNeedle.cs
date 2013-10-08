@@ -63,7 +63,7 @@ namespace Theraot.Threading.Needles
             var waitHandle = WaitHandle.Value;
             if (WaitHandle.IsAlive)
             {
-                waitHandle.Dispose();
+                waitHandle.Close();
             }
             WaitHandle.Release();
             SetTarget(default(T));
