@@ -10,47 +10,40 @@ namespace Theraot.Threading.Needles
     public partial class CacheNeedle<T> : WeakNeedle<T>, ICacheNeedle<T>
         where T : class
     {
-        //TODO: thread safety
-
-        private int _cached;
-        private Func<T> _function;
         private int _hashCode;
+        private int _status;
+        private Func<T> _valueFactory;
+        private StructNeedle<ManualResetEvent> _waitHandle;
 
-        public CacheNeedle(Func<T> function)
+        public CacheNeedle(Func<T> valueFactory)
+            : this(valueFactory, false)
         {
-            Thread.VolatileWrite(ref _cached, 0);
-            _function = function ?? FuncHelper.GetDefaultFunc<T>();
-            _hashCode = base.GetHashCode();
+            //Empty
         }
 
-        public CacheNeedle(Func<T> function, bool trackResurrection)
-            : base(trackResurrection)
+        public CacheNeedle(Func<T> valueFactory, bool trackResurrection)
+            : this(valueFactory, default(T), trackResurrection)
         {
-            Thread.VolatileWrite(ref _cached, 0);
-            _function = function ?? FuncHelper.GetDefaultFunc<T>();
-            _hashCode = base.GetHashCode();
+            //Empty
         }
 
-        public CacheNeedle(Func<T> function, T target)
-            : base(target)
+        public CacheNeedle(Func<T> valueFactory, T target)
+            : this(valueFactory, target, false)
         {
-            Thread.VolatileWrite(ref _cached, 1);
-            _function = function ?? FuncHelper.GetDefaultFunc<T>();
-            if (ReferenceEquals(target, null))
-            {
-                _hashCode = base.GetHashCode();
-            }
-            else
-            {
-                _hashCode = target.GetHashCode();
-            }
+            //Empty
         }
 
-        public CacheNeedle(Func<T> function, T target, bool trackResurrection)
+        public CacheNeedle(Func<T> valueFactory, T target, bool trackResurrection)
             : base(target, trackResurrection)
         {
-            Thread.VolatileWrite(ref _cached, 1);
-            _function = function ?? FuncHelper.GetDefaultFunc<T>();
+            Func<T> __valueFactory = valueFactory ?? FuncHelper.GetReturnFunc(target);
+            Thread thread = null;
+            _waitHandle = new StructNeedle<ManualResetEvent>(new ManualResetEvent(false));
+            _valueFactory =
+                () =>
+                {
+                    return FullMode(__valueFactory, ref thread);
+                };
             if (ReferenceEquals(target, null))
             {
                 _hashCode = base.GetHashCode();
@@ -91,7 +84,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return (Thread.VolatileRead(ref _cached) != 0) && IsAlive;
+                return (Thread.VolatileRead(ref _status) != 0) && IsAlive;
             }
         }
 
@@ -99,20 +92,21 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                if (IsCompleted)
-                {
-                    return base.Value;
-                }
-                else
-                {
-                    var result = _function.Invoke();
-                    base.Value = result;
-                    return result;
-                }
+                Initialize();
+                return base.Value;
             }
             set
             {
-                base.Value = value;
+                Allocate(value, TrackResurrection);
+                Thread.VolatileWrite(ref _status, 1);
+            }
+        }
+
+        protected INeedle<ManualResetEvent> WaitHandle
+        {
+            get
+            {
+                return _waitHandle;
             }
         }
 
@@ -134,9 +128,85 @@ namespace Theraot.Threading.Needles
             return _hashCode;
         }
 
+        public virtual void Initialize()
+        {
+            _valueFactory.Invoke();
+        }
+
         public virtual void InvalidateCache()
         {
-            Thread.VolatileWrite(ref _cached, 0);
+            Thread.VolatileWrite(ref _status, 0);
+        }
+
+        protected virtual void Initialize(Action beforeInitialize)
+        {
+            var _beforeInitialize = Check.NotNullArgument(beforeInitialize, "beforeInitialize");
+            if (Thread.VolatileRead(ref _status) == 0)
+            {
+                try
+                {
+                    _beforeInitialize.Invoke();
+                }
+                finally
+                {
+                    _valueFactory.Invoke();
+                }
+            }
+        }
+
+        private T FullMode(Func<T> valueFactory, ref Thread thread)
+        {
+        back:
+            if (Interlocked.CompareExchange(ref _status, 2, 0) == 0)
+            {
+                try
+                {
+                    thread = Thread.CurrentThread;
+                    var _target = valueFactory.Invoke();
+                    Allocate(_target, TrackResurrection);
+                    Thread.VolatileWrite(ref _status, 1);
+                    return _target;
+                }
+                catch (Exception)
+                {
+                    Thread.VolatileWrite(ref _status, 0);
+                    throw;
+                }
+                finally
+                {
+                    _waitHandle.Value.Set();
+                    thread = null;
+                }
+            }
+            else
+            {
+                if (ReferenceEquals(thread, Thread.CurrentThread))
+                {
+                    throw new InvalidOperationException();
+                }
+                else
+                {
+                    _waitHandle.Value.WaitOne();
+                    if (Thread.VolatileRead(ref _status) == 1)
+                    {
+                        return base.Value;
+                    }
+                    else
+                    {
+                        goto back;
+                    }
+                }
+            }
+        }
+
+        private void UnmanagedDispose()
+        {
+            var waitHandle = _waitHandle.Value;
+            if (!ReferenceEquals(waitHandle, null))
+            {
+                waitHandle.Close();
+            }
+            _waitHandle.Value = null;
         }
     }
 }

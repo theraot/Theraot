@@ -14,10 +14,11 @@
         },
         new KeyValuePair<string, string>[]
         {
+            new KeyValuePair<string, string>("this", "UnmanagedDispose")
         },
         new string[]
         {
-            "_function"
+            "_valueFactory"
         }
     )
 #>

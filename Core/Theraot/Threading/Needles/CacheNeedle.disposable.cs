@@ -25,11 +25,11 @@ namespace Theraot.Threading.Needles
                 {
                     try
                     {
-                        //Empty
+                        this.UnmanagedDispose();
                     }
                     finally
                     {
-                        _function = null;
+                        _valueFactory = null;
                     }
                     base.Dispose(disposeManagedResources);
                 }
