@@ -1,4 +1,4 @@
-﻿#if NET40 || NET20 || NET30 || NET35
+﻿#if NET20 || NET30 || NET35 || NET40
 
 using Theraot.Threading;
 
