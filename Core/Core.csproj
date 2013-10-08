@@ -243,6 +243,7 @@
     <Compile Include="System\Func9.net35.cs" />
     <Compile Include="System\IObservable.net35.cs" />
     <Compile Include="System\IObserver.net35.cs" />
+    <Compile Include="System\IProgress.net40.cs" />
     <Compile Include="System\Lazy1.net35.cs" />
     <Compile Include="System\Lazy2.net35.cs" />
     <Compile Include="System\LazyThreadSafetyMode.net35.cs" />
