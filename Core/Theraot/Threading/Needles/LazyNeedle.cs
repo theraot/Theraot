@@ -22,7 +22,7 @@ namespace Theraot.Threading.Needles
         public LazyNeedle(Func<T> valueFactory, T target)
             : base(target)
         {
-            Func<T> __valueFactory = valueFactory ?? (() => target);
+            Func<T> __valueFactory = valueFactory ?? FuncHelper.GetReturnFunc(target);
             Thread thread = null;
             _waitHandle = new StructNeedle<ManualResetEvent>(new ManualResetEvent(false));
             _valueFactory =
