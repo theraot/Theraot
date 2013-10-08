@@ -8,7 +8,7 @@ namespace Theraot.Threading.Needles
     [global::System.Diagnostics.DebuggerNonUserCode]
     public class LazyNeedle<T> : Needle<T>, ICacheNeedle<T>, IEquatable<LazyNeedle<T>>, IPromise<T>
     {
-        private int _isCompleted;
+        private int _status;
         private Func<T> _valueFactory;
 
         private StructNeedle<ManualResetEvent> _waitHandle;
@@ -25,11 +25,10 @@ namespace Theraot.Threading.Needles
             Func<T> __valueFactory = valueFactory ?? (() => target);
             Thread thread = null;
             _waitHandle = new StructNeedle<ManualResetEvent>(new ManualResetEvent(false));
-            int preIsValueCreated = 0;
             _valueFactory =
                 () =>
                 {
-                    return FullMode(__valueFactory, ref thread, ref preIsValueCreated);
+                    return FullMode(__valueFactory, ref thread);
                 };
         }
 
@@ -74,7 +73,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return Thread.VolatileRead(ref _isCompleted) == 1;
+                return Thread.VolatileRead(ref _status) == 1;
             }
         }
 
@@ -88,7 +87,7 @@ namespace Theraot.Threading.Needles
             set
             {
                 SetTarget(value);
-                Interlocked.Exchange(ref _isCompleted, 1);
+                Thread.VolatileWrite(ref _status, 1);
             }
         }
 
@@ -143,7 +142,7 @@ namespace Theraot.Threading.Needles
         protected virtual void Initialize(Action beforeInitialize)
         {
             var _beforeInitialize = Check.NotNullArgument(beforeInitialize, "beforeInitialize");
-            if (Thread.VolatileRead(ref _isCompleted) == 0)
+            if (Thread.VolatileRead(ref _status) == 0)
             {
                 try
                 {
@@ -156,22 +155,22 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        private T FullMode(Func<T> valueFactory, ref Thread thread, ref int preIsValueCreated)
+        private T FullMode(Func<T> valueFactory, ref Thread thread)
         {
         back:
-            if (Interlocked.CompareExchange(ref preIsValueCreated, 1, 0) == 0)
+            if (Interlocked.CompareExchange(ref _status, 2, 0) == 0)
             {
                 try
                 {
                     thread = Thread.CurrentThread;
                     var _target = valueFactory.Invoke();
                     SetTarget(_target);
-                    Thread.VolatileWrite(ref _isCompleted, 1);
+                    Thread.VolatileWrite(ref _status, 1);
                     return _target;
                 }
                 catch (Exception)
                 {
-                    Thread.VolatileWrite(ref preIsValueCreated, 0);
+                    Thread.VolatileWrite(ref _status, 0);
                     throw;
                 }
                 finally
@@ -189,7 +188,7 @@ namespace Theraot.Threading.Needles
                 else
                 {
                     _waitHandle.Value.WaitOne();
-                    if (Thread.VolatileRead(ref preIsValueCreated) == 1)
+                    if (Thread.VolatileRead(ref _status) == 1)
                     {
                         return base.Value;
                     }
