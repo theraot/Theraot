@@ -6,6 +6,7 @@ using System.Security.Permissions;
 
 namespace System
 {
+    [Serializable]
     public sealed class WeakReference<T> : ISerializable
        where T : class
     {
@@ -54,6 +55,7 @@ namespace System
             }
         }
 
+        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
@@ -67,6 +69,7 @@ namespace System
             }
         }
 
+        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
         public void SetTarget(T value)
         {
             var oldHandle = _handle;
