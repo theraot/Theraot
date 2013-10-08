@@ -246,6 +246,7 @@
     <Compile Include="System\Lazy1.net35.cs" />
     <Compile Include="System\Lazy2.net35.cs" />
     <Compile Include="System\LazyThreadSafetyMode.net35.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionType.net30.cs" />
     <Compile Include="System\Linq\LinqCheck.cs" />
     <Compile Include="System\Linq\EnumerableExecutor.net35.cs" />
     <Compile Include="System\Linq\EnumerableExecutor1.net35.cs" />
@@ -260,7 +261,6 @@
     <Compile Include="System\Linq\Expressions\Expression.net30.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionPrinter.net35.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTransformer.cs" />
-    <Compile Include="System\Linq\Expressions\ExpressionType.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionVisitor.net35.cs" />
     <Compile Include="System\Linq\Expressions\Expression1.net30.cs" />
     <Compile Include="System\Linq\Expressions\Extensions.cs" />
@@ -301,6 +301,7 @@
     <Compile Include="System\Numerics\Complex.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\DynamicAttribute.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\ExecutionScope.net30.cs" />
+    <Compile Include="System\Runtime\CompilerServices\ExtensionAttribute.net30.cs" />
     <Compile Include="System\Runtime\CompilerServices\IStrongBox.cs" />
     <Compile Include="System\Runtime\CompilerServices\StrongBox.net30.cs" />
     <Compile Include="System\Threading\AggregateException.net35.cs" />
@@ -445,7 +446,6 @@
     <Compile Include="Theraot\Core\NumericHelper.cs" />
     <Compile Include="Theraot\Core\NumericHelper.Primes.cs" />
     <Compile Include="Theraot\Core\OrderedEnumerable.cs" />
-    <Compile Include="System\Runtime\CompilerServices\ExtensionAttribute.net20.cs" />
     <Compile Include="System\Tuple8.net35.cs" />
     <Compile Include="System\Tuple7.net35.cs" />
     <Compile Include="System\Tuple6.net35.cs" />
