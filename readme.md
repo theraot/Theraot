@@ -134,7 +134,7 @@ This are some parts worth of mention:
     - CritialDisposible : A variant of Disposible that inherits from CritialFinalizerObject. [See Note 2]
     - Work : a task scheduler implementation, intended to be part of the backport of System.Threading.Tasks.
 
-Note 1: The notifications of GCMonitor will run in the finalizer thread, make sure to not waste it's time. It is strongly suggested to use it to start async operations.
+Note 1: The notifications of GCMonitor will run in a dedicated thread, make sure to not waste it's time. It is strongly suggested to use it to start async operations.
 
 Note 2: In theory you shouldn't need the CriticalDisposable, if you need it, chances are something else is wrong.
 
