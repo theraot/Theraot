@@ -55,7 +55,7 @@ namespace System
             }
         }
 
-        [SecurityPermission(SecurityAction.LinkDemand, UnmanagedCode = true, Flags = SecurityPermissionFlag.SerializationFormatter)]
+        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
