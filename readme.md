@@ -55,8 +55,8 @@ Theraot's Libraries...
     - System.Therading.Volatile: Done
     - System.Tuple: Done
     - System.WeakReferene: Done
-  - Uses less than 1MB in disk
-  - keeps a consistent code style in the whole code [See Note 2]
+  - Uses less than 1MB in disk.
+  - Keeps a consistent code style in the whole code [See Note 2]
     
 Note 1: I mantain my copy of System.Numerics.BigInteger that was taken from Mono. I have provided the optimization for the cast from BigInteger to float and double.
 
@@ -97,7 +97,7 @@ This are some parts worth of mention:
     - Needles : [See "Needle" below]
     - ArrayPool : An object pool to recycle arrays.
     - Disposable : A general purpose disposable object with Action callback.
-    - DisposableAkin : Same as above, but can only be disposed by the same thread that created it. [See Note 1]
+    - DisposableAkin : Same as above, but disposable only by the thread that created it. [See Note 1]
     - IExtendedDisposable : A IDisposible that you can query to know if it was disposed. [See Note 2]
     - NoTrackingThreadLocal & TrackingThreadLocal : The backends for the backport of System.Threading.ThreadLocal.
     - ReentryGuard : A helper class that allows to protect a code from reentry.
@@ -126,13 +126,15 @@ This are some parts worth of mention:
       - WeakHashBucket : A lock-free hash based dictionary of weak references.
       - WeakSetBucket : A lock-free set of weak references.
   - Theraot.Core
-    - ICloneable<T> & ICloner<T> & CloneHelper : Generalization of ICloneable as generic
-    - EqualityComparerHelper<T> : A helper function to create equality comparers for types such as delegates and tuples.
+    - ICloneable<T> & ICloner<T> & CloneHelper : Generalization of ICloneable as generic.
+    - EqualityComparerHelper<T> : A helper class to create IEqualityComparer for multiple types. [See Note 1]
     - TraceRoute & TraceNode : A Network Traceroute implementation
   - Theraot.Threading
-    - GCMonitor : Allows to get notifications on Garbage Collection. [See Note 1]
-    - CritialDisposible : A variant of Disposible that inherits from CritialFinalizerObject. [See Note 2]
+    - GCMonitor : Allows to get notifications on Garbage Collection. [See Note 2]
+    - CritialDisposible : A variant of Disposible that inherits from CritialFinalizerObject. [See Note 3]
     - Work : a task scheduler implementation, intended to be part of the backport of System.Threading.Tasks.
+
+Note 1: EqualityComparerHelper<T> creates equiality comparers for delegates, and tuples among other types.
 
 Note 1: The notifications of GCMonitor will run in a dedicated thread, make sure to not waste it's time. It is strongly suggested to use it to start async operations.
 
