@@ -16,8 +16,9 @@ namespace Theraot.Threading.Needles
         private bool _trackResurrection;
 
         public WeakNeedle()
+            : this(false)
         {
-            _hashCode = base.GetHashCode();
+            //Empty
         }
 
         public WeakNeedle(bool trackResurrection)
@@ -200,6 +201,42 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
+        protected void Allocate(T value, bool trackResurrection)
+        {
+            var suspention = SuspendDisposal();
+            if (ReferenceEquals(suspention, null))
+            {
+                ReleaseExtracted();
+                _handle = GetNewHandle(value, trackResurrection);
+                if (Interlocked.CompareExchange(ref _managedDisposal, 0, 1) == 1)
+                {
+                    GC.ReRegisterForFinalize(this);
+                }
+                UnDispose();
+            }
+            else
+            {
+                using (suspention)
+                {
+                    var oldHandle = _handle;
+                    _handle = GetNewHandle(value, trackResurrection);
+                    if (oldHandle.IsAllocated)
+                    {
+                        oldHandle.Free();
+                        try
+                        {
+                            oldHandle.Free();
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            //Empty
+                        }
+                    }
+                }
+            }
+        }
+
         private static bool EqualsExtracted(WeakNeedle<T> left, WeakNeedle<T> right)
         {
             if (ReferenceEquals(left, null))
@@ -291,42 +328,6 @@ namespace Theraot.Threading.Needles
             else
             {
                 return right.IsAlive;
-            }
-        }
-
-        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
-        private void Allocate(T value, bool trackResurrection)
-        {
-            var suspention = SuspendDisposal();
-            if (ReferenceEquals(suspention, null))
-            {
-                ReleaseExtracted();
-                _handle = GetNewHandle(value, trackResurrection);
-                if (Interlocked.CompareExchange(ref _managedDisposal, 0, 1) == 1)
-                {
-                    GC.ReRegisterForFinalize(this);
-                }
-                UnDispose();
-            }
-            else
-            {
-                using (suspention)
-                {
-                    var oldHandle = _handle;
-                    _handle = GetNewHandle(value, trackResurrection);
-                    if (oldHandle.IsAllocated)
-                    {
-                        oldHandle.Free();
-                        try
-                        {
-                            oldHandle.Free();
-                        }
-                        catch (InvalidOperationException)
-                        {
-                            //Empty
-                        }
-                    }
-                }
             }
         }
 
