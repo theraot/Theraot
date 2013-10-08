@@ -9,6 +9,8 @@ namespace Theraot.Threading.Needles
     public partial class LazyDisposableNeedle<T> : LazyNeedle<T>, ICacheNeedle<T>
         where T : IDisposable
     {
+        //TODO: dispose waithandle
+
         public LazyDisposableNeedle(Func<T> function)
             : base(function)
         {

@@ -10,6 +10,8 @@ namespace Theraot.Threading.Needles
     public partial class CacheNeedle<T> : WeakNeedle<T>, ICacheNeedle<T>
         where T : class
     {
+        //TODO: thread safety
+
         private int _cached;
         private Func<T> _function;
         private int _hashCode;
