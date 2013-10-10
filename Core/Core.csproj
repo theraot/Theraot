@@ -243,6 +243,7 @@
     <Compile Include="System\Func9.net35.cs" />
     <Compile Include="System\IObservable.net35.cs" />
     <Compile Include="System\IObserver.net35.cs" />
+    <Compile Include="System\IProgress.net40.cs" />
     <Compile Include="System\Lazy1.net35.cs" />
     <Compile Include="System\Lazy2.net35.cs" />
     <Compile Include="System\LazyThreadSafetyMode.net35.cs" />
@@ -314,6 +315,11 @@
     <Compile Include="Theraot\Core\DelegateDeepEqualityComparer.cs" />
     <Compile Include="Theraot\Core\DelegateEqualityComparer.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\BucketStatus.cs" />
+    <Compile Include="Theraot\Core\Ersatz.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Ersatz.tt</DependentUpon>
+    </Compile>
     <Compile Include="Theraot\Core\StopwatchExtensions.cs" />
     <Compile Include="Theraot\Core\StringBuilderExtensions.cs" />
     <Compile Include="Theraot\Threading\GCMonitor.cs" />
@@ -630,6 +636,10 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ActionHelper.cs</LastGenOutput>
       <DeployService-Deploy>True</DeployService-Deploy>
+    </None>
+    <None Include="Theraot\Core\Ersatz.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Ersatz.cs</LastGenOutput>
     </None>
     <None Include="Theraot\Core\FuncHelper.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
