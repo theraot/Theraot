@@ -37,7 +37,7 @@ Theraot's Libraries...
     - System.Collections.Generic.HashSet: Done
     - System.Collections.Generic.SortedSet: Done
     - System.Collections.Linq: Up to .NET 3.5
-    - System.Collections.Linq.Expressions: Up to .NET 3.4
+    - System.Collections.Linq.Expressions: Up to .NET 3.5
     - System.Collections.ObjectModel.ObservableCollection: Work in progress
     - System.Collections.ObjectModel.ReadOnlyDictionary : Done
     - System.Collections.StructuralComparison: Done
