@@ -8,6 +8,26 @@ namespace Theraot.Collections
 {
     public static partial class Extensions
     {
+        public static IEnumerable<T> Append<T>(this IEnumerable<T> target, IEnumerable<T> append)
+        {
+            return new ExtendedEnumerable<T>(target, append);
+        }
+
+        public static IEnumerable<T> Append<T>(this IEnumerable<T> target, T append)
+        {
+            return new ExtendedEnumerable<T>(target, AsUnaryEnumerable(append));
+        }
+
+        public static IEnumerable<T> Append<T>(this IEnumerable<T> target, IEnumerable<T> append, Predicate<T> match)
+        {
+            return new ExtendedFilteredEnumerable<T>(target, append, match);
+        }
+
+        public static IEnumerable<T> Append<T>(this IEnumerable<T> target, T append, Predicate<T> match)
+        {
+            return new ExtendedFilteredEnumerable<T>(target, AsUnaryEnumerable(append), match);
+        }
+
         public static IList<TItem> AsList<TItem>(IEnumerable<TItem> collection)
         {
             var _result = collection as IList<TItem>;
@@ -55,29 +75,57 @@ namespace Theraot.Collections
                    );
         }
 
-        public static IEnumerable<T> Append<T>(this IEnumerable<T> target, IEnumerable<T> append)
-        {
-            return new ExtendedEnumerable<T>(target, append);
-        }
-
-        public static IEnumerable<T> Append<T>(this IEnumerable<T> target, T append)
-        {
-            return new ExtendedEnumerable<T>(target, AsUnaryEnumerable(append));
-        }
-
-        public static IEnumerable<T> Append<T>(this IEnumerable<T> target, IEnumerable<T> append, Predicate<T> match)
-        {
-            return new ExtendedFilteredEnumerable<T>(target, append, match);
-        }
-
-        public static IEnumerable<T> Append<T>(this IEnumerable<T> target, T append, Predicate<T> match)
-        {
-            return new ExtendedFilteredEnumerable<T>(target, AsUnaryEnumerable(append), match);
-        }
-
         public static IEnumerable<T> Filter<T>(this IEnumerable<T> target, Predicate<T> match)
         {
             return new ExtendedFilteredEnumerable<T>(target, null, match);
+        }
+
+        public static bool HasAtLeast<TSource>(this IEnumerable<TSource> source, int count)
+        {
+            var collection = source as ICollection<TSource>;
+            if (collection == null)
+            {
+                int result = 0;
+                using (var item = source.GetEnumerator())
+                {
+                    while (item.MoveNext())
+                    {
+                        checked
+                        {
+                            result++;
+                        }
+                        if (result == count)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+            else
+            {
+                return collection.Count > count;
+            }
+        }
+
+        public static IEnumerable<T> Prepend<T>(this IEnumerable<T> target, IEnumerable<T> prepend)
+        {
+            return new ExtendedEnumerable<T>(prepend, target);
+        }
+
+        public static IEnumerable<T> Prepend<T>(this IEnumerable<T> target, T prepend)
+        {
+            return new ExtendedEnumerable<T>(AsUnaryEnumerable(prepend), target);
+        }
+
+        public static IEnumerable<T> Prepend<T>(this IEnumerable<T> target, IEnumerable<T> prepend, Predicate<T> match)
+        {
+            return new ExtendedFilteredEnumerable<T>(prepend, target, match);
+        }
+
+        public static IEnumerable<T> Prepend<T>(this IEnumerable<T> target, T prepend, Predicate<T> match)
+        {
+            return new ExtendedFilteredEnumerable<T>(AsUnaryEnumerable(prepend), target, match);
         }
 
         public static IEnumerable<T> SkipItems<T>(this IEnumerable<T> target, int skipCount)
@@ -113,34 +161,6 @@ namespace Theraot.Collections
             else
             {
                 return StepItemsExtracted(_target, predicateCount, stepCount);
-            }
-        }
-
-        public static bool HasAtLeast<TSource>(this IEnumerable<TSource> source, int count)
-        {
-            var collection = source as ICollection<TSource>;
-            if (collection == null)
-            {
-                int result = 0;
-                using (var item = source.GetEnumerator())
-                {
-                    while (item.MoveNext())
-                    {
-                        checked
-                        {
-                            result++;
-                        }
-                        if (result == count)
-                        {
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }
-            else
-            {
-                return collection.Count > count;
             }
         }
 
