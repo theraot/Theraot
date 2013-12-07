@@ -11,8 +11,8 @@ namespace Theraot.Collections.Specialized
     {
         private readonly Predicate<T> _match;
 
-        public ExtendedFilteredEnumerable(IEnumerable<T> target, IEnumerable<T> extension, Predicate<T> match)
-            : base(target, extension)
+        public ExtendedFilteredEnumerable(IEnumerable<T> target, IEnumerable<T> append, Predicate<T> match)
+            : base(target, append)
         {
             _match = Check.NotNullArgument(match, "filter");
         }
@@ -26,7 +26,7 @@ namespace Theraot.Collections.Specialized
                     yield return item;
                 }
             }
-            foreach (T item in Extension)
+            foreach (T item in Append)
             {
                 if (_match.Invoke(item))
                 {

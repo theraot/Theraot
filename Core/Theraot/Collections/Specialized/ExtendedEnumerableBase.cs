@@ -8,20 +8,20 @@ namespace Theraot.Collections.Specialized
     [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "By Design")]
     public abstract class ExtendedEnumerableBase<T> : IEnumerable<T>
     {
-        private readonly IEnumerable<T> _extension;
+        private readonly IEnumerable<T> _append;
         private readonly IEnumerable<T> _target;
 
-        protected ExtendedEnumerableBase(IEnumerable<T> target, IEnumerable<T> extension)
+        protected ExtendedEnumerableBase(IEnumerable<T> target, IEnumerable<T> append)
         {
             _target = Check.NotNullArgument(target, "target");
-            _extension = Check.NotNullArgument(extension, "extension");
+            _append = append ?? EmptySet<T>.Instance;
         }
 
-        protected IEnumerable<T> Extension
+        protected IEnumerable<T> Append
         {
             get
             {
-                return _extension;
+                return _append;
             }
         }
 

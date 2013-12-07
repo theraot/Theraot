@@ -9,14 +9,14 @@ namespace Theraot.Collections.Specialized
     [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "By Design")]
     public sealed class ConditionalExtendedEnumerable<T> : ExtendedEnumerableBase<T>, IEnumerable<T>
     {
-        private readonly Func<bool> _enumerateExtension;
+        private readonly Func<bool> _enumerateAppend;
         private readonly Func<bool> _enumerateTarget;
 
-        public ConditionalExtendedEnumerable(IEnumerable<T> target, IEnumerable<T> extension, Func<bool> enumerateTarget, Func<bool> enumerateExtension)
-            : base(target, extension)
+        public ConditionalExtendedEnumerable(IEnumerable<T> target, IEnumerable<T> append, Func<bool> enumerateTarget, Func<bool> enumerateAppend)
+            : base(target, append)
         {
             _enumerateTarget = Check.NotNullArgument(enumerateTarget, "enumerateTarget");
-            _enumerateExtension = Check.NotNullArgument(enumerateExtension, "enumerateExtension");
+            _enumerateAppend = enumerateAppend ?? (null == append ? FuncHelper.GetFallacyFunc() : FuncHelper.GetTautologyFunc());
         }
 
         public override IEnumerator<T> GetEnumerator()
@@ -28,9 +28,9 @@ namespace Theraot.Collections.Specialized
                     yield return item;
                 }
             }
-            if (_enumerateExtension.Invoke())
+            if (_enumerateAppend.Invoke())
             {
-                foreach (T item in Extension)
+                foreach (T item in Append)
                 {
                     yield return item;
                 }

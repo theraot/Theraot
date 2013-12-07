@@ -6,8 +6,8 @@ namespace Theraot.Collections.Specialized
     [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "By Design")]
     public sealed class ExtendedEnumerable<T> : ExtendedEnumerableBase<T>, IEnumerable<T>
     {
-        public ExtendedEnumerable(IEnumerable<T> target, IEnumerable<T> extension)
-            : base(target, extension)
+        public ExtendedEnumerable(IEnumerable<T> target, IEnumerable<T> append)
+            : base(target, append)
         {
             //Empty
         }
@@ -18,7 +18,7 @@ namespace Theraot.Collections.Specialized
             {
                 yield return item;
             }
-            foreach (T item in Extension)
+            foreach (T item in Append)
             {
                 yield return item;
             }

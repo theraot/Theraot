@@ -55,29 +55,29 @@ namespace Theraot.Collections
                    );
         }
 
-        public static IEnumerable<T> Append<T>(this IEnumerable<T> target, IEnumerable<T> extension)
+        public static IEnumerable<T> Append<T>(this IEnumerable<T> target, IEnumerable<T> append)
         {
-            return new ExtendedEnumerable<T>(target, extension);
+            return new ExtendedEnumerable<T>(target, append);
         }
 
-        public static IEnumerable<T> Append<T>(this IEnumerable<T> target, T extension)
+        public static IEnumerable<T> Append<T>(this IEnumerable<T> target, T append)
         {
-            return new ExtendedEnumerable<T>(target, AsUnaryEnumerable(extension));
+            return new ExtendedEnumerable<T>(target, AsUnaryEnumerable(append));
         }
 
-        public static IEnumerable<T> Append<T>(this IEnumerable<T> target, IEnumerable<T> extension, Predicate<T> match)
+        public static IEnumerable<T> Append<T>(this IEnumerable<T> target, IEnumerable<T> append, Predicate<T> match)
         {
-            return new ExtendedFilteredEnumerable<T>(target, extension, match);
+            return new ExtendedFilteredEnumerable<T>(target, append, match);
         }
 
-        public static IEnumerable<T> Append<T>(this IEnumerable<T> target, T extension, Predicate<T> match)
+        public static IEnumerable<T> Append<T>(this IEnumerable<T> target, T append, Predicate<T> match)
         {
-            return new ExtendedFilteredEnumerable<T>(target, AsUnaryEnumerable(extension), match);
+            return new ExtendedFilteredEnumerable<T>(target, AsUnaryEnumerable(append), match);
         }
 
         public static IEnumerable<T> Filter<T>(this IEnumerable<T> target, Predicate<T> match)
         {
-            return new ExtendedFilteredEnumerable<T>(target, EmptySet<T>.Instance, match);
+            return new ExtendedFilteredEnumerable<T>(target, null, match);
         }
 
         public static IEnumerable<T> SkipItems<T>(this IEnumerable<T> target, int skipCount)
