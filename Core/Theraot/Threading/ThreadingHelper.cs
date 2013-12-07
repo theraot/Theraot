@@ -471,17 +471,18 @@ namespace Theraot.Threading
             }
         }
 
-        public static void SpinWaitWhileNull(ref object check)
+        public static void SpinWaitWhileNull<T>(ref T check)
+            where T : class
         {
             int backCount = GetBackCount();
-            if (Thread.VolatileRead(ref check) != null)
+            if (!ReferenceEquals(VolatileRead<T>(ref check), null))
             {
                 return;
             }
             else
             {
             retry:
-                if (Thread.VolatileRead(ref check) != null)
+                if (!ReferenceEquals(VolatileRead<T>(ref check), null))
                 {
                     return;
                 }
@@ -501,17 +502,18 @@ namespace Theraot.Threading
             }
         }
 
-        public static bool SpinWaitWhileNull(ref object check, IComparable<TimeSpan> timeout)
+        public static bool SpinWaitWhileNull<T>(ref T check, IComparable<TimeSpan> timeout)
+            where T : class
         {
             int backCount = GetBackCount();
-            if (Thread.VolatileRead(ref check) != null)
+            if (!ReferenceEquals(VolatileRead<T>(ref check), null))
             {
                 return true;
             }
             else
             {
             retry:
-                if (Thread.VolatileRead(ref check) != null)
+                if (!ReferenceEquals(VolatileRead<T>(ref check), null))
                 {
                     return true;
                 }
