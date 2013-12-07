@@ -58,7 +58,7 @@ namespace Theraot.Threading
             }
             else if (_status != -1)
             {
-                ThreadingHelper.SpinWait(() => _status == -1 || OnExecute(work));
+                ThreadingHelper.SpinWaitUntil(() => _status == -1 || OnExecute(work));
                 return _status != -1;
             }
             else

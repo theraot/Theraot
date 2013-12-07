@@ -192,7 +192,7 @@ namespace Theraot.Threading
                 {
                     if (Thread.VolatileRead(ref _waitRequest) == 1)
                     {
-                        ThreadingHelper.SpinWait(ref _waitRequest, 0);
+                        ThreadingHelper.SpinWaitUntil(ref _waitRequest, 0);
                     }
                     Interlocked.Increment(ref _workingTotalThreadCount);
                     Work item;
@@ -326,7 +326,7 @@ namespace Theraot.Threading
                     if (Thread.VolatileRead(ref _waitRequest) == 1)
                     {
                         Interlocked.Decrement(ref _workingTotalThreadCount);
-                        ThreadingHelper.SpinWait(ref _waitRequest, 0);
+                        ThreadingHelper.SpinWaitUntil(ref _waitRequest, 0);
                         Interlocked.Increment(ref _workingTotalThreadCount);
                     }
                 }
@@ -347,7 +347,7 @@ namespace Theraot.Threading
             if (item.Exclusive)
             {
                 Thread.VolatileWrite(ref _waitRequest, 1);
-                ThreadingHelper.SpinWait(ref _workingTotalThreadCount, 1);
+                ThreadingHelper.SpinWaitUntil(ref _workingTotalThreadCount, 1);
                 item.Execute();
                 Thread.VolatileWrite(ref _waitRequest, 0);
             }

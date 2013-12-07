@@ -19,142 +19,6 @@ namespace Theraot.Threading
             }
         }
 
-        public static void SpinWait(ref int check, int comparand)
-        {
-            int backCount = GetBackCount();
-            if (Thread.VolatileRead(ref check) == comparand)
-            {
-                return;
-            }
-            else
-            {
-            retry:
-                if (Thread.VolatileRead(ref check) == comparand)
-                {
-                    return;
-                }
-                else
-                {
-                    if (backCount == 0)
-                    {
-                        Thread.Sleep(0);
-                    }
-                    else
-                    {
-                        Thread.SpinWait(IntSpinWaitHint);
-                        backCount--;
-                    }
-                    goto retry;
-                }
-            }
-        }
-
-        public static bool SpinWait(ref int check, int comparand, IComparable<TimeSpan> timeout)
-        {
-            int backCount = GetBackCount();
-            if (Thread.VolatileRead(ref check) == comparand)
-            {
-                return true;
-            }
-            else
-            {
-            retry:
-                if (Thread.VolatileRead(ref check) == comparand)
-                {
-                    return true;
-                }
-                else
-                {
-                    var start = DateTime.Now;
-                    if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-                    {
-                        if (backCount == 0)
-                        {
-                            Thread.Sleep(0);
-                        }
-                        else
-                        {
-                            Thread.SpinWait(IntSpinWaitHint);
-                            backCount--;
-                        }
-                        goto retry;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
-        }
-
-        public static void SpinWait(Func<bool> verification)
-        {
-            int backCount = GetBackCount();
-            if (verification == null)
-            {
-                return;
-            }
-            else
-            {
-            retry:
-                if (verification())
-                {
-                    return;
-                }
-                else
-                {
-                    if (backCount == 0)
-                    {
-                        Thread.Sleep(0);
-                    }
-                    else
-                    {
-                        Thread.SpinWait(IntSpinWaitHint);
-                        backCount--;
-                    }
-                    goto retry;
-                }
-            }
-        }
-
-        public static bool SpinWait(Func<bool> verification, IComparable<TimeSpan> timeout)
-        {
-            int backCount = GetBackCount();
-            if (verification == null)
-            {
-                return true;
-            }
-            else
-            {
-            retry:
-                if (verification())
-                {
-                    return true;
-                }
-                else
-                {
-                    var start = DateTime.Now;
-                    if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-                    {
-                        if (backCount == 0)
-                        {
-                            Thread.Sleep(0);
-                        }
-                        else
-                        {
-                            Thread.SpinWait(IntSpinWaitHint);
-                            backCount--;
-                        }
-                        goto retry;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
-        }
-
         public static void SpinWaitExchange(ref int check, int value, int comparand)
         {
             int backCount = GetBackCount();
@@ -378,6 +242,278 @@ namespace Theraot.Threading
                 else if (tmpB == ignoreComparand)
                 {
                     return false;
+                }
+                else
+                {
+                    var start = DateTime.Now;
+                    if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
+                    {
+                        if (backCount == 0)
+                        {
+                            Thread.Sleep(0);
+                        }
+                        else
+                        {
+                            Thread.SpinWait(IntSpinWaitHint);
+                            backCount--;
+                        }
+                        goto retry;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        public static void SpinWaitUntil(ref int check, int comparand)
+        {
+            int backCount = GetBackCount();
+            if (Thread.VolatileRead(ref check) == comparand)
+            {
+                return;
+            }
+            else
+            {
+            retry:
+                if (Thread.VolatileRead(ref check) == comparand)
+                {
+                    return;
+                }
+                else
+                {
+                    if (backCount == 0)
+                    {
+                        Thread.Sleep(0);
+                    }
+                    else
+                    {
+                        Thread.SpinWait(IntSpinWaitHint);
+                        backCount--;
+                    }
+                    goto retry;
+                }
+            }
+        }
+
+        public static bool SpinWaitUntil(ref int check, int comparand, IComparable<TimeSpan> timeout)
+        {
+            int backCount = GetBackCount();
+            if (Thread.VolatileRead(ref check) == comparand)
+            {
+                return true;
+            }
+            else
+            {
+            retry:
+                if (Thread.VolatileRead(ref check) == comparand)
+                {
+                    return true;
+                }
+                else
+                {
+                    var start = DateTime.Now;
+                    if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
+                    {
+                        if (backCount == 0)
+                        {
+                            Thread.Sleep(0);
+                        }
+                        else
+                        {
+                            Thread.SpinWait(IntSpinWaitHint);
+                            backCount--;
+                        }
+                        goto retry;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        public static void SpinWaitUntil(Func<bool> verification)
+        {
+            int backCount = GetBackCount();
+            if (verification == null)
+            {
+                return;
+            }
+            else
+            {
+            retry:
+                if (verification())
+                {
+                    return;
+                }
+                else
+                {
+                    if (backCount == 0)
+                    {
+                        Thread.Sleep(0);
+                    }
+                    else
+                    {
+                        Thread.SpinWait(IntSpinWaitHint);
+                        backCount--;
+                    }
+                    goto retry;
+                }
+            }
+        }
+
+        public static bool SpinWaitUntil(Func<bool> verification, IComparable<TimeSpan> timeout)
+        {
+            int backCount = GetBackCount();
+            if (verification == null)
+            {
+                return true;
+            }
+            else
+            {
+            retry:
+                if (verification())
+                {
+                    return true;
+                }
+                else
+                {
+                    var start = DateTime.Now;
+                    if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
+                    {
+                        if (backCount == 0)
+                        {
+                            Thread.Sleep(0);
+                        }
+                        else
+                        {
+                            Thread.SpinWait(IntSpinWaitHint);
+                            backCount--;
+                        }
+                        goto retry;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        public static void SpinWaitWhile(ref int check, int comparand)
+        {
+            int backCount = GetBackCount();
+            if (Thread.VolatileRead(ref check) != comparand)
+            {
+                return;
+            }
+            else
+            {
+            retry:
+                if (Thread.VolatileRead(ref check) != comparand)
+                {
+                    return;
+                }
+                else
+                {
+                    if (backCount == 0)
+                    {
+                        Thread.Sleep(0);
+                    }
+                    else
+                    {
+                        Thread.SpinWait(IntSpinWaitHint);
+                        backCount--;
+                    }
+                    goto retry;
+                }
+            }
+        }
+
+        public static bool SpinWaitWhile(ref int check, int comparand, IComparable<TimeSpan> timeout)
+        {
+            int backCount = GetBackCount();
+            if (Thread.VolatileRead(ref check) != comparand)
+            {
+                return true;
+            }
+            else
+            {
+            retry:
+                if (Thread.VolatileRead(ref check) != comparand)
+                {
+                    return true;
+                }
+                else
+                {
+                    var start = DateTime.Now;
+                    if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
+                    {
+                        if (backCount == 0)
+                        {
+                            Thread.Sleep(0);
+                        }
+                        else
+                        {
+                            Thread.SpinWait(IntSpinWaitHint);
+                            backCount--;
+                        }
+                        goto retry;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        public static void SpinWaitWhileNull(ref object check)
+        {
+            int backCount = GetBackCount();
+            if (Thread.VolatileRead(ref check) != null)
+            {
+                return;
+            }
+            else
+            {
+            retry:
+                if (Thread.VolatileRead(ref check) != null)
+                {
+                    return;
+                }
+                else
+                {
+                    if (backCount == 0)
+                    {
+                        Thread.Sleep(0);
+                    }
+                    else
+                    {
+                        Thread.SpinWait(IntSpinWaitHint);
+                        backCount--;
+                    }
+                    goto retry;
+                }
+            }
+        }
+
+        public static bool SpinWaitWhileNull(ref object check, IComparable<TimeSpan> timeout)
+        {
+            int backCount = GetBackCount();
+            if (Thread.VolatileRead(ref check) != null)
+            {
+                return true;
+            }
+            else
+            {
+            retry:
+                if (Thread.VolatileRead(ref check) != null)
+                {
+                    return true;
                 }
                 else
                 {
