@@ -98,6 +98,7 @@ namespace Theraot.Threading
             }
             else
             {
+                var start = DateTime.Now;
             retry:
                 if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
                 {
@@ -105,7 +106,6 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    var start = DateTime.Now;
                     if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
                     {
                         if (backCount == 0)
@@ -141,6 +141,7 @@ namespace Theraot.Threading
             }
             else
             {
+                var start = DateTime.Now;
             retry:
                 tmp = Interlocked.CompareExchange(ref check, value, comparand);
                 if (tmp == comparand)
@@ -153,7 +154,6 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    var start = DateTime.Now;
                     if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
                     {
                         if (backCount == 0)
@@ -232,6 +232,7 @@ namespace Theraot.Threading
             }
             else
             {
+                var start = DateTime.Now;
             retry:
                 tmpA = Thread.VolatileRead(ref check);
                 tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
@@ -245,7 +246,6 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    var start = DateTime.Now;
                     if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
                     {
                         if (backCount == 0)
@@ -306,6 +306,7 @@ namespace Theraot.Threading
             }
             else
             {
+                var start = DateTime.Now;
             retry:
                 if (Thread.VolatileRead(ref check) == comparand)
                 {
@@ -313,7 +314,6 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    var start = DateTime.Now;
                     if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
                     {
                         if (backCount == 0)
@@ -374,6 +374,7 @@ namespace Theraot.Threading
             }
             else
             {
+                var start = DateTime.Now;
             retry:
                 if (verification())
                 {
@@ -381,7 +382,6 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    var start = DateTime.Now;
                     if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
                     {
                         if (backCount == 0)
@@ -442,6 +442,7 @@ namespace Theraot.Threading
             }
             else
             {
+                var start = DateTime.Now;
             retry:
                 if (Thread.VolatileRead(ref check) != comparand)
                 {
@@ -449,7 +450,6 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    var start = DateTime.Now;
                     if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
                     {
                         if (backCount == 0)
@@ -512,6 +512,7 @@ namespace Theraot.Threading
             }
             else
             {
+                var start = DateTime.Now;
             retry:
                 if (!ReferenceEquals(VolatileRead<T>(ref check), null))
                 {
@@ -519,7 +520,6 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    var start = DateTime.Now;
                     if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
                     {
                         if (backCount == 0)
