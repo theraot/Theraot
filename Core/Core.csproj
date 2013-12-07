@@ -312,6 +312,11 @@
     <Compile Include="System\Threading\Tasks\TaskCreationOption.net35.cs" />
     <Compile Include="System\Threading\Tasks\TaskStatus.net35.cs" />
     <Compile Include="System\WeakReference.net40.cs" />
+    <Compile Include="Theraot\Collections\Extensions.interleave.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Extensions.interleave.tt</DependentUpon>
+    </Compile>
     <Compile Include="Theraot\Collections\Specialized\NeedleConversionEqualityComparer.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\WeakDelegateSet.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\WeakEvent.cs" />
@@ -633,6 +638,10 @@
     </MonoDevelop>
   </ProjectExtensions>
   <ItemGroup>
+    <None Include="Theraot\Collections\Extensions.interleave.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Extensions.interleave.cs</LastGenOutput>
+    </None>
     <None Include="Theraot\Collections\Extensions.zip.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Extensions.zip.cs</LastGenOutput>

@@ -1160,6 +1160,34 @@ namespace Theraot.Collections
             }
         }
 
+        public static IEnumerable<T> InterleaveMany<T>(this IEnumerable<IEnumerable<T>> source)
+        {
+            var enumerators = source.Select(x => x.GetEnumerator()).ToArray();
+            try
+            {
+                var ok = true;
+                while (ok)
+                {
+                    ok = false;
+                    foreach (var enumerator in enumerators)
+                    {
+                        if (enumerator.MoveNext())
+                        {
+                            yield return enumerator.Current;
+                            ok = true;
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                foreach (var enumerator in enumerators)
+                {
+                    enumerator.Dispose();
+                }
+            }
+        }
+
         public static int IntersectWith<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other)
         {
             var _other = new ProgressiveSet<TItem>(other);
@@ -1901,6 +1929,25 @@ namespace Theraot.Collections
         public static IEnumerable<T> WhereType<T>(IEnumerable enumerable)
         {
             return new EnumerableFromDelegate<T>(enumerable.GetEnumerator);
+        }
+
+        public static IEnumerable<TResult> ZipMany<T, TResult>(this IEnumerable<IEnumerable<T>> source, Func<IEnumerable<T>, TResult> func)
+        {
+            var enumerators = source.Select(x => x.GetEnumerator()).ToArray();
+            try
+            {
+                while (enumerators.All(enumerator => enumerator.MoveNext()))
+                {
+                    yield return func(enumerators.Select(enumerator => enumerator.Current));
+                }
+            }
+            finally
+            {
+                foreach (var enumerator in enumerators)
+                {
+                    enumerator.Dispose();
+                }
+            }
         }
 
         private static bool IsSubsetOf<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> other, bool proper)
