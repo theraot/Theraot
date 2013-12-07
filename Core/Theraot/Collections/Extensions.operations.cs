@@ -55,22 +55,22 @@ namespace Theraot.Collections
                    );
         }
 
-        public static IEnumerable<T> Extend<T>(this IEnumerable<T> target, IEnumerable<T> extension)
+        public static IEnumerable<T> Append<T>(this IEnumerable<T> target, IEnumerable<T> extension)
         {
             return new ExtendedEnumerable<T>(target, extension);
         }
 
-        public static IEnumerable<T> Extend<T>(this IEnumerable<T> target, T extension)
+        public static IEnumerable<T> Append<T>(this IEnumerable<T> target, T extension)
         {
             return new ExtendedEnumerable<T>(target, AsUnaryEnumerable(extension));
         }
 
-        public static IEnumerable<T> Extend<T>(this IEnumerable<T> target, IEnumerable<T> extension, Predicate<T> match)
+        public static IEnumerable<T> Append<T>(this IEnumerable<T> target, IEnumerable<T> extension, Predicate<T> match)
         {
             return new ExtendedFilteredEnumerable<T>(target, extension, match);
         }
 
-        public static IEnumerable<T> Extend<T>(this IEnumerable<T> target, T extension, Predicate<T> match)
+        public static IEnumerable<T> Append<T>(this IEnumerable<T> target, T extension, Predicate<T> match)
         {
             return new ExtendedFilteredEnumerable<T>(target, AsUnaryEnumerable(extension), match);
         }
