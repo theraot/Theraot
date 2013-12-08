@@ -11,25 +11,15 @@ namespace Theraot.Threading
     [global::System.Diagnostics.DebuggerNonUserCode]
     public static partial class GCMonitor
     {
-        private static AutoResetEvent collectedEvent;
-        private static WeakDelegateSet collectedEventHandlers;
-        private static volatile bool finished;
-
-        static GCMonitor()
-        {
-            collectedEvent = new AutoResetEvent(false);
-            collectedEventHandlers = new WeakDelegateSet(1024, false, false, 32);
-            AppDomain currentAppDomain = AppDomain.CurrentDomain;
-            currentAppDomain.ProcessExit += new EventHandler(ReportApplicationDomainExit);
-            currentAppDomain.DomainUnload += new EventHandler(ReportApplicationDomainExit);
-            new GCProbe();
-            (
-                new Thread(ExecuteCollected)
-                {
-                    Name = string.Format(CultureInfo.InvariantCulture, "{0} runner.", typeof(GCMonitor).Name)
-                }
-            ).Start();
-        }
+        private const int IntCapacityHint = 1024;
+        private const int IntMaxProbingHint = 32;
+        private const int IntStatusNotReady = -2;
+        private const int IntStatusPending = -1;
+        private const int IntStatusReady = 0;
+        private static AutoResetEvent _collectedEvent;
+        private static WeakDelegateSet _collectedEventHandlers;
+        private static int _finished = 0;
+        private static int _status = IntStatusNotReady;
 
         public static event EventHandler Collected
         {
@@ -37,7 +27,12 @@ namespace Theraot.Threading
             {
                 try
                 {
-                    collectedEventHandlers.Add(value);
+                    var startRunner = Initialize();
+                    _collectedEventHandlers.Add(value);
+                    if (startRunner)
+                    {
+                        StartRunner();
+                    }
                 }
                 catch
                 {
@@ -50,17 +45,20 @@ namespace Theraot.Threading
             }
             remove
             {
-                try
+                if (Thread.VolatileRead(ref _status) == IntStatusReady)
                 {
-                    collectedEventHandlers.Remove(value);
-                }
-                catch
-                {
-                    if (object.ReferenceEquals(value, null))
+                    try
                     {
-                        return;
+                        _collectedEventHandlers.Remove(value);
                     }
-                    throw;
+                    catch
+                    {
+                        if (object.ReferenceEquals(value, null))
+                        {
+                            return;
+                        }
+                        throw;
+                    }
                 }
             }
         }
@@ -73,32 +71,70 @@ namespace Theraot.Threading
             {
                 thread.IsBackground = true;
                 WaitOne();
-                if (finished || AppDomain.CurrentDomain.IsFinalizingForUnload())
+                if (Thread.VolatileRead(ref _finished) == 1 || AppDomain.CurrentDomain.IsFinalizingForUnload())
                 {
                     return;
                 }
-                thread.IsBackground = false;
-                try
+                else
                 {
-                    collectedEventHandlers.RemoveDeadItems();
-                    collectedEventHandlers.Invoke(null, new EventArgs());
+                    thread.IsBackground = false;
+                    try
+                    {
+                        _collectedEventHandlers.RemoveDeadItems();
+                        _collectedEventHandlers.Invoke(null, new EventArgs());
+                    }
+                    catch (Exception)
+                    {
+                        //Pokemon
+                    }
                 }
-                catch (Exception)
-                {
-                    //Pokemon
-                }
+            }
+        }
+
+        private static bool Initialize()
+        {
+            var check = Interlocked.CompareExchange(ref _status, IntStatusPending, IntStatusNotReady);
+            if (check == -2)
+            {
+                _collectedEvent = new AutoResetEvent(false);
+                _collectedEventHandlers = new WeakDelegateSet(IntCapacityHint, false, false, IntMaxProbingHint);
+                AppDomain currentAppDomain = AppDomain.CurrentDomain;
+                currentAppDomain.ProcessExit += new EventHandler(ReportApplicationDomainExit);
+                currentAppDomain.DomainUnload += new EventHandler(ReportApplicationDomainExit);
+                Thread.VolatileWrite(ref _status, IntStatusReady);
+                return true;
+            }
+            else if (check == 0)
+            {
+                return false;
+            }
+            else
+            {
+                ThreadingHelper.SpinWaitUntil(ref _status, IntStatusReady);
+                return false;
             }
         }
 
         private static void ReportApplicationDomainExit(object sender, EventArgs e)
         {
-            finished = true;
-            collectedEvent.Set();
+            Thread.VolatileWrite(ref _finished, 1);
+            _collectedEvent.Set();
+        }
+
+        private static void StartRunner()
+        {
+            new GCProbe();
+            (
+                new Thread(ExecuteCollected)
+                {
+                    Name = string.Format(CultureInfo.InvariantCulture, "{0} runner.", typeof(GCMonitor).Name)
+                }
+            ).Start();
         }
 
         private static void WaitOne()
         {
-            collectedEvent.WaitOne();
+            _collectedEvent.WaitOne();
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
@@ -106,12 +142,15 @@ namespace Theraot.Threading
         {
             ~GCProbe()
             {
-                if (finished || AppDomain.CurrentDomain.IsFinalizingForUnload())
+                if (Thread.VolatileRead(ref _finished) == 1 || AppDomain.CurrentDomain.IsFinalizingForUnload())
                 {
                     return;
                 }
-                GC.ReRegisterForFinalize(this);
-                collectedEvent.Set();
+                else
+                {
+                    GC.ReRegisterForFinalize(this);
+                    _collectedEvent.Set();
+                }
             }
         }
     }
