@@ -118,5 +118,12 @@ namespace Theraot.Collections.Specialized
         {
             return GetEnumerator();
         }
+
+        public T[] ToArray()
+        {
+            var array = new T[Instance.Count];
+            Instance.CopyTo(array, 0);
+            return array;
+        }
     }
 }
