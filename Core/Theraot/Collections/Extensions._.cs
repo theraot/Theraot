@@ -1212,6 +1212,11 @@ namespace Theraot.Collections
                    );
         }
 
+        public static bool IsEmpty<T>(this IEnumerable<T> source)
+        {
+            return !source.Any();
+        }
+
         public static bool IsProperSubsetOf<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> other)
         {
             return IsSubsetOf(collection, other, true);
