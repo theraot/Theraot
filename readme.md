@@ -44,9 +44,12 @@ Theraot's Libraries...
     - System.Numerics.Complex: Done [Taken from Mono]
     - System.Runtime.CompilerServices.DynamicAttribute: Done
     - System.Runtime.CompilerServices.ExtensionAttribute: Done
-    - System.Threading.Tasks: Planned
+    - System.Threading.Tasks: Work in progress
     - System.Therading.AggregateException: Done
+    - System.Therading.CancellationToken: Done
+    - System.Therading.CountDownEvent: Done
     - System.Therading.ManualResetEventSlim: Done
+    - System.Therading.SpinWait: Done
     - System.Therading.ThreadLocal: Done
     - System.Therading.Volatile: Done
     - System.Action: Done
