@@ -186,6 +186,7 @@ namespace System.Threading
             return Wait(TimeSpan.FromMilliseconds(millisecondsTimeout));
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", Justification = "False Positive")]
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
@@ -193,10 +194,10 @@ namespace System.Threading
                 if (Interlocked.Exchange(ref _state, -1) != -1)
                 {
                     Thread.VolatileWrite(ref _requested, 0);
-                    var handle = _handle;
-                    if (_handle != null)
+                    var handle = Interlocked.Exchange(ref _handle, null);
+                    if (handle != null)
                     {
-                        Interlocked.Exchange(ref _handle, null).Close();
+                        handle.Close();
                     }
                 }
             }
