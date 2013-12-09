@@ -21,6 +21,13 @@ namespace Theraot.Threading
         private static int _finished = 0;
         private static int _status = IntStatusNotReady;
 
+        static GCMonitor()
+        {
+            AppDomain currentAppDomain = AppDomain.CurrentDomain;
+            currentAppDomain.ProcessExit += new EventHandler(ReportApplicationDomainExit);
+            currentAppDomain.DomainUnload += new EventHandler(ReportApplicationDomainExit);
+        }
+
         public static event EventHandler Collected
         {
             add
@@ -98,9 +105,6 @@ namespace Theraot.Threading
             {
                 _collectedEvent = new AutoResetEvent(false);
                 _collectedEventHandlers = new WeakDelegateSet(IntCapacityHint, false, false, IntMaxProbingHint);
-                AppDomain currentAppDomain = AppDomain.CurrentDomain;
-                currentAppDomain.ProcessExit += new EventHandler(ReportApplicationDomainExit);
-                currentAppDomain.DomainUnload += new EventHandler(ReportApplicationDomainExit);
                 Thread.VolatileWrite(ref _status, IntStatusReady);
                 return true;
             }
@@ -118,7 +122,10 @@ namespace Theraot.Threading
         private static void ReportApplicationDomainExit(object sender, EventArgs e)
         {
             Thread.VolatileWrite(ref _finished, 1);
-            _collectedEvent.Set();
+            if (Thread.VolatileRead(ref _status) == IntStatusReady)
+            {
+                _collectedEvent.Set();
+            }
         }
 
         private static void StartRunner()
