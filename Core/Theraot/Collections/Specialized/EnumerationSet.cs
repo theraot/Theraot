@@ -65,32 +65,32 @@ namespace Theraot.Collections.Specialized
 
         public bool IsProperSubsetOf(IEnumerable<T> other)
         {
-            return Extensions.IsProperSubsetOf(Wrapped, other);
+            return Extensions.IsProperSubsetOf(this, other);
         }
 
         public bool IsProperSupersetOf(IEnumerable<T> other)
         {
-            return Extensions.IsProperSupersetOf(Wrapped, other);
+            return Extensions.IsProperSupersetOf(this, other);
         }
 
         public bool IsSubsetOf(IEnumerable<T> other)
         {
-            return Extensions.IsSubsetOf(Wrapped, other);
+            return Extensions.IsSubsetOf(this, other);
         }
 
         public bool IsSupersetOf(IEnumerable<T> other)
         {
-            return Extensions.IsSupersetOf(Wrapped, other);
+            return Extensions.IsSupersetOf(this, other);
         }
 
         public bool Overlaps(IEnumerable<T> other)
         {
-            return Extensions.Overlaps(Wrapped, other);
+            return Extensions.Overlaps(this, other);
         }
 
         public bool SetEquals(IEnumerable<T> other)
         {
-            return Extensions.SetEquals(new ProgressiveCollection<T>(Wrapped), other);
+            return Extensions.SetEquals(this, other);
         }
     }
 }
