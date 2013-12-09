@@ -9,9 +9,7 @@ using Theraot.Core;
 
 namespace System
 {
-    [ComVisible(false)]
     [DebuggerDisplay("ThreadSafetyMode={Mode}, IsValueCreated={IsValueCreated}, IsValueFaulted={IsValueFaulted}, Value={ValueForDebugDisplay}")]
-    [HostProtection(SecurityAction.LinkDemand, Synchronization = true, ExternalThreading = true)]
     [Serializable]
     public class Lazy<T>
     {

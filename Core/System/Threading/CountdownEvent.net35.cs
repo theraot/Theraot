@@ -5,7 +5,6 @@ using System.Runtime.InteropServices;
 
 namespace System.Threading
 {
-    [ComVisible(false)]
     [DebuggerDisplay("Initial Count={InitialCount}, Current Count={CurrentCount}")]
     public class CountdownEvent : IDisposable
     {
