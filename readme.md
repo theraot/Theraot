@@ -47,7 +47,7 @@ Theraot's Libraries...
     - System.Threading.Tasks: Work in progress
     - System.Therading.AggregateException: Done
     - System.Therading.CancellationToken: Done
-    - System.Therading.CountDownEvent: Done
+    - System.Therading.CountdownEvent: Done
     - System.Therading.ManualResetEventSlim: Done
     - System.Therading.SpinWait: Done
     - System.Therading.ThreadLocal: Done
