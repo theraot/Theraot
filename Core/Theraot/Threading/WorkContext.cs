@@ -289,11 +289,12 @@ namespace Theraot.Threading
         private void DoWorks()
         {
             int count = INT_LoopCountHint;
+        loopback:
             try
             {
                 Interlocked.Increment(ref _workingTotalThreadCount);
                 Interlocked.Increment(ref _workingDedicatedThreadCount);
-                while (_work)
+                while (_work && !AppDomain.CurrentDomain.IsFinalizingForUnload())
                 {
                     Work item;
                     if (_works.TryTake(out item))
@@ -333,8 +334,11 @@ namespace Theraot.Threading
             }
             catch
             {
-                // TODO: restarting a dedicated thread
                 // Pokemon
+                if (_work && !AppDomain.CurrentDomain.IsFinalizingForUnload())
+                {
+                    goto loopback;
+                }
             }
             finally
             {
