@@ -4,7 +4,7 @@ namespace System
 {
     public interface IProgress<in T>
     {
-        void Report (T value);
+        void Report(T value);
     }
 }
 
