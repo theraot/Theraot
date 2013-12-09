@@ -197,9 +197,9 @@ namespace System
                     Thread.VolatileWrite(ref _isValueCreated, 1);
                     return _target;
                 }
-                catch (Exception exc)
+                catch (Exception exception)
                 {
-                    _valueFactory = FuncHelper.GetThrowFunc<T>(exc);
+                    _valueFactory = FuncHelper.GetThrowFunc<T>(exception);
                     throw;
                 }
                 finally
