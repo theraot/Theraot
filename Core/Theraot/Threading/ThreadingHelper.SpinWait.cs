@@ -7,7 +7,7 @@ namespace Theraot.Threading
 {
     public static partial class ThreadingHelper
     {
-        public static void SpinWaitExchange(ref int check, int value, int comparand)
+        public static void SpinWaitSet(ref int check, int value, int comparand)
         {
             int count = 0;
             if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
@@ -30,7 +30,7 @@ namespace Theraot.Threading
             }
         }
 
-        public static bool SpinWaitExchange(ref int check, int value, int comparand, int milliseconds)
+        public static bool SpinWaitSet(ref int check, int value, int comparand, int milliseconds)
         {
             if (milliseconds < -1)
             {
@@ -38,7 +38,7 @@ namespace Theraot.Threading
             }
             else if (milliseconds == -1)
             {
-                SpinWaitExchange(ref check, value, comparand);
+                SpinWaitSet(ref check, value, comparand);
                 return true;
             }
             int count = 0;
@@ -69,7 +69,7 @@ namespace Theraot.Threading
             }
         }
 
-        public static bool SpinWaitExchange(ref int check, int value, int comparand, TimeSpan timeout)
+        public static bool SpinWaitSet(ref int check, int value, int comparand, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
             int count = 0;
@@ -100,7 +100,7 @@ namespace Theraot.Threading
             }
         }
 
-        public static bool SpinWaitExchange(ref int check, int value, int comparand, IComparable<TimeSpan> timeout)
+        public static bool SpinWaitSet(ref int check, int value, int comparand, IComparable<TimeSpan> timeout)
         {
             int count = 0;
             if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
@@ -626,7 +626,7 @@ namespace Theraot.Threading
             }
         }
     
-        public static bool SpinWaitExchangeRelative(ref int check, int value, int unless)
+        public static bool SpinWaitRelativeSet(ref int check, int value, int unless)
         {
             int count = 0;
             var tmpA = Thread.VolatileRead(ref check);
@@ -661,7 +661,7 @@ namespace Theraot.Threading
             }
         }
 
-        public static bool SpinWaitExchangeRelative(ref int check, int value, int unless, int milliseconds)
+        public static bool SpinWaitRelativeSet(ref int check, int value, int unless, int milliseconds)
         {
             if (milliseconds < -1)
             {
@@ -669,7 +669,7 @@ namespace Theraot.Threading
             }
             else if (milliseconds == -1)
             {
-                return SpinWaitExchangeRelative(ref check, value, unless);
+                return SpinWaitRelativeSet(ref check, value, unless);
             }
             int count = 0;
             var tmpA = Thread.VolatileRead(ref check);
@@ -711,7 +711,7 @@ namespace Theraot.Threading
             }
         }
 
-        public static bool SpinWaitExchangeRelative(ref int check, int value, int unless, TimeSpan timeout)
+        public static bool SpinWaitRelativeSet(ref int check, int value, int unless, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
             int count = 0;
@@ -754,7 +754,7 @@ namespace Theraot.Threading
             }
         }
 
-        public static bool SpinWaitExchangeRelative(ref int check, int value, int unless, IComparable<TimeSpan> timeout)
+        public static bool SpinWaitRelativeSet(ref int check, int value, int unless, IComparable<TimeSpan> timeout)
         {
             int count = 0;
             var tmpA = Thread.VolatileRead(ref check);
@@ -796,7 +796,7 @@ namespace Theraot.Threading
             }
         }
     
-        public static bool SpinWaitExchangeRelative(ref int check, int value, int unless, out int result)
+        public static bool SpinWaitRelativeExchange(ref int check, int value, int unless, out int result)
         {
             int count = 0;
             var tmpA = Thread.VolatileRead(ref check);
@@ -833,7 +833,7 @@ namespace Theraot.Threading
             }
         }
 
-        public static bool SpinWaitExchangeRelative(ref int check, int value, int unless, out int result, int milliseconds)
+        public static bool SpinWaitRelativeExchange(ref int check, int value, int unless, out int result, int milliseconds)
         {
             if (milliseconds < -1)
             {
@@ -841,7 +841,7 @@ namespace Theraot.Threading
             }
             else if (milliseconds == -1)
             {
-                return SpinWaitExchangeRelative(ref check, value, unless, out result);
+                return SpinWaitRelativeExchange(ref check, value, unless, out result);
             }
             int count = 0;
             var tmpA = Thread.VolatileRead(ref check);
@@ -885,7 +885,7 @@ namespace Theraot.Threading
             }
         }
 
-        public static bool SpinWaitExchangeRelative(ref int check, int value, int unless, out int result, TimeSpan timeout)
+        public static bool SpinWaitRelativeExchange(ref int check, int value, int unless, out int result, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
             int count = 0;
@@ -930,7 +930,7 @@ namespace Theraot.Threading
             }
         }
 
-        public static bool SpinWaitExchangeRelative(ref int check, int value, int unless, out int result, IComparable<TimeSpan> timeout)
+        public static bool SpinWaitRelativeExchange(ref int check, int value, int unless, out int result, IComparable<TimeSpan> timeout)
         {
             int count = 0;
             var tmpA = Thread.VolatileRead(ref check);
@@ -974,7 +974,7 @@ namespace Theraot.Threading
             }
         }
     
-        public static bool SpinWaitExchangeRelativeUnlessNegative(ref int check, int value)
+        public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value)
         {
             int count = 0;
             var tmpA = Thread.VolatileRead(ref check);
@@ -1009,7 +1009,7 @@ namespace Theraot.Threading
             }
         }
 
-        public static bool SpinWaitExchangeRelativeUnlessNegative(ref int check, int value, int milliseconds)
+        public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value, int milliseconds)
         {
             if (milliseconds < -1)
             {
@@ -1017,7 +1017,7 @@ namespace Theraot.Threading
             }
             else if (milliseconds == -1)
             {
-                return SpinWaitExchangeRelativeUnlessNegative(ref check, value);
+                return SpinWaitRelativeSetUnlessNegative(ref check, value);
             }
             int count = 0;
             var tmpA = Thread.VolatileRead(ref check);
@@ -1059,7 +1059,7 @@ namespace Theraot.Threading
             }
         }
 
-        public static bool SpinWaitExchangeRelativeUnlessNegative(ref int check, int value, TimeSpan timeout)
+        public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
             int count = 0;
@@ -1102,7 +1102,7 @@ namespace Theraot.Threading
             }
         }
 
-        public static bool SpinWaitExchangeRelativeUnlessNegative(ref int check, int value, IComparable<TimeSpan> timeout)
+        public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value, IComparable<TimeSpan> timeout)
         {
             int count = 0;
             var tmpA = Thread.VolatileRead(ref check);
@@ -1144,7 +1144,7 @@ namespace Theraot.Threading
             }
         }
     
-        public static bool SpinWaitExchangeRelativeUnlessNegative(ref int check, int value, out int result)
+        public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, out int result)
         {
             int count = 0;
             var tmpA = Thread.VolatileRead(ref check);
@@ -1181,7 +1181,7 @@ namespace Theraot.Threading
             }
         }
 
-        public static bool SpinWaitExchangeRelativeUnlessNegative(ref int check, int value, out int result, int milliseconds)
+        public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, out int result, int milliseconds)
         {
             if (milliseconds < -1)
             {
@@ -1189,7 +1189,7 @@ namespace Theraot.Threading
             }
             else if (milliseconds == -1)
             {
-                return SpinWaitExchangeRelativeUnlessNegative(ref check, value, out result);
+                return SpinWaitRelativeExchangeUnlessNegative(ref check, value, out result);
             }
             int count = 0;
             var tmpA = Thread.VolatileRead(ref check);
@@ -1233,7 +1233,7 @@ namespace Theraot.Threading
             }
         }
 
-        public static bool SpinWaitExchangeRelativeUnlessNegative(ref int check, int value, out int result, TimeSpan timeout)
+        public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, out int result, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
             int count = 0;
@@ -1278,7 +1278,7 @@ namespace Theraot.Threading
             }
         }
 
-        public static bool SpinWaitExchangeRelativeUnlessNegative(ref int check, int value, out int result, IComparable<TimeSpan> timeout)
+        public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, out int result, IComparable<TimeSpan> timeout)
         {
             int count = 0;
             var tmpA = Thread.VolatileRead(ref check);

@@ -157,7 +157,7 @@ namespace System.Threading
             {
                 CheckDisposed();
                 int finalCount;
-                if (Theraot.Threading.ThreadingHelper.SpinWaitExchangeRelativeUnlessNegative(ref _currentCount, -signalCount, out finalCount))
+                if (Theraot.Threading.ThreadingHelper.SpinWaitRelativeExchangeUnlessNegative(ref _currentCount, -signalCount, out finalCount))
                 {
                     if (finalCount > 0)
                     {
@@ -190,8 +190,7 @@ namespace System.Threading
             else
             {
                 this.CheckDisposed();
-                int finalCount;
-                if (Theraot.Threading.ThreadingHelper.SpinWaitExchangeRelativeUnlessNegative(ref _currentCount, -signalCount, out finalCount))
+                if (Theraot.Threading.ThreadingHelper.SpinWaitRelativeSetUnlessNegative(ref _currentCount, -signalCount))
                 {
                     return false;
                 }

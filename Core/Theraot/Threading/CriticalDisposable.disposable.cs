@@ -65,7 +65,7 @@ namespace Theraot.Threading
             {
                 if (whenNotDisposed != null)
                 {
-                    if (ThreadingHelper.SpinWaitExchangeRelative(ref _status, 1, -1))
+                    if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
                     {
                         try
                         {
@@ -109,7 +109,7 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    if (ThreadingHelper.SpinWaitExchangeRelative(ref _status, 1, -1))
+                    if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
                     {
                         try
                         {
@@ -179,7 +179,7 @@ namespace Theraot.Threading
             }
             else
             {
-                return ThreadingHelper.SpinWaitExchange(ref _status, -1, 0, -1);
+                return ThreadingHelper.SpinWaitSet(ref _status, -1, 0, -1);
             }
         }
 

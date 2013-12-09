@@ -94,7 +94,7 @@ namespace @NamespaceName
             {
                 if (!whenNotDisposed == null)
                 {
-                    if (ThreadingHelper.SpinWaitExchangeRelative(ref _status, 1, -1))
+                    if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
                     {
                         try
                         {
@@ -139,7 +139,7 @@ namespace @NamespaceName
                 }
                 else
                 {
-                    if (ThreadingHelper.SpinWaitExchangeRelative(ref _status, 1, -1))
+                    if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
                     {
                         try
                         {
@@ -211,7 +211,7 @@ namespace @NamespaceName
             }
             else
             {
-                if (ThreadingHelper.SpinWaitExchangeRelative(ref _status, 1, -1))
+                if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
                 {
                     return DisposableAkin.Create(() => System.Threading.Interlocked.Decrement(ref _status));
                 }
@@ -231,7 +231,7 @@ namespace @NamespaceName
             }
             else
             {
-                return ThreadingHelper.SpinWaitExchange(ref _status, -1, 0, -1);
+                return ThreadingHelper.SpinWaitSet(ref _status, -1, 0, -1);
             }
         }
 

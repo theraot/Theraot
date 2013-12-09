@@ -64,7 +64,7 @@ namespace Theraot.Threading.Needles
                 }
                 else
                 {
-                    return ThreadingHelper.SpinWaitExchange(ref _status, -1, 0, -1);
+                    return ThreadingHelper.SpinWaitSet(ref _status, -1, 0, -1);
                 }
             }
         }

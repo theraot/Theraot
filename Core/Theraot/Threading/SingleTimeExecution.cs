@@ -283,7 +283,7 @@ namespace Theraot.Threading
 
         private void PreventExecution()
         {
-            ThreadingHelper.SpinWaitExchangeRelative(ref _status, 1, -1);
+            ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1);
         }
     }
 }
