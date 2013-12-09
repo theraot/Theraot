@@ -10,6 +10,37 @@ namespace Theraot.Collections.Specialized
         public EnumerationSet(IEnumerable<T> wrapped)
             : base(wrapped)
         {
+            //Empty
+        }
+
+        public EnumerationSet(T[] wrapped)
+            : base(wrapped)
+        {
+            //Empty
+        }
+
+        public EnumerationSet(ICollection<T> wrapped)
+            : base(wrapped)
+        {
+            //Empty
+        }
+
+        public EnumerationSet(IEnumerable<T> wrapped, Func<int> count)
+            : base(wrapped, count)
+        {
+            //Empty
+        }
+
+        public EnumerationSet(IEnumerable<T> wrapped, Func<T, bool> contains)
+            : base(wrapped, contains)
+        {
+            //Empty
+        }
+
+        public EnumerationSet(IEnumerable<T> wrapped, Func<int> count, Func<T, bool> contains)
+            : base(wrapped, count, contains)
+        {
+            //Empty
         }
 
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Return this")]
