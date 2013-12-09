@@ -333,6 +333,7 @@ namespace Theraot.Threading
             }
             catch
             {
+                // TODO: restarting a dedicated thread
                 // Pokemon
             }
             finally
