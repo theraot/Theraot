@@ -32,7 +32,6 @@ Theraot's Libraries...
   - can be built for .NET 2.0, 3.0, 3.5, 4.0 and 4.5 with the help of conditional compilation to keep only the required code for the particular version.
   - includes lock-free and wait-free structures developen in HashBucket (another project of mine).
   - includes (among others) the following types to be used in old versions of .NET back to .NET 2.0:
-    - System.Action: Done
     - System.Collections.Concurrent: Work in progress
     - System.Collections.Generic.HashSet: Done
     - System.Collections.Generic.SortedSet: Done
@@ -41,18 +40,21 @@ Theraot's Libraries...
     - System.Collections.ObjectModel.ObservableCollection: Work in progress
     - System.Collections.ObjectModel.ReadOnlyDictionary : Done
     - System.Collections.StructuralComparison: Done
-    - System.Func: Done
-    - System.IObservable: Done
-    - System.IObserver: Done
-    - System.Lazy: Done
     - System.Numerics.BigInteger: Done [Taken from Mono][See Note 1]
     - System.Numerics.Complex: Done [Taken from Mono]
     - System.Runtime.CompilerServices.DynamicAttribute: Done
     - System.Runtime.CompilerServices.ExtensionAttribute: Done
-    - System.Therading.AggregateException: Done
-    - System.Therading.ThreadLocal: Done
     - System.Threading.Tasks: Planned
+    - System.Therading.AggregateException: Done
+    - System.Therading.ManualResetEventSlim: Done
+    - System.Therading.ThreadLocal: Done
     - System.Therading.Volatile: Done
+    - System.Action: Done
+    - System.Func: Done
+    - System.IObservable: Done
+    - System.IObserver: Done
+    - System.Progress: Done
+    - System.Lazy: Done
     - System.Tuple: Done
     - System.WeakReferene: Done
   - Uses less than 1MB in disk.
@@ -170,8 +172,9 @@ There are a few things that are beyond the scope of my work:
   - I cannot extend reflection (I recommend to use Mono.Cecil)
   - I cannot add some methods such as String.Join(string, IEnumerator<string>), I'll provide helper functions instead. For a list see below.
   - I cannot improve the Garbage Collector. Try using Mono as a back-end.
-  - I will not include backports of Reactive Extensions or any other code not in the BCL, but I may provide similar functionality. See below.
+  - I will not include backports of Reactive Extensions or any other code not in the BCL, but I may provide similar functionality.
   - I have no intention to backport GUI libraries.
+  - I cannot modify EventHandler<T> to remove the generic contraint that's present in .NET prior .NET 4.5. For workaround see below.
 
 This features are not planned to be added or improved:
 
@@ -188,18 +191,19 @@ The following are the notable methods that has been added to existing types:
   - Stream.CopyTo was added in .NET 4.0, use StreamExtensions.CopyTo instead.
   - String.IsNullOrWhiteSpace was added in .NET 4.0, use StringHelper.IsNullOrWhiteSpace instead.
   - String.Concat and String.Join has new overloads in .NET 4.0, use StringHelper.Concat and StringHelper.Join instead.
+  - Stopwatch.Restart was added in .NET 4.0, use StopwatchExtensions.Restart instead.
+  - StringBuilder.Clear was added in .NET 4.0, use StringBuilderExtensions.Clear instead.
 
 Others:
 
   - The class ReaderWriterLockSlim was added in .NET 3.5, if ReaderWriterLock is not good enough, I suggest the use of memory transaction via Theraot.Threading.Needles.Transact.
+  - The classes added in .NET 4.5 that require EventHandler<T> without the generic constraint may get backported using Theraot.Core.NewEventHandler. Avoid using EventHandler<T> explictly in those cases.
   - The class TimeZoneInfo was added in .NET 3.5... pending.
   - Path.Combine new overloads in .NET 4.0... pending.
-  - Stopwatch.Restart was added in .NET 4.0, use StopwatchExtensions.Restart instead.
-  - StringBuilder.Clear was added in .NET 4.0, use StringBuilderExtensions.Clear instead.
-  - Remember to use culture specific overloads.
   - DateTimeOffset is new in .NET 3.5... pending.
   - Enum.TryParse was added in .NET 4.0... pending.
   - MemoryCache was added in .NET 4.0... under consideration.
+  - Remember to use culture specific overloads.
 
 ---
 Compiling
