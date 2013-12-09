@@ -444,9 +444,6 @@
     </Compile>
     <Compile Include="Theraot\Collections\ProgressiveSet.cs" />
     <Compile Include="Theraot\Collections\Specialized\EnumerationSet.cs" />
-    <Compile Include="Theraot\Collections\Specialized\SpecialCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Theraot\Collections\TryTake.cs" />
     <Compile Include="Theraot\Core\ActionHelper.cs">
       <AutoGen>True</AutoGen>
