@@ -301,7 +301,6 @@
     <Compile Include="System\Numerics\BigInteger.net35.cs" />
     <Compile Include="System\Numerics\Complex.net35.cs" />
     <Compile Include="System\Progress.net40.cs" />
-    <Compile Include="System\ProgressEventHandler.net40.cs" />
     <Compile Include="System\Runtime\CompilerServices\DynamicAttribute.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\ExecutionScope.net30.cs" />
     <Compile Include="System\Runtime\CompilerServices\ExtensionAttribute.net30.cs" />

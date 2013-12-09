@@ -27,7 +27,7 @@ namespace System
             }
         }
 
-        public event ProgressEventHandler<T> ProgressChanged;
+        public event EventHandler<T> ProgressChanged;
 
         public void Report(T value)
         {
