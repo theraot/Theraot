@@ -1,7 +1,6 @@
 ﻿#if NET20 || NET30 || NET35
 
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 
 namespace System.Threading
 {

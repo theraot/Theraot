@@ -242,6 +242,14 @@ namespace System.Threading
             Dispose(true);
         }
 
+        internal void CheckDisposed()
+        {
+            if (_disposed)
+            {
+                throw new ObjectDisposedException(GetType().Name);
+            }
+        }
+
         internal CancellationTokenRegistration Register(Action callback, bool useSynchronizationContext)
         {
             CheckDisposed();
@@ -313,14 +321,6 @@ namespace System.Threading
             catch (OverflowException)
             {
                 throw new ArgumentOutOfRangeException("delay");
-            }
-        }
-
-        internal void CheckDisposed()
-        {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(GetType().Name);
             }
         }
 

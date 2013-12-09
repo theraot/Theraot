@@ -26,7 +26,6 @@ namespace System.Threading
 {
     public struct SpinWait
     {
-
         private int _count;
 
         public int Count
@@ -41,7 +40,7 @@ namespace System.Threading
         {
             get
             {
-                return Theraot.Threading.ThreadingHelper.isSingleCPU ? true : _count % Theraot.Threading.ThreadingHelper.sleepCountHint == 0;
+                return Theraot.Threading.ThreadingHelper.IsSingleCPU ? true : _count % Theraot.Threading.ThreadingHelper.SleepCountHint == 0;
             }
         }
 

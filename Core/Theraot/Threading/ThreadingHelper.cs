@@ -6,8 +6,8 @@ namespace Theraot.Threading
     [global::System.Diagnostics.DebuggerNonUserCode]
     public static partial class ThreadingHelper
     {
-        internal static readonly bool isSingleCPU = Environment.ProcessorCount == 1;
-        internal static readonly int sleepCountHint = 10;
+        internal static readonly bool IsSingleCPU = Environment.ProcessorCount == 1;
+        internal static readonly int SleepCountHint = 10;
         private const int INT_MaxTime = 200;
         private static readonly RuntimeUniqueIdProdiver _threadIdProvider = new RuntimeUniqueIdProdiver();
         private static NoTrackingThreadLocal<RuntimeUniqueIdProdiver.UniqueId> _threadRuntimeUniqueId = new NoTrackingThreadLocal<RuntimeUniqueIdProdiver.UniqueId>(_threadIdProvider.GetNextId);
@@ -43,13 +43,13 @@ namespace Theraot.Threading
         internal static void SpinOnce(ref int count)
         {
             count++;
-            if (isSingleCPU || count % sleepCountHint == 0)
+            if (IsSingleCPU || count % SleepCountHint == 0)
             {
                 Thread.Sleep(0);
             }
             else
             {
-                if (count % sleepCountHint == 0)
+                if (count % SleepCountHint == 0)
                 {
                     Thread.Sleep(0);
                 }
