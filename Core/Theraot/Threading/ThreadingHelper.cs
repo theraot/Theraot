@@ -7,7 +7,7 @@ namespace Theraot.Threading
     public static class ThreadingHelper
     {
         private static readonly RuntimeUniqueIdProdiver _threadIdProvider = new RuntimeUniqueIdProdiver();
-        private static readonly int IntSleepCountHint = 5;
+        private static readonly int IntSleepCountHint = 10;
         private static readonly int IntSpinWaitHint = 20;
         private static NoTrackingThreadLocal<RuntimeUniqueIdProdiver.UniqueId> _threadRuntimeUniqueId = new NoTrackingThreadLocal<RuntimeUniqueIdProdiver.UniqueId>(_threadIdProvider.GetNextId);
 
