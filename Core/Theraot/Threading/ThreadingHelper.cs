@@ -6,9 +6,9 @@ namespace Theraot.Threading
     [global::System.Diagnostics.DebuggerNonUserCode]
     public static partial class ThreadingHelper
     {
-        private static readonly bool _isSingleCPU = Environment.ProcessorCount == 1;
-        private static readonly int _sleepCountHint = 10;
-        private static readonly int _spinWaitHint = 20;
+        internal static readonly bool isSingleCPU = Environment.ProcessorCount == 1;
+        internal static readonly int sleepCountHint = 10;
+        private const int INT_MaxTime = 200;
         private static readonly RuntimeUniqueIdProdiver _threadIdProvider = new RuntimeUniqueIdProdiver();
         private static NoTrackingThreadLocal<RuntimeUniqueIdProdiver.UniqueId> _threadRuntimeUniqueId = new NoTrackingThreadLocal<RuntimeUniqueIdProdiver.UniqueId>(_threadIdProvider.GetNextId);
 
@@ -35,28 +35,34 @@ namespace Theraot.Threading
             address = value;
         }
 
-        private static void SpinOnce(ref int count)
+        internal static long Milliseconds(long ticks)
         {
-            if (count == _sleepCountHint || _isSingleCPU)
+            return ticks / TimeSpan.TicksPerMillisecond;
+        }
+
+        internal static void SpinOnce(ref int count)
+        {
+            count++;
+            if (isSingleCPU || count % sleepCountHint == 0)
             {
-                count = 0;
                 Thread.Sleep(0);
             }
             else
             {
-                count++;
-                Thread.SpinWait(_spinWaitHint);
+                if (count % sleepCountHint == 0)
+                {
+                    Thread.Sleep(0);
+                }
+                else
+                {
+                    Thread.SpinWait(Math.Min(count, INT_MaxTime) << 1);
+                }
             }
         }
 
-        private static long TicksNow()
+        internal static long TicksNow()
         {
             return DateTime.Now.Ticks;
-        }
-
-        private static long Milliseconds(long ticks)
-        {
-            return ticks / TimeSpan.TicksPerMillisecond;
         }
     }
 }
