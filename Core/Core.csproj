@@ -324,7 +324,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Extensions.interleave.tt</DependentUpon>
     </Compile>
-    <Compile Include="Theraot\Collections\Specialized\EnumerableWrappedCollection.cs" />
     <Compile Include="Theraot\Collections\Specialized\NeedleConversionEqualityComparer.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\WeakDelegateSet.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\WeakEvent.cs" />

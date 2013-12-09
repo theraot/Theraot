@@ -1,25 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using Theraot.Core;
 
 namespace Theraot.Collections.Specialized
 {
+    [global::System.Diagnostics.DebuggerNonUserCode]
     public class EnumerationCollection<T> : ICollection<T>, IReadOnlyCollection<T>, IExtendedReadOnlyCollection<T>, IExtendedCollection<T>, IEnumerable<T>
     {
-        private IEnumerable<T> _wrapped;
+        private readonly Func<int> _count;
+        private readonly IEnumerable<T> _wrapped;
+
+        public EnumerationCollection(IEnumerable<T> wrapped, Func<int> count)
+        {
+            _wrapped = Check.NotNullArgument(wrapped, "wrapped");
+            _count = Check.NotNullArgument(count, "count");
+        }
 
         public EnumerationCollection(IEnumerable<T> wrapped)
         {
             _wrapped = Check.NotNullArgument(wrapped, "wrapped");
+            _count = () => Enumerable.Count(_wrapped);
         }
 
         public int Count
         {
             get
             {
-                return Enumerable.Count(_wrapped);
+                return _count.Invoke();
             }
         }
 
@@ -41,38 +49,30 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        protected IEnumerable<T> Wrapped
-        {
-            get
-            {
-                return _wrapped;
-            }
-        }
-
         public bool Contains(T item)
         {
-            return Enumerable.Contains(_wrapped, item);
+            return System.Linq.Enumerable.Contains(_wrapped, item, EqualityComparer<T>.Default);
         }
 
         public bool Contains(T item, IEqualityComparer<T> comparer)
         {
-            return _wrapped.Contains(item, comparer);
+            return System.Linq.Enumerable.Contains(this, item, comparer);
         }
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            Extensions.CopyTo(_wrapped, array);
+            _wrapped.CopyTo(array, arrayIndex);
         }
 
         public void CopyTo(T[] array)
         {
-            Extensions.CopyTo(_wrapped, array);
+            _wrapped.CopyTo(array, 0);
         }
 
         public void CopyTo(T[] array, int arrayIndex, int countLimit)
         {
             Extensions.CanCopyTo(array, arrayIndex, countLimit);
-            Extensions.CopyTo(_wrapped, array, arrayIndex, countLimit);
+            Extensions.CopyTo(this, array, arrayIndex, countLimit);
         }
 
         public IEnumerator<T> GetEnumerator()
@@ -107,6 +107,13 @@ namespace Theraot.Collections.Specialized
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public T[] ToArray()
+        {
+            var array = new T[_count.Invoke()];
+            CopyTo(array);
+            return array;
         }
     }
 }
