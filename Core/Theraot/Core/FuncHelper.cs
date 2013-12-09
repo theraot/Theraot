@@ -536,18 +536,18 @@ namespace Theraot.Core
 
         private static class HelperDefaultFunc<TReturn>
         {
-            private static readonly Func<TReturn> instance;
+            private static readonly Func<TReturn> _instance;
 
             static HelperDefaultFunc()
             {
-                instance = DefaultFunc;
+                _instance = DefaultFunc;
             }
 
             public static Func<TReturn> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -559,18 +559,18 @@ namespace Theraot.Core
 
         private static class HelperDefaultFunc<T, TReturn>
         {
-            private static readonly Func<T, TReturn> instance;
+            private static readonly Func<T, TReturn> _instance;
 
             static HelperDefaultFunc()
             {
-                instance = DefaultFunc;
+                _instance = DefaultFunc;
             }
 
             public static Func<T, TReturn> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -583,18 +583,18 @@ namespace Theraot.Core
 
         private static class HelperDefaultFunc<T1, T2, TReturn>
         {
-            private static readonly Func<T1, T2, TReturn> instance;
+            private static readonly Func<T1, T2, TReturn> _instance;
 
             static HelperDefaultFunc()
             {
-                instance = DefaultFunc;
+                _instance = DefaultFunc;
             }
 
             public static Func<T1, T2, TReturn> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -607,18 +607,18 @@ namespace Theraot.Core
 
         private static class HelperDefaultFunc<T1, T2, T3, TReturn>
         {
-            private static readonly Func<T1, T2, T3, TReturn> instance;
+            private static readonly Func<T1, T2, T3, TReturn> _instance;
 
             static HelperDefaultFunc()
             {
-                instance = DefaultFunc;
+                _instance = DefaultFunc;
             }
 
             public static Func<T1, T2, T3, TReturn> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -631,18 +631,18 @@ namespace Theraot.Core
 
         private static class HelperDefaultFunc<T1, T2, T3, T4, TReturn>
         {
-            private static readonly Func<T1, T2, T3, T4, TReturn> instance;
+            private static readonly Func<T1, T2, T3, T4, TReturn> _instance;
 
             static HelperDefaultFunc()
             {
-                instance = DefaultFunc;
+                _instance = DefaultFunc;
             }
 
             public static Func<T1, T2, T3, T4, TReturn> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -655,18 +655,18 @@ namespace Theraot.Core
 
         private static class HelperDefaultFunc<T1, T2, T3, T4, T5, TReturn>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, TReturn> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, TReturn> _instance;
 
             static HelperDefaultFunc()
             {
-                instance = DefaultFunc;
+                _instance = DefaultFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, TReturn> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -679,18 +679,18 @@ namespace Theraot.Core
 
         private static class HelperDefaultFunc<T1, T2, T3, T4, T5, T6, TReturn>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, TReturn> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, TReturn> _instance;
 
             static HelperDefaultFunc()
             {
-                instance = DefaultFunc;
+                _instance = DefaultFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, TReturn> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -703,18 +703,18 @@ namespace Theraot.Core
 
         private static class HelperDefaultFunc<T1, T2, T3, T4, T5, T6, T7, TReturn>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, TReturn> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, TReturn> _instance;
 
             static HelperDefaultFunc()
             {
-                instance = DefaultFunc;
+                _instance = DefaultFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, TReturn> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -727,18 +727,18 @@ namespace Theraot.Core
 
         private static class HelperDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, TReturn>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> _instance;
 
             static HelperDefaultFunc()
             {
-                instance = DefaultFunc;
+                _instance = DefaultFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -751,18 +751,18 @@ namespace Theraot.Core
 
         private static class HelperDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> _instance;
 
             static HelperDefaultFunc()
             {
-                instance = DefaultFunc;
+                _instance = DefaultFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -775,18 +775,18 @@ namespace Theraot.Core
 
         private static class HelperDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> _instance;
 
             static HelperDefaultFunc()
             {
-                instance = DefaultFunc;
+                _instance = DefaultFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -799,18 +799,18 @@ namespace Theraot.Core
 
         private static class HelperDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> _instance;
 
             static HelperDefaultFunc()
             {
-                instance = DefaultFunc;
+                _instance = DefaultFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -823,18 +823,18 @@ namespace Theraot.Core
 
         private static class HelperDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> _instance;
 
             static HelperDefaultFunc()
             {
-                instance = DefaultFunc;
+                _instance = DefaultFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -847,18 +847,18 @@ namespace Theraot.Core
 
         private static class HelperDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> _instance;
 
             static HelperDefaultFunc()
             {
-                instance = DefaultFunc;
+                _instance = DefaultFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -871,18 +871,18 @@ namespace Theraot.Core
 
         private static class HelperDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> _instance;
 
             static HelperDefaultFunc()
             {
-                instance = DefaultFunc;
+                _instance = DefaultFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -895,18 +895,18 @@ namespace Theraot.Core
 
         private static class HelperDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> _instance;
 
             static HelperDefaultFunc()
             {
-                instance = DefaultFunc;
+                _instance = DefaultFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -919,18 +919,18 @@ namespace Theraot.Core
 
         private static class HelperDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> _instance;
 
             static HelperDefaultFunc()
             {
-                instance = DefaultFunc;
+                _instance = DefaultFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -943,18 +943,18 @@ namespace Theraot.Core
 
         private static class HelperFallacyFunc
         {
-            private static readonly Func<bool> instance;
+            private static readonly Func<bool> _instance;
 
             static HelperFallacyFunc()
             {
-                instance = FallacyFunc;
+                _instance = FallacyFunc;
             }
 
             public static Func<bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -966,18 +966,18 @@ namespace Theraot.Core
 
         private static class HelperFallacyFunc<T>
         {
-            private static readonly Func<T, bool> instance;
+            private static readonly Func<T, bool> _instance;
 
             static HelperFallacyFunc()
             {
-                instance = FallacyFunc;
+                _instance = FallacyFunc;
             }
 
             public static Func<T, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -990,18 +990,18 @@ namespace Theraot.Core
 
         private static class HelperFallacyFunc<T1, T2>
         {
-            private static readonly Func<T1, T2, bool> instance;
+            private static readonly Func<T1, T2, bool> _instance;
 
             static HelperFallacyFunc()
             {
-                instance = FallacyFunc;
+                _instance = FallacyFunc;
             }
 
             public static Func<T1, T2, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1014,18 +1014,18 @@ namespace Theraot.Core
 
         private static class HelperFallacyFunc<T1, T2, T3>
         {
-            private static readonly Func<T1, T2, T3, bool> instance;
+            private static readonly Func<T1, T2, T3, bool> _instance;
 
             static HelperFallacyFunc()
             {
-                instance = FallacyFunc;
+                _instance = FallacyFunc;
             }
 
             public static Func<T1, T2, T3, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1038,18 +1038,18 @@ namespace Theraot.Core
 
         private static class HelperFallacyFunc<T1, T2, T3, T4>
         {
-            private static readonly Func<T1, T2, T3, T4, bool> instance;
+            private static readonly Func<T1, T2, T3, T4, bool> _instance;
 
             static HelperFallacyFunc()
             {
-                instance = FallacyFunc;
+                _instance = FallacyFunc;
             }
 
             public static Func<T1, T2, T3, T4, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1062,18 +1062,18 @@ namespace Theraot.Core
 
         private static class HelperFallacyFunc<T1, T2, T3, T4, T5>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, bool> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, bool> _instance;
 
             static HelperFallacyFunc()
             {
-                instance = FallacyFunc;
+                _instance = FallacyFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1086,18 +1086,18 @@ namespace Theraot.Core
 
         private static class HelperFallacyFunc<T1, T2, T3, T4, T5, T6>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, bool> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, bool> _instance;
 
             static HelperFallacyFunc()
             {
-                instance = FallacyFunc;
+                _instance = FallacyFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1110,18 +1110,18 @@ namespace Theraot.Core
 
         private static class HelperFallacyFunc<T1, T2, T3, T4, T5, T6, T7>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, bool> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, bool> _instance;
 
             static HelperFallacyFunc()
             {
-                instance = FallacyFunc;
+                _instance = FallacyFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1134,18 +1134,18 @@ namespace Theraot.Core
 
         private static class HelperFallacyFunc<T1, T2, T3, T4, T5, T6, T7, T8>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, bool> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, bool> _instance;
 
             static HelperFallacyFunc()
             {
-                instance = FallacyFunc;
+                _instance = FallacyFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1158,18 +1158,18 @@ namespace Theraot.Core
 
         private static class HelperFallacyFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, bool> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, bool> _instance;
 
             static HelperFallacyFunc()
             {
-                instance = FallacyFunc;
+                _instance = FallacyFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1182,18 +1182,18 @@ namespace Theraot.Core
 
         private static class HelperFallacyFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, bool> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, bool> _instance;
 
             static HelperFallacyFunc()
             {
-                instance = FallacyFunc;
+                _instance = FallacyFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1206,18 +1206,18 @@ namespace Theraot.Core
 
         private static class HelperFallacyFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, bool> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, bool> _instance;
 
             static HelperFallacyFunc()
             {
-                instance = FallacyFunc;
+                _instance = FallacyFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1230,18 +1230,18 @@ namespace Theraot.Core
 
         private static class HelperFallacyFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, bool> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, bool> _instance;
 
             static HelperFallacyFunc()
             {
-                instance = FallacyFunc;
+                _instance = FallacyFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1254,18 +1254,18 @@ namespace Theraot.Core
 
         private static class HelperFallacyFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, bool> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, bool> _instance;
 
             static HelperFallacyFunc()
             {
-                instance = FallacyFunc;
+                _instance = FallacyFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1278,18 +1278,18 @@ namespace Theraot.Core
 
         private static class HelperFallacyFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, bool> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, bool> _instance;
 
             static HelperFallacyFunc()
             {
-                instance = FallacyFunc;
+                _instance = FallacyFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1302,18 +1302,18 @@ namespace Theraot.Core
 
         private static class HelperFallacyFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, bool> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, bool> _instance;
 
             static HelperFallacyFunc()
             {
-                instance = FallacyFunc;
+                _instance = FallacyFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1326,18 +1326,18 @@ namespace Theraot.Core
 
         private static class HelperFallacyFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, bool> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, bool> _instance;
 
             static HelperFallacyFunc()
             {
-                instance = FallacyFunc;
+                _instance = FallacyFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1350,18 +1350,18 @@ namespace Theraot.Core
 
         private static class HelperTautologyFunc
         {
-            private static readonly Func<bool> instance;
+            private static readonly Func<bool> _instance;
 
             static HelperTautologyFunc()
             {
-                instance = TautologyFunc;
+                _instance = TautologyFunc;
             }
 
             public static Func<bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1373,18 +1373,18 @@ namespace Theraot.Core
 
         private static class HelperTautologyFunc<T>
         {
-            private static readonly Func<T, bool> instance;
+            private static readonly Func<T, bool> _instance;
 
             static HelperTautologyFunc()
             {
-                instance = TautologyFunc;
+                _instance = TautologyFunc;
             }
 
             public static Func<T, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1397,18 +1397,18 @@ namespace Theraot.Core
 
         private static class HelperTautologyFunc<T1, T2>
         {
-            private static readonly Func<T1, T2, bool> instance;
+            private static readonly Func<T1, T2, bool> _instance;
 
             static HelperTautologyFunc()
             {
-                instance = TautologyFunc;
+                _instance = TautologyFunc;
             }
 
             public static Func<T1, T2, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1421,18 +1421,18 @@ namespace Theraot.Core
 
         private static class HelperTautologyFunc<T1, T2, T3>
         {
-            private static readonly Func<T1, T2, T3, bool> instance;
+            private static readonly Func<T1, T2, T3, bool> _instance;
 
             static HelperTautologyFunc()
             {
-                instance = TautologyFunc;
+                _instance = TautologyFunc;
             }
 
             public static Func<T1, T2, T3, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1445,18 +1445,18 @@ namespace Theraot.Core
 
         private static class HelperTautologyFunc<T1, T2, T3, T4>
         {
-            private static readonly Func<T1, T2, T3, T4, bool> instance;
+            private static readonly Func<T1, T2, T3, T4, bool> _instance;
 
             static HelperTautologyFunc()
             {
-                instance = TautologyFunc;
+                _instance = TautologyFunc;
             }
 
             public static Func<T1, T2, T3, T4, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1469,18 +1469,18 @@ namespace Theraot.Core
 
         private static class HelperTautologyFunc<T1, T2, T3, T4, T5>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, bool> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, bool> _instance;
 
             static HelperTautologyFunc()
             {
-                instance = TautologyFunc;
+                _instance = TautologyFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1493,18 +1493,18 @@ namespace Theraot.Core
 
         private static class HelperTautologyFunc<T1, T2, T3, T4, T5, T6>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, bool> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, bool> _instance;
 
             static HelperTautologyFunc()
             {
-                instance = TautologyFunc;
+                _instance = TautologyFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1517,18 +1517,18 @@ namespace Theraot.Core
 
         private static class HelperTautologyFunc<T1, T2, T3, T4, T5, T6, T7>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, bool> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, bool> _instance;
 
             static HelperTautologyFunc()
             {
-                instance = TautologyFunc;
+                _instance = TautologyFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1541,18 +1541,18 @@ namespace Theraot.Core
 
         private static class HelperTautologyFunc<T1, T2, T3, T4, T5, T6, T7, T8>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, bool> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, bool> _instance;
 
             static HelperTautologyFunc()
             {
-                instance = TautologyFunc;
+                _instance = TautologyFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1565,18 +1565,18 @@ namespace Theraot.Core
 
         private static class HelperTautologyFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, bool> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, bool> _instance;
 
             static HelperTautologyFunc()
             {
-                instance = TautologyFunc;
+                _instance = TautologyFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1589,18 +1589,18 @@ namespace Theraot.Core
 
         private static class HelperTautologyFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, bool> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, bool> _instance;
 
             static HelperTautologyFunc()
             {
-                instance = TautologyFunc;
+                _instance = TautologyFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1613,18 +1613,18 @@ namespace Theraot.Core
 
         private static class HelperTautologyFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, bool> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, bool> _instance;
 
             static HelperTautologyFunc()
             {
-                instance = TautologyFunc;
+                _instance = TautologyFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1637,18 +1637,18 @@ namespace Theraot.Core
 
         private static class HelperTautologyFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, bool> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, bool> _instance;
 
             static HelperTautologyFunc()
             {
-                instance = TautologyFunc;
+                _instance = TautologyFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1661,18 +1661,18 @@ namespace Theraot.Core
 
         private static class HelperTautologyFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, bool> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, bool> _instance;
 
             static HelperTautologyFunc()
             {
-                instance = TautologyFunc;
+                _instance = TautologyFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1685,18 +1685,18 @@ namespace Theraot.Core
 
         private static class HelperTautologyFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, bool> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, bool> _instance;
 
             static HelperTautologyFunc()
             {
-                instance = TautologyFunc;
+                _instance = TautologyFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1709,18 +1709,18 @@ namespace Theraot.Core
 
         private static class HelperTautologyFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, bool> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, bool> _instance;
 
             static HelperTautologyFunc()
             {
-                instance = TautologyFunc;
+                _instance = TautologyFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -1733,18 +1733,18 @@ namespace Theraot.Core
 
         private static class HelperTautologyFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>
         {
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, bool> instance;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, bool> _instance;
 
             static HelperTautologyFunc()
             {
-                instance = TautologyFunc;
+                _instance = TautologyFunc;
             }
 
             public static Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, bool> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 

@@ -6,13 +6,13 @@ namespace System.Collections
 {
     public static class StructuralComparisons
     {
-        private static readonly InternalComparer comparer = new InternalComparer();
+        private static readonly InternalComparer _comparer = new InternalComparer();
 
         public static IComparer StructuralComparer
         {
             get
             {
-                return comparer;
+                return _comparer;
             }
         }
 
@@ -20,7 +20,7 @@ namespace System.Collections
         {
             get
             {
-                return comparer;
+                return _comparer;
             }
         }
 

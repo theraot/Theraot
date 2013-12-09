@@ -37,7 +37,7 @@ namespace System.Threading
     {
         internal static readonly CancellationTokenSource CanceledSource = new CancellationTokenSource();
         internal static readonly CancellationTokenSource NoneSource = new CancellationTokenSource();
-        private static readonly TimerCallback timer_callback;
+        private static readonly TimerCallback _timerCallback;
         private HashBucket<CancellationTokenRegistration, Action> _callbacks;
         private bool _canceled;
         private int _currentId = int.MinValue;
@@ -49,7 +49,7 @@ namespace System.Threading
         static CancellationTokenSource()
         {
             CanceledSource._canceled = true;
-            timer_callback = token =>
+            _timerCallback = token =>
             {
                 var cancellationTokenSource = (CancellationTokenSource)token;
                 cancellationTokenSource.Cancel();
@@ -71,7 +71,7 @@ namespace System.Threading
             }
             if (millisecondsDelay != Timeout.Infinite)
             {
-                _timer = new Timer(timer_callback, this, millisecondsDelay, Timeout.Infinite);
+                _timer = new Timer(_timerCallback, this, millisecondsDelay, Timeout.Infinite);
             }
         }
 
@@ -225,7 +225,7 @@ namespace System.Threading
                     if (object.ReferenceEquals(_timer, null))
                     {
                         // Have to be carefull not to create secondary background timer
-                        var newTimer = new Timer(timer_callback, this, Timeout.Infinite, Timeout.Infinite);
+                        var newTimer = new Timer(_timerCallback, this, Timeout.Infinite, Timeout.Infinite);
                         var oldTimer = Interlocked.CompareExchange(ref _timer, newTimer, null);
                         if (!ReferenceEquals(oldTimer, null))
                         {

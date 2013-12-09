@@ -18,18 +18,18 @@ namespace Theraot.Core
 
         private static class IdentityHelper<TReturn>
         {
-            private static readonly Func<TReturn, TReturn> instance;
+            private static readonly Func<TReturn, TReturn> _instance;
 
             static IdentityHelper()
             {
-                instance = IdentityFunc;
+                _instance = IdentityFunc;
             }
 
             public static Func<TReturn, TReturn> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 

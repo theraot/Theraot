@@ -26,11 +26,11 @@ namespace System.Threading
 {
     public struct SpinWait
     {
-        private const int IntMaxTime = 200;
+        private const int INT_MaxTime = 200;
 
-        private static readonly int IntSleepCountHint = 10;
+        private static readonly int _sleepCountHint = 10;
 
-        private static readonly bool isSingleCpu = Environment.ProcessorCount == 1;
+        private static readonly bool _isSingleCpu = Environment.ProcessorCount == 1;
 
         private int _count;
 
@@ -46,7 +46,7 @@ namespace System.Threading
         {
             get
             {
-                return isSingleCpu ? true : _count % IntSleepCountHint == 0;
+                return _isSingleCpu ? true : _count % _sleepCountHint == 0;
             }
         }
 
@@ -73,19 +73,19 @@ namespace System.Threading
         public void SpinOnce()
         {
             _count++;
-            if (isSingleCpu)
+            if (_isSingleCpu)
             {
                 Thread.Sleep(0);
             }
             else
             {
-                if (_count % IntSleepCountHint == 0)
+                if (_count % _sleepCountHint == 0)
                 {
                     Thread.Sleep(0);
                 }
                 else
                 {
-                    Thread.SpinWait(Math.Min(_count, IntMaxTime) << 1);
+                    Thread.SpinWait(Math.Min(_count, INT_MaxTime) << 1);
                 }
             }
         }

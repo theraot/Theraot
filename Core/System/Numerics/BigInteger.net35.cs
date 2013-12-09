@@ -63,15 +63,15 @@ namespace System.Numerics
 {
     public partial struct BigInteger : IComparable, IFormattable, IComparable<BigInteger>, IEquatable<BigInteger>
     {
-        private static readonly uint[] ONE = new uint[1] { 1 };
+        private static readonly uint[] _one = new uint[1] { 1 };
 
-        private static readonly uint[] ZERO = new uint[1];
+        private static readonly uint[] _zero = new uint[1];
 
         public static BigInteger MinusOne
         {
             get
             {
-                return new BigInteger(-1, ONE);
+                return new BigInteger(-1, _one);
             }
         }
 
@@ -79,7 +79,7 @@ namespace System.Numerics
         {
             get
             {
-                return new BigInteger(1, ONE);
+                return new BigInteger(1, _one);
             }
         }
 
@@ -87,7 +87,7 @@ namespace System.Numerics
         {
             get
             {
-                return new BigInteger(0, ZERO);
+                return new BigInteger(0, _zero);
             }
         }
 
@@ -157,7 +157,7 @@ namespace System.Numerics
                     }
                     if (index == -1)
                     {
-                        remainder = new BigInteger(0, ZERO);
+                        remainder = new BigInteger(0, _zero);
                     }
                     else
                     {
@@ -173,7 +173,7 @@ namespace System.Numerics
                     }
                     if (index == -1)
                     {
-                        return new BigInteger(0, ZERO);
+                        return new BigInteger(0, _zero);
                     }
                     else
                     {
@@ -501,7 +501,7 @@ namespace System.Numerics
                     )
                 )
             {
-                return new BigInteger(1, ONE);
+                return new BigInteger(1, _one);
             }
             else if (left.IsZero)
             {
@@ -765,7 +765,7 @@ namespace System.Numerics
                 int r = CoreCompare(left._data, right._data);
                 if (r == 0)
                 {
-                    return new BigInteger(0, ZERO);
+                    return new BigInteger(0, _zero);
                 }
                 if (r > 0) //left > right
                 {
@@ -797,11 +797,11 @@ namespace System.Numerics
             {
                 if (sign == 1 && data[0] == 1)
                 {
-                    return new BigInteger(0, ZERO);
+                    return new BigInteger(0, _zero);
                 }
                 if (sign == 0)
                 {
-                    return new BigInteger(-1, ONE);
+                    return new BigInteger(-1, _one);
                 }
             }
             if (sign == -1)
@@ -866,7 +866,7 @@ namespace System.Numerics
                     }
                     if (index == -1)
                     {
-                        return new BigInteger(0, ZERO);
+                        return new BigInteger(0, _zero);
                     }
                     else
                     {
@@ -937,7 +937,7 @@ namespace System.Numerics
             }
             if (i == -1)
             {
-                return new BigInteger(0, ZERO);
+                return new BigInteger(0, _zero);
             }
             if (i < result.Length - 1)
             {
@@ -950,7 +950,7 @@ namespace System.Numerics
         {
             if (left._sign == 0 || right._sign == 0)
             {
-                return new BigInteger(0, ZERO);
+                return new BigInteger(0, _zero);
             }
             if (left._data[0] == 1 && left._data.Length == 1)
             {
@@ -1021,7 +1021,7 @@ namespace System.Numerics
             }
             if (i == -1)
             {
-                return new BigInteger(0, ZERO);
+                return new BigInteger(0, _zero);
             }
             if (i < quotient.Length - 1)
             {
@@ -1087,7 +1087,7 @@ namespace System.Numerics
             }
             if (i == -1)
             {
-                return new BigInteger(0, ZERO);
+                return new BigInteger(0, _zero);
             }
             if (i < result.Length - 1)
             {
@@ -1153,7 +1153,7 @@ namespace System.Numerics
             }
             if (i == -1)
             {
-                return new BigInteger(0, ZERO);
+                return new BigInteger(0, _zero);
             }
             if (i < result.Length - 1)
             {
@@ -1166,7 +1166,7 @@ namespace System.Numerics
         {
             if (value._sign == 0)
             {
-                return new BigInteger(-1, ONE);
+                return new BigInteger(-1, _one);
             }
             uint[] data = value._data;
             int sign = value._sign;
@@ -1198,7 +1198,7 @@ namespace System.Numerics
             }
             if (i == -1)
             {
-                return new BigInteger(0, ZERO);
+                return new BigInteger(0, _zero);
             }
             if (i < result.Length - 1)
             {
@@ -1224,7 +1224,7 @@ namespace System.Numerics
             int r = CoreCompare(left._data, right._data);
             if (r == 0)
             {
-                return new BigInteger(0, ZERO);
+                return new BigInteger(0, _zero);
             }
             if (r > 0) //left > right
             {
@@ -1250,11 +1250,11 @@ namespace System.Numerics
             {
                 if (sign == -1 && data[0] == 1)
                 {
-                    return new BigInteger(0, ZERO);
+                    return new BigInteger(0, _zero);
                 }
                 if (sign == 0)
                 {
-                    return new BigInteger(1, ONE);
+                    return new BigInteger(1, _one);
                 }
             }
             if (sign == -1)
@@ -1470,9 +1470,9 @@ namespace System.Numerics
             {
                 if (sign == 1)
                 {
-                    return new BigInteger(0, ZERO);
+                    return new BigInteger(0, _zero);
                 }
-                return new BigInteger(-1, ONE);
+                return new BigInteger(-1, _one);
             }
             uint[] res = new uint[size];
             int carry_shift = 32 - bit_shift;
@@ -1746,7 +1746,7 @@ namespace System.Numerics
                 remainder = new uint[1];
                 for (int index_dividend = length_dividend - 1; index_dividend >= 0; index_dividend--)
                 {
-                    _remainder *= Base;
+                    _remainder *= INT_Base;
                     _remainder += dividend[index_dividend];
                     ulong div = _remainder / _divisor;
                     _remainder -= div * _divisor;
@@ -1768,17 +1768,17 @@ namespace System.Numerics
                 {
                     ulong rr, qq;
                     int index_divisor;
-                    rr = (Base * un[index_dividend + length_divisor]) + un[index_dividend + length_divisor - 1];
+                    rr = (INT_Base * un[index_dividend + length_divisor]) + un[index_dividend + length_divisor - 1];
                     qq = rr / vn[length_divisor - 1];
                     rr -= qq * vn[length_divisor - 1];
                     while (true)
                     {
                         // Estimate too big ?
-                        if ((qq >= Base) || ((qq * vn[length_divisor - 2]) > ((rr * Base) + un[index_dividend + length_divisor - 2])))
+                        if ((qq >= INT_Base) || ((qq * vn[length_divisor - 2]) > ((rr * INT_Base) + un[index_dividend + length_divisor - 2])))
                         {
                             qq--;
                             rr += (ulong)vn[length_divisor - 1];
-                            if (rr < Base)
+                            if (rr < INT_Base)
                             {
                                 continue;
                             }
@@ -2146,11 +2146,11 @@ namespace System.Numerics
 
     public partial struct BigInteger : IComparable, IFormattable, IComparable<BigInteger>, IEquatable<BigInteger>
     {
-        private const ulong Base = 0x100000000;
+        private const ulong INT_Base = 0x100000000;
 
-        private const int DecimalScaleFactorMask = 0x00FF0000;
+        private const int INT_DecimalScaleFactorMask = 0x00FF0000;
 
-        private const int DecimalSignMask = unchecked((int)0x80000000);
+        private const int INT_DecimalSignMask = unchecked((int)0x80000000);
 
         //LSB on [0]
         private readonly uint[] _data;
@@ -2162,7 +2162,7 @@ namespace System.Numerics
             if (value == 0)
             {
                 _sign = 0;
-                _data = ZERO;
+                _data = _zero;
             }
             else if (value > 0)
             {
@@ -2182,7 +2182,7 @@ namespace System.Numerics
             if (value == 0)
             {
                 _sign = 0;
-                _data = ZERO;
+                _data = _zero;
             }
             else
             {
@@ -2196,7 +2196,7 @@ namespace System.Numerics
             if (value == 0)
             {
                 _sign = 0;
-                _data = ZERO;
+                _data = _zero;
             }
             else if (value > 0)
             {
@@ -2231,7 +2231,7 @@ namespace System.Numerics
             if (value == 0)
             {
                 _sign = 0;
-                _data = ZERO;
+                _data = _zero;
             }
             else
             {
@@ -2249,7 +2249,7 @@ namespace System.Numerics
 
         public BigInteger(double value)
         {
-            const int Bias = 1075;
+            const int INT_Bias = 1075;
             if (double.IsNaN(value) || double.IsInfinity(value))
             {
                 throw new OverflowException();
@@ -2265,7 +2265,7 @@ namespace System.Numerics
                     if (exponent == 0)
                     {
                         _sign = 0;
-                        _data = ZERO;
+                        _data = _zero;
                         return;
                     }
                     BigInteger result = Negative(bytes) ? MinusOne : One;
@@ -2279,7 +2279,7 @@ namespace System.Numerics
                     int exponent = Exponent(bytes);
                     mantissa |= 0x10000000000000ul;
                     BigInteger mantissaAsBigInteger = mantissa;
-                    BigInteger result = exponent > Bias ? mantissaAsBigInteger << (exponent - Bias) : mantissaAsBigInteger >> (Bias - exponent);
+                    BigInteger result = exponent > INT_Bias ? mantissaAsBigInteger << (exponent - INT_Bias) : mantissaAsBigInteger >> (INT_Bias - exponent);
                     _sign = (short)(Negative(bytes) ? -1 : 1);
                     _data = result._data;
                 }
@@ -2304,12 +2304,12 @@ namespace System.Numerics
             if (size == 0)
             {
                 _sign = 0;
-                _data = ZERO;
+                _data = _zero;
                 return;
             }
             else
             {
-                _sign = (short)((bits[3] & DecimalSignMask) != 0 ? -1 : 1);
+                _sign = (short)((bits[3] & INT_DecimalSignMask) != 0 ? -1 : 1);
                 _data = new uint[size];
                 _data[0] = (uint)bits[0];
                 if (size > 1)
@@ -2334,7 +2334,7 @@ namespace System.Numerics
             if (valueLength == 0 || (valueLength == 1 && value[0] == 0))
             {
                 _sign = 0;
-                _data = ZERO;
+                _data = _zero;
                 return;
             }
             else
@@ -2350,7 +2350,7 @@ namespace System.Numerics
                     if (valueLength == 0)
                     {
                         _sign = 0;
-                        _data = ZERO;
+                        _data = _zero;
                         return;
                     }
                 }
@@ -2814,8 +2814,8 @@ namespace System.Numerics
 
         private string ToString(uint radix, IFormatProvider provider)
         {
-            const string CharacterSet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            if (CharacterSet.Length < radix)
+            const string STR_CharacterSet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            if (STR_CharacterSet.Length < radix)
             {
                 throw new ArgumentException("charSet length less than radix", "characterSet");
             }
@@ -2850,7 +2850,7 @@ namespace System.Numerics
             {
                 BigInteger rem;
                 a = DivRem(a, radix, out rem);
-                digits.Add(CharacterSet[(int)rem]);
+                digits.Add(STR_CharacterSet[(int)rem]);
             }
             if (_sign == -1 && radix == 10)
             {

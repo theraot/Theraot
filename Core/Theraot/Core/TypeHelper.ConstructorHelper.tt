@@ -67,22 +67,22 @@ namespace Theraot.Core
 
         private static class ConstructorHelper<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>
         {
-            private static readonly ConstructorInfo constructorInfo;
-            private static readonly Func<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn> create;
-            private static readonly Func<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn> createOrDefault;
+            private static readonly ConstructorInfo _constructorInfo;
+            private static readonly Func<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn> _create;
+            private static readonly Func<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn> _createOrDefault;
 
             static ConstructorHelper()
             {
                 Type[] typeArguments = <# if (indice == 0) {#>Type.EmptyTypes<#} else {#>new Type[] { <# if (indice == 1) #>typeof(T)<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>typeof(T<#=subindice#>)<#}#> }<#}#>;
-                constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
-                create = InvokeConstructor;
+                _constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
+                _create = InvokeConstructor;
                 if (HasConstructor)
                 {
-                    createOrDefault = FuncHelper.GetDefaultFunc<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>();
+                    _createOrDefault = FuncHelper.GetDefaultFunc<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>();
                 }
                 else
                 {
-                    createOrDefault = create;
+                    _createOrDefault = _create;
                 }
             }
 
@@ -90,7 +90,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return create;
+                    return _create;
                 }
             }
 
@@ -98,7 +98,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return createOrDefault;
+                    return _createOrDefault;
                 }
             }
 
@@ -106,19 +106,19 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo != null;
+                    return _constructorInfo != null;
                 }
             }
 
             public static TReturn InvokeConstructor(<# if (indice != 0) { if (indice == 1) #>T obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#> arg<#=subindice#><#}}#>)
             {
-                if (constructorInfo == null)
+                if (_constructorInfo == null)
                 {
                     throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with <# if (indice == 0) {#>no type arguments.<# } else { if (indice == 1) #>the type argument {1}<# else {#>the type arguments <# for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>{<#=subindice#>}<#}}}#>", typeof(TReturn)<# if (indice != 0)#>, <# { if (indice == 1) #>typeof(T).Name<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>typeof(T<#=subindice#>).Name<#}}#>));
                 }
                 else
                 {
-                    <# if (indice == 0) { #>return (TReturn)constructorInfo.Invoke(_emptyObjects);<# } else { #>return (TReturn)constructorInfo.Invoke(new object[]{<# if (indice != 0) { if (indice == 1) #>obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>arg<#=subindice#><#}}#>});<# } #>
+                    <# if (indice == 0) { #>return (TReturn)_constructorInfo.Invoke(_emptyObjects);<# } else { #>return (TReturn)_constructorInfo.Invoke(new object[]{<# if (indice != 0) { if (indice == 1) #>obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>arg<#=subindice#><#}}#>});<# } #>
 
                 }
             }

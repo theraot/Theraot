@@ -64,22 +64,22 @@ namespace Theraot.Core
 
         private static class ConstructorHelper<TReturn>
         {
-            private static readonly ConstructorInfo constructorInfo;
-            private static readonly Func<TReturn> create;
-            private static readonly Func<TReturn> createOrDefault;
+            private static readonly ConstructorInfo _constructorInfo;
+            private static readonly Func<TReturn> _create;
+            private static readonly Func<TReturn> _createOrDefault;
 
             static ConstructorHelper()
             {
                 Type[] typeArguments = Type.EmptyTypes;
-                constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
-                create = InvokeConstructor;
+                _constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
+                _create = InvokeConstructor;
                 if (HasConstructor)
                 {
-                    createOrDefault = FuncHelper.GetDefaultFunc<TReturn>();
+                    _createOrDefault = FuncHelper.GetDefaultFunc<TReturn>();
                 }
                 else
                 {
-                    createOrDefault = create;
+                    _createOrDefault = _create;
                 }
             }
 
@@ -87,7 +87,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return create;
+                    return _create;
                 }
             }
 
@@ -95,7 +95,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return createOrDefault;
+                    return _createOrDefault;
                 }
             }
 
@@ -103,19 +103,19 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo != null;
+                    return _constructorInfo != null;
                 }
             }
 
             public static TReturn InvokeConstructor()
             {
-                if (constructorInfo == null)
+                if (_constructorInfo == null)
                 {
                     throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with no type arguments.", typeof(TReturn)));
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(_emptyObjects);
+                    return (TReturn)_constructorInfo.Invoke(_emptyObjects);
                 }
             }
         }
@@ -175,22 +175,22 @@ namespace Theraot.Core
 
         private static class ConstructorHelper<T, TReturn>
         {
-            private static readonly ConstructorInfo constructorInfo;
-            private static readonly Func<T, TReturn> create;
-            private static readonly Func<T, TReturn> createOrDefault;
+            private static readonly ConstructorInfo _constructorInfo;
+            private static readonly Func<T, TReturn> _create;
+            private static readonly Func<T, TReturn> _createOrDefault;
 
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T) };
-                constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
-                create = InvokeConstructor;
+                _constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
+                _create = InvokeConstructor;
                 if (HasConstructor)
                 {
-                    createOrDefault = FuncHelper.GetDefaultFunc<T, TReturn>();
+                    _createOrDefault = FuncHelper.GetDefaultFunc<T, TReturn>();
                 }
                 else
                 {
-                    createOrDefault = create;
+                    _createOrDefault = _create;
                 }
             }
 
@@ -198,7 +198,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return create;
+                    return _create;
                 }
             }
 
@@ -206,7 +206,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return createOrDefault;
+                    return _createOrDefault;
                 }
             }
 
@@ -214,19 +214,19 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo != null;
+                    return _constructorInfo != null;
                 }
             }
 
             public static TReturn InvokeConstructor(T obj)
             {
-                if (constructorInfo == null)
+                if (_constructorInfo == null)
                 {
                     throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with the type argument {1}", typeof(TReturn), typeof(T).Name));
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(new object[]{obj});
+                    return (TReturn)_constructorInfo.Invoke(new object[]{obj});
                 }
             }
         }
@@ -286,22 +286,22 @@ namespace Theraot.Core
 
         private static class ConstructorHelper<T1, T2, TReturn>
         {
-            private static readonly ConstructorInfo constructorInfo;
-            private static readonly Func<T1, T2, TReturn> create;
-            private static readonly Func<T1, T2, TReturn> createOrDefault;
+            private static readonly ConstructorInfo _constructorInfo;
+            private static readonly Func<T1, T2, TReturn> _create;
+            private static readonly Func<T1, T2, TReturn> _createOrDefault;
 
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2) };
-                constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
-                create = InvokeConstructor;
+                _constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
+                _create = InvokeConstructor;
                 if (HasConstructor)
                 {
-                    createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, TReturn>();
+                    _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, TReturn>();
                 }
                 else
                 {
-                    createOrDefault = create;
+                    _createOrDefault = _create;
                 }
             }
 
@@ -309,7 +309,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return create;
+                    return _create;
                 }
             }
 
@@ -317,7 +317,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return createOrDefault;
+                    return _createOrDefault;
                 }
             }
 
@@ -325,19 +325,19 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo != null;
+                    return _constructorInfo != null;
                 }
             }
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2)
             {
-                if (constructorInfo == null)
+                if (_constructorInfo == null)
                 {
                     throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with the type arguments {1}, {2}", typeof(TReturn), typeof(T1).Name, typeof(T2).Name));
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2});
+                    return (TReturn)_constructorInfo.Invoke(new object[]{arg1, arg2});
                 }
             }
         }
@@ -397,22 +397,22 @@ namespace Theraot.Core
 
         private static class ConstructorHelper<T1, T2, T3, TReturn>
         {
-            private static readonly ConstructorInfo constructorInfo;
-            private static readonly Func<T1, T2, T3, TReturn> create;
-            private static readonly Func<T1, T2, T3, TReturn> createOrDefault;
+            private static readonly ConstructorInfo _constructorInfo;
+            private static readonly Func<T1, T2, T3, TReturn> _create;
+            private static readonly Func<T1, T2, T3, TReturn> _createOrDefault;
 
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3) };
-                constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
-                create = InvokeConstructor;
+                _constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
+                _create = InvokeConstructor;
                 if (HasConstructor)
                 {
-                    createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, TReturn>();
+                    _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, TReturn>();
                 }
                 else
                 {
-                    createOrDefault = create;
+                    _createOrDefault = _create;
                 }
             }
 
@@ -420,7 +420,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return create;
+                    return _create;
                 }
             }
 
@@ -428,7 +428,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return createOrDefault;
+                    return _createOrDefault;
                 }
             }
 
@@ -436,19 +436,19 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo != null;
+                    return _constructorInfo != null;
                 }
             }
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3)
             {
-                if (constructorInfo == null)
+                if (_constructorInfo == null)
                 {
                     throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with the type arguments {1}, {2}, {3}", typeof(TReturn), typeof(T1).Name, typeof(T2).Name, typeof(T3).Name));
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3});
+                    return (TReturn)_constructorInfo.Invoke(new object[]{arg1, arg2, arg3});
                 }
             }
         }
@@ -508,22 +508,22 @@ namespace Theraot.Core
 
         private static class ConstructorHelper<T1, T2, T3, T4, TReturn>
         {
-            private static readonly ConstructorInfo constructorInfo;
-            private static readonly Func<T1, T2, T3, T4, TReturn> create;
-            private static readonly Func<T1, T2, T3, T4, TReturn> createOrDefault;
+            private static readonly ConstructorInfo _constructorInfo;
+            private static readonly Func<T1, T2, T3, T4, TReturn> _create;
+            private static readonly Func<T1, T2, T3, T4, TReturn> _createOrDefault;
 
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4) };
-                constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
-                create = InvokeConstructor;
+                _constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
+                _create = InvokeConstructor;
                 if (HasConstructor)
                 {
-                    createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, TReturn>();
+                    _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, TReturn>();
                 }
                 else
                 {
-                    createOrDefault = create;
+                    _createOrDefault = _create;
                 }
             }
 
@@ -531,7 +531,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return create;
+                    return _create;
                 }
             }
 
@@ -539,7 +539,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return createOrDefault;
+                    return _createOrDefault;
                 }
             }
 
@@ -547,19 +547,19 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo != null;
+                    return _constructorInfo != null;
                 }
             }
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3, T4 arg4)
             {
-                if (constructorInfo == null)
+                if (_constructorInfo == null)
                 {
                     throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with the type arguments {1}, {2}, {3}, {4}", typeof(TReturn), typeof(T1).Name, typeof(T2).Name, typeof(T3).Name, typeof(T4).Name));
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4});
+                    return (TReturn)_constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4});
                 }
             }
         }
@@ -619,22 +619,22 @@ namespace Theraot.Core
 
         private static class ConstructorHelper<T1, T2, T3, T4, T5, TReturn>
         {
-            private static readonly ConstructorInfo constructorInfo;
-            private static readonly Func<T1, T2, T3, T4, T5, TReturn> create;
-            private static readonly Func<T1, T2, T3, T4, T5, TReturn> createOrDefault;
+            private static readonly ConstructorInfo _constructorInfo;
+            private static readonly Func<T1, T2, T3, T4, T5, TReturn> _create;
+            private static readonly Func<T1, T2, T3, T4, T5, TReturn> _createOrDefault;
 
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5) };
-                constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
-                create = InvokeConstructor;
+                _constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
+                _create = InvokeConstructor;
                 if (HasConstructor)
                 {
-                    createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, TReturn>();
+                    _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, TReturn>();
                 }
                 else
                 {
-                    createOrDefault = create;
+                    _createOrDefault = _create;
                 }
             }
 
@@ -642,7 +642,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return create;
+                    return _create;
                 }
             }
 
@@ -650,7 +650,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return createOrDefault;
+                    return _createOrDefault;
                 }
             }
 
@@ -658,19 +658,19 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo != null;
+                    return _constructorInfo != null;
                 }
             }
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
             {
-                if (constructorInfo == null)
+                if (_constructorInfo == null)
                 {
                     throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with the type arguments {1}, {2}, {3}, {4}, {5}", typeof(TReturn), typeof(T1).Name, typeof(T2).Name, typeof(T3).Name, typeof(T4).Name, typeof(T5).Name));
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5});
+                    return (TReturn)_constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5});
                 }
             }
         }
@@ -730,22 +730,22 @@ namespace Theraot.Core
 
         private static class ConstructorHelper<T1, T2, T3, T4, T5, T6, TReturn>
         {
-            private static readonly ConstructorInfo constructorInfo;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, TReturn> create;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, TReturn> createOrDefault;
+            private static readonly ConstructorInfo _constructorInfo;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, TReturn> _create;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, TReturn> _createOrDefault;
 
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6) };
-                constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
-                create = InvokeConstructor;
+                _constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
+                _create = InvokeConstructor;
                 if (HasConstructor)
                 {
-                    createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, TReturn>();
+                    _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, TReturn>();
                 }
                 else
                 {
-                    createOrDefault = create;
+                    _createOrDefault = _create;
                 }
             }
 
@@ -753,7 +753,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return create;
+                    return _create;
                 }
             }
 
@@ -761,7 +761,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return createOrDefault;
+                    return _createOrDefault;
                 }
             }
 
@@ -769,19 +769,19 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo != null;
+                    return _constructorInfo != null;
                 }
             }
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
             {
-                if (constructorInfo == null)
+                if (_constructorInfo == null)
                 {
                     throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with the type arguments {1}, {2}, {3}, {4}, {5}, {6}", typeof(TReturn), typeof(T1).Name, typeof(T2).Name, typeof(T3).Name, typeof(T4).Name, typeof(T5).Name, typeof(T6).Name));
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6});
+                    return (TReturn)_constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6});
                 }
             }
         }
@@ -841,22 +841,22 @@ namespace Theraot.Core
 
         private static class ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, TReturn>
         {
-            private static readonly ConstructorInfo constructorInfo;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, TReturn> create;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, TReturn> createOrDefault;
+            private static readonly ConstructorInfo _constructorInfo;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, TReturn> _create;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, TReturn> _createOrDefault;
 
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7) };
-                constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
-                create = InvokeConstructor;
+                _constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
+                _create = InvokeConstructor;
                 if (HasConstructor)
                 {
-                    createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, TReturn>();
+                    _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, TReturn>();
                 }
                 else
                 {
-                    createOrDefault = create;
+                    _createOrDefault = _create;
                 }
             }
 
@@ -864,7 +864,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return create;
+                    return _create;
                 }
             }
 
@@ -872,7 +872,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return createOrDefault;
+                    return _createOrDefault;
                 }
             }
 
@@ -880,19 +880,19 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo != null;
+                    return _constructorInfo != null;
                 }
             }
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
             {
-                if (constructorInfo == null)
+                if (_constructorInfo == null)
                 {
                     throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with the type arguments {1}, {2}, {3}, {4}, {5}, {6}, {7}", typeof(TReturn), typeof(T1).Name, typeof(T2).Name, typeof(T3).Name, typeof(T4).Name, typeof(T5).Name, typeof(T6).Name, typeof(T7).Name));
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7});
+                    return (TReturn)_constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7});
                 }
             }
         }
@@ -952,22 +952,22 @@ namespace Theraot.Core
 
         private static class ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, TReturn>
         {
-            private static readonly ConstructorInfo constructorInfo;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> create;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> createOrDefault;
+            private static readonly ConstructorInfo _constructorInfo;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> _create;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> _createOrDefault;
 
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8) };
-                constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
-                create = InvokeConstructor;
+                _constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
+                _create = InvokeConstructor;
                 if (HasConstructor)
                 {
-                    createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, TReturn>();
+                    _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, TReturn>();
                 }
                 else
                 {
-                    createOrDefault = create;
+                    _createOrDefault = _create;
                 }
             }
 
@@ -975,7 +975,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return create;
+                    return _create;
                 }
             }
 
@@ -983,7 +983,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return createOrDefault;
+                    return _createOrDefault;
                 }
             }
 
@@ -991,19 +991,19 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo != null;
+                    return _constructorInfo != null;
                 }
             }
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)
             {
-                if (constructorInfo == null)
+                if (_constructorInfo == null)
                 {
                     throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with the type arguments {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}", typeof(TReturn), typeof(T1).Name, typeof(T2).Name, typeof(T3).Name, typeof(T4).Name, typeof(T5).Name, typeof(T6).Name, typeof(T7).Name, typeof(T8).Name));
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8});
+                    return (TReturn)_constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8});
                 }
             }
         }
@@ -1063,22 +1063,22 @@ namespace Theraot.Core
 
         private static class ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn>
         {
-            private static readonly ConstructorInfo constructorInfo;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> create;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> createOrDefault;
+            private static readonly ConstructorInfo _constructorInfo;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> _create;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> _createOrDefault;
 
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9) };
-                constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
-                create = InvokeConstructor;
+                _constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
+                _create = InvokeConstructor;
                 if (HasConstructor)
                 {
-                    createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn>();
+                    _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn>();
                 }
                 else
                 {
-                    createOrDefault = create;
+                    _createOrDefault = _create;
                 }
             }
 
@@ -1086,7 +1086,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return create;
+                    return _create;
                 }
             }
 
@@ -1094,7 +1094,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return createOrDefault;
+                    return _createOrDefault;
                 }
             }
 
@@ -1102,19 +1102,19 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo != null;
+                    return _constructorInfo != null;
                 }
             }
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)
             {
-                if (constructorInfo == null)
+                if (_constructorInfo == null)
                 {
                     throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with the type arguments {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}", typeof(TReturn), typeof(T1).Name, typeof(T2).Name, typeof(T3).Name, typeof(T4).Name, typeof(T5).Name, typeof(T6).Name, typeof(T7).Name, typeof(T8).Name, typeof(T9).Name));
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9});
+                    return (TReturn)_constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9});
                 }
             }
         }
@@ -1174,22 +1174,22 @@ namespace Theraot.Core
 
         private static class ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn>
         {
-            private static readonly ConstructorInfo constructorInfo;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> create;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> createOrDefault;
+            private static readonly ConstructorInfo _constructorInfo;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> _create;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> _createOrDefault;
 
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10) };
-                constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
-                create = InvokeConstructor;
+                _constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
+                _create = InvokeConstructor;
                 if (HasConstructor)
                 {
-                    createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn>();
+                    _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn>();
                 }
                 else
                 {
-                    createOrDefault = create;
+                    _createOrDefault = _create;
                 }
             }
 
@@ -1197,7 +1197,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return create;
+                    return _create;
                 }
             }
 
@@ -1205,7 +1205,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return createOrDefault;
+                    return _createOrDefault;
                 }
             }
 
@@ -1213,19 +1213,19 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo != null;
+                    return _constructorInfo != null;
                 }
             }
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10)
             {
-                if (constructorInfo == null)
+                if (_constructorInfo == null)
                 {
                     throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with the type arguments {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}", typeof(TReturn), typeof(T1).Name, typeof(T2).Name, typeof(T3).Name, typeof(T4).Name, typeof(T5).Name, typeof(T6).Name, typeof(T7).Name, typeof(T8).Name, typeof(T9).Name, typeof(T10).Name));
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10});
+                    return (TReturn)_constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10});
                 }
             }
         }
@@ -1285,22 +1285,22 @@ namespace Theraot.Core
 
         private static class ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn>
         {
-            private static readonly ConstructorInfo constructorInfo;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> create;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> createOrDefault;
+            private static readonly ConstructorInfo _constructorInfo;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> _create;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> _createOrDefault;
 
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11) };
-                constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
-                create = InvokeConstructor;
+                _constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
+                _create = InvokeConstructor;
                 if (HasConstructor)
                 {
-                    createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn>();
+                    _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn>();
                 }
                 else
                 {
-                    createOrDefault = create;
+                    _createOrDefault = _create;
                 }
             }
 
@@ -1308,7 +1308,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return create;
+                    return _create;
                 }
             }
 
@@ -1316,7 +1316,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return createOrDefault;
+                    return _createOrDefault;
                 }
             }
 
@@ -1324,19 +1324,19 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo != null;
+                    return _constructorInfo != null;
                 }
             }
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11)
             {
-                if (constructorInfo == null)
+                if (_constructorInfo == null)
                 {
                     throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with the type arguments {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}", typeof(TReturn), typeof(T1).Name, typeof(T2).Name, typeof(T3).Name, typeof(T4).Name, typeof(T5).Name, typeof(T6).Name, typeof(T7).Name, typeof(T8).Name, typeof(T9).Name, typeof(T10).Name, typeof(T11).Name));
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11});
+                    return (TReturn)_constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11});
                 }
             }
         }
@@ -1396,22 +1396,22 @@ namespace Theraot.Core
 
         private static class ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn>
         {
-            private static readonly ConstructorInfo constructorInfo;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> create;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> createOrDefault;
+            private static readonly ConstructorInfo _constructorInfo;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> _create;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> _createOrDefault;
 
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12) };
-                constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
-                create = InvokeConstructor;
+                _constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
+                _create = InvokeConstructor;
                 if (HasConstructor)
                 {
-                    createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn>();
+                    _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn>();
                 }
                 else
                 {
-                    createOrDefault = create;
+                    _createOrDefault = _create;
                 }
             }
 
@@ -1419,7 +1419,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return create;
+                    return _create;
                 }
             }
 
@@ -1427,7 +1427,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return createOrDefault;
+                    return _createOrDefault;
                 }
             }
 
@@ -1435,19 +1435,19 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo != null;
+                    return _constructorInfo != null;
                 }
             }
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12)
             {
-                if (constructorInfo == null)
+                if (_constructorInfo == null)
                 {
                     throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with the type arguments {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}", typeof(TReturn), typeof(T1).Name, typeof(T2).Name, typeof(T3).Name, typeof(T4).Name, typeof(T5).Name, typeof(T6).Name, typeof(T7).Name, typeof(T8).Name, typeof(T9).Name, typeof(T10).Name, typeof(T11).Name, typeof(T12).Name));
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12});
+                    return (TReturn)_constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12});
                 }
             }
         }
@@ -1507,22 +1507,22 @@ namespace Theraot.Core
 
         private static class ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn>
         {
-            private static readonly ConstructorInfo constructorInfo;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> create;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> createOrDefault;
+            private static readonly ConstructorInfo _constructorInfo;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> _create;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> _createOrDefault;
 
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13) };
-                constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
-                create = InvokeConstructor;
+                _constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
+                _create = InvokeConstructor;
                 if (HasConstructor)
                 {
-                    createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn>();
+                    _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn>();
                 }
                 else
                 {
-                    createOrDefault = create;
+                    _createOrDefault = _create;
                 }
             }
 
@@ -1530,7 +1530,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return create;
+                    return _create;
                 }
             }
 
@@ -1538,7 +1538,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return createOrDefault;
+                    return _createOrDefault;
                 }
             }
 
@@ -1546,19 +1546,19 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo != null;
+                    return _constructorInfo != null;
                 }
             }
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13)
             {
-                if (constructorInfo == null)
+                if (_constructorInfo == null)
                 {
                     throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with the type arguments {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}", typeof(TReturn), typeof(T1).Name, typeof(T2).Name, typeof(T3).Name, typeof(T4).Name, typeof(T5).Name, typeof(T6).Name, typeof(T7).Name, typeof(T8).Name, typeof(T9).Name, typeof(T10).Name, typeof(T11).Name, typeof(T12).Name, typeof(T13).Name));
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13});
+                    return (TReturn)_constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13});
                 }
             }
         }
@@ -1618,22 +1618,22 @@ namespace Theraot.Core
 
         private static class ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn>
         {
-            private static readonly ConstructorInfo constructorInfo;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> create;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> createOrDefault;
+            private static readonly ConstructorInfo _constructorInfo;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> _create;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> _createOrDefault;
 
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14) };
-                constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
-                create = InvokeConstructor;
+                _constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
+                _create = InvokeConstructor;
                 if (HasConstructor)
                 {
-                    createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn>();
+                    _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn>();
                 }
                 else
                 {
-                    createOrDefault = create;
+                    _createOrDefault = _create;
                 }
             }
 
@@ -1641,7 +1641,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return create;
+                    return _create;
                 }
             }
 
@@ -1649,7 +1649,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return createOrDefault;
+                    return _createOrDefault;
                 }
             }
 
@@ -1657,19 +1657,19 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo != null;
+                    return _constructorInfo != null;
                 }
             }
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14)
             {
-                if (constructorInfo == null)
+                if (_constructorInfo == null)
                 {
                     throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with the type arguments {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}", typeof(TReturn), typeof(T1).Name, typeof(T2).Name, typeof(T3).Name, typeof(T4).Name, typeof(T5).Name, typeof(T6).Name, typeof(T7).Name, typeof(T8).Name, typeof(T9).Name, typeof(T10).Name, typeof(T11).Name, typeof(T12).Name, typeof(T13).Name, typeof(T14).Name));
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14});
+                    return (TReturn)_constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14});
                 }
             }
         }
@@ -1729,22 +1729,22 @@ namespace Theraot.Core
 
         private static class ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn>
         {
-            private static readonly ConstructorInfo constructorInfo;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> create;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> createOrDefault;
+            private static readonly ConstructorInfo _constructorInfo;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> _create;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> _createOrDefault;
 
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof(T15) };
-                constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
-                create = InvokeConstructor;
+                _constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
+                _create = InvokeConstructor;
                 if (HasConstructor)
                 {
-                    createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn>();
+                    _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn>();
                 }
                 else
                 {
-                    createOrDefault = create;
+                    _createOrDefault = _create;
                 }
             }
 
@@ -1752,7 +1752,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return create;
+                    return _create;
                 }
             }
 
@@ -1760,7 +1760,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return createOrDefault;
+                    return _createOrDefault;
                 }
             }
 
@@ -1768,19 +1768,19 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo != null;
+                    return _constructorInfo != null;
                 }
             }
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15)
             {
-                if (constructorInfo == null)
+                if (_constructorInfo == null)
                 {
                     throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with the type arguments {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}", typeof(TReturn), typeof(T1).Name, typeof(T2).Name, typeof(T3).Name, typeof(T4).Name, typeof(T5).Name, typeof(T6).Name, typeof(T7).Name, typeof(T8).Name, typeof(T9).Name, typeof(T10).Name, typeof(T11).Name, typeof(T12).Name, typeof(T13).Name, typeof(T14).Name, typeof(T15).Name));
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15});
+                    return (TReturn)_constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15});
                 }
             }
         }
@@ -1840,22 +1840,22 @@ namespace Theraot.Core
 
         private static class ConstructorHelper<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn>
         {
-            private static readonly ConstructorInfo constructorInfo;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> create;
-            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> createOrDefault;
+            private static readonly ConstructorInfo _constructorInfo;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> _create;
+            private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> _createOrDefault;
 
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof(T15), typeof(T16) };
-                constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
-                create = InvokeConstructor;
+                _constructorInfo = typeof(TReturn).GetConstructor(typeArguments);
+                _create = InvokeConstructor;
                 if (HasConstructor)
                 {
-                    createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn>();
+                    _createOrDefault = FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn>();
                 }
                 else
                 {
-                    createOrDefault = create;
+                    _createOrDefault = _create;
                 }
             }
 
@@ -1863,7 +1863,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return create;
+                    return _create;
                 }
             }
 
@@ -1871,7 +1871,7 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return createOrDefault;
+                    return _createOrDefault;
                 }
             }
 
@@ -1879,19 +1879,19 @@ namespace Theraot.Core
             {
                 get
                 {
-                    return constructorInfo != null;
+                    return _constructorInfo != null;
                 }
             }
 
             public static TReturn InvokeConstructor(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15, T16 arg16)
             {
-                if (constructorInfo == null)
+                if (_constructorInfo == null)
                 {
                     throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "There is no constructor for {0} with the type arguments {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}, {11}, {12}, {13}, {14}, {15}, {16}", typeof(TReturn), typeof(T1).Name, typeof(T2).Name, typeof(T3).Name, typeof(T4).Name, typeof(T5).Name, typeof(T6).Name, typeof(T7).Name, typeof(T8).Name, typeof(T9).Name, typeof(T10).Name, typeof(T11).Name, typeof(T12).Name, typeof(T13).Name, typeof(T14).Name, typeof(T15).Name, typeof(T16).Name));
                 }
                 else
                 {
-                    return (TReturn)constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16});
+                    return (TReturn)_constructorInfo.Invoke(new object[]{arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16});
                 }
             }
         }

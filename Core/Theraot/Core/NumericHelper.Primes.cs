@@ -7,7 +7,7 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public static partial class NumericHelper
     {
-        private static readonly int[] smallPrimes = new int[]
+        private static readonly int[] _smallPrimes = new int[]
         {
             2, 3, 5, 7, 11, 13, 17, 19, 23, 29,
             31, 37, 41, 43, 47, 53, 59, 61, 67, 71,
@@ -675,9 +675,9 @@ namespace Theraot.Core
             }
             else
             {
-                if (number < smallPrimes[smallPrimes.Length - 1])
+                if (number < _smallPrimes[_smallPrimes.Length - 1])
                 {
-                    return Array.BinarySearch<int>(smallPrimes, number) >= 0;
+                    return Array.BinarySearch<int>(_smallPrimes, number) >= 0;
                 }
                 else
                 {
@@ -691,13 +691,13 @@ namespace Theraot.Core
                     }
                     int max = Sqrt(number) + 1;
                     int index = 2;
-                    for (; index < smallPrimes.Length; index++)
+                    for (; index < _smallPrimes.Length; index++)
                     {
-                        if (number % smallPrimes[index] == 0)
+                        if (number % _smallPrimes[index] == 0)
                         {
                             return false;
                         }
-                        if (smallPrimes[index] > max)
+                        if (_smallPrimes[index] > max)
                         {
                             return true;
                         }
@@ -725,12 +725,12 @@ namespace Theraot.Core
             }
             else
             {
-                if (fromNumber < smallPrimes[smallPrimes.Length - 1])
+                if (fromNumber < _smallPrimes[_smallPrimes.Length - 1])
                 {
-                    var index = Array.BinarySearch<int>(smallPrimes, fromNumber);
+                    var index = Array.BinarySearch<int>(_smallPrimes, fromNumber);
                     if (index < 0)
                     {
-                        return smallPrimes[-index - 1];
+                        return _smallPrimes[-index - 1];
                     }
                     else
                     {

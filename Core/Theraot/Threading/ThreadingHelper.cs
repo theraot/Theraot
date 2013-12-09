@@ -7,8 +7,8 @@ namespace Theraot.Threading
     public static class ThreadingHelper
     {
         private static readonly RuntimeUniqueIdProdiver _threadIdProvider = new RuntimeUniqueIdProdiver();
-        private static readonly int IntSleepCountHint = 10;
-        private static readonly int IntSpinWaitHint = 20;
+        private static readonly int _sleepCountHint = 10;
+        private static readonly int _spinWaitHint = 20;
         private static NoTrackingThreadLocal<RuntimeUniqueIdProdiver.UniqueId> _threadRuntimeUniqueId = new NoTrackingThreadLocal<RuntimeUniqueIdProdiver.UniqueId>(_threadIdProvider.GetNextId);
 
         public static RuntimeUniqueIdProdiver.UniqueId ThreadUniqueId
@@ -41,7 +41,7 @@ namespace Theraot.Threading
                     }
                     else
                     {
-                        Thread.SpinWait(IntSpinWaitHint);
+                        Thread.SpinWait(_spinWaitHint);
                         backCount--;
                     }
                     goto retry;
@@ -81,7 +81,7 @@ namespace Theraot.Threading
                     }
                     else
                     {
-                        Thread.SpinWait(IntSpinWaitHint);
+                        Thread.SpinWait(_spinWaitHint);
                         backCount--;
                     }
                     goto retry;
@@ -114,7 +114,7 @@ namespace Theraot.Threading
                         }
                         else
                         {
-                            Thread.SpinWait(IntSpinWaitHint);
+                            Thread.SpinWait(_spinWaitHint);
                             backCount--;
                         }
                         goto retry;
@@ -162,7 +162,7 @@ namespace Theraot.Threading
                         }
                         else
                         {
-                            Thread.SpinWait(IntSpinWaitHint);
+                            Thread.SpinWait(_spinWaitHint);
                             backCount--;
                         }
                         goto retry;
@@ -209,7 +209,7 @@ namespace Theraot.Threading
                     }
                     else
                     {
-                        Thread.SpinWait(IntSpinWaitHint);
+                        Thread.SpinWait(_spinWaitHint);
                         backCount--;
                     }
                     goto retry;
@@ -254,7 +254,7 @@ namespace Theraot.Threading
                         }
                         else
                         {
-                            Thread.SpinWait(IntSpinWaitHint);
+                            Thread.SpinWait(_spinWaitHint);
                             backCount--;
                         }
                         goto retry;
@@ -289,7 +289,7 @@ namespace Theraot.Threading
                     }
                     else
                     {
-                        Thread.SpinWait(IntSpinWaitHint);
+                        Thread.SpinWait(_spinWaitHint);
                         backCount--;
                     }
                     goto retry;
@@ -322,7 +322,7 @@ namespace Theraot.Threading
                         }
                         else
                         {
-                            Thread.SpinWait(IntSpinWaitHint);
+                            Thread.SpinWait(_spinWaitHint);
                             backCount--;
                         }
                         goto retry;
@@ -357,7 +357,7 @@ namespace Theraot.Threading
                     }
                     else
                     {
-                        Thread.SpinWait(IntSpinWaitHint);
+                        Thread.SpinWait(_spinWaitHint);
                         backCount--;
                     }
                     goto retry;
@@ -390,7 +390,7 @@ namespace Theraot.Threading
                         }
                         else
                         {
-                            Thread.SpinWait(IntSpinWaitHint);
+                            Thread.SpinWait(_spinWaitHint);
                             backCount--;
                         }
                         goto retry;
@@ -425,7 +425,7 @@ namespace Theraot.Threading
                     }
                     else
                     {
-                        Thread.SpinWait(IntSpinWaitHint);
+                        Thread.SpinWait(_spinWaitHint);
                         backCount--;
                     }
                     goto retry;
@@ -458,7 +458,7 @@ namespace Theraot.Threading
                         }
                         else
                         {
-                            Thread.SpinWait(IntSpinWaitHint);
+                            Thread.SpinWait(_spinWaitHint);
                             backCount--;
                         }
                         goto retry;
@@ -494,7 +494,7 @@ namespace Theraot.Threading
                     }
                     else
                     {
-                        Thread.SpinWait(IntSpinWaitHint);
+                        Thread.SpinWait(_spinWaitHint);
                         backCount--;
                     }
                     goto retry;
@@ -528,7 +528,7 @@ namespace Theraot.Threading
                         }
                         else
                         {
-                            Thread.SpinWait(IntSpinWaitHint);
+                            Thread.SpinWait(_spinWaitHint);
                             backCount--;
                         }
                         goto retry;
@@ -560,7 +560,7 @@ namespace Theraot.Threading
         {
             if (Environment.ProcessorCount > 1)
             {
-                return IntSleepCountHint;
+                return _sleepCountHint;
             }
             else
             {

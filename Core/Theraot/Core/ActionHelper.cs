@@ -230,18 +230,18 @@ namespace Theraot.Core
 
         private static class HelperNullAction
         {
-            private static readonly Action instance;
+            private static readonly Action _instance;
 
             static HelperNullAction()
             {
-                instance = NullAction;
+                _instance = NullAction;
             }
 
             public static Action Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -253,18 +253,18 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T>
         {
-            private static readonly Action<T> instance;
+            private static readonly Action<T> _instance;
 
             static HelperNullAction()
             {
-                instance = NullAction;
+                _instance = NullAction;
             }
 
             public static Action<T> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -277,18 +277,18 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2>
         {
-            private static readonly Action<T1, T2> instance;
+            private static readonly Action<T1, T2> _instance;
 
             static HelperNullAction()
             {
-                instance = NullAction;
+                _instance = NullAction;
             }
 
             public static Action<T1, T2> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -301,18 +301,18 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3>
         {
-            private static readonly Action<T1, T2, T3> instance;
+            private static readonly Action<T1, T2, T3> _instance;
 
             static HelperNullAction()
             {
-                instance = NullAction;
+                _instance = NullAction;
             }
 
             public static Action<T1, T2, T3> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -325,18 +325,18 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3, T4>
         {
-            private static readonly Action<T1, T2, T3, T4> instance;
+            private static readonly Action<T1, T2, T3, T4> _instance;
 
             static HelperNullAction()
             {
-                instance = NullAction;
+                _instance = NullAction;
             }
 
             public static Action<T1, T2, T3, T4> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -349,18 +349,18 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3, T4, T5>
         {
-            private static readonly Action<T1, T2, T3, T4, T5> instance;
+            private static readonly Action<T1, T2, T3, T4, T5> _instance;
 
             static HelperNullAction()
             {
-                instance = NullAction;
+                _instance = NullAction;
             }
 
             public static Action<T1, T2, T3, T4, T5> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -373,18 +373,18 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3, T4, T5, T6>
         {
-            private static readonly Action<T1, T2, T3, T4, T5, T6> instance;
+            private static readonly Action<T1, T2, T3, T4, T5, T6> _instance;
 
             static HelperNullAction()
             {
-                instance = NullAction;
+                _instance = NullAction;
             }
 
             public static Action<T1, T2, T3, T4, T5, T6> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -397,18 +397,18 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3, T4, T5, T6, T7>
         {
-            private static readonly Action<T1, T2, T3, T4, T5, T6, T7> instance;
+            private static readonly Action<T1, T2, T3, T4, T5, T6, T7> _instance;
 
             static HelperNullAction()
             {
-                instance = NullAction;
+                _instance = NullAction;
             }
 
             public static Action<T1, T2, T3, T4, T5, T6, T7> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -421,18 +421,18 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3, T4, T5, T6, T7, T8>
         {
-            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8> instance;
+            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8> _instance;
 
             static HelperNullAction()
             {
-                instance = NullAction;
+                _instance = NullAction;
             }
 
             public static Action<T1, T2, T3, T4, T5, T6, T7, T8> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -445,18 +445,18 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3, T4, T5, T6, T7, T8, T9>
         {
-            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> instance;
+            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> _instance;
 
             static HelperNullAction()
             {
-                instance = NullAction;
+                _instance = NullAction;
             }
 
             public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -469,18 +469,18 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>
         {
-            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> instance;
+            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> _instance;
 
             static HelperNullAction()
             {
-                instance = NullAction;
+                _instance = NullAction;
             }
 
             public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -493,18 +493,18 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>
         {
-            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> instance;
+            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> _instance;
 
             static HelperNullAction()
             {
-                instance = NullAction;
+                _instance = NullAction;
             }
 
             public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -517,18 +517,18 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>
         {
-            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> instance;
+            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> _instance;
 
             static HelperNullAction()
             {
-                instance = NullAction;
+                _instance = NullAction;
             }
 
             public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -541,18 +541,18 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>
         {
-            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> instance;
+            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> _instance;
 
             static HelperNullAction()
             {
-                instance = NullAction;
+                _instance = NullAction;
             }
 
             public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -565,18 +565,18 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>
         {
-            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> instance;
+            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> _instance;
 
             static HelperNullAction()
             {
-                instance = NullAction;
+                _instance = NullAction;
             }
 
             public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -589,18 +589,18 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>
         {
-            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> instance;
+            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> _instance;
 
             static HelperNullAction()
             {
-                instance = NullAction;
+                _instance = NullAction;
             }
 
             public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
@@ -613,18 +613,18 @@ namespace Theraot.Core
 
         private static class HelperNullAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>
         {
-            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> instance;
+            private static readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> _instance;
 
             static HelperNullAction()
             {
-                instance = NullAction;
+                _instance = NullAction;
             }
 
             public static Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 

@@ -15,7 +15,7 @@ namespace System.Threading
     [DebuggerDisplay("Count = {InnerExceptions.Count}")]
     public class AggregateException : Exception
     {
-        private static readonly string BaseMessage = "Exception(s) occurred while inside the Parallel loop. {0}.";
+        private const string STR_BaseMessage = "Exception(s) occurred while inside the Parallel loop. {0}.";
 
         private readonly ReadOnlyCollection<Exception> _innerExceptions;
 
@@ -220,7 +220,7 @@ namespace System.Threading
 
         private static string GetFormattedMessage(string customMessage, IEnumerable<Exception> exceptions)
         {
-            var result = new System.Text.StringBuilder(string.Format(BaseMessage, customMessage));
+            var result = new System.Text.StringBuilder(string.Format(STR_BaseMessage, customMessage));
             foreach (var exception in exceptions)
             {
                 result.Append(Environment.NewLine);

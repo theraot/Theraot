@@ -1,8 +1,5 @@
 ﻿#if NET20 || NET30 || NET35
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Theraot.Threading;
 
 namespace System.Threading
@@ -11,8 +8,8 @@ namespace System.Threading
     {
         private const int INT_DefaultSpinCount = 10;
         private const int INT_LongTimeOutHint = 160;
-        private const int IntSleepCountHint = 5;
-        private const int IntSpinWaitHint = 20;
+        private const int INT_SleepCountHint = 5;
+        private const int INT_SpinWaitHint = 20;
 
         private static readonly TimeSpan _timeout = TimeSpan.FromMilliseconds(INT_LongTimeOutHint);
 
@@ -20,6 +17,7 @@ namespace System.Threading
         private int _requested;
         private int _spinCount;
         private int _state;
+
         public ManualResetEventSlim()
             : this(false)
         {
@@ -203,27 +201,15 @@ namespace System.Threading
             }
         }
 
-        private ManualResetEvent WaitHandleExtracted()
-        {
-            if (Interlocked.CompareExchange(ref _requested, 1, 0) == 0)
-            {
-                _handle = new ManualResetEvent(IsSet);
-            }
-            else if (_handle == null)
-            {
-                ThreadingHelper.SpinWaitWhileNull(ref _handle);
-            }
-            return _handle;
-        }
         private bool WaitExtracted(TimeSpan timeout)
         {
             var start = DateTime.Now;
             var backCount = 0;
             if (Environment.ProcessorCount > 1)
             {
-                backCount = IntSleepCountHint;
+                backCount = INT_SleepCountHint;
             }
-            retry:
+        retry:
             if (IsSet)
             {
                 return true;
@@ -238,7 +224,7 @@ namespace System.Threading
                     }
                     else
                     {
-                        Thread.SpinWait(IntSpinWaitHint);
+                        Thread.SpinWait(INT_SpinWaitHint);
                         backCount--;
                     }
                     goto retry;
@@ -248,6 +234,19 @@ namespace System.Threading
                     return false;
                 }
             }
+        }
+
+        private ManualResetEvent WaitHandleExtracted()
+        {
+            if (Interlocked.CompareExchange(ref _requested, 1, 0) == 0)
+            {
+                _handle = new ManualResetEvent(IsSet);
+            }
+            else if (_handle == null)
+            {
+                ThreadingHelper.SpinWaitWhileNull(ref _handle);
+            }
+            return _handle;
         }
     }
 }

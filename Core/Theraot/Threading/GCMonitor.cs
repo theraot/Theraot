@@ -11,15 +11,15 @@ namespace Theraot.Threading
     [global::System.Diagnostics.DebuggerNonUserCode]
     public static partial class GCMonitor
     {
-        private const int IntCapacityHint = 1024;
-        private const int IntMaxProbingHint = 32;
-        private const int IntStatusNotReady = -2;
-        private const int IntStatusPending = -1;
-        private const int IntStatusReady = 0;
+        private const int INT_CapacityHint = 1024;
+        private const int INT_MaxProbingHint = 32;
+        private const int INT_StatusNotReady = -2;
+        private const int INT_StatusPending = -1;
+        private const int INT_tStatusReady = 0;
         private static AutoResetEvent _collectedEvent;
         private static WeakDelegateSet _collectedEventHandlers;
         private static int _finished = 0;
-        private static int _status = IntStatusNotReady;
+        private static int _status = INT_StatusNotReady;
 
         static GCMonitor()
         {
@@ -52,7 +52,7 @@ namespace Theraot.Threading
             }
             remove
             {
-                if (Thread.VolatileRead(ref _status) == IntStatusReady)
+                if (Thread.VolatileRead(ref _status) == INT_tStatusReady)
                 {
                     try
                     {
@@ -100,12 +100,12 @@ namespace Theraot.Threading
 
         private static bool Initialize()
         {
-            var check = Interlocked.CompareExchange(ref _status, IntStatusPending, IntStatusNotReady);
+            var check = Interlocked.CompareExchange(ref _status, INT_StatusPending, INT_StatusNotReady);
             if (check == -2)
             {
                 _collectedEvent = new AutoResetEvent(false);
-                _collectedEventHandlers = new WeakDelegateSet(IntCapacityHint, false, false, IntMaxProbingHint);
-                Thread.VolatileWrite(ref _status, IntStatusReady);
+                _collectedEventHandlers = new WeakDelegateSet(INT_CapacityHint, false, false, INT_MaxProbingHint);
+                Thread.VolatileWrite(ref _status, INT_tStatusReady);
                 return true;
             }
             else if (check == 0)
@@ -114,7 +114,7 @@ namespace Theraot.Threading
             }
             else
             {
-                ThreadingHelper.SpinWaitUntil(ref _status, IntStatusReady);
+                ThreadingHelper.SpinWaitUntil(ref _status, INT_tStatusReady);
                 return false;
             }
         }
@@ -122,7 +122,7 @@ namespace Theraot.Threading
         private static void ReportApplicationDomainExit(object sender, EventArgs e)
         {
             Thread.VolatileWrite(ref _finished, 1);
-            if (Thread.VolatileRead(ref _status) == IntStatusReady)
+            if (Thread.VolatileRead(ref _status) == INT_tStatusReady)
             {
                 _collectedEvent.Set();
             }

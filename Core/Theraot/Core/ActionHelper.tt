@@ -34,18 +34,18 @@ namespace Theraot.Core
         private static class HelperNullAction<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#>
 
         {
-            private static readonly Action<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#> instance;
+            private static readonly Action<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#> _instance;
 
             static HelperNullAction()
             {
-                instance = NullAction;
+                _instance = NullAction;
             }
 
             public static Action<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#> Instance
             {
                 get
                 {
-                    return instance;
+                    return _instance;
                 }
             }
 
