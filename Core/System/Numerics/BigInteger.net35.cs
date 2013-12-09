@@ -1949,18 +1949,18 @@ namespace System.Numerics
             }
         }
 
-        private static bool Parse(string s, bool tryParse, out BigInteger result, out Exception exc)
+        private static bool Parse(string s, bool tryParse, out BigInteger result, out Exception exception)
         {
             int len;
             int i, sign = 1;
             bool digits_seen = false;
             result = Zero;
-            exc = null;
+            exception = null;
             if (s == null)
             {
                 if (!tryParse)
                 {
-                    exc = new ArgumentNullException("value");
+                    exception = new ArgumentNullException("value");
                 }
                 return false;
             }
@@ -1978,7 +1978,7 @@ namespace System.Numerics
             {
                 if (!tryParse)
                 {
-                    exc = GetFormatException();
+                    exception = GetFormatException();
                 }
                 return false;
             }
@@ -2009,7 +2009,7 @@ namespace System.Numerics
                     val = (val * 10) + d;
                     digits_seen = true;
                 }
-                else if (!ProcessTrailingWhitespace(tryParse, s, i, ref exc))
+                else if (!ProcessTrailingWhitespace(tryParse, s, i, ref exception))
                 {
                     return false;
                 }
@@ -2018,7 +2018,7 @@ namespace System.Numerics
             {
                 if (!tryParse)
                 {
-                    exc = GetFormatException();
+                    exception = GetFormatException();
                 }
                 return false;
             }
