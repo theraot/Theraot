@@ -8,19 +8,50 @@ namespace Theraot.Collections.Specialized
     [global::System.Diagnostics.DebuggerNonUserCode]
     public class EnumerationCollection<T> : ICollection<T>, IReadOnlyCollection<T>, IExtendedReadOnlyCollection<T>, IExtendedCollection<T>, IEnumerable<T>
     {
+        private readonly Func<T, bool> _contains;
         private readonly Func<int> _count;
         private readonly IEnumerable<T> _wrapped;
-
-        public EnumerationCollection(IEnumerable<T> wrapped, Func<int> count)
-        {
-            _wrapped = Check.NotNullArgument(wrapped, "wrapped");
-            _count = Check.NotNullArgument(count, "count");
-        }
 
         public EnumerationCollection(IEnumerable<T> wrapped)
         {
             _wrapped = Check.NotNullArgument(wrapped, "wrapped");
             _count = () => Enumerable.Count(_wrapped);
+            _contains = item => System.Linq.Enumerable.Contains(_wrapped, item, EqualityComparer<T>.Default);
+        }
+
+        public EnumerationCollection(T[] wrapped)
+        {
+            _wrapped = Check.NotNullArgument(wrapped, "wrapped");
+            _count = () => wrapped.Length;
+            _contains = item => Array.IndexOf(wrapped, item) >= 0;
+        }
+
+        public EnumerationCollection(ICollection<T> wrapped)
+        {
+            _wrapped = Check.NotNullArgument(wrapped, "wrapped");
+            _count = () => wrapped.Count;
+            _contains = item => wrapped.Contains(item);
+        }
+
+        public EnumerationCollection(IEnumerable<T> wrapped, Func<int> count)
+        {
+            _wrapped = Check.NotNullArgument(wrapped, "wrapped");
+            _count = Check.NotNullArgument(count, "count");
+            _contains = item => System.Linq.Enumerable.Contains(_wrapped, item, EqualityComparer<T>.Default);
+        }
+
+        public EnumerationCollection(IEnumerable<T> wrapped, Func<T, bool> contains)
+        {
+            _wrapped = Check.NotNullArgument(wrapped, "wrapped");
+            _count = () => Enumerable.Count(_wrapped);
+            _contains = Check.NotNullArgument(contains, "contains");
+        }
+
+        public EnumerationCollection(IEnumerable<T> wrapped, Func<int> count, Func<T, bool> contains)
+        {
+            _wrapped = Check.NotNullArgument(wrapped, "wrapped");
+            _count = Check.NotNullArgument(count, "count");
+            _contains = Check.NotNullArgument(contains, "contains");
         }
 
         public int Count
@@ -51,7 +82,7 @@ namespace Theraot.Collections.Specialized
 
         public bool Contains(T item)
         {
-            return System.Linq.Enumerable.Contains(_wrapped, item, EqualityComparer<T>.Default);
+            return _contains.Invoke(item);
         }
 
         public bool Contains(T item, IEqualityComparer<T> comparer)
