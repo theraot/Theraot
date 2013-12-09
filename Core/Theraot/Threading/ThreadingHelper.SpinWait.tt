@@ -284,7 +284,7 @@ namespace Theraot.Threading
 
         public static bool <#=method[0]#>(<#=method[1]#>, TimeSpan timeout)<#=method[4]#>
         {
-            var milliseconds = timeout.TotalMilliseconds;
+            var milliseconds = (long)timeout.TotalMilliseconds;
             <#= templates[0][1].Replace("@", method[3]) #>
         }
 
@@ -314,7 +314,7 @@ namespace Theraot.Threading
 
         public static bool <#=method[0]#>(<#=method[1]#>, TimeSpan timeout)<#=method[7]#>
         {
-            var milliseconds = timeout.TotalMilliseconds;
+            var milliseconds = (long)timeout.TotalMilliseconds;
             <#= templates[1][1].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]) #>
         }
 

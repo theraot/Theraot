@@ -71,7 +71,7 @@ namespace Theraot.Threading
 
         public static bool SpinWaitExchange(ref int check, int value, int comparand, TimeSpan timeout)
         {
-            var milliseconds = timeout.TotalMilliseconds;
+            var milliseconds = (long)timeout.TotalMilliseconds;
             int count = 0;
             if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
             {
@@ -194,7 +194,7 @@ namespace Theraot.Threading
 
         public static bool SpinWaitUntil(ref int check, int comparand, TimeSpan timeout)
         {
-            var milliseconds = timeout.TotalMilliseconds;
+            var milliseconds = (long)timeout.TotalMilliseconds;
             int count = 0;
             if (Thread.VolatileRead(ref check) == comparand)
             {
@@ -317,7 +317,7 @@ namespace Theraot.Threading
 
         public static bool SpinWaitUntil(Func<bool> verification, TimeSpan timeout)
         {
-            var milliseconds = timeout.TotalMilliseconds;
+            var milliseconds = (long)timeout.TotalMilliseconds;
             int count = 0;
             if (verification.Invoke())
             {
@@ -440,7 +440,7 @@ namespace Theraot.Threading
 
         public static bool SpinWaitWhile(ref int check, int comparand, TimeSpan timeout)
         {
-            var milliseconds = timeout.TotalMilliseconds;
+            var milliseconds = (long)timeout.TotalMilliseconds;
             int count = 0;
             if (Thread.VolatileRead(ref check) != comparand)
             {
@@ -566,7 +566,7 @@ namespace Theraot.Threading
         public static bool SpinWaitWhileNull<T>(ref T check, TimeSpan timeout)
         where T : class
         {
-            var milliseconds = timeout.TotalMilliseconds;
+            var milliseconds = (long)timeout.TotalMilliseconds;
             int count = 0;
             if (!object.ReferenceEquals(VolatileRead<T>(ref check), null))
             {
@@ -713,7 +713,7 @@ namespace Theraot.Threading
 
         public static bool SpinWaitExchangeRelative(ref int check, int value, int unless, TimeSpan timeout)
         {
-            var milliseconds = timeout.TotalMilliseconds;
+            var milliseconds = (long)timeout.TotalMilliseconds;
             int count = 0;
             var tmpA = Thread.VolatileRead(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
@@ -883,7 +883,7 @@ namespace Theraot.Threading
 
         public static bool SpinWaitExchangeRelativeUnlessNegative(ref int check, int value, TimeSpan timeout)
         {
-            var milliseconds = timeout.TotalMilliseconds;
+            var milliseconds = (long)timeout.TotalMilliseconds;
             int count = 0;
             var tmpA = Thread.VolatileRead(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
