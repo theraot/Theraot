@@ -191,6 +191,32 @@ namespace System.Threading
             }
         }
 
+        public bool Wait(int millisecondsTimeout, CancellationToken cancellationToken)
+        {
+            if (Thread.VolatileRead(ref _state) == -1)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
+            else
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                cancellationToken.ThrowIfSourceDisposed();
+                if (millisecondsTimeout < -1)
+                {
+                    throw new ArgumentOutOfRangeException("millisecondsTimeout");
+                }
+                else if (millisecondsTimeout == -1)
+                {
+                    Wait();
+                    return true;
+                }
+                else
+                {
+                    return WaitExtracted(millisecondsTimeout, cancellationToken);
+                }
+            }
+        }
+
         public bool Wait(TimeSpan timeout)
         {
             if (Thread.VolatileRead(ref _state) == -1)
@@ -201,6 +227,21 @@ namespace System.Threading
             {
                 var milliseconds = timeout.TotalMilliseconds;
                 return WaitExtracted((int)milliseconds);
+            }
+        }
+
+        public bool Wait(TimeSpan timeout, CancellationToken cancellationToken)
+        {
+            if (Thread.VolatileRead(ref _state) == -1)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
+            else
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                cancellationToken.ThrowIfSourceDisposed();
+                var milliseconds = timeout.TotalMilliseconds;
+                return WaitExtracted((int)milliseconds, cancellationToken);
             }
         }
 
@@ -255,6 +296,51 @@ namespace System.Threading
                 }
                 else
                 {
+                    if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < INT_LongTimeOutHint)
+                    {
+                        ThreadingHelper.SpinOnce(ref count);
+                        goto retry;
+                    }
+                    else
+                    {
+                        var handle = RetrieveWaitHandle();
+                        var remaining = (int)(millisecondsTimeout - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start));
+                        if (remaining > 0)
+                        {
+                            return handle.WaitOne(remaining);
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+
+        private bool WaitExtracted(int millisecondsTimeout, CancellationToken cancellationToken)
+        {
+            int count = 0;
+            if (IsSet)
+            {
+                return true;
+            }
+            else
+            {
+                var start = ThreadingHelper.TicksNow();
+            retry:
+                if (IsSet)
+                {
+                    return true;
+                }
+                else if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) > millisecondsTimeout)
+                {
+                    return false;
+                }
+                else
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    cancellationToken.ThrowIfSourceDisposed();
                     if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < INT_LongTimeOutHint)
                     {
                         ThreadingHelper.SpinOnce(ref count);

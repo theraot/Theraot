@@ -316,7 +316,7 @@ namespace System.Threading
             }
         }
 
-        private void CheckDisposed()
+        internal void CheckDisposed()
         {
             if (_disposed)
             {

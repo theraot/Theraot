@@ -143,6 +143,15 @@ namespace System.Threading
                 throw new Theraot.Core.NewOperationCanceledException(this);
             }
         }
+
+        internal void ThrowIfSourceDisposed()
+        {
+            var source = _source;
+            if (!ReferenceEquals(source, null))
+            {
+                source.CheckDisposed();
+            }
+        }
     }
 }
 
