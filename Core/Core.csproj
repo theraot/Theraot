@@ -224,6 +224,9 @@
     <Compile Include="System\Collections\ObjectModel\ReadOnlyDictionary.KeyCollection.net40.cs" />
     <Compile Include="System\Collections\ObjectModel\ReadOnlyDictionary.net40.cs" />
     <Compile Include="System\Collections\StructuralComparisons.net35.cs" />
+    <Compile Include="System\Threading\CancellationToken.net35.cs" />
+    <Compile Include="System\Threading\CancellationTokenRegistration.net35.cs" />
+    <Compile Include="System\Threading\CancellationTokenSource.net35.cs" />
     <Compile Include="Theraot\Core\NewEventHandler.cs" />
     <Compile Include="System\Func1.net30.cs" />
     <Compile Include="System\Func10.net35.cs" />
@@ -331,6 +334,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Ersatz.tt</DependentUpon>
     </Compile>
+    <Compile Include="Theraot\Core\NewOperationCanceledException.cs" />
     <Compile Include="Theraot\Core\StopwatchExtensions.cs" />
     <Compile Include="Theraot\Core\StringBuilderExtensions.cs" />
     <Compile Include="Theraot\Threading\GCMonitor.cs" />
