@@ -242,11 +242,33 @@ var methods1 = new string[][]
     },
     new string[]
     {
+        "SpinWaitExchangeRelative",
+        "ref int check, int value, int unless, out int result",
+        "ref check, value, unless, out result",
+        "var tmpA = Thread.VolatileRead(ref check);\r\n            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);\r\n            result = tmpB + value;",
+        "tmpA = Thread.VolatileRead(ref check);\r\n                tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);\r\n                result = tmpB + value;",
+        "tmpB == tmpA",
+        "tmpB == unless",
+        ""
+    },
+    new string[]
+    {
         "SpinWaitExchangeRelativeUnlessNegative",
         "ref int check, int value",
         "ref check, value",
         "var tmpA = Thread.VolatileRead(ref check);\r\n            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);",
         "tmpA = Thread.VolatileRead(ref check);\r\n                tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);",
+        "tmpB == tmpA",
+        "tmpB < 0",
+        ""
+    },
+    new string[]
+    {
+        "SpinWaitExchangeRelativeUnlessNegative",
+        "ref int check, int value, out int result",
+        "ref check, value, out result",
+        "var tmpA = Thread.VolatileRead(ref check);\r\n            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);\r\n            result = tmpB + value;",
+        "tmpA = Thread.VolatileRead(ref check);\r\n                tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);\r\n                result = tmpB + value;",
         "tmpB == tmpA",
         "tmpB < 0",
         ""

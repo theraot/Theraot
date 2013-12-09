@@ -796,6 +796,184 @@ namespace Theraot.Threading
             }
         }
     
+        public static bool SpinWaitExchangeRelative(ref int check, int value, int unless, out int result)
+        {
+            int count = 0;
+            var tmpA = Thread.VolatileRead(ref check);
+            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+            result = tmpB + value;
+            if (tmpB == tmpA)
+            {
+                return true;
+            }
+            else if (tmpB == unless)
+            {
+                return false;
+            }
+            else
+            {
+                var start = TicksNow();
+            retry:
+                tmpA = Thread.VolatileRead(ref check);
+                tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+                result = tmpB + value;
+                if (tmpB == tmpA)
+                {
+                    return true;
+                }
+                else if (tmpB == unless)
+                {
+                    return false;
+                }
+                else
+                {
+                    SpinOnce(ref count);
+                    goto retry;
+                }
+            }
+        }
+
+        public static bool SpinWaitExchangeRelative(ref int check, int value, int unless, out int result, int milliseconds)
+        {
+            if (milliseconds < -1)
+            {
+                throw new ArgumentOutOfRangeException("milliseconds");
+            }
+            else if (milliseconds == -1)
+            {
+                return SpinWaitExchangeRelative(ref check, value, unless, out result);
+            }
+            int count = 0;
+            var tmpA = Thread.VolatileRead(ref check);
+            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+            result = tmpB + value;
+            if (tmpB == tmpA)
+            {
+                return true;
+            }
+            else if (tmpB == unless)
+            {
+                return false;
+            }
+            else
+            {
+                var start = TicksNow();
+            retry:
+                tmpA = Thread.VolatileRead(ref check);
+                tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+                result = tmpB + value;
+                if (tmpB == tmpA)
+                {
+                    return true;
+                }
+                else if (tmpB == unless)
+                {
+                    return false;
+                }
+                else
+                {
+                    if (Milliseconds(TicksNow() - start) < milliseconds)
+                    {
+                        SpinOnce(ref count);
+                        goto retry;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        public static bool SpinWaitExchangeRelative(ref int check, int value, int unless, out int result, TimeSpan timeout)
+        {
+            var milliseconds = (long)timeout.TotalMilliseconds;
+            int count = 0;
+            var tmpA = Thread.VolatileRead(ref check);
+            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+            result = tmpB + value;
+            if (tmpB == tmpA)
+            {
+                return true;
+            }
+            else if (tmpB == unless)
+            {
+                return false;
+            }
+            else
+            {
+                var start = TicksNow();
+            retry:
+                tmpA = Thread.VolatileRead(ref check);
+                tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+                result = tmpB + value;
+                if (tmpB == tmpA)
+                {
+                    return true;
+                }
+                else if (tmpB == unless)
+                {
+                    return false;
+                }
+                else
+                {
+                    if (Milliseconds(TicksNow() - start) < milliseconds)
+                    {
+                        SpinOnce(ref count);
+                        goto retry;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        public static bool SpinWaitExchangeRelative(ref int check, int value, int unless, out int result, IComparable<TimeSpan> timeout)
+        {
+            int count = 0;
+            var tmpA = Thread.VolatileRead(ref check);
+            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+            result = tmpB + value;
+            if (tmpB == tmpA)
+            {
+                return true;
+            }
+            else if (tmpB == unless)
+            {
+                return false;
+            }
+            else
+            {
+                var start = DateTime.Now;
+            retry:
+                tmpA = Thread.VolatileRead(ref check);
+                tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+                result = tmpB + value;
+                if (tmpB == tmpA)
+                {
+                    return true;
+                }
+                else if (tmpB == unless)
+                {
+                    return false;
+                }
+                else
+                {
+                    if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
+                    {
+                        SpinOnce(ref count);
+                        goto retry;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+    
         public static bool SpinWaitExchangeRelativeUnlessNegative(ref int check, int value)
         {
             int count = 0;
@@ -943,6 +1121,184 @@ namespace Theraot.Threading
             retry:
                 tmpA = Thread.VolatileRead(ref check);
                 tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+                if (tmpB == tmpA)
+                {
+                    return true;
+                }
+                else if (tmpB < 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
+                    {
+                        SpinOnce(ref count);
+                        goto retry;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+    
+        public static bool SpinWaitExchangeRelativeUnlessNegative(ref int check, int value, out int result)
+        {
+            int count = 0;
+            var tmpA = Thread.VolatileRead(ref check);
+            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+            result = tmpB + value;
+            if (tmpB == tmpA)
+            {
+                return true;
+            }
+            else if (tmpB < 0)
+            {
+                return false;
+            }
+            else
+            {
+                var start = TicksNow();
+            retry:
+                tmpA = Thread.VolatileRead(ref check);
+                tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+                result = tmpB + value;
+                if (tmpB == tmpA)
+                {
+                    return true;
+                }
+                else if (tmpB < 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    SpinOnce(ref count);
+                    goto retry;
+                }
+            }
+        }
+
+        public static bool SpinWaitExchangeRelativeUnlessNegative(ref int check, int value, out int result, int milliseconds)
+        {
+            if (milliseconds < -1)
+            {
+                throw new ArgumentOutOfRangeException("milliseconds");
+            }
+            else if (milliseconds == -1)
+            {
+                return SpinWaitExchangeRelativeUnlessNegative(ref check, value, out result);
+            }
+            int count = 0;
+            var tmpA = Thread.VolatileRead(ref check);
+            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+            result = tmpB + value;
+            if (tmpB == tmpA)
+            {
+                return true;
+            }
+            else if (tmpB < 0)
+            {
+                return false;
+            }
+            else
+            {
+                var start = TicksNow();
+            retry:
+                tmpA = Thread.VolatileRead(ref check);
+                tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+                result = tmpB + value;
+                if (tmpB == tmpA)
+                {
+                    return true;
+                }
+                else if (tmpB < 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    if (Milliseconds(TicksNow() - start) < milliseconds)
+                    {
+                        SpinOnce(ref count);
+                        goto retry;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        public static bool SpinWaitExchangeRelativeUnlessNegative(ref int check, int value, out int result, TimeSpan timeout)
+        {
+            var milliseconds = (long)timeout.TotalMilliseconds;
+            int count = 0;
+            var tmpA = Thread.VolatileRead(ref check);
+            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+            result = tmpB + value;
+            if (tmpB == tmpA)
+            {
+                return true;
+            }
+            else if (tmpB < 0)
+            {
+                return false;
+            }
+            else
+            {
+                var start = TicksNow();
+            retry:
+                tmpA = Thread.VolatileRead(ref check);
+                tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+                result = tmpB + value;
+                if (tmpB == tmpA)
+                {
+                    return true;
+                }
+                else if (tmpB < 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    if (Milliseconds(TicksNow() - start) < milliseconds)
+                    {
+                        SpinOnce(ref count);
+                        goto retry;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        public static bool SpinWaitExchangeRelativeUnlessNegative(ref int check, int value, out int result, IComparable<TimeSpan> timeout)
+        {
+            int count = 0;
+            var tmpA = Thread.VolatileRead(ref check);
+            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+            result = tmpB + value;
+            if (tmpB == tmpA)
+            {
+                return true;
+            }
+            else if (tmpB < 0)
+            {
+                return false;
+            }
+            else
+            {
+                var start = DateTime.Now;
+            retry:
+                tmpA = Thread.VolatileRead(ref check);
+                tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+                result = tmpB + value;
                 if (tmpB == tmpA)
                 {
                     return true;
