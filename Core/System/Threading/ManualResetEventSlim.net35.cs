@@ -57,7 +57,7 @@ namespace System.Threading
                 {
                     if (Thread.VolatileRead(ref _requested) != 0)
                     {
-                        var handle = get_WaitHandleExtracted();
+                        var handle = WaitHandleExtracted();
                         return handle.WaitOne(0);
                     }
                     else
@@ -87,7 +87,7 @@ namespace System.Threading
         {
             get
             {
-                return get_WaitHandleExtracted();
+                return WaitHandleExtracted();
             }
         }
 
@@ -108,7 +108,7 @@ namespace System.Threading
                 Thread.VolatileWrite(ref _state, 0);
                 if (Thread.VolatileRead(ref _requested) != 0)
                 {
-                    var handle = get_WaitHandleExtracted();
+                    var handle = WaitHandleExtracted();
                     handle.Reset();
                 }
             }
@@ -125,7 +125,7 @@ namespace System.Threading
                 Thread.VolatileWrite(ref _state, 1);
                 if (Thread.VolatileRead(ref _requested) != 0)
                 {
-                    var handle = get_WaitHandleExtracted();
+                    var handle = WaitHandleExtracted();
                     handle.Set();
                 }
             }
@@ -143,7 +143,7 @@ namespace System.Threading
                 {
                     if (Thread.VolatileRead(ref _requested) != 0)
                     {
-                        var handle = get_WaitHandleExtracted();
+                        var handle = WaitHandleExtracted();
                         return handle.WaitOne(timeout);
                     }
                     else
@@ -163,7 +163,7 @@ namespace System.Threading
                                 else
                                 {
                                     timeout -= _timeout;
-                                    var handle = get_WaitHandleExtracted();
+                                    var handle = WaitHandleExtracted();
                                     return handle.WaitOne(timeout);
                                 }
                             }
@@ -203,7 +203,7 @@ namespace System.Threading
             }
         }
 
-        private ManualResetEvent get_WaitHandleExtracted()
+        private ManualResetEvent WaitHandleExtracted()
         {
             if (Interlocked.CompareExchange(ref _requested, 1, 0) == 0)
             {

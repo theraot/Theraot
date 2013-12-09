@@ -1,5 +1,4 @@
-﻿//
-// CancellationToken.cs
+﻿// CancellationToken.cs
 //
 // Authors:
 //       Jérémie "Garuma" Laval <jeremie.laval@gmail.com>
@@ -28,27 +27,25 @@
 
 #if NET20 || NET30 || NET35
 
-using System;
-using System.Threading;
 using System.Diagnostics;
 using Theraot.Core;
 
 namespace System.Threading
 {
-    [DebuggerDisplay ("IsCancellationRequested = {IsCancellationRequested}")]
+    [DebuggerDisplay("IsCancellationRequested = {IsCancellationRequested}")]
     public struct CancellationToken
     {
-        readonly CancellationTokenSource source;
+        private readonly CancellationTokenSource _source;
 
-        public CancellationToken (bool canceled)
-            : this (canceled ? CancellationTokenSource.CanceledSource : null)
+        public CancellationToken(bool canceled)
+            : this(canceled ? CancellationTokenSource.CanceledSource : null)
         {
             //Empty
         }
 
-        internal CancellationToken (CancellationTokenSource source)
+        internal CancellationToken(CancellationTokenSource source)
         {
-            this.source = source;
+            _source = source;
         }
 
         public static CancellationToken None
@@ -57,69 +54,15 @@ namespace System.Threading
             {
                 // simply return new struct value, it's the fastest option
                 // and we don't have to bother with reseting source
-                return new CancellationToken ();
+                return new CancellationToken();
             }
-        }
-
-        public CancellationTokenRegistration Register (Action callback)
-        {
-            return Register (callback, false);
-        }
-
-        public CancellationTokenRegistration Register (Action callback, bool useSynchronizationContext)
-        {
-            return Source.Register (Check.NotNullArgument(callback, "callback"), useSynchronizationContext);
-        }
-
-        public CancellationTokenRegistration Register (Action<object> callback, object state)
-        {
-            return Register (callback, state, false);
-        }
-
-        public CancellationTokenRegistration Register (Action<object> callback, object state, bool useSynchronizationContext)
-        {
-            Check.NotNullArgument(callback, "callback");
-            return Register (() => callback (state), useSynchronizationContext);
-        }
-
-        public void ThrowIfCancellationRequested ()
-        {
-            if (!ReferenceEquals(source, null) && source.IsCancellationRequested)
-            {
-                throw new Theraot.Core.NewOperationCanceledException(this);
-            }
-        }
-
-        public bool Equals (CancellationToken other)
-        {
-            return this.Source == other.Source;
-        }
-
-        public override bool Equals (object other)
-        {
-            return (other is CancellationToken) ? Equals ((CancellationToken)other) : false;
-        }
-
-        public override int GetHashCode ()
-        {
-            return Source.GetHashCode ();
-        }
-
-        public static bool operator == (CancellationToken left, CancellationToken right)
-        {
-            return left.Equals (right);
-        }
-
-        public static bool operator != (CancellationToken left, CancellationToken right)
-        {
-             return !left.Equals (right);
         }
 
         public bool CanBeCanceled
         {
             get
             {
-                return source != null;
+                return _source != null;
             }
         }
 
@@ -139,13 +82,68 @@ namespace System.Threading
             }
         }
 
-        CancellationTokenSource Source
+        private CancellationTokenSource Source
         {
             get
             {
-                return source ?? CancellationTokenSource.NoneSource;
+                return _source ?? CancellationTokenSource.NoneSource;
+            }
+        }
+
+        public static bool operator !=(CancellationToken left, CancellationToken right)
+        {
+            return !left.Equals(right);
+        }
+
+        public static bool operator ==(CancellationToken left, CancellationToken right)
+        {
+            return left.Equals(right);
+        }
+
+        public bool Equals(CancellationToken other)
+        {
+            return this.Source == other.Source;
+        }
+
+        public override bool Equals(object other)
+        {
+            return (other is CancellationToken) ? Equals((CancellationToken)other) : false;
+        }
+
+        public override int GetHashCode()
+        {
+            return Source.GetHashCode();
+        }
+
+        public CancellationTokenRegistration Register(Action callback)
+        {
+            return Register(callback, false);
+        }
+
+        public CancellationTokenRegistration Register(Action callback, bool useSynchronizationContext)
+        {
+            return Source.Register(Check.NotNullArgument(callback, "callback"), useSynchronizationContext);
+        }
+
+        public CancellationTokenRegistration Register(Action<object> callback, object state)
+        {
+            return Register(callback, state, false);
+        }
+
+        public CancellationTokenRegistration Register(Action<object> callback, object state, bool useSynchronizationContext)
+        {
+            Check.NotNullArgument(callback, "callback");
+            return Register(() => callback(state), useSynchronizationContext);
+        }
+
+        public void ThrowIfCancellationRequested()
+        {
+            if (!ReferenceEquals(_source, null) && _source.IsCancellationRequested)
+            {
+                throw new Theraot.Core.NewOperationCanceledException(this);
             }
         }
     }
 }
+
 #endif

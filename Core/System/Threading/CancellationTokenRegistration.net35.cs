@@ -1,5 +1,4 @@
-﻿//
-// CancellationTokenRegistration.cs
+﻿// CancellationTokenRegistration.cs
 //
 // Authors:
 //       Jérémie "Garuma" Laval <jeremie.laval@gmail.com>

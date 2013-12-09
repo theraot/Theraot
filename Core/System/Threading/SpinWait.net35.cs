@@ -19,8 +19,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-//
 
 #if NET20 || NET30 || NET35
 
@@ -28,11 +26,11 @@ namespace System.Threading
 {
     public struct SpinWait
     {
-        private const int maxTime = 200;
+        private const int IntMaxTime = 200;
 
         private static readonly int IntSleepCountHint = 10;
 
-        private static readonly bool isSingleCpu = (Environment.ProcessorCount == 1);
+        private static readonly bool isSingleCpu = Environment.ProcessorCount == 1;
 
         private int _count;
 
@@ -74,7 +72,7 @@ namespace System.Threading
 
         public void SpinOnce()
         {
-            _count ++;
+            _count++;
             if (isSingleCpu)
             {
                 Thread.Sleep(0);
@@ -87,7 +85,7 @@ namespace System.Threading
                 }
                 else
                 {
-                    Thread.SpinWait(Math.Min(_count, maxTime) << 1);
+                    Thread.SpinWait(Math.Min(_count, IntMaxTime) << 1);
                 }
             }
         }

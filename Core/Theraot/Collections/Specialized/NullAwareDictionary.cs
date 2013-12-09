@@ -486,8 +486,10 @@ namespace Theraot.Collections.Specialized
                 (
                     new ConditionalExtendedEnumerable<TKey>
                     (
-                        new TKey[] { _typedNull }, _dictionary.Keys,
-                        () => _hasNull, null
+                        new TKey[] { _typedNull },
+                        _dictionary.Keys,
+                        () => _hasNull,
+                        null
                     )
                 )
             );
@@ -506,8 +508,10 @@ namespace Theraot.Collections.Specialized
                 (
                     new ConditionalExtendedEnumerable<TValue>
                     (
-                        _valueForNull, _dictionary.Values,
-                        () => _hasNull, null
+                        _valueForNull,
+                        _dictionary.Values,
+                        () => _hasNull,
+                        null
                     )
                 )
             );
