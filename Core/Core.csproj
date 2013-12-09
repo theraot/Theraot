@@ -523,6 +523,11 @@
     <Compile Include="Theraot\Threading\IThreadLocal.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\LazyBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\SetBucket.cs" />
+    <Compile Include="Theraot\Threading\ThreadingHelper.SpinWait.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ThreadingHelper.SpinWait.tt</DependentUpon>
+    </Compile>
     <Compile Include="Theraot\Threading\TrackingThreadLocal.cs" />
     <Compile Include="Theraot\Threading\CriticalDisposable.cs">
       <SubType>Code</SubType>
@@ -699,6 +704,10 @@
     <None Include="Theraot\Threading\Needles\WeakNeedle.disposable.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>WeakNeedle.disposable.cs</LastGenOutput>
+    </None>
+    <None Include="Theraot\Threading\ThreadingHelper.SpinWait.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ThreadingHelper.SpinWait.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup />
