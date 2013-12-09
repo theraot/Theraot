@@ -26,8 +26,9 @@ namespace System
                 _callback = new SendOrPostCallback(Callback);
             }
         }
-
-        public event EventHandler<T> ProgressChanged;
+        
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly", Justification = "Microsoft's Design")]
+        public event Theraot.Core.NewEventHandler<T> ProgressChanged;
 
         public void Report(T value)
         {
