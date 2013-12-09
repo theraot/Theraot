@@ -104,11 +104,13 @@ This are some parts worth of mention:
     - NoTrackingThreadLocal & TrackingThreadLocal : The backends for the backport of System.Threading.ThreadLocal.
     - ReentryGuard : A helper class that allows to protect a code from reentry.
     - SingleTimeExecution : A thread-safe way to wrap code to be called only once.
-    - ThreadinHelper : Provides unique ids for managed threads, generic VolatileRead and *Write, and conditional SpinWait.
+    - ThreadinHelper : Provides unique ids for managed threads, generic VolatileRead and *Write, and conditional SpinWait. [See Note 3]
         
 Note 1: This actually makes the implementation simpler and more efficient.
 
 Note 2: Do not rely on the IsDisposed property as it may change any moment if another thread call Dispose, use DisposedConditional instead.
+
+Note 3: The SpinWait functions in ThreadingHelper provides alternatives to System.Threading.SpinWait.
 
 ---
 "FAT" Features
@@ -175,6 +177,7 @@ There are a few things that are beyond the scope of my work:
   - I will not include backports of Reactive Extensions or any other code not in the BCL, but I may provide similar functionality.
   - I have no intention to backport GUI libraries.
   - I cannot modify EventHandler<T> to remove the generic contraint that's present in .NET prior .NET 4.5. For workaround see below.
+  - I cannot modify OperationCanceledException to add support to CancellationToken. For workaround see below.
 
 This features are not planned to be added or improved:
 
@@ -198,6 +201,7 @@ Others:
 
   - The class ReaderWriterLockSlim was added in .NET 3.5, if ReaderWriterLock is not good enough, I suggest the use of memory transaction via Theraot.Threading.Needles.Transact.
   - The classes added in .NET 4.5 that require EventHandler<T> without the generic constraint may get backported using Theraot.Core.NewEventHandler. Avoid using EventHandler<T> explictly in those cases.
+  - The classes added in .NET 4.0 or .NET 4.5 that require OperationCanceledException.CancellationToken et al. may get backported using Theraot.Core.NewCancellationToken. Avoid creating this exceptions yourself.
   - The class TimeZoneInfo was added in .NET 3.5... pending.
   - Path.Combine new overloads in .NET 4.0... pending.
   - DateTimeOffset is new in .NET 3.5... pending.
