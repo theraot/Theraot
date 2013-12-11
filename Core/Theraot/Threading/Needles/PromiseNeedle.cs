@@ -7,7 +7,7 @@ namespace Theraot.Threading.Needles
     [global::System.Diagnostics.DebuggerNonUserCode]
     public sealed class PromiseNeedle : IPromise
     {
-        private Internal _internal;
+        private readonly Internal _internal;
 
         public PromiseNeedle(bool done)
         {
@@ -87,7 +87,7 @@ namespace Theraot.Threading.Needles
         }
 
         [Serializable]
-        private class Internal : IPromised
+        private class Internal : IPromised, IEquatable<Internal>
         {
             private readonly int _hashCode;
             private Exception _error;
@@ -177,6 +177,43 @@ namespace Theraot.Threading.Needles
                 {
                     return !ReferenceEquals(_error, null);
                 }
+            }
+
+            public bool Equals(Internal other)
+            {
+                if (IsCompleted)
+                {
+                    if (other.IsCompleted)
+                    {
+                        if (ReferenceEquals(_error, null))
+                        {
+                            return ReferenceEquals(other._error, null);
+                        }
+                        else
+                        {
+                            return !ReferenceEquals(other._error, null);
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return !other.IsCompleted;
+                }
+            }
+
+            public override bool Equals(object obj)
+            {
+                var _obj = obj as Internal;
+                return _obj != null && Equals(_obj);
+            }
+
+            public override int GetHashCode()
+            {
+                return _hashCode;
             }
 
             void INeedle<object>.Release()

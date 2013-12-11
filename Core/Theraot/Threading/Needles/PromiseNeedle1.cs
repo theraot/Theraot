@@ -297,19 +297,6 @@ namespace Theraot.Threading.Needles
                 }
             }
 
-            public override bool Equals(object obj)
-            {
-                var _obj = obj as Internal;
-                if (_obj != null)
-                {
-                    return Equals(_obj);
-                }
-                else
-                {
-                    return false;
-                }
-            }
-
             public bool Equals(Internal other)
             {
                 if (IsCompleted)
@@ -333,6 +320,19 @@ namespace Theraot.Threading.Needles
                 else
                 {
                     return !other.IsCompleted;
+                }
+            }
+
+            public override bool Equals(object obj)
+            {
+                var _obj = obj as Internal;
+                if (_obj != null)
+                {
+                    return Equals(_obj);
+                }
+                else
+                {
+                    return false;
                 }
             }
 
