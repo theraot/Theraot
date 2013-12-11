@@ -9,13 +9,13 @@ namespace Theraot.Core
 {
     public static class EqualityComparerHelper<T>
     {
-        private static IEqualityComparer<T> _default;
+        private static readonly IEqualityComparer<T> _default;
 
         static EqualityComparerHelper()
         {
             var type = typeof(T);
             Type tmp;
-            PropertyInfo property = null;
+            PropertyInfo property;
             if (type.IsImplementationOf(typeof(IEquatable<>).MakeGenericType(type)))
             {
                 property = GetPropertyDelegated(type, typeof(EqualityComparer<>));
@@ -27,7 +27,7 @@ namespace Theraot.Core
             else if (type.IsGenericImplementationOf(typeof(INeedle<>), out tmp))
             {
                 var types = tmp.GetGenericArguments();
-                var conversionType = typeof(NeedleConversionEqualityComparer<,>).MakeGenericType(new Type[] { tmp, types[0] });
+                var conversionType = typeof(NeedleConversionEqualityComparer<,>).MakeGenericType(new [] { tmp, types[0] });
                 _default = (IEqualityComparer<T>)conversionType.Create
                     (
                         GetPropertyDelegated

@@ -160,14 +160,7 @@ namespace Theraot.Threading.Needles
         {
             if (ReferenceEquals(left, null))
             {
-                if (ReferenceEquals(right, null))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return ReferenceEquals(right, null);
             }
             else
             {
@@ -179,14 +172,7 @@ namespace Theraot.Threading.Needles
         {
             if (ReferenceEquals(left, null))
             {
-                if (ReferenceEquals(right, null))
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+                return !ReferenceEquals(right, null);
             }
             else
             {

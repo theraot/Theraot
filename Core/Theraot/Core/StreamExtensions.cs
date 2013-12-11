@@ -20,7 +20,7 @@ namespace Theraot.Core
             }
             else
             {
-                byte[] buffer = new byte[INT_PageSize];
+                var buffer = new byte[INT_PageSize];
                 int read;
                 do
                 {
@@ -44,7 +44,7 @@ namespace Theraot.Core
             }
             else
             {
-                byte[] buffer = new byte[INT_PageSize];
+                var buffer = new byte[INT_PageSize];
                 int read;
                 do
                 {
@@ -64,7 +64,7 @@ namespace Theraot.Core
             }
             else
             {
-                MemoryStream _stream = stream as MemoryStream;
+                var _stream = stream as MemoryStream;
                 if (_stream != null)
                 {
                     return _stream.ToArray();

@@ -118,14 +118,7 @@ namespace Theraot.Threading.Needles
             if (left.IsAlive)
             {
                 var _right = right.Value;
-                if (right.IsAlive)
-                {
-                    return EqualityComparer<T>.Default.Equals(_left, _right);
-                }
-                else
-                {
-                    return false;
-                }
+                return right.IsAlive && EqualityComparer<T>.Default.Equals(_left, _right);
             }
             else
             {
@@ -139,14 +132,7 @@ namespace Theraot.Threading.Needles
             if (left.IsAlive)
             {
                 var _right = right.Value;
-                if (right.IsAlive)
-                {
-                    return !EqualityComparer<T>.Default.Equals(_left, _right);
-                }
-                else
-                {
-                    return true;
-                }
+                return !right.IsAlive || !EqualityComparer<T>.Default.Equals(_left, _right);
             }
             else
             {

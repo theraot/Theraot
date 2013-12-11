@@ -62,7 +62,7 @@ namespace Theraot.Core
                     {
                         unchecked
                         {
-                            ulong bits = (ulong)mantissa | (ulong)((ulong)exponent << 52);
+                            ulong bits = mantissa | ((ulong)exponent << 52);
                             if (sign < 0)
                             {
                                 bits |= 0x8000000000000000uL;
@@ -147,7 +147,7 @@ namespace Theraot.Core
                     {
                         unchecked
                         {
-                            uint bits = (uint)mantissa | (uint)((uint)exponent << 23);
+                            uint bits = mantissa | ((uint)exponent << 23);
                             if (sign < 0)
                             {
                                 bits |= 0x80000000u;
@@ -254,7 +254,7 @@ namespace Theraot.Core
             {
                 int bits = SingleAsInt32(value);
                 sign = (bits < 0) ? -1 : 1;
-                exponent = (int)((bits >> 23) & 0xff);
+                exponent = ((bits >> 23) & 0xff);
                 if (exponent == 2047)
                 {
                     throw new ArgumentException("The value is NaN, PositiveInfinity or NegativeInfinity");

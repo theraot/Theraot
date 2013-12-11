@@ -58,14 +58,7 @@ namespace Theraot.Core
         {
             if (ReferenceEquals(x, null))
             {
-                if (ReferenceEquals(y, null))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return ReferenceEquals(y, null);
             }
             else
             {

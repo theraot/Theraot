@@ -9,7 +9,7 @@ namespace Theraot.Threading.Needles
         {
             if (ReferenceEquals(target, null))
             {
-                throw new ArgumentNullException("NotNull cannot have a null value.");
+                throw new ArgumentNullException("target", "NotNull cannot have a null value.");
             }
         }
 
@@ -23,7 +23,7 @@ namespace Theraot.Threading.Needles
             {
                 if (ReferenceEquals(value, null))
                 {
-                    throw new ArgumentNullException("NotNull cannot have a null value.");
+                    throw new ArgumentNullException("value", "NotNull cannot have a null value.");
                 }
                 else
                 {

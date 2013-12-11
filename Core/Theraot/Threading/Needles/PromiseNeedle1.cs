@@ -326,14 +326,7 @@ namespace Theraot.Threading.Needles
             public override bool Equals(object obj)
             {
                 var _obj = obj as Internal;
-                if (_obj != null)
-                {
-                    return Equals(_obj);
-                }
-                else
-                {
-                    return false;
-                }
+                return _obj != null && Equals(_obj);
             }
 
             public override int GetHashCode()
