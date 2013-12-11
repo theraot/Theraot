@@ -1,6 +1,4 @@
-﻿#if FAT
-
-using System;
+﻿using System;
 using System.Reflection;
 
 namespace Theraot.Collections.ThreadSafe
@@ -98,5 +96,3 @@ namespace Theraot.Collections.ThreadSafe
         }
     }
 }
-
-#endif
