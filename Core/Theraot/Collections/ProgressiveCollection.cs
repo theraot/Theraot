@@ -30,7 +30,7 @@ namespace Theraot.Collections
         {
             _cache = Check.NotNullArgument(cache, "cache");
             _progressor = new Progressor<T>(wrapped);
-            _progressor.SubscribeAction(item => _cache.Add(item));
+            _progressor.SubscribeAction(_cache.Add);
             _comparer = comparer ?? EqualityComparer<T>.Default;
         }
 
@@ -38,7 +38,7 @@ namespace Theraot.Collections
         {
             _cache = Check.NotNullArgument(cache, "cache");
             _progressor = Check.NotNullArgument(wrapped, "wrapped");
-            _progressor.SubscribeAction(item => _cache.Add(item));
+            _progressor.SubscribeAction(_cache.Add);
             _comparer = comparer ?? EqualityComparer<T>.Default;
         }
 

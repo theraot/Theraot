@@ -75,22 +75,6 @@ namespace Theraot.Collections
             }
         }
 
-        public IReadOnlyCollection<TKey> Keys
-        {
-            get
-            {
-                return _keysReadonly;
-            }
-        }
-
-        public IReadOnlyCollection<IExtendedGrouping<TKey, TValue>> Values
-        {
-            get
-            {
-                return _valuesReadonly;
-            }
-        }
-
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns this")]
         bool ICollection<IExtendedGrouping<TKey, TValue>>.IsReadOnly
         {
@@ -184,6 +168,22 @@ namespace Theraot.Collections
             }
         }
 
+        public IReadOnlyCollection<TKey> Keys
+        {
+            get
+            {
+                return _keysReadonly;
+            }
+        }
+
+        public IReadOnlyCollection<IExtendedGrouping<TKey, TValue>> Values
+        {
+            get
+            {
+                return _valuesReadonly;
+            }
+        }
+
         protected IEqualityComparer<TValue> ItemComparer
         {
             get
@@ -224,29 +224,6 @@ namespace Theraot.Collections
             }
         }
 
-        public IExtendedGrouping<TKey, TValue> this[TKey key]
-        {
-            get
-            {
-                try
-                {
-                    return _cache[key];
-                }
-                catch (KeyNotFoundException)
-                {
-                    KeyValuePair<TKey, IExtendedGrouping<TKey, TValue>> _item;
-                    while (_progressor.TryTake(out _item))
-                    {
-                        if (_keyComparer.Equals(key, _item.Key))
-                        {
-                            return _item.Value;
-                        }
-                    }
-                    throw;
-                }
-            }
-        }
-
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
         IExtendedGrouping<TKey, TValue> IDictionary<TKey, IExtendedGrouping<TKey, TValue>>.this[TKey key]
         {
@@ -283,6 +260,29 @@ namespace Theraot.Collections
             }
         }
 
+        public IExtendedGrouping<TKey, TValue> this[TKey key]
+        {
+            get
+            {
+                try
+                {
+                    return _cache[key];
+                }
+                catch (KeyNotFoundException)
+                {
+                    KeyValuePair<TKey, IExtendedGrouping<TKey, TValue>> _item;
+                    while (_progressor.TryTake(out _item))
+                    {
+                        if (_keyComparer.Equals(key, _item.Key))
+                        {
+                            return _item.Value;
+                        }
+                    }
+                    throw;
+                }
+            }
+        }
+
         public bool Contains(KeyValuePair<TKey, IExtendedGrouping<TKey, TValue>> item)
         {
             if (_cache.Contains(item))
@@ -312,7 +312,7 @@ namespace Theraot.Collections
         {
             if (!ReferenceEquals(item, null))
             {
-                return Contains(item as IExtendedGrouping<TKey, TValue>);
+                return Contains(item);
             }
             else
             {
@@ -571,14 +571,6 @@ namespace Theraot.Collections
                 }
             }
 
-            public TKey Key
-            {
-                get
-                {
-                    return _key;
-                }
-            }
-
             bool ICollection<TValue>.IsReadOnly
             {
                 get
@@ -592,6 +584,14 @@ namespace Theraot.Collections
                 get
                 {
                     return this;
+                }
+            }
+
+            public TKey Key
+            {
+                get
+                {
+                    return _key;
                 }
             }
 
@@ -652,6 +652,11 @@ namespace Theraot.Collections
                 _cache.CopyTo(array, arrayIndex, countLimit);
             }
 
+            public bool Equals(TValue x, TValue y)
+            {
+                return _comparer.Equals(x, y);
+            }
+
             public IEnumerator<TValue> GetEnumerator()
             {
                 foreach (TValue item in _cache)
@@ -665,6 +670,11 @@ namespace Theraot.Collections
                         yield return item;
                     }
                 }
+            }
+
+            public int GetHashCode(TValue obj)
+            {
+                return _comparer.GetHashCode(obj);
             }
 
             void ICollection<TValue>.Add(TValue item)
@@ -690,16 +700,6 @@ namespace Theraot.Collections
             System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
             {
                 return GetEnumerator();
-            }
-
-            public bool Equals(TValue x, TValue y)
-            {
-                return _comparer.Equals(x, y);
-            }
-
-            public int GetHashCode(TValue obj)
-            {
-                return _comparer.GetHashCode(obj);
             }
         }
     }

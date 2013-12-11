@@ -8,7 +8,7 @@ namespace Theraot.Collections.Specialized
     [global::System.Diagnostics.DebuggerNonUserCode]
     public class CustomComparer<T> : IComparer<T>
     {
-        private Func<T, T, int> _comparison;
+        private readonly Func<T, T, int> _comparison;
 
         public CustomComparer(Func<T, T, int> comparison)
         {

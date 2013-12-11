@@ -19,6 +19,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         /// Initializes a new instance of the <see cref="Bucket{T}" /> class.
         /// </summary>
+        /// <param name = "valueFactory">The delegate that is invoked to do the lazy initialization of the items given their index.</param>
         /// <param name="capacity">The capacity.</param>
         public LazyBucket(Converter<int, T> valueFactory, int capacity)
         {
@@ -98,7 +99,7 @@ namespace Theraot.Collections.ThreadSafe
         /// Returns an enumerator that iterates through a collection.
         /// </summary>
         /// <returns>
-        /// An <see cref="T:System.Collections.IEnumerator{T}" /> object that can be used to iterate through the collection.
+        /// An <see cref="System.Collections.Generic.IEnumerator{T}" /> object that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {

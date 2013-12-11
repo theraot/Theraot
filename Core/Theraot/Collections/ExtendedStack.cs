@@ -43,20 +43,20 @@ namespace Theraot.Collections
             }
         }
 
-        public T Item
-        {
-            get
-            {
-                return _wrapped.Peek();
-            }
-        }
-
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns False")]
         bool ICollection<T>.IsReadOnly
         {
             get
             {
                 return false;
+            }
+        }
+
+        public T Item
+        {
+            get
+            {
+                return _wrapped.Peek();
             }
         }
 

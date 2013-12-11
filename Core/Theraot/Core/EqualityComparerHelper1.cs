@@ -27,19 +27,19 @@ namespace Theraot.Core
             else if (type.IsGenericImplementationOf(typeof(INeedle<>), out tmp))
             {
                 var types = tmp.GetGenericArguments();
-                var conversionType = typeof(NeedleConversionEqualityComparer<,>).MakeGenericType(new [] { tmp, types[0] });
+                var conversionType = typeof(NeedleConversionEqualityComparer<,>).MakeGenericType(new[] { tmp, types[0] });
                 _default = (IEqualityComparer<T>)conversionType.Create
-                    (
-                        GetPropertyDelegated
-                        (
-                            types[0],
-                            typeof(EqualityComparerHelper<>)
-                        ).GetValue
-                        (
-                            null,
-                            null
-                        )
-                    );
+                           (
+                               GetPropertyDelegated
+                               (
+                                   types[0],
+                                   typeof(EqualityComparerHelper<>)
+                               ).GetValue
+                               (
+                                   null,
+                                   null
+                               )
+                           );
                 return;
             }
             else if (type.IsGenericInstanceOf(typeof(KeyValuePair<,>)))

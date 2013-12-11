@@ -11,7 +11,7 @@ namespace Theraot.Collections.Specialized
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
     public sealed class NullAwareDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollection<KeyValuePair<TKey, TValue>>, IExtendedDictionary<TKey, TValue>
     {
-        private static readonly TKey _typedNull = (TKey)TypeHelper.Cast<TKey>(null);
+        private static readonly TKey _typedNull = TypeHelper.Cast<TKey>(null);
 
         private readonly Dictionary<TKey, TValue> _dictionary;
         private readonly ExtendedReadOnlyCollection<TKey> _keys;
@@ -112,22 +112,6 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        public ICollection<TKey> Keys
-        {
-            get
-            {
-                return _keys;
-            }
-        }
-
-        public ICollection<TValue> Values
-        {
-            get
-            {
-                return _values;
-            }
-        }
-
         bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
         {
             get
@@ -176,11 +160,27 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+        public ICollection<TKey> Keys
+        {
+            get
+            {
+                return _keys;
+            }
+        }
+
+        public ICollection<TValue> Values
+        {
+            get
+            {
+                return _values;
+            }
+        }
+
         public TValue this[TKey key]
         {
             get
             {
-                if (key == null)
+                if (ReferenceEquals(key, null))
                 {
                     if (_hasNull)
                     {
@@ -198,7 +198,7 @@ namespace Theraot.Collections.Specialized
             }
             set
             {
-                if (key == null)
+                if (ReferenceEquals(key, null))
                 {
                     SetForNull(value);
                 }
@@ -211,7 +211,7 @@ namespace Theraot.Collections.Specialized
 
         public void Add(TKey key, TValue value)
         {
-            if (key == null)
+            if (ReferenceEquals(key, null))
             {
                 if (_hasNull)
                 {
@@ -245,7 +245,7 @@ namespace Theraot.Collections.Specialized
         {
             var key = item.Key;
             var value = item.Value;
-            if (key == null)
+            if (ReferenceEquals(key, null))
             {
                 if (_hasNull)
                 {
@@ -276,7 +276,7 @@ namespace Theraot.Collections.Specialized
 
         public bool ContainsKey(TKey key)
         {
-            if (key == null)
+            if (ReferenceEquals(key, null))
             {
                 return _hasNull;
             }
@@ -357,7 +357,7 @@ namespace Theraot.Collections.Specialized
 
         public bool Remove(TKey key)
         {
-            if (key == null)
+            if (ReferenceEquals(key, null))
             {
                 if (_hasNull)
                 {
@@ -379,7 +379,7 @@ namespace Theraot.Collections.Specialized
         {
             TKey key = item.Key;
             TValue value = item.Value;
-            if (key == null)
+            if (ReferenceEquals(key, null))
             {
                 if (_valueComparer.Equals(_valueForNull[0], value))
                 {
@@ -413,7 +413,7 @@ namespace Theraot.Collections.Specialized
 
         public bool Remove(KeyValuePair<TKey, TValue> item, IEqualityComparer<KeyValuePair<TKey, TValue>> comparer)
         {
-            if (item.Key == null)
+            if (ReferenceEquals(item.Key, null))
             {
                 if (_hasNull)
                 {
@@ -448,7 +448,7 @@ namespace Theraot.Collections.Specialized
 
         public bool TryGetValue(TKey key, out TValue value)
         {
-            if (key == null)
+            if (ReferenceEquals(key, null))
             {
                 if (_hasNull)
                 {
@@ -486,7 +486,7 @@ namespace Theraot.Collections.Specialized
                 (
                     new ConditionalExtendedEnumerable<TKey>
                     (
-                        new TKey[] { _typedNull },
+                        new[] { _typedNull },
                         _dictionary.Keys,
                         () => _hasNull,
                         null
@@ -521,7 +521,7 @@ namespace Theraot.Collections.Specialized
         {
             var key = item.Key;
             var value = item.Value;
-            if (key == null)
+            if (ReferenceEquals(key, null))
             {
                 if (_hasNull)
                 {
@@ -557,12 +557,12 @@ namespace Theraot.Collections.Specialized
         {
             if (dictionary.ContainsKey(_typedNull))
             {
-                _valueForNull = new TValue[] { dictionary[_typedNull] };
+                _valueForNull = new[] { dictionary[_typedNull] };
                 _hasNull = true;
             }
             else
             {
-                _valueForNull = new TValue[] { default(TValue) };
+                _valueForNull = new[] { default(TValue) };
                 _hasNull = false;
             }
         }

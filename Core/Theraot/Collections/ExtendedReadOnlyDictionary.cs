@@ -10,9 +10,9 @@ namespace Theraot.Collections
     [global::System.Diagnostics.DebuggerNonUserCode]
     public sealed class ExtendedReadOnlyDictionary<TKey, TValue> : IReadOnlyCollection<KeyValuePair<TKey, TValue>>, IExtendedReadOnlyCollection<KeyValuePair<TKey, TValue>>, IReadOnlyDictionary<TKey, TValue>, IExtendedReadOnlyDictionary<TKey, TValue>, IExtendedDictionary<TKey, TValue>
     {
-        private ExtendedReadOnlyCollection<TKey> _keys;
-        private ExtendedReadOnlyCollection<TValue> _values;
-        private IDictionary<TKey, TValue> _wrapped;
+        private readonly ExtendedReadOnlyCollection<TKey> _keys;
+        private readonly ExtendedReadOnlyCollection<TValue> _values;
+        private readonly IDictionary<TKey, TValue> _wrapped;
 
         public ExtendedReadOnlyDictionary(IDictionary<TKey, TValue> dictionary)
         {
@@ -26,22 +26,6 @@ namespace Theraot.Collections
             get
             {
                 return _wrapped.Count;
-            }
-        }
-
-        public IReadOnlyCollection<TKey> Keys
-        {
-            get
-            {
-                return _keys;
-            }
-        }
-
-        public IReadOnlyCollection<TValue> Values
-        {
-            get
-            {
-                return _values;
             }
         }
 
@@ -101,11 +85,19 @@ namespace Theraot.Collections
             }
         }
 
-        public TValue this[TKey key]
+        public IReadOnlyCollection<TKey> Keys
         {
             get
             {
-                return _wrapped[key];
+                return _keys;
+            }
+        }
+
+        public IReadOnlyCollection<TValue> Values
+        {
+            get
+            {
+                return _values;
             }
         }
 
@@ -118,6 +110,14 @@ namespace Theraot.Collections
             set
             {
                 throw new NotSupportedException();
+            }
+        }
+
+        public TValue this[TKey key]
+        {
+            get
+            {
+                return _wrapped[key];
             }
         }
 

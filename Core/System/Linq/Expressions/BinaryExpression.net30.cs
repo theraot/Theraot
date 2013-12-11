@@ -9,9 +9,9 @@ namespace System.Linq.Expressions
     public sealed class BinaryExpression : Expression
     {
         private LambdaExpression _conversion;
+        private bool _isLifted;
         private Expression _left;
         private bool _liftToNull;
-        private bool _isLifted;
         private MethodInfo _method;
         private Expression _right;
 

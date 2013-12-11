@@ -21,18 +21,18 @@ namespace Theraot.Collections.ThreadSafe
         private const int INT_DefaultMaxProbing = 1;
         private const int INT_SpinWaitHint = 80;
 
+        private readonly IEqualityComparer<TKey> _keyComparer;
+        private readonly int _maxProbing;
         private int _copyingThreads;
         private int _copyPosition;
         private int _count;
         private FixedSizeHashBucket<TKey, TValue> _entriesNew;
         private FixedSizeHashBucket<TKey, TValue> _entriesOld;
-        private IEqualityComparer<TKey> _keyComparer;
-        private int _maxProbing;
         private volatile int _revision;
         private int _status;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HashBucket{TValue}" /> class.
+        /// Initializes a new instance of the <see cref="HashBucket{TKey, TValue}" /> class.
         /// </summary>
         public HashBucket()
             : this(INT_DefaultCapacity, EqualityComparer<TKey>.Default, INT_DefaultMaxProbing)
@@ -41,7 +41,7 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HashBucket{TValue}" /> class.
+        /// Initializes a new instance of the <see cref="HashBucket{TKey, TValue}" /> class.
         /// </summary>
         /// <param name="capacity">The initial capacity.</param>
         public HashBucket(int capacity)
@@ -51,7 +51,7 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HashBucket{TValue}" /> class.
+        /// Initializes a new instance of the <see cref="HashBucket{TKey, TValue}" /> class.
         /// </summary>
         /// <param name="capacity">The initial capacity.</param>
         /// <param name="maxProbing">The maximum number of steps in linear probing.</param>
@@ -63,7 +63,7 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HashBucket{TValue}" /> class.
+        /// Initializes a new instance of the <see cref="HashBucket{TKey, TValue}" /> class.
         /// </summary>
         /// <param name="comparer">The key comparer.</param>
         public HashBucket(IEqualityComparer<TKey> comparer)
@@ -73,7 +73,7 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HashBucket{TValue}" /> class.
+        /// Initializes a new instance of the <see cref="HashBucket{TKey, TValue}" /> class.
         /// </summary>
         /// <param name="comparer">The key comparer.</param>
         /// <param name="maxProbing">The maximum number of steps in linear probing.</param>
@@ -85,7 +85,7 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HashBucket{TValue}" /> class.
+        /// Initializes a new instance of the <see cref="HashBucket{TKey, TValue}" /> class.
         /// </summary>
         /// <param name="capacity">The initial capacity.</param>
         /// <param name="comparer">The key comparer.</param>
@@ -96,7 +96,7 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="HashBucket{TValue}" /> class.
+        /// Initializes a new instance of the <see cref="HashBucket{TKey, TValue}" /> class.
         /// </summary>
         /// <param name="capacity">The initial capacity.</param>
         /// <param name="comparer">The key comparer.</param>
@@ -170,10 +170,7 @@ namespace Theraot.Collections.ThreadSafe
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
                     try
                     {
-                        if (AddExtracted(key, value, entries, out isCollision) != -1)
-                        {
-                            result = true;
-                        }
+                        result |= AddExtracted(key, value, entries, out isCollision) != -1;
                     }
                     finally
                     {
@@ -290,10 +287,7 @@ namespace Theraot.Collections.ThreadSafe
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
                     try
                     {
-                        if (ContainsKeyExtracted(key, entries))
-                        {
-                            result = true;
-                        }
+                        result |= ContainsKeyExtracted(key, entries);
                     }
                     finally
                     {
@@ -356,10 +350,7 @@ namespace Theraot.Collections.ThreadSafe
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
                     try
                     {
-                        if (RemoveExtracted(key, entries))
-                        {
-                            result = true;
-                        }
+                        result |= RemoveExtracted(key, entries);
                     }
                     finally
                     {
@@ -464,10 +455,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         if (entries.TryGet(index, out key, out value) && predicate(key))
                         {
-                            if (RemoveExtracted(key, entries))
-                            {
-                                result = true;
-                            }
+                            result |= RemoveExtracted(key, entries);
                         }
                         else
                         {
@@ -534,10 +522,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         if (entries.TryGet(index, out key, out value) && predicate(key))
                         {
-                            if (RemoveExtracted(key, entries))
-                            {
-                                result = true;
-                            }
+                            result |= RemoveExtracted(key, entries);
                         }
                         else
                         {
@@ -638,10 +623,7 @@ namespace Theraot.Collections.ThreadSafe
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
                     try
                     {
-                        if (TryAddExtracted(key, value, entries, out isCollision) != -1)
-                        {
-                            result = true;
-                        }
+                        result |= TryAddExtracted(key, value, entries, out isCollision) != -1;
                     }
                     finally
                     {
@@ -928,9 +910,6 @@ namespace Theraot.Collections.ThreadSafe
                             Interlocked.Exchange(ref _entriesOld, null);
                             Interlocked.CompareExchange(ref _status, (int)BucketStatus.Free, (int)BucketStatus.Waiting);
                         }
-                        break;
-
-                    default:
                         break;
                 }
             }

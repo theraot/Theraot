@@ -17,7 +17,7 @@ namespace Theraot.Collections.ThreadSafe
         private Bucket<KeyValuePair<TKey, TValue>> _entries;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FixedSizeHashBucket" /> class.
+        /// Initializes a new instance of the <see cref="FixedSizeHashBucket{TKey, TValue}" /> class.
         /// </summary>
         /// <param name="capacity">The capacity.</param>
         /// <param name="keyComparer">The key comparer.</param>
@@ -141,10 +141,10 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Returns an <see cref="System.Collections.Generic.IEnumerator{System.Collections.Generic.KeyValuePair{TKey, TValue}}" /> that allows to iterate through the collection.
+        /// Returns an <see cref="IEnumerator{KeyValuePair{TKey, TValue}}" /> that allows to iterate through the collection.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.Collections.Generic.IEnumerator{System.Collections.Generic.KeyValuePair{TKey, TValue}}" /> that can be used to iterate through the collection.
+        /// A <see cref="IEnumerator{KeyValuePair{TKey, TValue}}" /> that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {

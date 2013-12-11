@@ -32,7 +32,7 @@ namespace Theraot.Collections
 
         public static IProgressor<T> CreateConversionProgressor<T, TInput>(IProgressor<TInput> wrapped, Converter<TInput, T> converter)
         {
-            var _wrapped = Check.NotNullArgument(wrapped, "wrapped");
+            Check.NotNullArgument(wrapped, "wrapped");
             var _converter = Check.NotNullArgument(converter, "converter");
             var proxy = new ProxyObservable<T>();
             wrapped.Subscribe(new ConvertedObserver<TInput, T>(proxy, _converter));

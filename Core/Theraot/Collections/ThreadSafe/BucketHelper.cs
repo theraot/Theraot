@@ -1,6 +1,6 @@
 ﻿namespace Theraot.Collections.ThreadSafe
 {
-    internal static partial class BucketHelper
+    internal static class BucketHelper
     {
         private static readonly object _null;
 

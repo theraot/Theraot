@@ -97,7 +97,7 @@ namespace Theraot.Core
 
         public static TTarget Cast<TTarget>(object source, TTarget def)
         {
-            return Cast (source, () => def);
+            return Cast(source, () => def);
         }
 
         public static TTarget Cast<TTarget>(object source, Func<TTarget> alternative)

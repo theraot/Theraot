@@ -248,49 +248,6 @@ namespace System.Numerics
             }
         }
 
-        [CLSCompliantAttribute(false)]
-        public static explicit operator ulong(BigInteger value)
-        {
-            if (value._sign == 0)
-            {
-                return 0;
-            }
-            else
-            {
-                if (value._data.Length > 2 || value._sign == -1)
-                {
-                    throw new OverflowException();
-                }
-                uint low = value._data[0];
-                if (value._data.Length == 1)
-                {
-                    return low;
-                }
-                else
-                {
-                    uint high = value._data[1];
-                    return (((ulong)high) << 32) | low;
-                }
-            }
-        }
-
-        [CLSCompliantAttribute(false)]
-        public static explicit operator uint(BigInteger value)
-        {
-            if (value._sign == 0)
-            {
-                return 0;
-            }
-            else if (value._data.Length > 1 || value._sign == -1)
-            {
-                throw new OverflowException();
-            }
-            else
-            {
-                return value._data[0];
-            }
-        }
-
         public static explicit operator double(BigInteger value)
         {
             if (value._data.Length == 0)
@@ -321,86 +278,6 @@ namespace System.Numerics
                     mantissa >>= -missing;
                 }
                 return Theraot.Core.NumericHelper.BuildDouble(value._sign, mantissa, ((value._data.Length - 2) * 32) - missing);
-            }
-        }
-
-        public static explicit operator int(BigInteger value)
-        {
-            if (value._sign == 0)
-            {
-                return 0;
-            }
-            else if (value._data.Length > 1)
-            {
-                throw new OverflowException();
-            }
-            else
-            {
-                uint data = value._data[0];
-                if (value._sign == 1)
-                {
-                    if (data > (uint)int.MaxValue)
-                    {
-                        throw new OverflowException();
-                    }
-                    else
-                    {
-                        return (int)data;
-                    }
-                }
-                else
-                {
-                    if (data > 0x80000000u)
-                    {
-                        throw new OverflowException();
-                    }
-                    else
-                    {
-                        return -(int)data;
-                    }
-                }
-            }
-        }
-
-        public static explicit operator float(BigInteger value)
-        {
-            if (value._data.Length == 0)
-            {
-                return 0.0f;
-            }
-            else if (value._data.Length == 1)
-            {
-                return Theraot.Core.NumericHelper.BuildSingle(value._sign, value._data[0], 0);
-            }
-            else
-            {
-                int index = value._data.Length - 1;
-                uint mantissa = value._data[index];
-                var off = Theraot.Core.NumericHelper.LeadingZeroCount(mantissa);
-                int missing = off - 8; //24 - (32 - off);
-                if (missing > 0)
-                {
-                    mantissa = (mantissa << missing) | (value._data[index - 1] >> (32 - missing));
-                }
-                else
-                {
-                    mantissa >>= -missing;
-                }
-                return Theraot.Core.NumericHelper.BuildSingle(value._sign, mantissa, ((value._data.Length - 1) * 32) - missing);
-            }
-        }
-
-        [CLSCompliantAttribute(false)]
-        public static explicit operator ushort(BigInteger value)
-        {
-            uint val = (uint)value;
-            if (val > ushort.MaxValue)
-            {
-                throw new OverflowException();
-            }
-            else
-            {
-                return (ushort)val;
             }
         }
 
@@ -458,6 +335,23 @@ namespace System.Numerics
             }
         }
 
+        [CLSCompliantAttribute(false)]
+        public static explicit operator uint(BigInteger value)
+        {
+            if (value._sign == 0)
+            {
+                return 0;
+            }
+            else if (value._data.Length > 1 || value._sign == -1)
+            {
+                throw new OverflowException();
+            }
+            else
+            {
+                return value._data[0];
+            }
+        }
+
         public static explicit operator short(BigInteger value)
         {
             int val = (int)value;
@@ -468,6 +362,44 @@ namespace System.Numerics
             else
             {
                 return (short)val;
+            }
+        }
+
+        public static explicit operator int(BigInteger value)
+        {
+            if (value._sign == 0)
+            {
+                return 0;
+            }
+            else if (value._data.Length > 1)
+            {
+                throw new OverflowException();
+            }
+            else
+            {
+                uint data = value._data[0];
+                if (value._sign == 1)
+                {
+                    if (data > (uint)int.MaxValue)
+                    {
+                        throw new OverflowException();
+                    }
+                    else
+                    {
+                        return (int)data;
+                    }
+                }
+                else
+                {
+                    if (data > 0x80000000u)
+                    {
+                        throw new OverflowException();
+                    }
+                    else
+                    {
+                        return -(int)data;
+                    }
+                }
             }
         }
 
@@ -482,6 +414,74 @@ namespace System.Numerics
             else
             {
                 return (sbyte)val;
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static explicit operator ushort(BigInteger value)
+        {
+            uint val = (uint)value;
+            if (val > ushort.MaxValue)
+            {
+                throw new OverflowException();
+            }
+            else
+            {
+                return (ushort)val;
+            }
+        }
+
+        public static explicit operator float(BigInteger value)
+        {
+            if (value._data.Length == 0)
+            {
+                return 0.0f;
+            }
+            else if (value._data.Length == 1)
+            {
+                return Theraot.Core.NumericHelper.BuildSingle(value._sign, value._data[0], 0);
+            }
+            else
+            {
+                int index = value._data.Length - 1;
+                uint mantissa = value._data[index];
+                var off = Theraot.Core.NumericHelper.LeadingZeroCount(mantissa);
+                int missing = off - 8; //24 - (32 - off);
+                if (missing > 0)
+                {
+                    mantissa = (mantissa << missing) | (value._data[index - 1] >> (32 - missing));
+                }
+                else
+                {
+                    mantissa >>= -missing;
+                }
+                return Theraot.Core.NumericHelper.BuildSingle(value._sign, mantissa, ((value._data.Length - 1) * 32) - missing);
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        public static explicit operator ulong(BigInteger value)
+        {
+            if (value._sign == 0)
+            {
+                return 0;
+            }
+            else
+            {
+                if (value._data.Length > 2 || value._sign == -1)
+                {
+                    throw new OverflowException();
+                }
+                uint low = value._data[0];
+                if (value._data.Length == 1)
+                {
+                    return low;
+                }
+                else
+                {
+                    uint high = value._data[1];
+                    return (((ulong)high) << 32) | low;
+                }
             }
         }
 

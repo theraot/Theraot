@@ -8,8 +8,8 @@ namespace Theraot.Collections.Specialized
     [global::System.Diagnostics.DebuggerNonUserCode]
     public class ConversionEqualityComparer<TInput, TOutput> : IEqualityComparer<TInput>
     {
-        private IEqualityComparer<TOutput> _comparer;
-        private Converter<TInput, TOutput> _converter;
+        private readonly IEqualityComparer<TOutput> _comparer;
+        private readonly Converter<TInput, TOutput> _converter;
 
         public ConversionEqualityComparer(IEqualityComparer<TOutput> comparer, Converter<TInput, TOutput> converter)
         {

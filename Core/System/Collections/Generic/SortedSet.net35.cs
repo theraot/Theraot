@@ -68,22 +68,6 @@ namespace System.Collections.Generic
             }
         }
 
-        public T Max
-        {
-            get
-            {
-                return GetMax();
-            }
-        }
-
-        public T Min
-        {
-            get
-            {
-                return GetMin();
-            }
-        }
-
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
         bool ICollection.IsSynchronized
         {
@@ -108,6 +92,22 @@ namespace System.Collections.Generic
             get
             {
                 return false;
+            }
+        }
+
+        public T Max
+        {
+            get
+            {
+                return GetMax();
+            }
+        }
+
+        public T Min
+        {
+            get
+            {
+                return GetMin();
             }
         }
 
@@ -359,10 +359,9 @@ namespace System.Collections.Generic
         [Serializable]
         private sealed class SortedSubSet : SortedSet<T>, IEnumerable<T>, IEnumerable
         {
-            private new SortedSet<T> _wrapped;
-
             private T _lower;
             private T _upper;
+            private new SortedSet<T> _wrapped;
 
             public SortedSubSet(SortedSet<T> set, T lower, T upper)
                 : base(set.Comparer)

@@ -15,6 +15,7 @@ namespace Theraot.Threading
         private static readonly WorkContext _recycle;
         private static LazyBucket<FixedSizeQueueBucket<T[]>> _data;
         private static int _done;
+
         static ArrayPool()
         {
             _recycle = new WorkContext("Recycler", INT_WorkCapacityHint, 1);

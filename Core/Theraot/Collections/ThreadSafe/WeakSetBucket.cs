@@ -523,7 +523,7 @@ namespace Theraot.Collections.ThreadSafe
                (
                    input =>
                    {
-                        return input.IsAlive && predicate(input.Value);
+                       return input.IsAlive && predicate(input.Value);
                    }
                );
         }

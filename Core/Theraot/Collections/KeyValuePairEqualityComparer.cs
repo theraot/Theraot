@@ -4,8 +4,8 @@ namespace Theraot.Collections
 {
     public class KeyValuePairEqualityComparer<TKey, TValue> : IEqualityComparer<KeyValuePair<TKey, TValue>>
     {
-        private IEqualityComparer<TKey> _keyComparer;
-        private IEqualityComparer<TValue> _valueComparer;
+        private readonly IEqualityComparer<TKey> _keyComparer;
+        private readonly IEqualityComparer<TValue> _valueComparer;
 
         public KeyValuePairEqualityComparer(IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
         {

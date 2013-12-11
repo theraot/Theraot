@@ -174,7 +174,7 @@ namespace Theraot.Collections.ThreadSafe
                 if (IsOperationSafe())
                 {
                     bool isOperationSafe;
-                    bool isCollision;
+                    bool isCollision = false;
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
                     try
                     {

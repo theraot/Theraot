@@ -45,18 +45,6 @@ namespace Theraot.Collections
             }
         }
 
-        public T this[int index]
-        {
-            get
-            {
-                if (index >= _cache.Count)
-                {
-                    Progressor.TakeWhile(() => _cache.Count < index + 1);
-                }
-                return _cache[index];
-            }
-        }
-
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
         T IExtendedList<T>.this[int index]
         {
@@ -80,6 +68,18 @@ namespace Theraot.Collections
             set
             {
                 throw new NotSupportedException();
+            }
+        }
+
+        public T this[int index]
+        {
+            get
+            {
+                if (index >= _cache.Count)
+                {
+                    Progressor.TakeWhile(() => _cache.Count < index + 1);
+                }
+                return _cache[index];
             }
         }
 

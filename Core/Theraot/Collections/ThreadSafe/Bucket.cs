@@ -109,7 +109,7 @@ namespace Theraot.Collections.ThreadSafe
         /// Returns an <see cref="System.Collections.Generic.IEnumerator{T}" /> that allows to iterate through the collection.
         /// </summary>
         /// <returns>
-        /// An <see cref="T:System.Collections.IEnumerator{T}" /> object that can be used to iterate through the collection.
+        /// An <see cref="System.Collections.Generic.IEnumerator{T}" /> object that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {

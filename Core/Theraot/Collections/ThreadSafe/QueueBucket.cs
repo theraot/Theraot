@@ -14,6 +14,7 @@ namespace Theraot.Collections.ThreadSafe
         private const int INT_DefaultCapacity = 64;
         private const int INT_SpinWaitHint = 80;
 
+        private readonly object _synclock = new object();
         private int _copyingThreads;
         private int _copySourcePosition;
         private int _count;
@@ -21,7 +22,6 @@ namespace Theraot.Collections.ThreadSafe
         private FixedSizeQueueBucket<T> _entriesOld;
         private volatile int _revision;
         private int _status;
-        private object _synclock = new object();
         private int _workingThreads;
 
         /// <summary>
@@ -66,19 +66,6 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Removes all the elements.
-        /// </summary>
-        public void Clear()
-        {
-            BucketHelper.Recycle(ref _entriesOld);
-            var displaced = Interlocked.Exchange(ref _entriesNew, new FixedSizeQueueBucket<T>(INT_DefaultCapacity));
-            BucketHelper.Recycle(ref displaced);
-            Thread.VolatileWrite(ref _status, (int)BucketStatus.Free);
-            Thread.VolatileWrite(ref _count, 0);
-            _revision++;
-        }
-
-        /// <summary>
         /// Adds the specified item at the front.
         /// </summary>
         /// <param name="item">The item.</param>
@@ -94,10 +81,7 @@ namespace Theraot.Collections.ThreadSafe
                     try
                     {
                         Interlocked.Increment(ref _workingThreads);
-                        if (entries.Add(item))
-                        {
-                            result = true;
-                        }
+                        result |= entries.Add(item);
                     }
                     finally
                     {
@@ -129,10 +113,23 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
+        /// Removes all the elements.
+        /// </summary>
+        public void Clear()
+        {
+            BucketHelper.Recycle(ref _entriesOld);
+            var displaced = Interlocked.Exchange(ref _entriesNew, new FixedSizeQueueBucket<T>(INT_DefaultCapacity));
+            BucketHelper.Recycle(ref displaced);
+            Thread.VolatileWrite(ref _status, (int)BucketStatus.Free);
+            Thread.VolatileWrite(ref _count, 0);
+            _revision++;
+        }
+
+        /// <summary>
         /// Returns an <see cref="System.Collections.Generic.IEnumerator{T}" /> that allows to iterate through the collection.
         /// </summary>
         /// <returns>
-        /// An <see cref="T:System.Collections.IEnumerator{T}" /> object that can be used to iterate through the collection.
+        /// An <see cref="System.Collections.Generic.IEnumerator{T}" /> object that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
@@ -159,7 +156,7 @@ namespace Theraot.Collections.ThreadSafe
         /// Returns the next item to be taken from the back without removing it.
         /// </summary>
         /// <exception cref="System.InvalidOperationException">No more items to be taken.</exception>
-        public T Peek(T item)
+        public T Peek()
         {
             T result = default(T);
             while (true)
@@ -196,54 +193,6 @@ namespace Theraot.Collections.ThreadSafe
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
-        }
-
-        /// <summary>
-        /// Attempts to retrieve and remove the next item from the back.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <returns>
-        ///   <c>true</c> if the item was taken; otherwise, <c>false</c>.
-        /// </returns>
-        public bool TryTake(out T item)
-        {
-            item = default(T);
-            bool result = false;
-            while (true)
-            {
-                if (IsOperationSafe())
-                {
-                    var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
-                    bool done = false;
-                    try
-                    {
-                        Interlocked.Increment(ref _workingThreads);
-                        T tmpItem;
-                        if (entries.TryTake(out tmpItem))
-                        {
-                            item = tmpItem;
-                            result = true;
-                        }
-                    }
-                    finally
-                    {
-                        Interlocked.Decrement(ref _workingThreads);
-                        if (result)
-                        {
-                            Interlocked.Decrement(ref _count);
-                        }
-                        done = true;
-                    }
-                    if (done)
-                    {
-                        return result;
-                    }
-                }
-                else
-                {
-                    CooperativeGrow();
-                }
-            }
         }
 
         /// <summary>
@@ -284,6 +233,54 @@ namespace Theraot.Collections.ThreadSafe
                         {
                             done = true;
                         }
+                    }
+                    if (done)
+                    {
+                        return result;
+                    }
+                }
+                else
+                {
+                    CooperativeGrow();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Attempts to retrieve and remove the next item from the back.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <returns>
+        ///   <c>true</c> if the item was taken; otherwise, <c>false</c>.
+        /// </returns>
+        public bool TryTake(out T item)
+        {
+            item = default(T);
+            bool result = false;
+            while (true)
+            {
+                if (IsOperationSafe())
+                {
+                    var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
+                    bool done = false;
+                    try
+                    {
+                        Interlocked.Increment(ref _workingThreads);
+                        T tmpItem;
+                        if (entries.TryTake(out tmpItem))
+                        {
+                            item = tmpItem;
+                            result = true;
+                        }
+                    }
+                    finally
+                    {
+                        Interlocked.Decrement(ref _workingThreads);
+                        if (result)
+                        {
+                            Interlocked.Decrement(ref _count);
+                        }
+                        done = true;
                     }
                     if (done)
                     {
@@ -387,9 +384,6 @@ namespace Theraot.Collections.ThreadSafe
                             Thread.Sleep(1);
                             Interlocked.CompareExchange(ref _status, (int)BucketStatus.Free, (int)BucketStatus.Waiting);
                         }
-                        break;
-
-                    default:
                         break;
                 }
             }

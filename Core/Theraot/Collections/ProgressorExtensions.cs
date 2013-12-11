@@ -71,19 +71,13 @@ namespace Theraot.Collections
         public static IObserver<TInput> ToObserver<TInput, TOutput>(this Action<TOutput> listener, Converter<TInput, TOutput> converter)
         {
             var _converter = Check.NotNullArgument(converter, "converter");
-            return new ActionObserver<TInput>
-                   (
-                       input =>
-                       {
-                           listener(_converter.Invoke(input));
-                       }
-                   );
+            return new ActionObserver<TInput>(input => listener(_converter.Invoke(input)));
         }
 
         [Serializable]
         private sealed class ActionObserver<T> : IObserver<T>
         {
-            private Action<T> _action;
+            private readonly Action<T> _action;
 
             public ActionObserver(Action<T> action)
             {

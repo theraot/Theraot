@@ -254,7 +254,7 @@ namespace Theraot.Core
             {
                 int bits = SingleAsInt32(value);
                 sign = (bits < 0) ? -1 : 1;
-                exponent = ((bits >> 23) & 0xff);
+                exponent = (bits >> 23) & 0xff;
                 if (exponent == 2047)
                 {
                     throw new ArgumentException("The value is NaN, PositiveInfinity or NegativeInfinity");
@@ -274,12 +274,10 @@ namespace Theraot.Core
                         // bit to the front of the mantissa
                         mantissa = mantissa | (1 << 23);
                     }
-
                     // Bias the exponent. It's actually biased by 127, but we're
                     // treating the mantissa as m.0 rather than 0.m, so we need
                     // to subtract another 23 from it.
                     exponent -= 150;
-
                     if (mantissa != 0)
                     {
                         while ((mantissa & 1) == 0)
@@ -324,12 +322,10 @@ namespace Theraot.Core
                         // bit to the front of the mantissa
                         mantissa = mantissa | (1L << 52);
                     }
-
                     // Bias the exponent. It's actually biased by 1023, but we're
                     // treating the mantissa as m.0 rather than 0.m, so we need
                     // to subtract another 52 from it.
                     exponent -= 1075;
-
                     if (mantissa != 0)
                     {
                         while ((mantissa & 1) == 0)
