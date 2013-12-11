@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Theraot.Core;
 
@@ -60,6 +61,7 @@ namespace Theraot.Collections.ThreadSafe
         /// Gets the index where the next item removed with TryDequeue will be taken from.
         /// </summary>
         /// <remarks>IndexDequeue increases each time a new item is removed with TryDequeue.</remarks>
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Dequeue")]
         public int IndexDequeue
         {
             get
@@ -168,6 +170,22 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
+        /// Tries the retrieve the item at an specified index.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="item">The item.</param>
+        /// <returns>
+        ///   <c>true</c> if the value was retrieved; otherwise, <c>false</c>.
+        /// </returns>
+        /// <remarks>
+        /// Although items are ordered, they are not guaranteed to start at index 0.
+        /// </remarks>
+        public bool TryGet(int index, out T item)
+        {
+            return _entries.TryGet(index, out item);
+        }
+
+        /// <summary>
         /// Attempts to retrieve and remove the next item from the back.
         /// </summary>
         /// <param name="item">The item.</param>
@@ -191,22 +209,6 @@ namespace Theraot.Collections.ThreadSafe
             }
             item = default(T);
             return false;
-        }
-
-        /// <summary>
-        /// Tries the retrieve the item at an specified index.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <param name="item">The item.</param>
-        /// <returns>
-        ///   <c>true</c> if the value was retrieved; otherwise, <c>false</c>.
-        /// </returns>
-        /// <remarks>
-        /// Although items are ordered, they are not guaranteed to start at index 0.
-        /// </remarks>
-        public bool TryGet(int index, out T item)
-        {
-            return _entries.TryGet(index, out item);
         }
 
         internal void Recycle()
