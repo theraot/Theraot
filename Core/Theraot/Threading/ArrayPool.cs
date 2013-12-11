@@ -5,26 +5,22 @@ using Theraot.Core;
 
 namespace Theraot.Threading
 {
-    internal class ArrayPool<T>
+    internal static class ArrayPool<T>
     {
         private const int INT_MaxCapacity = 1024;
         private const int INT_MinCapacity = 16;
         private const int INT_PoolSize = 16;
         private const int INT_WorkCapacityHint = 16;
+        private static readonly ReentryGuard _guard;
+        private static readonly WorkContext _recycle;
         private static LazyBucket<FixedSizeQueueBucket<T[]>> _data;
         private static int _done;
-        private static ReentryGuard _guard;
-        private static WorkContext _recycle;
-
         static ArrayPool()
         {
             _recycle = new WorkContext("Recycler", INT_WorkCapacityHint, 1);
             _data = new LazyBucket<FixedSizeQueueBucket<T[]>>
             (
-                input =>
-                {
-                    return new FixedSizeQueueBucket<T[]>(INT_PoolSize);
-                },
+                _ => new FixedSizeQueueBucket<T[]>(INT_PoolSize),
                 NumericHelper.Log2(INT_MaxCapacity) - NumericHelper.Log2(INT_MinCapacity)
             );
             _guard = new ReentryGuard();
@@ -53,8 +49,9 @@ namespace Theraot.Threading
                         _recycle.AddWork
                         (
                             () =>
-                            {
-                                _guard.Execute(() =>
+                            _guard.Execute
+                            (
+                                () =>
                                 {
                                     int index = GetIndex(capacity);
                                     if (index < _data.Capacity)
@@ -63,8 +60,8 @@ namespace Theraot.Threading
                                         var bucket = _data.Get(index);
                                         bucket.Add(array);
                                     }
-                                });
-                            }
+                                }
+                            )
                         ).Start();
                         return true;
                     }
