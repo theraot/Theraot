@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
@@ -67,7 +67,7 @@ namespace Theraot.Core
             }
             if (countLimit > array.Length - arrayIndex)
             {
-                throw new ArgumentException("array", "startIndex plus countLimit is greater than the number of elements in array.");
+                throw new ArgumentException("startIndex plus countLimit is greater than the number of elements in array.", "array");
             }
             if (arrayIndex == array.Length)
             {
@@ -114,7 +114,7 @@ namespace Theraot.Core
             }
             if (countLimit > array.Length - arrayIndex)
             {
-                throw new ArgumentException("array", "startIndex plus countLimit is greater than the number of elements in array.");
+                throw new ArgumentException("startIndex plus countLimit is greater than the number of elements in array.", "array");
             }
             if (arrayIndex == array.Length)
             {
@@ -361,7 +361,7 @@ namespace Theraot.Core
             }
             if (countLimit > array.Length - arrayIndex)
             {
-                throw new ArgumentException("array", "The array can not contain the number of elements.");
+                throw new ArgumentException("The array can not contain the number of elements.", "array");
             }
             if (arrayIndex == array.Length)
             {
@@ -424,7 +424,7 @@ namespace Theraot.Core
             }
             if (countLimit > array.Length - arrayIndex)
             {
-                throw new ArgumentException("array", "The array can not contain the number of elements.");
+                throw new ArgumentException("The array can not contain the number of elements.", "array");
             }
             if (arrayIndex == array.Length)
             {
