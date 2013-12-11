@@ -144,12 +144,20 @@ namespace Theraot.Threading
             _collectedEvent.WaitOne();
         }
 
+        public static bool FinalizingForUnload
+        {
+            get
+            {
+                return AppDomain.CurrentDomain.IsFinalizingForUnload();
+            }
+        }
+
         [global::System.Diagnostics.DebuggerNonUserCode]
         private sealed class GCProbe : CriticalFinalizerObject
         {
             ~GCProbe()
             {
-                if (Thread.VolatileRead(ref _finished) == 1 || AppDomain.CurrentDomain.IsFinalizingForUnload())
+                if (Thread.VolatileRead(ref _finished) == 1 || GCMonitor.FinalizingForUnload)
                 {
                     return;
                 }
