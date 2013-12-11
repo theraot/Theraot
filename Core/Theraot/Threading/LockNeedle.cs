@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Threading;
 using Theraot.Threading.Needles;
+using Theraot.Core;
 
 namespace Theraot.Threading
 {
     internal class LockNeedle<T> : INeedle<T>
     {
         private int _capture;
-        private LockNeedleContext<T> _context;
-        private int _hashCode;
+        private readonly LockNeedleContext<T> _context;
+        private readonly int _hashCode;
         private int _lock;
         private T _target;
 
@@ -68,14 +69,7 @@ namespace Theraot.Threading
 
         public static explicit operator T(LockNeedle<T> needle)
         {
-            if (ReferenceEquals(needle, null))
-            {
-                throw new ArgumentNullException("needle");
-            }
-            else
-            {
-                return needle.Value;
-            }
+            return Check.NotNullArgument(needle, "needle").Value;
         }
 
         public static bool operator !=(LockNeedle<T> left, LockNeedle<T> right)
@@ -91,13 +85,13 @@ namespace Theraot.Threading
         public override bool Equals(object obj)
         {
             var _obj = obj as LockNeedle<T>;
-            if (!ReferenceEquals(null, _obj))
+            if (ReferenceEquals(null, _obj))
             {
-                return EqualsExtracted(this, _obj);
+                return _target.Equals(obj);
             }
             else
             {
-                return _target.Equals(obj);
+                return EqualsExtracted(this, _obj);
             }
         }
 
@@ -147,14 +141,7 @@ namespace Theraot.Threading
 
         internal bool Lock(int id)
         {
-            if (Interlocked.CompareExchange(ref _lock, id, 0) == 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return Interlocked.CompareExchange(ref _lock, id, 0) == 0;
         }
 
         internal void Release(int id)
@@ -172,32 +159,18 @@ namespace Theraot.Threading
 
         internal bool Unlock(int id)
         {
-            if (Interlocked.CompareExchange(ref _lock, 0, id) == id)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return Interlocked.CompareExchange(ref _lock, 0, id) == id;
         }
 
         private static bool EqualsExtracted(LockNeedle<T> left, LockNeedle<T> right)
         {
             if (ReferenceEquals(left, null))
             {
-                if (ReferenceEquals(right, null))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return ReferenceEquals(right, null);
             }
             else
             {
-                return left._target.Equals(left._target);
+                return left._target.Equals(right._target);
             }
         }
 
@@ -216,7 +189,7 @@ namespace Theraot.Threading
             }
             else
             {
-                return !left._target.Equals(left._target);
+                return !left._target.Equals(right._target);
             }
         }
     }
