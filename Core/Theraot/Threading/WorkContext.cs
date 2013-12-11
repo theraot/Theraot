@@ -280,7 +280,7 @@ namespace Theraot.Threading
             {
                 Interlocked.Increment(ref _workingTotalThreadCount);
                 Interlocked.Increment(ref _workingDedicatedThreadCount);
-                while (_work && !AppDomain.CurrentDomain.IsFinalizingForUnload())
+                while (_work && !GCMonitor.FinalizingForUnload)
                 {
                     Work item;
                     if (_works.TryTake(out item))
@@ -321,7 +321,7 @@ namespace Theraot.Threading
             catch
             {
                 // Pokemon
-                if (_work && !AppDomain.CurrentDomain.IsFinalizingForUnload())
+                if (_work && !GCMonitor.FinalizingForUnload)
                 {
                     goto loopback;
                 }

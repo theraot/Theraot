@@ -31,8 +31,7 @@ namespace Theraot.Collections.ThreadSafe
 
         ~Bucket()
         {
-            //Do not recycle on AppDomain Unload
-            if (!AppDomain.CurrentDomain.IsFinalizingForUnload())
+            if (!GCMonitor.FinalizingForUnload)
             {
                 RecycleExtracted();
             }

@@ -34,9 +34,8 @@ namespace Theraot.Threading
 
         public static bool DonateArray(T[] array)
         {
-            if (ReferenceEquals(array, null) || AppDomain.CurrentDomain.IsFinalizingForUnload())
+            if (ReferenceEquals(array, null) || GCMonitor.FinalizingForUnload)
             {
-                //Ignore null arrays and anything on AppDomain Unload
                 return false;
             }
             else
