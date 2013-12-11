@@ -10,21 +10,20 @@ namespace Theraot.Threading
         private const int INT_InitialWorkCapacityHint = 128;
         private const int INT_LoopCountHint = 4;
         private const int INT_SpinWaitHint = 16;
-        private static WorkContext _defaultContext = new WorkContext(INT_InitialWorkCapacityHint, Environment.ProcessorCount, "Default Context", false);
+        private static readonly WorkContext _defaultContext = new WorkContext(INT_InitialWorkCapacityHint, Environment.ProcessorCount, "Default Context", false);
 
         private static int _lastId;
+        private readonly int _dedidatedThreadMax;
+        private readonly bool _disposable;
+        private readonly int _id;
+        private readonly QueueBucket<Work> _works;
         private int _dedidatedThreadCount;
-        private int _dedidatedThreadMax;
-        private bool _disposable;
         private AutoResetEvent _event;
-        private int _id;
         private LazyBucket<Thread> _threads;
         private int _waitRequest;
         private volatile bool _work;
         private int _workingDedicatedThreadCount;
         private int _workingTotalThreadCount;
-        private QueueBucket<Work> _works;
-
         public WorkContext()
             : this(INT_InitialWorkCapacityHint, Environment.ProcessorCount, null, true)
         {
@@ -160,15 +159,7 @@ namespace Theraot.Threading
 
         public Work AddWork(Action action)
         {
-            //Fail on AppDomain Unload
-            if (AppDomain.CurrentDomain.IsFinalizingForUnload())
-            {
-                return null;
-            }
-            else
-            {
-                return new Work(action, false, this);
-            }
+            return GCMonitor.FinalizingForUnload ? null : new Work(action, false, this);
         }
 
         public Work AddWork(Action action, bool exclusive)
@@ -227,13 +218,7 @@ namespace Theraot.Threading
                 _works.Add(work);
                 if (_threads.Capacity == 0)
                 {
-                    ThreadPool.QueueUserWorkItem
-                    (
-                        _ =>
-                        {
-                            DoOneWork();
-                        }
-                    );
+                    ThreadPool.QueueUserWorkItem(_ => DoOneWork());
                 }
                 else
                 {
@@ -270,6 +255,7 @@ namespace Theraot.Threading
                     _event.Set();
                 }
                 _event.Close();
+                _event = null;
             }
             finally
             {

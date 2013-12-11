@@ -103,8 +103,7 @@ namespace Theraot.Threading
 
         public void Start()
         {
-            //Fail on AppDomain Unload
-            if (!AppDomain.CurrentDomain.IsFinalizingForUnload())
+            if (!GCMonitor.FinalizingForUnload)
             {
                 _context.ScheduleWork(this);
             }
@@ -140,7 +139,7 @@ namespace Theraot.Threading
         }
     }
 
-    public sealed partial class Work : ICloneable
+    public sealed partial class Work
     {
 #if DEBUG || FAT
         private static int _lastId;
