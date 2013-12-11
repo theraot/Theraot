@@ -24,6 +24,7 @@ namespace Theraot.Threading
         private volatile bool _work;
         private int _workingDedicatedThreadCount;
         private int _workingTotalThreadCount;
+
         public WorkContext()
             : this(INT_InitialWorkCapacityHint, Environment.ProcessorCount, null, true)
         {

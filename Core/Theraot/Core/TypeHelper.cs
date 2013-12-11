@@ -44,14 +44,7 @@ namespace Theraot.Core
         public static TTarget As<TTarget>(object source, TTarget def)
             where TTarget : class
         {
-            return As
-            (
-                source,
-                () =>
-                {
-                    return def;
-                }
-            );
+            return As(source, () => def);
         }
 
         public static TTarget As<TTarget>(object source, Func<TTarget> alternative)
@@ -71,7 +64,7 @@ namespace Theraot.Core
 
         public static bool CanBe<T>(this Type type, T value)
         {
-            if (value == null)
+            if (object.ReferenceEquals(value, null))
             {
                 return type.CanBeNull();
             }
@@ -104,14 +97,7 @@ namespace Theraot.Core
 
         public static TTarget Cast<TTarget>(object source, TTarget def)
         {
-            return Cast
-            (
-                source,
-                () =>
-                {
-                    return def;
-                }
-            );
+            return Cast (source, () => def);
         }
 
         public static TTarget Cast<TTarget>(object source, Func<TTarget> alternative)

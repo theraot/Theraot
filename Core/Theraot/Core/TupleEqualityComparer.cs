@@ -7,9 +7,9 @@ namespace Theraot.Core
 {
     class TupleEqualityComparer<T> : IEqualityComparer<Tuple<T>>
     {
-        private static TupleEqualityComparer<T> _default;
+        private static readonly TupleEqualityComparer<T> _default;
 
-        private IEqualityComparer<T> _comparer;
+        private readonly IEqualityComparer<T> _comparer;
 
         static TupleEqualityComparer()
         {
@@ -67,10 +67,10 @@ namespace Theraot.Core
 
     class TupleEqualityComparer<T1, T2> : IEqualityComparer<Tuple<T1, T2>>
     {
-        private static TupleEqualityComparer<T1, T2> _default;
+        private static readonly TupleEqualityComparer<T1, T2> _default;
 
-        private IEqualityComparer<T1> _comparer1;
-        private IEqualityComparer<T2> _comparer2;
+        private readonly IEqualityComparer<T1> _comparer1;
+        private readonly IEqualityComparer<T2> _comparer2;
 
         static TupleEqualityComparer()
         {
@@ -132,11 +132,11 @@ namespace Theraot.Core
 
     class TupleEqualityComparer<T1, T2, T3> : IEqualityComparer<Tuple<T1, T2, T3>>
     {
-        private static TupleEqualityComparer<T1, T2, T3> _default;
+        private static readonly TupleEqualityComparer<T1, T2, T3> _default;
 
-        private IEqualityComparer<T1> _comparer1;
-        private IEqualityComparer<T2> _comparer2;
-        private IEqualityComparer<T3> _comparer3;
+        private readonly IEqualityComparer<T1> _comparer1;
+        private readonly IEqualityComparer<T2> _comparer2;
+        private readonly IEqualityComparer<T3> _comparer3;
 
         static TupleEqualityComparer()
         {
@@ -202,12 +202,12 @@ namespace Theraot.Core
 
     class TupleEqualityComparer<T1, T2, T3, T4> : IEqualityComparer<Tuple<T1, T2, T3, T4>>
     {
-        private static TupleEqualityComparer<T1, T2, T3, T4> _default;
+        private static readonly TupleEqualityComparer<T1, T2, T3, T4> _default;
 
-        private IEqualityComparer<T1> _comparer1;
-        private IEqualityComparer<T2> _comparer2;
-        private IEqualityComparer<T3> _comparer3;
-        private IEqualityComparer<T4> _comparer4;
+        private readonly IEqualityComparer<T1> _comparer1;
+        private readonly IEqualityComparer<T2> _comparer2;
+        private readonly IEqualityComparer<T3> _comparer3;
+        private readonly IEqualityComparer<T4> _comparer4;
 
         static TupleEqualityComparer()
         {
@@ -277,13 +277,13 @@ namespace Theraot.Core
 
     class TupleEqualityComparer<T1, T2, T3, T4, T5> : IEqualityComparer<Tuple<T1, T2, T3, T4, T5>>
     {
-        private static TupleEqualityComparer<T1, T2, T3, T4, T5> _default;
+        private static readonly TupleEqualityComparer<T1, T2, T3, T4, T5> _default;
 
-        private IEqualityComparer<T1> _comparer1;
-        private IEqualityComparer<T2> _comparer2;
-        private IEqualityComparer<T3> _comparer3;
-        private IEqualityComparer<T4> _comparer4;
-        private IEqualityComparer<T5> _comparer5;
+        private readonly IEqualityComparer<T1> _comparer1;
+        private readonly IEqualityComparer<T2> _comparer2;
+        private readonly IEqualityComparer<T3> _comparer3;
+        private readonly IEqualityComparer<T4> _comparer4;
+        private readonly IEqualityComparer<T5> _comparer5;
 
         static TupleEqualityComparer()
         {
@@ -357,14 +357,14 @@ namespace Theraot.Core
 
     class TupleEqualityComparer<T1, T2, T3, T4, T5, T6> : IEqualityComparer<Tuple<T1, T2, T3, T4, T5, T6>>
     {
-        private static TupleEqualityComparer<T1, T2, T3, T4, T5, T6> _default;
+        private static readonly TupleEqualityComparer<T1, T2, T3, T4, T5, T6> _default;
 
-        private IEqualityComparer<T1> _comparer1;
-        private IEqualityComparer<T2> _comparer2;
-        private IEqualityComparer<T3> _comparer3;
-        private IEqualityComparer<T4> _comparer4;
-        private IEqualityComparer<T5> _comparer5;
-        private IEqualityComparer<T6> _comparer6;
+        private readonly IEqualityComparer<T1> _comparer1;
+        private readonly IEqualityComparer<T2> _comparer2;
+        private readonly IEqualityComparer<T3> _comparer3;
+        private readonly IEqualityComparer<T4> _comparer4;
+        private readonly IEqualityComparer<T5> _comparer5;
+        private readonly IEqualityComparer<T6> _comparer6;
 
         static TupleEqualityComparer()
         {
@@ -442,15 +442,15 @@ namespace Theraot.Core
 
     class TupleEqualityComparer<T1, T2, T3, T4, T5, T6, T7> : IEqualityComparer<Tuple<T1, T2, T3, T4, T5, T6, T7>>
     {
-        private static TupleEqualityComparer<T1, T2, T3, T4, T5, T6, T7> _default;
+        private static readonly TupleEqualityComparer<T1, T2, T3, T4, T5, T6, T7> _default;
 
-        private IEqualityComparer<T1> _comparer1;
-        private IEqualityComparer<T2> _comparer2;
-        private IEqualityComparer<T3> _comparer3;
-        private IEqualityComparer<T4> _comparer4;
-        private IEqualityComparer<T5> _comparer5;
-        private IEqualityComparer<T6> _comparer6;
-        private IEqualityComparer<T7> _comparer7;
+        private readonly IEqualityComparer<T1> _comparer1;
+        private readonly IEqualityComparer<T2> _comparer2;
+        private readonly IEqualityComparer<T3> _comparer3;
+        private readonly IEqualityComparer<T4> _comparer4;
+        private readonly IEqualityComparer<T5> _comparer5;
+        private readonly IEqualityComparer<T6> _comparer6;
+        private readonly IEqualityComparer<T7> _comparer7;
 
         static TupleEqualityComparer()
         {
@@ -532,16 +532,16 @@ namespace Theraot.Core
 
     class TupleEqualityComparer<T1, T2, T3, T4, T5, T6, T7, T8> : IEqualityComparer<Tuple<T1, T2, T3, T4, T5, T6, T7, T8>>
     {
-        private static TupleEqualityComparer<T1, T2, T3, T4, T5, T6, T7, T8> _default;
+        private static readonly TupleEqualityComparer<T1, T2, T3, T4, T5, T6, T7, T8> _default;
 
-        private IEqualityComparer<T1> _comparer1;
-        private IEqualityComparer<T2> _comparer2;
-        private IEqualityComparer<T3> _comparer3;
-        private IEqualityComparer<T4> _comparer4;
-        private IEqualityComparer<T5> _comparer5;
-        private IEqualityComparer<T6> _comparer6;
-        private IEqualityComparer<T7> _comparer7;
-        private IEqualityComparer<T8> _comparer8;
+        private readonly IEqualityComparer<T1> _comparer1;
+        private readonly IEqualityComparer<T2> _comparer2;
+        private readonly IEqualityComparer<T3> _comparer3;
+        private readonly IEqualityComparer<T4> _comparer4;
+        private readonly IEqualityComparer<T5> _comparer5;
+        private readonly IEqualityComparer<T6> _comparer6;
+        private readonly IEqualityComparer<T7> _comparer7;
+        private readonly IEqualityComparer<T8> _comparer8;
 
         static TupleEqualityComparer()
         {

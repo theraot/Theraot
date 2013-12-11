@@ -12,13 +12,13 @@ namespace Theraot.Core
 
     class TupleEqualityComparer<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#> : IEqualityComparer<Tuple<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#>>
     {
-        private static TupleEqualityComparer<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#> _default;
+        private static readonly TupleEqualityComparer<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#> _default;
 
 <#
         if (indice == 1)
         {
 #>
-        private IEqualityComparer<T> _comparer;
+        private readonly IEqualityComparer<T> _comparer;
 <#
         }
         else
@@ -26,7 +26,7 @@ namespace Theraot.Core
             for (var subindice = 1; subindice <= indice; subindice++)
             {
 #>
-        private IEqualityComparer<T<#=subindice#>> _comparer<#=subindice#>;
+        private readonly IEqualityComparer<T<#=subindice#>> _comparer<#=subindice#>;
 <#
             }
         }

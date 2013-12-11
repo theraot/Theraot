@@ -71,6 +71,14 @@ namespace Theraot.Threading
             }
         }
 
+        System.Collections.Generic.IList<T> IThreadLocal<T>.Values
+        {
+            get
+            {
+                throw new InvalidOperationException();
+            }
+        }
+
         public T Value
         {
             get
@@ -132,14 +140,6 @@ namespace Theraot.Threading
                         }
                     }
                 }
-            }
-        }
-
-        System.Collections.Generic.IList<T> IThreadLocal<T>.Values
-        {
-            get
-            {
-                throw new InvalidOperationException();
             }
         }
 
