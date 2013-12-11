@@ -49,8 +49,8 @@ namespace Theraot.Threading
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "By Design")]
         public sealed class VersionToken : IComparable<VersionToken>
         {
+            private readonly VersionProvider _provider;
             private long _number;
-            private VersionProvider _provider;
             private Target _target;
 
             internal VersionToken(VersionProvider provider)
@@ -128,8 +128,8 @@ namespace Theraot.Threading
 
         internal sealed class Target : IComparable<Target>
         {
+            private readonly long _time = ThreadingHelper.TicksNow();
             private long _number = long.MinValue;
-            private long _time = DateTime.Now.Ticks;
 
             internal Target(out Advancer tryAdvance)
             {

@@ -7,7 +7,7 @@ namespace Theraot.Threading
 {
     [System.Diagnostics.DebuggerDisplay("IsValueCreated={IsValueCreated}, Value={ValueForDebugDisplay}")]
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public sealed partial class NoTrackingThreadLocal<T> : IDisposable, IThreadLocal<T>
+    public sealed class NoTrackingThreadLocal<T> : IDisposable, IThreadLocal<T>
     {
         private int _disposing;
         private LocalDataStoreSlot _slot;

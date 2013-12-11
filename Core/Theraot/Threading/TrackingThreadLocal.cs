@@ -8,7 +8,7 @@ using Theraot.Core;
 namespace Theraot.Threading
 {
     [System.Diagnostics.DebuggerDisplay("IsValueCreated={IsValueCreated}, Value={ValueForDebugDisplay}")]
-    public sealed partial class TrackingThreadLocal<T> : IDisposable, IThreadLocal<T>
+    public sealed class TrackingThreadLocal<T> : IDisposable, IThreadLocal<T>
     {
         private const int INT_MaxProbingHint = 4;
         private const int INT_MaxProcessorCount = 32;
