@@ -1,6 +1,4 @@
-﻿#if FAT
-
-using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using Theraot.Collections.Specialized;
 using Theraot.Core;
@@ -29,49 +27,49 @@ namespace Theraot.Collections.ThreadSafe
         public WeakSetBucket(T[] prototype)
             : this(Check.NotNullArgument(prototype, "prototype").Length, null as IEqualityComparer<T>, true)
         {
-            this.AddRange(prototype);
+            AddRange(prototype);
         }
 
         public WeakSetBucket(T[] prototype, IEqualityComparer<T> comparer)
             : this(Check.NotNullArgument(prototype, "prototype").Length, comparer, true)
         {
-            this.AddRange(prototype);
+            AddRange(prototype);
         }
 
         public WeakSetBucket(T[] prototype, bool autoRemoveDeadItems)
             : this(Check.NotNullArgument(prototype, "prototype").Length, null as IEqualityComparer<T>, autoRemoveDeadItems)
         {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(T[] prototype, IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
             : this(Check.NotNullArgument(prototype, "prototype").Length, comparer, autoRemoveDeadItems)
         {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(IEnumerable<T> prototype)
             : this(null as IEqualityComparer<T>, true)
         {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(IEnumerable<T> prototype, IEqualityComparer<T> comparer)
             : this(comparer, true)
         {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(IEnumerable<T> prototype, bool autoRemoveDeadItems)
             : this(null as IEqualityComparer<T>, autoRemoveDeadItems)
         {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(IEnumerable<T> prototype, IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
             : this(comparer, autoRemoveDeadItems)
         {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(IEqualityComparer<T> comparer)
@@ -120,25 +118,25 @@ namespace Theraot.Collections.ThreadSafe
         public WeakSetBucket(int capacity, IEnumerable<T> prototype)
             : this(capacity, null as IEqualityComparer<T>, true)
         {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(int capacity, IEnumerable<T> prototype, IEqualityComparer<T> comparer)
             : this(capacity, comparer, true)
         {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(int capacity, IEnumerable<T> prototype, bool autoRemoveDeadItems)
             : this(capacity, null as IEqualityComparer<T>, autoRemoveDeadItems)
         {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(int capacity, IEnumerable<T> prototype, IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
             : this(capacity, comparer, autoRemoveDeadItems)
         {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(int capacity, IEqualityComparer<T> comparer)
@@ -181,49 +179,49 @@ namespace Theraot.Collections.ThreadSafe
         public WeakSetBucket(T[] prototype, int maxProbing)
             : this(Check.NotNullArgument(prototype, "prototype").Length, null as IEqualityComparer<T>, true, maxProbing)
         {
-            this.AddRange(prototype);
+            AddRange(prototype);
         }
 
         public WeakSetBucket(T[] prototype, IEqualityComparer<T> comparer, int maxProbing)
             : this(Check.NotNullArgument(prototype, "prototype").Length, comparer, true, maxProbing)
         {
-            this.AddRange(prototype);
+            AddRange(prototype);
         }
 
         public WeakSetBucket(T[] prototype, bool autoRemoveDeadItems, int maxProbing)
             : this(Check.NotNullArgument(prototype, "prototype").Length, null as IEqualityComparer<T>, autoRemoveDeadItems, maxProbing)
         {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(T[] prototype, IEqualityComparer<T> comparer, bool autoRemoveDeadItems, int maxProbing)
             : this(Check.NotNullArgument(prototype, "prototype").Length, comparer, autoRemoveDeadItems, maxProbing)
         {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(IEnumerable<T> prototype, int maxProbing)
             : this(null as IEqualityComparer<T>, true, maxProbing)
         {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(IEnumerable<T> prototype, IEqualityComparer<T> comparer, int maxProbing)
             : this(comparer, true, maxProbing)
         {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(IEnumerable<T> prototype, bool autoRemoveDeadItems, int maxProbing)
             : this(null as IEqualityComparer<T>, autoRemoveDeadItems, maxProbing)
         {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(IEnumerable<T> prototype, IEqualityComparer<T> comparer, bool autoRemoveDeadItems, int maxProbing)
             : this(comparer, autoRemoveDeadItems, maxProbing)
         {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(IEqualityComparer<T> comparer, int maxProbing)
@@ -272,25 +270,25 @@ namespace Theraot.Collections.ThreadSafe
         public WeakSetBucket(int capacity, IEnumerable<T> prototype, int maxProbing)
             : this(capacity, null as IEqualityComparer<T>, true, maxProbing)
         {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(int capacity, IEnumerable<T> prototype, IEqualityComparer<T> comparer, int maxProbing)
             : this(capacity, comparer, true, maxProbing)
         {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(int capacity, IEnumerable<T> prototype, bool autoRemoveDeadItems, int maxProbing)
             : this(capacity, null as IEqualityComparer<T>, autoRemoveDeadItems, maxProbing)
         {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(int capacity, IEnumerable<T> prototype, IEqualityComparer<T> comparer, bool autoRemoveDeadItems, int maxProbing)
             : this(capacity, comparer, autoRemoveDeadItems, maxProbing)
         {
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            AddRange(Check.NotNullArgument(prototype, "prototype"));
         }
 
         public WeakSetBucket(int capacity, IEqualityComparer<T> comparer, int maxProbing)
@@ -339,7 +337,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             get
             {
-                return !object.ReferenceEquals(_eventHandler, null);
+                return _eventHandler.IsAlive;
             }
             set
             {
@@ -522,19 +520,12 @@ namespace Theraot.Collections.ThreadSafe
         public int RemoveWhere(Predicate<T> predicate)
         {
             return _wrapped.RemoveWhere
-                   (
-                       input =>
-                       {
-                           if (input.IsAlive)
-                           {
-                               return predicate(input.Value);
-                           }
-                           else
-                           {
-                               return false;
-                           }
-                       }
-                   );
+               (
+                   input =>
+                   {
+                        return input.IsAlive && predicate(input.Value);
+                   }
+               );
         }
 
         public bool SetEquals(IEnumerable<T> other)
@@ -639,5 +630,3 @@ namespace Theraot.Collections.ThreadSafe
         }
     }
 }
-
-#endif

@@ -1,5 +1,3 @@
-#if FAT
-
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -22,13 +20,13 @@ namespace Theraot.Collections.ThreadSafe
         private const int INT_DefaultMaxProbing = 1;
         private const int INT_SpinWaitHint = 80;
 
-        private IEqualityComparer<T> _comparer;
+        private readonly IEqualityComparer<T> _comparer;
+        private readonly int _maxProbing;
         private int _copyingThreads;
         private int _copyPosition;
         private int _count;
         private FixedSizeSetBucket<T> _entriesNew;
         private FixedSizeSetBucket<T> _entriesOld;
-        private int _maxProbing;
         private volatile int _revision;
         private int _status;
 
@@ -176,14 +174,11 @@ namespace Theraot.Collections.ThreadSafe
                 if (IsOperationSafe())
                 {
                     bool isOperationSafe;
-                    bool isCollision = false;
+                    bool isCollision;
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
                     try
                     {
-                        if (AddExtracted(item, entries, out isCollision) != -1)
-                        {
-                            result = true;
-                        }
+                        result |= AddExtracted(item, entries, out isCollision) != -1;
                     }
                     finally
                     {
@@ -253,10 +248,7 @@ namespace Theraot.Collections.ThreadSafe
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
                     try
                     {
-                        if (ContainsExtracted(item, entries))
-                        {
-                            result = true;
-                        }
+                        result |= ContainsExtracted(item, entries);
                     }
                     finally
                     {
@@ -332,10 +324,7 @@ namespace Theraot.Collections.ThreadSafe
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
                     try
                     {
-                        if (RemoveExtracted(item, entries))
-                        {
-                            result = true;
-                        }
+                        result |= RemoveExtracted(item, entries);
                     }
                     finally
                     {
@@ -439,10 +428,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         if (entries.TryGet(index, out value) && predicate(value))
                         {
-                            if (RemoveExtracted(value, entries))
-                            {
-                                result = true;
-                            }
+                            result |= RemoveExtracted(value, entries);
                         }
                         else
                         {
@@ -508,10 +494,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         if (entries.TryGet(index, out value) && predicate(value))
                         {
-                            if (RemoveExtracted(value, entries))
-                            {
-                                result = true;
-                            }
+                            result |= RemoveExtracted(value, entries);
                         }
                         else
                         {
@@ -733,9 +716,6 @@ namespace Theraot.Collections.ThreadSafe
                             Interlocked.CompareExchange(ref _status, (int)BucketStatus.Free, (int)BucketStatus.Waiting);
                         }
                         break;
-
-                    default:
-                        break;
                 }
             }
             while (status != (int)BucketStatus.Free);
@@ -853,9 +833,12 @@ namespace Theraot.Collections.ThreadSafe
             item = default(T);
             if (entries != null)
             {
-                if (entries.TryGet(index, out item))
+                for (int attempts = 0; attempts < _maxProbing; attempts++)
                 {
-                    return true;
+                    if (entries.TryGet(index, out item))
+                    {
+                        return true;
+                    }
                 }
             }
             return false;
@@ -868,5 +851,3 @@ namespace Theraot.Collections.ThreadSafe
         //  This can be added by a wrapper.
     }
 }
-
-#endif

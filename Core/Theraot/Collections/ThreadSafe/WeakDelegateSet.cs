@@ -1,6 +1,4 @@
-﻿#if FAT
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Theraot.Core;
@@ -15,15 +13,14 @@ namespace Theraot.Collections.ThreadSafe
         private readonly Action<object[]> _invoke;
 
         public WeakDelegateSet()
-            : base()
         {
-            _invoke = input => InvokeExtracted(input);
+            _invoke = InvokeExtracted;
         }
 
         public WeakDelegateSet(WeakDelegateSet prototype)
             : base(prototype as IEnumerable<Delegate>)
         {
-            _invoke = input => InvokeExtracted(input);
+            _invoke = InvokeExtracted;
         }
 
         public WeakDelegateSet(WeakDelegateSet prototype, bool autoRemoveDeadItems, bool reentryGuard)
@@ -31,19 +28,12 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (reentryGuard)
             {
-                _invoke = input => InvokeExtracted(input);
+                _invoke = InvokeExtracted;
             }
             else
             {
                 var guard = new ReentryGuard();
-                _invoke =
-                    (input) =>
-                    {
-                        guard.Execute
-                        (
-                            () => InvokeExtracted(input)
-                        );
-                    };
+                _invoke = input => guard.Execute(() => InvokeExtracted(input));
             }
         }
 
@@ -52,26 +42,19 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (reentryGuard)
             {
-                _invoke = input => InvokeExtracted(input);
+                _invoke = InvokeExtracted;
             }
             else
             {
                 var guard = new ReentryGuard();
-                _invoke =
-                    (input) =>
-                    {
-                        guard.Execute
-                        (
-                            () => InvokeExtracted(input)
-                        );
-                    };
+                _invoke = input => guard.Execute(() => InvokeExtracted(input));
             }
         }
 
         public WeakDelegateSet(int capacity)
             : base(capacity)
         {
-            _invoke = input => InvokeExtracted(input);
+            _invoke = InvokeExtracted;
         }
 
         public WeakDelegateSet(int capacity, bool autoRemoveDeadItems, bool reentryGuard)
@@ -79,19 +62,12 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (reentryGuard)
             {
-                _invoke = input => InvokeExtracted(input);
+                _invoke = InvokeExtracted;
             }
             else
             {
                 var guard = new ReentryGuard();
-                _invoke =
-                    (input) =>
-                    {
-                        guard.Execute
-                        (
-                            () => InvokeExtracted(input)
-                        );
-                    };
+                _invoke = input => guard.Execute(() => InvokeExtracted(input));
             }
         }
 
@@ -100,26 +76,19 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (reentryGuard)
             {
-                _invoke = input => InvokeExtracted(input);
+                _invoke = InvokeExtracted;
             }
             else
             {
                 var guard = new ReentryGuard();
-                _invoke =
-                    (input) =>
-                    {
-                        guard.Execute
-                        (
-                            () => InvokeExtracted(input)
-                        );
-                    };
+                _invoke = input => guard.Execute(() => InvokeExtracted(input));
             }
         }
 
         public WeakDelegateSet(int capacity, int maxProbing)
             : base(capacity, maxProbing)
         {
-            _invoke = input => InvokeExtracted(input);
+            _invoke = InvokeExtracted;
         }
 
         public WeakDelegateSet(int capacity, bool autoRemoveDeadItems, bool reentryGuard, int maxProbing)
@@ -127,19 +96,12 @@ namespace Theraot.Collections.ThreadSafe
         {
             if (reentryGuard)
             {
-                _invoke = input => InvokeExtracted(input);
+                _invoke = InvokeExtracted;
             }
             else
             {
                 var guard = new ReentryGuard();
-                _invoke =
-                    (input) =>
-                    {
-                        guard.Execute
-                        (
-                            () => InvokeExtracted(input)
-                        );
-                    };
+                _invoke = input => guard.Execute(() => InvokeExtracted(input));
             }
         }
 
@@ -205,5 +167,3 @@ namespace Theraot.Collections.ThreadSafe
         }
     }
 }
-
-#endif

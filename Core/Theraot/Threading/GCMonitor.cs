@@ -1,6 +1,4 @@
-﻿#if FAT
-
-using System;
+﻿using System;
 using System.Globalization;
 using System.Runtime.ConstrainedExecution;
 using System.Threading;
@@ -9,23 +7,25 @@ using Theraot.Collections.ThreadSafe;
 namespace Theraot.Threading
 {
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public static partial class GCMonitor
+    public static class GCMonitor
     {
+        private const int INT_BoolFalse = 0;
+        private const int INT_BoolTrue = 1;
         private const int INT_CapacityHint = 1024;
         private const int INT_MaxProbingHint = 32;
         private const int INT_StatusNotReady = -2;
         private const int INT_StatusPending = -1;
-        private const int INT_tStatusReady = 0;
+        private const int INT_StatusReady = 0;
         private static AutoResetEvent _collectedEvent;
         private static WeakDelegateSet _collectedEventHandlers;
-        private static int _finished = 0;
+        private static int _finished = INT_BoolFalse;
         private static int _status = INT_StatusNotReady;
 
         static GCMonitor()
         {
             AppDomain currentAppDomain = AppDomain.CurrentDomain;
-            currentAppDomain.ProcessExit += new EventHandler(ReportApplicationDomainExit);
-            currentAppDomain.DomainUnload += new EventHandler(ReportApplicationDomainExit);
+            currentAppDomain.ProcessExit += ReportApplicationDomainExit;
+            currentAppDomain.DomainUnload += ReportApplicationDomainExit;
         }
 
         public static event EventHandler Collected
@@ -52,7 +52,7 @@ namespace Theraot.Threading
             }
             remove
             {
-                if (Thread.VolatileRead(ref _status) == INT_tStatusReady)
+                if (Thread.VolatileRead(ref _status) == INT_StatusReady)
                 {
                     try
                     {
@@ -70,6 +70,14 @@ namespace Theraot.Threading
             }
         }
 
+        public static bool FinalizingForUnload
+        {
+            get
+            {
+                return AppDomain.CurrentDomain.IsFinalizingForUnload();
+            }
+        }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Pokemon")]
         private static void ExecuteCollected()
         {
@@ -78,7 +86,7 @@ namespace Theraot.Threading
             {
                 thread.IsBackground = true;
                 WaitOne();
-                if (Thread.VolatileRead(ref _finished) == 1 || AppDomain.CurrentDomain.IsFinalizingForUnload())
+                if (Thread.VolatileRead(ref _finished) == INT_BoolTrue || AppDomain.CurrentDomain.IsFinalizingForUnload())
                 {
                     return;
                 }
@@ -90,7 +98,7 @@ namespace Theraot.Threading
                         _collectedEventHandlers.RemoveDeadItems();
                         _collectedEventHandlers.Invoke(null, new EventArgs());
                     }
-                    catch (Exception)
+                    catch
                     {
                         //Pokemon
                     }
@@ -101,28 +109,31 @@ namespace Theraot.Threading
         private static bool Initialize()
         {
             var check = Interlocked.CompareExchange(ref _status, INT_StatusPending, INT_StatusNotReady);
-            if (check == -2)
+            if (check == INT_StatusNotReady)
             {
                 _collectedEvent = new AutoResetEvent(false);
                 _collectedEventHandlers = new WeakDelegateSet(INT_CapacityHint, false, false, INT_MaxProbingHint);
-                Thread.VolatileWrite(ref _status, INT_tStatusReady);
+                Thread.VolatileWrite(ref _status, INT_StatusReady);
                 return true;
-            }
-            else if (check == 0)
-            {
-                return false;
             }
             else
             {
-                ThreadingHelper.SpinWaitUntil(ref _status, INT_tStatusReady);
-                return false;
+                if (check == INT_StatusReady)
+                {
+                    return false;
+                }
+                else
+                {
+                    ThreadingHelper.SpinWaitUntil(ref _status, INT_StatusReady);
+                    return false;
+                }
             }
         }
 
         private static void ReportApplicationDomainExit(object sender, EventArgs e)
         {
-            Thread.VolatileWrite(ref _finished, 1);
-            if (Thread.VolatileRead(ref _status) == INT_tStatusReady)
+            Thread.VolatileWrite(ref _finished, INT_BoolTrue);
+            if (Thread.VolatileRead(ref _status) == INT_StatusReady)
             {
                 _collectedEvent.Set();
             }
@@ -130,13 +141,13 @@ namespace Theraot.Threading
 
         private static void StartRunner()
         {
-            new GCProbe();
-            (
-                new Thread(ExecuteCollected)
-                {
-                    Name = string.Format(CultureInfo.InvariantCulture, "{0} runner.", typeof(GCMonitor).Name)
-                }
-            ).Start();
+            GC.KeepAlive(new GCProbe());
+            Thread.MemoryBarrier();
+            var runnerThread = new Thread(ExecuteCollected)
+            {
+                Name = string.Format(CultureInfo.InvariantCulture, "{0} runner.", typeof(GCMonitor).Name)
+            };
+            runnerThread.Start();
         }
 
         private static void WaitOne()
@@ -144,20 +155,12 @@ namespace Theraot.Threading
             _collectedEvent.WaitOne();
         }
 
-        public static bool FinalizingForUnload
-        {
-            get
-            {
-                return AppDomain.CurrentDomain.IsFinalizingForUnload();
-            }
-        }
-
         [global::System.Diagnostics.DebuggerNonUserCode]
         private sealed class GCProbe : CriticalFinalizerObject
         {
             ~GCProbe()
             {
-                if (Thread.VolatileRead(ref _finished) == 1 || GCMonitor.FinalizingForUnload)
+                if (Thread.VolatileRead(ref _finished) == INT_BoolTrue || GCMonitor.FinalizingForUnload)
                 {
                     return;
                 }
@@ -170,5 +173,3 @@ namespace Theraot.Threading
         }
     }
 }
-
-#endif

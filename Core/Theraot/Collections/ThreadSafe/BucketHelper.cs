@@ -43,11 +43,6 @@
                 entries = null;
             }
         }
-    }
-
-    internal static partial class BucketHelper
-    {
-#if FAT
 
         public static void Recycle<T>(ref FixedSizeSetBucket<T> entries) //Needed
         {
@@ -57,7 +52,5 @@
                 entries = null;
             }
         }
-
-#endif
     }
 }

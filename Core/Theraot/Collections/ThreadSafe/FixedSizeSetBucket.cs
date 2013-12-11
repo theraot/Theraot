@@ -1,5 +1,3 @@
-#if FAT
-
 using System;
 using System.Collections.Generic;
 using Theraot.Core;
@@ -18,7 +16,7 @@ namespace Theraot.Collections.ThreadSafe
         private Bucket<T> _entries;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FixedSizeHashBucket" /> class.
+        /// Initializes a new instance of the <see cref="FixedSizeSetBucket{T}" /> class.
         /// </summary>
         /// <param name="capacity">The capacity.</param>
         /// <param name="comparer">The comparer.</param>
@@ -336,5 +334,3 @@ namespace Theraot.Collections.ThreadSafe
         }
     }
 }
-
-#endif
