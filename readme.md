@@ -83,15 +83,21 @@ This are some parts worth of mention:
       - Bucket : A fixed-size wait-free collection.
       - FixedSizeHashBucket : A fixed-size wait-free hash based dictionary.
       - FixedSizeQueueBucket : A fixed-size wait-free queue.
+      - FixedSizeSetBucket : A fixed-size wait-free set.
       - HashBucket : A lock-free hash based dictionary.
       - LazyBucket : A fixed-size wait-free lazy initialized collection.
       - QueueBucket : A lock-free queue.
+      - SetBucket : A lock-free set.
+      - WeakDelegateSet : A lock-free set of weak references to delegates.
+      - WeakEvent : A weak event implementation.
+      - WeakSetBucket : A lock-free set of weak references.
     - Extensions : A huge plus beyond Linq.
     - Progressive* : A set of classes that walk an IEnumerable<T> on demand and cache the result.
   - Theraot.Core
     - ActionHelper : A helper class with Lazy static Noop and Throw Actions.
     - ComparerExtensions : A helper class with Extension Methods for IComparer<T>
     - EnumHelper : A helper class for enums.
+    - EqualityComparerHelper<T> : A helper class to create IEqualityComparer for multiple types. [See Note 1]
     - FuncHelper : A helper class with Lazy static Default, Return and Throw Funcs.
     - NumericHelper : A helper class with A lot of functions from integer square root to primality test including extracting mantissa and exp from double value and more.
     - StringHelper : A helper class with A lot of functions from Append to Implode and more.
@@ -102,18 +108,24 @@ This are some parts worth of mention:
     - Needles : [See "Needle" below]
     - ArrayPool : An object pool to recycle arrays.
     - Disposable : A general purpose disposable object with Action callback.
-    - DisposableAkin : Same as above, but disposable only by the thread that created it. [See Note 1]
-    - IExtendedDisposable : A IDisposible that you can query to know if it was disposed. [See Note 2]
+    - DisposableAkin : Same as above, but disposable only by the thread that created it. [See Note 2]
+    - GCMonitor : Allows to get notifications on Garbage Collection. [See Note 3]
+    - IExtendedDisposable : A IDisposible that you can query to know if it was disposed. [See Note 4]
     - NoTrackingThreadLocal & TrackingThreadLocal : The backends for the backport of System.Threading.ThreadLocal.
     - ReentryGuard : A helper class that allows to protect a code from reentry.
     - SingleTimeExecution : A thread-safe way to wrap code to be called only once.
-    - ThreadinHelper : Provides unique ids for managed threads, generic VolatileRead and *Write, and conditional SpinWait. [See Note 3]
-        
-Note 1: This actually makes the implementation simpler and more efficient.
+    - ThreadinHelper : Provides unique ids for managed threads, generic VolatileRead and *Write, and conditional SpinWait. [See Note 5]
+    - Work : a task scheduler implementation, intended to be part of the backport of System.Threading.Tasks.
 
-Note 2: Do not rely on the IsDisposed property as it may change any moment if another thread call Dispose, use DisposedConditional instead.
+Note 1: EqualityComparerHelper<T> creates equiality comparers for delegates, and tuples among other types.
 
-Note 3: The SpinWait functions in ThreadingHelper provides alternatives to System.Threading.SpinWait.
+Note 2: This actually makes the implementation simpler and more efficient.
+
+Note 3: The notifications of GCMonitor will run in a dedicated thread, make sure to not waste it's time. It is strongly suggested to use it to start async operations.
+
+Note 4: Do not rely on the IsDisposed property as it may change any moment if another thread call Dispose, use DisposedConditional instead.
+
+Note 5: The SpinWait functions in ThreadingHelper provides alternatives to System.Threading.SpinWait.
 
 ---
 "FAT" Features
@@ -126,26 +138,14 @@ This are some parts worth of mention:
   - Theraot.Collections
     - ThreadSafe
       - CircularBucket : A fixed-size wait-free circular collection.
-      - FixedSizeSetBucket : A fixed-size wait-free set.
-      - SetBucket : A lock-free set.
-      - WeakDelegateSet : A lock-free set of weak references to delegates.
-      - WeakEvent : A weak event implementation.
       - WeakHashBucket : A lock-free hash based dictionary of weak references.
-      - WeakSetBucket : A lock-free set of weak references.
   - Theraot.Core
     - ICloneable<T> & ICloner<T> & CloneHelper : Generalization of ICloneable as generic.
-    - EqualityComparerHelper<T> : A helper class to create IEqualityComparer for multiple types. [See Note 1]
     - TraceRoute & TraceNode : A Network Traceroute implementation
   - Theraot.Threading
-    - GCMonitor : Allows to get notifications on Garbage Collection. [See Note 2]
-    - CritialDisposible : A variant of Disposible that inherits from CritialFinalizerObject. [See Note 3]
-    - Work : a task scheduler implementation, intended to be part of the backport of System.Threading.Tasks.
+    - CritialDisposible : A variant of Disposible that inherits from CritialFinalizerObject. [See Note 1]
 
-Note 1: EqualityComparerHelper<T> creates equiality comparers for delegates, and tuples among other types.
-
-Note 2: The notifications of GCMonitor will run in a dedicated thread, make sure to not waste it's time. It is strongly suggested to use it to start async operations.
-
-Note 3: In theory you shouldn't need the CriticalDisposable, if you need it, chances are something else is wrong.
+Note 1: In theory you shouldn't need the CriticalDisposable, if you need it, chances are something else is wrong.
 
 ---
 Needles
