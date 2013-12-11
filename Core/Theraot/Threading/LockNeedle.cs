@@ -1,22 +1,21 @@
-﻿using System;
-using System.Threading;
-using Theraot.Threading.Needles;
+﻿using System.Threading;
 using Theraot.Core;
+using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
 {
     internal class LockNeedle<T> : INeedle<T>
     {
-        private int _capture;
         private readonly LockNeedleContext<T> _context;
         private readonly int _hashCode;
+        private int _capture;
         private int _lock;
         private T _target;
 
         internal LockNeedle(LockNeedleContext<T> context)
         {
             _context = context;
-            _hashCode = base.GetHashCode();
+            _hashCode = GetHashCode();
         }
 
         internal LockNeedle(LockNeedleContext<T> context, T target)
@@ -25,11 +24,11 @@ namespace Theraot.Threading
             _target = target;
             if (ReferenceEquals(target, null))
             {
-                _hashCode = base.GetHashCode();
+                _hashCode = GetHashCode();
             }
             else
             {
-                _hashCode = target.GetHashCode();
+                target.GetHashCode();
             }
         }
 
