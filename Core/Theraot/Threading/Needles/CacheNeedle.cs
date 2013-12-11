@@ -10,7 +10,7 @@ namespace Theraot.Threading.Needles
     public partial class CacheNeedle<T> : WeakNeedle<T>, ICacheNeedle<T>
         where T : class
     {
-        private int _hashCode;
+        private readonly int _hashCode;
         private int _status;
         private Func<T> _valueFactory;
         private StructNeedle<ManualResetEvent> _waitHandle;
@@ -39,11 +39,7 @@ namespace Theraot.Threading.Needles
             Func<T> __valueFactory = valueFactory ?? FuncHelper.GetReturnFunc(target);
             Thread thread = null;
             _waitHandle = new StructNeedle<ManualResetEvent>(new ManualResetEvent(false));
-            _valueFactory =
-                () =>
-                {
-                    return FullMode(__valueFactory, ref thread);
-                };
+            _valueFactory = () => FullMode(__valueFactory, ref thread);
             if (ReferenceEquals(target, null))
             {
                 _hashCode = base.GetHashCode();

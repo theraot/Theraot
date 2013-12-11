@@ -7,7 +7,7 @@ namespace Theraot.Threading.Needles
     [global::System.Diagnostics.DebuggerNonUserCode]
     public sealed class WeakDelegateNeedle : WeakNeedle<Delegate>, IEquatable<Delegate>, IEquatable<WeakDelegateNeedle>
     {
-        private int _hashCode;
+        private readonly int _hashCode;
 
         public WeakDelegateNeedle(Delegate handler)
             : base(Check.NotNullArgument(handler, "handler"))
@@ -67,14 +67,7 @@ namespace Theraot.Threading.Needles
 
         public bool Equals(Delegate other)
         {
-            if (ReferenceEquals(null, other))
-            {
-                return false;
-            }
-            else
-            {
-                return Equals(other.Method, other.Target);
-            }
+            return !ReferenceEquals(null, other) && Equals(other.Method, other.Target);
         }
 
         public bool Equals(MethodInfo method, object target)

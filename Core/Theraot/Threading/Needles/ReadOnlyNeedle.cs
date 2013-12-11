@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
@@ -43,14 +44,7 @@ namespace Theraot.Threading.Needles
 
         public static explicit operator T(ReadOnlyNeedle<T> needle)
         {
-            if (needle == null)
-            {
-                throw new ArgumentNullException("needle");
-            }
-            else
-            {
-                return needle.Value;
-            }
+            return Check.NotNullArgument(needle, "needle").Value;
         }
 
         public static implicit operator ReadOnlyNeedle<T>(T field)
@@ -100,18 +94,11 @@ namespace Theraot.Threading.Needles
         {
             if (ReferenceEquals(left, null))
             {
-                if (ReferenceEquals(right, null))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return ReferenceEquals(right, null);
             }
             else
             {
-                return left._target.Equals(left._target);
+                return left._target.Equals(right._target);
             }
         }
 
@@ -119,18 +106,11 @@ namespace Theraot.Threading.Needles
         {
             if (ReferenceEquals(left, null))
             {
-                if (ReferenceEquals(right, null))
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+                return !ReferenceEquals(right, null);
             }
             else
             {
-                return !left._target.Equals(left._target);
+                return !left._target.Equals(right._target);
             }
         }
     }

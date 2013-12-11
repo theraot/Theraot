@@ -10,10 +10,10 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzFunc<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>
     {
-        private Func<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn> _target;
+        private readonly Func<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn> _target;
         private TReturn _result;
-        <# if (indice != 0) { #>private <# if (indice == 1) #>T _obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>;
-        private <#}#>T<#=subindice#> _arg<#=subindice#><#} #>;
+        <# if (indice != 0) { #>private readonly <# if (indice == 1) #>T _obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>;
+        private readonly <#}#>T<#=subindice#> _arg<#=subindice#><#} #>;
         <#}#>
 
         public ErsatzFunc(Func<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn> target<# if (indice != 0) { #>, <# if (indice == 1) #>T obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#> arg<#=subindice#><#}}#>)
@@ -67,9 +67,9 @@ namespace Theraot.Core
     public struct ErsatzAction<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#>
     
     {
-        private Action<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#> _target;
-        <# if (indice != 0) { #>private <# if (indice == 1) #>T _obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>;
-        private <#}#>T<#=subindice#> _arg<#=subindice#><#} #>;
+        private readonly Action<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#> _target;
+        <# if (indice != 0) { #>private readonly <# if (indice == 1) #>T _obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>;
+        private readonly <#}#>T<#=subindice#> _arg<#=subindice#><#} #>;
         <#}#>
 
         public ErsatzAction(Action<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#> target<# if (indice != 0) { #>, <# if (indice == 1) #>T obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#> arg<#=subindice#><#}}#>)

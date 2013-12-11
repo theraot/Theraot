@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
@@ -41,14 +41,7 @@ namespace Theraot.Threading.Needles
 
         public static explicit operator T(DefaultNeedle<T> needle)
         {
-            if (needle == null)
-            {
-                throw new ArgumentNullException("needle");
-            }
-            else
-            {
-                return needle.Value;
-            }
+            return Check.NotNullArgument(needle, "needle").Value;
         }
 
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]

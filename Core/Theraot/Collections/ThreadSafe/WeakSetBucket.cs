@@ -548,14 +548,7 @@ namespace Theraot.Collections.ThreadSafe
             TNeedle needle;
             var result = _wrapped.TryGet(index, out needle);
             item = needle.Value;
-            if (needle.IsAlive)
-            {
-                return result;
-            }
-            else
-            {
-                return false;
-            }
+            return needle.IsAlive && result;
         }
 
         public void UnionWith(IEnumerable<T> other)

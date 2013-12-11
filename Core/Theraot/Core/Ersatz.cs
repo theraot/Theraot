@@ -7,7 +7,7 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzFunc<TReturn>
     {
-        private Func<TReturn> _target;
+        private readonly Func<TReturn> _target;
         private TReturn _result;
         
         public ErsatzFunc(Func<TReturn> target)
@@ -38,9 +38,9 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzFunc<T, TReturn>
     {
-        private Func<T, TReturn> _target;
+        private readonly Func<T, TReturn> _target;
         private TReturn _result;
-        private T _obj;
+        private readonly T _obj;
         
         public ErsatzFunc(Func<T, TReturn> target, T obj)
         {
@@ -71,10 +71,10 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzFunc<T1, T2, TReturn>
     {
-        private Func<T1, T2, TReturn> _target;
+        private readonly Func<T1, T2, TReturn> _target;
         private TReturn _result;
-        private T1 _arg1;
-        private T2 _arg2;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
         
         public ErsatzFunc(Func<T1, T2, TReturn> target, T1 arg1, T2 arg2)
         {
@@ -106,11 +106,11 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzFunc<T1, T2, T3, TReturn>
     {
-        private Func<T1, T2, T3, TReturn> _target;
+        private readonly Func<T1, T2, T3, TReturn> _target;
         private TReturn _result;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
         
         public ErsatzFunc(Func<T1, T2, T3, TReturn> target, T1 arg1, T2 arg2, T3 arg3)
         {
@@ -143,12 +143,12 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzFunc<T1, T2, T3, T4, TReturn>
     {
-        private Func<T1, T2, T3, T4, TReturn> _target;
+        private readonly Func<T1, T2, T3, T4, TReturn> _target;
         private TReturn _result;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
-        private T4 _arg4;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
         
         public ErsatzFunc(Func<T1, T2, T3, T4, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
         {
@@ -182,13 +182,13 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzFunc<T1, T2, T3, T4, T5, TReturn>
     {
-        private Func<T1, T2, T3, T4, T5, TReturn> _target;
+        private readonly Func<T1, T2, T3, T4, T5, TReturn> _target;
         private TReturn _result;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
-        private T4 _arg4;
-        private T5 _arg5;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
         
         public ErsatzFunc(Func<T1, T2, T3, T4, T5, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
         {
@@ -223,14 +223,14 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzFunc<T1, T2, T3, T4, T5, T6, TReturn>
     {
-        private Func<T1, T2, T3, T4, T5, T6, TReturn> _target;
+        private readonly Func<T1, T2, T3, T4, T5, T6, TReturn> _target;
         private TReturn _result;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
-        private T4 _arg4;
-        private T5 _arg5;
-        private T6 _arg6;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
         
         public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
         {
@@ -266,15 +266,15 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, TReturn>
     {
-        private Func<T1, T2, T3, T4, T5, T6, T7, TReturn> _target;
+        private readonly Func<T1, T2, T3, T4, T5, T6, T7, TReturn> _target;
         private TReturn _result;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
-        private T4 _arg4;
-        private T5 _arg5;
-        private T6 _arg6;
-        private T7 _arg7;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
         
         public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
         {
@@ -311,16 +311,16 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, TReturn>
     {
-        private Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> _target;
+        private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> _target;
         private TReturn _result;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
-        private T4 _arg4;
-        private T5 _arg5;
-        private T6 _arg6;
-        private T7 _arg7;
-        private T8 _arg8;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
         
         public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)
         {
@@ -358,17 +358,17 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn>
     {
-        private Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> _target;
+        private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> _target;
         private TReturn _result;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
-        private T4 _arg4;
-        private T5 _arg5;
-        private T6 _arg6;
-        private T7 _arg7;
-        private T8 _arg8;
-        private T9 _arg9;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
+        private readonly T9 _arg9;
         
         public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)
         {
@@ -407,18 +407,18 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn>
     {
-        private Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> _target;
+        private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> _target;
         private TReturn _result;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
-        private T4 _arg4;
-        private T5 _arg5;
-        private T6 _arg6;
-        private T7 _arg7;
-        private T8 _arg8;
-        private T9 _arg9;
-        private T10 _arg10;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
+        private readonly T9 _arg9;
+        private readonly T10 _arg10;
         
         public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10)
         {
@@ -458,19 +458,19 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn>
     {
-        private Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> _target;
+        private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> _target;
         private TReturn _result;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
-        private T4 _arg4;
-        private T5 _arg5;
-        private T6 _arg6;
-        private T7 _arg7;
-        private T8 _arg8;
-        private T9 _arg9;
-        private T10 _arg10;
-        private T11 _arg11;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
+        private readonly T9 _arg9;
+        private readonly T10 _arg10;
+        private readonly T11 _arg11;
         
         public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11)
         {
@@ -511,20 +511,20 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn>
     {
-        private Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> _target;
+        private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> _target;
         private TReturn _result;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
-        private T4 _arg4;
-        private T5 _arg5;
-        private T6 _arg6;
-        private T7 _arg7;
-        private T8 _arg8;
-        private T9 _arg9;
-        private T10 _arg10;
-        private T11 _arg11;
-        private T12 _arg12;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
+        private readonly T9 _arg9;
+        private readonly T10 _arg10;
+        private readonly T11 _arg11;
+        private readonly T12 _arg12;
         
         public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12)
         {
@@ -566,21 +566,21 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn>
     {
-        private Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> _target;
+        private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> _target;
         private TReturn _result;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
-        private T4 _arg4;
-        private T5 _arg5;
-        private T6 _arg6;
-        private T7 _arg7;
-        private T8 _arg8;
-        private T9 _arg9;
-        private T10 _arg10;
-        private T11 _arg11;
-        private T12 _arg12;
-        private T13 _arg13;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
+        private readonly T9 _arg9;
+        private readonly T10 _arg10;
+        private readonly T11 _arg11;
+        private readonly T12 _arg12;
+        private readonly T13 _arg13;
         
         public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13)
         {
@@ -623,22 +623,22 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn>
     {
-        private Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> _target;
+        private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> _target;
         private TReturn _result;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
-        private T4 _arg4;
-        private T5 _arg5;
-        private T6 _arg6;
-        private T7 _arg7;
-        private T8 _arg8;
-        private T9 _arg9;
-        private T10 _arg10;
-        private T11 _arg11;
-        private T12 _arg12;
-        private T13 _arg13;
-        private T14 _arg14;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
+        private readonly T9 _arg9;
+        private readonly T10 _arg10;
+        private readonly T11 _arg11;
+        private readonly T12 _arg12;
+        private readonly T13 _arg13;
+        private readonly T14 _arg14;
         
         public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14)
         {
@@ -682,23 +682,23 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn>
     {
-        private Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> _target;
+        private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> _target;
         private TReturn _result;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
-        private T4 _arg4;
-        private T5 _arg5;
-        private T6 _arg6;
-        private T7 _arg7;
-        private T8 _arg8;
-        private T9 _arg9;
-        private T10 _arg10;
-        private T11 _arg11;
-        private T12 _arg12;
-        private T13 _arg13;
-        private T14 _arg14;
-        private T15 _arg15;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
+        private readonly T9 _arg9;
+        private readonly T10 _arg10;
+        private readonly T11 _arg11;
+        private readonly T12 _arg12;
+        private readonly T13 _arg13;
+        private readonly T14 _arg14;
+        private readonly T15 _arg15;
         
         public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15)
         {
@@ -743,24 +743,24 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn>
     {
-        private Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> _target;
+        private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> _target;
         private TReturn _result;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
-        private T4 _arg4;
-        private T5 _arg5;
-        private T6 _arg6;
-        private T7 _arg7;
-        private T8 _arg8;
-        private T9 _arg9;
-        private T10 _arg10;
-        private T11 _arg11;
-        private T12 _arg12;
-        private T13 _arg13;
-        private T14 _arg14;
-        private T15 _arg15;
-        private T16 _arg16;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
+        private readonly T9 _arg9;
+        private readonly T10 _arg10;
+        private readonly T11 _arg11;
+        private readonly T12 _arg12;
+        private readonly T13 _arg13;
+        private readonly T14 _arg14;
+        private readonly T15 _arg15;
+        private readonly T16 _arg16;
         
         public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15, T16 arg16)
         {
@@ -806,7 +806,7 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzAction    
     {
-        private Action _target;
+        private readonly Action _target;
         
         public ErsatzAction(Action target)
         {
@@ -827,8 +827,8 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzAction<T>    
     {
-        private Action<T> _target;
-        private T _obj;
+        private readonly Action<T> _target;
+        private readonly T _obj;
         
         public ErsatzAction(Action<T> target, T obj)
         {
@@ -850,9 +850,9 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzAction<T1, T2>    
     {
-        private Action<T1, T2> _target;
-        private T1 _arg1;
-        private T2 _arg2;
+        private readonly Action<T1, T2> _target;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
         
         public ErsatzAction(Action<T1, T2> target, T1 arg1, T2 arg2)
         {
@@ -875,10 +875,10 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzAction<T1, T2, T3>    
     {
-        private Action<T1, T2, T3> _target;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
+        private readonly Action<T1, T2, T3> _target;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
         
         public ErsatzAction(Action<T1, T2, T3> target, T1 arg1, T2 arg2, T3 arg3)
         {
@@ -902,11 +902,11 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzAction<T1, T2, T3, T4>    
     {
-        private Action<T1, T2, T3, T4> _target;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
-        private T4 _arg4;
+        private readonly Action<T1, T2, T3, T4> _target;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
         
         public ErsatzAction(Action<T1, T2, T3, T4> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
         {
@@ -931,12 +931,12 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzAction<T1, T2, T3, T4, T5>    
     {
-        private Action<T1, T2, T3, T4, T5> _target;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
-        private T4 _arg4;
-        private T5 _arg5;
+        private readonly Action<T1, T2, T3, T4, T5> _target;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
         
         public ErsatzAction(Action<T1, T2, T3, T4, T5> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
         {
@@ -962,13 +962,13 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzAction<T1, T2, T3, T4, T5, T6>    
     {
-        private Action<T1, T2, T3, T4, T5, T6> _target;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
-        private T4 _arg4;
-        private T5 _arg5;
-        private T6 _arg6;
+        private readonly Action<T1, T2, T3, T4, T5, T6> _target;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
         
         public ErsatzAction(Action<T1, T2, T3, T4, T5, T6> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
         {
@@ -995,14 +995,14 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzAction<T1, T2, T3, T4, T5, T6, T7>    
     {
-        private Action<T1, T2, T3, T4, T5, T6, T7> _target;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
-        private T4 _arg4;
-        private T5 _arg5;
-        private T6 _arg6;
-        private T7 _arg7;
+        private readonly Action<T1, T2, T3, T4, T5, T6, T7> _target;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
         
         public ErsatzAction(Action<T1, T2, T3, T4, T5, T6, T7> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
         {
@@ -1030,15 +1030,15 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzAction<T1, T2, T3, T4, T5, T6, T7, T8>    
     {
-        private Action<T1, T2, T3, T4, T5, T6, T7, T8> _target;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
-        private T4 _arg4;
-        private T5 _arg5;
-        private T6 _arg6;
-        private T7 _arg7;
-        private T8 _arg8;
+        private readonly Action<T1, T2, T3, T4, T5, T6, T7, T8> _target;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
         
         public ErsatzAction(Action<T1, T2, T3, T4, T5, T6, T7, T8> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)
         {
@@ -1067,16 +1067,16 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzAction<T1, T2, T3, T4, T5, T6, T7, T8, T9>    
     {
-        private Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> _target;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
-        private T4 _arg4;
-        private T5 _arg5;
-        private T6 _arg6;
-        private T7 _arg7;
-        private T8 _arg8;
-        private T9 _arg9;
+        private readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> _target;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
+        private readonly T9 _arg9;
         
         public ErsatzAction(Action<T1, T2, T3, T4, T5, T6, T7, T8, T9> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)
         {
@@ -1106,17 +1106,17 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>    
     {
-        private Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> _target;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
-        private T4 _arg4;
-        private T5 _arg5;
-        private T6 _arg6;
-        private T7 _arg7;
-        private T8 _arg8;
-        private T9 _arg9;
-        private T10 _arg10;
+        private readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> _target;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
+        private readonly T9 _arg9;
+        private readonly T10 _arg10;
         
         public ErsatzAction(Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10)
         {
@@ -1147,18 +1147,18 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>    
     {
-        private Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> _target;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
-        private T4 _arg4;
-        private T5 _arg5;
-        private T6 _arg6;
-        private T7 _arg7;
-        private T8 _arg8;
-        private T9 _arg9;
-        private T10 _arg10;
-        private T11 _arg11;
+        private readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> _target;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
+        private readonly T9 _arg9;
+        private readonly T10 _arg10;
+        private readonly T11 _arg11;
         
         public ErsatzAction(Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11)
         {
@@ -1190,19 +1190,19 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>    
     {
-        private Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> _target;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
-        private T4 _arg4;
-        private T5 _arg5;
-        private T6 _arg6;
-        private T7 _arg7;
-        private T8 _arg8;
-        private T9 _arg9;
-        private T10 _arg10;
-        private T11 _arg11;
-        private T12 _arg12;
+        private readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> _target;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
+        private readonly T9 _arg9;
+        private readonly T10 _arg10;
+        private readonly T11 _arg11;
+        private readonly T12 _arg12;
         
         public ErsatzAction(Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12)
         {
@@ -1235,20 +1235,20 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>    
     {
-        private Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> _target;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
-        private T4 _arg4;
-        private T5 _arg5;
-        private T6 _arg6;
-        private T7 _arg7;
-        private T8 _arg8;
-        private T9 _arg9;
-        private T10 _arg10;
-        private T11 _arg11;
-        private T12 _arg12;
-        private T13 _arg13;
+        private readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> _target;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
+        private readonly T9 _arg9;
+        private readonly T10 _arg10;
+        private readonly T11 _arg11;
+        private readonly T12 _arg12;
+        private readonly T13 _arg13;
         
         public ErsatzAction(Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13)
         {
@@ -1282,21 +1282,21 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>    
     {
-        private Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> _target;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
-        private T4 _arg4;
-        private T5 _arg5;
-        private T6 _arg6;
-        private T7 _arg7;
-        private T8 _arg8;
-        private T9 _arg9;
-        private T10 _arg10;
-        private T11 _arg11;
-        private T12 _arg12;
-        private T13 _arg13;
-        private T14 _arg14;
+        private readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> _target;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
+        private readonly T9 _arg9;
+        private readonly T10 _arg10;
+        private readonly T11 _arg11;
+        private readonly T12 _arg12;
+        private readonly T13 _arg13;
+        private readonly T14 _arg14;
         
         public ErsatzAction(Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14)
         {
@@ -1331,22 +1331,22 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>    
     {
-        private Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> _target;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
-        private T4 _arg4;
-        private T5 _arg5;
-        private T6 _arg6;
-        private T7 _arg7;
-        private T8 _arg8;
-        private T9 _arg9;
-        private T10 _arg10;
-        private T11 _arg11;
-        private T12 _arg12;
-        private T13 _arg13;
-        private T14 _arg14;
-        private T15 _arg15;
+        private readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> _target;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
+        private readonly T9 _arg9;
+        private readonly T10 _arg10;
+        private readonly T11 _arg11;
+        private readonly T12 _arg12;
+        private readonly T13 _arg13;
+        private readonly T14 _arg14;
+        private readonly T15 _arg15;
         
         public ErsatzAction(Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15)
         {
@@ -1382,23 +1382,23 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ErsatzAction<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>    
     {
-        private Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> _target;
-        private T1 _arg1;
-        private T2 _arg2;
-        private T3 _arg3;
-        private T4 _arg4;
-        private T5 _arg5;
-        private T6 _arg6;
-        private T7 _arg7;
-        private T8 _arg8;
-        private T9 _arg9;
-        private T10 _arg10;
-        private T11 _arg11;
-        private T12 _arg12;
-        private T13 _arg13;
-        private T14 _arg14;
-        private T15 _arg15;
-        private T16 _arg16;
+        private readonly Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> _target;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
+        private readonly T9 _arg9;
+        private readonly T10 _arg10;
+        private readonly T11 _arg11;
+        private readonly T12 _arg12;
+        private readonly T13 _arg13;
+        private readonly T14 _arg14;
+        private readonly T15 _arg15;
+        private readonly T16 _arg16;
         
         public ErsatzAction(Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15, T16 arg16)
         {

@@ -8,9 +8,8 @@ namespace Theraot.Threading.Needles
     [global::System.Diagnostics.DebuggerNonUserCode]
     public class LazyNeedle<T> : Needle<T>, ICacheNeedle<T>, IEquatable<LazyNeedle<T>>, IPromise<T>
     {
+        private readonly Func<T> _valueFactory;
         private int _status;
-        private Func<T> _valueFactory;
-
         private StructNeedle<ManualResetEvent> _waitHandle;
 
         public LazyNeedle(Func<T> valueFactory)
@@ -25,11 +24,7 @@ namespace Theraot.Threading.Needles
             Func<T> __valueFactory = valueFactory ?? FuncHelper.GetReturnFunc(target);
             Thread thread = null;
             _waitHandle = new StructNeedle<ManualResetEvent>(new ManualResetEvent(false));
-            _valueFactory =
-                () =>
-                {
-                    return FullMode(__valueFactory, ref thread);
-                };
+            _valueFactory = () => FullMode(__valueFactory, ref thread);
         }
 
         ~LazyNeedle()
@@ -102,26 +97,12 @@ namespace Theraot.Threading.Needles
         public override bool Equals(object obj)
         {
             var _obj = obj as LazyNeedle<T>;
-            if (!ReferenceEquals(null, _obj))
-            {
-                return base.Equals(obj);
-            }
-            else
-            {
-                return false;
-            }
+            return !ReferenceEquals(null, _obj) && base.Equals(obj);
         }
 
         public bool Equals(LazyNeedle<T> other)
         {
-            if (ReferenceEquals(other, null))
-            {
-                return false;
-            }
-            else
-            {
-                return base.Equals(other as Needle<T>);
-            }
+            return !ReferenceEquals(other, null) && base.Equals(other);
         }
 
         public override int GetHashCode()

@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
@@ -7,7 +8,7 @@ namespace Theraot.Threading.Needles
     [global::System.Diagnostics.DebuggerNonUserCode]
     public class Needle<T> : INeedle<T>, IEquatable<Needle<T>>
     {
-        private int _hashCode;
+        private readonly int _hashCode;
         private INeedle<T> _target;
 
         public Needle()
@@ -68,14 +69,7 @@ namespace Theraot.Threading.Needles
 
         public static explicit operator T(Needle<T> needle)
         {
-            if (ReferenceEquals(needle, null))
-            {
-                throw new ArgumentNullException("needle");
-            }
-            else
-            {
-                return needle.Value;
-            }
+            return Check.NotNullArgument(needle, "needle").Value;
         }
 
         public static implicit operator Needle<T>(T field)
@@ -177,7 +171,7 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                return left._target.Equals(left._target);
+                return left._target.Equals(right._target);
             }
         }
 
@@ -196,7 +190,7 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                return !left._target.Equals(left._target);
+                return !left._target.Equals(right._target);
             }
         }
     }

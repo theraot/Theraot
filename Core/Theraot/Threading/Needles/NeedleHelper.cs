@@ -113,8 +113,8 @@ namespace Theraot.Threading.Needles
         private static class DeferredNeedleCreator<T, TNeedle>
             where TNeedle : INeedle<T>
         {
-            private static bool _canCreate;
-            private static Func<Func<T>, TNeedle> _create;
+            private static readonly bool _canCreate;
+            private static readonly Func<Func<T>, TNeedle> _create;
 
             [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "Expensive Initialization")]
             static DeferredNeedleCreator()
@@ -126,11 +126,7 @@ namespace Theraot.Threading.Needles
                     _canCreate = TypeHelper.TryGetCreate<T, TNeedle>(out tmpA);
                     if (_canCreate)
                     {
-                        _create =
-                        (target) =>
-                        {
-                            return tmpA(target.Invoke());
-                        };
+                        _create = target => tmpA(target.Invoke());
                     }
                     else
                     {
@@ -139,7 +135,7 @@ namespace Theraot.Threading.Needles
                         if (_canCreate)
                         {
                             _create =
-                            (target) =>
+                            target =>
                             {
                                 var needle = tmpB.Invoke();
                                 needle.Value = target.Invoke();
@@ -175,8 +171,8 @@ namespace Theraot.Threading.Needles
         private static class DeferredReadOnlyNeedleCreator<T, TNeedle>
             where TNeedle : IReadOnlyNeedle<T>
         {
-            private static bool _canCreate;
-            private static Func<Func<T>, TNeedle> _create;
+            private static readonly bool _canCreate;
+            private static readonly Func<Func<T>, TNeedle> _create;
 
             [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "Expensive Initialization")]
             static DeferredReadOnlyNeedleCreator()
@@ -188,11 +184,7 @@ namespace Theraot.Threading.Needles
                     _canCreate = TypeHelper.TryGetCreate<T, TNeedle>(out tmp);
                     if (_canCreate)
                     {
-                        _create =
-                        (target) =>
-                        {
-                            return tmp(target.Invoke());
-                        };
+                        _create = target => tmp(target.Invoke());
                     }
                 }
                 if (!_canCreate)
@@ -222,8 +214,8 @@ namespace Theraot.Threading.Needles
         private static class NeedleCreator<T, TNeedle>
             where TNeedle : INeedle<T>
         {
-            private static bool _canCreate;
-            private static Func<T, TNeedle> _create;
+            private static readonly bool _canCreate;
+            private static readonly Func<T, TNeedle> _create;
 
             [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "Expensive Initialization")]
             static NeedleCreator()
@@ -236,7 +228,7 @@ namespace Theraot.Threading.Needles
                     if (_canCreate)
                     {
                         _create =
-                        (target) =>
+                        target =>
                         {
                             var needle = tmpA.Invoke();
                             needle.Value = target;
@@ -249,11 +241,7 @@ namespace Theraot.Threading.Needles
                         _canCreate = TypeHelper.TryGetCreate<Func<T>, TNeedle>(out tmpB);
                         if (_canCreate)
                         {
-                            _create =
-                            (target) =>
-                            {
-                                return tmpB(() => target);
-                            };
+                            _create = target => tmpB(() => target);
                         }
                     }
                     if (!_canCreate)
@@ -284,8 +272,8 @@ namespace Theraot.Threading.Needles
         private static class NestedNeedleCreator<T, TNeedle>
         where TNeedle : INeedle<T>
         {
-            private static bool _canCreate;
-            private static Func<INeedle<T>, TNeedle> _create;
+            private static readonly bool _canCreate;
+            private static readonly Func<INeedle<T>, TNeedle> _create;
 
             [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "Expensive Initialization")]
             static NestedNeedleCreator()
@@ -297,11 +285,7 @@ namespace Theraot.Threading.Needles
                     _canCreate = TypeHelper.TryGetCreate<Func<INeedle<T>>, TNeedle>(out tmp);
                     if (_canCreate)
                     {
-                        _create =
-                        (target) =>
-                        {
-                            return tmp(() => target);
-                        };
+                        _create = target => tmp(() => target);
                     }
                     if (!_canCreate)
                     {
@@ -331,8 +315,8 @@ namespace Theraot.Threading.Needles
         private static class NestedReadOnlyNeedleCreator<T, TNeedle>
             where TNeedle : IReadOnlyNeedle<T>
         {
-            private static bool _canCreate;
-            private static Func<IReadOnlyNeedle<T>, TNeedle> _create;
+            private static readonly bool _canCreate;
+            private static readonly Func<IReadOnlyNeedle<T>, TNeedle> _create;
 
             [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "Expensive Initialization")]
             static NestedReadOnlyNeedleCreator()
@@ -344,11 +328,7 @@ namespace Theraot.Threading.Needles
                     _canCreate = TypeHelper.TryGetCreate<Func<IReadOnlyNeedle<T>>, TNeedle>(out tmp);
                     if (_canCreate)
                     {
-                        _create =
-                        (target) =>
-                        {
-                            return tmp(() => target);
-                        };
+                        _create = target => tmp(() => target);
                     }
                 }
                 if (!_canCreate)
@@ -378,8 +358,8 @@ namespace Theraot.Threading.Needles
         private static class ReadOnlyNeedleCreator<T, TNeedle>
             where TNeedle : IReadOnlyNeedle<T>
         {
-            private static bool _canCreate;
-            private static Func<T, TNeedle> _create;
+            private static readonly bool _canCreate;
+            private static readonly Func<T, TNeedle> _create;
 
             [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "Expensive Initialization")]
             static ReadOnlyNeedleCreator()
@@ -391,11 +371,7 @@ namespace Theraot.Threading.Needles
                     _canCreate = TypeHelper.TryGetCreate<Func<T>, TNeedle>(out tmp);
                     if (_canCreate)
                     {
-                        _create =
-                        (target) =>
-                        {
-                            return tmp(() => target);
-                        };
+                        _create = target => tmp(() => target);
                     }
                 }
                 if (!_canCreate)

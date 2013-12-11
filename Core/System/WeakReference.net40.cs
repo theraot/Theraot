@@ -108,7 +108,7 @@ namespace System
                     }
                     else
                     {
-                        target = (T)obj;
+                        target = obj as T;
                         return true;
                     }
                 }

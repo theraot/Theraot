@@ -31,7 +31,7 @@ namespace Theraot.Core
 
         public static T NotNullArgument<T>(T argument, string parameterName)
         {
-            if (argument == null)
+            if (object.ReferenceEquals(argument, null))
             {
                 throw new ArgumentNullException(parameterName, parameterName + " is null.");
             }

@@ -1,23 +1,26 @@
-using System;
 using System.Collections.Generic;
+using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
     [global::System.Diagnostics.DebuggerNonUserCode]
     public sealed partial class ReadOnlyDisposableNeedle<T> : IReadOnlyNeedle<T>
     {
+        private readonly int _hashCode;
         private bool _isAlive;
         private T _target;
 
         public ReadOnlyDisposableNeedle()
         {
             _isAlive = false;
+            _hashCode = EqualityComparer<T>.Default.GetHashCode(default(T));
         }
 
         public ReadOnlyDisposableNeedle(T target)
         {
             _isAlive = true;
             _target = target;
+            _hashCode = EqualityComparer<T>.Default.GetHashCode(target);
         }
 
         public bool IsAlive
@@ -38,14 +41,7 @@ namespace Theraot.Threading.Needles
 
         public static explicit operator T(ReadOnlyDisposableNeedle<T> needle)
         {
-            if (needle == null)
-            {
-                throw new ArgumentNullException("needle");
-            }
-            else
-            {
-                return needle.Value;
-            }
+            return Check.NotNullArgument(needle, "needle").Value;
         }
 
         public static implicit operator ReadOnlyDisposableNeedle<T>(T field)
@@ -65,9 +61,10 @@ namespace Theraot.Threading.Needles
 
         public override bool Equals(object obj)
         {
-            if (obj is ReadOnlyDisposableNeedle<T>)
+            var _obj = obj as ReadOnlyDisposableNeedle<T>;
+            if (_obj != null)
             {
-                return EqualityComparer<T>.Default.Equals(_target, ((ReadOnlyDisposableNeedle<T>)obj)._target);
+                return EqualityComparer<T>.Default.Equals(_target, _obj._target);
             }
             else
             {
@@ -84,19 +81,12 @@ namespace Theraot.Threading.Needles
 
         public bool Equals(ReadOnlyDisposableNeedle<T> other)
         {
-            if (ReferenceEquals(null, other))
-            {
-                return false;
-            }
-            else
-            {
-                return EqualityComparer<T>.Default.Equals(_target, other.Value);
-            }
+            return !ReferenceEquals(null, other) && EqualityComparer<T>.Default.Equals(_target, other.Value);
         }
 
         public override int GetHashCode()
         {
-            return EqualityComparer<T>.Default.GetHashCode(_target);
+            return _hashCode;
         }
 
         public override string ToString()

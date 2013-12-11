@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Threading;
+using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
@@ -10,10 +11,10 @@ namespace Theraot.Threading.Needles
     public partial class WeakNeedle<T> : INeedle<T>, IEquatable<WeakNeedle<T>>
         where T : class
     {
+        private readonly int _hashCode;
+        private readonly bool _trackResurrection;
         private GCHandle _handle;
-        private int _hashCode;
         private int _managedDisposal;
-        private bool _trackResurrection;
 
         public WeakNeedle()
             : this(false)
@@ -24,7 +25,7 @@ namespace Theraot.Threading.Needles
         public WeakNeedle(bool trackResurrection)
         {
             _trackResurrection = trackResurrection;
-            _hashCode = base.GetHashCode();
+            _hashCode = GetHashCode();
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
@@ -45,7 +46,7 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                _hashCode = base.GetHashCode();
+                _hashCode = GetHashCode();
             }
         }
 
@@ -83,14 +84,7 @@ namespace Theraot.Threading.Needles
 
         public static explicit operator T(WeakNeedle<T> needle)
         {
-            if (ReferenceEquals(needle, null))
-            {
-                throw new ArgumentNullException("needle");
-            }
-            else
-            {
-                return needle.Value;
-            }
+            return Check.NotNullArgument(needle, "needle").Value;
         }
 
         public static implicit operator WeakNeedle<T>(T field)
@@ -117,35 +111,22 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                if (obj is T)
+                var __obj = obj as T;
+                if (__obj == null)
                 {
-                    var target = Value;
-                    if (IsAlive)
-                    {
-                        return EqualityComparer<T>.Default.Equals(target, (T)obj);
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return false;
                 }
                 else
                 {
-                    return false;
+                    var target = Value;
+                    return IsAlive && EqualityComparer<T>.Default.Equals(target, __obj);
                 }
             }
         }
 
         public bool Equals(WeakNeedle<T> other)
         {
-            if (ReferenceEquals(other, null))
-            {
-                return false;
-            }
-            else
-            {
-                return EqualsExtractedExtracted(this, other);
-            }
+            return !ReferenceEquals(other, null) && EqualsExtractedExtracted(this, other);
         }
 
         public override int GetHashCode()
@@ -190,7 +171,7 @@ namespace Theraot.Threading.Needles
                     }
                     else
                     {
-                        target = (T)obj;
+                        target = obj as T;
                         return true;
                     }
                 }
@@ -241,25 +222,11 @@ namespace Theraot.Threading.Needles
         {
             if (ReferenceEquals(left, null))
             {
-                if (ReferenceEquals(right, null))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return ReferenceEquals(right, null);
             }
             else
             {
-                if (ReferenceEquals(right, null))
-                {
-                    return false;
-                }
-                else
-                {
-                    return EqualsExtractedExtracted(left, right);
-                }
+                return !ReferenceEquals(right, null) && EqualsExtractedExtracted(left, right);
             }
         }
 
@@ -269,14 +236,7 @@ namespace Theraot.Threading.Needles
             if (left.IsAlive)
             {
                 var _right = right.Value;
-                if (right.IsAlive)
-                {
-                    return EqualityComparer<T>.Default.Equals(_left, _right);
-                }
-                else
-                {
-                    return false;
-                }
+                return right.IsAlive && EqualityComparer<T>.Default.Equals(_left, _right);
             }
             else
             {
@@ -288,25 +248,11 @@ namespace Theraot.Threading.Needles
         {
             if (ReferenceEquals(left, null))
             {
-                if (ReferenceEquals(right, null))
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+                return !ReferenceEquals(right, null);
             }
             else
             {
-                if (ReferenceEquals(right, null))
-                {
-                    return true;
-                }
-                else
-                {
-                    return NotEqualsExtractedExtracted(left, right);
-                }
+                return ReferenceEquals(right, null) || NotEqualsExtractedExtracted(left, right);
             }
         }
 

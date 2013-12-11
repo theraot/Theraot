@@ -39,14 +39,7 @@ namespace Theraot.Threading.Needles
 
         public static explicit operator T(StructNeedle<T> needle)
         {
-            if (ReferenceEquals(needle, null))
-            {
-                throw new ArgumentNullException("needle");
-            }
-            else
-            {
-                return needle.Value;
-            }
+            return needle.Value;
         }
 
         public static implicit operator StructNeedle<T>(T field)

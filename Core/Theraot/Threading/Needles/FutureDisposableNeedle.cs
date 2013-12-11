@@ -10,13 +10,7 @@ namespace Theraot.Threading.Needles
         public FutureDisposableNeedle(Func<T> load)
             : base(load)
         {
-            var waitCallback = new System.Threading.WaitCallback
-            (
-                _ =>
-                {
-                    Initialize();
-                }
-            );
+            var waitCallback = new System.Threading.WaitCallback(_ => Initialize());
             System.Threading.ThreadPool.QueueUserWorkItem(waitCallback);
         }
     }

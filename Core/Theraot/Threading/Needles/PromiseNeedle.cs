@@ -7,7 +7,6 @@ namespace Theraot.Threading.Needles
     [global::System.Diagnostics.DebuggerNonUserCode]
     public sealed class PromiseNeedle : IPromise
     {
-        private int _hashCode;
         private Internal _internal;
 
         public PromiseNeedle(bool done)
@@ -17,13 +16,11 @@ namespace Theraot.Threading.Needles
             {
                 _internal.OnCompleted();
             }
-            _hashCode = base.GetHashCode();
         }
 
         public PromiseNeedle(Exception exception)
         {
             _internal = new Internal(exception);
-            _hashCode = exception.GetHashCode();
         }
 
         public PromiseNeedle(out IPromised promised, bool done)
@@ -34,14 +31,12 @@ namespace Theraot.Threading.Needles
                 _internal.OnCompleted();
             }
             promised = _internal;
-            _hashCode = base.GetHashCode();
         }
 
         public PromiseNeedle(out IPromised promised, Exception exception)
         {
             _internal = new Internal(exception);
             promised = _internal;
-            _hashCode = exception.GetHashCode();
         }
 
         public Exception Error
@@ -78,7 +73,7 @@ namespace Theraot.Threading.Needles
 
         public override int GetHashCode()
         {
-            return _hashCode;
+            return _internal.GetHashCode();
         }
 
         public override string ToString()
@@ -94,19 +89,21 @@ namespace Theraot.Threading.Needles
         [Serializable]
         private class Internal : IPromised
         {
+            private readonly int _hashCode;
             private Exception _error;
             private int _isCompleted;
-
             private StructNeedle<ManualResetEvent> _waitHandle;
 
             public Internal()
             {
+                _hashCode = base.GetHashCode();
                 _waitHandle = new ManualResetEvent(false);
             }
 
             public Internal(Exception error)
             {
                 _error = error;
+                _hashCode = error.GetHashCode();
                 Thread.VolatileWrite(ref _isCompleted, 1);
                 _waitHandle = new ManualResetEvent(true);
             }

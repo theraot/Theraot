@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
@@ -7,8 +8,7 @@ namespace Theraot.Threading.Needles
     [global::System.Diagnostics.DebuggerNonUserCode]
     public sealed class PromiseNeedle<T> : IPromise<T>, IReadOnlyNeedle<T>, ICacheNeedle<T>, IEquatable<PromiseNeedle<T>>
     {
-        private int _hashCode;
-        private Internal _internal;
+        private readonly Internal _internal;
 
         public PromiseNeedle(bool done)
         {
@@ -17,19 +17,16 @@ namespace Theraot.Threading.Needles
             {
                 _internal.OnCompleted();
             }
-            _hashCode = base.GetHashCode();
         }
 
         public PromiseNeedle(T target)
         {
             _internal = new Internal(target);
-            _hashCode = target.GetHashCode();
         }
 
         public PromiseNeedle(Exception exception)
         {
             _internal = new Internal(exception);
-            _hashCode = exception.GetHashCode();
         }
 
         public PromiseNeedle(out IPromised<T> promised, bool done)
@@ -40,21 +37,18 @@ namespace Theraot.Threading.Needles
                 _internal.OnCompleted();
             }
             promised = _internal;
-            _hashCode = base.GetHashCode();
         }
 
         public PromiseNeedle(out IPromised<T> promised, T target)
         {
             _internal = new Internal(target);
             promised = _internal;
-            _hashCode = target.GetHashCode();
         }
 
         public PromiseNeedle(out IPromised<T> promised, Exception exception)
         {
             _internal = new Internal(exception);
             promised = _internal;
-            _hashCode = exception.GetHashCode();
         }
 
         public Exception Error
@@ -119,14 +113,7 @@ namespace Theraot.Threading.Needles
 
         public static explicit operator T(PromiseNeedle<T> needle)
         {
-            if (needle == null)
-            {
-                throw new ArgumentNullException("needle");
-            }
-            else
-            {
-                return needle.Value;
-            }
+            return Check.NotNullArgument(needle, "needle").Value;
         }
 
         public static bool operator !=(PromiseNeedle<T> left, PromiseNeedle<T> right)
@@ -148,14 +135,7 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                if (_internal.IsCompleted)
-                {
-                    return _internal.Value.Equals(obj);
-                }
-                else
-                {
-                    return false;
-                }
+                return _internal.IsCompleted && _internal.Value.Equals(obj);
             }
         }
 
@@ -166,7 +146,7 @@ namespace Theraot.Threading.Needles
 
         public override int GetHashCode()
         {
-            return _hashCode;
+            return _internal.GetHashCode();
         }
 
         void INeedle<T>.Release()
@@ -188,14 +168,7 @@ namespace Theraot.Threading.Needles
         {
             if (ReferenceEquals(left, null))
             {
-                if (ReferenceEquals(right, null))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return ReferenceEquals(right, null);
             }
             else
             {
@@ -207,14 +180,7 @@ namespace Theraot.Threading.Needles
         {
             if (ReferenceEquals(left, null))
             {
-                if (ReferenceEquals(right, null))
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+                return !ReferenceEquals(right, null);
             }
             else
             {
@@ -225,20 +191,29 @@ namespace Theraot.Threading.Needles
         [Serializable]
         private class Internal : IPromised<T>, IObserver<T>, IReadOnlyNeedle<T>, ICacheNeedle<T>, IEquatable<Internal>
         {
+            private readonly int _hashCode;
             private Exception _error;
             private int _isCompleted;
             private T _target;
-
             private StructNeedle<ManualResetEvent> _waitHandle;
 
             public Internal()
             {
                 _waitHandle = new ManualResetEvent(false);
+                _hashCode = base.GetHashCode();
             }
 
-            public Internal(T value)
+            public Internal(T target)
             {
-                _target = value;
+                _target = target;
+                if (ReferenceEquals(target, null))
+                {
+                    _hashCode = base.GetHashCode();
+                }
+                else
+                {
+                    _hashCode = target.GetHashCode();
+                }
                 Thread.VolatileWrite(ref _isCompleted, 1);
                 _waitHandle = new ManualResetEvent(true);
             }
@@ -246,6 +221,7 @@ namespace Theraot.Threading.Needles
             public Internal(Exception error)
             {
                 _error = error;
+                _hashCode = error.GetHashCode();
                 Thread.VolatileWrite(ref _isCompleted, 1);
                 _waitHandle = new ManualResetEvent(true);
             }
@@ -321,6 +297,19 @@ namespace Theraot.Threading.Needles
                 }
             }
 
+            public override bool Equals(object obj)
+            {
+                var _obj = obj as Internal;
+                if (_obj != null)
+                {
+                    return Equals(_obj);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
             public bool Equals(Internal other)
             {
                 if (IsCompleted)
@@ -329,25 +318,11 @@ namespace Theraot.Threading.Needles
                     {
                         if (ReferenceEquals(_error, null))
                         {
-                            if (ReferenceEquals(other._error, null))
-                            {
-                                return true;
-                            }
-                            else
-                            {
-                                return false;
-                            }
+                            return ReferenceEquals(other._error, null);
                         }
                         else
                         {
-                            if (ReferenceEquals(other._error, null))
-                            {
-                                return false;
-                            }
-                            else
-                            {
-                                return _target.Equals(other._target);
-                            }
+                            return !ReferenceEquals(other._error, null) && _target.Equals(other._target);
                         }
                     }
                     else
@@ -357,15 +332,13 @@ namespace Theraot.Threading.Needles
                 }
                 else
                 {
-                    if (other.IsCompleted)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        return true;
-                    }
+                    return !other.IsCompleted;
                 }
+            }
+
+            public override int GetHashCode()
+            {
+                return _hashCode;
             }
 
             public void OnCompleted()

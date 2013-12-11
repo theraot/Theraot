@@ -131,7 +131,7 @@ namespace Theraot.Core
                 {
                     if ((value & check) != 0)
                     {
-                        yield return (byte)check;
+                        yield return check;
                     }
                     check >>= 1;
                     log2--;
@@ -682,45 +682,45 @@ namespace Theraot.Core
         [CLSCompliantAttribute(false)]
         public static string ToStringBinary(this sbyte value)
         {
-            return Theraot.Core.StringHelper.Concat(Theraot.Core.NumericHelper.BitsBinary(value), input => input.ToString());
+            return StringHelper.Concat(value.BitsBinary(), input => input.ToString());
         }
 
         public static string ToStringBinary(this short value)
         {
-            return Theraot.Core.StringHelper.Concat(Theraot.Core.NumericHelper.BitsBinary(value), input => input.ToString());
+            return StringHelper.Concat(value.BitsBinary(), input => input.ToString());
         }
 
         public static string ToStringBinary(this int value)
         {
-            return Theraot.Core.StringHelper.Concat(Theraot.Core.NumericHelper.BitsBinary(value), input => input.ToString());
+            return StringHelper.Concat(value.BitsBinary(), input => input.ToString());
         }
 
         public static string ToStringBinary(this long value)
         {
-            return Theraot.Core.StringHelper.Concat(Theraot.Core.NumericHelper.BitsBinary(value), input => input.ToString());
+            return StringHelper.Concat(value.BitsBinary(), input => input.ToString());
         }
 
         public static string ToStringBinary(this byte value)
         {
-            return Theraot.Core.StringHelper.Concat(Theraot.Core.NumericHelper.BitsBinary(value), input => input.ToString());
+            return StringHelper.Concat(value.BitsBinary(), input => input.ToString());
         }
 
         [CLSCompliantAttribute(false)]
         public static string ToStringBinary(this ushort value)
         {
-            return Theraot.Core.StringHelper.Concat(Theraot.Core.NumericHelper.BitsBinary(value), input => input.ToString());
+            return StringHelper.Concat(value.BitsBinary(), input => input.ToString());
         }
 
         [CLSCompliantAttribute(false)]
         public static string ToStringBinary(this uint value)
         {
-            return Theraot.Core.StringHelper.Concat(Theraot.Core.NumericHelper.BitsBinary(value), input => input.ToString());
+            return StringHelper.Concat(value.BitsBinary(), input => input.ToString());
         }
 
         [CLSCompliantAttribute(false)]
         public static string ToStringBinary(this ulong value)
         {
-            return Theraot.Core.StringHelper.Concat(Theraot.Core.NumericHelper.BitsBinary(value), input => input.ToString());
+            return StringHelper.Concat(value.BitsBinary(), input => input.ToString());
         }
 
         public static int TrailingZeroCount(this int value)
