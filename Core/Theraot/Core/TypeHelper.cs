@@ -177,6 +177,10 @@ namespace Theraot.Core
             }
         }
 
+        public static object GetValue(this PropertyInfo info, object obj)
+        {
+            return info.GetValue(obj, null);
+        }
         public static bool HasConstructor(this Type type, params Type[] typeArguments)
         {
             var constructorInfo = type.GetConstructor(typeArguments);
