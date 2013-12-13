@@ -107,7 +107,7 @@ namespace System.Threading
         {
             _innerExceptions = new ReadOnlyCollection<Exception>
             (
-                innerExceptions.WhereMatch
+                innerExceptions.Where
                 (
                     (input) => input != null,
                     ActionHelper.GetThrowAction(new ArgumentException("An element of innerExceptions is null."))

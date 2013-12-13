@@ -1464,7 +1464,7 @@ namespace Theraot.Collections
 
         public static int RemoveWhere<TItem>(this ICollection<TItem> collection, Predicate<TItem> predicate)
         {
-            return RemoveWhere(collection, items => items.WhereMatch(Check.NotNullArgument(predicate, "predicate")));
+            return RemoveWhere(collection, items => items.Where(Check.NotNullArgument(predicate, "predicate")));
         }
 
         public static int RemoveWhere<TItem>(this ICollection<TItem> collection, Converter<IEnumerable<TItem>, IEnumerable<TItem>> converter)
@@ -1479,7 +1479,7 @@ namespace Theraot.Collections
 
         public static IEnumerable<TItem> RemoveWhereEnumerable<TItem>(this ICollection<TItem> collection, Predicate<TItem> predicate)
         {
-            return RemoveWhereEnumerable(collection, items => items.WhereMatch(Check.NotNullArgument(predicate, "predicate")));
+            return RemoveWhereEnumerable(collection, items => items.Where(Check.NotNullArgument(predicate, "predicate")));
         }
 
         public static IEnumerable<TItem> RemoveWhereEnumerable<TItem>(this ICollection<TItem> collection, Converter<IEnumerable<TItem>, IEnumerable<TItem>> converter)
@@ -1520,11 +1520,11 @@ namespace Theraot.Collections
             var _collection = Check.NotNullArgument(collection, "collection");
             var _other = Check.NotNullArgument(other, "other");
             var _that = new ProgressiveSet<TItem>(_other);
-            foreach (var item in Extensions.WhereMatch(_that, input => !_collection.Contains(input)))
+            foreach (var item in _that.Where(input => !_collection.Contains(input)))
             {
                 return false;
             }
-            foreach (var item in Extensions.WhereMatch(_collection, input => !_that.Contains(input)))
+            foreach (var item in _collection.Where(input => !_that.Contains(input)))
             {
                 return false;
             }
@@ -1578,12 +1578,12 @@ namespace Theraot.Collections
 
         public static int SymmetricExceptWith<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other)
         {
-            return collection.AddRange(Extensions.WhereMatch(other, (TItem input) => !collection.Remove(input)));
+            return collection.AddRange(Extensions.Where(other, (TItem input) => !collection.Remove(input)));
         }
 
         public static IEnumerable<TItem> SymmetricExceptWithEnumerable<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other)
         {
-            return collection.AddRangeEnumerable(Extensions.WhereMatch(other, (TItem input) => !collection.Remove(input)));
+            return collection.AddRangeEnumerable(Extensions.Where(other, (TItem input) => !collection.Remove(input)));
         }
 
         public static TItem TakeAndReturn<TItem>(this IDropPoint<TItem> dropPoint)
@@ -1845,12 +1845,12 @@ namespace Theraot.Collections
 
         public static int UnionWith<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other)
         {
-            return Extensions.AddRange(collection, other.WhereMatch(input => !collection.Contains(input)));
+            return Extensions.AddRange(collection, other.Where(input => !collection.Contains(input)));
         }
 
         public static IEnumerable<TItem> UnionWithEnumerable<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other)
         {
-            return Extensions.AddRangeEnumerable(collection, other.WhereMatch(input => !collection.Contains(input)));
+            return Extensions.AddRangeEnumerable(collection, other.Where(input => !collection.Contains(input)));
         }
 
         public static void Waste<T>(this IEnumerable<T> source)
@@ -1861,21 +1861,21 @@ namespace Theraot.Collections
             }
         }
 
-        public static IEnumerable<TItem> WhereMatch<TItem>(this IEnumerable<TItem> collection, Predicate<TItem> predicate)
+        public static IEnumerable<TItem> Where<TItem>(this IEnumerable<TItem> collection, Predicate<TItem> predicate)
         {
             var _predicate = Check.NotNullArgument(predicate, "predicate");
             var _collection = Check.NotNullArgument(collection, "collection");
             return WhereExtracted(_collection, _predicate);
         }
 
-        public static IEnumerable<TItem> WhereMatch<TItem>(this IEnumerable<TItem> collection, Func<TItem, int, bool> predicate)
+        public static IEnumerable<TItem> Where<TItem>(this IEnumerable<TItem> collection, Func<TItem, int, bool> predicate)
         {
             var _predicate = Check.NotNullArgument(predicate, "predicate");
             var _collection = Check.NotNullArgument(collection, "collection");
             return WhereExtracted(_collection, _predicate);
         }
 
-        public static IEnumerable<TItem> WhereMatch<TItem>(this IEnumerable<TItem> source, Func<TItem, bool> predicate, Action whereNot)
+        public static IEnumerable<TItem> Where<TItem>(this IEnumerable<TItem> source, Func<TItem, bool> predicate, Action whereNot)
         {
             var _predicate = Check.NotNullArgument(predicate, "predicate");
             var _collection = Check.NotNullArgument(source, "source");
@@ -1889,7 +1889,7 @@ namespace Theraot.Collections
             }
         }
 
-        public static IEnumerable<TItem> WhereMatch<TItem>(this IEnumerable<TItem> source, Func<TItem, bool> predicate, Action<TItem> whereNot)
+        public static IEnumerable<TItem> Where<TItem>(this IEnumerable<TItem> source, Func<TItem, bool> predicate, Action<TItem> whereNot)
         {
             var _predicate = Check.NotNullArgument(predicate, "predicate");
             var _collection = Check.NotNullArgument(source, "source");
@@ -1903,7 +1903,7 @@ namespace Theraot.Collections
             }
         }
 
-        public static IEnumerable<TItem> WhereMatch<TItem>(this IEnumerable<TItem> source, Func<TItem, int, bool> predicate, Action whereNot)
+        public static IEnumerable<TItem> Where<TItem>(this IEnumerable<TItem> source, Func<TItem, int, bool> predicate, Action whereNot)
         {
             var _predicate = Check.NotNullArgument(predicate, "predicate");
             var _collection = Check.NotNullArgument(source, "source");
@@ -1917,7 +1917,7 @@ namespace Theraot.Collections
             }
         }
 
-        public static IEnumerable<TItem> WhereMatch<TItem>(this IEnumerable<TItem> source, Func<TItem, int, bool> predicate, Action<TItem> whereNot)
+        public static IEnumerable<TItem> Where<TItem>(this IEnumerable<TItem> source, Func<TItem, int, bool> predicate, Action<TItem> whereNot)
         {
             var _predicate = Check.NotNullArgument(predicate, "predicate");
             var _collection = Check.NotNullArgument(source, "source");

@@ -78,7 +78,7 @@ namespace Theraot.Collections
         public static IEnumerable<T> ExceptWhere<T>(this IEnumerable<T> source, Predicate<T> predicate)
         {
             var _predicate = Check.NotNullArgument(predicate, "predicate");
-            return Check.NotNullArgument(source, "source").WhereMatch(item => !_predicate.Invoke(item));
+            return Check.NotNullArgument(source, "source").Where(item => !_predicate.Invoke(item));
         }
 
         public static IEnumerable<T> Filter<T>(this IEnumerable<T> target, Predicate<T> match)

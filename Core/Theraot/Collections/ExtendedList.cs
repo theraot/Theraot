@@ -238,12 +238,12 @@ namespace Theraot.Collections
         public bool SetEquals(IEnumerable<T> other)
         {
             var that = new ProgressiveSet<T>(Enumerable.Distinct(Check.NotNullArgument(other, "other")));
-            foreach (var item in Extensions.WhereMatch(that, input => !Contains(input)))
+            foreach (var item in that.Where(input => !Contains(input)))
             {
                 GC.KeepAlive(item);
                 return false;
             }
-            foreach (var item in Extensions.WhereMatch(this, input => !that.Contains(input)))
+            foreach (var item in this.Where(input => !that.Contains(input)))
             {
                 return false;
             }
