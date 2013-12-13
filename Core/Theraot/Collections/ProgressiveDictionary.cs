@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using Theraot.Core;
 
 namespace Theraot.Collections
@@ -45,22 +44,6 @@ namespace Theraot.Collections
             _keyComparer = EqualityComparer<TKey>.Default;
             _valuesReadonly = new ProgressiveSet<TValue>(ProgressorBuilder.CreateConversionProgressor(Progressor, input => input.Value), valueComparer);
             _keysReadonly = new ProgressiveSet<TKey>(ProgressorBuilder.CreateConversionProgressor(Progressor, input => input.Key), keyComparer);
-        }
-
-        public IReadOnlyCollection<TKey> Keys
-        {
-            get
-            {
-                return _keysReadonly;
-            }
-        }
-
-        public IReadOnlyCollection<TValue> Values
-        {
-            get
-            {
-                return _valuesReadonly;
-            }
         }
 
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns True")]
@@ -122,26 +105,19 @@ namespace Theraot.Collections
             }
         }
 
-        public TValue this[TKey key]
+        public IReadOnlyCollection<TKey> Keys
         {
             get
             {
-                try
-                {
-                    return _cache[key];
-                }
-                catch (KeyNotFoundException)
-                {
-                    KeyValuePair<TKey, TValue> _item;
-                    while (Progressor.TryTake(out _item))
-                    {
-                        if (_keyComparer.Equals(key, _item.Key))
-                        {
-                            return _item.Value;
-                        }
-                    }
-                    throw;
-                }
+                return _keysReadonly;
+            }
+        }
+
+        public IReadOnlyCollection<TValue> Values
+        {
+            get
+            {
+                return _valuesReadonly;
             }
         }
 
@@ -170,6 +146,29 @@ namespace Theraot.Collections
             set
             {
                 throw new NotSupportedException();
+            }
+        }
+
+        public TValue this[TKey key]
+        {
+            get
+            {
+                try
+                {
+                    return _cache[key];
+                }
+                catch (KeyNotFoundException)
+                {
+                    KeyValuePair<TKey, TValue> _item;
+                    while (Progressor.TryTake(out _item))
+                    {
+                        if (_keyComparer.Equals(key, _item.Key))
+                        {
+                            return _item.Value;
+                        }
+                    }
+                    throw;
+                }
             }
         }
 
