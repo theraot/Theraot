@@ -6,6 +6,7 @@ namespace Theraot.Core
     [Serializable]
     public class NewOperationCanceledException : OperationCanceledException
     {
+#if NET20 || NET30 || NET35
         [NonSerialized]
         private CancellationToken? _token;
 
@@ -41,5 +42,6 @@ namespace Theraot.Core
                 }
             }
         }
+#endif
     }
 }
