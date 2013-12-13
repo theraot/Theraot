@@ -181,6 +181,7 @@ namespace Theraot.Core
         {
             return info.GetValue(obj, null);
         }
+
         public static bool HasConstructor(this Type type, params Type[] typeArguments)
         {
             var constructorInfo = type.GetConstructor(typeArguments);
@@ -346,6 +347,11 @@ namespace Theraot.Core
         public static Type MakeNullableType(this Type self)
         {
             return typeof(Nullable<>).MakeGenericType(self);
+        }
+
+        public static void SetValue(this PropertyInfo info, object obj, object value)
+        {
+            info.SetValue(obj, value, null);
         }
 
         private static bool IsBinaryPortableExtracted(Type type)
