@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using System.Threading;
 
 namespace Theraot.Core
@@ -6,7 +7,13 @@ namespace Theraot.Core
     [Serializable]
     public class NewOperationCanceledException : OperationCanceledException
     {
+        public NewOperationCanceledException()
+        {
+            //Empty
+        }
+
 #if NET20 || NET30 || NET35
+
         [NonSerialized]
         private CancellationToken? _token;
 
@@ -42,6 +49,27 @@ namespace Theraot.Core
                 }
             }
         }
+
+#else
+
+        public NewOperationCanceledException(string message)
+            : base(message)
+        {
+            //Empty
+        }
+
+        public NewOperationCanceledException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+            //Empty
+        }
+
+        protected NewOperationCanceledException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+            //Empty
+        }
+
 #endif
     }
 }
