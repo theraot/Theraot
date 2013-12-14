@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 namespace Theraot.Core
 {
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public static class StringHelper
+    public static partial class StringHelper
     {
         public static string Append(this string text, string value)
         {
@@ -121,47 +121,6 @@ namespace Theraot.Core
                 return string.Empty;
             }
             return ConcatExtracted(array, arrayIndex, countLimit);
-        }
-
-        public static string Concat(IEnumerable<string> values)
-        {
-#if NET20 || NET30 || NET35
-            if (values == null)
-            {
-                throw new ArgumentNullException("values");
-            }
-            var stringList = new List<string>();
-            int length = 0;
-            foreach (var item in values)
-            {
-                stringList.Add(item);
-                length += item.Length;
-            }
-            return ConcatExtractedExtracted(stringList.ToArray(), 0, stringList.Count, length);
-#else
-            return string.Concat(values);
-#endif
-        }
-
-        public static string Concat<T>(IEnumerable<T> values)
-        {
-#if NET20 || NET30 || NET35
-            if (values == null)
-            {
-                throw new ArgumentNullException("values");
-            }
-            var stringList = new List<string>();
-            int length = 0;
-            foreach (var item in values)
-            {
-                var itemToString = item.ToString();
-                stringList.Add(itemToString);
-                length += itemToString.Length;
-            }
-            return ConcatExtractedExtracted(stringList.ToArray(), 0, stringList.Count, length);
-#else
-            return string.Concat(values);
-#endif
         }
 
         public static string Concat<T>(IEnumerable<T> values, Converter<T, string> converter)
@@ -616,28 +575,6 @@ namespace Theraot.Core
             }
         }
 
-        public static bool IsNullOrEmpty(this string value)
-        {
-            return string.IsNullOrEmpty(value);
-        }
-
-        public static bool IsNullOrWhiteSpace(this string value)
-        {
-            //Added in .NET 4.0
-            if (string.IsNullOrEmpty(value))
-            {
-                return true;
-            }
-            foreach (char character in value)
-            {
-                if (!char.IsWhiteSpace(character))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
         public static bool Like(this string text, Regex regex, int startAt)
         {
             return regex.IsMatch(text, startAt);
@@ -1006,18 +943,70 @@ namespace Theraot.Core
                 return result.ToString();
             }
         }
+    }
 
-        /*[global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", Justification = "By Design")]
-        public static string ToString(this object obj, string onNull)
+    public static partial class StringHelper
+    {
+#if NET20 || NET30 || NET35
+        public static bool IsNullOrWhiteSpace(this string value)
+#else
+        public static bool IsNullOrWhiteSpace(string value)
+#endif
         {
-            if (obj == null)
+            //Added in .NET 4.0
+            if (string.IsNullOrEmpty(value))
             {
-                return onNull;
+                return true;
             }
-            else
+            foreach (char character in value)
             {
-                return obj.ToString();
+                if (!char.IsWhiteSpace(character))
+                {
+                    return false;
+                }
             }
-        }*/
+            return true;
+        }
+
+        public static string Concat(IEnumerable<string> values)
+        {
+#if NET20 || NET30 || NET35
+            if (values == null)
+            {
+                throw new ArgumentNullException("values");
+            }
+            var stringList = new List<string>();
+            int length = 0;
+            foreach (var item in values)
+            {
+                stringList.Add(item);
+                length += item.Length;
+            }
+            return ConcatExtractedExtracted(stringList.ToArray(), 0, stringList.Count, length);
+#else
+            return string.Concat(values);
+#endif
+        }
+
+        public static string Concat<T>(IEnumerable<T> values)
+        {
+#if NET20 || NET30 || NET35
+            if (values == null)
+            {
+                throw new ArgumentNullException("values");
+            }
+            var stringList = new List<string>();
+            int length = 0;
+            foreach (var item in values)
+            {
+                var itemToString = item.ToString();
+                stringList.Add(itemToString);
+                length += itemToString.Length;
+            }
+            return ConcatExtractedExtracted(stringList.ToArray(), 0, stringList.Count, length);
+#else
+            return string.Concat(values);
+#endif
+        }
     }
 }

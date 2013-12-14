@@ -4,6 +4,7 @@ namespace Theraot.Core
 {
     public static class EnumHelper
     {
+        #if NET20 || NET30 || NET35
         public static bool HasFlag(this Enum value, Enum flag)
         {
             //Added in .NET 4.0
@@ -54,5 +55,12 @@ namespace Theraot.Core
                 }
             }
         }
+#else
+        public static bool HasFlag(Enum value, Enum flag)
+        {
+            //Added in .NET 4.0
+            return value.HasFlag(flag);
+        }
+#endif
     }
 }

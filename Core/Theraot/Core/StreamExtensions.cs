@@ -5,8 +5,9 @@ namespace Theraot.Core
 {
     public static class StreamExtensions
     {
-        private const int INT_PageSize = 4096;
+        private const int INT_DefaultBufferSize = 4096;
 
+#if NET20 || NET30 || NET35
         public static void CopyTo(this Stream input, Stream output)
         {
             //Added in .NET 4.0
@@ -20,18 +21,26 @@ namespace Theraot.Core
             }
             else
             {
-                var buffer = new byte[INT_PageSize];
+                var buffer = new byte[INT_DefaultBufferSize];
                 int read;
                 do
                 {
-                    read = input.Read(buffer, 0, INT_PageSize);
+                    read = input.Read(buffer, 0, INT_DefaultBufferSize);
                     output.Write(buffer, 0, read);
                 }
                 while (read != 0);
             }
         }
+#else
+        public static void CopyTo(Stream input, Stream output)
+        {
+            //Added in .NET 4.0
+            input.CopyTo(output);
+        }
+#endif
 
-        public static void CopyTo(this Stream input, Stream output, long count)
+#if NET20 || NET30 || NET35
+        public static void CopyTo(this Stream input, Stream output, int bufferSize)
         {
             //Added in .NET 4.0
             if (ReferenceEquals(input, null))
@@ -44,16 +53,21 @@ namespace Theraot.Core
             }
             else
             {
-                var buffer = new byte[INT_PageSize];
+                var buffer = new byte[bufferSize];
                 int read;
                 do
                 {
-                    read = input.Read(buffer, 0, INT_PageSize);
+                    read = input.Read(buffer, 0, bufferSize);
                     output.Write(buffer, 0, read);
-                    count = count - (long)read;
                 }
                 while (read != 0);
             }
+        }
+#else
+        public static void CopyTo(Stream input, Stream output, int bufferSize)
+        {
+            //Added in .NET 4.0
+            input.CopyTo(output, bufferSize);
         }
 
         public static byte[] ToArray(this Stream stream)

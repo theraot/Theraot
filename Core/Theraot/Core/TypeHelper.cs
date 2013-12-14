@@ -177,11 +177,6 @@ namespace Theraot.Core
             }
         }
 
-        public static object GetValue(this PropertyInfo info, object obj)
-        {
-            return info.GetValue(obj, null);
-        }
-
         public static bool HasConstructor(this Type type, params Type[] typeArguments)
         {
             var constructorInfo = type.GetConstructor(typeArguments);
@@ -347,11 +342,6 @@ namespace Theraot.Core
         public static Type MakeNullableType(this Type self)
         {
             return typeof(Nullable<>).MakeGenericType(self);
-        }
-
-        public static void SetValue(this PropertyInfo info, object obj, object value)
-        {
-            info.SetValue(obj, value, null);
         }
 
         private static bool IsBinaryPortableExtracted(Type type)
@@ -520,4 +510,23 @@ namespace Theraot.Core
             }
         }
     }
+
+#if NET20 || NET30 || NET35 || NET40
+
+    public static partial class TypeHelper
+    {
+        public static object GetValue(this PropertyInfo info, object obj)
+        {
+            //Added in .NET 4.5
+            return info.GetValue(obj, null);
+        }
+
+        public static void SetValue(this PropertyInfo info, object obj, object value)
+        {
+            //Added in .NET 4.5
+            info.SetValue(obj, value, null);
+        }
+    }
+
+#endif
 }
