@@ -109,7 +109,7 @@ This are some parts worth of mention:
     - `Disposable`: A general purpose disposable object with Action callback.
     - `DisposableAkin`: Same as above, but disposable only by the thread that created it. [See Note 2]
     - `GCMonitor`: Allows to get notifications on Garbage Collection. [See Note 3]
-    - `IExtendedDisposable`: A IDisposible that you can query to know if it was disposed. [See Note 4]
+    - `IExtendedDisposable`: A `IDisposible` that you can query to know if it was disposed. [See Note 4]
     - `NoTrackingThreadLocal<T>` & `TrackingThreadLocal<T>`: The backends for the backport of `System.Threading.ThreadLocal`.
     - `ReentryGuard`: A helper class that allows to protect a code from reentry.
     - `SingleTimeExecution`: A thread-safe way to wrap code to be called only once.
@@ -118,7 +118,7 @@ This are some parts worth of mention:
 
 Note 1: `EqualityComparerHelper<T>` creates equality comparers for delegates, tuples, and Needles [See "Needle" below] among others. This facilitates their use as keys in dictionaries.
 
-Note 2: Restricting Disposable to only the same thread actually makes the implementation simpler and more efficient.
+Note 2: Restricting `DisposableAkin` to only the same thread actually makes the implementation simpler and more efficient.
 
 Note 3: The notifications of `GCMonitor` will run in a dedicated thread, make sure to not waste it's time. It is strongly suggested to use it to start asynchronous operations.
 
@@ -141,7 +141,7 @@ This are some parts worth of mention:
     - `ICloneable<T>` & `ICloner<T>` & `CloneHelper`: Generalization of `ICloneable` as generic.
     - `TraceRoute` & `TraceNode`: A Network Traceroute implementation
   - `Theraot.Threading`
-    - `CritialDisposible`: A variant of Disposible that inherits from `CritialFinalizerObject`. [See Note 1]
+    - `CritialDisposible`: A variant of `Disposible` that inherits from `CritialFinalizerObject`. [See Note 1]
 
 Note 1: In theory you shouldn't need the `CriticalDisposable`, if you need it, chances are something else is wrong.
 
