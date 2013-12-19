@@ -69,6 +69,7 @@ namespace Theraot.Core
             //Added in .NET 4.0
             input.CopyTo(output, bufferSize);
         }
+#endif
 
         public static byte[] ToArray(this Stream stream)
         {
