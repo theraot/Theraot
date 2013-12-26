@@ -8,6 +8,9 @@ namespace Theraot.Threading.Needles
     [global::System.Diagnostics.DebuggerNonUserCode]
     public class LazyNeedle<T> : Needle<T>, ICacheNeedle<T>, IEquatable<LazyNeedle<T>>, IPromise<T>
     {
+        private const int INT_StatusCompleted = 1;
+        private const int INT_StatusFree = 0;
+        private const int INT_StatusWorking = 2;
         private readonly Func<T> _valueFactory;
         private int _status;
         private StructNeedle<ManualResetEvent> _waitHandle;
@@ -68,7 +71,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return Thread.VolatileRead(ref _status) == 1;
+                return Thread.VolatileRead(ref _status) == INT_StatusCompleted;
             }
         }
 
@@ -82,7 +85,7 @@ namespace Theraot.Threading.Needles
             set
             {
                 SetTarget(value);
-                Thread.VolatileWrite(ref _status, 1);
+                Thread.VolatileWrite(ref _status, INT_StatusCompleted);
             }
         }
 
@@ -123,7 +126,7 @@ namespace Theraot.Threading.Needles
         protected virtual void Initialize(Action beforeInitialize)
         {
             var _beforeInitialize = Check.NotNullArgument(beforeInitialize, "beforeInitialize");
-            if (Thread.VolatileRead(ref _status) == 0)
+            if (Thread.VolatileRead(ref _status) == INT_StatusFree)
             {
                 try
                 {
@@ -139,19 +142,19 @@ namespace Theraot.Threading.Needles
         private T FullMode(Func<T> valueFactory, ref Thread thread)
         {
         back:
-            if (Interlocked.CompareExchange(ref _status, 2, 0) == 0)
+            if (Interlocked.CompareExchange(ref _status, INT_StatusWorking, INT_StatusFree) == INT_StatusFree)
             {
                 try
                 {
                     thread = Thread.CurrentThread;
                     var _target = valueFactory.Invoke();
                     SetTarget(_target);
-                    Thread.VolatileWrite(ref _status, 1);
+                    Thread.VolatileWrite(ref _status, INT_StatusCompleted);
                     return _target;
                 }
                 catch (Exception)
                 {
-                    Thread.VolatileWrite(ref _status, 0);
+                    Thread.VolatileWrite(ref _status, INT_StatusFree);
                     throw;
                 }
                 finally
@@ -169,7 +172,7 @@ namespace Theraot.Threading.Needles
                 else
                 {
                     _waitHandle.Value.WaitOne();
-                    if (Thread.VolatileRead(ref _status) == 1)
+                    if (Thread.VolatileRead(ref _status) == INT_StatusCompleted)
                     {
                         return base.Value;
                     }
