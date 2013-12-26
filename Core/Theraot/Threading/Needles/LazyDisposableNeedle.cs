@@ -44,7 +44,7 @@ namespace Theraot.Threading.Needles
                         var waitHandle = WaitHandle.Value;
                         if (!WaitHandle.IsAlive)
                         {
-                            WaitHandle.Value = new System.Threading.ManualResetEvent(false);
+                            WaitHandle.Value = new System.Threading.ManualResetEventSlim(false);
                         }
                         beforeInitialize.SafeInvoke();
                     }
@@ -63,7 +63,7 @@ namespace Theraot.Threading.Needles
             var waitHandle = WaitHandle.Value;
             if (WaitHandle.IsAlive)
             {
-                waitHandle.Close();
+                waitHandle.Dispose();
             }
             WaitHandle.Release();
             SetTarget(default(T));

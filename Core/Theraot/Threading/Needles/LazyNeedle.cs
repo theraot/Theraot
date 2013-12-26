@@ -13,7 +13,7 @@ namespace Theraot.Threading.Needles
         private const int INT_StatusWorking = 2;
         private readonly Func<T> _valueFactory;
         private int _status;
-        private StructNeedle<ManualResetEvent> _waitHandle;
+        private StructNeedle<ManualResetEventSlim> _waitHandle;
 
         public LazyNeedle(Func<T> valueFactory)
             : this(valueFactory, default(T))
@@ -26,7 +26,7 @@ namespace Theraot.Threading.Needles
         {
             Func<T> __valueFactory = valueFactory ?? FuncHelper.GetReturnFunc(target);
             Thread thread = null;
-            _waitHandle = new StructNeedle<ManualResetEvent>(new ManualResetEvent(false));
+            _waitHandle = new StructNeedle<ManualResetEventSlim>(new ManualResetEventSlim(false));
             _valueFactory = () => FullMode(__valueFactory, ref thread);
         }
 
@@ -35,7 +35,7 @@ namespace Theraot.Threading.Needles
             var waitHandle = _waitHandle.Value;
             if (!ReferenceEquals(waitHandle, null))
             {
-                waitHandle.Close();
+                waitHandle.Dispose();
             }
             _waitHandle.Value = null;
         }
@@ -89,7 +89,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        protected INeedle<ManualResetEvent> WaitHandle
+        protected INeedle<ManualResetEventSlim> WaitHandle
         {
             get
             {
@@ -120,7 +120,7 @@ namespace Theraot.Threading.Needles
 
         public void Wait()
         {
-            _waitHandle.Value.WaitOne();
+            _waitHandle.Value.Wait();
         }
 
         protected virtual void Initialize(Action beforeInitialize)
@@ -171,7 +171,7 @@ namespace Theraot.Threading.Needles
                 }
                 else
                 {
-                    _waitHandle.Value.WaitOne();
+                    _waitHandle.Value.Wait();
                     if (Thread.VolatileRead(ref _status) == INT_StatusCompleted)
                     {
                         return base.Value;
