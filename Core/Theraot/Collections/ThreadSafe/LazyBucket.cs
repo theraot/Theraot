@@ -75,7 +75,7 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Tries to retrieve the item at the specified index.
+        /// Retrieve or creates a new item item at the specified index.
         /// </summary>
         /// <param name="index">The index.</param>
         /// <returns>The value.</returns>
@@ -92,6 +92,30 @@ namespace Theraot.Collections.ThreadSafe
             {
                 //_previous should be null because null is never added
                 return _previous.Value;
+            }
+        }
+
+        /// <summary>
+        /// Tries to retrieve the item at the specified index.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        ///   <c>true</c> if the item was retrieved; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        public bool TryGet(int index, out T value)
+        {
+            LazyNeedle<T> _previous;
+            if (_entries.TryGet(index, out _previous))
+            {
+                value = _previous.Value;
+                return true;
+            }
+            else
+            {
+                value = default(T);
+                return false;
             }
         }
 
