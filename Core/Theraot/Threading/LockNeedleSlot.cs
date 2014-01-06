@@ -6,15 +6,16 @@ namespace Theraot.Threading
 {
     internal class LockNeedleSlot<T> : IComparable<LockNeedleSlot<T>>, INeedle<T>
     {
-        private LockNeedleContext<T> _context;
-        private int _id;
+        private readonly LockNeedleContext<T> _context;
+        private readonly int _id;
         private T _target;
         private Thread _thread;
         private VersionProvider.VersionToken _token;
 
-        internal LockNeedleSlot(LockNeedleContext<T> context)
+        internal LockNeedleSlot(LockNeedleContext<T> context, int id)
         {
             _context = context;
+            _id = id;
         }
 
         bool IReadOnlyNeedle<T>.IsAlive
@@ -43,10 +44,6 @@ namespace Theraot.Threading
             get
             {
                 return _id;
-            }
-            set
-            {
-                _id = value;
             }
         }
 
@@ -95,6 +92,7 @@ namespace Theraot.Threading
         public void Release(LockNeedle<T> token)
         {
             token.Release(_id);
+            _context.Release(this);
         }
 
         public bool Unlock(LockNeedle<T> token)

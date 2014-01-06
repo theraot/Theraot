@@ -5,43 +5,38 @@ namespace Theraot.Threading
 {
     internal class LockNeedleContext<T>
     {
+        private readonly QueueBucket<LockNeedleSlot<T>> _freeSlots;
+        private readonly LazyBucket<LockNeedleSlot<T>> _slots;
+        private readonly VersionProvider _version;
         private int _current;
-        private Bucket<LockNeedleSlot<T>> _slots;
-        private VersionProvider _version;
 
         public LockNeedleContext()
         {
-            _slots = new Bucket<LockNeedleSlot<T>>(32);
+            _slots = new LazyBucket<LockNeedleSlot<T>>(index => new LockNeedleSlot<T>(this, index), 32);
+            _freeSlots = new QueueBucket<LockNeedleSlot<T>>(32);
             _version = new VersionProvider();
         }
 
         public bool ClaimSlot(out LockNeedleSlot<T> slot)
         {
-            foreach (var currentSlot in _slots)
+            if (_freeSlots.TryTake(out slot))
             {
-                if (currentSlot.Claim())
-                {
-                    slot = currentSlot;
-                    return true;
-                }
+                return true;
             }
-            if (_slots.Count < _slots.Capacity)
+            else
             {
-                var newSlot = new LockNeedleSlot<T>(this);
-                while (_slots.Count < _slots.Capacity)
+                if (_slots.Count < _slots.Capacity)
                 {
                     var index = Interlocked.Increment(ref _current) & 31;
-                    if (_slots.Insert(index, newSlot))
-                    {
-                        newSlot.Id = 1 << index;
-                        newSlot.Claim();
-                        slot = newSlot;
-                        return true;
-                    }
+                    slot = _slots.Get(index);
+                    return true;
+                }
+                else
+                {
+                    slot = null;
+                    return false;
                 }
             }
-            slot = null;
-            return false;
         }
 
         public LockNeedle<T> CreateToken()
@@ -56,34 +51,22 @@ namespace Theraot.Threading
 
         internal bool Read(int id, out T value)
         {
-            LockNeedleSlot<T> selected = null;
-            foreach (var currentSlot in _slots)
+            LockNeedleSlot<T> slot;
+            foreach (var item in Theraot.Core.NumericHelper.Bits(id))
             {
-                if ((currentSlot.Id & id) != 0)
+                if (_slots.TryGet(id, out slot))
                 {
-                    if (ReferenceEquals(selected, null))
-                    {
-                        selected = currentSlot;
-                    }
-                    else
-                    {
-                        if (selected.CompareTo(currentSlot) < 0)
-                        {
-                            selected = currentSlot;
-                        }
-                    }
+                    value = slot.Value;
+                    return true;
                 }
             }
-            if (ReferenceEquals(selected, null))
-            {
-                value = default(T);
-                return false;
-            }
-            else
-            {
-                value = selected.Value;
-                return true;
-            }
+            value = default(T);
+            return false;
+        }
+
+        internal void Release(LockNeedleSlot<T> slot)
+        {
+            _freeSlots.Add(slot);
         }
     }
 }
