@@ -73,29 +73,36 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    if (ReferenceEquals(_target, null))
+                    if (ReferenceEquals(_target, other._target))
                     {
-                        if (!ReferenceEquals(other._target, null))
-                        {
-                            return -1;
-                        }
+                        return _number.CompareTo(other._number);
                     }
                     else
                     {
-                        if (ReferenceEquals(other._target, null))
+                        if (ReferenceEquals(_target, null))
                         {
-                            return 1;
+                            return -1;
                         }
                         else
                         {
-                            var check = _target.CompareTo(other._target);
-                            if (check != 0)
+                            if (ReferenceEquals(other._target, null))
                             {
-                                return check;
+                                return 1;
+                            }
+                            else
+                            {
+                                var check = _target.CompareToExtracted(other._target);
+                                if (check == 0)
+                                {
+                                    return _number.CompareTo(other._number);
+                                }
+                                else
+                                {
+                                    return check;
+                                }
                             }
                         }
                     }
-                    return _number.CompareTo(other._number);
                 }
             }
 
@@ -152,8 +159,13 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    return _time.CompareTo(other._time);
+                    return CompareToExtracted(other);
                 }
+            }
+
+            internal int CompareToExtracted(Target other)
+            {
+                return _time.CompareTo(other._time);
             }
 
             private bool TryAdvance(out long number)
