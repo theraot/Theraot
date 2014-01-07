@@ -112,6 +112,11 @@ namespace Theraot.Threading.Needles
                 var transaction = Transact.CurrentTransaction;
                 if (!ReferenceEquals(transaction, null))
                 {
+                    var slot = transaction._lockSlot;
+                    if (!ReferenceEquals(slot, null))
+                    {
+                        slot.Uncapture(_lockNeedle);
+                    }
                     transaction._readLog.Remove(this);
                     transaction._writeLog.Remove(this);
                 }
