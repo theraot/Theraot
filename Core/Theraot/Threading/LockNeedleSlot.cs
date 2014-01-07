@@ -82,6 +82,8 @@ namespace Theraot.Threading
         {
             ThreadingHelper.VolatileWrite(ref _thread, null);
             _versionToken.Reset();
+            _target = default(T);
+            _context.Free(this);
         }
 
         public bool Lock(LockNeedle<T> token)
@@ -89,10 +91,9 @@ namespace Theraot.Threading
             return token.Lock(_id);
         }
 
-        public void Release(LockNeedle<T> token)
+        public void Uncapture(LockNeedle<T> token)
         {
-            token.Release(_id);
-            _context.Release(this);
+            token.Uncapture(_id);
         }
 
         public bool Unlock(LockNeedle<T> token)

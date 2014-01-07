@@ -50,6 +50,11 @@ namespace Theraot.Threading
             return _version.AdvanceNewToken();
         }
 
+        internal void Free(LockNeedleSlot<T> slot)
+        {
+            _freeSlots.Add(slot);
+        }
+
         internal bool Read(int id, out T value)
         {
             LockNeedleSlot<T> slot;
@@ -63,11 +68,6 @@ namespace Theraot.Threading
             }
             value = default(T);
             return false;
-        }
-
-        internal void Release(LockNeedleSlot<T> slot)
-        {
-            _freeSlots.Add(slot);
         }
 
         private bool TryClaimFreeSlot(out LockNeedleSlot<T> slot)

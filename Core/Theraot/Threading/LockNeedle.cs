@@ -143,7 +143,7 @@ namespace Theraot.Threading
             return Interlocked.CompareExchange(ref _lock, id, 0) == 0;
         }
 
-        internal void Release(int id)
+        internal void Uncapture(int id)
         {
         again:
             int readed = Thread.VolatileRead(ref _capture);
