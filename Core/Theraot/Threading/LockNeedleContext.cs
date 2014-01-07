@@ -19,7 +19,7 @@ namespace Theraot.Threading
 
         public bool ClaimSlot(out LockNeedleSlot<T> slot)
         {
-            if (_freeSlots.TryTake(out slot))
+            if (TryClaimFreeSlot(out slot))
             {
                 return true;
             }
@@ -27,8 +27,9 @@ namespace Theraot.Threading
             {
                 if (_slots.Count < _slots.Capacity)
                 {
-                    var index = Interlocked.Increment(ref _current) & 31;
+                    int index = Interlocked.Increment(ref _current) & 31;
                     slot = _slots.Get(index);
+                    slot.Claim();
                     return true;
                 }
                 else
@@ -67,6 +68,18 @@ namespace Theraot.Threading
         internal void Release(LockNeedleSlot<T> slot)
         {
             _freeSlots.Add(slot);
+        }
+
+        private bool TryClaimFreeSlot(out LockNeedleSlot<T> slot)
+        {
+            if (_freeSlots.TryTake(out slot))
+            {
+                if (slot.Claim())
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
