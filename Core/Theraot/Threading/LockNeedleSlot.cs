@@ -47,9 +47,9 @@ namespace Theraot.Threading
             }
         }
 
-        public void Capture(LockNeedle<T> token)
+        public void Capture(LockNeedle<T> needle)
         {
-            token.Capture(_id);
+            needle.Capture(_id);
         }
 
         public int CompareTo(LockNeedleSlot<T> other)
@@ -86,19 +86,19 @@ namespace Theraot.Threading
             _context.Free(this);
         }
 
-        public bool Lock(LockNeedle<T> token)
+        public bool Lock(LockNeedle<T> needle)
         {
-            return token.Lock(_id);
+            return needle.Lock(_id);
         }
 
-        public void Uncapture(LockNeedle<T> token)
+        public void Uncapture(LockNeedle<T> needle)
         {
-            token.Uncapture(_id);
+            needle.Uncapture(_id);
         }
 
-        public bool Unlock(LockNeedle<T> token)
+        public bool Unlock(LockNeedle<T> needle)
         {
-            return token.Unlock(_id);
+            return needle.Unlock(_id);
         }
 
         internal bool Claim()
