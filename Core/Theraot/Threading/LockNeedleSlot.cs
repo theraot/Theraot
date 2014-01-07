@@ -10,7 +10,7 @@ namespace Theraot.Threading
         private readonly int _id;
         private T _target;
         private Thread _thread;
-        private VersionProvider.VersionToken _token;
+        private VersionProvider.VersionToken _versionToken;
 
         internal LockNeedleSlot(LockNeedleContext<T> context, int id)
         {
@@ -34,7 +34,7 @@ namespace Theraot.Threading
             }
             set
             {
-                _token = _context.Advance();
+                _versionToken = _context.Advance();
                 _target = value;
             }
         }
@@ -60,33 +60,33 @@ namespace Theraot.Threading
             }
             else
             {
-                if (ReferenceEquals(_token, null))
+                if (ReferenceEquals(_versionToken, null))
                 {
-                    return ReferenceEquals(other._token, null) ? 0 : -1;
+                    return ReferenceEquals(other._versionToken, null) ? 0 : -1;
                 }
                 else
                 {
-                    if (ReferenceEquals(other._token, null))
+                    if (ReferenceEquals(other._versionToken, null))
                     {
                         return 1;
                     }
                     else
                     {
-                        return _token.CompareTo(other._token);
+                        return _versionToken.CompareTo(other._versionToken);
                     }
                 }
             }
         }
 
+        public void Free()
+        {
+            ThreadingHelper.VolatileWrite(ref _thread, null);
+            _versionToken.Reset();
+        }
+
         public bool Lock(LockNeedle<T> token)
         {
             return token.Lock(_id);
-        }
-
-        public void Release()
-        {
-            ThreadingHelper.VolatileWrite(ref _thread, null);
-            _token.Reset();
         }
 
         public void Release(LockNeedle<T> token)

@@ -94,9 +94,9 @@ namespace Theraot.Threading.Needles
             return base.GetHashCode();
         }
 
-        void INeedle<T>.Release()
+        void INeedle<T>.Free()
         {
-            //Empty
+            _target = default(T);
         }
 
         public override string ToString()

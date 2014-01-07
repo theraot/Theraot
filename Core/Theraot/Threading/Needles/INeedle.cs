@@ -8,6 +8,6 @@
             set;
         }
 
-        void Release();
+        void Free();
     }
 }

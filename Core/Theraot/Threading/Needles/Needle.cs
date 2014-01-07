@@ -105,14 +105,14 @@ namespace Theraot.Threading.Needles
             return EqualsExtracted(this, other);
         }
 
+        public void Free()
+        {
+            _target = null;
+        }
+
         public override int GetHashCode()
         {
             return _hashCode;
-        }
-
-        public void Release()
-        {
-            _target = null;
         }
 
         public Needle<T> Simplify()

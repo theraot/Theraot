@@ -115,13 +115,13 @@ namespace Theraot.Threading.Needles
                     transaction._readLog.Remove(this);
                     transaction._writeLog.Remove(this);
                 }
-                _lockNeedle.Release();
+                _lockNeedle.Free();
             }
 
             private void OnDispose()
             {
                 //TODO: Remove from read and write log
-                _lockNeedle.Release();
+                _lockNeedle.Free();
             }
 
             private T RetrieveValue(Transact transaction)

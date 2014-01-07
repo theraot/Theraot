@@ -88,7 +88,7 @@ namespace Theraot.Threading.Needles
                 value = needle.Value;
                 if (needle.IsAlive)
                 {
-                    needle.Release();
+                    needle.Free();
                     return true;
                 }
                 else

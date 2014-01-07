@@ -149,7 +149,7 @@ namespace Theraot.Threading.Needles
             return _internal.GetHashCode();
         }
 
-        void INeedle<T>.Release()
+        void INeedle<T>.Free()
         {
             //Empty
         }
@@ -329,6 +329,14 @@ namespace Theraot.Threading.Needles
                 return _obj != null && Equals(_obj);
             }
 
+            public void Free()
+            {
+                Thread.VolatileWrite(ref _isCompleted, 0);
+                _waitHandle.Value.Reset();
+                _target = default(T);
+                _error = null;
+            }
+
             public override int GetHashCode()
             {
                 return _hashCode;
@@ -356,14 +364,6 @@ namespace Theraot.Threading.Needles
                 _error = null;
                 Thread.VolatileWrite(ref _isCompleted, 1);
                 _waitHandle.Value.Set();
-            }
-
-            public void Release()
-            {
-                Thread.VolatileWrite(ref _isCompleted, 0);
-                _waitHandle.Value.Reset();
-                _target = default(T);
-                _error = null;
             }
 
             public override string ToString()

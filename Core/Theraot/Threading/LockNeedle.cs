@@ -99,17 +99,17 @@ namespace Theraot.Threading
             return EqualsExtracted(this, other);
         }
 
-        public override int GetHashCode()
-        {
-            return _hashCode;
-        }
-
-        public void Release()
+        public void Free()
         {
             if (Thread.VolatileRead(ref _capture) == 0)
             {
                 _target = default(T);
             }
+        }
+
+        public override int GetHashCode()
+        {
+            return _hashCode;
         }
 
         public override string ToString()

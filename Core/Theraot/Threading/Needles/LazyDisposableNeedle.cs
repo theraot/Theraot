@@ -65,7 +65,7 @@ namespace Theraot.Threading.Needles
             {
                 waitHandle.Dispose();
             }
-            WaitHandle.Release();
+            WaitHandle.Free();
             SetTarget(default(T));
         }
     }

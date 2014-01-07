@@ -129,14 +129,14 @@ namespace Theraot.Threading.Needles
             return !ReferenceEquals(other, null) && EqualsExtractedExtracted(this, other);
         }
 
+        public void Free()
+        {
+            Dispose();
+        }
+
         public override int GetHashCode()
         {
             return _hashCode;
-        }
-
-        public void Release()
-        {
-            Dispose();
         }
 
         public override string ToString()
