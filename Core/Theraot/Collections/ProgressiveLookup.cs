@@ -348,7 +348,7 @@ namespace Theraot.Collections
         public void CopyTo(KeyValuePair<TKey, IExtendedGrouping<TKey, TValue>>[] array)
         {
             _progressor.TakeAll();
-            _cache.CopyTo(array);
+            _cache.CopyTo(array, 0);
         }
 
         public void CopyTo(KeyValuePair<TKey, IExtendedGrouping<TKey, TValue>>[] array, int arrayIndex)
@@ -373,7 +373,7 @@ namespace Theraot.Collections
         public void CopyTo(IExtendedGrouping<TKey, TValue>[] array)
         {
             _progressor.TakeAll();
-            _cache.Values.CopyTo(array);
+            _cache.Values.CopyTo(array, 0);
         }
 
         public void CopyTo(IExtendedGrouping<TKey, TValue>[] array, int arrayIndex, int countLimit)
@@ -636,7 +636,7 @@ namespace Theraot.Collections
             public void CopyTo(TValue[] array)
             {
                 _progressor.TakeAll();
-                _cache.CopyTo(array);
+                _cache.CopyTo(array, 0);
             }
 
             public void CopyTo(TValue[] array, int arrayIndex)

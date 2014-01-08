@@ -126,7 +126,7 @@ namespace Theraot.Collections
         public void CopyTo(T[] array)
         {
             _progressor.TakeAll();
-            _cache.CopyTo(array);
+            _cache.CopyTo(array, 0);
         }
 
         public void CopyTo(T[] array, int arrayIndex)
