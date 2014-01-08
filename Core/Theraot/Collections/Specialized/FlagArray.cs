@@ -149,7 +149,20 @@ namespace Theraot.Collections.Specialized
 
         public bool Contains(bool item)
         {
-            return System.Linq.Enumerable.Contains(this, item);
+            int count = 0;
+            foreach (var entry in _entries)
+            {
+                if ((entry == 0) != item)
+                {
+                    return true;
+                }
+                count += 32;
+                if (count >= _length)
+                {
+                    break;
+                }
+            }
+            return false;
         }
 
         public bool Contains(bool item, IEqualityComparer<bool> comparer)
