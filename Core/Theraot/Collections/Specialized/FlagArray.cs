@@ -180,24 +180,13 @@ namespace Theraot.Collections.Specialized
             int count = 0;
             foreach (var item in _data)
             {
-                if (item == 0)
+                foreach (var bit in item.BitsBinary())
                 {
-                    count += 32;
-                    if (count >= _length)
+                    yield return bit == 1;
+                    count++;
+                    if (count == _length)
                     {
                         yield break;
-                    }
-                }
-                else
-                {
-                    foreach (var bit in item.BitsBinary())
-                    {
-                        yield return bit == 1;
-                        count++;
-                        if (count == _length)
-                        {
-                            yield break;
-                        }
                     }
                 }
             }
