@@ -58,6 +58,29 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+        public IEnumerable<int> Flags
+        {
+            get
+            {
+                int count = 0;
+                foreach (var item in _data)
+                {
+                    foreach (var bit in item.BitsBinary())
+                    {
+                        if (bit == 1)
+                        {
+                            yield return count;
+                        }
+                        count++;
+                        if (count == _length)
+                        {
+                            yield break;
+                        }
+                    }
+                }
+            }
+        }
+
         bool ICollection<bool>.IsReadOnly
         {
             get
