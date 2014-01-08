@@ -65,16 +65,27 @@ namespace Theraot.Collections.Specialized
                 int count = 0;
                 foreach (var item in _data)
                 {
-                    foreach (var bit in item.BitsBinary())
+                    if (item == 0)
                     {
-                        if (bit == 1)
-                        {
-                            yield return count;
-                        }
-                        count++;
-                        if (count == _length)
+                        count += 32;
+                        if (count >= _length)
                         {
                             yield break;
+                        }
+                    }
+                    else
+                    {
+                        foreach (var bit in item.BitsBinary())
+                        {
+                            if (bit == 1)
+                            {
+                                yield return count;
+                            }
+                            count++;
+                            if (count == _length)
+                            {
+                                yield break;
+                            }
                         }
                     }
                 }
@@ -160,13 +171,24 @@ namespace Theraot.Collections.Specialized
             int count = 0;
             foreach (var item in _data)
             {
-                foreach (var bit in item.BitsBinary())
+                if (item == 0)
                 {
-                    yield return bit == 1;
-                    count++;
-                    if (count == _length)
+                    count += 32;
+                    if (count >= _length)
                     {
                         yield break;
+                    }
+                }
+                else
+                {
+                    foreach (var bit in item.BitsBinary())
+                    {
+                        yield return bit == 1;
+                        count++;
+                        if (count == _length)
+                        {
+                            yield break;
+                        }
                     }
                 }
             }
