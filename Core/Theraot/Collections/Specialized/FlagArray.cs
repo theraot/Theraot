@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using Theraot.Core;
+using Theraot.Threading;
 
 namespace Theraot.Collections.Specialized
 {
@@ -21,7 +22,7 @@ namespace Theraot.Collections.Specialized
             else
             {
                 _length = prototype._length;
-                _data = new int[GetLength(_length)];
+                _data = ArrayPool<int>.GetArray(GetLength(_length));
                 prototype._data.CopyTo(_data, 0);
                 _asReadOnly = new ExtendedReadOnlyCollection<bool>(this);
             }
@@ -36,7 +37,7 @@ namespace Theraot.Collections.Specialized
             else
             {
                 _length = length;
-                _data = new int[GetLength(_length)];
+                _data = ArrayPool<int>.GetArray(GetLength(_length));
                 _asReadOnly = new ExtendedReadOnlyCollection<bool>(this);
             }
         }
@@ -47,6 +48,14 @@ namespace Theraot.Collections.Specialized
             if (defaultValue)
             {
                 Fill(defaultValue);
+            }
+        }
+
+        ~FlagArray()
+        {
+            if (!GCMonitor.FinalizingForUnload)
+            {
+                RecycleExtracted();
             }
         }
 
@@ -256,6 +265,12 @@ namespace Theraot.Collections.Specialized
         private int GetLength(int length)
         {
             return (length >> 5) + (length & 31) == 0 ? 0 : 1;
+        }
+
+        private void RecycleExtracted()
+        {
+            ArrayPool<int>.DonateArray(_data);
+            _data = null;
         }
 
         private void SetBit(int index, int mask)
