@@ -9,7 +9,6 @@ namespace Theraot.Threading
         private readonly LockNeedleContext<T> _context;
         private readonly int _id;
         private T _target;
-        private Thread _thread;
         private VersionProvider.VersionToken _versionToken;
 
         internal LockNeedleSlot(LockNeedleContext<T> context, int id)
@@ -80,7 +79,6 @@ namespace Theraot.Threading
 
         public void Free()
         {
-            ThreadingHelper.VolatileWrite(ref _thread, null);
             _versionToken.Reset();
             _target = default(T);
             _context.Free(this);
@@ -99,11 +97,6 @@ namespace Theraot.Threading
         public bool Unlock(LockNeedle<T> needle)
         {
             return needle.Unlock(_id);
-        }
-
-        internal bool Claim()
-        {
-            return Interlocked.CompareExchange(ref _thread, Thread.CurrentThread, null) == null;
         }
     }
 }
