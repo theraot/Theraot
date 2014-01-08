@@ -105,7 +105,6 @@ This are some parts worth of mention:
     - `TypeHelper`: A helper class with A bunch of type related helper methods.
   - `Theraot.Threading`
     - `Needles`: [See "Needle" below]
-    - `ArrayPool`: An object pool to recycle arrays.
     - `Disposable`: A general purpose disposable object with Action callback.
     - `DisposableAkin`: Same as above, but disposable only by the thread that created it. [See Note 2]
     - `GCMonitor`: Allows to get notifications on Garbage Collection. [See Note 3]
