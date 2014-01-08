@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using Theraot.Collections.Specialized;
 using Theraot.Core;
 using Theraot.Threading.Needles;
 
@@ -8,7 +9,7 @@ namespace Theraot.Threading
     {
         private readonly LockNeedleContext<T> _context;
         private readonly int _hashCode;
-        private int _capture;
+        private FlagArray _capture;
         private int _lock;
         private T _target;
 
@@ -16,6 +17,7 @@ namespace Theraot.Threading
         {
             _context = context;
             _hashCode = GetHashCode();
+            _capture = new FlagArray(_context.Capacity);
         }
 
         internal LockNeedle(LockNeedleContext<T> context, T target)
@@ -30,6 +32,7 @@ namespace Theraot.Threading
             {
                 target.GetHashCode();
             }
+            _capture = new FlagArray(_context.Capacity);
         }
 
         bool IReadOnlyNeedle<T>.IsAlive
@@ -46,13 +49,8 @@ namespace Theraot.Threading
             {
                 T value;
                 var @lock = Interlocked.Exchange(ref _lock, 0);
-                var capture = Interlocked.Exchange(ref _capture, 0);
-                if
-                (
-                    (@lock != 0 && _context.Read(@lock, out value))
-                    ||
-                    (capture != 0 && _context.Read(capture, out value))
-                )
+                var capture = Interlocked.Exchange(ref _capture, new FlagArray(_context.Capacity));
+                if (_context.Read(@lock, out value) || _context.Read(capture, out value))
                 {
                     _target = value;
                 }
@@ -101,7 +99,7 @@ namespace Theraot.Threading
 
         public void Free()
         {
-            if (Thread.VolatileRead(ref _capture) == 0)
+            if (System.Linq.Enumerable.Count(ThreadingHelper.VolatileRead(ref _capture).Flags) == 0)
             {
                 _target = default(T);
             }
@@ -127,15 +125,7 @@ namespace Theraot.Threading
 
         internal void Capture(int id)
         {
-        again:
-            int readed = Thread.VolatileRead(ref _capture);
-            if ((readed & id) == 0)
-            {
-                if (Interlocked.CompareExchange(ref _capture, readed | id, readed) != readed)
-                {
-                    goto again;
-                }
-            }
+            _capture[id] = true;
         }
 
         internal bool Lock(int id)
@@ -145,15 +135,7 @@ namespace Theraot.Threading
 
         internal void Uncapture(int id)
         {
-        again:
-            int readed = Thread.VolatileRead(ref _capture);
-            if ((readed & id) != 0)
-            {
-                if (Interlocked.CompareExchange(ref _capture, readed & ~id, readed) != readed)
-                {
-                    goto again;
-                }
-            }
+            _capture[id] = false;
         }
 
         internal bool Unlock(int id)
