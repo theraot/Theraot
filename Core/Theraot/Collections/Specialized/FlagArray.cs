@@ -10,7 +10,7 @@ namespace Theraot.Collections.Specialized
     public sealed class FlagArray : ICollection<bool>, IExtendedCollection<bool>, IEnumerable<bool>, ICloneable<FlagArray>, IList<bool>
     {
         private IReadOnlyCollection<bool> _asReadOnly;
-        private int[] _data;
+        private int[] _entries;
         private int _length;
 
         public FlagArray(FlagArray prototype)
@@ -22,8 +22,8 @@ namespace Theraot.Collections.Specialized
             else
             {
                 _length = prototype._length;
-                _data = ArrayPool<int>.GetArray(GetLength(_length));
-                prototype._data.CopyTo(_data, 0);
+                _entries = ArrayPool<int>.GetArray(GetLength(_length));
+                prototype._entries.CopyTo(_entries, 0);
                 _asReadOnly = new ExtendedReadOnlyCollection<bool>(this);
             }
         }
@@ -37,7 +37,7 @@ namespace Theraot.Collections.Specialized
             else
             {
                 _length = length;
-                _data = ArrayPool<int>.GetArray(GetLength(_length));
+                _entries = ArrayPool<int>.GetArray(GetLength(_length));
                 _asReadOnly = new ExtendedReadOnlyCollection<bool>(this);
             }
         }
@@ -72,9 +72,9 @@ namespace Theraot.Collections.Specialized
             get
             {
                 int count = 0;
-                foreach (var item in _data)
+                foreach (var entry in _entries)
                 {
-                    if (item == 0)
+                    if (entry == 0)
                     {
                         count += 32;
                         if (count >= _length)
@@ -84,7 +84,7 @@ namespace Theraot.Collections.Specialized
                     }
                     else
                     {
-                        foreach (var bit in item.BitsBinary())
+                        foreach (var bit in entry.BitsBinary())
                         {
                             if (bit == 1)
                             {
@@ -178,9 +178,9 @@ namespace Theraot.Collections.Specialized
         public IEnumerator<bool> GetEnumerator()
         {
             int count = 0;
-            foreach (var item in _data)
+            foreach (var entry in _entries)
             {
-                foreach (var bit in item.BitsBinary())
+                foreach (var bit in entry.BitsBinary())
                 {
                     yield return bit == 1;
                     count++;
@@ -242,13 +242,13 @@ namespace Theraot.Collections.Specialized
             int _value = value ? unchecked((int)0xffffffff) : 0;
             for (int index = 0; index < _length; index++)
             {
-                _data[index] = _value;
+                _entries[index] = _value;
             }
         }
 
         private bool GetBit(int index, int mask)
         {
-            return (Thread.VolatileRead(ref _data[index]) & mask) != 0;
+            return (Thread.VolatileRead(ref _entries[index]) & mask) != 0;
         }
 
         private int GetLength(int length)
@@ -258,17 +258,17 @@ namespace Theraot.Collections.Specialized
 
         private void RecycleExtracted()
         {
-            ArrayPool<int>.DonateArray(_data);
-            _data = null;
+            ArrayPool<int>.DonateArray(_entries);
+            _entries = null;
         }
 
         private void SetBit(int index, int mask)
         {
         again:
-            int readed = Thread.VolatileRead(ref _data[index]);
+            int readed = Thread.VolatileRead(ref _entries[index]);
             if ((readed & mask) == 0)
             {
-                if (Interlocked.CompareExchange(ref _data[index], readed | mask, readed) != readed)
+                if (Interlocked.CompareExchange(ref _entries[index], readed | mask, readed) != readed)
                 {
                     goto again;
                 }
@@ -278,10 +278,10 @@ namespace Theraot.Collections.Specialized
         private void UnsetBit(int index, int mask)
         {
         again:
-            int readed = Thread.VolatileRead(ref _data[index]);
+            int readed = Thread.VolatileRead(ref _entries[index]);
             if ((readed & mask) != 0)
             {
-                if (Interlocked.CompareExchange(ref _data[index], readed & ~mask, readed) != readed)
+                if (Interlocked.CompareExchange(ref _entries[index], readed & ~mask, readed) != readed)
                 {
                     goto again;
                 }
