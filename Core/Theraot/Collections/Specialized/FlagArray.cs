@@ -273,12 +273,11 @@ namespace Theraot.Collections.Specialized
 
         private void UnsetBit(int index, int mask)
         {
-            mask = ~mask;
         again:
             int readed = Thread.VolatileRead(ref _data[index]);
             if ((readed & mask) != 0)
             {
-                if (Interlocked.CompareExchange(ref _data[index], readed & mask, readed) != readed)
+                if (Interlocked.CompareExchange(ref _data[index], readed & ~mask, readed) != readed)
                 {
                     goto again;
                 }
