@@ -38,14 +38,6 @@ namespace Theraot.Threading
             }
         }
 
-        internal int Id
-        {
-            get
-            {
-                return _id;
-            }
-        }
-
         public void Capture(LockNeedle<T> needle)
         {
             needle.Capture(_id);

@@ -62,6 +62,11 @@ namespace Theraot.Threading
             return new LockNeedle<T>(this);
         }
 
+        public LockNeedle<T> CreateToken(T value)
+        {
+            return new LockNeedle<T>(this, value);
+        }
+
         internal VersionProvider.VersionToken Advance()
         {
             return _version.AdvanceNewToken();
