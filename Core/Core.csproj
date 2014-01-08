@@ -231,6 +231,7 @@
     <Compile Include="System\Threading\SpinWait.net35.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Theraot\Collections\Specialized\FlagArray.cs" />
     <Compile Include="Theraot\Core\NewEventHandler.cs" />
     <Compile Include="System\Func1.net30.cs" />
     <Compile Include="System\Func10.net35.cs" />
