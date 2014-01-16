@@ -150,15 +150,32 @@ namespace Theraot.Collections.Specialized
         public bool Contains(bool item)
         {
             int count = 0;
+            int newcount = 0;
+            int check = item ? 0 : -1;
             foreach (var entry in _entries)
             {
-                if ((entry == 0) != item)
+                newcount += 32;
+                if (newcount <= _length)
                 {
-                    return true;
+                    if (entry != check)
+                    {
+                        return true;
+                    }
+                    count = newcount;
                 }
-                count += 32;
-                if (count >= _length)
+                else
                 {
+                    foreach (var bit in entry.BitsBinary())
+                    {
+                        if ((bit == 1) == item)
+                        {
+                            count++;
+                        }
+                        if (count == _length)
+                        {
+                            break;
+                        }
+                    }
                     break;
                 }
             }
