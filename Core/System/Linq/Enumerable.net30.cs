@@ -181,7 +181,7 @@ namespace System.Linq
 
         public static IEnumerable<TSource> Distinct<TSource>(this IEnumerable<TSource> source, IEqualityComparer<TSource> comparer)
         {
-            return Enumerable.DistinctExtracted<TSource>(Check.NotNullArgument(source, "sorce"), comparer);
+            return Enumerable.DistinctExtracted<TSource>(Check.NotNullArgument(source, "source"), comparer);
         }
 
         public static TSource ElementAt<TSource>(this IEnumerable<TSource> source, int index)
