@@ -99,9 +99,12 @@ namespace Theraot.Core
             public T Clone(T target)
             {
                 var formatter = new BinaryFormatter();
-                var stream = new MemoryStream();
-                formatter.Serialize(stream, target);
-                return (T)formatter.Deserialize(stream);
+                using (var stream = new MemoryStream())
+                {
+                    formatter.Serialize(stream, target);
+                    stream.Seek(0, SeekOrigin.Begin);
+                    return (T)formatter.Deserialize(stream);
+                }
             }
         }
 
