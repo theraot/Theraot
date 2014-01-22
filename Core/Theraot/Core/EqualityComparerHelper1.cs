@@ -24,7 +24,7 @@ namespace Theraot.Core
             {
                 property = typeof(DelegateEqualityComparer).GetProperty("Default", BindingFlags.Public | BindingFlags.Static);
             }
-            else if (type.IsGenericImplementationOf(typeof(INeedle<>), out tmp))
+            else if (type.IsGenericImplementationOf(out tmp, typeof(INeedle<>)))
             {
                 var types = tmp.GetGenericArguments();
                 var conversionType = typeof(NeedleConversionEqualityComparer<,>).MakeGenericType(new[] { tmp, types[0] });

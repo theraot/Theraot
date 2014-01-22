@@ -105,7 +105,7 @@ namespace System.Linq
             }
 
             Type ienumerable;
-            if (!source.GetType().IsGenericImplementationOf(typeof(IEnumerable<>), out ienumerable))
+            if (!source.GetType().IsGenericImplementationOf(out ienumerable, typeof(IEnumerable<>)))
             {
                 throw new ArgumentException("source is not IEnumerable<>");
             }

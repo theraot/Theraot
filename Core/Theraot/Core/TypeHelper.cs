@@ -260,7 +260,20 @@ namespace Theraot.Core
             return false;
         }
 
-        public static bool IsGenericImplementationOf(this Type type, Type interfaceGenericTypeDefinition, out Type interfaceType)
+        public static bool IsGenericImplementationOf(this Type type, params Type[] interfaceGenericTypeDefinitions)
+        {
+            foreach (var currentInterface in type.GetInterfaces())
+            {
+                var match = currentInterface.GetGenericTypeDefinition();
+                if (Array.Exists(interfaceGenericTypeDefinitions, item => item.Equals(match)))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static bool IsGenericImplementationOf(this Type type, out Type interfaceType, Type interfaceGenericTypeDefinition)
         {
             foreach (var currentInterface in type.GetInterfaces())
             {
@@ -274,13 +287,32 @@ namespace Theraot.Core
             return false;
         }
 
+        public static bool IsGenericImplementationOf(this Type type, out Type interfaceType, params Type[] interfaceGenericTypeDefinitions)
+        {
+            var implementedInterfaces = type.GetInterfaces();
+            foreach (var currentInterface in interfaceGenericTypeDefinitions)
+            {
+                var index = Array.FindIndex(implementedInterfaces, item => item.GetGenericTypeDefinition().Equals(currentInterface));
+                if (index != -1)
+                {
+                    interfaceType = implementedInterfaces[index];
+                    return true;
+                }
+            }
+            interfaceType = null;
+            return false;
+        }
+
         public static bool IsGenericInstanceOf(this Type type, Type genericTypeDefinition)
         {
             if (!type.IsGenericType)
             {
                 return false;
             }
-            return type.GetGenericTypeDefinition().Equals(genericTypeDefinition);
+            else
+            {
+                return type.GetGenericTypeDefinition().Equals(genericTypeDefinition);
+            }
         }
 
         public static bool IsImplementationOf(this Type type, Type interfaceType)
@@ -292,6 +324,34 @@ namespace Theraot.Core
                     return true;
                 }
             }
+            return false;
+        }
+
+        public static bool IsImplementationOf(this Type type, params Type[] interfaceTypes)
+        {
+            foreach (var currentInterface in type.GetInterfaces())
+            {
+                if (Array.Exists(interfaceTypes, item => currentInterface.Equals(item)))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static bool IsImplementationOf(this Type type, out Type interfaceType, params Type[] interfaceTypes)
+        {
+            var implementedInterfaces = type.GetInterfaces();
+            foreach (var currentInterface in interfaceTypes)
+            {
+                var index = Array.FindIndex(implementedInterfaces, item => item.Equals(currentInterface));
+                if (index != -1)
+                {
+                    interfaceType = implementedInterfaces[index];
+                    return true;
+                }
+            }
+            interfaceType = null;
             return false;
         }
 
