@@ -11,7 +11,11 @@ namespace Theraot.Core
         public static ICloner<T> GetCloner()
         {
             Type type = typeof(T);
-            if (type.IsImplementationOf(typeof(ICloneable<T>)))
+            if (TypeHelper.IsValueTypeRecursive(type))
+            {
+                return StructCloner.Instance;
+            }
+            else if (type.IsImplementationOf(typeof(ICloneable<T>)))
             {
                 return GenericCloner.Instance;
             }
@@ -22,10 +26,6 @@ namespace Theraot.Core
             else if (type.IsSerializable)
             {
                 return SerializerCloner.Instance;
-            }
-            else if (TypeHelper.IsValueTypeRecursive(type))
-            {
-                return StructCloner.Instance;
             }
             else
             {
