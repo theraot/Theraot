@@ -84,9 +84,13 @@ namespace Theraot.Threading.Needles
                 object value;
                 if (transaction._readLog.TryGetValue(this, out value))
                 {
-                    return EqualityComparer<T>.Default.Equals(RetrieveValue(transaction), (T)value);
+                    var check = RetrieveValue(transaction);
+                    return EqualityComparer<T>.Default.Equals(check, (T)value);
                 }
-                return false;
+                else
+                {
+                    return false;
+                }
             }
 
             bool IResource.Commit()
