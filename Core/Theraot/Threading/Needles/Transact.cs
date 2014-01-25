@@ -48,6 +48,7 @@ namespace Theraot.Threading.Needles
                 if (CheckValue())
                 {
                     ThreadingHelper.SpinWaitUntil(() => _lockContext.ClaimSlot(out _lockSlot));
+                    _lockContext.Advance();
                     if (_writeLog.Count > 0)
                     {
                         _lockSlot.Value = this;

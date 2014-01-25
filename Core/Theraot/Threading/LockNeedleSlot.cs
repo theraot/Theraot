@@ -38,7 +38,6 @@ namespace Theraot.Threading
 
         public void Capture(LockNeedle<T> needle)
         {
-            _context.Advance();
             needle.Capture(_id);
         }
 
@@ -76,7 +75,6 @@ namespace Theraot.Threading
 
         public bool Lock(LockNeedle<T> needle)
         {
-            _context.Advance();
             return needle.Lock(_id);
         }
 
