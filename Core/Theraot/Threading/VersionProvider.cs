@@ -41,7 +41,7 @@ namespace Theraot.Threading
             return new VersionToken(this, _target, number);
         }
 
-        public VersionToken CreateToken()
+        public VersionToken NewToken()
         {
             return new VersionToken(this);
         }
