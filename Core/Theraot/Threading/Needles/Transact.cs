@@ -86,13 +86,13 @@ namespace Theraot.Threading.Needles
                                 else
                                 {
                                     //the resources has been modified by another thread
-                                    return false;
+                                    throw new ApplicationException("Modified outside - inner check");
                                 }
                             }
                             else
                             {
                                 //the resources has been claimed by another thread
-                                return false;
+                                throw new ApplicationException("Claimed outside");
                             }
                         }
                         finally
@@ -103,7 +103,11 @@ namespace Theraot.Threading.Needles
                                 {
                                     throw new ApplicationException("Unexpected");
                                 }
-                                Rollback(false);
+                                else
+                                {
+                                    Rollback(false);
+                                    throw new ApplicationException("Rollback");
+                                }
                             }
                             _lockSlot.Free();
                             _lockSlot = null;
@@ -118,6 +122,7 @@ namespace Theraot.Threading.Needles
                 else
                 {
                     //the resources has been modified by another thread
+                    throw new ApplicationException("Modified outside - outer check");
                     return false;
                 }
             }
