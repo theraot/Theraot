@@ -75,7 +75,8 @@ namespace Theraot.Threading.Needles
             bool IResource.CheckCapture()
             {
                 var transaction = Transact.CurrentTransaction;
-                return ReferenceEquals(_lockNeedle.Value, transaction);
+                var check = _lockNeedle.Value;
+                return ReferenceEquals(check, transaction);
             }
 
             bool IResource.CheckValue()
