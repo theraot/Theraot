@@ -112,9 +112,9 @@ namespace Theraot.Threading
                 _number = 0;
             }
 
-            public void UpdateIfNeeded(Action update)
+            public void Update(Action callback)
             {
-                if (update == null)
+                if (callback == null)
                 {
                     throw new ArgumentNullException("update");
                 }
@@ -132,12 +132,12 @@ namespace Theraot.Threading
                     }
                     if (needUpdate)
                     {
-                        update();
+                        callback();
                     }
                 }
             }
 
-            public void UpdateIfNeeded()
+            public void Update()
             {
                 var nextTarget = _provider._target;
                 Interlocked.Exchange<Target>(ref _target, nextTarget);
