@@ -84,7 +84,7 @@ namespace Theraot.Collections.Specialized
                     }
                     else
                     {
-                        foreach (var bit in entry.BitsBinary())
+                        foreach (var bit in entry.BinaryReverse().BitsBinary())
                         {
                             if (bit == 1)
                             {
