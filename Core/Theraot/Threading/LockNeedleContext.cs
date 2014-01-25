@@ -7,18 +7,19 @@ namespace Theraot.Threading
 {
     internal class LockNeedleContext<T>
     {
+        private static readonly VersionProvider _version = new VersionProvider();
         private readonly int _capacity;
         private readonly QueueBucket<LockNeedleSlot<T>> _freeSlots;
         private readonly LazyBucket<LockNeedleSlot<T>> _slots;
-        private readonly VersionProvider _version;
         private int _index;
+        private VersionProvider.VersionToken _versionToken;
 
         public LockNeedleContext(int capacity)
         {
+            _versionToken = _version.NewToken();
             _capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
             _slots = new LazyBucket<LockNeedleSlot<T>>(index => new LockNeedleSlot<T>(this, index), capacity);
             _freeSlots = new QueueBucket<LockNeedleSlot<T>>(capacity);
-            _version = new VersionProvider();
         }
 
         public LockNeedleContext()
@@ -67,9 +68,10 @@ namespace Theraot.Threading
             return new LockNeedle<T>(this, value);
         }
 
-        internal VersionProvider.VersionToken Advance()
+        internal void Advance()
         {
-            return _version.AdvanceNewToken();
+            _version.Advance();
+            _versionToken.Update();
         }
 
         internal void Free(LockNeedleSlot<T> slot)
@@ -128,6 +130,14 @@ namespace Theraot.Threading
         private bool TryClaimFreeSlot(out LockNeedleSlot<T> slot)
         {
             return _freeSlots.TryTake(out slot);
+        }
+
+        internal VersionProvider.VersionToken VersionToken
+        {
+            get
+            {
+                return _versionToken;
+            }
         }
     }
 }

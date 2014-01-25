@@ -43,62 +43,77 @@ namespace Theraot.Threading.Needles
 
         public bool Commit()
         {
-            if (CheckValue())
+            if (ReferenceEquals(_currentTransaction, this))
             {
-                ThreadingHelper.SpinWaitUntil(() => _lockContext.ClaimSlot(out _lockSlot));
-                if (_writeLog.Count > 0)
+                if (CheckValue())
                 {
-                    _lockSlot.Value = this;
-                    foreach (var resource in _writeLog)
+                    ThreadingHelper.SpinWaitUntil(() => _lockContext.ClaimSlot(out _lockSlot));
+                    if (_writeLog.Count > 0)
                     {
-                        resource.Key.Capture();
-                    }
-                    foreach (var resource in _readLog)
-                    {
-                        resource.Key.Capture();
-                    }
-                    bool rollback = true;
-                    try
-                    {
-                        if (CheckCapture() && CheckValue())
+                        _lockSlot.Value = this;
+                        foreach (var resource in _writeLog)
                         {
-                            foreach (var resource in _writeLog)
+                            resource.Key.Capture();
+                        }
+                        foreach (var resource in _readLog)
+                        {
+                            resource.Key.Capture();
+                        }
+                        bool rollback = true;
+                        try
+                        {
+                            if (CheckCapture())
                             {
-                                if (!resource.Key.Commit())
+                                if (CheckValue())
                                 {
-                                    //unexpected
+                                    foreach (var resource in _writeLog)
+                                    {
+                                        if (!resource.Key.Commit())
+                                        {
+                                            //unexpected
+                                            return false;
+                                        }
+                                    }
+                                    rollback = false;
+                                    return true;
+                                }
+                                else
+                                {
+                                    //the resources has been modified by another thread
                                     return false;
                                 }
                             }
-                            rollback = false;
-                            return true;
+                            else
+                            {
+                                //the resources has been claimed by another thread
+                                return false;
+                            }
                         }
-                        else
+                        finally
                         {
-                            //the resources has been modified by another thread
-                            return false;
+                            if (rollback)
+                            {
+                                Rollback(false);
+                            }
+                            _lockSlot.Free();
+                            _lockSlot = null;
                         }
                     }
-                    finally
+                    else
                     {
-                        if (rollback)
-                        {
-                            Rollback(false);
-                        }
-                        _lockSlot.Free();
-                        _lockSlot = null;
+                        //Nothing to commit
+                        return true;
                     }
                 }
                 else
                 {
-                    //Nothing to commit
-                    return true;
+                    //the resources has been modified by another thread
+                    return false;
                 }
             }
             else
             {
-                //the resources has been modified by another thread
-                return false;
+                throw new InvalidOperationException("Cannot commit a non-current transaction.");
             }
         }
 
