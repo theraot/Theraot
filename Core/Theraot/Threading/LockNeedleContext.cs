@@ -108,7 +108,7 @@ namespace Theraot.Threading
                     }
                     else
                     {
-                        if (slot.CompareTo(bestSlot) == 1)
+                        if (bestSlot.CompareTo(slot) == 1)
                         {
                             bestSlot = slot;
                         }
