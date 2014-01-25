@@ -61,6 +61,7 @@ namespace Theraot.Threading.Needles
                             resource.Key.Capture();
                         }
                         bool rollback = true;
+                        bool written = false;
                         try
                         {
                             if (CheckCapture())
@@ -69,7 +70,11 @@ namespace Theraot.Threading.Needles
                                 {
                                     foreach (var resource in _writeLog)
                                     {
-                                        if (!resource.Key.Commit())
+                                        if (resource.Key.Commit())
+                                        {
+                                            written = true;
+                                        }
+                                        else
                                         {
                                             //unexpected
                                             return false;
@@ -94,6 +99,10 @@ namespace Theraot.Threading.Needles
                         {
                             if (rollback)
                             {
+                                if (written)
+                                {
+                                    throw new ApplicationException("Unexpected");
+                                }
                                 Rollback(false);
                             }
                             _lockSlot.Free();
