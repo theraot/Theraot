@@ -121,15 +121,27 @@ namespace Theraot.Threading
                 else
                 {
                     var nextTarget = _provider._target;
-                    if
-                    (
-                        !ReferenceEquals(Interlocked.Exchange<Target>(ref _target, nextTarget), nextTarget) ||
-                        Interlocked.Exchange(ref _number, nextTarget.Number) != nextTarget.Number
-                    )
+                    var needUpdate = false;
+                    if (!ReferenceEquals(Interlocked.Exchange<Target>(ref _target, nextTarget), nextTarget))
+                    {
+                        needUpdate = true;
+                    }
+                    if (Interlocked.Exchange(ref _number, nextTarget.Number) != nextTarget.Number)
+                    {
+                        needUpdate = true;
+                    }
+                    if (needUpdate)
                     {
                         update();
                     }
                 }
+            }
+
+            public void UpdateIfNeeded()
+            {
+                var nextTarget = _provider._target;
+                Interlocked.Exchange<Target>(ref _target, nextTarget);
+                Interlocked.Exchange(ref _number, nextTarget.Number);
             }
         }
 
