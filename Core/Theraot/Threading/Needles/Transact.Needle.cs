@@ -96,7 +96,8 @@ namespace Theraot.Threading.Needles
             bool IResource.Commit()
             {
                 var transaction = Transact.CurrentTransaction;
-                if (ReferenceEquals(_lockNeedle.Value, transaction))
+                var check = _lockNeedle.Value;
+                if (ReferenceEquals(check, transaction))
                 {
                     object value;
                     if (transaction._writeLog.TryGetValue(this, out value))
