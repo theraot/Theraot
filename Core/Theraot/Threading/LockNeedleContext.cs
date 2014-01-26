@@ -36,6 +36,14 @@ namespace Theraot.Threading
             }
         }
 
+        internal VersionProvider.VersionToken VersionToken
+        {
+            get
+            {
+                return _versionToken;
+            }
+        }
+
         public bool ClaimSlot(out LockNeedleSlot<T> slot)
         {
             if (TryClaimFreeSlot(out slot))
@@ -130,14 +138,6 @@ namespace Theraot.Threading
         private bool TryClaimFreeSlot(out LockNeedleSlot<T> slot)
         {
             return _freeSlots.TryTake(out slot);
-        }
-
-        internal VersionProvider.VersionToken VersionToken
-        {
-            get
-            {
-                return _versionToken;
-            }
         }
     }
 }
