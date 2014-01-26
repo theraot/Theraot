@@ -69,7 +69,7 @@ namespace Theraot.Threading
             public VersionToken Clone()
             {
                 VersionToken result = new VersionToken(_provider, _target, _number);
-                if (result.CompareTo(this) > 1)
+                if (result.CompareTo(this) > 0)
                 {
                     SpinWait wait = new SpinWait();
                     do
@@ -77,7 +77,7 @@ namespace Theraot.Threading
                         result._number = _number;
                         result._target = _target;
                         wait.SpinOnce();
-                    } while (result.CompareTo(this) > 1);
+                    } while (result.CompareTo(this) > 0);
                 }
                 return result;
             }
@@ -184,7 +184,7 @@ namespace Theraot.Threading
                     {
                         updated = true;
                     }
-                    if (this.CompareTo(other) > 1)
+                    if (this.CompareTo(other) > 0)
                     {
                         SpinWait wait = new SpinWait();
                         do
@@ -198,7 +198,7 @@ namespace Theraot.Threading
                                 updated = true;
                             }
                             wait.SpinOnce();
-                        } while (this.CompareTo(other) > 1);
+                        } while (this.CompareTo(other) > 0);
                     }
                     if (updated)
                     {
@@ -212,7 +212,7 @@ namespace Theraot.Threading
                 var newTarget = _provider._target;
                 Interlocked.Exchange<Target>(ref _target, newTarget);
                 Interlocked.Exchange(ref _number, newTarget.Number);
-                if (this.CompareTo(other) > 1)
+                if (this.CompareTo(other) > 0)
                 {
                     SpinWait wait = new SpinWait();
                     do
@@ -220,7 +220,7 @@ namespace Theraot.Threading
                         Interlocked.Exchange<Target>(ref _target, newTarget);
                         Interlocked.Exchange(ref _number, other._number);
                         wait.SpinOnce();
-                    } while (this.CompareTo(other) > 1);
+                    } while (this.CompareTo(other) > 0);
                 }
             }
         }
