@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using Theraot.Core;
 
 namespace Theraot.Threading
 {
@@ -47,7 +48,7 @@ namespace Theraot.Threading
         }
 
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "By Design")]
-        public sealed class VersionToken : IComparable<VersionToken>
+        public sealed class VersionToken : IComparable<VersionToken>, ICloneable, ICloneable<VersionToken>
         {
             private readonly VersionProvider _provider;
             private long _number;
@@ -63,6 +64,22 @@ namespace Theraot.Threading
                 _provider = provider;
                 _target = target;
                 _number = number;
+            }
+
+            public VersionToken Clone()
+            {
+                VersionToken result = new VersionToken(_provider, _target, _number);
+                if (result.CompareTo(this) > 1)
+                {
+                    SpinWait wait = new SpinWait();
+                    do
+                    {
+                        result._number = _number;
+                        result._target = _target;
+                        wait.SpinOnce();
+                    } while (result.CompareTo(this) > 1);
+                }
+                return result;
             }
 
             public int CompareTo(VersionToken other)
@@ -106,6 +123,11 @@ namespace Theraot.Threading
                 }
             }
 
+            object ICloneable.Clone()
+            {
+                return Clone();
+            }
+
             public void Reset()
             {
                 _target = null;
@@ -120,17 +142,17 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    var nextTarget = _provider._target;
-                    var needUpdate = false;
-                    if (!ReferenceEquals(Interlocked.Exchange<Target>(ref _target, nextTarget), nextTarget))
+                    var newTarget = _provider._target;
+                    var updated = false;
+                    if (!ReferenceEquals(Interlocked.Exchange<Target>(ref _target, newTarget), newTarget))
                     {
-                        needUpdate = true;
+                        updated = true;
                     }
-                    if (Interlocked.Exchange(ref _number, nextTarget.Number) != nextTarget.Number)
+                    if (Interlocked.Exchange(ref _number, newTarget.Number) != newTarget.Number)
                     {
-                        needUpdate = true;
+                        updated = true;
                     }
-                    if (needUpdate)
+                    if (updated)
                     {
                         callback();
                     }
