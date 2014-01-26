@@ -8,6 +8,7 @@ namespace Theraot.Threading
     internal class LockNeedleContext<T>
     {
         private static readonly VersionProvider _version = new VersionProvider();
+
         private readonly int _capacity;
         private readonly QueueBucket<LockNeedleSlot<T>> _freeSlots;
         private readonly LazyBucket<LockNeedleSlot<T>> _slots;
@@ -64,16 +65,6 @@ namespace Theraot.Threading
                     return false;
                 }
             }
-        }
-
-        public LockNeedle<T> CreateToken()
-        {
-            return new LockNeedle<T>(this);
-        }
-
-        public LockNeedle<T> CreateToken(T value)
-        {
-            return new LockNeedle<T>(this, value);
         }
 
         internal void Advance()

@@ -123,7 +123,6 @@ namespace Theraot.Threading.Needles
                 {
                     //the resources has been modified by another thread
                     throw new ApplicationException("Modified outside - outer check");
-                    return false;
                 }
             }
             else
