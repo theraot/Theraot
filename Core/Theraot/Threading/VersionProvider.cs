@@ -161,9 +161,67 @@ namespace Theraot.Threading
 
             public void Update()
             {
-                var nextTarget = _provider._target;
-                Interlocked.Exchange<Target>(ref _target, nextTarget);
-                Interlocked.Exchange(ref _number, nextTarget.Number);
+                var newTarget = _provider._target;
+                Interlocked.Exchange<Target>(ref _target, newTarget);
+                Interlocked.Exchange(ref _number, newTarget.Number);
+            }
+
+            public void UpdateTo(VersionToken other, Action callback)
+            {
+                if (callback == null)
+                {
+                    throw new ArgumentNullException("update");
+                }
+                else
+                {
+                    var newTarget = other._target;
+                    var updated = false;
+                    if (!ReferenceEquals(Interlocked.Exchange<Target>(ref _target, newTarget), newTarget))
+                    {
+                        updated = true;
+                    }
+                    if (Interlocked.Exchange(ref _number, other._number) != other._number)
+                    {
+                        updated = true;
+                    }
+                    if (this.CompareTo(other) > 1)
+                    {
+                        SpinWait wait = new SpinWait();
+                        do
+                        {
+                            if (!ReferenceEquals(Interlocked.Exchange<Target>(ref _target, newTarget), newTarget))
+                            {
+                                updated = true;
+                            }
+                            if (Interlocked.Exchange(ref _number, other._number) != other._number)
+                            {
+                                updated = true;
+                            }
+                            wait.SpinOnce();
+                        } while (this.CompareTo(other) > 1);
+                    }
+                    if (updated)
+                    {
+                        callback();
+                    }
+                }
+            }
+
+            public void UpdateTo(VersionToken other)
+            {
+                var newTarget = _provider._target;
+                Interlocked.Exchange<Target>(ref _target, newTarget);
+                Interlocked.Exchange(ref _number, newTarget.Number);
+                if (this.CompareTo(other) > 1)
+                {
+                    SpinWait wait = new SpinWait();
+                    do
+                    {
+                        Interlocked.Exchange<Target>(ref _target, newTarget);
+                        Interlocked.Exchange(ref _number, other._number);
+                        wait.SpinOnce();
+                    } while (this.CompareTo(other) > 1);
+                }
             }
         }
 
