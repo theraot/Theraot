@@ -8,10 +8,12 @@ namespace Theraot.Threading
         private readonly LockNeedleContext<T> _context;
         private readonly int _id;
         private T _target;
+        private VersionProvider.VersionToken _versionToken;
 
         internal LockNeedleSlot(LockNeedleContext<T> context, int id)
         {
             _context = context;
+            _versionToken = _context.VersionToken.Clone();
             _id = id;
         }
 
@@ -31,13 +33,34 @@ namespace Theraot.Threading
             }
             set
             {
-                _target = value;
+                var versionToken = ThreadingHelper.VolatileRead(ref _versionToken);
+                if (versionToken == null)
+                {
+                    throw new InvalidOperationException(string.Format("The {0} has been freed", GetType().Name));
+                }
+                else
+                {
+                    versionToken.UpdateTo(_context.VersionToken);
+                    _target = value;
+                    versionToken = ThreadingHelper.VolatileRead(ref _versionToken);
+                    if (versionToken == null)
+                    {
+                        _target = default(T);
+                    }
+                }
             }
         }
 
         public void Capture(LockNeedle<T> needle)
         {
-            needle.Capture(_id);
+            if (ReferenceEquals(needle.Context, _context))
+            {
+                needle.Capture(_id);
+            }
+            else
+            {
+                throw new InvalidOperationException("Context mismatch");
+            }
         }
 
         public int CompareTo(LockNeedleSlot<T> other)
@@ -48,19 +71,19 @@ namespace Theraot.Threading
             }
             else
             {
-                if (ReferenceEquals(_context.VersionToken, null))
+                if (ReferenceEquals(_versionToken, null))
                 {
-                    return ReferenceEquals(other._context.VersionToken, null) ? 0 : -1;
+                    return ReferenceEquals(other._versionToken, null) ? 0 : -1;
                 }
                 else
                 {
-                    if (ReferenceEquals(other._context.VersionToken, null))
+                    if (ReferenceEquals(other._versionToken, null))
                     {
                         return 1;
                     }
                     else
                     {
-                        return _context.VersionToken.CompareTo(other._context.VersionToken);
+                        return _versionToken.CompareTo(other._versionToken);
                     }
                 }
             }
@@ -69,22 +92,49 @@ namespace Theraot.Threading
         public void Free()
         {
             _target = default(T);
+            ThreadingHelper.VolatileWrite(ref _versionToken, null);
             _context.Free(this);
         }
 
         public bool Lock(LockNeedle<T> needle)
         {
-            return needle.Lock(_id);
+            if (ReferenceEquals(needle.Context, _context))
+            {
+                return needle.Lock(_id);
+            }
+            else
+            {
+                throw new InvalidOperationException("Context mismatch");
+            }
         }
 
         public void Uncapture(LockNeedle<T> needle)
         {
-            needle.Uncapture(_id);
+            if (ReferenceEquals(needle.Context, _context))
+            {
+                needle.Uncapture(_id);
+            }
+            else
+            {
+                throw new InvalidOperationException("Context mismatch");
+            }
         }
 
         public bool Unlock(LockNeedle<T> needle)
         {
-            return needle.Unlock(_id);
+            if (ReferenceEquals(needle.Context, _context))
+            {
+                return needle.Unlock(_id);
+            }
+            else
+            {
+                throw new InvalidOperationException("Context mismatch");
+            }
+        }
+
+        internal void Unfree(LockNeedleContext<T> lockNeedleContext)
+        {
+            _versionToken = _context.VersionToken.Clone();
         }
     }
 }

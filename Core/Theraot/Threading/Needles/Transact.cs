@@ -101,16 +101,24 @@ namespace Theraot.Threading.Needles
                             {
                                 if (written)
                                 {
+                                    _lockSlot.Free();
+                                    _lockSlot = null;
                                     throw new ApplicationException("Unexpected");
                                 }
                                 else
                                 {
                                     Rollback(false);
+                                    _lockSlot.Free();
+                                    _lockSlot = null;
                                     throw new ApplicationException("Rollback");
                                 }
                             }
-                            _lockSlot.Free();
-                            _lockSlot = null;
+                            else
+                            {
+                                Uncapture();
+                                _lockSlot.Free();
+                                _lockSlot = null;
+                            }
                         }
                     }
                     else
@@ -178,22 +186,27 @@ namespace Theraot.Threading.Needles
                 }
             }
             while (true);
-            foreach (var resource in _readLog)
-            {
-                resource.Key.Rollback();
-            }
-            foreach (var resource in _writeLog)
-            {
-                resource.Key.Rollback();
-            }
-            _readLog.Clear();
-            _writeLog.Clear();
+            Uncapture();
             if (disposing)
             {
                 _readLog.AutoRemoveDeadItems = false;
                 _writeLog.AutoRemoveDeadItems = false;
                 _currentTransaction = _currentTransaction._parentTransaction;
             }
+        }
+
+        private void Uncapture()
+        {
+            foreach (var resource in _readLog)
+            {
+                resource.Key.Release();
+            }
+            foreach (var resource in _writeLog)
+            {
+                resource.Key.Release();
+            }
+            _readLog.Clear();
+            _writeLog.Clear();
         }
     }
 }

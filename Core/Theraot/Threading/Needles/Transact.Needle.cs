@@ -113,7 +113,7 @@ namespace Theraot.Threading.Needles
                 }
             }
 
-            void IResource.Rollback()
+            void IResource.Release()
             {
                 var transaction = Transact.CurrentTransaction;
                 if (!ReferenceEquals(transaction, null))

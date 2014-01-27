@@ -48,9 +48,7 @@ namespace Theraot.Threading
             get
             {
                 T value;
-                var @lock = Interlocked.Exchange(ref _lock, 0);
-                var capture = Interlocked.Exchange(ref _capture, new FlagArray(_context.Capacity));
-                if (_context.Read(@lock, out value) || _context.Read(capture, out value))
+                if (_context.Read(_lock, out value) || _context.Read(_capture, out value))
                 {
                     _target = value;
                 }
@@ -61,6 +59,14 @@ namespace Theraot.Threading
             {
                 _target = value;
                 Thread.MemoryBarrier();
+            }
+        }
+
+        internal LockNeedleContext<T> Context
+        {
+            get
+            {
+                return _context;
             }
         }
 

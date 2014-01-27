@@ -14,7 +14,7 @@ namespace Theraot.Threading.Needles
 
             bool Commit();
 
-            void Rollback();
+            void Release();
         }
     }
 }
