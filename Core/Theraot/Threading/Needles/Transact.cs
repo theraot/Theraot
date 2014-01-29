@@ -83,13 +83,13 @@ namespace Theraot.Threading.Needles
                                 else
                                 {
                                     //the resources has been modified by another thread
-                                    throw new ApplicationException("Modified outside - inner check");
+                                    return false;
                                 }
                             }
                             else
                             {
                                 //the resources has been claimed by another thread
-                                throw new ApplicationException("Claimed outside");
+                                return false;
                             }
                         }
                         finally
@@ -98,17 +98,11 @@ namespace Theraot.Threading.Needles
                             {
                                 if (written)
                                 {
-                                    _lockSlot.Free();
-                                    _lockSlot = null;
-                                    throw new ApplicationException("Unexpected");
+                                    //TODO
                                 }
-                                else
-                                {
-                                    Rollback(false);
-                                    _lockSlot.Free();
-                                    _lockSlot = null;
-                                    throw new ApplicationException("Rollback");
-                                }
+                                Rollback(false);
+                                _lockSlot.Free();
+                                _lockSlot = null;
                             }
                             else
                             {
@@ -127,7 +121,7 @@ namespace Theraot.Threading.Needles
                 else
                 {
                     //the resources has been modified by another thread
-                    throw new ApplicationException("Modified outside - outer check");
+                    return false;
                 }
             }
             else
