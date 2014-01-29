@@ -115,6 +115,11 @@ namespace Theraot.Threading.Needles
 
             void IResource.Release()
             {
+                OnDispose();
+            }
+
+            private void OnDispose()
+            {
                 var transaction = Transact.CurrentTransaction;
                 if (!ReferenceEquals(transaction, null))
                 {
@@ -126,12 +131,6 @@ namespace Theraot.Threading.Needles
                     transaction._readLog.Remove(this);
                     transaction._writeLog.Remove(this);
                 }
-                _lockNeedle.Free();
-            }
-
-            private void OnDispose()
-            {
-                //TODO: Remove from read and write log
                 _lockNeedle.Free();
             }
 
