@@ -7,8 +7,6 @@ namespace Theraot.Threading.Needles
 {
     public sealed partial class Transact
     {
-        private static readonly LockNeedleContext<Transact> _lockContext = new LockNeedleContext<Transact>();
-
         [ThreadStatic]
         private static Transact _currentTransaction;
 
@@ -47,8 +45,7 @@ namespace Theraot.Threading.Needles
             {
                 if (CheckValue())
                 {
-                    ThreadingHelper.SpinWaitUntil(() => _lockContext.ClaimSlot(out _lockSlot));
-                    _lockContext.Advance();
+                    ThreadingHelper.SpinWaitUntil(() => LockNeedleContext<Transact>.ClaimSlot(out _lockSlot));
                     if (_writeLog.Count > 0)
                     {
                         _lockSlot.Value = this;

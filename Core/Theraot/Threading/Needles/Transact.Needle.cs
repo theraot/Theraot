@@ -11,7 +11,7 @@ namespace Theraot.Threading.Needles
         public sealed partial class Needle<T> : Theraot.Threading.Needles.Needle<T>, IResource
         {
             private ICloner<T> _cloner;
-            private LockNeedle<Transact> _lockNeedle = new LockNeedle<Transact>(Transact._lockContext);
+            private LockNeedle<Transact> _lockNeedle = new LockNeedle<Transact>();
 
             public Needle(T value)
                 : base(value)

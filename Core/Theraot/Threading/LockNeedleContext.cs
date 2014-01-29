@@ -5,31 +5,25 @@ using Theraot.Core;
 
 namespace Theraot.Threading
 {
-    internal class LockNeedleContext<T>
+    internal static class LockNeedleContext<T>
     {
+        private static readonly int _capacity;
+        private static readonly QueueBucket<LockNeedleSlot<T>> _freeSlots;
+        private static readonly LazyBucket<LockNeedleSlot<T>> _slots;
         private static readonly VersionProvider _version = new VersionProvider();
+        private static int _index;
+        private static VersionProvider.VersionToken _versionToken;
 
-        private readonly int _capacity;
-        private readonly QueueBucket<LockNeedleSlot<T>> _freeSlots;
-        private readonly LazyBucket<LockNeedleSlot<T>> _slots;
-        private int _index;
-        private VersionProvider.VersionToken _versionToken;
-
-        public LockNeedleContext(int capacity)
+        static LockNeedleContext()
         {
+            _capacity = 512;
             _versionToken = _version.NewToken();
-            _capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
-            _slots = new LazyBucket<LockNeedleSlot<T>>(index => new LockNeedleSlot<T>(this, index), capacity);
-            _freeSlots = new QueueBucket<LockNeedleSlot<T>>(capacity);
+            _capacity = NumericHelper.PopulationCount(_capacity) == 1 ? _capacity : NumericHelper.NextPowerOf2(_capacity);
+            _slots = new LazyBucket<LockNeedleSlot<T>>(index => new LockNeedleSlot<T>(index), _capacity);
+            _freeSlots = new QueueBucket<LockNeedleSlot<T>>(_capacity);
         }
 
-        public LockNeedleContext()
-            : this(32)
-        {
-            //Empty
-        }
-
-        internal int Capacity
+        internal static int Capacity
         {
             get
             {
@@ -37,7 +31,7 @@ namespace Theraot.Threading
             }
         }
 
-        internal VersionProvider.VersionToken VersionToken
+        internal static VersionProvider.VersionToken VersionToken
         {
             get
             {
@@ -45,7 +39,7 @@ namespace Theraot.Threading
             }
         }
 
-        public bool ClaimSlot(out LockNeedleSlot<T> slot)
+        public static bool ClaimSlot(out LockNeedleSlot<T> slot)
         {
             if (TryClaimFreeSlot(out slot))
             {
@@ -57,6 +51,7 @@ namespace Theraot.Threading
                 {
                     int index = Interlocked.Increment(ref _index) & (_capacity - 1);
                     slot = _slots.Get(index);
+                    Advance();
                     return true;
                 }
                 else
@@ -67,18 +62,12 @@ namespace Theraot.Threading
             }
         }
 
-        internal void Advance()
-        {
-            _version.Advance();
-            _versionToken.Update();
-        }
-
-        internal void Free(LockNeedleSlot<T> slot)
+        internal static void Free(LockNeedleSlot<T> slot)
         {
             _freeSlots.Add(slot);
         }
 
-        internal bool Read(int flag, out T value)
+        internal static bool Read(int flag, out T value)
         {
             LockNeedleSlot<T> slot;
             if (_slots.TryGet(flag, out slot))
@@ -93,7 +82,7 @@ namespace Theraot.Threading
             }
         }
 
-        internal bool Read(FlagArray flags, out T value)
+        internal static bool Read(FlagArray flags, out T value)
         {
             LockNeedleSlot<T> testSlot;
             LockNeedleSlot<T> bestSlot = null;
@@ -126,11 +115,17 @@ namespace Theraot.Threading
             }
         }
 
-        private bool TryClaimFreeSlot(out LockNeedleSlot<T> slot)
+        private static void Advance()
+        {
+            _version.Advance();
+            _versionToken.Update();
+        }
+
+        private static bool TryClaimFreeSlot(out LockNeedleSlot<T> slot)
         {
             if (_freeSlots.TryTake(out slot))
             {
-                slot.Unfree(this);
+                slot.Unfree();
                 return true;
             }
             else

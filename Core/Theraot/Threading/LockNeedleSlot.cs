@@ -5,15 +5,13 @@ namespace Theraot.Threading
 {
     internal class LockNeedleSlot<T> : IComparable<LockNeedleSlot<T>>, INeedle<T>
     {
-        private readonly LockNeedleContext<T> _context;
         private readonly int _id;
         private T _target;
         private VersionProvider.VersionToken _versionToken;
 
-        internal LockNeedleSlot(LockNeedleContext<T> context, int id)
+        internal LockNeedleSlot(int id)
         {
-            _context = context;
-            _versionToken = _context.VersionToken.Clone();
+            _versionToken = LockNeedleContext<T>.VersionToken.Clone();
             _id = id;
         }
 
@@ -40,7 +38,7 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    versionToken.UpdateTo(_context.VersionToken);
+                    versionToken.UpdateTo(LockNeedleContext<T>.VersionToken);
                     _target = value;
                     versionToken = ThreadingHelper.VolatileRead(ref _versionToken);
                     if (versionToken == null)
@@ -53,14 +51,7 @@ namespace Theraot.Threading
 
         public void Capture(LockNeedle<T> needle)
         {
-            if (ReferenceEquals(needle.Context, _context))
-            {
-                needle.Capture(_id);
-            }
-            else
-            {
-                throw new InvalidOperationException("Context mismatch");
-            }
+            needle.Capture(_id);
         }
 
         public int CompareTo(LockNeedleSlot<T> other)
@@ -93,48 +84,27 @@ namespace Theraot.Threading
         {
             _target = default(T);
             ThreadingHelper.VolatileWrite(ref _versionToken, null);
-            _context.Free(this);
+            LockNeedleContext<T>.Free(this);
         }
 
         public bool Lock(LockNeedle<T> needle)
         {
-            if (ReferenceEquals(needle.Context, _context))
-            {
-                return needle.Lock(_id);
-            }
-            else
-            {
-                throw new InvalidOperationException("Context mismatch");
-            }
+            return needle.Lock(_id);
         }
 
         public void Uncapture(LockNeedle<T> needle)
         {
-            if (ReferenceEquals(needle.Context, _context))
-            {
-                needle.Uncapture(_id);
-            }
-            else
-            {
-                throw new InvalidOperationException("Context mismatch");
-            }
+            needle.Uncapture(_id);
         }
 
         public bool Unlock(LockNeedle<T> needle)
         {
-            if (ReferenceEquals(needle.Context, _context))
-            {
-                return needle.Unlock(_id);
-            }
-            else
-            {
-                throw new InvalidOperationException("Context mismatch");
-            }
+            return needle.Unlock(_id);
         }
 
-        internal void Unfree(LockNeedleContext<T> lockNeedleContext)
+        internal void Unfree()
         {
-            _versionToken = _context.VersionToken.Clone();
+            _versionToken = LockNeedleContext<T>.VersionToken.Clone();
         }
     }
 }
