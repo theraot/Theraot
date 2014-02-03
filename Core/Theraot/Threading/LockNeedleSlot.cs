@@ -9,10 +9,17 @@ namespace Theraot.Threading
         private T _target;
         private VersionProvider.VersionToken _versionToken;
 
-        internal LockNeedleSlot(int id)
+        internal LockNeedleSlot(int id, VersionProvider.VersionToken versionToken)
         {
-            _versionToken = LockNeedleContext<T>.VersionToken.Clone();
-            _id = id;
+            if (ReferenceEquals(versionToken, null))
+            {
+                throw new ArgumentNullException("versionToken");
+            }
+            else
+            {
+                _versionToken = versionToken.Clone();
+                _id = id;
+            }
         }
 
         bool IReadOnlyNeedle<T>.IsAlive
@@ -31,21 +38,7 @@ namespace Theraot.Threading
             }
             set
             {
-                var versionToken = ThreadingHelper.VolatileRead(ref _versionToken);
-                if (versionToken == null)
-                {
-                    throw new InvalidOperationException(string.Format("The {0} has been freed", GetType().Name));
-                }
-                else
-                {
-                    versionToken.UpdateTo(LockNeedleContext<T>.VersionToken);
-                    _target = value;
-                    versionToken = ThreadingHelper.VolatileRead(ref _versionToken);
-                    if (versionToken == null)
-                    {
-                        _target = default(T);
-                    }
-                }
+                _target = value;
             }
         }
 
@@ -62,28 +55,13 @@ namespace Theraot.Threading
             }
             else
             {
-                if (ReferenceEquals(_versionToken, null))
-                {
-                    return ReferenceEquals(other._versionToken, null) ? 0 : -1;
-                }
-                else
-                {
-                    if (ReferenceEquals(other._versionToken, null))
-                    {
-                        return 1;
-                    }
-                    else
-                    {
-                        return _versionToken.CompareTo(other._versionToken);
-                    }
-                }
+                return _versionToken.CompareTo(other._versionToken);
             }
         }
 
         public void Free()
         {
             _target = default(T);
-            ThreadingHelper.VolatileWrite(ref _versionToken, null);
             LockNeedleContext<T>.Free(this);
         }
 
@@ -104,7 +82,7 @@ namespace Theraot.Threading
 
         internal void Unfree()
         {
-            _versionToken = LockNeedleContext<T>.VersionToken.Clone();
+            _versionToken.Update();
         }
     }
 }

@@ -12,14 +12,12 @@ namespace Theraot.Threading
         private static readonly LazyBucket<LockNeedleSlot<T>> _slots;
         private static readonly VersionProvider _version = new VersionProvider();
         private static int _index;
-        private static VersionProvider.VersionToken _versionToken;
 
         static LockNeedleContext()
         {
             _capacity = 512;
-            _versionToken = _version.NewToken();
             _capacity = NumericHelper.PopulationCount(_capacity) == 1 ? _capacity : NumericHelper.NextPowerOf2(_capacity);
-            _slots = new LazyBucket<LockNeedleSlot<T>>(index => new LockNeedleSlot<T>(index), _capacity);
+            _slots = new LazyBucket<LockNeedleSlot<T>>(index => new LockNeedleSlot<T>(index, _version.AdvanceNewToken()), _capacity);
             _freeSlots = new QueueBucket<LockNeedleSlot<T>>(_capacity);
         }
 
@@ -28,14 +26,6 @@ namespace Theraot.Threading
             get
             {
                 return _capacity;
-            }
-        }
-
-        internal static VersionProvider.VersionToken VersionToken
-        {
-            get
-            {
-                return _versionToken;
             }
         }
 
@@ -51,7 +41,6 @@ namespace Theraot.Threading
                 {
                     int index = Interlocked.Increment(ref _index) & (_capacity - 1);
                     slot = _slots.Get(index);
-                    Advance();
                     return true;
                 }
                 else
@@ -113,12 +102,6 @@ namespace Theraot.Threading
                 value = bestSlot.Value;
                 return true;
             }
-        }
-
-        private static void Advance()
-        {
-            _version.Advance();
-            _versionToken.Update();
         }
 
         private static bool TryClaimFreeSlot(out LockNeedleSlot<T> slot)
