@@ -160,14 +160,28 @@ namespace Theraot.Threading
         {
             ~GCProbe()
             {
-                if (Thread.VolatileRead(ref _finished) == INT_BoolTrue || GCMonitor.FinalizingForUnload)
+                try
                 {
-                    return;
+                    //Empty
                 }
-                else
+                finally
                 {
-                    GC.ReRegisterForFinalize(this);
-                    _collectedEvent.Set();
+                    try
+                    {
+                        if (Thread.VolatileRead(ref _finished) != INT_BoolTrue && !GCMonitor.FinalizingForUnload)
+                        {
+                            GC.ReRegisterForFinalize(this);
+                            var collectedEvent = _collectedEvent;
+                            if (!ReferenceEquals(collectedEvent, null))
+                            {
+                                collectedEvent.Set();
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        //Pokemon
+                    }
                 }
             }
         }
