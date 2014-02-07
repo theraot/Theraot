@@ -19,6 +19,7 @@ namespace Theraot.Threading
         private static AutoResetEvent _collectedEvent;
         private static WeakDelegateSet _collectedEventHandlers;
         private static int _finished = INT_BoolFalse;
+        private static int _runnerStarted = INT_BoolFalse;
         private static int _status = INT_StatusNotReady;
 
         static GCMonitor()
@@ -34,12 +35,9 @@ namespace Theraot.Threading
             {
                 try
                 {
-                    var startRunner = Initialize();
+                    Initialize();
                     _collectedEventHandlers.Add(value);
-                    if (startRunner)
-                    {
-                        StartRunner();
-                    }
+                    StartRunner();
                 }
                 catch
                 {
@@ -85,7 +83,7 @@ namespace Theraot.Threading
             while (true)
             {
                 thread.IsBackground = true;
-                WaitOne();
+                _collectedEvent.WaitOne();
                 if (Thread.VolatileRead(ref _finished) == INT_BoolTrue || AppDomain.CurrentDomain.IsFinalizingForUnload())
                 {
                     return;
@@ -106,26 +104,21 @@ namespace Theraot.Threading
             }
         }
 
-        private static bool Initialize()
+        private static void Initialize()
         {
             var check = Interlocked.CompareExchange(ref _status, INT_StatusPending, INT_StatusNotReady);
             if (check == INT_StatusNotReady)
             {
                 _collectedEvent = new AutoResetEvent(false);
+                GC.KeepAlive(new GCProbe());
                 _collectedEventHandlers = new WeakDelegateSet(INT_CapacityHint, false, false, INT_MaxProbingHint);
                 Thread.VolatileWrite(ref _status, INT_StatusReady);
-                return true;
             }
             else
             {
-                if (check == INT_StatusReady)
-                {
-                    return false;
-                }
-                else
+                if (check != INT_StatusReady)
                 {
                     ThreadingHelper.SpinWaitUntil(ref _status, INT_StatusReady);
-                    return false;
                 }
             }
         }
@@ -141,18 +134,16 @@ namespace Theraot.Threading
 
         private static void StartRunner()
         {
-            GC.KeepAlive(new GCProbe());
-            Thread.MemoryBarrier();
-            var runnerThread = new Thread(ExecuteCollected)
+            var check = Interlocked.CompareExchange(ref _runnerStarted, INT_BoolTrue, INT_BoolFalse);
+            if (check == INT_BoolFalse)
             {
-                Name = string.Format(CultureInfo.InvariantCulture, "{0} runner.", typeof(GCMonitor).Name)
-            };
-            runnerThread.Start();
-        }
-
-        private static void WaitOne()
-        {
-            _collectedEvent.WaitOne();
+                Thread.MemoryBarrier();
+                var runnerThread = new Thread(ExecuteCollected)
+                {
+                    Name = string.Format(CultureInfo.InvariantCulture, "{0} runner.", typeof(GCMonitor).Name)
+                };
+                runnerThread.Start();
+            }
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
