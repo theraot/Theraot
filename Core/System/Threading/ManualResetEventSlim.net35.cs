@@ -60,14 +60,7 @@ namespace System.Threading
                     }
                     else
                     {
-                        if (Thread.VolatileRead(ref _state) == 0)
-                        {
-                            return false;
-                        }
-                        else
-                        {
-                            return true;
-                        }
+                        return Thread.VolatileRead(ref _state) != 0;
                     }
                 }
             }
@@ -266,13 +259,14 @@ namespace System.Threading
         {
             if (Interlocked.CompareExchange(ref _requested, 1, 0) == 0)
             {
-                _handle = new ManualResetEvent(IsSet);
+                var isSet = Thread.VolatileRead(ref _state) != 0;
+                ThreadingHelper.VolatileWrite(ref _handle, new ManualResetEvent(isSet));
             }
             else if (_handle == null)
             {
                 ThreadingHelper.SpinWaitWhileNull(ref _handle);
             }
-            return _handle;
+            return ThreadingHelper.VolatileRead(ref _handle);
         }
 
         private bool WaitExtracted(int millisecondsTimeout)
