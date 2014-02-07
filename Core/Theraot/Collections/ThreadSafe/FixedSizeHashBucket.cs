@@ -434,7 +434,7 @@ namespace Theraot.Collections.ThreadSafe
         public bool TryGet(int index, out TKey key, out TValue value)
         {
             KeyValuePair<TKey, TValue> entry;
-            if (_entries.TryGet(index, out entry))
+            if (_entries.TryGet(index, out entry)) //TODO: throws NullReferenceException
             {
                 key = entry.Key;
                 value = entry.Value;

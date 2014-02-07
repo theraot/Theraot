@@ -126,7 +126,7 @@ namespace Theraot.Threading.Needles
             var value = Value;
             if (IsAlive)
             {
-                value.DynamicInvoke(args);
+                value.DynamicInvoke(args); //Throws TargetInvocationException
                 return true;
             }
             else

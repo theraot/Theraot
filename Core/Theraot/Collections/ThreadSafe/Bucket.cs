@@ -377,7 +377,7 @@ namespace Theraot.Collections.ThreadSafe
             }
             else
             {
-                var entry = Interlocked.CompareExchange(ref _entries[index], null, null);
+                var entry = Interlocked.CompareExchange(ref _entries[index], null, null); //TODO: Throws NullReferenceException
                 if (entry == null)
                 {
                     value = default(T);

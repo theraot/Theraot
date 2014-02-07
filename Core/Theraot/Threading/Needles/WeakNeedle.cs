@@ -164,7 +164,7 @@ namespace Theraot.Threading.Needles
             {
                 try
                 {
-                    object obj = _handle.Target;
+                    object obj = _handle.Target; //Throws InvalidOperationException
                     if (obj == null)
                     {
                         return false;
