@@ -285,7 +285,7 @@ namespace Theraot.Threading.Needles
                 {
                     if (ReferenceEquals(_handle.Target, null))
                     {
-                        _handle.Free();
+                        _handle.Free(); //Throws IvalidOperationException
                         return false;
                     }
                     else
