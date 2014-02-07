@@ -1,4 +1,7 @@
-﻿namespace Theraot.Collections.ThreadSafe
+﻿using System.Threading;
+using Theraot.Threading;
+
+namespace Theraot.Collections.ThreadSafe
 {
     internal static class BucketHelper
     {
@@ -19,37 +22,37 @@
 
         public static void Recycle<T>(ref FixedSizeQueueBucket<T> entries) //Needed
         {
-            if (!ReferenceEquals(entries, null))
+            var _entries = Interlocked.Exchange(ref entries, null);
+            if (!ReferenceEquals(_entries, null))
             {
-                entries.Recycle();
-                entries = null;
+                _entries.Recycle();
             }
         }
 
         public static void Recycle<TKey, TValue>(ref FixedSizeHashBucket<TKey, TValue> entries) //Needed
         {
-            if (!ReferenceEquals(entries, null))
+            var _entries = Interlocked.Exchange(ref entries, null);
+            if (!ReferenceEquals(_entries, null))
             {
-                entries.Recycle();
-                entries = null;
+                _entries.Recycle();
             }
         }
 
         public static void Recycle<T>(ref Bucket<T> entries) //Needed
         {
-            if (!ReferenceEquals(entries, null))
+            var _entries = Interlocked.Exchange(ref entries, null);
+            if (!ReferenceEquals(_entries, null))
             {
-                entries.Recycle();
-                entries = null;
+                _entries.Recycle();
             }
         }
 
         public static void Recycle<T>(ref FixedSizeSetBucket<T> entries) //Needed
         {
-            if (!ReferenceEquals(entries, null))
+            var _entries = Interlocked.Exchange(ref entries, null);
+            if (!ReferenceEquals(_entries, null))
             {
-                entries.Recycle();
-                entries = null;
+                _entries.Recycle();
             }
         }
     }

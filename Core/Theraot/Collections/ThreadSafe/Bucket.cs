@@ -412,8 +412,11 @@ namespace Theraot.Collections.ThreadSafe
 
         private void RecycleExtracted()
         {
-            ArrayPool<object>.DonateArray(_entries);
-            _entries = null;
+            var array = Interlocked.Exchange(ref _entries, null);
+            if (!ReferenceEquals(array, null))
+            {
+                ArrayPool<object>.DonateArray(array);
+            }
         }
 
         private bool RemoveAtExtracted(int index, out object previous)
