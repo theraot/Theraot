@@ -97,19 +97,6 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public override bool Equals(object obj)
-        {
-            var _obj = obj as CacheNeedle<T>;
-            if (!ReferenceEquals(null, _obj))
-            {
-                return object.Equals(_obj.Value, Value);
-            }
-            else
-            {
-                return false;
-            }
-        }
-
         public virtual void Initialize()
         {
             _valueFactory.Invoke();

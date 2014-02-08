@@ -102,7 +102,7 @@ namespace Theraot.Threading.Needles
             return EqualsExtracted(left, right);
         }
 
-        public override bool Equals(object obj)
+        public sealed override bool Equals(object obj)
         {
             var _obj = obj as WeakNeedle<T>;
             if (!ReferenceEquals(null, _obj))

@@ -35,19 +35,6 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public override bool Equals(object obj)
-        {
-            var _obj = obj as WeakDelegateNeedle;
-            if (ReferenceEquals(null, _obj))
-            {
-                return Equals(obj as Delegate);
-            }
-            else
-            {
-                return Equals(_obj);
-            }
-        }
-
         public bool Equals(Delegate other)
         {
             return !ReferenceEquals(null, other) && Equals(other.Method, other.Target);
