@@ -6,7 +6,7 @@ using Theraot.Threading;
 
 namespace Theraot.Collections.Specialized
 {
-    [Serializable()]
+    [Serializable]
     public sealed class FlagArray : ICollection<bool>, IExtendedCollection<bool>, IEnumerable<bool>, ICloneable<FlagArray>, IList<bool>
     {
         private IReadOnlyCollection<bool> _asReadOnly;

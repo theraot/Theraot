@@ -1,17 +1,19 @@
 ﻿using System;
-using System.Runtime.Serialization;
 using System.Threading;
 
 namespace Theraot.Core
 {
     [Serializable]
-    public class NewOperationCanceledException : OperationCanceledException
+    public partial class NewOperationCanceledException : OperationCanceledException
     {
         public NewOperationCanceledException()
         {
             //Empty
         }
+    }
 
+    public partial class NewOperationCanceledException : OperationCanceledException
+    {
 #if NET20 || NET30 || NET35
 
         [NonSerialized]
