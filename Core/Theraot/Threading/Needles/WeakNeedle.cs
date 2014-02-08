@@ -134,7 +134,7 @@ namespace Theraot.Threading.Needles
             Dispose();
         }
 
-        public override int GetHashCode()
+        public sealed override int GetHashCode()
         {
             return _hashCode;
         }

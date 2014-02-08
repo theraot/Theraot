@@ -7,33 +7,16 @@ namespace Theraot.Threading.Needles
     [global::System.Diagnostics.DebuggerNonUserCode]
     public sealed class WeakDelegateNeedle : WeakNeedle<Delegate>, IEquatable<Delegate>, IEquatable<WeakDelegateNeedle>
     {
-        private readonly int _hashCode;
-
         public WeakDelegateNeedle(Delegate handler)
             : base(Check.NotNullArgument(handler, "handler"))
         {
             var _handler = Check.NotNullArgument(handler, "handler");
-            if (ReferenceEquals(_handler.Target, null))
-            {
-                _hashCode = _handler.Method.GetHashCode();
-            }
-            else
-            {
-                _hashCode = _handler.Method.GetHashCode() ^ _handler.Target.GetHashCode();
-            }
         }
 
         public WeakDelegateNeedle(MethodInfo methodInfo, object target)
             : base(BuilDelegate(methodInfo, target))
         {
-            if (ReferenceEquals(target, null))
-            {
-                _hashCode = methodInfo.GetHashCode();
-            }
-            else
-            {
-                _hashCode = methodInfo.GetHashCode() ^ target.GetHashCode();
-            }
+            //Empty
         }
 
         public MethodInfo Method
@@ -109,11 +92,6 @@ namespace Theraot.Threading.Needles
                     return !other.IsAlive;
                 }
             }
-        }
-
-        public override int GetHashCode()
-        {
-            return _hashCode;
         }
 
         public void Invoke(object[] args)
