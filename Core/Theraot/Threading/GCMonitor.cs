@@ -19,7 +19,8 @@ namespace Theraot.Threading
         private static AutoResetEvent _collectedEvent;
         private static WeakDelegateSet _collectedEventHandlers;
         private static int _finished = INT_BoolFalse;
-        private static int _runnerStarted = INT_BoolFalse;
+        private static int _runnerStarted;
+        private static Thread _runnerThread;
         private static int _status = INT_StatusNotReady;
 
         static GCMonitor()
@@ -138,11 +139,11 @@ namespace Theraot.Threading
             if (check == INT_BoolFalse)
             {
                 Thread.MemoryBarrier();
-                var runnerThread = new Thread(ExecuteCollected)
+                _runnerThread = new Thread(ExecuteCollected)
                 {
                     Name = string.Format(CultureInfo.InvariantCulture, "{0} runner.", typeof(GCMonitor).Name)
                 };
-                runnerThread.Start();
+                _runnerThread.Start();
             }
         }
 
