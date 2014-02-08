@@ -12,8 +12,7 @@ namespace Theraot.Collections.ThreadSafe
     {
         private readonly int _capacity;
         private readonly IEqualityComparer<T> _comparer;
-
-        private Bucket<T> _entries;
+        private readonly Bucket<T> _entries;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FixedSizeSetBucket{T}" /> class.
@@ -25,11 +24,6 @@ namespace Theraot.Collections.ThreadSafe
             _capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
             _entries = new Bucket<T>(_capacity);
             _comparer = comparer ?? EqualityComparer<T>.Default;
-        }
-
-        ~FixedSizeSetBucket()
-        {
-            RecycleExtracted();
         }
 
         /// <summary>
@@ -306,12 +300,6 @@ namespace Theraot.Collections.ThreadSafe
             return _entries.TryGet(index, out item);
         }
 
-        internal void Recycle()
-        {
-            RecycleExtracted();
-            GC.SuppressFinalize(this);
-        }
-
         //HACK
         internal int Set(T item, int offset, out bool isNew)
         {
@@ -326,11 +314,6 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return -1;
             }
-        }
-
-        private void RecycleExtracted()
-        {
-            BucketHelper.Recycle(ref _entries);
         }
     }
 }

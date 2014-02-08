@@ -12,7 +12,7 @@ namespace Theraot.Collections.ThreadSafe
     internal sealed class FixedSizeQueueBucket<T> : IEnumerable<T>
     {
         private readonly int _capacity;
-        private Bucket<T> _entries;
+        private readonly Bucket<T> _entries;
         private int _indexDequeue;
         private int _indexEnqueue;
         private int _preCount;
@@ -28,11 +28,6 @@ namespace Theraot.Collections.ThreadSafe
             _indexEnqueue = 0;
             _indexDequeue = 0;
             _entries = new Bucket<T>(_capacity);
-        }
-
-        ~FixedSizeQueueBucket()
-        {
-            RecycleExtracted();
         }
 
         /// <summary>
@@ -211,12 +206,6 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
-        internal void Recycle()
-        {
-            RecycleExtracted();
-            GC.SuppressFinalize(this);
-        }
-
         //HACK
         internal bool Set(int index, T item, out bool isNew)
         {
@@ -232,11 +221,6 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return false;
             }
-        }
-
-        private void RecycleExtracted()
-        {
-            BucketHelper.Recycle(ref _entries);
         }
     }
 }

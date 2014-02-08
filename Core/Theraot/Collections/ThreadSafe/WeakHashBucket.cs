@@ -428,7 +428,6 @@ namespace Theraot.Collections.ThreadSafe
             {
                 item.Key.Dispose();
             }
-            BucketHelper.Recycle(ref displaced);
         }
 
         public WeakHashBucket<TKey, TValue, TNeedle> Clone()

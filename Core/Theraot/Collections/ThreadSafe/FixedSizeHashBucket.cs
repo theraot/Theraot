@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Theraot.Core;
 
 namespace Theraot.Collections.ThreadSafe
@@ -12,9 +11,8 @@ namespace Theraot.Collections.ThreadSafe
     public sealed class FixedSizeHashBucket<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>
     {
         private readonly int _capacity;
+        private readonly Bucket<KeyValuePair<TKey, TValue>> _entries;
         private readonly IEqualityComparer<TKey> _keyComparer;
-
-        private Bucket<KeyValuePair<TKey, TValue>> _entries;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FixedSizeHashBucket{TKey, TValue}" /> class.
@@ -26,11 +24,6 @@ namespace Theraot.Collections.ThreadSafe
             _capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
             _entries = new Bucket<KeyValuePair<TKey, TValue>>(_capacity);
             _keyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
-        }
-
-        ~FixedSizeHashBucket()
-        {
-            RecycleExtracted();
         }
 
         /// <summary>
@@ -434,7 +427,7 @@ namespace Theraot.Collections.ThreadSafe
         public bool TryGet(int index, out TKey key, out TValue value)
         {
             KeyValuePair<TKey, TValue> entry;
-            if (_entries.TryGet(index, out entry)) //TODO: throws NullReferenceException
+            if (_entries.TryGet(index, out entry))
             {
                 key = entry.Key;
                 value = entry.Value;
@@ -488,17 +481,6 @@ namespace Theraot.Collections.ThreadSafe
                 value = default(TValue);
                 return -1;
             }
-        }
-
-        internal void Recycle()
-        {
-            RecycleExtracted();
-            GC.SuppressFinalize(this);
-        }
-
-        private void RecycleExtracted()
-        {
-            BucketHelper.Recycle(ref _entries);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Theraot.Collections.ThreadSafe
     /// </remarks>
     public sealed class LazyBucket<T> : IEnumerable<T>
     {
-        private Bucket<LazyNeedle<T>> _entries;
+        private readonly Bucket<LazyNeedle<T>> _entries;
         private Converter<int, T> _valueFactory;
 
         /// <summary>
@@ -32,11 +32,6 @@ namespace Theraot.Collections.ThreadSafe
                 _valueFactory = valueFactory;
                 _entries = new Bucket<LazyNeedle<T>>(capacity);
             }
-        }
-
-        ~LazyBucket()
-        {
-            RecycleExtracted();
         }
 
         /// <summary>
@@ -92,30 +87,6 @@ namespace Theraot.Collections.ThreadSafe
             {
                 //_previous should be null because null is never added
                 return _previous.Value;
-            }
-        }
-
-        /// <summary>
-        /// Tries to retrieve the item at the specified index.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <param name="value">The value.</param>
-        /// <returns>
-        ///   <c>true</c> if the item was retrieved; otherwise, <c>false</c>.
-        /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
-        public bool TryGet(int index, out T value)
-        {
-            LazyNeedle<T> _previous;
-            if (_entries.TryGet(index, out _previous))
-            {
-                value = _previous.Value;
-                return true;
-            }
-            else
-            {
-                value = default(T);
-                return false;
             }
         }
 
@@ -266,15 +237,28 @@ namespace Theraot.Collections.ThreadSafe
             return GetEnumerator();
         }
 
-        internal void Recycle()
+        /// <summary>
+        /// Tries to retrieve the item at the specified index.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        ///   <c>true</c> if the item was retrieved; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        public bool TryGet(int index, out T value)
         {
-            RecycleExtracted();
-            GC.SuppressFinalize(this);
-        }
-
-        private void RecycleExtracted()
-        {
-            BucketHelper.Recycle(ref _entries);
+            LazyNeedle<T> _previous;
+            if (_entries.TryGet(index, out _previous))
+            {
+                value = _previous.Value;
+                return true;
+            }
+            else
+            {
+                value = default(T);
+                return false;
+            }
         }
     }
 }

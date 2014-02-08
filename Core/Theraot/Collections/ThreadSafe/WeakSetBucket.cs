@@ -411,7 +411,6 @@ namespace Theraot.Collections.ThreadSafe
             {
                 item.Dispose();
             }
-            BucketHelper.Recycle(ref displaced);
         }
 
         public WeakSetBucket<T, TNeedle> Clone()

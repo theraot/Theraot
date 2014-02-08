@@ -377,7 +377,7 @@ namespace Theraot.Collections.ThreadSafe
             }
             else
             {
-                var entry = Interlocked.CompareExchange(ref _entries[index], null, null); //TODO: Throws NullReferenceException
+                var entry = Interlocked.CompareExchange(ref _entries[index], null, null);
                 if (entry == null)
                 {
                     value = default(T);
@@ -412,11 +412,8 @@ namespace Theraot.Collections.ThreadSafe
 
         private void RecycleExtracted()
         {
-            var array = Interlocked.Exchange(ref _entries, null);
-            if (!ReferenceEquals(array, null))
-            {
-                ArrayPool<object>.DonateArray(array);
-            }
+            ArrayPool<object>.DonateArray(_entries);
+            _entries = null;
         }
 
         private bool RemoveAtExtracted(int index, out object previous)

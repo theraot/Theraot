@@ -259,12 +259,11 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public void Clear()
         {
-            BucketHelper.Recycle(ref _entriesOld);
+            ThreadingHelper.VolatileWrite(ref _entriesOld, null);
             var displaced = Interlocked.Exchange(ref _entriesNew, new FixedSizeHashBucket<TKey, TValue>(INT_DefaultCapacity, _keyComparer));
             Thread.VolatileWrite(ref _status, (int)BucketStatus.Free);
             Thread.VolatileWrite(ref _count, 0);
             _revision++;
-            BucketHelper.Recycle(ref displaced);
         }
 
         /// <summary>
@@ -762,7 +761,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         internal FixedSizeHashBucket<TKey, TValue> ClearEnumerable()
         {
-            BucketHelper.Recycle(ref _entriesOld);
+            ThreadingHelper.VolatileWrite(ref _entriesOld, null);
             var displaced = Interlocked.Exchange(ref _entriesNew, new FixedSizeHashBucket<TKey, TValue>(INT_DefaultCapacity, _keyComparer));
             Thread.VolatileWrite(ref _status, (int)BucketStatus.Free);
             Thread.VolatileWrite(ref _count, 0);

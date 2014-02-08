@@ -117,9 +117,8 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public void Clear()
         {
-            BucketHelper.Recycle(ref _entriesOld);
-            var displaced = Interlocked.Exchange(ref _entriesNew, new FixedSizeQueueBucket<T>(INT_DefaultCapacity));
-            BucketHelper.Recycle(ref displaced);
+            ThreadingHelper.VolatileWrite(ref _entriesOld, null);
+            ThreadingHelper.VolatileWrite(ref _entriesNew, new FixedSizeQueueBucket<T>(INT_DefaultCapacity));
             Thread.VolatileWrite(ref _status, (int)BucketStatus.Free);
             Thread.VolatileWrite(ref _count, 0);
             _revision++;
