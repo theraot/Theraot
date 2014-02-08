@@ -1,5 +1,16 @@
 ﻿using System;
+
+#if NET20 || NET30 || NET35
+
 using System.Threading;
+
+#endif
+
+#if NET40 || NET45
+
+using System.Runtime.Serialization;
+
+#endif
 
 namespace Theraot.Core
 {
@@ -52,7 +63,8 @@ namespace Theraot.Core
             }
         }
 
-#else
+#endif
+#if NET40 || NET45
 
         public NewOperationCanceledException(string message)
             : base(message)
