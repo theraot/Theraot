@@ -3,7 +3,7 @@ using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
 {
-    internal class LockNeedleSlot<T> : IComparable<LockNeedleSlot<T>>, INeedle<T>
+    internal sealed class LockNeedleSlot<T> : IComparable<LockNeedleSlot<T>>, INeedle<T>
     {
         private readonly int _id;
         private T _target;

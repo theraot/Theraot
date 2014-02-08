@@ -5,7 +5,7 @@ using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
 {
-    internal class LockNeedle<T> : INeedle<T>
+    internal sealed class LockNeedle<T> : INeedle<T>
     {
         private readonly int _hashCode;
         private FlagArray _capture;
