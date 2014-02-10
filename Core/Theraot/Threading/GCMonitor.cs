@@ -16,7 +16,7 @@ namespace Theraot.Threading
         private const int INT_StatusNotReady = -2;
         private const int INT_StatusPending = -1;
         private const int INT_StatusReady = 0;
-        private static AutoResetEvent _collectedEvent;
+        private static ManualResetEvent _collectedEvent;
         private static WeakDelegateSet _collectedEventHandlers;
         private static int _finished = INT_BoolFalse;
         private static int _runnerStarted;
@@ -83,6 +83,7 @@ namespace Theraot.Threading
             while (true)
             {
                 _collectedEvent.WaitOne();
+                _collectedEvent.Reset();
                 if (Thread.VolatileRead(ref _finished) == INT_BoolTrue || AppDomain.CurrentDomain.IsFinalizingForUnload())
                 {
                     return;
@@ -107,7 +108,7 @@ namespace Theraot.Threading
             var check = Interlocked.CompareExchange(ref _status, INT_StatusPending, INT_StatusNotReady);
             if (check == INT_StatusNotReady)
             {
-                _collectedEvent = new AutoResetEvent(false);
+                _collectedEvent = new ManualResetEvent(false);
                 GC.KeepAlive(new GCProbe());
                 _collectedEventHandlers = new WeakDelegateSet(INT_CapacityHint, false, false, INT_MaxProbingHint);
                 Thread.VolatileWrite(ref _status, INT_StatusReady);
