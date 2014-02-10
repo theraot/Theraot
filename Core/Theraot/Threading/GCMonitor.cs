@@ -80,10 +80,8 @@ namespace Theraot.Threading
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Pokemon")]
         private static void ExecuteCollected()
         {
-            Thread thread = Thread.CurrentThread;
             while (true)
             {
-                thread.IsBackground = true;
                 _collectedEvent.WaitOne();
                 if (Thread.VolatileRead(ref _finished) == INT_BoolTrue || AppDomain.CurrentDomain.IsFinalizingForUnload())
                 {
@@ -91,7 +89,6 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    thread.IsBackground = false;
                     try
                     {
                         _collectedEventHandlers.RemoveDeadItems();
