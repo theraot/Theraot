@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.Runtime.ConstrainedExecution;
 using System.Threading;
 using Theraot.Collections.ThreadSafe;
@@ -16,11 +15,8 @@ namespace Theraot.Threading
         private const int INT_StatusNotReady = -2;
         private const int INT_StatusPending = -1;
         private const int INT_StatusReady = 0;
-        private static ManualResetEvent _collectedEvent;
         private static WeakDelegateSet _collectedEventHandlers;
         private static int _finished = INT_BoolFalse;
-        private static int _runnerStarted;
-        private static Thread _runnerThread;
         private static int _status = INT_StatusNotReady;
 
         static GCMonitor()
@@ -38,7 +34,6 @@ namespace Theraot.Threading
                 {
                     Initialize();
                     _collectedEventHandlers.Add(value);
-                    StartRunner();
                 }
                 catch
                 {
@@ -77,38 +72,11 @@ namespace Theraot.Threading
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Pokemon")]
-        private static void ExecuteCollected()
-        {
-            while (true)
-            {
-                _collectedEvent.WaitOne();
-                _collectedEvent.Reset();
-                if (Thread.VolatileRead(ref _finished) == INT_BoolTrue || AppDomain.CurrentDomain.IsFinalizingForUnload())
-                {
-                    return;
-                }
-                else
-                {
-                    try
-                    {
-                        _collectedEventHandlers.RemoveDeadItems();
-                        _collectedEventHandlers.Invoke(null, new EventArgs());
-                    }
-                    catch
-                    {
-                        //Pokemon
-                    }
-                }
-            }
-        }
-
         private static void Initialize()
         {
             var check = Interlocked.CompareExchange(ref _status, INT_StatusPending, INT_StatusNotReady);
             if (check == INT_StatusNotReady)
             {
-                _collectedEvent = new ManualResetEvent(false);
                 GC.KeepAlive(new GCProbe());
                 _collectedEventHandlers = new WeakDelegateSet(INT_CapacityHint, false, false, INT_MaxProbingHint);
                 Thread.VolatileWrite(ref _status, INT_StatusReady);
@@ -122,27 +90,29 @@ namespace Theraot.Threading
             }
         }
 
-        private static void ReportApplicationDomainExit(object sender, EventArgs e)
+        private static void RaiseCollected()
         {
-            Thread.VolatileWrite(ref _finished, INT_BoolTrue);
-            if (Thread.VolatileRead(ref _status) == INT_StatusReady)
+            if (Thread.VolatileRead(ref _finished) == INT_BoolTrue || AppDomain.CurrentDomain.IsFinalizingForUnload())
             {
-                _collectedEvent.Set();
+                return;
+            }
+            else
+            {
+                try
+                {
+                    _collectedEventHandlers.RemoveDeadItems();
+                    _collectedEventHandlers.Invoke(null, new EventArgs());
+                }
+                catch
+                {
+                    //Pokemon
+                }
             }
         }
 
-        private static void StartRunner()
+        private static void ReportApplicationDomainExit(object sender, EventArgs e)
         {
-            var check = Interlocked.CompareExchange(ref _runnerStarted, INT_BoolTrue, INT_BoolFalse);
-            if (check == INT_BoolFalse)
-            {
-                Thread.MemoryBarrier();
-                _runnerThread = new Thread(ExecuteCollected)
-                {
-                    Name = string.Format(CultureInfo.InvariantCulture, "{0} runner.", typeof(GCMonitor).Name)
-                };
-                _runnerThread.Start();
-            }
+            Thread.VolatileWrite(ref _finished, INT_BoolTrue);
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
@@ -161,11 +131,7 @@ namespace Theraot.Threading
                         if (Thread.VolatileRead(ref _finished) != INT_BoolTrue && !GCMonitor.FinalizingForUnload)
                         {
                             GC.ReRegisterForFinalize(this);
-                            var collectedEvent = _collectedEvent;
-                            if (!ReferenceEquals(collectedEvent, null))
-                            {
-                                collectedEvent.Set();
-                            }
+                            WorkContext.DefaultContext.AddWork(GCMonitor.RaiseCollected);
                         }
                     }
                     catch
