@@ -7,6 +7,10 @@ namespace Theraot.Threading
 {
     public sealed partial class Work : ICloneable, IPromise
     {
+        private const int INT_StatusCompleted = 2;
+        private const int INT_StatusNew = 0;
+        private const int INT_StatusRunning = 1;
+
         [ThreadStatic]
         private static Work _current;
 
@@ -14,7 +18,7 @@ namespace Theraot.Threading
         private readonly WorkContext _context;
         private readonly bool _exclusive;
         private Exception _error;
-        private int _isCompleted;
+        private int _status = INT_StatusNew;
 
         private StructNeedle<ManualResetEventSlim> _waitHandle;
 
@@ -71,7 +75,7 @@ namespace Theraot.Threading
         {
             get
             {
-                return Thread.VolatileRead(ref _isCompleted) == 1;
+                return Thread.VolatileRead(ref _status) == INT_StatusCompleted;
             }
         }
 
@@ -101,17 +105,24 @@ namespace Theraot.Threading
             return Clone();
         }
 
-        public void Start()
+        public bool Start()
         {
-            if (!GCMonitor.FinalizingForUnload)
+            var check = Interlocked.Exchange(ref _status, INT_StatusRunning);
+            if (check != INT_StatusRunning && !GCMonitor.FinalizingForUnload)
             {
+                _error = null;
                 _context.ScheduleWork(this);
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
         public void Wait()
         {
-            while (Thread.VolatileRead(ref _isCompleted) != 1)
+            while (Thread.VolatileRead(ref _status) != INT_StatusCompleted)
             {
                 _context.DoOneWork();
             }
@@ -123,17 +134,15 @@ namespace Theraot.Threading
             try
             {
                 _action.Invoke();
-                Thread.VolatileWrite(ref _isCompleted, 1);
-                _waitHandle.Value.Set();
             }
             catch (Exception exception)
             {
                 _error = exception;
-                Thread.VolatileWrite(ref _isCompleted, 1);
-                _waitHandle.Value.Set();
             }
             finally
             {
+                Thread.VolatileWrite(ref _status, INT_StatusCompleted);
+                _waitHandle.Value.Set();
                 Interlocked.Exchange(ref _current, oldCurrent);
             }
         }
