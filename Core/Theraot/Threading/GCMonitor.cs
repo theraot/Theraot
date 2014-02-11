@@ -16,6 +16,7 @@ namespace Theraot.Threading
         private const int INT_StatusReady = 0;
         private static WeakDelegateSet _collectedEventHandlers;
         private static int _status = INT_StatusNotReady;
+        private static Work _work;
 
         static GCMonitor()
         {
@@ -76,6 +77,7 @@ namespace Theraot.Threading
             switch (check)
             {
                 case INT_StatusNotReady:
+                    _work = WorkContext.DefaultContext.AddWork(GCMonitor.RaiseCollected);
                     GC.KeepAlive(new GCProbe());
                     _collectedEventHandlers = new WeakDelegateSet(INT_CapacityHint, false, false, INT_MaxProbingHint);
                     Thread.VolatileWrite(ref _status, INT_StatusReady);
@@ -116,13 +118,6 @@ namespace Theraot.Threading
         [global::System.Diagnostics.DebuggerNonUserCode]
         private sealed class GCProbe : CriticalFinalizerObject
         {
-            private Work _work;
-
-            public GCProbe()
-            {
-                _work = WorkContext.DefaultContext.AddWork(GCMonitor.RaiseCollected);
-            }
-
             ~GCProbe()
             {
                 try
