@@ -10,12 +10,10 @@ namespace Theraot.Threading
     {
         private const int INT_CapacityHint = 1024;
         private const int INT_MaxProbingHint = 32;
-        private const int INT_StatusFinished = 3;
+        private const int INT_StatusFinished = 1;
         private const int INT_StatusNotReady = -2;
         private const int INT_StatusPending = -1;
         private const int INT_StatusReady = 0;
-        private const int INT_StatusRequested = 2;
-        private const int INT_StatusRunning = 1;
         private static WeakDelegateSet _collectedEventHandlers;
         private static int _status = INT_StatusNotReady;
 
@@ -94,8 +92,8 @@ namespace Theraot.Threading
 
         private static void RaiseCollected()
         {
-            var check = Interlocked.CompareExchange(ref _status, INT_StatusRunning, INT_StatusRequested);
-            if (check == INT_StatusRequested)
+            var check = Thread.VolatileRead(ref _status);
+            if (check == INT_StatusReady)
             {
                 try
                 {
@@ -118,6 +116,13 @@ namespace Theraot.Threading
         [global::System.Diagnostics.DebuggerNonUserCode]
         private sealed class GCProbe : CriticalFinalizerObject
         {
+            private Work _work;
+
+            public GCProbe()
+            {
+                _work = WorkContext.DefaultContext.AddWork(GCMonitor.RaiseCollected);
+            }
+
             ~GCProbe()
             {
                 try
@@ -128,11 +133,11 @@ namespace Theraot.Threading
                 {
                     try
                     {
-                        var check = Interlocked.CompareExchange(ref _status, INT_StatusRequested, INT_StatusReady);
+                        var check = Thread.VolatileRead(ref _status);
                         if (check == INT_StatusReady)
                         {
                             GC.ReRegisterForFinalize(this);
-                            WorkContext.DefaultContext.AddWork(GCMonitor.RaiseCollected).Start();
+                            _work.Start();
                         }
                     }
                     catch
