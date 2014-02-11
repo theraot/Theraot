@@ -131,7 +131,7 @@ namespace Theraot.Threading
                         if (Thread.VolatileRead(ref _finished) != INT_BoolTrue && !GCMonitor.FinalizingForUnload)
                         {
                             GC.ReRegisterForFinalize(this);
-                            WorkContext.DefaultContext.AddWork(GCMonitor.RaiseCollected);
+                            WorkContext.DefaultContext.AddWork(GCMonitor.RaiseCollected).Start();
                         }
                     }
                     catch
