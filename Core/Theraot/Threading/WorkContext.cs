@@ -165,7 +165,7 @@ namespace Theraot.Threading
 
         public Work AddWork(Action action, bool exclusive)
         {
-            return new Work(action, exclusive, this);
+            return GCMonitor.FinalizingForUnload ? null : new Work(action, exclusive, this);
         }
 
         public void Dispose()
