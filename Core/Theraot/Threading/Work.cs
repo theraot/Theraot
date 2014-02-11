@@ -16,7 +16,7 @@ namespace Theraot.Threading
         private Exception _error;
         private int _isCompleted;
 
-        private StructNeedle<ManualResetEvent> _waitHandle;
+        private StructNeedle<ManualResetEventSlim> _waitHandle;
 
         internal Work(Action action, bool exclusive, WorkContext context)
         {
@@ -29,7 +29,7 @@ namespace Theraot.Threading
                 _context = context;
                 _action = action ?? ActionHelper.GetNoopAction();
                 _exclusive = exclusive;
-                _waitHandle = new ManualResetEvent(false);
+                _waitHandle = new ManualResetEventSlim(false);
             }
         }
 
@@ -38,7 +38,7 @@ namespace Theraot.Threading
             var waitHandle = _waitHandle.Value;
             if (!ReferenceEquals(waitHandle, null))
             {
-                waitHandle.Close();
+                waitHandle.Dispose();
             }
             _waitHandle.Value = null;
         }
