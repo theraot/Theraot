@@ -12,7 +12,6 @@ namespace Theraot.Collections.ThreadSafe
     public sealed class QueueBucket<T> : IEnumerable<T>
     {
         private const int INT_DefaultCapacity = 64;
-        private const int INT_SpinWaitHint = 80;
 
         private int _copyingThreads;
         private int _copySourcePosition;
@@ -323,23 +322,14 @@ namespace Theraot.Collections.ThreadSafe
                         break;
 
                     case (int)BucketStatus.Waiting:
-                        Thread.SpinWait(INT_SpinWaitHint);
-                        if (Thread.VolatileRead(ref _status) == 2)
-                        {
-                            Thread.Sleep(0);
-                        }
+                        ThreadingHelper.SpinWaitWhile(ref _status, (int)BucketStatus.Waiting);
                         break;
 
                     case (int)BucketStatus.Copy:
                         _revision++;
                         if (Thread.VolatileRead(ref _workingThreads) > 0)
                         {
-                            Thread.SpinWait(INT_SpinWaitHint);
-                            while (Thread.VolatileRead(ref _workingThreads) > 0)
-                            {
-                                Thread.Sleep(0);
-                                Thread.SpinWait(INT_SpinWaitHint);
-                            }
+                            ThreadingHelper.SpinWaitUntil(ref _workingThreads, 0);
                         }
                         var old = _entriesOld;
                         if (old != null)

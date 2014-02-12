@@ -18,7 +18,6 @@ namespace Theraot.Collections.ThreadSafe
 
         private const int INT_DefaultCapacity = 64;
         private const int INT_DefaultMaxProbing = 1;
-        private const int INT_SpinWaitHint = 80;
 
         private readonly IEqualityComparer<T> _comparer;
         private readonly int _maxProbing;
@@ -660,16 +659,12 @@ namespace Theraot.Collections.ThreadSafe
 
                     case (int)BucketStatus.Waiting:
 
-                        // This is the whole reason why this datastructure is not wait free.
+                        // This is the whole reason why this data structure is not wait free.
                         // Testing shows that it is uncommon that a thread enters here.
                         // _status is 2 only for a short period.
                         // Still, it happens, so this is needed for correctness.
-                        // Going completely wait-free adds complexity with deminished value.
-                        Thread.SpinWait(INT_SpinWaitHint);
-                        if (Thread.VolatileRead(ref _status) == (int)BucketStatus.Waiting)
-                        {
-                            Thread.Sleep(0);
-                        }
+                        // Going completely wait-free adds complexity with diminished value.
+                        ThreadingHelper.SpinWaitWhile(ref _status, (int)BucketStatus.Waiting);
                         break;
 
                     case (int)BucketStatus.Copy:

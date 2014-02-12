@@ -8,8 +8,7 @@ namespace Theraot.Threading
     public sealed class WorkContext : IDisposable
     {
         private const int INT_InitialWorkCapacityHint = 128;
-        private const int INT_LoopCountHint = 4;
-        private const int INT_SpinWaitHint = 16;
+        
         private static readonly WorkContext _defaultContext = new WorkContext(INT_InitialWorkCapacityHint, Environment.ProcessorCount, "Default Context", false);
 
         private static int _lastId;
@@ -275,7 +274,7 @@ namespace Theraot.Threading
 
         private void DoWorks()
         {
-            int count = INT_LoopCountHint;
+            int count = 0;
         loopback:
             try
             {
@@ -290,25 +289,24 @@ namespace Theraot.Threading
                     }
                     else if (_works.Count == 0)
                     {
-                        if (count > 0)
-                        {
-                            count--;
-                            Thread.SpinWait(INT_SpinWaitHint);
-                        }
-                        else
+                        if (count == ThreadingHelper.SleepCountHint)
                         {
                             try
                             {
                                 Interlocked.Decrement(ref _workingDedicatedThreadCount);
                                 Interlocked.Decrement(ref _workingTotalThreadCount);
                                 _event.WaitOne();
-                                count = INT_LoopCountHint;
+                                count = 0;
                             }
                             finally
                             {
                                 Interlocked.Increment(ref _workingTotalThreadCount);
                                 Interlocked.Increment(ref _workingDedicatedThreadCount);
                             }
+                        }
+                        else
+                        {
+                            ThreadingHelper.SpinOnce(ref count);
                         }
                     }
                     if (Thread.VolatileRead(ref _waitRequest) == 1)
