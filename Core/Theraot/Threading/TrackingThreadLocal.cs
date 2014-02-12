@@ -94,14 +94,6 @@ namespace Theraot.Threading
             }
         }
 
-        bool IPromise<T>.IsAlive
-        {
-            get
-            {
-                return IsValueCreated;
-            }
-        }
-
         bool IReadOnlyNeedle<T>.IsAlive
         {
             get
@@ -200,17 +192,17 @@ namespace Theraot.Threading
             GC.KeepAlive(Value);
         }
 
-        void IPromised.OnCompleted()
+        void IObserver<T>.OnCompleted()
         {
             GC.KeepAlive(Value);
         }
 
-        void IPromised.OnError(Exception error)
+        void IObserver<T>.OnError(Exception error)
         {
             //Empty
         }
 
-        void IPromised.OnNext(T value)
+        void IObserver<T>.OnNext(T value)
         {
             Value = value;
         }
