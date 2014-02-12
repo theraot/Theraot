@@ -2,12 +2,13 @@
 using System.Threading;
 
 using Theraot.Core;
+using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
 {
     [System.Diagnostics.DebuggerDisplay("IsValueCreated={IsValueCreated}, Value={ValueForDebugDisplay}")]
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public sealed class NoTrackingThreadLocal<T> : IDisposable, IThreadLocal<T>
+    public sealed class NoTrackingThreadLocal<T> : IDisposable, IThreadLocal<T>, IPromise<T>
     {
         private int _disposing;
         private LocalDataStoreSlot _slot;
@@ -16,7 +17,7 @@ namespace Theraot.Threading
         public NoTrackingThreadLocal()
             : this(TypeHelper.GetCreateOrDefault<T>())
         {
-            //Empty
+            _slot = Thread.AllocateDataSlot();
         }
 
         public NoTrackingThreadLocal(Func<T> valueFactory)
@@ -49,6 +50,46 @@ namespace Theraot.Threading
             }
         }
 
+        bool IExpected.IsCanceled
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        bool IExpected.IsCompleted
+        {
+            get
+            {
+                return IsValueCreated;
+            }
+        }
+
+        bool IExpected.IsFaulted
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        Exception IPromise.Error
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        bool IReadOnlyNeedle<T>.IsAlive
+        {
+            get
+            {
+                return IsValueCreated;
+            }
+        }
+
         public bool IsValueCreated
         {
             get
@@ -59,14 +100,7 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    if (_slot == null)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        return Thread.GetData(_slot) is Container;
-                    }
+                    return Thread.GetData(_slot) is Container;
                 }
             }
         }
@@ -89,27 +123,17 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    if (_slot == null)
+                    var bundle = Thread.GetData(_slot);
+                    var container = bundle as Container;
+                    if (container == null)
                     {
-                        _slot = Thread.AllocateDataSlot();
                         T result = _valueFactory.Invoke();
                         Thread.SetData(_slot, new Container(result));
                         return result;
                     }
                     else
                     {
-                        var bundle = Thread.GetData(_slot);
-                        var container = bundle as Container;
-                        if (container == null)
-                        {
-                            T result = _valueFactory.Invoke();
-                            Thread.SetData(_slot, new Container(result));
-                            return result;
-                        }
-                        else
-                        {
-                            return container.Value;
-                        }
+                        return container.Value;
                     }
                 }
             }
@@ -121,23 +145,15 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    if (_slot == null)
+                    var bundle = Thread.GetData(_slot);
+                    var container = bundle as Container;
+                    if (container == null)
                     {
-                        _slot = Thread.AllocateDataSlot();
                         Thread.SetData(_slot, new Container(value));
                     }
                     else
                     {
-                        var bundle = Thread.GetData(_slot);
-                        var container = bundle as Container;
-                        if (container == null)
-                        {
-                            Thread.SetData(_slot, new Container(value));
-                        }
-                        else
-                        {
-                            container.Value = value;
-                        }
+                        container.Value = value;
                     }
                 }
             }
@@ -154,6 +170,23 @@ namespace Theraot.Threading
             {
                 GC.SuppressFinalize(this);
             }
+        }
+
+        public void Free()
+        {
+            if (Thread.VolatileRead(ref _disposing) == 1)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
+            else
+            {
+                Thread.SetData(_slot, null);
+            }
+        }
+
+        void IPromise.Wait()
+        {
+            GC.KeepAlive(Value);
         }
 
         public override string ToString()
