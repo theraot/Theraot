@@ -8,7 +8,7 @@ namespace Theraot.Threading
 {
     [System.Diagnostics.DebuggerDisplay("IsValueCreated={IsValueCreated}, Value={ValueForDebugDisplay}")]
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public sealed class NoTrackingThreadLocal<T> : IDisposable, IThreadLocal<T>, IPromise<T>
+    public sealed class NoTrackingThreadLocal<T> : IDisposable, IThreadLocal<T>, IPromise<T>, IPromised<T>
     {
         private int _disposing;
         private LocalDataStoreSlot _slot;
@@ -187,6 +187,21 @@ namespace Theraot.Threading
         void IPromise.Wait()
         {
             GC.KeepAlive(Value);
+        }
+
+        void IPromised.OnCompleted()
+        {
+            GC.KeepAlive(Value);
+        }
+
+        void IPromised.OnError(Exception error)
+        {
+            //Empty
+        }
+
+        void IPromised<T>.OnNext(T value)
+        {
+            Value = value;
         }
 
         public override string ToString()
