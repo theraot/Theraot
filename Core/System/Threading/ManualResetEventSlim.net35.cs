@@ -8,8 +8,6 @@ namespace System.Threading
     {
         private const int INT_DefaultSpinCount = 10;
         private const int INT_LongTimeOutHint = 160;
-        private const int INT_SleepCountHint = 5;
-        private const int INT_SpinWaitHint = 20;
 
         private static readonly TimeSpan _timeout = TimeSpan.FromMilliseconds(INT_LongTimeOutHint);
 
