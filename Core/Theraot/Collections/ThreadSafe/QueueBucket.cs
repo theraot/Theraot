@@ -14,7 +14,6 @@ namespace Theraot.Collections.ThreadSafe
         private const int INT_DefaultCapacity = 64;
         private const int INT_SpinWaitHint = 80;
 
-        private readonly object _synclock = new object();
         private int _copyingThreads;
         private int _copySourcePosition;
         private int _count;
