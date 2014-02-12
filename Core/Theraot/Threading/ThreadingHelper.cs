@@ -49,14 +49,7 @@ namespace Theraot.Threading
             }
             else
             {
-                if (count % SleepCountHint == 0)
-                {
-                    Thread.Sleep(0);
-                }
-                else
-                {
-                    Thread.SpinWait(Math.Min(count, INT_MaxTime) << 1);
-                }
+                Thread.SpinWait(Math.Min(count, INT_MaxTime) << 1);
             }
         }
 
