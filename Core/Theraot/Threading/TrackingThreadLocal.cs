@@ -4,11 +4,12 @@ using System.Threading;
 using Theraot.Collections;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
+using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
 {
     [System.Diagnostics.DebuggerDisplay("IsValueCreated={IsValueCreated}, Value={ValueForDebugDisplay}")]
-    public sealed class TrackingThreadLocal<T> : IDisposable, IThreadLocal<T>
+    public sealed class TrackingThreadLocal<T> : IDisposable, IThreadLocal<T>, IPromise<T>, IPromised<T>
     {
         private const int INT_MaxProbingHint = 4;
         private const int INT_MaxProcessorCount = 32;
@@ -58,6 +59,54 @@ namespace Theraot.Threading
                 {
                     //Pokemon
                 }
+            }
+        }
+
+        bool IExpected.IsCanceled
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        bool IExpected.IsCompleted
+        {
+            get
+            {
+                return IsValueCreated;
+            }
+        }
+
+        bool IExpected.IsFaulted
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        Exception IPromise.Error
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        bool IPromise<T>.IsAlive
+        {
+            get
+            {
+                return IsValueCreated;
+            }
+        }
+
+        bool IReadOnlyNeedle<T>.IsAlive
+        {
+            get
+            {
+                return IsValueCreated;
             }
         }
 
@@ -132,6 +181,38 @@ namespace Theraot.Threading
             {
                 GC.SuppressFinalize(this);
             }
+        }
+
+        public void Free()
+        {
+            if (Thread.VolatileRead(ref _disposing) == 1)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
+            else
+            {
+                _slots.Remove(Thread.CurrentThread);
+            }
+        }
+
+        void IPromise.Wait()
+        {
+            GC.KeepAlive(Value);
+        }
+
+        void IPromised.OnCompleted()
+        {
+            GC.KeepAlive(Value);
+        }
+
+        void IPromised.OnError(Exception error)
+        {
+            //Empty
+        }
+
+        void IPromised.OnNext(T value)
+        {
+            Value = value;
         }
 
         public override string ToString()
