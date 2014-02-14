@@ -270,41 +270,59 @@ namespace System.Threading
         private bool WaitExtracted(int millisecondsTimeout)
         {
             int count = 0;
+            var start = ThreadingHelper.TicksNow();
             if (IsSet)
             {
                 return true;
             }
             else
             {
-                var start = ThreadingHelper.TicksNow();
-            retry:
-                if (IsSet)
+                if (millisecondsTimeout > INT_LongTimeOutHint)
                 {
-                    return true;
-                }
-                else if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) > millisecondsTimeout)
-                {
-                    return false;
-                }
-                else
-                {
-                    if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < INT_LongTimeOutHint)
+                retry_longTimeout:
+                    if (IsSet)
                     {
-                        ThreadingHelper.SpinOnce(ref count);
-                        goto retry;
+                        return true;
                     }
                     else
                     {
-                        var handle = RetrieveWaitHandle();
-                        var remaining = (int)(millisecondsTimeout - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start));
-                        if (remaining > 0)
+                        var elapsed = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
+                        if (elapsed < millisecondsTimeout)
                         {
-                            return handle.WaitOne(remaining);
+                            if (elapsed < INT_LongTimeOutHint)
+                            {
+                                ThreadingHelper.SpinOnce(ref count);
+                                goto retry_longTimeout;
+                            }
+                            else
+                            {
+                                var handle = RetrieveWaitHandle();
+                                var remaining = (int)(millisecondsTimeout - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start));
+                                if (remaining > 0)
+                                {
+                                    return handle.WaitOne(remaining);
+                                }
+                            }
                         }
-                        else
+                        return false;
+                    }
+                }
+                else
+                {
+                retry_shortTimeout:
+                    if (IsSet)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        var elapsed = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
+                        if (elapsed < millisecondsTimeout)
                         {
-                            return false;
+                            ThreadingHelper.SpinOnce(ref count);
+                            goto retry_shortTimeout;
                         }
+                        return false;
                     }
                 }
             }
@@ -313,43 +331,46 @@ namespace System.Threading
         private bool WaitExtracted(int millisecondsTimeout, CancellationToken cancellationToken)
         {
             int count = 0;
+            var start = ThreadingHelper.TicksNow();
             if (IsSet)
             {
                 return true;
             }
             else
             {
-                var start = ThreadingHelper.TicksNow();
             retry:
                 if (IsSet)
                 {
                     return true;
                 }
-                else if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) > millisecondsTimeout)
-                {
-                    return false;
-                }
                 else
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    cancellationToken.ThrowIfSourceDisposed();
-                    if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < INT_LongTimeOutHint)
+                    if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < millisecondsTimeout)
                     {
-                        ThreadingHelper.SpinOnce(ref count);
-                        goto retry;
-                    }
-                    else
-                    {
-                        var handle = RetrieveWaitHandle();
-                        var remaining = (int)(millisecondsTimeout - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start));
-                        if (remaining > 0)
+                        cancellationToken.ThrowIfCancellationRequested();
+                        cancellationToken.ThrowIfSourceDisposed();
+                        if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < INT_LongTimeOutHint)
                         {
-                            return handle.WaitOne(remaining);
+                            ThreadingHelper.SpinOnce(ref count);
+                            goto retry;
                         }
                         else
                         {
-                            return false;
+                            var handle = RetrieveWaitHandle();
+                            var remaining = (int)(millisecondsTimeout - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start));
+                            if (remaining > 0)
+                            {
+                                return handle.WaitOne(remaining);
+                            }
+                            else
+                            {
+                                return false;
+                            }
                         }
+                    }
+                    else
+                    {
+                        return false;
                     }
                 }
             }
