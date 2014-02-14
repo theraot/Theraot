@@ -341,6 +341,7 @@
     <Compile Include="Theraot\Core\NewOperationCanceledException.cs" />
     <Compile Include="Theraot\Core\StopwatchExtensions.cs" />
     <Compile Include="Theraot\Core\StringBuilderExtensions.cs" />
+    <Compile Include="Theraot\Core\ThreadEqualityComparer.cs" />
     <Compile Include="Theraot\Threading\GCMonitor.cs" />
     <Compile Include="Theraot\Threading\Guard.cs" />
     <Compile Include="Theraot\Threading\LockNeedle.cs" />
