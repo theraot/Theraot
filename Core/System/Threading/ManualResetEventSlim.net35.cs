@@ -198,7 +198,7 @@ namespace System.Threading
                 }
                 else if (millisecondsTimeout == -1)
                 {
-                    Wait();
+                    WaitExtracted(cancellationToken);
                     return true;
                 }
                 else
@@ -371,6 +371,39 @@ namespace System.Threading
                     else
                     {
                         return false;
+                    }
+                }
+            }
+        }
+
+        private bool WaitExtracted(CancellationToken cancellationToken)
+        {
+            int count = 0;
+            var start = ThreadingHelper.TicksNow();
+            if (IsSet)
+            {
+                return true;
+            }
+            else
+            {
+            retry:
+                if (IsSet)
+                {
+                    return true;
+                }
+                else
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    cancellationToken.ThrowIfSourceDisposed();
+                    if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < INT_LongTimeOutHint)
+                    {
+                        ThreadingHelper.SpinOnce(ref count);
+                        goto retry;
+                    }
+                    else
+                    {
+                        var handle = RetrieveWaitHandle();
+                        return handle.WaitOne();
                     }
                 }
             }
