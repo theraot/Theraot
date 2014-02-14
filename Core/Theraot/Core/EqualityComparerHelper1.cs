@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 using Theraot.Collections;
 using Theraot.Collections.Specialized;
 using Theraot.Threading.Needles;
@@ -23,6 +24,10 @@ namespace Theraot.Core
             else if (type.IsAssignableTo(typeof(Delegate)))
             {
                 property = typeof(DelegateEqualityComparer).GetProperty("Default", BindingFlags.Public | BindingFlags.Static);
+            }
+            else if (type.IsAssignableTo(typeof(Thread)))
+            {
+                property = typeof(ThreadEqualityComparer).GetProperty("Default", BindingFlags.Public | BindingFlags.Static);
             }
             else if (type.IsGenericImplementationOf(out tmp, typeof(INeedle<>)))
             {
