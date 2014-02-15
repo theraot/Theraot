@@ -430,6 +430,28 @@ var methods3 = new string[][]
         "tmpC == tmpA",
         ""
     },
+    new string[]
+    {
+        "SpinWaitRelativeSetUnlessExcess",
+        "ref int check, int value, int maxValue",
+        "ref check, value, maxValue",
+        "var tmpA = Thread.VolatileRead(ref check);\r\n            var tmpB = tmpA + value;",
+        "tmpA <= maxValue && tmpB <= maxValue",
+        "var tmpC = Interlocked.CompareExchange(ref check, tmpB, tmpA);",
+        "tmpC == tmpA",
+        ""
+    },
+    new string[]
+    {
+        "SpinWaitRelativeExchangeUnlessExcess",
+        "ref int check, int value, int maxValue, out int result",
+        "ref check, value, out result, maxValue",
+        "var tmpA = Thread.VolatileRead(ref check);\r\n            result = tmpA + value;",
+        "tmpA <= maxValue && result <= maxValue",
+        "var tmpC = Interlocked.CompareExchange(ref check, result, tmpA);",
+        "tmpC == tmpA",
+        ""
+    }
 };
 
 #>
