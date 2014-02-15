@@ -225,17 +225,13 @@ var templates = new string[][]
             {
                 return false;
             }
-            else if (@2)
+            else
             {
-                @3
-                if (@4)
+                @2
+                if (@3)
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             SpinOnce(ref count);
             goto retry;
@@ -248,17 +244,13 @@ var templates = new string[][]
             {
                 return false;
             }
-            else if (@2)
+            else
             {
-                @3
-                if (@4)
+                @2
+                if (@3)
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -277,17 +269,13 @@ var templates = new string[][]
             {
                 return false;
             }
-            else if (@2)
+            else
             {
-                @3
-                if (@4)
+                @2
+                if (@3)
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
@@ -401,9 +389,8 @@ var methods3 = new string[][]
         "ref int check, int value",
         "ref check, value",
         "var lastValue = Thread.VolatileRead(ref check);",
-        "lastValue < 0",
-        "lastValue >= -value",
-        "var result = lastValue + value;\r\n                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);",
+        "(lastValue < 0) || (lastValue < -value)",
+        "var result = lastValue + value;\r\n                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);",
         "tmp == lastValue",
         ""
     },
@@ -413,9 +400,8 @@ var methods3 = new string[][]
         "ref int check, int value, out int lastValue",
         "ref check, value, out lastValue",
         "lastValue = Thread.VolatileRead(ref check);",
-        "lastValue < 0",
-        "lastValue >= -value",
-        "var result = lastValue + value;\r\n                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);",
+        "(lastValue < 0) || (lastValue < -value)",
+        "var result = lastValue + value;\r\n                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);",
         "tmp == lastValue",
         ""
     },
@@ -425,9 +411,8 @@ var methods3 = new string[][]
         "ref int check, int value, int maxValue",
         "ref check, value, maxValue",
         "var lastValue = Thread.VolatileRead(ref check);",
-        "lastValue > maxValue",
-        "lastValue <= maxValue - value",
-        "var result = lastValue + value;\r\n                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);",
+        "(lastValue > maxValue) || (lastValue > maxValue - value)",
+        "var result = lastValue + value;\r\n                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);",
         "tmp == lastValue",
         ""
     },
@@ -437,9 +422,8 @@ var methods3 = new string[][]
         "ref int check, int value, int maxValue, out int lastValue",
         "ref check, value, maxValue, out lastValue",
         "lastValue = Thread.VolatileRead(ref check);",
-        "lastValue > maxValue",
-        "lastValue <= maxValue - value",
-        "var result = lastValue + value;\r\n                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);",
+        "(lastValue > maxValue) || (lastValue > maxValue - value)",
+        "var result = lastValue + value;\r\n                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);",
         "tmp == lastValue",
         ""
     },
@@ -449,8 +433,7 @@ var methods3 = new string[][]
         "ref int check, int value, int minValue, int maxValue",
         "ref check, value, minValue, maxValue",
         "var lastValue = Thread.VolatileRead(ref check);",
-        "lastValue < minValue || lastValue > maxValue",
-        "lastValue + value >= minValue && lastValue <= maxValue - value",
+        "(lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value)",
         "var result = lastValue + value;\r\n                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);",
         "tmp == lastValue",
         ""
@@ -461,8 +444,7 @@ var methods3 = new string[][]
         "ref int check, int value, int minValue, int maxValue, out int lastValue",
         "ref check, value, minValue, maxValue, out lastValue",
         "lastValue = Thread.VolatileRead(ref check);",
-        "lastValue < minValue || lastValue > maxValue",
-        "lastValue + value >= minValue && lastValue <= maxValue - value",
+        "(lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value)",
         "var result = lastValue + value;\r\n                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);",
         "tmp == lastValue",
         ""
@@ -570,12 +552,12 @@ namespace Theraot.Threading
         }
     <# } #><# foreach (var method in methods3){ #>
 
-        public static bool <#=method[0]#>(<#=method[1]#>)<#=method[8]#>
+        public static bool <#=method[0]#>(<#=method[1]#>)<#=method[7]#>
         {
-            <#= templates[3][0].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]).Replace("@4", method[7]) #>
+            <#= templates[3][0].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]) #>
         }
 
-        public static bool <#=method[0]#>(<#=method[1]#>, int milliseconds)<#=method[8]#>
+        public static bool <#=method[0]#>(<#=method[1]#>, int milliseconds)<#=method[7]#>
         {
             if (milliseconds < -1)
             {
@@ -585,18 +567,18 @@ namespace Theraot.Threading
             {
                 return <#=method[0]#>(<#=method[2]#>);
             }
-            <#= templates[3][1].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]).Replace("@4", method[7]) #>
+            <#= templates[3][1].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]) #>
         }
 
-        public static bool <#=method[0]#>(<#=method[1]#>, TimeSpan timeout)<#=method[8]#>
+        public static bool <#=method[0]#>(<#=method[1]#>, TimeSpan timeout)<#=method[7]#>
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            <#= templates[3][1].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]).Replace("@4", method[7]) #>
+            <#= templates[3][1].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]) #>
         }
 
-        public static bool <#=method[0]#>(<#=method[1]#>, IComparable<TimeSpan> timeout)<#=method[8]#>
+        public static bool <#=method[0]#>(<#=method[1]#>, IComparable<TimeSpan> timeout)<#=method[7]#>
         {
-            <#= templates[3][2].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]).Replace("@4", method[7]) #>
+            <#= templates[3][2].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]) #>
         }
     <# } #>}
 }

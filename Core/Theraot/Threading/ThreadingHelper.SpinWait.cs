@@ -1131,22 +1131,18 @@ namespace Theraot.Threading
             int count = 0;
         retry:
             var lastValue = Thread.VolatileRead(ref check);
-            if (lastValue < 0)
+            if ((lastValue < 0) || (lastValue < -value))
             {
                 return false;
             }
-            else if (lastValue >= -value)
+            else
             {
                 var result = lastValue + value;
-                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
                 if (tmp == lastValue)
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             SpinOnce(ref count);
             goto retry;
@@ -1167,22 +1163,18 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             var lastValue = Thread.VolatileRead(ref check);
-            if (lastValue < 0)
+            if ((lastValue < 0) || (lastValue < -value))
             {
                 return false;
             }
-            else if (lastValue >= -value)
+            else
             {
                 var result = lastValue + value;
-                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
                 if (tmp == lastValue)
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -1202,22 +1194,18 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             var lastValue = Thread.VolatileRead(ref check);
-            if (lastValue < 0)
+            if ((lastValue < 0) || (lastValue < -value))
             {
                 return false;
             }
-            else if (lastValue >= -value)
+            else
             {
                 var result = lastValue + value;
-                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
                 if (tmp == lastValue)
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -1236,22 +1224,18 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             var lastValue = Thread.VolatileRead(ref check);
-            if (lastValue < 0)
+            if ((lastValue < 0) || (lastValue < -value))
             {
                 return false;
             }
-            else if (lastValue >= -value)
+            else
             {
                 var result = lastValue + value;
-                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
                 if (tmp == lastValue)
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
@@ -1269,22 +1253,18 @@ namespace Theraot.Threading
             int count = 0;
         retry:
             lastValue = Thread.VolatileRead(ref check);
-            if (lastValue < 0)
+            if ((lastValue < 0) || (lastValue < -value))
             {
                 return false;
             }
-            else if (lastValue >= -value)
+            else
             {
                 var result = lastValue + value;
-                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
                 if (tmp == lastValue)
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             SpinOnce(ref count);
             goto retry;
@@ -1305,22 +1285,18 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             lastValue = Thread.VolatileRead(ref check);
-            if (lastValue < 0)
+            if ((lastValue < 0) || (lastValue < -value))
             {
                 return false;
             }
-            else if (lastValue >= -value)
+            else
             {
                 var result = lastValue + value;
-                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
                 if (tmp == lastValue)
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -1340,22 +1316,18 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             lastValue = Thread.VolatileRead(ref check);
-            if (lastValue < 0)
+            if ((lastValue < 0) || (lastValue < -value))
             {
                 return false;
             }
-            else if (lastValue >= -value)
+            else
             {
                 var result = lastValue + value;
-                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
                 if (tmp == lastValue)
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -1374,22 +1346,18 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             lastValue = Thread.VolatileRead(ref check);
-            if (lastValue < 0)
+            if ((lastValue < 0) || (lastValue < -value))
             {
                 return false;
             }
-            else if (lastValue >= -value)
+            else
             {
                 var result = lastValue + value;
-                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
                 if (tmp == lastValue)
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
@@ -1407,22 +1375,18 @@ namespace Theraot.Threading
             int count = 0;
         retry:
             var lastValue = Thread.VolatileRead(ref check);
-            if (lastValue > maxValue)
+            if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
                 return false;
             }
-            else if (lastValue <= maxValue - value)
+            else
             {
                 var result = lastValue + value;
-                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
                 if (tmp == lastValue)
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             SpinOnce(ref count);
             goto retry;
@@ -1443,22 +1407,18 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             var lastValue = Thread.VolatileRead(ref check);
-            if (lastValue > maxValue)
+            if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
                 return false;
             }
-            else if (lastValue <= maxValue - value)
+            else
             {
                 var result = lastValue + value;
-                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
                 if (tmp == lastValue)
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -1478,22 +1438,18 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             var lastValue = Thread.VolatileRead(ref check);
-            if (lastValue > maxValue)
+            if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
                 return false;
             }
-            else if (lastValue <= maxValue - value)
+            else
             {
                 var result = lastValue + value;
-                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
                 if (tmp == lastValue)
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -1512,22 +1468,18 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             var lastValue = Thread.VolatileRead(ref check);
-            if (lastValue > maxValue)
+            if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
                 return false;
             }
-            else if (lastValue <= maxValue - value)
+            else
             {
                 var result = lastValue + value;
-                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
                 if (tmp == lastValue)
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
@@ -1545,22 +1497,18 @@ namespace Theraot.Threading
             int count = 0;
         retry:
             lastValue = Thread.VolatileRead(ref check);
-            if (lastValue > maxValue)
+            if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
                 return false;
             }
-            else if (lastValue <= maxValue - value)
+            else
             {
                 var result = lastValue + value;
-                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
                 if (tmp == lastValue)
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             SpinOnce(ref count);
             goto retry;
@@ -1581,22 +1529,18 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             lastValue = Thread.VolatileRead(ref check);
-            if (lastValue > maxValue)
+            if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
                 return false;
             }
-            else if (lastValue <= maxValue - value)
+            else
             {
                 var result = lastValue + value;
-                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
                 if (tmp == lastValue)
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -1616,22 +1560,18 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             lastValue = Thread.VolatileRead(ref check);
-            if (lastValue > maxValue)
+            if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
                 return false;
             }
-            else if (lastValue <= maxValue - value)
+            else
             {
                 var result = lastValue + value;
-                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
                 if (tmp == lastValue)
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -1650,22 +1590,18 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             lastValue = Thread.VolatileRead(ref check);
-            if (lastValue > maxValue)
+            if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
                 return false;
             }
-            else if (lastValue <= maxValue - value)
+            else
             {
                 var result = lastValue + value;
-                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
                 if (tmp == lastValue)
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
@@ -1683,11 +1619,11 @@ namespace Theraot.Threading
             int count = 0;
         retry:
             var lastValue = Thread.VolatileRead(ref check);
-            if (lastValue < minValue || lastValue > maxValue)
+            if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
                 return false;
             }
-            else if (lastValue + value >= minValue && lastValue <= maxValue - value)
+            else
             {
                 var result = lastValue + value;
                 var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
@@ -1695,10 +1631,6 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             SpinOnce(ref count);
             goto retry;
@@ -1719,11 +1651,11 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             var lastValue = Thread.VolatileRead(ref check);
-            if (lastValue < minValue || lastValue > maxValue)
+            if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
                 return false;
             }
-            else if (lastValue + value >= minValue && lastValue <= maxValue - value)
+            else
             {
                 var result = lastValue + value;
                 var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
@@ -1731,10 +1663,6 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -1754,11 +1682,11 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             var lastValue = Thread.VolatileRead(ref check);
-            if (lastValue < minValue || lastValue > maxValue)
+            if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
                 return false;
             }
-            else if (lastValue + value >= minValue && lastValue <= maxValue - value)
+            else
             {
                 var result = lastValue + value;
                 var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
@@ -1766,10 +1694,6 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -1788,11 +1712,11 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             var lastValue = Thread.VolatileRead(ref check);
-            if (lastValue < minValue || lastValue > maxValue)
+            if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
                 return false;
             }
-            else if (lastValue + value >= minValue && lastValue <= maxValue - value)
+            else
             {
                 var result = lastValue + value;
                 var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
@@ -1800,10 +1724,6 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
@@ -1821,11 +1741,11 @@ namespace Theraot.Threading
             int count = 0;
         retry:
             lastValue = Thread.VolatileRead(ref check);
-            if (lastValue < minValue || lastValue > maxValue)
+            if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
                 return false;
             }
-            else if (lastValue + value >= minValue && lastValue <= maxValue - value)
+            else
             {
                 var result = lastValue + value;
                 var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
@@ -1833,10 +1753,6 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             SpinOnce(ref count);
             goto retry;
@@ -1857,11 +1773,11 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             lastValue = Thread.VolatileRead(ref check);
-            if (lastValue < minValue || lastValue > maxValue)
+            if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
                 return false;
             }
-            else if (lastValue + value >= minValue && lastValue <= maxValue - value)
+            else
             {
                 var result = lastValue + value;
                 var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
@@ -1869,10 +1785,6 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -1892,11 +1804,11 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             lastValue = Thread.VolatileRead(ref check);
-            if (lastValue < minValue || lastValue > maxValue)
+            if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
                 return false;
             }
-            else if (lastValue + value >= minValue && lastValue <= maxValue - value)
+            else
             {
                 var result = lastValue + value;
                 var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
@@ -1904,10 +1816,6 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -1926,11 +1834,11 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             lastValue = Thread.VolatileRead(ref check);
-            if (lastValue < minValue || lastValue > maxValue)
+            if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
                 return false;
             }
-            else if (lastValue + value >= minValue && lastValue <= maxValue - value)
+            else
             {
                 var result = lastValue + value;
                 var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
@@ -1938,10 +1846,6 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-            }
-            else
-            {
-                return false;
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
