@@ -1143,10 +1143,10 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             SpinOnce(ref count);
             goto retry;
@@ -1179,10 +1179,10 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -1214,10 +1214,10 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -1248,10 +1248,10 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
@@ -1281,10 +1281,10 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             SpinOnce(ref count);
             goto retry;
@@ -1317,10 +1317,10 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -1352,10 +1352,10 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -1386,10 +1386,10 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
@@ -1419,10 +1419,10 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             SpinOnce(ref count);
             goto retry;
@@ -1455,10 +1455,10 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -1490,10 +1490,10 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -1524,10 +1524,10 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
@@ -1557,10 +1557,10 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             SpinOnce(ref count);
             goto retry;
@@ -1593,10 +1593,10 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -1628,10 +1628,10 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -1662,10 +1662,10 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
@@ -1695,10 +1695,10 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             SpinOnce(ref count);
             goto retry;
@@ -1731,10 +1731,10 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -1766,10 +1766,10 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -1800,10 +1800,10 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
@@ -1833,10 +1833,10 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             SpinOnce(ref count);
             goto retry;
@@ -1869,10 +1869,10 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -1904,10 +1904,10 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -1938,10 +1938,10 @@ namespace Theraot.Threading
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {

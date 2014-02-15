@@ -232,10 +232,10 @@ var templates = new string[][]
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             SpinOnce(ref count);
             goto retry;
@@ -255,10 +255,10 @@ var templates = new string[][]
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -284,10 +284,10 @@ var templates = new string[][]
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            else
+            {
+                return false;
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
