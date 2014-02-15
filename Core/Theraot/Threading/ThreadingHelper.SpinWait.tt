@@ -268,10 +268,17 @@ var templates = new string[][]
             @0
             if (@1)
             {
-                @2
-                if (@3)
+                return false;
+            }
+            else
+            {
+                if (@2)
                 {
-                    return true;
+                    @3
+                    if (@4)
+                    {
+                        return true;
+                    }
                 }
             }
             SpinOnce(ref count);
@@ -283,10 +290,17 @@ var templates = new string[][]
             @0
             if (@1)
             {
-                @2
-                if (@3)
+                return false;
+            }
+            else
+            {
+                if (@2)
                 {
-                    return true;
+                    @3
+                    if (@4)
+                    {
+                        return true;
+                    }
                 }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
@@ -304,10 +318,17 @@ var templates = new string[][]
             @0
             if (@1)
             {
-                @2
-                if (@3)
+                return false;
+            }
+            else
+            {
+                if (@2)
                 {
-                    return true;
+                    @3
+                    if (@4)
+                    {
+                        return true;
+                    }
                 }
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
@@ -377,6 +398,16 @@ var methods1 = new string[][]
         "tmpA = Thread.VolatileRead(ref check);\r\n                tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);",
         "tmpB == tmpA",
         ""
+    },
+    new string[]
+    {
+        "SpinWaitRelativeExchange",
+        "ref int check, int value, out int result",
+        "ref check, value, out result",
+        "var tmpA = Thread.VolatileRead(ref check);\r\n            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);\r\n            result = tmpB + value;",
+        "tmpA = Thread.VolatileRead(ref check);\r\n                tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);\r\n                result = tmpB + value;",
+        "tmpB == tmpA",
+        ""
     }
 };
 
@@ -384,7 +415,7 @@ var methods2 = new string[][]
 {
     new string[]
     {
-        "SpinWaitRelativeSet",
+        "SpinWaitRelativeSetUnless",
         "ref int check, int value, int unless",
         "ref check, value, unless",
         "var tmpA = Thread.VolatileRead(ref check);\r\n            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);",
@@ -395,7 +426,7 @@ var methods2 = new string[][]
     },
     new string[]
     {
-        "SpinWaitRelativeExchange",
+        "SpinWaitRelativeExchangeUnless",
         "ref int check, int value, int unless, out int result",
         "ref check, value, unless, out result",
         "var tmpA = Thread.VolatileRead(ref check);\r\n            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);\r\n            result = tmpB + value;",
@@ -411,23 +442,25 @@ var methods3 = new string[][]
     new string[]
     {
         "SpinWaitRelativeSetUnlessNegative",
-        "ref int check, int value",
-        "ref check, value",
-        "var tmpA = Thread.VolatileRead(ref check);\r\n            var tmpB = tmpA + value;",
-        "tmpA >= 0 && tmpB >= 0",
-        "var tmpC = Interlocked.CompareExchange(ref check, tmpB, tmpA);",
-        "tmpC == tmpA",
+        "ref int check, int value, int maxValue",
+        "ref check, value, maxValue",
+        "var lastValue = Thread.VolatileRead(ref check);",
+        "lastValue < 0",
+        "lastValue >= -value",
+        "var result = lastValue + value;\r\n                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);",
+        "tmp == lastValue",
         ""
     },
     new string[]
     {
         "SpinWaitRelativeExchangeUnlessNegative",
-        "ref int check, int value, out int result",
-        "ref check, value, out result",
-        "var tmpA = Thread.VolatileRead(ref check);\r\n            result = tmpA + value;",
-        "tmpA >= 0 && result >= 0",
-        "var tmpC = Interlocked.CompareExchange(ref check, result, tmpA);",
-        "tmpC == tmpA",
+        "ref int check, int value, int maxValue, out int lastValue",
+        "ref check, value, maxValue, out lastValue",
+        "lastValue = Thread.VolatileRead(ref check);",
+        "lastValue < 0",
+        "lastValue >= -value",
+        "var result = lastValue + value;\r\n                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);",
+        "tmp == lastValue",
         ""
     },
     new string[]
@@ -435,21 +468,23 @@ var methods3 = new string[][]
         "SpinWaitRelativeSetUnlessExcess",
         "ref int check, int value, int maxValue",
         "ref check, value, maxValue",
-        "var tmpA = Thread.VolatileRead(ref check);\r\n            var tmpB = tmpA + value;",
-        "tmpA <= maxValue && tmpB <= maxValue",
-        "var tmpC = Interlocked.CompareExchange(ref check, tmpB, tmpA);",
-        "tmpC == tmpA",
+        "var lastValue = Thread.VolatileRead(ref check);",
+        "lastValue > maxValue",
+        "lastValue <= maxValue - value",
+        "var result = lastValue + value;\r\n                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);",
+        "tmp == lastValue",
         ""
     },
     new string[]
     {
         "SpinWaitRelativeExchangeUnlessExcess",
-        "ref int check, int value, int maxValue, out int result",
-        "ref check, value, out result, maxValue",
-        "var tmpA = Thread.VolatileRead(ref check);\r\n            result = tmpA + value;",
-        "tmpA <= maxValue && result <= maxValue",
-        "var tmpC = Interlocked.CompareExchange(ref check, result, tmpA);",
-        "tmpC == tmpA",
+        "ref int check, int value, int maxValue, out int lastValue",
+        "ref check, value, maxValue, out lastValue",
+        "lastValue = Thread.VolatileRead(ref check);",
+        "lastValue > maxValue",
+        "lastValue <= maxValue - value",
+        "var result = lastValue + value;\r\n                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);",
+        "tmp == lastValue",
         ""
     }
 };
@@ -555,12 +590,12 @@ namespace Theraot.Threading
         }
     <# } #><# foreach (var method in methods3){ #>
 
-        public static bool <#=method[0]#>(<#=method[1]#>)<#=method[7]#>
+        public static bool <#=method[0]#>(<#=method[1]#>)<#=method[8]#>
         {
-            <#= templates[3][0].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]) #>
+            <#= templates[3][0].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]).Replace("@4", method[7]) #>
         }
 
-        public static bool <#=method[0]#>(<#=method[1]#>, int milliseconds)<#=method[7]#>
+        public static bool <#=method[0]#>(<#=method[1]#>, int milliseconds)<#=method[8]#>
         {
             if (milliseconds < -1)
             {
@@ -570,18 +605,18 @@ namespace Theraot.Threading
             {
                 return <#=method[0]#>(<#=method[2]#>);
             }
-            <#= templates[3][1].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]) #>
+            <#= templates[3][1].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]).Replace("@4", method[7]) #>
         }
 
-        public static bool <#=method[0]#>(<#=method[1]#>, TimeSpan timeout)<#=method[7]#>
+        public static bool <#=method[0]#>(<#=method[1]#>, TimeSpan timeout)<#=method[8]#>
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            <#= templates[3][1].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]) #>
+            <#= templates[3][1].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]).Replace("@4", method[7]) #>
         }
 
-        public static bool <#=method[0]#>(<#=method[1]#>, IComparable<TimeSpan> timeout)<#=method[7]#>
+        public static bool <#=method[0]#>(<#=method[1]#>, IComparable<TimeSpan> timeout)<#=method[8]#>
         {
-            <#= templates[3][2].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]) #>
+            <#= templates[3][2].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]).Replace("@4", method[7]) #>
         }
     <# } #>}
 }
