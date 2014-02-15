@@ -160,65 +160,6 @@ var templates = new string[][]
     new string[]
     {
         @"int count = 0;
-            var start = TicksNow();
-        retry:
-            @0
-            if (@1)
-            {
-                return true;
-            }
-            else if (@2)
-            {
-                return false;
-            }
-            SpinOnce(ref count);
-            goto retry;",
-        @"int count = 0;
-            var start = TicksNow();
-        retry:
-            @0
-            if (@1)
-            {
-                return true;
-            }
-            else if (@2)
-            {
-                return false;
-            }
-            if (Milliseconds(TicksNow() - start) < milliseconds)
-            {
-                SpinOnce(ref count);
-                goto retry;
-            }
-            else
-            {
-                return false;
-            }",
-        @"int count = 0;
-            var start = DateTime.Now;
-        retry:
-            @0
-            if (@1)
-            {
-                return true;
-            }
-            else if (@2)
-            {
-                return false;
-            }
-            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-            {
-                SpinOnce(ref count);
-                goto retry;
-            }
-            else
-            {
-                return false;
-            }"
-    },
-    new string[]
-    {
-        @"int count = 0;
         retry:
             @0
             if (@1)
@@ -364,9 +305,10 @@ var methods2 = new string[][]
         "SpinWaitRelativeSetUnless",
         "ref int check, int value, int unless",
         "ref check, value, unless",
-        "var lastValue = Thread.VolatileRead(ref check);\r\n            var tmpB = Interlocked.CompareExchange(ref check, lastValue + value, lastValue);",
+        "var lastValue = Thread.VolatileRead(ref check);\r\n            var result = lastValue + value;",
+        "(lastValue == unless) || (result == unless)",
+        "var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);",
         "tmpB == lastValue",
-        "tmpB == unless",
         ""
     },
     new string[]
@@ -374,15 +316,12 @@ var methods2 = new string[][]
         "SpinWaitRelativeExchangeUnless",
         "ref int check, int value, int unless, out int result",
         "ref check, value, unless, out result",
-        "var lastValue = Thread.VolatileRead(ref check);\r\n            var tmpB = Interlocked.CompareExchange(ref check, lastValue + value, lastValue);\r\n            result = tmpB + value;",
+        "var lastValue = Thread.VolatileRead(ref check);\r\n            result = lastValue + value;",
+        "(lastValue == unless) || (lastValue + value == unless)",
+        "var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);",
         "tmpB == lastValue",
-        "tmpB == unless",
         ""
-    }
-};
-
-var methods3 = new string[][]
-{
+    },
     new string[]
     {
         "SpinWaitRelativeSetUnlessNegative",
@@ -522,39 +461,9 @@ namespace Theraot.Threading
         }
     <# } #><# foreach (var method in methods2){ #>
 
-        public static bool <#=method[0]#>(<#=method[1]#>)<#=method[6]#>
-        {
-            <#= templates[2][0].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]) #>
-        }
-
-        public static bool <#=method[0]#>(<#=method[1]#>, int milliseconds)<#=method[6]#>
-        {
-            if (milliseconds < -1)
-            {
-                throw new ArgumentOutOfRangeException("milliseconds");
-            }
-            else if (milliseconds == -1)
-            {
-                return <#=method[0]#>(<#=method[2]#>);
-            }
-            <#= templates[2][1].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]) #>
-        }
-
-        public static bool <#=method[0]#>(<#=method[1]#>, TimeSpan timeout)<#=method[6]#>
-        {
-            var milliseconds = (long)timeout.TotalMilliseconds;
-            <#= templates[2][1].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]) #>
-        }
-
-        public static bool <#=method[0]#>(<#=method[1]#>, IComparable<TimeSpan> timeout)<#=method[6]#>
-        {
-            <#= templates[2][2].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]) #>
-        }
-    <# } #><# foreach (var method in methods3){ #>
-
         public static bool <#=method[0]#>(<#=method[1]#>)<#=method[7]#>
         {
-            <#= templates[3][0].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]) #>
+            <#= templates[2][0].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]) #>
         }
 
         public static bool <#=method[0]#>(<#=method[1]#>, int milliseconds)<#=method[7]#>
@@ -567,18 +476,18 @@ namespace Theraot.Threading
             {
                 return <#=method[0]#>(<#=method[2]#>);
             }
-            <#= templates[3][1].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]) #>
+            <#= templates[2][1].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]) #>
         }
 
         public static bool <#=method[0]#>(<#=method[1]#>, TimeSpan timeout)<#=method[7]#>
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            <#= templates[3][1].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]) #>
+            <#= templates[2][1].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]) #>
         }
 
         public static bool <#=method[0]#>(<#=method[1]#>, IComparable<TimeSpan> timeout)<#=method[7]#>
         {
-            <#= templates[3][2].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]) #>
+            <#= templates[2][2].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]) #>
         }
     <# } #>}
 }

@@ -913,20 +913,24 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeSetUnless(ref int check, int value, int unless)
         {
             int count = 0;
-            var start = TicksNow();
         retry:
             var lastValue = Thread.VolatileRead(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, lastValue + value, lastValue);
-            if (tmpB == lastValue)
-            {
-                return true;
-            }
-            else if (tmpB == unless)
+            var result = lastValue + value;
+            if ((lastValue == unless) || (result == unless))
             {
                 return false;
             }
+            else
+            {
+                var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmpB == lastValue)
+                {
+                    return true;
+                }
+            }
             SpinOnce(ref count);
             goto retry;
+            
         }
 
         public static bool SpinWaitRelativeSetUnless(ref int check, int value, int unless, int milliseconds)
@@ -943,14 +947,18 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             var lastValue = Thread.VolatileRead(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, lastValue + value, lastValue);
-            if (tmpB == lastValue)
-            {
-                return true;
-            }
-            else if (tmpB == unless)
+            var result = lastValue + value;
+            if ((lastValue == unless) || (result == unless))
             {
                 return false;
+            }
+            else
+            {
+                var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmpB == lastValue)
+                {
+                    return true;
+                }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -970,14 +978,18 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             var lastValue = Thread.VolatileRead(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, lastValue + value, lastValue);
-            if (tmpB == lastValue)
-            {
-                return true;
-            }
-            else if (tmpB == unless)
+            var result = lastValue + value;
+            if ((lastValue == unless) || (result == unless))
             {
                 return false;
+            }
+            else
+            {
+                var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmpB == lastValue)
+                {
+                    return true;
+                }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -996,14 +1008,18 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             var lastValue = Thread.VolatileRead(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, lastValue + value, lastValue);
-            if (tmpB == lastValue)
-            {
-                return true;
-            }
-            else if (tmpB == unless)
+            var result = lastValue + value;
+            if ((lastValue == unless) || (result == unless))
             {
                 return false;
+            }
+            else
+            {
+                var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmpB == lastValue)
+                {
+                    return true;
+                }
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
@@ -1019,21 +1035,24 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeExchangeUnless(ref int check, int value, int unless, out int result)
         {
             int count = 0;
-            var start = TicksNow();
         retry:
             var lastValue = Thread.VolatileRead(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, lastValue + value, lastValue);
-            result = tmpB + value;
-            if (tmpB == lastValue)
-            {
-                return true;
-            }
-            else if (tmpB == unless)
+            result = lastValue + value;
+            if ((lastValue == unless) || (lastValue + value == unless))
             {
                 return false;
             }
+            else
+            {
+                var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmpB == lastValue)
+                {
+                    return true;
+                }
+            }
             SpinOnce(ref count);
             goto retry;
+            
         }
 
         public static bool SpinWaitRelativeExchangeUnless(ref int check, int value, int unless, out int result, int milliseconds)
@@ -1050,15 +1069,18 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             var lastValue = Thread.VolatileRead(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, lastValue + value, lastValue);
-            result = tmpB + value;
-            if (tmpB == lastValue)
-            {
-                return true;
-            }
-            else if (tmpB == unless)
+            result = lastValue + value;
+            if ((lastValue == unless) || (lastValue + value == unless))
             {
                 return false;
+            }
+            else
+            {
+                var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmpB == lastValue)
+                {
+                    return true;
+                }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -1078,15 +1100,18 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             var lastValue = Thread.VolatileRead(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, lastValue + value, lastValue);
-            result = tmpB + value;
-            if (tmpB == lastValue)
-            {
-                return true;
-            }
-            else if (tmpB == unless)
+            result = lastValue + value;
+            if ((lastValue == unless) || (lastValue + value == unless))
             {
                 return false;
+            }
+            else
+            {
+                var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmpB == lastValue)
+                {
+                    return true;
+                }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
@@ -1105,15 +1130,18 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             var lastValue = Thread.VolatileRead(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, lastValue + value, lastValue);
-            result = tmpB + value;
-            if (tmpB == lastValue)
-            {
-                return true;
-            }
-            else if (tmpB == unless)
+            result = lastValue + value;
+            if ((lastValue == unless) || (lastValue + value == unless))
             {
                 return false;
+            }
+            else
+            {
+                var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmpB == lastValue)
+                {
+                    return true;
+                }
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
