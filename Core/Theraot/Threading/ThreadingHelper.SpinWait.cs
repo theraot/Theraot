@@ -1258,7 +1258,7 @@ namespace Theraot.Threading
             }
         }
     
-        public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value, int maxValue)
+        public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value)
         {
             int count = 0;
         retry:
@@ -1284,7 +1284,7 @@ namespace Theraot.Threading
             
         }
 
-        public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value, int maxValue, int milliseconds)
+        public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value, int milliseconds)
         {
             if (milliseconds < -1)
             {
@@ -1292,7 +1292,7 @@ namespace Theraot.Threading
             }
             else if (milliseconds == -1)
             {
-                return SpinWaitRelativeSetUnlessNegative(ref check, value, maxValue);
+                return SpinWaitRelativeSetUnlessNegative(ref check, value);
             }
             int count = 0;
             var start = TicksNow();
@@ -1325,7 +1325,7 @@ namespace Theraot.Threading
             }
         }
 
-        public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value, int maxValue, TimeSpan timeout)
+        public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
             int count = 0;
@@ -1359,7 +1359,7 @@ namespace Theraot.Threading
             }
         }
 
-        public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value, int maxValue, IComparable<TimeSpan> timeout)
+        public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value, IComparable<TimeSpan> timeout)
         {
             int count = 0;
             var start = DateTime.Now;
@@ -1392,7 +1392,7 @@ namespace Theraot.Threading
             }
         }
     
-        public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, int maxValue, out int lastValue)
+        public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, out int lastValue)
         {
             int count = 0;
         retry:
@@ -1418,7 +1418,7 @@ namespace Theraot.Threading
             
         }
 
-        public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, int maxValue, out int lastValue, int milliseconds)
+        public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, out int lastValue, int milliseconds)
         {
             if (milliseconds < -1)
             {
@@ -1426,7 +1426,7 @@ namespace Theraot.Threading
             }
             else if (milliseconds == -1)
             {
-                return SpinWaitRelativeExchangeUnlessNegative(ref check, value, maxValue, out lastValue);
+                return SpinWaitRelativeExchangeUnlessNegative(ref check, value, out lastValue);
             }
             int count = 0;
             var start = TicksNow();
@@ -1459,7 +1459,7 @@ namespace Theraot.Threading
             }
         }
 
-        public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, int maxValue, out int lastValue, TimeSpan timeout)
+        public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, out int lastValue, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
             int count = 0;
@@ -1493,7 +1493,7 @@ namespace Theraot.Threading
             }
         }
 
-        public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, int maxValue, out int lastValue, IComparable<TimeSpan> timeout)
+        public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, out int lastValue, IComparable<TimeSpan> timeout)
         {
             int count = 0;
             var start = DateTime.Now;

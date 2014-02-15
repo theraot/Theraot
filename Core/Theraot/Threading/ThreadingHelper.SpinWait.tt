@@ -442,8 +442,8 @@ var methods3 = new string[][]
     new string[]
     {
         "SpinWaitRelativeSetUnlessNegative",
-        "ref int check, int value, int maxValue",
-        "ref check, value, maxValue",
+        "ref int check, int value",
+        "ref check, value",
         "var lastValue = Thread.VolatileRead(ref check);",
         "lastValue < 0",
         "lastValue >= -value",
@@ -454,8 +454,8 @@ var methods3 = new string[][]
     new string[]
     {
         "SpinWaitRelativeExchangeUnlessNegative",
-        "ref int check, int value, int maxValue, out int lastValue",
-        "ref check, value, maxValue, out lastValue",
+        "ref int check, int value, out int lastValue",
+        "ref check, value, out lastValue",
         "lastValue = Thread.VolatileRead(ref check);",
         "lastValue < 0",
         "lastValue >= -value",
