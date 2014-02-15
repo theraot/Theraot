@@ -1,6 +1,7 @@
 ﻿#if NET20 || NET30 || NET35
 
 using System.Diagnostics;
+using Theraot.Threading;
 
 namespace System.Threading
 {
@@ -80,7 +81,7 @@ namespace System.Threading
         {
             if (!TryAddCount(signalCount))
             {
-                throw new InvalidOperationException("Zero");
+                throw new InvalidOperationException("Already Zero");
             }
         }
 
@@ -122,7 +123,7 @@ namespace System.Threading
             this.CheckDisposed();
             if (Thread.VolatileRead(ref _currentCount) <= 0)
             {
-                throw new InvalidOperationException("Zero");
+                throw new InvalidOperationException("Below Zero");
             }
             else
             {
@@ -136,7 +137,7 @@ namespace System.Threading
                 {
                     if (currentCount < 0)
                     {
-                        throw new InvalidOperationException("Zero");
+                        throw new InvalidOperationException("Below Zero");
                     }
                     else
                     {
@@ -155,29 +156,30 @@ namespace System.Threading
             else
             {
                 CheckDisposed();
-                int finalCount;
-                if (Theraot.Threading.ThreadingHelper.SpinWaitRelativeExchangeUnlessNegative(ref _currentCount, -signalCount, out finalCount))
+                int lastValue;
+                if (ThreadingHelper.SpinWaitRelativeExchangeUnlessNegative(ref _currentCount, -signalCount, out lastValue))
                 {
-                    if (finalCount > 0)
-                    {
-                        return false;
-                    }
-                    else
+                    var result = lastValue - signalCount;
+                    if (result == 0)
                     {
                         _event.Set();
                         return true;
                     }
+                    else
+                    {
+                        return false;
+                    }
                 }
                 else
                 {
-                    return false;
+                    throw new InvalidOperationException("Below Zero");
                 }
             }
         }
 
         public bool TryAddCount()
         {
-            return this.TryAddCount(1);
+            return TryAddCount(1);
         }
 
         public bool TryAddCount(int signalCount)
@@ -188,26 +190,34 @@ namespace System.Threading
             }
             else
             {
-                this.CheckDisposed();
-                if (Theraot.Threading.ThreadingHelper.SpinWaitRelativeSetUnlessNegative(ref _currentCount, -signalCount))
+                CheckDisposed();
+                int lastValue;
+                if (ThreadingHelper.SpinWaitRelativeExchangeBounded(ref _currentCount, signalCount, 1, int.MaxValue, out lastValue))
                 {
-                    return false;
+                    return true;
                 }
                 else
                 {
-                    return true;
+                    if (lastValue < 1)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Max");
+                    }
                 }
             }
         }
 
         public void Wait()
         {
-            this.Wait(-1, new CancellationToken());
+            Wait(-1, CancellationToken.None);
         }
 
         public void Wait(CancellationToken cancellationToken)
         {
-            this.Wait(-1, cancellationToken);
+            Wait(-1, cancellationToken);
         }
 
         public bool Wait(TimeSpan timeout)
@@ -219,7 +229,7 @@ namespace System.Threading
             }
             else
             {
-                return this.Wait((int)totalMilliseconds, new CancellationToken());
+                return Wait((int)totalMilliseconds, CancellationToken.None);
             }
         }
 
@@ -227,7 +237,7 @@ namespace System.Threading
         {
             CheckDisposed();
             cancellationToken.ThrowIfCancellationRequested();
-            bool isSet = this.IsSet;
+            bool isSet = IsSet;
             if (!isSet)
             {
                 isSet = _event.Wait(timeout, cancellationToken);
@@ -237,7 +247,7 @@ namespace System.Threading
 
         public bool Wait(int millisecondsTimeout)
         {
-            return Wait(millisecondsTimeout, new CancellationToken());
+            return Wait(millisecondsTimeout, CancellationToken.None);
         }
 
         public bool Wait(int millisecondsTimeout, CancellationToken cancellationToken)
