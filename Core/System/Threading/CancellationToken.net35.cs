@@ -3,6 +3,7 @@
 // Authors:
 //       Jérémie "Garuma" Laval <jeremie.laval@gmail.com>
 //       Marek Safar (marek.safar@gmail.com)
+//       Alfonso J. Ramos (theraot@gmail.com)
 //
 // Copyright (c) 2009 Jérémie "Garuma" Laval
 // Copyright 2011 Xamarin, Inc (http://www.xamarin.com)
@@ -70,7 +71,14 @@ namespace System.Threading
         {
             get
             {
-                return Source.IsCancellationRequested;
+                if (_source == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return Source.IsCancellationRequested;
+                }
             }
         }
 
@@ -102,7 +110,7 @@ namespace System.Threading
 
         public bool Equals(CancellationToken other)
         {
-            return this.Source == other.Source;
+            return Source == other.Source;
         }
 
         public override bool Equals(object other)
@@ -122,7 +130,14 @@ namespace System.Threading
 
         public CancellationTokenRegistration Register(Action callback, bool useSynchronizationContext)
         {
-            return Source.Register(Check.NotNullArgument(callback, "callback"), useSynchronizationContext);
+            if (_source == null)
+            {
+                return new CancellationTokenRegistration();
+            }
+            else
+            {
+                return Source.Register(Check.NotNullArgument(callback, "callback"), useSynchronizationContext);
+            }
         }
 
         public CancellationTokenRegistration Register(Action<object> callback, object state)
@@ -141,15 +156,6 @@ namespace System.Threading
             if (!ReferenceEquals(_source, null) && _source.IsCancellationRequested)
             {
                 throw new Theraot.Core.NewOperationCanceledException(this);
-            }
-        }
-
-        internal void ThrowIfSourceDisposed()
-        {
-            var source = _source;
-            if (!ReferenceEquals(source, null))
-            {
-                source.CheckDisposed();
             }
         }
     }

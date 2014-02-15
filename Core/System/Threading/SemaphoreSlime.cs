@@ -114,7 +114,7 @@ namespace System.Threading
             else
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                cancellationToken.ThrowIfSourceDisposed();
+                GC.KeepAlive(cancellationToken.WaitHandle);
                 if (millisecondsTimeout == -1)
                 {
                     ThreadingHelper.SpinWaitRelativeSet(ref _count, 1);
