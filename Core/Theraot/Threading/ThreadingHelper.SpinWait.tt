@@ -160,105 +160,60 @@ var templates = new string[][]
     new string[]
     {
         @"int count = 0;
+            var start = TicksNow();
+        retry:
             @0
-            if (@2)
+            if (@1)
             {
                 return true;
             }
-            else if (@3)
+            else if (@2)
             {
                 return false;
             }
+            SpinOnce(ref count);
+            goto retry;",
+        @"int count = 0;
+            var start = TicksNow();
+        retry:
+            @0
+            if (@1)
+            {
+                return true;
+            }
+            else if (@2)
+            {
+                return false;
+            }
+            if (Milliseconds(TicksNow() - start) < milliseconds)
+            {
+                SpinOnce(ref count);
+                goto retry;
+            }
             else
             {
-                var start = TicksNow();
-            retry:
-                @1
-                if (@2)
-                {
-                    return true;
-                }
-                else if (@3)
-                {
-                    return false;
-                }
-                else
-                {
-                    SpinOnce(ref count);
-                    goto retry;
-                }
+                return false;
             }",
         @"int count = 0;
+            var start = DateTime.Now;
+        retry:
             @0
-            if (@2)
+            if (@1)
             {
                 return true;
             }
-            else if (@3)
+            else if (@2)
             {
                 return false;
             }
-            else
+            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                var start = TicksNow();
-            retry:
-                @1
-                if (@2)
-                {
-                    return true;
-                }
-                else if (@3)
-                {
-                    return false;
-                }
-                else
-                {
-                    if (Milliseconds(TicksNow() - start) < milliseconds)
-                    {
-                        SpinOnce(ref count);
-                        goto retry;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }",
-        @"int count = 0;
-            @0
-            if (@2)
-            {
-                return true;
+                SpinOnce(ref count);
+                goto retry;
             }
-            else if (@3)
+            else
             {
                 return false;
-            }
-            else
-            {
-                var start = DateTime.Now;
-            retry:
-                @1
-                if (@2)
-                {
-                    return true;
-                }
-                else if (@3)
-                {
-                    return false;
-                }
-                else
-                {
-                    if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-                    {
-                        SpinOnce(ref count);
-                        goto retry;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
             }"
     },
     new string[]
@@ -270,19 +225,16 @@ var templates = new string[][]
             {
                 return false;
             }
-            else
+            else if (@2)
             {
-                if (@2)
+                @3
+                if (@4)
                 {
-                    @3
-                    if (@4)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             SpinOnce(ref count);
@@ -296,19 +248,16 @@ var templates = new string[][]
             {
                 return false;
             }
-            else
+            else if (@2)
             {
-                if (@2)
+                @3
+                if (@4)
                 {
-                    @3
-                    if (@4)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
@@ -328,19 +277,16 @@ var templates = new string[][]
             {
                 return false;
             }
-            else
+            else if (@2)
             {
-                if (@2)
+                @3
+                if (@4)
                 {
-                    @3
-                    if (@4)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
@@ -430,9 +376,8 @@ var methods2 = new string[][]
         "SpinWaitRelativeSetUnless",
         "ref int check, int value, int unless",
         "ref check, value, unless",
-        "var tmpA = Thread.VolatileRead(ref check);\r\n            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);",
-        "tmpA = Thread.VolatileRead(ref check);\r\n                tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);",
-        "tmpB == tmpA",
+        "var lastValue = Thread.VolatileRead(ref check);\r\n            var tmpB = Interlocked.CompareExchange(ref check, lastValue + value, lastValue);",
+        "tmpB == lastValue",
         "tmpB == unless",
         ""
     },
@@ -441,9 +386,8 @@ var methods2 = new string[][]
         "SpinWaitRelativeExchangeUnless",
         "ref int check, int value, int unless, out int result",
         "ref check, value, unless, out result",
-        "var tmpA = Thread.VolatileRead(ref check);\r\n            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);\r\n            result = tmpB + value;",
-        "tmpA = Thread.VolatileRead(ref check);\r\n                tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);\r\n                result = tmpB + value;",
-        "tmpB == tmpA",
+        "var lastValue = Thread.VolatileRead(ref check);\r\n            var tmpB = Interlocked.CompareExchange(ref check, lastValue + value, lastValue);\r\n            result = tmpB + value;",
+        "tmpB == lastValue",
         "tmpB == unless",
         ""
     }
@@ -507,7 +451,7 @@ var methods3 = new string[][]
         "var lastValue = Thread.VolatileRead(ref check);",
         "lastValue < minValue || lastValue > maxValue",
         "lastValue + value >= minValue && lastValue <= maxValue - value",
-        "var result = lastValue + value;\r\n                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);",
+        "var result = lastValue + value;\r\n                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);",
         "tmp == lastValue",
         ""
     },
@@ -519,7 +463,7 @@ var methods3 = new string[][]
         "lastValue = Thread.VolatileRead(ref check);",
         "lastValue < minValue || lastValue > maxValue",
         "lastValue + value >= minValue && lastValue <= maxValue - value",
-        "var result = lastValue + value;\r\n                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);",
+        "var result = lastValue + value;\r\n                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);",
         "tmp == lastValue",
         ""
     }
@@ -596,12 +540,12 @@ namespace Theraot.Threading
         }
     <# } #><# foreach (var method in methods2){ #>
 
-        public static bool <#=method[0]#>(<#=method[1]#>)<#=method[7]#>
+        public static bool <#=method[0]#>(<#=method[1]#>)<#=method[6]#>
         {
-            <#= templates[2][0].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]) #>
+            <#= templates[2][0].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]) #>
         }
 
-        public static bool <#=method[0]#>(<#=method[1]#>, int milliseconds)<#=method[7]#>
+        public static bool <#=method[0]#>(<#=method[1]#>, int milliseconds)<#=method[6]#>
         {
             if (milliseconds < -1)
             {
@@ -611,18 +555,18 @@ namespace Theraot.Threading
             {
                 return <#=method[0]#>(<#=method[2]#>);
             }
-            <#= templates[2][1].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]) #>
+            <#= templates[2][1].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]) #>
         }
 
-        public static bool <#=method[0]#>(<#=method[1]#>, TimeSpan timeout)<#=method[7]#>
+        public static bool <#=method[0]#>(<#=method[1]#>, TimeSpan timeout)<#=method[6]#>
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            <#= templates[2][1].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]) #>
+            <#= templates[2][1].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]) #>
         }
 
-        public static bool <#=method[0]#>(<#=method[1]#>, IComparable<TimeSpan> timeout)<#=method[7]#>
+        public static bool <#=method[0]#>(<#=method[1]#>, IComparable<TimeSpan> timeout)<#=method[6]#>
         {
-            <#= templates[2][2].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]).Replace("@3", method[6]) #>
+            <#= templates[2][2].Replace("@0", method[3]).Replace("@1", method[4]).Replace("@2", method[5]) #>
         }
     <# } #><# foreach (var method in methods3){ #>
 

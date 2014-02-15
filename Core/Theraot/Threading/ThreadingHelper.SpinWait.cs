@@ -913,9 +913,11 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeSetUnless(ref int check, int value, int unless)
         {
             int count = 0;
-            var tmpA = Thread.VolatileRead(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-            if (tmpB == tmpA)
+            var start = TicksNow();
+        retry:
+            var lastValue = Thread.VolatileRead(ref check);
+            var tmpB = Interlocked.CompareExchange(ref check, lastValue + value, lastValue);
+            if (tmpB == lastValue)
             {
                 return true;
             }
@@ -923,26 +925,8 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            else
-            {
-                var start = TicksNow();
-            retry:
-                tmpA = Thread.VolatileRead(ref check);
-                tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-                if (tmpB == tmpA)
-                {
-                    return true;
-                }
-                else if (tmpB == unless)
-                {
-                    return false;
-                }
-                else
-                {
-                    SpinOnce(ref count);
-                    goto retry;
-                }
-            }
+            SpinOnce(ref count);
+            goto retry;
         }
 
         public static bool SpinWaitRelativeSetUnless(ref int check, int value, int unless, int milliseconds)
@@ -956,9 +940,11 @@ namespace Theraot.Threading
                 return SpinWaitRelativeSetUnless(ref check, value, unless);
             }
             int count = 0;
-            var tmpA = Thread.VolatileRead(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-            if (tmpB == tmpA)
+            var start = TicksNow();
+        retry:
+            var lastValue = Thread.VolatileRead(ref check);
+            var tmpB = Interlocked.CompareExchange(ref check, lastValue + value, lastValue);
+            if (tmpB == lastValue)
             {
                 return true;
             }
@@ -966,32 +952,14 @@ namespace Theraot.Threading
             {
                 return false;
             }
+            if (Milliseconds(TicksNow() - start) < milliseconds)
+            {
+                SpinOnce(ref count);
+                goto retry;
+            }
             else
             {
-                var start = TicksNow();
-            retry:
-                tmpA = Thread.VolatileRead(ref check);
-                tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-                if (tmpB == tmpA)
-                {
-                    return true;
-                }
-                else if (tmpB == unless)
-                {
-                    return false;
-                }
-                else
-                {
-                    if (Milliseconds(TicksNow() - start) < milliseconds)
-                    {
-                        SpinOnce(ref count);
-                        goto retry;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
+                return false;
             }
         }
 
@@ -999,9 +967,11 @@ namespace Theraot.Threading
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
             int count = 0;
-            var tmpA = Thread.VolatileRead(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-            if (tmpB == tmpA)
+            var start = TicksNow();
+        retry:
+            var lastValue = Thread.VolatileRead(ref check);
+            var tmpB = Interlocked.CompareExchange(ref check, lastValue + value, lastValue);
+            if (tmpB == lastValue)
             {
                 return true;
             }
@@ -1009,41 +979,25 @@ namespace Theraot.Threading
             {
                 return false;
             }
+            if (Milliseconds(TicksNow() - start) < milliseconds)
+            {
+                SpinOnce(ref count);
+                goto retry;
+            }
             else
             {
-                var start = TicksNow();
-            retry:
-                tmpA = Thread.VolatileRead(ref check);
-                tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-                if (tmpB == tmpA)
-                {
-                    return true;
-                }
-                else if (tmpB == unless)
-                {
-                    return false;
-                }
-                else
-                {
-                    if (Milliseconds(TicksNow() - start) < milliseconds)
-                    {
-                        SpinOnce(ref count);
-                        goto retry;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
+                return false;
             }
         }
 
         public static bool SpinWaitRelativeSetUnless(ref int check, int value, int unless, IComparable<TimeSpan> timeout)
         {
             int count = 0;
-            var tmpA = Thread.VolatileRead(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-            if (tmpB == tmpA)
+            var start = DateTime.Now;
+        retry:
+            var lastValue = Thread.VolatileRead(ref check);
+            var tmpB = Interlocked.CompareExchange(ref check, lastValue + value, lastValue);
+            if (tmpB == lastValue)
             {
                 return true;
             }
@@ -1051,42 +1005,26 @@ namespace Theraot.Threading
             {
                 return false;
             }
+            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
+            {
+                SpinOnce(ref count);
+                goto retry;
+            }
             else
             {
-                var start = DateTime.Now;
-            retry:
-                tmpA = Thread.VolatileRead(ref check);
-                tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-                if (tmpB == tmpA)
-                {
-                    return true;
-                }
-                else if (tmpB == unless)
-                {
-                    return false;
-                }
-                else
-                {
-                    if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-                    {
-                        SpinOnce(ref count);
-                        goto retry;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
+                return false;
             }
         }
     
         public static bool SpinWaitRelativeExchangeUnless(ref int check, int value, int unless, out int result)
         {
             int count = 0;
-            var tmpA = Thread.VolatileRead(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+            var start = TicksNow();
+        retry:
+            var lastValue = Thread.VolatileRead(ref check);
+            var tmpB = Interlocked.CompareExchange(ref check, lastValue + value, lastValue);
             result = tmpB + value;
-            if (tmpB == tmpA)
+            if (tmpB == lastValue)
             {
                 return true;
             }
@@ -1094,27 +1032,8 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            else
-            {
-                var start = TicksNow();
-            retry:
-                tmpA = Thread.VolatileRead(ref check);
-                tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-                result = tmpB + value;
-                if (tmpB == tmpA)
-                {
-                    return true;
-                }
-                else if (tmpB == unless)
-                {
-                    return false;
-                }
-                else
-                {
-                    SpinOnce(ref count);
-                    goto retry;
-                }
-            }
+            SpinOnce(ref count);
+            goto retry;
         }
 
         public static bool SpinWaitRelativeExchangeUnless(ref int check, int value, int unless, out int result, int milliseconds)
@@ -1128,10 +1047,12 @@ namespace Theraot.Threading
                 return SpinWaitRelativeExchangeUnless(ref check, value, unless, out result);
             }
             int count = 0;
-            var tmpA = Thread.VolatileRead(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+            var start = TicksNow();
+        retry:
+            var lastValue = Thread.VolatileRead(ref check);
+            var tmpB = Interlocked.CompareExchange(ref check, lastValue + value, lastValue);
             result = tmpB + value;
-            if (tmpB == tmpA)
+            if (tmpB == lastValue)
             {
                 return true;
             }
@@ -1139,33 +1060,14 @@ namespace Theraot.Threading
             {
                 return false;
             }
+            if (Milliseconds(TicksNow() - start) < milliseconds)
+            {
+                SpinOnce(ref count);
+                goto retry;
+            }
             else
             {
-                var start = TicksNow();
-            retry:
-                tmpA = Thread.VolatileRead(ref check);
-                tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-                result = tmpB + value;
-                if (tmpB == tmpA)
-                {
-                    return true;
-                }
-                else if (tmpB == unless)
-                {
-                    return false;
-                }
-                else
-                {
-                    if (Milliseconds(TicksNow() - start) < milliseconds)
-                    {
-                        SpinOnce(ref count);
-                        goto retry;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
+                return false;
             }
         }
 
@@ -1173,10 +1075,12 @@ namespace Theraot.Threading
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
             int count = 0;
-            var tmpA = Thread.VolatileRead(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+            var start = TicksNow();
+        retry:
+            var lastValue = Thread.VolatileRead(ref check);
+            var tmpB = Interlocked.CompareExchange(ref check, lastValue + value, lastValue);
             result = tmpB + value;
-            if (tmpB == tmpA)
+            if (tmpB == lastValue)
             {
                 return true;
             }
@@ -1184,43 +1088,26 @@ namespace Theraot.Threading
             {
                 return false;
             }
+            if (Milliseconds(TicksNow() - start) < milliseconds)
+            {
+                SpinOnce(ref count);
+                goto retry;
+            }
             else
             {
-                var start = TicksNow();
-            retry:
-                tmpA = Thread.VolatileRead(ref check);
-                tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-                result = tmpB + value;
-                if (tmpB == tmpA)
-                {
-                    return true;
-                }
-                else if (tmpB == unless)
-                {
-                    return false;
-                }
-                else
-                {
-                    if (Milliseconds(TicksNow() - start) < milliseconds)
-                    {
-                        SpinOnce(ref count);
-                        goto retry;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
+                return false;
             }
         }
 
         public static bool SpinWaitRelativeExchangeUnless(ref int check, int value, int unless, out int result, IComparable<TimeSpan> timeout)
         {
             int count = 0;
-            var tmpA = Thread.VolatileRead(ref check);
-            var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
+            var start = DateTime.Now;
+        retry:
+            var lastValue = Thread.VolatileRead(ref check);
+            var tmpB = Interlocked.CompareExchange(ref check, lastValue + value, lastValue);
             result = tmpB + value;
-            if (tmpB == tmpA)
+            if (tmpB == lastValue)
             {
                 return true;
             }
@@ -1228,33 +1115,14 @@ namespace Theraot.Threading
             {
                 return false;
             }
+            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
+            {
+                SpinOnce(ref count);
+                goto retry;
+            }
             else
             {
-                var start = DateTime.Now;
-            retry:
-                tmpA = Thread.VolatileRead(ref check);
-                tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
-                result = tmpB + value;
-                if (tmpB == tmpA)
-                {
-                    return true;
-                }
-                else if (tmpB == unless)
-                {
-                    return false;
-                }
-                else
-                {
-                    if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
-                    {
-                        SpinOnce(ref count);
-                        goto retry;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
+                return false;
             }
         }
     
@@ -1267,20 +1135,17 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            else
+            else if (lastValue >= -value)
             {
-                if (lastValue >= -value)
-                {
-                    var result = lastValue + value;
+                var result = lastValue + value;
                     var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-                    if (tmp == lastValue)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             SpinOnce(ref count);
@@ -1306,20 +1171,17 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            else
+            else if (lastValue >= -value)
             {
-                if (lastValue >= -value)
-                {
-                    var result = lastValue + value;
+                var result = lastValue + value;
                     var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-                    if (tmp == lastValue)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
@@ -1344,20 +1206,17 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            else
+            else if (lastValue >= -value)
             {
-                if (lastValue >= -value)
-                {
-                    var result = lastValue + value;
+                var result = lastValue + value;
                     var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-                    if (tmp == lastValue)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
@@ -1381,20 +1240,17 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            else
+            else if (lastValue >= -value)
             {
-                if (lastValue >= -value)
-                {
-                    var result = lastValue + value;
+                var result = lastValue + value;
                     var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-                    if (tmp == lastValue)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
@@ -1417,20 +1273,17 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            else
+            else if (lastValue >= -value)
             {
-                if (lastValue >= -value)
-                {
-                    var result = lastValue + value;
+                var result = lastValue + value;
                     var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-                    if (tmp == lastValue)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             SpinOnce(ref count);
@@ -1456,20 +1309,17 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            else
+            else if (lastValue >= -value)
             {
-                if (lastValue >= -value)
-                {
-                    var result = lastValue + value;
+                var result = lastValue + value;
                     var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-                    if (tmp == lastValue)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
@@ -1494,20 +1344,17 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            else
+            else if (lastValue >= -value)
             {
-                if (lastValue >= -value)
-                {
-                    var result = lastValue + value;
+                var result = lastValue + value;
                     var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-                    if (tmp == lastValue)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
@@ -1531,20 +1378,17 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            else
+            else if (lastValue >= -value)
             {
-                if (lastValue >= -value)
-                {
-                    var result = lastValue + value;
+                var result = lastValue + value;
                     var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-                    if (tmp == lastValue)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
@@ -1567,20 +1411,17 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            else
+            else if (lastValue <= maxValue - value)
             {
-                if (lastValue <= maxValue - value)
-                {
-                    var result = lastValue + value;
+                var result = lastValue + value;
                     var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-                    if (tmp == lastValue)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             SpinOnce(ref count);
@@ -1606,20 +1447,17 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            else
+            else if (lastValue <= maxValue - value)
             {
-                if (lastValue <= maxValue - value)
-                {
-                    var result = lastValue + value;
+                var result = lastValue + value;
                     var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-                    if (tmp == lastValue)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
@@ -1644,20 +1482,17 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            else
+            else if (lastValue <= maxValue - value)
             {
-                if (lastValue <= maxValue - value)
-                {
-                    var result = lastValue + value;
+                var result = lastValue + value;
                     var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-                    if (tmp == lastValue)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
@@ -1681,20 +1516,17 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            else
+            else if (lastValue <= maxValue - value)
             {
-                if (lastValue <= maxValue - value)
-                {
-                    var result = lastValue + value;
+                var result = lastValue + value;
                     var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-                    if (tmp == lastValue)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
@@ -1717,20 +1549,17 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            else
+            else if (lastValue <= maxValue - value)
             {
-                if (lastValue <= maxValue - value)
-                {
-                    var result = lastValue + value;
+                var result = lastValue + value;
                     var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-                    if (tmp == lastValue)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             SpinOnce(ref count);
@@ -1756,20 +1585,17 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            else
+            else if (lastValue <= maxValue - value)
             {
-                if (lastValue <= maxValue - value)
-                {
-                    var result = lastValue + value;
+                var result = lastValue + value;
                     var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-                    if (tmp == lastValue)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
@@ -1794,20 +1620,17 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            else
+            else if (lastValue <= maxValue - value)
             {
-                if (lastValue <= maxValue - value)
-                {
-                    var result = lastValue + value;
+                var result = lastValue + value;
                     var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-                    if (tmp == lastValue)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
@@ -1831,20 +1654,17 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            else
+            else if (lastValue <= maxValue - value)
             {
-                if (lastValue <= maxValue - value)
-                {
-                    var result = lastValue + value;
+                var result = lastValue + value;
                     var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-                    if (tmp == lastValue)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
@@ -1867,20 +1687,17 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            else
+            else if (lastValue + value >= minValue && lastValue <= maxValue - value)
             {
-                if (lastValue + value >= minValue && lastValue <= maxValue - value)
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
                 {
-                    var result = lastValue + value;
-                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-                    if (tmp == lastValue)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             SpinOnce(ref count);
@@ -1906,20 +1723,17 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            else
+            else if (lastValue + value >= minValue && lastValue <= maxValue - value)
             {
-                if (lastValue + value >= minValue && lastValue <= maxValue - value)
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
                 {
-                    var result = lastValue + value;
-                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-                    if (tmp == lastValue)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
@@ -1944,20 +1758,17 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            else
+            else if (lastValue + value >= minValue && lastValue <= maxValue - value)
             {
-                if (lastValue + value >= minValue && lastValue <= maxValue - value)
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
                 {
-                    var result = lastValue + value;
-                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-                    if (tmp == lastValue)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
@@ -1981,20 +1792,17 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            else
+            else if (lastValue + value >= minValue && lastValue <= maxValue - value)
             {
-                if (lastValue + value >= minValue && lastValue <= maxValue - value)
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
                 {
-                    var result = lastValue + value;
-                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-                    if (tmp == lastValue)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
@@ -2017,20 +1825,17 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            else
+            else if (lastValue + value >= minValue && lastValue <= maxValue - value)
             {
-                if (lastValue + value >= minValue && lastValue <= maxValue - value)
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
                 {
-                    var result = lastValue + value;
-                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-                    if (tmp == lastValue)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             SpinOnce(ref count);
@@ -2056,20 +1861,17 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            else
+            else if (lastValue + value >= minValue && lastValue <= maxValue - value)
             {
-                if (lastValue + value >= minValue && lastValue <= maxValue - value)
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
                 {
-                    var result = lastValue + value;
-                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-                    if (tmp == lastValue)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
@@ -2094,20 +1896,17 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            else
+            else if (lastValue + value >= minValue && lastValue <= maxValue - value)
             {
-                if (lastValue + value >= minValue && lastValue <= maxValue - value)
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
                 {
-                    var result = lastValue + value;
-                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-                    if (tmp == lastValue)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
@@ -2131,20 +1930,17 @@ namespace Theraot.Threading
             {
                 return false;
             }
-            else
+            else if (lastValue + value >= minValue && lastValue <= maxValue - value)
             {
-                if (lastValue + value >= minValue && lastValue <= maxValue - value)
+                var result = lastValue + value;
+                var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                if (tmp == lastValue)
                 {
-                    var result = lastValue + value;
-                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
-                    if (tmp == lastValue)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
