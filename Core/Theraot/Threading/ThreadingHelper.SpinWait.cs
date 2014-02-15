@@ -1793,5 +1793,273 @@ namespace Theraot.Threading
                 return false;
             }
         }
+    
+        public static bool SpinWaitRelativeSetBounded(ref int check, int value, int minValue, int maxValue)
+        {
+            int count = 0;
+        retry:
+            var lastValue = Thread.VolatileRead(ref check);
+            if (lastValue < minValue || lastValue > maxValue)
+            {
+                return false;
+            }
+            else
+            {
+                if (lastValue + value >= minValue && lastValue <= maxValue - value)
+                {
+                    var result = lastValue + value;
+                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                    if (tmp == lastValue)
+                    {
+                        return true;
+                    }
+                }
+            }
+            SpinOnce(ref count);
+            goto retry;
+            
+        }
+
+        public static bool SpinWaitRelativeSetBounded(ref int check, int value, int minValue, int maxValue, int milliseconds)
+        {
+            if (milliseconds < -1)
+            {
+                throw new ArgumentOutOfRangeException("milliseconds");
+            }
+            else if (milliseconds == -1)
+            {
+                return SpinWaitRelativeSetBounded(ref check, value, minValue, maxValue);
+            }
+            int count = 0;
+            var start = TicksNow();
+        retry:
+            var lastValue = Thread.VolatileRead(ref check);
+            if (lastValue < minValue || lastValue > maxValue)
+            {
+                return false;
+            }
+            else
+            {
+                if (lastValue + value >= minValue && lastValue <= maxValue - value)
+                {
+                    var result = lastValue + value;
+                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                    if (tmp == lastValue)
+                    {
+                        return true;
+                    }
+                }
+            }
+            if (Milliseconds(TicksNow() - start) < milliseconds)
+            {
+                SpinOnce(ref count);
+                goto retry;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool SpinWaitRelativeSetBounded(ref int check, int value, int minValue, int maxValue, TimeSpan timeout)
+        {
+            var milliseconds = (long)timeout.TotalMilliseconds;
+            int count = 0;
+            var start = TicksNow();
+        retry:
+            var lastValue = Thread.VolatileRead(ref check);
+            if (lastValue < minValue || lastValue > maxValue)
+            {
+                return false;
+            }
+            else
+            {
+                if (lastValue + value >= minValue && lastValue <= maxValue - value)
+                {
+                    var result = lastValue + value;
+                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                    if (tmp == lastValue)
+                    {
+                        return true;
+                    }
+                }
+            }
+            if (Milliseconds(TicksNow() - start) < milliseconds)
+            {
+                SpinOnce(ref count);
+                goto retry;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool SpinWaitRelativeSetBounded(ref int check, int value, int minValue, int maxValue, IComparable<TimeSpan> timeout)
+        {
+            int count = 0;
+            var start = DateTime.Now;
+        retry:
+            var lastValue = Thread.VolatileRead(ref check);
+            if (lastValue < minValue || lastValue > maxValue)
+            {
+                return false;
+            }
+            else
+            {
+                if (lastValue + value >= minValue && lastValue <= maxValue - value)
+                {
+                    var result = lastValue + value;
+                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                    if (tmp == lastValue)
+                    {
+                        return true;
+                    }
+                }
+            }
+            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
+            {
+                SpinOnce(ref count);
+                goto retry;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    
+        public static bool SpinWaitRelativeExchangeBounded(ref int check, int value, int minValue, int maxValue, out int lastValue)
+        {
+            int count = 0;
+        retry:
+            lastValue = Thread.VolatileRead(ref check);
+            if (lastValue < minValue || lastValue > maxValue)
+            {
+                return false;
+            }
+            else
+            {
+                if (lastValue + value >= minValue && lastValue <= maxValue - value)
+                {
+                    var result = lastValue + value;
+                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                    if (tmp == lastValue)
+                    {
+                        return true;
+                    }
+                }
+            }
+            SpinOnce(ref count);
+            goto retry;
+            
+        }
+
+        public static bool SpinWaitRelativeExchangeBounded(ref int check, int value, int minValue, int maxValue, out int lastValue, int milliseconds)
+        {
+            if (milliseconds < -1)
+            {
+                throw new ArgumentOutOfRangeException("milliseconds");
+            }
+            else if (milliseconds == -1)
+            {
+                return SpinWaitRelativeExchangeBounded(ref check, value, minValue, maxValue, out lastValue);
+            }
+            int count = 0;
+            var start = TicksNow();
+        retry:
+            lastValue = Thread.VolatileRead(ref check);
+            if (lastValue < minValue || lastValue > maxValue)
+            {
+                return false;
+            }
+            else
+            {
+                if (lastValue + value >= minValue && lastValue <= maxValue - value)
+                {
+                    var result = lastValue + value;
+                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                    if (tmp == lastValue)
+                    {
+                        return true;
+                    }
+                }
+            }
+            if (Milliseconds(TicksNow() - start) < milliseconds)
+            {
+                SpinOnce(ref count);
+                goto retry;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool SpinWaitRelativeExchangeBounded(ref int check, int value, int minValue, int maxValue, out int lastValue, TimeSpan timeout)
+        {
+            var milliseconds = (long)timeout.TotalMilliseconds;
+            int count = 0;
+            var start = TicksNow();
+        retry:
+            lastValue = Thread.VolatileRead(ref check);
+            if (lastValue < minValue || lastValue > maxValue)
+            {
+                return false;
+            }
+            else
+            {
+                if (lastValue + value >= minValue && lastValue <= maxValue - value)
+                {
+                    var result = lastValue + value;
+                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                    if (tmp == lastValue)
+                    {
+                        return true;
+                    }
+                }
+            }
+            if (Milliseconds(TicksNow() - start) < milliseconds)
+            {
+                SpinOnce(ref count);
+                goto retry;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool SpinWaitRelativeExchangeBounded(ref int check, int value, int minValue, int maxValue, out int lastValue, IComparable<TimeSpan> timeout)
+        {
+            int count = 0;
+            var start = DateTime.Now;
+        retry:
+            lastValue = Thread.VolatileRead(ref check);
+            if (lastValue < minValue || lastValue > maxValue)
+            {
+                return false;
+            }
+            else
+            {
+                if (lastValue + value >= minValue && lastValue <= maxValue - value)
+                {
+                    var result = lastValue + value;
+                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);
+                    if (tmp == lastValue)
+                    {
+                        return true;
+                    }
+                }
+            }
+            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
+            {
+                SpinOnce(ref count);
+                goto retry;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

@@ -486,6 +486,30 @@ var methods3 = new string[][]
         "var result = lastValue + value;\r\n                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);",
         "tmp == lastValue",
         ""
+    },
+    new string[]
+    {
+        "SpinWaitRelativeSetBounded",
+        "ref int check, int value, int minValue, int maxValue",
+        "ref check, value, minValue, maxValue",
+        "var lastValue = Thread.VolatileRead(ref check);",
+        "lastValue < minValue || lastValue > maxValue",
+        "lastValue + value >= minValue && lastValue <= maxValue - value",
+        "var result = lastValue + value;\r\n                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);",
+        "tmp == lastValue",
+        ""
+    },
+    new string[]
+    {
+        "SpinWaitRelativeExchangeBounded",
+        "ref int check, int value, int minValue, int maxValue, out int lastValue",
+        "ref check, value, minValue, maxValue, out lastValue",
+        "lastValue = Thread.VolatileRead(ref check);",
+        "lastValue < minValue || lastValue > maxValue",
+        "lastValue + value >= minValue && lastValue <= maxValue - value",
+        "var result = lastValue + value;\r\n                    var tmp = Interlocked.CompareExchange(ref check, result, lastValue);",
+        "tmp == lastValue",
+        ""
     }
 };
 
