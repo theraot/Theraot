@@ -191,7 +191,7 @@ namespace System.Threading
             else
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                cancellationToken.ThrowIfSourceDisposed();
+                GC.KeepAlive(cancellationToken.WaitHandle);
                 if (millisecondsTimeout < -1)
                 {
                     throw new ArgumentOutOfRangeException("millisecondsTimeout");
@@ -230,7 +230,7 @@ namespace System.Threading
             else
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                cancellationToken.ThrowIfSourceDisposed();
+                GC.KeepAlive(cancellationToken.WaitHandle);
                 var milliseconds = timeout.TotalMilliseconds;
                 return WaitExtracted((int)milliseconds, cancellationToken);
             }
@@ -348,7 +348,7 @@ namespace System.Threading
                     if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < millisecondsTimeout)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        cancellationToken.ThrowIfSourceDisposed();
+                        GC.KeepAlive(cancellationToken.WaitHandle);
                         if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < INT_LongTimeOutHint)
                         {
                             ThreadingHelper.SpinOnce(ref count);
@@ -394,7 +394,7 @@ namespace System.Threading
                 else
                 {
                     cancellationToken.ThrowIfCancellationRequested();
-                    cancellationToken.ThrowIfSourceDisposed();
+                    GC.KeepAlive(cancellationToken.WaitHandle);
                     if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < INT_LongTimeOutHint)
                     {
                         ThreadingHelper.SpinOnce(ref count);

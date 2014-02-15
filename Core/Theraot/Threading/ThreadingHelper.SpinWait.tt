@@ -57,7 +57,7 @@ var templates = new string[][]
         @"int count = 0;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             if (@)
             {
                 return;
@@ -71,7 +71,7 @@ var templates = new string[][]
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             if (@)
             {
                 return true;
@@ -92,7 +92,7 @@ var templates = new string[][]
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             if (@)
             {
                 return true;
@@ -168,7 +168,7 @@ var templates = new string[][]
         @"int count = 0;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             @0
             if (@1)
             {
@@ -183,7 +183,7 @@ var templates = new string[][]
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             @0
             if (@1)
             {
@@ -205,7 +205,7 @@ var templates = new string[][]
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             @0
             if (@1)
             {
@@ -297,7 +297,7 @@ var templates = new string[][]
         @"int count = 0;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             @0
             if (@1)
             {
@@ -318,7 +318,7 @@ var templates = new string[][]
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             @0
             if (@1)
             {
@@ -345,7 +345,7 @@ var templates = new string[][]
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             @0
             if (@1)
             {

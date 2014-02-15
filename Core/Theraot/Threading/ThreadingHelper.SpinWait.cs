@@ -27,7 +27,7 @@ namespace Theraot.Threading
             int count = 0;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
             {
                 return;
@@ -86,7 +86,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
             {
                 return true;
@@ -136,7 +136,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
             {
                 return true;
@@ -184,7 +184,7 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
             {
                 return true;
@@ -223,7 +223,7 @@ namespace Theraot.Threading
             int count = 0;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             if (Thread.VolatileRead(ref check) == comparand)
             {
                 return;
@@ -282,7 +282,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             if (Thread.VolatileRead(ref check) == comparand)
             {
                 return true;
@@ -332,7 +332,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             if (Thread.VolatileRead(ref check) == comparand)
             {
                 return true;
@@ -380,7 +380,7 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             if (Thread.VolatileRead(ref check) == comparand)
             {
                 return true;
@@ -419,7 +419,7 @@ namespace Theraot.Threading
             int count = 0;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             if (verification.Invoke())
             {
                 return;
@@ -478,7 +478,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             if (verification.Invoke())
             {
                 return true;
@@ -528,7 +528,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             if (verification.Invoke())
             {
                 return true;
@@ -576,7 +576,7 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             if (verification.Invoke())
             {
                 return true;
@@ -615,7 +615,7 @@ namespace Theraot.Threading
             int count = 0;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             if (Thread.VolatileRead(ref check) != comparand)
             {
                 return;
@@ -674,7 +674,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             if (Thread.VolatileRead(ref check) != comparand)
             {
                 return true;
@@ -724,7 +724,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             if (Thread.VolatileRead(ref check) != comparand)
             {
                 return true;
@@ -772,7 +772,7 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             if (Thread.VolatileRead(ref check) != comparand)
             {
                 return true;
@@ -813,7 +813,7 @@ namespace Theraot.Threading
             int count = 0;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             if (!object.ReferenceEquals(VolatileRead<T>(ref check), null))
             {
                 return;
@@ -874,7 +874,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             if (!object.ReferenceEquals(VolatileRead<T>(ref check), null))
             {
                 return true;
@@ -926,7 +926,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             if (!object.ReferenceEquals(VolatileRead<T>(ref check), null))
             {
                 return true;
@@ -976,7 +976,7 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             if (!object.ReferenceEquals(VolatileRead<T>(ref check), null))
             {
                 return true;
@@ -1018,7 +1018,7 @@ namespace Theraot.Threading
             int count = 0;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var tmpA = Thread.VolatileRead(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
             if (tmpB == tmpA)
@@ -1079,7 +1079,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var tmpA = Thread.VolatileRead(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
             if (tmpB == tmpA)
@@ -1133,7 +1133,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var tmpA = Thread.VolatileRead(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
             if (tmpB == tmpA)
@@ -1185,7 +1185,7 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var tmpA = Thread.VolatileRead(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
             if (tmpB == tmpA)
@@ -1230,7 +1230,7 @@ namespace Theraot.Threading
             int count = 0;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var tmpA = Thread.VolatileRead(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
             result = tmpB + value;
@@ -1293,7 +1293,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var tmpA = Thread.VolatileRead(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
             result = tmpB + value;
@@ -1349,7 +1349,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var tmpA = Thread.VolatileRead(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
             result = tmpB + value;
@@ -1403,7 +1403,7 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var tmpA = Thread.VolatileRead(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
             result = tmpB + value;
@@ -1453,7 +1453,7 @@ namespace Theraot.Threading
             int count = 0;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             var result = lastValue + value;
             if ((lastValue == unless) || (result == unless))
@@ -1525,7 +1525,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             var result = lastValue + value;
             if ((lastValue == unless) || (result == unless))
@@ -1589,7 +1589,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             var result = lastValue + value;
             if ((lastValue == unless) || (result == unless))
@@ -1651,7 +1651,7 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             var result = lastValue + value;
             if ((lastValue == unless) || (result == unless))
@@ -1705,7 +1705,7 @@ namespace Theraot.Threading
             int count = 0;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             result = lastValue + value;
             if ((lastValue == unless) || (lastValue + value == unless))
@@ -1777,7 +1777,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             result = lastValue + value;
             if ((lastValue == unless) || (lastValue + value == unless))
@@ -1841,7 +1841,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             result = lastValue + value;
             if ((lastValue == unless) || (lastValue + value == unless))
@@ -1903,7 +1903,7 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             result = lastValue + value;
             if ((lastValue == unless) || (lastValue + value == unless))
@@ -1957,7 +1957,7 @@ namespace Theraot.Threading
             int count = 0;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             if ((lastValue < 0) || (lastValue < -value))
             {
@@ -2029,7 +2029,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             if ((lastValue < 0) || (lastValue < -value))
             {
@@ -2093,7 +2093,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             if ((lastValue < 0) || (lastValue < -value))
             {
@@ -2155,7 +2155,7 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             if ((lastValue < 0) || (lastValue < -value))
             {
@@ -2209,7 +2209,7 @@ namespace Theraot.Threading
             int count = 0;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             lastValue = Thread.VolatileRead(ref check);
             if ((lastValue < 0) || (lastValue < -value))
             {
@@ -2281,7 +2281,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             lastValue = Thread.VolatileRead(ref check);
             if ((lastValue < 0) || (lastValue < -value))
             {
@@ -2345,7 +2345,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             lastValue = Thread.VolatileRead(ref check);
             if ((lastValue < 0) || (lastValue < -value))
             {
@@ -2407,7 +2407,7 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             lastValue = Thread.VolatileRead(ref check);
             if ((lastValue < 0) || (lastValue < -value))
             {
@@ -2461,7 +2461,7 @@ namespace Theraot.Threading
             int count = 0;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
@@ -2533,7 +2533,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
@@ -2597,7 +2597,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
@@ -2659,7 +2659,7 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
@@ -2713,7 +2713,7 @@ namespace Theraot.Threading
             int count = 0;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             lastValue = Thread.VolatileRead(ref check);
             if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
@@ -2785,7 +2785,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             lastValue = Thread.VolatileRead(ref check);
             if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
@@ -2849,7 +2849,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             lastValue = Thread.VolatileRead(ref check);
             if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
@@ -2911,7 +2911,7 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             lastValue = Thread.VolatileRead(ref check);
             if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
@@ -2965,7 +2965,7 @@ namespace Theraot.Threading
             int count = 0;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
@@ -3037,7 +3037,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
@@ -3101,7 +3101,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
@@ -3163,7 +3163,7 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
@@ -3217,7 +3217,7 @@ namespace Theraot.Threading
             int count = 0;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             lastValue = Thread.VolatileRead(ref check);
             if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
@@ -3289,7 +3289,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             lastValue = Thread.VolatileRead(ref check);
             if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
@@ -3353,7 +3353,7 @@ namespace Theraot.Threading
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             lastValue = Thread.VolatileRead(ref check);
             if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
@@ -3415,7 +3415,7 @@ namespace Theraot.Threading
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
-            cancellationToken.ThrowIfSourceDisposed();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             lastValue = Thread.VolatileRead(ref check);
             if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {

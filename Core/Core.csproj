@@ -229,7 +229,7 @@
     <Compile Include="System\Threading\CancellationTokenSource.net35.cs" />
     <Compile Include="System\Threading\CountdownEvent.net35.cs" />
     <Compile Include="System\Threading\LockRecursionException.cs" />
-    <Compile Include="System\Threading\SemaphoreSlime.cs" />
+    <Compile Include="System\Threading\SemaphoreSlim.net35.cs" />
     <Compile Include="System\Threading\SpinLock.net35.cs">
       <SubType>Code</SubType>
     </Compile>
