@@ -279,6 +279,10 @@ var templates = new string[][]
                     {
                         return true;
                     }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
             SpinOnce(ref count);
@@ -300,6 +304,10 @@ var templates = new string[][]
                     if (@4)
                     {
                         return true;
+                    }
+                    else
+                    {
+                        return false;
                     }
                 }
             }
@@ -328,6 +336,10 @@ var templates = new string[][]
                     if (@4)
                     {
                         return true;
+                    }
+                    else
+                    {
+                        return false;
                     }
                 }
             }

@@ -1277,6 +1277,10 @@ namespace Theraot.Threading
                     {
                         return true;
                     }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
             SpinOnce(ref count);
@@ -1312,6 +1316,10 @@ namespace Theraot.Threading
                     {
                         return true;
                     }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
@@ -1346,6 +1354,10 @@ namespace Theraot.Threading
                     {
                         return true;
                     }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
@@ -1379,6 +1391,10 @@ namespace Theraot.Threading
                     {
                         return true;
                     }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
@@ -1410,6 +1426,10 @@ namespace Theraot.Threading
                     if (tmp == lastValue)
                     {
                         return true;
+                    }
+                    else
+                    {
+                        return false;
                     }
                 }
             }
@@ -1446,6 +1466,10 @@ namespace Theraot.Threading
                     {
                         return true;
                     }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
@@ -1480,6 +1504,10 @@ namespace Theraot.Threading
                     {
                         return true;
                     }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
@@ -1513,6 +1541,10 @@ namespace Theraot.Threading
                     {
                         return true;
                     }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
@@ -1544,6 +1576,10 @@ namespace Theraot.Threading
                     if (tmp == lastValue)
                     {
                         return true;
+                    }
+                    else
+                    {
+                        return false;
                     }
                 }
             }
@@ -1580,6 +1616,10 @@ namespace Theraot.Threading
                     {
                         return true;
                     }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
@@ -1614,6 +1654,10 @@ namespace Theraot.Threading
                     {
                         return true;
                     }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
@@ -1647,6 +1691,10 @@ namespace Theraot.Threading
                     {
                         return true;
                     }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
@@ -1678,6 +1726,10 @@ namespace Theraot.Threading
                     if (tmp == lastValue)
                     {
                         return true;
+                    }
+                    else
+                    {
+                        return false;
                     }
                 }
             }
@@ -1714,6 +1766,10 @@ namespace Theraot.Threading
                     {
                         return true;
                     }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
@@ -1748,6 +1804,10 @@ namespace Theraot.Threading
                     {
                         return true;
                     }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
@@ -1781,6 +1841,10 @@ namespace Theraot.Threading
                     {
                         return true;
                     }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
@@ -1812,6 +1876,10 @@ namespace Theraot.Threading
                     if (tmp == lastValue)
                     {
                         return true;
+                    }
+                    else
+                    {
+                        return false;
                     }
                 }
             }
@@ -1848,6 +1916,10 @@ namespace Theraot.Threading
                     {
                         return true;
                     }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
@@ -1882,6 +1954,10 @@ namespace Theraot.Threading
                     {
                         return true;
                     }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
@@ -1915,6 +1991,10 @@ namespace Theraot.Threading
                     {
                         return true;
                     }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
@@ -1946,6 +2026,10 @@ namespace Theraot.Threading
                     if (tmp == lastValue)
                     {
                         return true;
+                    }
+                    else
+                    {
+                        return false;
                     }
                 }
             }
@@ -1982,6 +2066,10 @@ namespace Theraot.Threading
                     {
                         return true;
                     }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
@@ -2016,6 +2104,10 @@ namespace Theraot.Threading
                     {
                         return true;
                     }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
@@ -2048,6 +2140,10 @@ namespace Theraot.Threading
                     if (tmp == lastValue)
                     {
                         return true;
+                    }
+                    else
+                    {
+                        return false;
                     }
                 }
             }
