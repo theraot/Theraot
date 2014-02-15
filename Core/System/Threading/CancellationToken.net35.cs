@@ -53,7 +53,7 @@ namespace System.Threading
             get
             {
                 // simply return new struct value, it's the fastest option
-                // and we don't have to bother with reseting source
+                // and we don't have to bother with resetting source
                 return new CancellationToken();
             }
         }

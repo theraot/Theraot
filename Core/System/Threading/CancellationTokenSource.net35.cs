@@ -224,7 +224,7 @@ namespace System.Threading
                 {
                     if (object.ReferenceEquals(_timer, null))
                     {
-                        // Have to be carefull not to create secondary background timer
+                        // Have to be careful not to create secondary background timer
                         var newTimer = new Timer(_timerCallback, this, Timeout.Infinite, Timeout.Infinite);
                         var oldTimer = Interlocked.CompareExchange(ref _timer, newTimer, null);
                         if (!ReferenceEquals(oldTimer, null))
