@@ -10,7 +10,7 @@ namespace System.Threading
         private int _count;
         private bool _disposed;
         private ManualResetEventSlim _event;
-        private int _maxCount;
+        private readonly int _maxCount;
 
         public SemaphoreSlim(int initialCount)
             : this(initialCount, int.MaxValue)
@@ -45,7 +45,7 @@ namespace System.Threading
         {
             get
             {
-                return _maxCount - _count;
+                return _maxCount - Thread.VolatileRead(ref _count);
             }
         }
 
