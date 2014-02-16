@@ -4,7 +4,7 @@ using Theraot.Threading;
 
 namespace System.Threading
 {
-    [System.Diagnostics.DebuggerDisplayAttribute("Current Count = {currCount}")]
+    [System.Diagnostics.DebuggerDisplayAttribute("Current Count = {CurrentCount}")]
     public class SemaphoreSlim : IDisposable
     {
         private int _count;
@@ -36,6 +36,7 @@ namespace System.Threading
         {
             get
             {
+                CheckDisposed();
                 return _event.WaitHandle;
             }
         }
