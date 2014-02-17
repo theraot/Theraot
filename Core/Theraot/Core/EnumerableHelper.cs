@@ -7,46 +7,84 @@ namespace Theraot.Core
 {
     public static class EnumerableHelper
     {
-        public static IEnumerable<T> Create<T>(Func<bool> condition, Func<T> iterate, Action after)
+        public static IEnumerable<T> Create<T>(T initialState, Func<T, bool> condition, Func<T, T> iterate)
         {
-            var _step = Check.NotNullArgument(condition, "condition");
+            var _condition = Check.NotNullArgument(condition, "condition");
             var _iterate = Check.NotNullArgument(iterate, "iterate");
-            try
+            var currentState = initialState;
+            do
             {
-                while (_step.Invoke())
-                {
-                    yield return _iterate.Invoke();
-                }
-            }
-            finally
-            {
-                after.SafeInvoke();
-            }
+                currentState = _iterate.Invoke(currentState);
+                yield return currentState;
+            } while (_condition.Invoke(currentState));
         }
 
-        public static IEnumerable<T> Create<T>(Action before, Func<bool> condition, Func<T> iterate, Action after)
+        public static IEnumerable<T> Create<T>(T initialState, Func<T, T> iterate)
         {
-            var _step = Check.NotNullArgument(condition, "condition");
             var _iterate = Check.NotNullArgument(iterate, "iterate");
-            try
+            var currentState = initialState;
+            do
             {
-                before.SafeInvoke();
-                while (_step.Invoke())
-                {
-                    yield return _iterate.Invoke();
-                }
-            }
-            finally
+                currentState = _iterate.Invoke(currentState);
+                yield return currentState;
+            } while (true);
+        }
+
+        public static IEnumerable<TResult> Create<TState, TResult>(TState initialState, Func<TState, bool> condition, Func<TState, TState> iterate, Converter<TState, TResult> resultSelector)
+        {
+            var _condition = Check.NotNullArgument(condition, "condition");
+            var _iterate = Check.NotNullArgument(iterate, "iterate");
+            var _resultSelector = Check.NotNullArgument(resultSelector, "resultSelector");
+            var currentState = initialState;
+            do
             {
-                after.SafeInvoke();
-            }
+                currentState = _iterate.Invoke(currentState);
+                yield return _resultSelector.Invoke(currentState);
+            } while (_condition.Invoke(currentState));
+        }
+
+        public static IEnumerable<TResult> Create<TState, TResult>(TState initialState, Func<TState, bool> condition, Func<TState, TState> iterate, Func<TState, TResult> resultSelector)
+        {
+            var _condition = Check.NotNullArgument(condition, "condition");
+            var _iterate = Check.NotNullArgument(iterate, "iterate");
+            var _resultSelector = Check.NotNullArgument(resultSelector, "resultSelector");
+            var currentState = initialState;
+            do
+            {
+                currentState = _iterate.Invoke(currentState);
+                yield return _resultSelector.Invoke(currentState);
+            } while (_condition.Invoke(currentState));
+        }
+
+        public static IEnumerable<TResult> Create<TState, TResult>(TState initialState, Func<TState, TState> iterate, Converter<TState, TResult> resultSelector)
+        {
+            var _iterate = Check.NotNullArgument(iterate, "iterate");
+            var _resultSelector = Check.NotNullArgument(resultSelector, "resultSelector");
+            var currentState = initialState;
+            do
+            {
+                currentState = _iterate.Invoke(currentState);
+                yield return _resultSelector.Invoke(currentState);
+            } while (true);
+        }
+
+        public static IEnumerable<TResult> Create<TState, TResult>(TState initialState, Func<TState, TState> iterate, Func<TState, TResult> resultSelector)
+        {
+            var _iterate = Check.NotNullArgument(iterate, "iterate");
+            var _resultSelector = Check.NotNullArgument(resultSelector, "resultSelector");
+            var currentState = initialState;
+            do
+            {
+                currentState = _iterate.Invoke(currentState);
+                yield return _resultSelector.Invoke(currentState);
+            } while (true);
         }
 
         public static IEnumerable<T> Create<T>(Func<bool> condition, Func<T> iterate)
         {
-            var _step = Check.NotNullArgument(condition, "condition");
+            var _condition = Check.NotNullArgument(condition, "condition");
             var _iterate = Check.NotNullArgument(iterate, "iterate");
-            while (_step.Invoke())
+            while (_condition.Invoke())
             {
                 yield return _iterate.Invoke();
             }
@@ -61,154 +99,45 @@ namespace Theraot.Core
             }
         }
 
-        public static IEnumerable<TResult> Create<TState, TResult>(Func<bool> condition, Func<TState> iterate, Converter<TState, TResult> resultSelector, Action after)
-        {
-            var _step = Check.NotNullArgument(condition, "condition");
-            var _iterate = Check.NotNullArgument(iterate, "iterate");
-            var _converter = Check.NotNullArgument(resultSelector, "resultSelector");
-            try
-            {
-                while (_step.Invoke())
-                {
-                    yield return _converter(_iterate.Invoke());
-                }
-            }
-            finally
-            {
-                after.SafeInvoke();
-            }
-        }
-
-        public static IEnumerable<TResult> Create<TState, TResult>(Func<bool> condition, Func<TState> iterate, Func<TState, TResult> resultSelector, Action after)
-        {
-            var _step = Check.NotNullArgument(condition, "condition");
-            var _iterate = Check.NotNullArgument(iterate, "iterate");
-            var _converter = Check.NotNullArgument(resultSelector, "resultSelector");
-            try
-            {
-                while (_step.Invoke())
-                {
-                    yield return _converter(_iterate.Invoke());
-                }
-            }
-            finally
-            {
-                after.SafeInvoke();
-            }
-        }
-
-        public static IEnumerable<TResult> Create<TState, TResult>(Action before, Func<bool> condition, Func<TState> iterate, Converter<TState, TResult> resultSelector, Action after)
-        {
-            var _step = Check.NotNullArgument(condition, "condition");
-            var _iterate = Check.NotNullArgument(iterate, "iterate");
-            var _converter = Check.NotNullArgument(resultSelector, "resultSelector");
-            try
-            {
-                before.SafeInvoke();
-                while (_step.Invoke())
-                {
-                    yield return _converter(_iterate.Invoke());
-                }
-            }
-            finally
-            {
-                after.SafeInvoke();
-            }
-        }
-
-        public static IEnumerable<TResult> Create<TState, TResult>(Action before, Func<bool> condition, Func<TState> iterate, Func<TState, TResult> resultSelector, Action after)
-        {
-            var _step = Check.NotNullArgument(condition, "condition");
-            var _iterate = Check.NotNullArgument(iterate, "iterate");
-            var _converter = Check.NotNullArgument(resultSelector, "resultSelector");
-            try
-            {
-                before.SafeInvoke();
-                while (_step.Invoke())
-                {
-                    yield return _converter(_iterate.Invoke());
-                }
-            }
-            finally
-            {
-                after.SafeInvoke();
-            }
-        }
-
         public static IEnumerable<TResult> Create<TState, TResult>(Func<bool> condition, Func<TState> iterate, Converter<TState, TResult> resultSelector)
         {
-            var _step = Check.NotNullArgument(condition, "condition");
+            var _condition = Check.NotNullArgument(condition, "condition");
             var _iterate = Check.NotNullArgument(iterate, "iterate");
-            var _converter = Check.NotNullArgument(resultSelector, "resultSelector");
-            while (_step.Invoke())
+            var _resultSelector = Check.NotNullArgument(resultSelector, "resultSelector");
+            while (_condition.Invoke())
             {
-                yield return _converter(_iterate.Invoke());
+                yield return _resultSelector(_iterate.Invoke());
             }
         }
 
         public static IEnumerable<TResult> Create<TState, TResult>(Func<bool> condition, Func<TState> iterate, Func<TState, TResult> resultSelector)
         {
-            var _step = Check.NotNullArgument(condition, "condition");
+            var _condition = Check.NotNullArgument(condition, "condition");
             var _iterate = Check.NotNullArgument(iterate, "iterate");
-            var _converter = Check.NotNullArgument(resultSelector, "resultSelector");
-            while (_step.Invoke())
+            var _resultSelector = Check.NotNullArgument(resultSelector, "resultSelector");
+            while (_condition.Invoke())
             {
-                yield return _converter(_iterate.Invoke());
+                yield return _resultSelector(_iterate.Invoke());
             }
         }
 
         public static IEnumerable<TResult> Create<TState, TResult>(Func<TState> iterate, Converter<TState, TResult> resultSelector)
         {
             var _iterate = Check.NotNullArgument(iterate, "iterate");
-            var _converter = Check.NotNullArgument(resultSelector, "resultSelector");
+            var _resultSelector = Check.NotNullArgument(resultSelector, "resultSelector");
             while (true)
             {
-                yield return _converter(_iterate.Invoke());
+                yield return _resultSelector(_iterate.Invoke());
             }
         }
 
         public static IEnumerable<TResult> Create<TState, TResult>(Func<TState> iterate, Func<TState, TResult> resultSelector)
         {
             var _iterate = Check.NotNullArgument(iterate, "iterate");
-            var _converter = Check.NotNullArgument(resultSelector, "resultSelector");
+            var _resultSelector = Check.NotNullArgument(resultSelector, "resultSelector");
             while (true)
             {
-                yield return _converter(_iterate.Invoke());
-            }
-        }
-
-        public static IEnumerable<T> Create<T>(TryTake<T> tryTake, Action after)
-        {
-            var _tryTake = Check.NotNullArgument(tryTake, "tryTake");
-            try
-            {
-                T item;
-                while (_tryTake.Invoke(out item))
-                {
-                    yield return item;
-                }
-            }
-            finally
-            {
-                after.SafeInvoke();
-            }
-        }
-
-        public static IEnumerable<T> Create<T>(Action before, TryTake<T> tryTake, Action after)
-        {
-            var _tryTake = Check.NotNullArgument(tryTake, "tryTake");
-            try
-            {
-                before.SafeInvoke();
-                T item;
-                while (_tryTake.Invoke(out item))
-                {
-                    yield return item;
-                }
-            }
-            finally
-            {
-                after.SafeInvoke();
+                yield return _resultSelector(_iterate.Invoke());
             }
         }
 
@@ -219,80 +148,6 @@ namespace Theraot.Core
             while (_tryTake.Invoke(out item))
             {
                 yield return item;
-            }
-        }
-
-        public static IEnumerable<TResult> Create<TState, TResult>(TryTake<TState> tryTake, Converter<TState, TResult> resultSelector, Action after)
-        {
-            var _tryTake = Check.NotNullArgument(tryTake, "tryTake");
-            var _converter = Check.NotNullArgument(resultSelector, "resultSelector");
-            try
-            {
-                TState item;
-                while (_tryTake.Invoke(out item))
-                {
-                    yield return _converter.Invoke(item);
-                }
-            }
-            finally
-            {
-                after.SafeInvoke();
-            }
-        }
-
-        public static IEnumerable<TResult> Create<TState, TResult>(TryTake<TState> tryTake, Func<TState, TResult> resultSelector, Action after)
-        {
-            var _tryTake = Check.NotNullArgument(tryTake, "tryTake");
-            var _converter = Check.NotNullArgument(resultSelector, "resultSelector");
-            try
-            {
-                TState item;
-                while (_tryTake.Invoke(out item))
-                {
-                    yield return _converter.Invoke(item);
-                }
-            }
-            finally
-            {
-                after.SafeInvoke();
-            }
-        }
-
-        public static IEnumerable<TResult> Create<TState, TResult>(Action before, TryTake<TState> tryTake, Converter<TState, TResult> resultSelector, Action after)
-        {
-            var _tryTake = Check.NotNullArgument(tryTake, "tryTake");
-            var _converter = Check.NotNullArgument(resultSelector, "resultSelector");
-            try
-            {
-                before.SafeInvoke();
-                TState item;
-                while (_tryTake.Invoke(out item))
-                {
-                    yield return _converter.Invoke(item);
-                }
-            }
-            finally
-            {
-                after.SafeInvoke();
-            }
-        }
-
-        public static IEnumerable<TResult> Create<TState, TResult>(Action before, TryTake<TState> tryTake, Func<TState, TResult> resultSelector, Action after)
-        {
-            var _tryTake = Check.NotNullArgument(tryTake, "tryTake");
-            var _converter = Check.NotNullArgument(resultSelector, "resultSelector");
-            try
-            {
-                before.SafeInvoke();
-                TState item;
-                while (_tryTake.Invoke(out item))
-                {
-                    yield return _converter.Invoke(item);
-                }
-            }
-            finally
-            {
-                after.SafeInvoke();
             }
         }
 
