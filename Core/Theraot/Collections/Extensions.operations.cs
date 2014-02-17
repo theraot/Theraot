@@ -75,6 +75,18 @@ namespace Theraot.Collections
                    );
         }
 
+        public static IEnumerable<T> Cycle<T>(this IEnumerable<T> source)
+        {
+            var _source = Check.NotNullArgument(source, "source");
+            while (true)
+            {
+                foreach (var item in _source)
+                {
+                    yield return item;
+                }
+            }
+        }
+
         public static IEnumerable<T> ExceptWhere<T>(this IEnumerable<T> source, Predicate<T> predicate)
         {
             var _predicate = Check.NotNullArgument(predicate, "predicate");
@@ -88,29 +100,36 @@ namespace Theraot.Collections
 
         public static bool HasAtLeast<TSource>(this IEnumerable<TSource> source, int count)
         {
-            var collection = source as ICollection<TSource>;
-            if (collection == null)
+            if (source == null)
             {
-                int result = 0;
-                using (var item = source.GetEnumerator())
-                {
-                    while (item.MoveNext())
-                    {
-                        checked
-                        {
-                            result++;
-                        }
-                        if (result == count)
-                        {
-                            return true;
-                        }
-                    }
-                }
-                return false;
+                throw new ArgumentNullException("source");
             }
             else
             {
-                return collection.Count > count;
+                var collection = source as ICollection<TSource>;
+                if (collection == null)
+                {
+                    int result = 0;
+                    using (var item = source.GetEnumerator())
+                    {
+                        while (item.MoveNext())
+                        {
+                            checked
+                            {
+                                result++;
+                            }
+                            if (result == count)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                }
+                else
+                {
+                    return collection.Count > count;
+                }
             }
         }
 
