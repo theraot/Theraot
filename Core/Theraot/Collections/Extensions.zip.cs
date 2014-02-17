@@ -9,10 +9,14 @@ namespace Theraot.Collections
 {
     public static partial class Extensions
     {
-        public static IEnumerable<TReturn> Zip<T1, T2, TReturn>(IEnumerable<T1> arg1, IEnumerable<T2> arg2, Func<T1, T2, TReturn> resultSelector)
+#if NET20 || NET30 || NET35
+        public static IEnumerable<TReturn> Zip<T1, T2, TReturn>(this IEnumerable<T1> first, IEnumerable<T2> second, Func<T1, T2, TReturn> resultSelector)
+#else
+        public static IEnumerable<TReturn> Zip<T1, T2, TReturn>(IEnumerable<T1> first, IEnumerable<T2> second, Func<T1, T2, TReturn> resultSelector)
+#endif
         {
-            var _1 = Check.NotNullArgument(arg1, "arg1");
-            var _2 = Check.NotNullArgument(arg2, "arg2");
+            var _1 = Check.NotNullArgument(first, "arg1");
+            var _2 = Check.NotNullArgument(second, "arg2");
             var _result = Check.NotNullArgument(resultSelector, "resultSelector");
             using (var enumerator1 = _1.GetEnumerator())
             using (var enumerator2 = _2.GetEnumerator())
