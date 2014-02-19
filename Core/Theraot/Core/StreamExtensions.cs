@@ -8,6 +8,7 @@ namespace Theraot.Core
         private const int INT_DefaultBufferSize = 4096;
 
 #if NET20 || NET30 || NET35
+
         public static void CopyTo(this Stream input, Stream output)
         {
             //Added in .NET 4.0
@@ -31,6 +32,7 @@ namespace Theraot.Core
                 while (read != 0);
             }
         }
+
 #else
         public static void CopyTo(Stream input, Stream output)
         {
@@ -40,6 +42,7 @@ namespace Theraot.Core
 #endif
 
 #if NET20 || NET30 || NET35
+
         public static void CopyTo(this Stream input, Stream output, int bufferSize)
         {
             //Added in .NET 4.0
@@ -63,6 +66,7 @@ namespace Theraot.Core
                 while (read != 0);
             }
         }
+
 #else
         public static void CopyTo(Stream input, Stream output, int bufferSize)
         {
@@ -70,6 +74,21 @@ namespace Theraot.Core
             input.CopyTo(output, bufferSize);
         }
 #endif
+
+        public static void ReadComplete(this Stream stream, byte[] buffer, int offset, int length)
+        {
+            var _stream = Check.NotNullArgument(stream, "stream");
+            while (length > 0)
+            {
+                int delta = _stream.Read(buffer, offset, length);
+                if (delta <= 0)
+                {
+                    throw new EndOfStreamException();
+                }
+                length -= delta;
+                offset += delta;
+            }
+        }
 
         public static byte[] ToArray(this Stream stream)
         {
