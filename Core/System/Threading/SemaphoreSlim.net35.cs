@@ -187,6 +187,7 @@ namespace System.Threading
 
         protected virtual void Dispose(bool disposing)
         {
+            _event.Dispose();
             _disposed = true;
         }
 
