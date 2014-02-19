@@ -1479,7 +1479,7 @@ namespace Theraot.Threading
             }
             else if (milliseconds == -1)
             {
-                return SpinWaitSetUnless(ref check, value, unless);
+                return SpinWaitSetUnless(ref check, value, comparand, unless);
             }
             int count = 0;
             var start = TicksNow();
@@ -1516,7 +1516,7 @@ namespace Theraot.Threading
             }
             else if (milliseconds == -1)
             {
-                return SpinWaitSetUnless(ref check, value, unless);
+                return SpinWaitSetUnless(ref check, value, comparand, unless);
             }
             int count = 0;
             var start = TicksNow();
