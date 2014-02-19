@@ -1675,7 +1675,7 @@ namespace Theraot.Threading
         retry:
             var lastValue = Thread.VolatileRead(ref check);
             var result = lastValue + value;
-            if ((lastValue == unless) || (result == unless))
+            if (lastValue == unless)
             {
                 return false;
             }
@@ -1700,7 +1700,7 @@ namespace Theraot.Threading
             GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             var result = lastValue + value;
-            if ((lastValue == unless) || (result == unless))
+            if (lastValue == unless)
             {
                 return false;
             }
@@ -1732,7 +1732,7 @@ namespace Theraot.Threading
         retry:
             var lastValue = Thread.VolatileRead(ref check);
             var result = lastValue + value;
-            if ((lastValue == unless) || (result == unless))
+            if (lastValue == unless)
             {
                 return false;
             }
@@ -1772,7 +1772,7 @@ namespace Theraot.Threading
             GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             var result = lastValue + value;
-            if ((lastValue == unless) || (result == unless))
+            if (lastValue == unless)
             {
                 return false;
             }
@@ -1803,7 +1803,7 @@ namespace Theraot.Threading
         retry:
             var lastValue = Thread.VolatileRead(ref check);
             var result = lastValue + value;
-            if ((lastValue == unless) || (result == unless))
+            if (lastValue == unless)
             {
                 return false;
             }
@@ -1836,7 +1836,7 @@ namespace Theraot.Threading
             GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             var result = lastValue + value;
-            if ((lastValue == unless) || (result == unless))
+            if (lastValue == unless)
             {
                 return false;
             }
@@ -1866,7 +1866,7 @@ namespace Theraot.Threading
         retry:
             var lastValue = Thread.VolatileRead(ref check);
             var result = lastValue + value;
-            if ((lastValue == unless) || (result == unless))
+            if (lastValue == unless)
             {
                 return false;
             }
@@ -1898,7 +1898,7 @@ namespace Theraot.Threading
             GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             var result = lastValue + value;
-            if ((lastValue == unless) || (result == unless))
+            if (lastValue == unless)
             {
                 return false;
             }
@@ -1927,7 +1927,7 @@ namespace Theraot.Threading
         retry:
             var lastValue = Thread.VolatileRead(ref check);
             result = lastValue + value;
-            if ((lastValue == unless) || (lastValue + value == unless))
+            if (lastValue == unless)
             {
                 return false;
             }
@@ -1952,7 +1952,7 @@ namespace Theraot.Threading
             GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             result = lastValue + value;
-            if ((lastValue == unless) || (lastValue + value == unless))
+            if (lastValue == unless)
             {
                 return false;
             }
@@ -1984,7 +1984,7 @@ namespace Theraot.Threading
         retry:
             var lastValue = Thread.VolatileRead(ref check);
             result = lastValue + value;
-            if ((lastValue == unless) || (lastValue + value == unless))
+            if (lastValue == unless)
             {
                 return false;
             }
@@ -2024,7 +2024,7 @@ namespace Theraot.Threading
             GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             result = lastValue + value;
-            if ((lastValue == unless) || (lastValue + value == unless))
+            if (lastValue == unless)
             {
                 return false;
             }
@@ -2055,7 +2055,7 @@ namespace Theraot.Threading
         retry:
             var lastValue = Thread.VolatileRead(ref check);
             result = lastValue + value;
-            if ((lastValue == unless) || (lastValue + value == unless))
+            if (lastValue == unless)
             {
                 return false;
             }
@@ -2088,7 +2088,7 @@ namespace Theraot.Threading
             GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             result = lastValue + value;
-            if ((lastValue == unless) || (lastValue + value == unless))
+            if (lastValue == unless)
             {
                 return false;
             }
@@ -2118,7 +2118,7 @@ namespace Theraot.Threading
         retry:
             var lastValue = Thread.VolatileRead(ref check);
             result = lastValue + value;
-            if ((lastValue == unless) || (lastValue + value == unless))
+            if (lastValue == unless)
             {
                 return false;
             }
@@ -2150,7 +2150,7 @@ namespace Theraot.Threading
             GC.KeepAlive(cancellationToken.WaitHandle);
             var lastValue = Thread.VolatileRead(ref check);
             result = lastValue + value;
-            if ((lastValue == unless) || (lastValue + value == unless))
+            if (lastValue == unless)
             {
                 return false;
             }

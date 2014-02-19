@@ -456,7 +456,7 @@ var methods2 = new string[][]
         "ref int check, int value, int unless",
         "ref check, value, unless",
         "var lastValue = Thread.VolatileRead(ref check);\r\n            var result = lastValue + value;",
-        "(lastValue == unless) || (result == unless)",
+        "lastValue == unless",
         "var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);",
         "tmpB == lastValue",
         ""
@@ -467,7 +467,7 @@ var methods2 = new string[][]
         "ref int check, int value, int unless, out int result",
         "ref check, value, unless, out result",
         "var lastValue = Thread.VolatileRead(ref check);\r\n            result = lastValue + value;",
-        "(lastValue == unless) || (lastValue + value == unless)",
+        "lastValue == unless",
         "var tmpB = Interlocked.CompareExchange(ref check, result, lastValue);",
         "tmpB == lastValue",
         ""
