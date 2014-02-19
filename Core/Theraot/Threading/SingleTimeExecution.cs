@@ -9,6 +9,9 @@ namespace Theraot.Threading
     [global::System.Diagnostics.DebuggerNonUserCode]
     public class SingleTimeExecution
     {
+        private const int INT_StatusCompleted = -1;
+        private const int INT_StatusFree = 0;
+        private const int INT_StatusPrevented = 1;
         [NonSerialized]
         private Thread _executionThread;
 
@@ -22,14 +25,14 @@ namespace Theraot.Threading
 
         public SingleTimeExecution(bool alreadyExecuted)
         {
-            _status = alreadyExecuted ? -1 : 0;
+            _status = alreadyExecuted ? INT_StatusCompleted : INT_StatusFree;
         }
 
         public bool Executed
         {
             get
             {
-                return _status == -1;
+                return Thread.VolatileRead(ref _status) == INT_StatusCompleted;
             }
         }
 
@@ -56,10 +59,23 @@ namespace Theraot.Threading
                 SafeInvoke(work);
                 return true;
             }
-            else if (_status != -1)
+            else if (Thread.VolatileRead(ref _status) != INT_StatusCompleted)
             {
-                ThreadingHelper.SpinWaitUntil(() => _status == -1 || OnExecute(work));
-                return _status != -1;
+                int count = 0;
+            retry:
+                if (OnExecute(work))
+                {
+                    return true;
+                }
+                else if (Thread.VolatileRead(ref _status) == INT_StatusCompleted)
+                {
+                    return false;
+                }
+                else
+                {
+                    ThreadingHelper.SpinOnce(ref count);
+                    goto retry;
+                }
             }
             else
             {
@@ -69,7 +85,7 @@ namespace Theraot.Threading
 
         public T ExecutedConditional<T>(Func<T> whenExecuted, Func<T> whenNotExecuted)
         {
-            if (_status == -1)
+            if (Thread.VolatileRead(ref _status) == INT_StatusCompleted)
             {
                 if (whenExecuted == null)
                 {
@@ -89,7 +105,7 @@ namespace Theraot.Threading
                 else
                 {
                     PreventExecution();
-                    if (_status == -1)
+                    if (Thread.VolatileRead(ref _status) == INT_StatusCompleted)
                     {
                         if (whenExecuted == null)
                         {
@@ -117,7 +133,7 @@ namespace Theraot.Threading
 
         public void ExecutedConditional(Action whenExecuted, Action whenNotExecuted)
         {
-            if (_status == -1)
+            if (Thread.VolatileRead(ref _status) == INT_StatusCompleted)
             {
                 if (whenExecuted != null)
                 {
@@ -129,7 +145,7 @@ namespace Theraot.Threading
                 if (whenNotExecuted != null)
                 {
                     PreventExecution();
-                    if (_status == -1)
+                    if (Thread.VolatileRead(ref _status) == INT_StatusCompleted)
                     {
                         if (whenExecuted != null)
                         {
@@ -158,10 +174,10 @@ namespace Theraot.Threading
 
         public virtual bool Reset(Action beforeReset)
         {
-            if (Thread.VolatileRead(ref _status) == -1)
+            if (Thread.VolatileRead(ref _status) == INT_StatusCompleted)
             {
                 SafeInvoke(beforeReset);
-                Thread.VolatileWrite(ref _status, 0);
+                Thread.VolatileWrite(ref _status, INT_StatusFree);
                 return true;
             }
             else
@@ -177,7 +193,7 @@ namespace Theraot.Threading
                 prevention = null;
                 return false;
             }
-            else if (_status == -1)
+            else if (Thread.VolatileRead(ref _status) == INT_StatusCompleted)
             {
                 prevention = null;
                 return false;
@@ -185,7 +201,7 @@ namespace Theraot.Threading
             else
             {
                 PreventExecution();
-                if (_status == -1)
+                if (Thread.VolatileRead(ref _status) == INT_StatusCompleted)
                 {
                     prevention = null;
                     return false;
@@ -246,7 +262,7 @@ namespace Theraot.Threading
 
         protected bool OnExecute(Action work)
         {
-            if (Interlocked.CompareExchange(ref _status, -1, 0) == 0)
+            if (Interlocked.CompareExchange(ref _status, INT_StatusCompleted, INT_StatusFree) == INT_StatusFree)
             {
                 try
                 {
@@ -269,7 +285,7 @@ namespace Theraot.Threading
         protected bool OnTryRetrieveExecution(out IDisposable execution)
         {
             _executionThread = Thread.CurrentThread;
-            if (Interlocked.CompareExchange(ref _status, -1, 0) == 0)
+            if (Interlocked.CompareExchange(ref _status, INT_StatusCompleted, INT_StatusFree) == INT_StatusFree)
             {
                 execution = CreateExecution();
                 return true;
@@ -283,7 +299,7 @@ namespace Theraot.Threading
 
         private void PreventExecution()
         {
-            ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1);
+            ThreadingHelper.SpinWaitRelativeSetUnless(ref _status, INT_StatusPrevented, INT_StatusCompleted);
         }
     }
 }
