@@ -124,6 +124,12 @@ namespace Theraot.Core
             return FuncHelper.GetDefaultFunc<TReturn>().Invoke();
         }
 
+        public static TAttribute[] GetAttributes<TAttribute>(this ICustomAttributeProvider item, bool inherit)
+    where TAttribute : Attribute
+        {
+            return (TAttribute[])Check.NotNullArgument(item, "item").GetCustomAttributes(typeof(TAttribute), inherit);
+        }
+
         public static Func<TReturn> GetDefault<TReturn>()
         {
             return FuncHelper.GetDefaultFunc<TReturn>();
@@ -175,6 +181,13 @@ namespace Theraot.Core
             {
                 return underlying;
             }
+        }
+
+        public static bool HasAttribute<TAttribute>(this ICustomAttributeProvider item)
+            where TAttribute : Attribute
+        {
+            var attributes = item.GetAttributes<TAttribute>(true);
+            return attributes != null && attributes.Length > 0;
         }
 
         public static bool HasConstructor(this Type type, params Type[] typeArguments)
