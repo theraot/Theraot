@@ -135,6 +135,37 @@ namespace Theraot.Core
             return FuncHelper.GetDefaultFunc<TReturn>();
         }
 
+        public static MethodInfo GetDelegateMethodInfo(Type delegateType)
+        {
+            var _delegateType = Check.NotNullArgument(delegateType, "delegateType");
+            if (_delegateType.BaseType != typeof(MulticastDelegate))
+            {
+                throw new ArgumentException("Not a delegate.");
+            }
+            else
+            {
+                MethodInfo methodInfo = _delegateType.GetMethod("Invoke");
+                if (methodInfo == null)
+                {
+                    throw new ArgumentException("Not a delegate.");
+                }
+                else
+                {
+                    return methodInfo;
+                }
+            }
+        }
+
+        public static ParameterInfo[] GetDelegateParameters(Type delegateType)
+        {
+            return GetDelegateMethodInfo(delegateType).GetParameters();
+        }
+
+        public static Type GetDelegateReturnType(Type delegateType)
+        {
+            return GetDelegateMethodInfo(delegateType).ReturnType;
+        }
+
         public static ILookup<string, Type> GetNamespaces(this Assembly assembly)
         {
             if (assembly == null)
