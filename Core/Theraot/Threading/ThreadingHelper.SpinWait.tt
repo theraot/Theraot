@@ -441,6 +441,17 @@ var methods2 = new string[][]
 {
     new string[]
     {
+        "SpinWaitSetUnless",
+        "ref int check, int value, int comparand, int unless",
+        "ref check, value, unless",
+        "var lastValue = Thread.VolatileRead(ref check);",
+        "lastValue == unless",
+        "var tmpB = Interlocked.CompareExchange(ref check, value, comparand);",
+        "tmpB == comparand",
+        ""
+    },
+    new string[]
+    {
         "SpinWaitRelativeSetUnless",
         "ref int check, int value, int unless",
         "ref check, value, unless",

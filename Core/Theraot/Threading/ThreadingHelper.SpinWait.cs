@@ -1425,6 +1425,250 @@ namespace Theraot.Threading
             }
         }
     
+        public static bool SpinWaitSetUnless(ref int check, int value, int comparand, int unless)
+        {
+            int count = 0;
+        retry:
+            var lastValue = Thread.VolatileRead(ref check);
+            if (lastValue == unless)
+            {
+                return false;
+            }
+            else
+            {
+                var tmpB = Interlocked.CompareExchange(ref check, value, comparand);
+                if (tmpB == comparand)
+                {
+                    return true;
+                }
+            }
+            SpinOnce(ref count);
+            goto retry;
+            
+        }
+
+        public static bool SpinWaitSetUnless(ref int check, int value, int comparand, int unless, CancellationToken cancellationToken)
+        {
+            int count = 0;
+        retry:
+            cancellationToken.ThrowIfCancellationRequested();
+            GC.KeepAlive(cancellationToken.WaitHandle);
+            var lastValue = Thread.VolatileRead(ref check);
+            if (lastValue == unless)
+            {
+                return false;
+            }
+            else
+            {
+                var tmpB = Interlocked.CompareExchange(ref check, value, comparand);
+                if (tmpB == comparand)
+                {
+                    return true;
+                }
+            }
+            SpinOnce(ref count);
+            goto retry;
+            
+        }
+
+        public static bool SpinWaitSetUnless(ref int check, int value, int comparand, int unless, int milliseconds)
+        {
+            if (milliseconds < -1)
+            {
+                throw new ArgumentOutOfRangeException("milliseconds");
+            }
+            else if (milliseconds == -1)
+            {
+                return SpinWaitSetUnless(ref check, value, unless);
+            }
+            int count = 0;
+            var start = TicksNow();
+        retry:
+            var lastValue = Thread.VolatileRead(ref check);
+            if (lastValue == unless)
+            {
+                return false;
+            }
+            else
+            {
+                var tmpB = Interlocked.CompareExchange(ref check, value, comparand);
+                if (tmpB == comparand)
+                {
+                    return true;
+                }
+            }
+            if (Milliseconds(TicksNow() - start) < milliseconds)
+            {
+                SpinOnce(ref count);
+                goto retry;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool SpinWaitSetUnless(ref int check, int value, int comparand, int unless, int milliseconds, CancellationToken cancellationToken)
+        {
+            if (milliseconds < -1)
+            {
+                throw new ArgumentOutOfRangeException("milliseconds");
+            }
+            else if (milliseconds == -1)
+            {
+                return SpinWaitSetUnless(ref check, value, unless);
+            }
+            int count = 0;
+            var start = TicksNow();
+        retry:
+            cancellationToken.ThrowIfCancellationRequested();
+            GC.KeepAlive(cancellationToken.WaitHandle);
+            var lastValue = Thread.VolatileRead(ref check);
+            if (lastValue == unless)
+            {
+                return false;
+            }
+            else
+            {
+                var tmpB = Interlocked.CompareExchange(ref check, value, comparand);
+                if (tmpB == comparand)
+                {
+                    return true;
+                }
+            }
+            if (Milliseconds(TicksNow() - start) < milliseconds)
+            {
+                SpinOnce(ref count);
+                goto retry;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool SpinWaitSetUnless(ref int check, int value, int comparand, int unless, TimeSpan timeout)
+        {
+            var milliseconds = (long)timeout.TotalMilliseconds;
+            int count = 0;
+            var start = TicksNow();
+        retry:
+            var lastValue = Thread.VolatileRead(ref check);
+            if (lastValue == unless)
+            {
+                return false;
+            }
+            else
+            {
+                var tmpB = Interlocked.CompareExchange(ref check, value, comparand);
+                if (tmpB == comparand)
+                {
+                    return true;
+                }
+            }
+            if (Milliseconds(TicksNow() - start) < milliseconds)
+            {
+                SpinOnce(ref count);
+                goto retry;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool SpinWaitSetUnless(ref int check, int value, int comparand, int unless, TimeSpan timeout, CancellationToken cancellationToken)
+        {
+            var milliseconds = (long)timeout.TotalMilliseconds;
+            int count = 0;
+            var start = TicksNow();
+        retry:
+            cancellationToken.ThrowIfCancellationRequested();
+            GC.KeepAlive(cancellationToken.WaitHandle);
+            var lastValue = Thread.VolatileRead(ref check);
+            if (lastValue == unless)
+            {
+                return false;
+            }
+            else
+            {
+                var tmpB = Interlocked.CompareExchange(ref check, value, comparand);
+                if (tmpB == comparand)
+                {
+                    return true;
+                }
+            }
+            if (Milliseconds(TicksNow() - start) < milliseconds)
+            {
+                SpinOnce(ref count);
+                goto retry;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool SpinWaitSetUnless(ref int check, int value, int comparand, int unless, IComparable<TimeSpan> timeout)
+        {
+            int count = 0;
+            var start = DateTime.Now;
+        retry:
+            var lastValue = Thread.VolatileRead(ref check);
+            if (lastValue == unless)
+            {
+                return false;
+            }
+            else
+            {
+                var tmpB = Interlocked.CompareExchange(ref check, value, comparand);
+                if (tmpB == comparand)
+                {
+                    return true;
+                }
+            }
+            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
+            {
+                SpinOnce(ref count);
+                goto retry;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool SpinWaitSetUnless(ref int check, int value, int comparand, int unless, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
+        {
+            int count = 0;
+            var start = DateTime.Now;
+        retry:
+            cancellationToken.ThrowIfCancellationRequested();
+            GC.KeepAlive(cancellationToken.WaitHandle);
+            var lastValue = Thread.VolatileRead(ref check);
+            if (lastValue == unless)
+            {
+                return false;
+            }
+            else
+            {
+                var tmpB = Interlocked.CompareExchange(ref check, value, comparand);
+                if (tmpB == comparand)
+                {
+                    return true;
+                }
+            }
+            if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
+            {
+                SpinOnce(ref count);
+                goto retry;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    
         public static bool SpinWaitRelativeSetUnless(ref int check, int value, int unless)
         {
             int count = 0;
