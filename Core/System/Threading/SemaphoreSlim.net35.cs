@@ -7,10 +7,10 @@ namespace System.Threading
     [System.Diagnostics.DebuggerDisplayAttribute("Current Count = {CurrentCount}")]
     public class SemaphoreSlim : IDisposable
     {
+        private readonly int _maxCount;
         private int _count;
         private bool _disposed;
         private ManualResetEventSlim _event;
-        private readonly int _maxCount;
 
         public SemaphoreSlim(int initialCount)
             : this(initialCount, int.MaxValue)
