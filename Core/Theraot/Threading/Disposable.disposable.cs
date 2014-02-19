@@ -156,7 +156,7 @@ namespace Theraot.Threading
             }
             else
             {
-                return ThreadingHelper.SpinWaitSet(ref _status, -1, 0, -1);
+                return ThreadingHelper.SpinWaitSetUnless(ref _status, -1, 0, -1);
             }
         }
 
