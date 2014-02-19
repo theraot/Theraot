@@ -348,6 +348,7 @@
       <DependentUpon>Ersatz.tt</DependentUpon>
     </Compile>
     <Compile Include="Theraot\Core\NewOperationCanceledException.cs" />
+    <Compile Include="Theraot\Core\FuncHelper.predicate.cs" />
     <Compile Include="Theraot\Core\StopwatchExtensions.cs" />
     <Compile Include="Theraot\Core\StringBuilderExtensions.cs" />
     <Compile Include="Theraot\Core\ThreadEqualityComparer.cs" />
