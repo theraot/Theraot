@@ -1861,7 +1861,7 @@ namespace Theraot.Collections
             }
         }
 
-        public static IEnumerable<TItem> Where<TItem>(this IEnumerable<TItem> collection, Predicate<TItem> predicate)
+        public static IEnumerable<TItem> Where<TItem>(IEnumerable<TItem> collection, Predicate<TItem> predicate)
         {
             var _predicate = Check.NotNullArgument(predicate, "predicate");
             var _collection = Check.NotNullArgument(collection, "collection");
