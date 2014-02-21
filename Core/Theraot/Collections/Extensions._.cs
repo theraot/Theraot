@@ -1464,7 +1464,7 @@ namespace Theraot.Collections
 
         public static int RemoveWhere<TItem>(this ICollection<TItem> collection, Predicate<TItem> predicate)
         {
-            return RemoveWhere(collection, items => items.Where(Check.NotNullArgument(predicate, "predicate")));
+            return RemoveWhere(collection, items => Where(items, Check.NotNullArgument(predicate, "predicate")));
         }
 
         public static int RemoveWhere<TItem>(this ICollection<TItem> collection, Converter<IEnumerable<TItem>, IEnumerable<TItem>> converter)
@@ -1479,7 +1479,7 @@ namespace Theraot.Collections
 
         public static IEnumerable<TItem> RemoveWhereEnumerable<TItem>(this ICollection<TItem> collection, Predicate<TItem> predicate)
         {
-            return RemoveWhereEnumerable(collection, items => items.Where(Check.NotNullArgument(predicate, "predicate")));
+            return RemoveWhereEnumerable(collection, items => Where(items, Check.NotNullArgument(predicate, "predicate")));
         }
 
         public static IEnumerable<TItem> RemoveWhereEnumerable<TItem>(this ICollection<TItem> collection, Converter<IEnumerable<TItem>, IEnumerable<TItem>> converter)
