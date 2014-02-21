@@ -238,6 +238,9 @@
     </Compile>
     <Compile Include="Theraot\Collections\Specialized\FlagArray.cs" />
     <Compile Include="Theraot\Core\CancellationTokenHelper.cs" />
+    <Compile Include="Theraot\Core\GraphHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Theraot\Core\MonitorHelper.cs">
       <SubType>Code</SubType>
     </Compile>
