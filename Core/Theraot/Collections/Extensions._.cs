@@ -1818,12 +1818,12 @@ namespace Theraot.Collections
             }
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", Justification = "By Design")]
-        public static bool TryTakeUntil<TItem>(this IDropPoint<TItem> dropPoint, Predicate<TItem> check, out TItem item, ICollection<TItem> trail)
+        public static bool TryTakeUntil<TItem>(this IDropPoint<TItem> dropPoint, Predicate<TItem> check, ICollection<TItem> trail)
         {
             var _check = Check.NotNullArgument(check, "check");
             var _dropPoint = Check.NotNullArgument(dropPoint, "dropPoint");
             var _trail = Check.NotNullArgument(trail, "trail");
+            TItem item;
         back:
             if (_dropPoint.TryTake(out item))
             {
