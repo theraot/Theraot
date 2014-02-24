@@ -41,6 +41,10 @@ namespace Theraot.Core
                     int offset = LeadingZeroCount(mantissa) - 11;
                     if (offset < 0)
                     {
+                        if (exponent - offset > 2046)
+                        {
+                            return sign > 0 ? double.PositiveInfinity : double.NegativeInfinity;
+                        }
                         mantissa >>= -offset;
                         exponent += -offset;
                     }
