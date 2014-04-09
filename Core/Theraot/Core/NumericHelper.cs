@@ -25,51 +25,52 @@ namespace Theraot.Core
         [CLSCompliantAttribute(false)]
         public static double BuildDouble(int sign, ulong mantissa, int exponent)
         {
+            const int ExponentBias = 1023;
+            const int MantissaLength = 52;
+            const int ExponentLength = 11;
+            const int MaxExponent = 2046;
+            const long MantissaMask = 0xfffffffffffffL;
+            const long ExponentMask = 0x7ffL;
+            const ulong NegativeMark = 0x8000000000000000uL;
+
             if (sign == 0 || mantissa == 0)
             {
                 return 0.0;
             }
             else
             {
-                if (exponent > int.MaxValue - 1075)
+                exponent += ExponentBias + MantissaLength;
+                int offset = LeadingZeroCount(mantissa) - ExponentLength;
+                if (exponent - offset > MaxExponent)
                 {
                     return sign > 0 ? double.PositiveInfinity : double.NegativeInfinity;
                 }
                 else
                 {
-                    exponent += 1075;
-                    int offset = LeadingZeroCount(mantissa) - 11;
                     if (offset < 0)
                     {
-                        if (exponent - offset > 2046)
-                        {
-                            return sign > 0 ? double.PositiveInfinity : double.NegativeInfinity;
-                        }
                         mantissa >>= -offset;
                         exponent += -offset;
                     }
+                    else if (offset >= exponent)
+                    {
+                        mantissa <<= exponent - 1;
+                        exponent = 0;
+                    }
                     else
                     {
-                        if (offset >= exponent)
-                        {
-                            mantissa <<= exponent - 1;
-                            exponent = 0;
-                        }
-                        else
-                        {
-                            mantissa <<= offset;
-                            exponent -= offset;
-                        }
+                        mantissa <<= offset;
+                        exponent -= offset;
                     }
-                    mantissa = mantissa & 0xfffffffffffffL;
-                    if ((exponent & 0x7ffL) == exponent)
+                    mantissa = mantissa & MantissaMask;
+                    if ((exponent & ExponentMask) == exponent)
                     {
                         unchecked
                         {
-                            ulong bits = mantissa | ((ulong)exponent << 52);
+                            ulong bits = mantissa | ((ulong)exponent << MantissaLength);
                             if (sign < 0)
                             {
-                                bits |= 0x8000000000000000uL;
+                                bits |= NegativeMark;
                             }
                             return BitConverter.Int64BitsToDouble((long)bits);
                         }
@@ -95,76 +96,13 @@ namespace Theraot.Core
 
         public static float BuildSingle(int sign, int mantissa, int exponent)
         {
-            if (sign == 0 || mantissa == 0)
-            {
-                return 0.0f;
-            }
-            else
-            {
-                if (mantissa < 0)
-                {
-                    mantissa = -mantissa;
-                    sign = -sign;
-                }
-                uint _mantissa = (uint)mantissa;
-                return BuildSingle(sign, _mantissa, exponent);
-            }
+            return (float)BuildDouble(sign, mantissa, exponent);
         }
 
         [CLSCompliantAttribute(false)]
         public static float BuildSingle(int sign, uint mantissa, int exponent)
         {
-            if (sign == 0 || mantissa == 0)
-            {
-                return 0.0f;
-            }
-            else
-            {
-                if (exponent > int.MaxValue - 150)
-                {
-                    return sign > 0 ? float.PositiveInfinity : float.NegativeInfinity;
-                }
-                else
-                {
-                    exponent += 150;
-                    int offset = LeadingZeroCount(mantissa) - 8;
-                    if (offset < 0)
-                    {
-                        mantissa >>= -offset;
-                        exponent += -offset;
-                    }
-                    else
-                    {
-                        if (offset >= exponent)
-                        {
-                            mantissa <<= exponent - 1;
-                            exponent = 0;
-                        }
-                        else
-                        {
-                            mantissa <<= offset;
-                            exponent -= offset;
-                        }
-                    }
-                    mantissa = mantissa & 0x7fffff;
-                    if ((exponent & 0xff) == exponent)
-                    {
-                        unchecked
-                        {
-                            uint bits = mantissa | ((uint)exponent << 23);
-                            if (sign < 0)
-                            {
-                                bits |= 0x80000000u;
-                            }
-                            return UInt32AsSingle(bits);
-                        }
-                    }
-                    else
-                    {
-                        return sign > 0 ? float.PositiveInfinity : float.NegativeInfinity;
-                    }
-                }
-            }
+            return (float)BuildDouble(sign, mantissa, exponent);
         }
 
         [CLSCompliantAttribute(false)]
@@ -248,7 +186,7 @@ namespace Theraot.Core
 
         public static void GetParts(float value, out int sign, out int mantissa, out int exponent)
         {
-            if (value == 0.0)
+            if (value == 0.0f)
             {
                 sign = 0;
                 mantissa = 0;
