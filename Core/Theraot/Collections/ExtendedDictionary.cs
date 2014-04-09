@@ -98,22 +98,6 @@ namespace Theraot.Collections
             }
         }
 
-        public IReadOnlyCollection<TKey> Keys
-        {
-            get
-            {
-                return _keysReadonly;
-            }
-        }
-
-        public IReadOnlyCollection<TValue> Values
-        {
-            get
-            {
-                return _valuesReadonly;
-            }
-        }
-
         bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
         {
             get
@@ -155,6 +139,22 @@ namespace Theraot.Collections
         }
 
         IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values
+        {
+            get
+            {
+                return _valuesReadonly;
+            }
+        }
+
+        public IReadOnlyCollection<TKey> Keys
+        {
+            get
+            {
+                return _keysReadonly;
+            }
+        }
+
+        public IReadOnlyCollection<TValue> Values
         {
             get
             {
