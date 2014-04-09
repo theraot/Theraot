@@ -628,8 +628,8 @@ namespace Theraot.Core
             return (int)(value & 0x0000003F);
         }
 
-        //Gem from BitTwiddler1011 at StackOverflow
-        //Returns the number of bits set in @value
+        //Based on code by Zilong Tan on Ulib released under MIT license
+        //Returns the number of bits set in @x
         [CLSCompliantAttribute(false)]
         public static int PopulationCount(ulong value)
         {
