@@ -51,14 +51,6 @@ namespace Theraot.Collections
             }
         }
 
-        public T this[int index]
-        {
-            get
-            {
-                return _wrapped[index];
-            }
-        }
-
         T IExtendedList<T>.this[int index]
         {
             get
@@ -80,6 +72,14 @@ namespace Theraot.Collections
             set
             {
                 throw new NotSupportedException();
+            }
+        }
+
+        public T this[int index]
+        {
+            get
+            {
+                return _wrapped[index];
             }
         }
 

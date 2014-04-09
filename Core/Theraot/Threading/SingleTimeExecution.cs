@@ -12,6 +12,7 @@ namespace Theraot.Threading
         private const int INT_StatusCompleted = -1;
         private const int INT_StatusFree = 0;
         private const int INT_StatusPrevented = 1;
+
         [NonSerialized]
         private Thread _executionThread;
 

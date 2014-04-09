@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using Theraot.Threading;
-
-namespace Theraot.Collections.ThreadSafe
+﻿namespace Theraot.Collections.ThreadSafe
 {
     internal static class BucketHelper
     {

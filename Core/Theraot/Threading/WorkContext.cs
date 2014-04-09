@@ -8,7 +8,7 @@ namespace Theraot.Threading
     public sealed class WorkContext : IDisposable
     {
         private const int INT_InitialWorkCapacityHint = 128;
-        
+
         private static readonly WorkContext _defaultContext = new WorkContext(INT_InitialWorkCapacityHint, Environment.ProcessorCount, "Default Context", false);
 
         private static int _lastId;

@@ -184,11 +184,6 @@ namespace Theraot.Threading
             }
         }
 
-        void IPromise.Wait()
-        {
-            GC.KeepAlive(Value);
-        }
-
         void IObserver<T>.OnCompleted()
         {
             GC.KeepAlive(Value);
@@ -202,6 +197,11 @@ namespace Theraot.Threading
         void IObserver<T>.OnNext(T value)
         {
             Value = value;
+        }
+
+        void IPromise.Wait()
+        {
+            GC.KeepAlive(Value);
         }
 
         public override string ToString()
