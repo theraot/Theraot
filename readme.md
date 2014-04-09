@@ -63,7 +63,7 @@ Theraot's Libraries...
   - Uses less than 1MB in disk.
   - Keeps a consistent code style in the whole code [See Note 2]
     
-Note 1: I maintain my copy of `System.Numerics.BigInteger` that was taken from Mono. I have provided the optimization for the cast from BigInteger to float and double.
+Note 1: I have provided the optimization for the cast from `System.Numerics.BigInteger` to float and double. I have contributed code to Mono.
 
 Note 2: I intent to keep the code readable, yet documentation is low priority at this point. 
 
