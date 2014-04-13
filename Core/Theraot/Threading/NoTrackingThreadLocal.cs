@@ -17,7 +17,7 @@ namespace Theraot.Threading
         public NoTrackingThreadLocal()
             : this(TypeHelper.GetCreateOrDefault<T>())
         {
-            _slot = Thread.AllocateDataSlot();
+            //Empty
         }
 
         public NoTrackingThreadLocal(Func<T> valueFactory)
@@ -27,6 +27,7 @@ namespace Theraot.Threading
                 throw new ArgumentNullException("valueFactory");
             }
             _valueFactory = valueFactory;
+            _slot = Thread.AllocateDataSlot();
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
