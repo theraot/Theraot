@@ -9,7 +9,7 @@ namespace Theraot.Threading
     public static class GCMonitor
     {
         private const int INT_CapacityHint = 1024;
-        private const int INT_MaxProbingHint = 32;
+        private const int INT_MaxProbingHint = 128;
         private const int INT_StatusFinished = 1;
         private const int INT_StatusNotReady = -2;
         private const int INT_StatusPending = -1;
