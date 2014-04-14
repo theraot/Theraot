@@ -5,6 +5,7 @@ using System;
 namespace Theraot.Core
 {
     [global::System.Diagnostics.DebuggerNonUserCode]
+    [global::System.Diagnostics.DebuggerStepThrough]
     public static partial class NumericHelper
     {
         private static readonly int[] _smallPrimes = new int[]
