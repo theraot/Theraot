@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
+using Theraot.Collections;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
 
@@ -7,23 +9,26 @@ namespace Theraot.Threading
 {
     internal static class ArrayPool<T>
     {
+        private const int INT_DirtyCapacityHint = 128;
         private const int INT_MaxCapacity = 1024;
         private const int INT_MinCapacity = 16;
         private const int INT_PoolSize = 16;
-        private const int INT_WorkCapacityHint = 16;
+
+        private static readonly LazyBucket<FixedSizeQueueBucket<ArrayHolder>> _data;
+        private static readonly List<ArrayHolder> _dirty;
         private static readonly ReentryGuard _guard;
-        private static readonly WorkContext _recycle;
-        private static LazyBucket<FixedSizeQueueBucket<T[]>> _data;
+        private static readonly Work _recycle;
         private static int _done;
 
         static ArrayPool()
         {
-            _recycle = new WorkContext("Recycler", INT_WorkCapacityHint, 1);
-            _data = new LazyBucket<FixedSizeQueueBucket<T[]>>
+            _recycle = WorkContext.DefaultContext.AddWork(CleanUp);
+            _data = new LazyBucket<FixedSizeQueueBucket<ArrayHolder>>
             (
-                _ => new FixedSizeQueueBucket<T[]>(INT_PoolSize),
+                _ => new FixedSizeQueueBucket<ArrayHolder>(INT_PoolSize),
                 NumericHelper.Log2(INT_MaxCapacity) - NumericHelper.Log2(INT_MinCapacity)
             );
+            _dirty = new List<ArrayHolder>(INT_DirtyCapacityHint);
             _guard = new ReentryGuard();
             Thread.MemoryBarrier();
             Thread.VolatileWrite(ref _done, 1);
@@ -47,23 +52,8 @@ namespace Theraot.Threading
                     }
                     else
                     {
-                        _recycle.AddWork
-                        (
-                            () =>
-                            _guard.Execute
-                            (
-                                () =>
-                                {
-                                    int index = GetIndex(capacity);
-                                    if (index < _data.Capacity)
-                                    {
-                                        Array.Clear(array, 0, capacity);
-                                        var bucket = _data.Get(index);
-                                        bucket.Add(array);
-                                    }
-                                }
-                            )
-                        ).Start();
+                        var ersatz = new ErsatzAction<T[]>(DonateArrayExtracted, array);
+                        _guard.Execute(ersatz.Invoke);
                         return true;
                     }
                 }
@@ -94,27 +84,7 @@ namespace Theraot.Threading
             }
             if (Thread.VolatileRead(ref _done) == 1 && !_guard.IsTaken)
             {
-                var promise = _guard.Execute
-                (
-                    () =>
-                    {
-                        T[] result;
-                        int index = GetIndex(capacity);
-                        if (index >= _data.Capacity)
-                        {
-                            result = new T[capacity];
-                        }
-                        else
-                        {
-                            var bucket = _data.Get(index);
-                            if (!bucket.TryTake(out result))
-                            {
-                                result = new T[capacity];
-                            }
-                        }
-                        return result;
-                    }
-                );
+                var promise = _guard.Execute<T[]>(() => GetArrayExtracted(capacity));
                 return promise.Value;
             }
             else
@@ -123,9 +93,78 @@ namespace Theraot.Threading
             }
         }
 
+        private static void CleanUp()
+        {
+            do
+            {
+                foreach (var item in Extensions.RemoveWhereEnumerable(_dirty, FuncHelper.GetTautologyPredicate<ArrayHolder>()))
+                {
+                    item.ClearIfNeeded();
+                }
+            } while (_dirty.Count > 0);
+        }
+
+        private static void DonateArrayExtracted(T[] array)
+        {
+            int index = GetIndex(array.Length);
+            if (index < _data.Capacity)
+            {
+                var bucket = _data.Get(index);
+                var holder = new ArrayHolder(array);
+                bucket.Add(holder);
+                _dirty.Add(holder);
+                _recycle.Start();
+            }
+        }
+
+        private static T[] GetArrayExtracted(int capacity)
+        {
+            ArrayHolder result;
+            int index = GetIndex(capacity);
+            if (index < _data.Capacity)
+            {
+                var bucket = _data.Get(index);
+                if (bucket.TryTake(out result))
+                {
+                    return result.Array;
+                }
+            }
+            return new T[capacity];
+        }
+
         private static int GetIndex(int capacity)
         {
             return NumericHelper.Log2(capacity) - NumericHelper.Log2(INT_MinCapacity);
+        }
+
+        private class ArrayHolder
+        {
+            private T[] _array;
+
+            private int _dirty;
+
+            public ArrayHolder(T[] array)
+            {
+                _array = array;
+                _dirty = 1;
+            }
+
+            public T[] Array
+            {
+                get
+                {
+                    ClearIfNeeded();
+                    return _array;
+                }
+            }
+
+            public void ClearIfNeeded()
+            {
+                if (Interlocked.CompareExchange(ref _dirty, 0, 1) == 1)
+                {
+                    System.Array.Clear(_array, 0, _array.Length);
+                }
+            }
         }
     }
 }
