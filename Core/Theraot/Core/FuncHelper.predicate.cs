@@ -23,12 +23,12 @@ namespace Theraot.Core
             };
         }
 
-        public static Predicate<T> GetFallacyPredicate<T>(T item)
+        public static Predicate<T> GetFallacyPredicate<T>()
         {
             return HelperFallacyPredicate<T>.Instance;
         }
 
-        public static Predicate<T> GetTautologyPredicate<T>(T item)
+        public static Predicate<T> GetTautologyPredicate<T>()
         {
             return HelperTautologyPredicate<T>.Instance;
         }
