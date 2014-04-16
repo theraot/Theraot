@@ -51,12 +51,40 @@ namespace Theraot.Threading.Needles
 
         public static bool operator !=(ReadOnlyDisposableNeedle<T> left, ReadOnlyDisposableNeedle<T> right)
         {
-            return !EqualityComparer<T>.Default.Equals(left._target, right._target);
+            if (left == null && right == null)
+            {
+                return false;
+            }
+            else
+            {
+                if (left == null || right == null)
+                {
+                    return true;
+                }
+                else
+                {
+                    return !EqualityComparer<T>.Default.Equals(left._target, right._target);
+                }
+            }
         }
 
         public static bool operator ==(ReadOnlyDisposableNeedle<T> left, ReadOnlyDisposableNeedle<T> right)
         {
-            return EqualityComparer<T>.Default.Equals(left._target, right._target);
+            if (left == null && right == null)
+            {
+                return true;
+            }
+            else
+            {
+                if (left == null || right == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return EqualityComparer<T>.Default.Equals(left._target, right._target);
+                }
+            }
         }
 
         public override bool Equals(object obj)
