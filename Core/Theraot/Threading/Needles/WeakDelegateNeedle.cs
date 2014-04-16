@@ -14,7 +14,7 @@ namespace Theraot.Threading.Needles
         }
 
         public WeakDelegateNeedle(MethodInfo methodInfo, object target)
-            : base(BuilDelegate(methodInfo, target))
+            : base(BuildDelegate(methodInfo, target))
         {
             //Empty
         }
@@ -131,7 +131,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        private static Delegate BuilDelegate(MethodInfo methodInfo, object target)
+        private static Delegate BuildDelegate(MethodInfo methodInfo, object target)
         {
             if (ReferenceEquals(methodInfo, null))
             {
@@ -139,7 +139,7 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                if (!(methodInfo.IsStatic && ReferenceEquals(null, target)) || (!ReferenceEquals(null, target)))
+                if (methodInfo.IsStatic != ReferenceEquals(null, target))
                 {
                     if (ReferenceEquals(target, null))
                     {
@@ -152,7 +152,15 @@ namespace Theraot.Threading.Needles
                 }
                 else
                 {
-                    return Delegate.CreateDelegate(methodInfo.DeclaringType, target, methodInfo);
+                    var type = methodInfo.DeclaringType;
+                    if (ReferenceEquals(type, null))
+                    {
+                        throw new ArgumentException("methodInfo.DeclaringType is null", "methodInfo");
+                    }
+                    else
+                    {
+                        return Delegate.CreateDelegate(type, target, methodInfo);
+                    }
                 }
             }
         }
