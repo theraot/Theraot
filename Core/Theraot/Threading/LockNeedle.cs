@@ -27,7 +27,7 @@ namespace Theraot.Threading
             }
             else
             {
-                target.GetHashCode();
+                _hashCode = target.GetHashCode();
             }
             _capture = new FlagArray(LockNeedleContext<T>.Capacity);
         }
