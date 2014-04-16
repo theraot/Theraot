@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Theraot.Core
 {
@@ -45,9 +46,9 @@ namespace Theraot.Core
         {
             unchecked
             {
-                byte check = (byte)1 << 7;
+                byte check = 1 << 7;
                 int log2 = 8;
-                byte _value = (byte)value;
+                var _value = (byte)value;
                 do
                 {
                     if ((_value & check) != 0)
@@ -65,9 +66,9 @@ namespace Theraot.Core
         {
             unchecked
             {
-                ushort check = (ushort)1 << 15;
+                ushort check = 1 << 15;
                 int log2 = 16;
-                ushort _value = (ushort)value;
+                var _value = (ushort)value;
                 do
                 {
                     if ((_value & check) != 0)
@@ -87,7 +88,7 @@ namespace Theraot.Core
             {
                 uint check = (uint)1 << 31;
                 int log2 = 32;
-                uint _value = (uint)value;
+                var _value = (uint)value;
                 do
                 {
                     if ((_value & check) != 0)
@@ -107,7 +108,7 @@ namespace Theraot.Core
             {
                 ulong check = (ulong)1 << 63;
                 int log2 = 64;
-                ulong _value = (ulong)value;
+                var _value = (ulong)value;
                 do
                 {
                     if ((_value & check) != 0)
@@ -125,7 +126,7 @@ namespace Theraot.Core
         {
             unchecked
             {
-                byte check = (byte)1 << 7;
+                byte check = 1 << 7;
                 int log2 = 8;
                 do
                 {
@@ -145,7 +146,7 @@ namespace Theraot.Core
         {
             unchecked
             {
-                ushort check = (ushort)1 << 15;
+                ushort check = 1 << 15;
                 int log2 = 16;
                 do
                 {
@@ -205,9 +206,9 @@ namespace Theraot.Core
         {
             unchecked
             {
-                byte check = (byte)1 << 7;
+                byte check = 1 << 7;
                 int log2 = 8;
-                byte _value = (byte)value;
+                var _value = (byte)value;
                 do
                 {
                     if ((_value & check) != 0)
@@ -229,9 +230,9 @@ namespace Theraot.Core
         {
             unchecked
             {
-                ushort check = (ushort)1 << 15;
+                ushort check = 1 << 15;
                 int log2 = 16;
-                ushort _value = (ushort)value;
+                var _value = (ushort)value;
                 do
                 {
                     if ((_value & check) != 0)
@@ -255,7 +256,7 @@ namespace Theraot.Core
             {
                 uint check = (uint)1 << 31;
                 int log2 = 32;
-                uint _value = (uint)value;
+                var _value = (uint)value;
                 do
                 {
                     if ((_value & check) != 0)
@@ -279,7 +280,7 @@ namespace Theraot.Core
             {
                 ulong check = (ulong)1 << 63;
                 int log2 = 64;
-                ulong _value = (ulong)value;
+                var _value = (ulong)value;
                 do
                 {
                     if ((_value & check) != 0)
@@ -301,7 +302,7 @@ namespace Theraot.Core
         {
             unchecked
             {
-                byte check = (byte)1 << 7;
+                byte check = 1 << 7;
                 int log2 = 8;
                 do
                 {
@@ -325,7 +326,7 @@ namespace Theraot.Core
         {
             unchecked
             {
-                ushort check = (ushort)1 << 15;
+                ushort check = 1 << 15;
                 int log2 = 16;
                 do
                 {
@@ -397,9 +398,9 @@ namespace Theraot.Core
         {
             unchecked
             {
-                byte check = (byte)1 << 7;
+                byte check = 1 << 7;
                 int log2 = 8;
-                byte _value = (byte)value;
+                var _value = (byte)value;
                 do
                 {
                     if ((_value & check) != 0)
@@ -417,9 +418,9 @@ namespace Theraot.Core
         {
             unchecked
             {
-                ushort check = (ushort)1 << 15;
+                ushort check = 1 << 15;
                 int log2 = 16;
-                ushort _value = (ushort)value;
+                var _value = (ushort)value;
                 do
                 {
                     if ((_value & check) != 0)
@@ -439,7 +440,7 @@ namespace Theraot.Core
             {
                 uint check = (uint)1 << 31;
                 int log2 = 32;
-                uint _value = (uint)value;
+                var _value = (uint)value;
                 do
                 {
                     if ((_value & check) != 0)
@@ -459,7 +460,7 @@ namespace Theraot.Core
             {
                 ulong check = (ulong)1 << 63;
                 int log2 = 64;
-                ulong _value = (ulong)value;
+                var _value = (ulong)value;
                 do
                 {
                     if ((_value & check) != 0)
@@ -477,7 +478,7 @@ namespace Theraot.Core
         {
             unchecked
             {
-                byte check = (byte)1 << 7;
+                byte check = 1 << 7;
                 int log2 = 8;
                 do
                 {
@@ -497,7 +498,7 @@ namespace Theraot.Core
         {
             unchecked
             {
-                ushort check = (ushort)1 << 15;
+                ushort check = 1 << 15;
                 int log2 = 16;
                 do
                 {
@@ -682,45 +683,45 @@ namespace Theraot.Core
         [CLSCompliantAttribute(false)]
         public static string ToStringBinary(this sbyte value)
         {
-            return StringHelper.Concat(value.BitsBinary(), input => input.ToString());
+            return StringHelper.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
         }
 
         public static string ToStringBinary(this short value)
         {
-            return StringHelper.Concat(value.BitsBinary(), input => input.ToString());
+            return StringHelper.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
         }
 
         public static string ToStringBinary(this int value)
         {
-            return StringHelper.Concat(value.BitsBinary(), input => input.ToString());
+            return StringHelper.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
         }
 
         public static string ToStringBinary(this long value)
         {
-            return StringHelper.Concat(value.BitsBinary(), input => input.ToString());
+            return StringHelper.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
         }
 
         public static string ToStringBinary(this byte value)
         {
-            return StringHelper.Concat(value.BitsBinary(), input => input.ToString());
+            return StringHelper.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
         }
 
         [CLSCompliantAttribute(false)]
         public static string ToStringBinary(this ushort value)
         {
-            return StringHelper.Concat(value.BitsBinary(), input => input.ToString());
+            return StringHelper.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
         }
 
         [CLSCompliantAttribute(false)]
         public static string ToStringBinary(this uint value)
         {
-            return StringHelper.Concat(value.BitsBinary(), input => input.ToString());
+            return StringHelper.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
         }
 
         [CLSCompliantAttribute(false)]
         public static string ToStringBinary(this ulong value)
         {
-            return StringHelper.Concat(value.BitsBinary(), input => input.ToString());
+            return StringHelper.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
         }
 
         public static int TrailingZeroCount(this int value)

@@ -872,7 +872,7 @@ namespace Theraot.Core
             }
             else
             {
-                StringBuilder result = new StringBuilder(length);
+                var result = new StringBuilder(length);
                 for (int index = startIndex; index < maxIndex; index++)
                 {
                     var item = array[index];
@@ -925,7 +925,7 @@ namespace Theraot.Core
             }
             else
             {
-                StringBuilder result = new StringBuilder(length);
+                var result = new StringBuilder(length);
                 bool first = true;
                 for (int index = startIndex; index < maxIndex; index++)
                 {

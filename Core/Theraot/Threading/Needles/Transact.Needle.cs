@@ -10,8 +10,8 @@ namespace Theraot.Threading.Needles
     {
         public sealed partial class Needle<T> : Theraot.Threading.Needles.Needle<T>, IResource
         {
-            private ICloner<T> _cloner;
-            private LockNeedle<Transact> _lockNeedle = new LockNeedle<Transact>();
+            private readonly ICloner<T> _cloner;
+            private readonly LockNeedle<Transact> _lockNeedle = new LockNeedle<Transact>();
 
             public Needle(T value)
                 : base(value)

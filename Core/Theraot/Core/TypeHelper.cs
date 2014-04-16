@@ -375,7 +375,7 @@ namespace Theraot.Core
         {
             foreach (var currentInterface in type.GetInterfaces())
             {
-                if (Array.Exists(interfaceTypes, item => currentInterface.Equals(item)))
+                if (Array.Exists(interfaceTypes, item => currentInterface == item))
                 {
                     return true;
                 }
@@ -388,7 +388,7 @@ namespace Theraot.Core
             var implementedInterfaces = type.GetInterfaces();
             foreach (var currentInterface in interfaceTypes)
             {
-                var index = Array.FindIndex(implementedInterfaces, item => item.Equals(currentInterface));
+                var index = Array.FindIndex(implementedInterfaces, item => item == currentInterface);
                 if (index != -1)
                 {
                     interfaceType = implementedInterfaces[index];
@@ -410,12 +410,12 @@ namespace Theraot.Core
             {
                 if
                 (
-                    type.Equals(typeof(bool))
-                    || type.Equals(typeof(char))
-                    || type.Equals(typeof(IntPtr))
-                    || type.Equals(typeof(UIntPtr))
-                    || type.Equals(typeof(double))
-                    || type.Equals(typeof(float))
+                    type == typeof(bool)
+                    || type == typeof(char)
+                    || type == typeof(IntPtr)
+                    || type == typeof(UIntPtr)
+                    || type == typeof(double)
+                    || type == typeof(float)
                 )
                 {
                     return false;

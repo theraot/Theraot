@@ -359,6 +359,18 @@
     </Compile>
     <Compile Include="Theraot\Core\NewOperationCanceledException.cs" />
     <Compile Include="Theraot\Core\FuncHelper.predicate.cs" />
+    <Compile Include="Theraot\Core\NumericHelper.build.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Theraot\Core\NumericHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Theraot\Core\PrimeHelper.array.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Theraot\Core\PrimeHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Theraot\Core\Range.cs" />
     <Compile Include="Theraot\Core\RangeExtensions.cs" />
     <Compile Include="Theraot\Core\StopwatchExtensions.cs" />
@@ -488,8 +500,6 @@
     <Compile Include="Theraot\Core\ICloneable.cs" />
     <Compile Include="Theraot\Core\ICloner.cs" />
     <Compile Include="Theraot\Core\NumericHelper.Binary.cs" />
-    <Compile Include="Theraot\Core\NumericHelper.cs" />
-    <Compile Include="Theraot\Core\NumericHelper.Primes.cs" />
     <Compile Include="Theraot\Core\OrderedEnumerable.cs" />
     <Compile Include="System\Tuple8.net35.cs" />
     <Compile Include="System\Tuple7.net35.cs" />
