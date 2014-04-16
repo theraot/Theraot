@@ -425,7 +425,7 @@ namespace Theraot.Core
             }
             if (separator == null)
             {
-                return Concat<T>(values);
+                return Concat(values);
             }
             else
             {
@@ -450,7 +450,7 @@ namespace Theraot.Core
             }
             if (separator == null)
             {
-                return Concat<T>(values, converter);
+                return Concat(values, converter);
             }
             else
             {
@@ -507,7 +507,7 @@ namespace Theraot.Core
             }
             if (separator == null)
             {
-                return Concat<T>(values);
+                return Concat(values);
             }
             else
             {
@@ -547,7 +547,7 @@ namespace Theraot.Core
             }
             if (separator == null)
             {
-                return Concat<T>(values, converter);
+                return Concat(values, converter);
             }
             else
             {
@@ -947,12 +947,9 @@ namespace Theraot.Core
 
     public static partial class StringHelper
     {
-#if NET20 || NET30 || NET35
-        public static bool IsNullOrWhiteSpace(this string value)
-#else
         public static bool IsNullOrWhiteSpace(string value)
-#endif
         {
+#if NET20 || NET30 || NET35
             //Added in .NET 4.0
             if (string.IsNullOrEmpty(value))
             {
@@ -966,6 +963,9 @@ namespace Theraot.Core
                 }
             }
             return true;
+#else
+            return string.IsNullOrWhiteSpace(value);
+#endif
         }
 
         public static string Concat(IEnumerable<string> values)
