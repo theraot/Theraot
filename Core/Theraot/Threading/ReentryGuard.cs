@@ -57,7 +57,7 @@ namespace Theraot.Threading
         public IPromise<T> Execute<T>(Func<T> action)
         {
             var local = _workQueue.Value.Value;
-            var result = AddExecution<T>(action, local);
+            var result = AddExecution(action, local);
             IDisposable engagement;
             if (local.Item2.Enter(out engagement))
             {
