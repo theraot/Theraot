@@ -8,19 +8,13 @@ namespace Theraot.Core
         public static Predicate<T> CreateEquals<T>(T comparand, IEqualityComparer<T> comparer)
         {
             Check.NotNullArgument(comparer, "comparer");
-            return delegate(T y)
-            {
-                return comparer.Equals(comparand, y);
-            };
+            return y => comparer.Equals(comparand, y);
         }
 
         public static Predicate<T> CreateNotEquals<T>(T comparand, IEqualityComparer<T> comparer)
         {
             Check.NotNullArgument(comparer, "comparer");
-            return delegate(T y)
-            {
-                return !comparer.Equals(comparand, y);
-            };
+            return y => !comparer.Equals(comparand, y);
         }
 
         public static Predicate<T> GetFallacyPredicate<T>()
@@ -36,28 +30,28 @@ namespace Theraot.Core
         public static Func<T, bool> ToFunc<T>(this Predicate<T> predicate)
         {
             var target = predicate.Target;
-            if (target.GetType() == typeof(FuncWrapper<T>))
+            if (target is FuncWrapper<T>)
             {
                 return (target as FuncWrapper<T>).Func;
             }
             else
             {
                 var wrapper = new PredicateWrapper<T>(predicate);
-                return new Func<T, bool>(wrapper.Invoke);
+                return wrapper.Invoke;
             }
         }
 
         public static Predicate<T> ToPredicate<T>(this Func<T, bool> func)
         {
             var target = func.Target;
-            if (target.GetType() == typeof(PredicateWrapper<T>))
+            if (target is PredicateWrapper<T>)
             {
                 return (target as PredicateWrapper<T>).Predicate;
             }
             else
             {
                 var wrapper = new FuncWrapper<T>(func);
-                return new Predicate<T>(wrapper.Invoke);
+                return wrapper.Invoke;
             }
         }
 
@@ -111,7 +105,7 @@ namespace Theraot.Core
 
         private class FuncWrapper<T>
         {
-            private Func<T, bool> _func;
+            private readonly Func<T, bool> _func;
 
             public FuncWrapper(Func<T, bool> func)
             {
@@ -134,7 +128,7 @@ namespace Theraot.Core
 
         private class PredicateWrapper<T>
         {
-            private Predicate<T> _predicate;
+            private readonly Predicate<T> _predicate;
 
             public PredicateWrapper(Predicate<T> predicate)
             {

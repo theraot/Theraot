@@ -10,7 +10,7 @@ namespace Theraot.Core
         {
             Check.NotNullArgument(next, "next");
             Check.NotNullArgument(resultSelector, "next");
-            return ExploreBreadthFirstGraphExtracted(new ExtendedQueue<TInput>() { initial }, next, resultSelector);
+            return ExploreBreadthFirstGraphExtracted(new ExtendedQueue<TInput> { initial }, next, resultSelector);
         }
 
         public static IEnumerable<TOutput> ExploreBreadthFirstGraph<TInput, TOutput>(IEnumerable<TInput> initial, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
@@ -23,7 +23,7 @@ namespace Theraot.Core
         public static IEnumerable<T> ExploreBreadthFirstGraph<T>(T initial, Func<T, IEnumerable<T>> next)
         {
             Check.NotNullArgument(next, "next");
-            return ExploreBreadthFirstGraphExtracted(new ExtendedQueue<T>() { initial }, next);
+            return ExploreBreadthFirstGraphExtracted(new ExtendedQueue<T> { initial }, next);
         }
 
         public static IEnumerable<T> ExploreBreadthFirstGraph<T>(IEnumerable<T> initial, Func<T, IEnumerable<T>> next)
@@ -36,7 +36,7 @@ namespace Theraot.Core
         {
             Check.NotNullArgument(next, "next");
             Check.NotNullArgument(resultSelector, "next");
-            return ExploreBreadthFirstTreeExtracted(new ExtendedQueue<TInput>() { initial }, next, resultSelector);
+            return ExploreBreadthFirstTreeExtracted(new ExtendedQueue<TInput> { initial }, next, resultSelector);
         }
 
         public static IEnumerable<TOutput> ExploreBreadthFirstTree<TInput, TOutput>(IEnumerable<TInput> initial, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
@@ -49,7 +49,7 @@ namespace Theraot.Core
         public static IEnumerable<T> ExploreBreadthFirstTree<T>(T initial, Func<T, IEnumerable<T>> next)
         {
             Check.NotNullArgument(next, "next");
-            return ExploreBreadthFirstTreeExtracted(new ExtendedQueue<T>() { initial }, next);
+            return ExploreBreadthFirstTreeExtracted(new ExtendedQueue<T> { initial }, next);
         }
 
         public static IEnumerable<T> ExploreBreadthFirstTree<T>(IEnumerable<T> initial, Func<T, IEnumerable<T>> next)
@@ -249,7 +249,7 @@ namespace Theraot.Core
         {
             Check.NotNullArgument(next, "next");
             Check.NotNullArgument(resultSelector, "next");
-            return ExploreDepthFirstGraphExtracted(new ExtendedStack<TInput>() { initial }, next, resultSelector);
+            return ExploreDepthFirstGraphExtracted(new ExtendedStack<TInput> { initial }, next, resultSelector);
         }
 
         public static IEnumerable<TOutput> ExploreDepthFirstGraph<TInput, TOutput>(IEnumerable<TInput> initial, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
@@ -262,7 +262,7 @@ namespace Theraot.Core
         public static IEnumerable<T> ExploreDepthFirstGraph<T>(T initial, Func<T, IEnumerable<T>> next)
         {
             Check.NotNullArgument(next, "next");
-            return ExploreDepthFirstGraphExtracted(new ExtendedStack<T>() { initial }, next);
+            return ExploreDepthFirstGraphExtracted(new ExtendedStack<T> { initial }, next);
         }
 
         public static IEnumerable<T> ExploreDepthFirstGraph<T>(IEnumerable<T> initial, Func<T, IEnumerable<T>> next)
@@ -275,7 +275,7 @@ namespace Theraot.Core
         {
             Check.NotNullArgument(next, "next");
             Check.NotNullArgument(resultSelector, "next");
-            return ExploreDepthFirstTreeExtracted(new ExtendedStack<TInput>() { initial }, next, resultSelector);
+            return ExploreDepthFirstTreeExtracted(new ExtendedStack<TInput> { initial }, next, resultSelector);
         }
 
         public static IEnumerable<TOutput> ExploreDepthFirstTree<TInput, TOutput>(IEnumerable<TInput> initial, Func<TInput, IEnumerable<TInput>> next, Func<TInput, TOutput> resultSelector)
@@ -288,7 +288,7 @@ namespace Theraot.Core
         public static IEnumerable<T> ExploreDepthFirstTree<T>(T initial, Func<T, IEnumerable<T>> next)
         {
             Check.NotNullArgument(next, "next");
-            return ExploreDepthFirstTreeExtracted(new ExtendedStack<T>() { initial }, next);
+            return ExploreDepthFirstTreeExtracted(new ExtendedStack<T> { initial }, next);
         }
 
         public static IEnumerable<T> ExploreDepthFirstTree<T>(IEnumerable<T> initial, Func<T, IEnumerable<T>> next)

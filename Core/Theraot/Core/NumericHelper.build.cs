@@ -17,7 +17,7 @@ namespace Theraot.Core
                     mantissa = -mantissa;
                     sign = -sign;
                 }
-                ulong _mantissa = (ulong)mantissa;
+                var _mantissa = (ulong)mantissa;
                 return BuildDouble(sign, _mantissa, exponent);
             }
         }

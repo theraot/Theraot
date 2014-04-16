@@ -2,7 +2,7 @@ using System;
 
 namespace Theraot.Core
 {
-    public interface ICloneable<T> : ICloneable
+    public interface ICloneable<out T> : ICloneable
     {
         new T Clone();
     }

@@ -1,4 +1,4 @@
 namespace Theraot.Core
 {
-    public delegate void NewEventHandler<TEventArgs>(object sender, TEventArgs value);
+    public delegate void NewEventHandler<in TEventArgs>(object sender, TEventArgs value);
 }

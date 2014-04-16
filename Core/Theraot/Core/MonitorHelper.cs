@@ -24,11 +24,7 @@ namespace Theraot.Core
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            if (Monitor.TryEnter(obj))
-            {
-                return;
-            }
-            else
+            if (!Monitor.TryEnter(obj))
             {
                 ThreadingHelper.SpinOnce(ref count);
                 goto retry;

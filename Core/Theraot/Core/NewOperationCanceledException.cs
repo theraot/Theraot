@@ -31,7 +31,6 @@ namespace Theraot.Core
         private CancellationToken? _token;
 
         public NewOperationCanceledException(CancellationToken token)
-            : base()
         {
             _token = token;
         }
