@@ -152,7 +152,7 @@ namespace Theraot.Threading
     {
 #if DEBUG || FAT
         private static int _lastId;
-        private int _id = Interlocked.Increment(ref _lastId) - 1;
+        private readonly int _id = Interlocked.Increment(ref _lastId) - 1;
 
         public int Id
         {
