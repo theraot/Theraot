@@ -51,7 +51,7 @@ namespace Theraot.Threading.Needles
                 {
                     if (disposeManagedResources)
                     {
-                        this.OnDispose();
+                        OnDispose();
                     }
                 }
             }

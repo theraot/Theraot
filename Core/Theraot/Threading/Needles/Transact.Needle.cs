@@ -19,7 +19,7 @@ namespace Theraot.Threading.Needles
                 _cloner = CloneHelper<T>.GetCloner();
                 if (ReferenceEquals(_cloner, null))
                 {
-                    throw new InvalidOperationException(string.Format("Unable to get a cloner for {0}", typeof(T).ToString()));
+                    throw new InvalidOperationException(string.Format("Unable to get a cloner for {0}", typeof(T)));
                 }
             }
 

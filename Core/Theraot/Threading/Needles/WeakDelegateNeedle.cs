@@ -10,7 +10,7 @@ namespace Theraot.Threading.Needles
         public WeakDelegateNeedle(Delegate handler)
             : base(Check.NotNullArgument(handler, "handler"))
         {
-            var _handler = Check.NotNullArgument(handler, "handler");
+            Check.NotNullArgument(handler, "handler");
         }
 
         public WeakDelegateNeedle(MethodInfo methodInfo, object target)
