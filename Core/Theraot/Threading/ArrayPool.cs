@@ -15,7 +15,7 @@ namespace Theraot.Threading
         private const int INT_PoolSize = 16;
 
         private static readonly LazyBucket<FixedSizeQueueBucket<ArrayHolder>> _data;
-        private static readonly List<ArrayHolder> _dirty;
+        private static readonly List<ArrayHolder> _dirtyData;
         private static readonly ReentryGuard _guard;
         private static readonly Work _recycle;
         private static int _done;
@@ -28,7 +28,7 @@ namespace Theraot.Threading
                 _ => new FixedSizeQueueBucket<ArrayHolder>(INT_PoolSize),
                 NumericHelper.Log2(INT_MaxCapacity) - NumericHelper.Log2(INT_MinCapacity)
             );
-            _dirty = new List<ArrayHolder>(INT_DirtyCapacityHint);
+            _dirtyData = new List<ArrayHolder>(INT_DirtyCapacityHint);
             _guard = new ReentryGuard();
             Thread.MemoryBarrier();
             Thread.VolatileWrite(ref _done, 1);
@@ -84,7 +84,7 @@ namespace Theraot.Threading
             }
             if (Thread.VolatileRead(ref _done) == 1 && !_guard.IsTaken)
             {
-                var promise = _guard.Execute<T[]>(() => GetArrayExtracted(capacity));
+                var promise = _guard.Execute(() => GetArrayExtracted(capacity));
                 return promise.Value;
             }
             else
@@ -97,11 +97,11 @@ namespace Theraot.Threading
         {
             do
             {
-                foreach (var item in Extensions.RemoveWhereEnumerable(_dirty, FuncHelper.GetTautologyPredicate<ArrayHolder>()))
+                foreach (var item in Extensions.RemoveWhereEnumerable(_dirtyData, FuncHelper.GetTautologyPredicate<ArrayHolder>()))
                 {
                     item.ClearIfNeeded();
                 }
-            } while (_dirty.Count > 0);
+            } while (_dirtyData.Count > 0);
         }
 
         private static void DonateArrayExtracted(T[] array)
@@ -112,7 +112,7 @@ namespace Theraot.Threading
                 var bucket = _data.Get(index);
                 var holder = new ArrayHolder(array);
                 bucket.Add(holder);
-                _dirty.Add(holder);
+                _dirtyData.Add(holder);
                 _recycle.Start();
             }
         }
@@ -139,8 +139,7 @@ namespace Theraot.Threading
 
         private class ArrayHolder
         {
-            private T[] _array;
-
+            private readonly T[] _array;
             private int _dirty;
 
             public ArrayHolder(T[] array)
