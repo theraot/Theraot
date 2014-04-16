@@ -11,7 +11,7 @@ namespace Theraot.Core
         public static ICloner<T> GetCloner()
         {
             Type type = typeof(T);
-            if (TypeHelper.IsValueTypeRecursive(type))
+            if (type.IsValueTypeRecursive())
             {
                 return StructCloner.Instance;
             }
@@ -35,7 +35,7 @@ namespace Theraot.Core
 
         private class Cloner : ICloner<T>
         {
-            private static ICloner<T> _instance = new Cloner();
+            private static readonly ICloner<T> _instance = new Cloner();
 
             private Cloner()
             {
@@ -58,7 +58,7 @@ namespace Theraot.Core
 
         private class GenericCloner : ICloner<T>
         {
-            private static ICloner<T> _instance = new GenericCloner();
+            private static readonly ICloner<T> _instance = new GenericCloner();
 
             private GenericCloner()
             {
@@ -81,7 +81,7 @@ namespace Theraot.Core
 
         private class SerializerCloner : ICloner<T>
         {
-            private static ICloner<T> _instance = new SerializerCloner();
+            private static readonly ICloner<T> _instance = new SerializerCloner();
 
             private SerializerCloner()
             {
@@ -110,7 +110,7 @@ namespace Theraot.Core
 
         private class StructCloner : ICloner<T>
         {
-            private static ICloner<T> _instance = new StructCloner();
+            private static readonly ICloner<T> _instance = new StructCloner();
 
             private StructCloner()
             {

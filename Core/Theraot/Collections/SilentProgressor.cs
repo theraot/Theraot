@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Theraot.Collections
 {
     [Serializable]
-    public sealed class SilentProgressor<T> : ProgressorBase<T>, IObservable<T>, IProgressor<T>
+    public sealed class SilentProgressor<T> : ProgressorBase<T>, IObservable<T>
     {
         public SilentProgressor(IEnumerable<T> wrapped)
             : base(wrapped)

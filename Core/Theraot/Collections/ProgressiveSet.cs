@@ -1,16 +1,12 @@
 using System;
 using System.Collections.Generic;
 
-using Theraot.Core;
-
 namespace Theraot.Collections
 {
     [System.Serializable]
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public class ProgressiveSet<T> : ProgressiveCollection<T>, IReadOnlySet<T>, IExtendedReadOnlySet<T>, IExtendedSet<T>, ISet<T>
+    public class ProgressiveSet<T> : ProgressiveCollection<T>, IExtendedReadOnlySet<T>, IExtendedSet<T>, ISet<T>
     {
-        private readonly ISet<T> _cache;
-
         public ProgressiveSet(IEnumerable<T> wrapped)
             : this(wrapped, new ExtendedSet<T>(), null)
         {
@@ -32,13 +28,13 @@ namespace Theraot.Collections
         protected ProgressiveSet(IEnumerable<T> wrapped, ISet<T> cache, IEqualityComparer<T> comparer)
             : base(wrapped, cache, comparer)
         {
-            _cache = Check.NotNullArgument(cache, "cache");
+            //Empty
         }
 
         protected ProgressiveSet(IProgressor<T> wrapped, ISet<T> cache, IEqualityComparer<T> comparer)
             : base(wrapped, cache, comparer)
         {
-            _cache = Check.NotNullArgument(cache, "cache");
+            //Empty
         }
 
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns True")]
