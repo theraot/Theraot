@@ -41,42 +41,37 @@ namespace Theraot.Core
 
         public static IEnumerable<string> GetFilesAndFoldersRecursive(string folder, string pattern)
         {
-            return GraphHelper.ExploreBreadthFirstTree<string, IEnumerable<string>>
+            return GraphHelper.ExploreBreadthFirstTree
             (
                 folder,
-                current => GetFolders(current),
+                GetFolders,
                 current => GetFiles(current, pattern).Prepend(current)
             ).SelectMany(input => input);
         }
 
         public static IEnumerable<string> GetFilesRecursive(string folder, string pattern)
         {
-            return GraphHelper.ExploreBreadthFirstTree<string, IEnumerable<string>>
+            return GraphHelper.ExploreBreadthFirstTree
             (
                 folder,
-                current => GetFolders(folder),
+                GetFolders,
                 current => GetFiles(current, pattern)
             ).SelectMany(input => input);
         }
 
         public static IEnumerable<string> GetFolders(string folder)
         {
-            IEnumerable<string> directories;
 #if NET20 || NET30 || NET35
-            directories = Directory.GetDirectories(folder);
+            var directories = Directory.GetDirectories(folder);
 #else
-            directories = Directory.EnumerateDirectories(folder);
+            var directories = Directory.EnumerateDirectories(folder);
 #endif
             return directories.Where(subFolder => ((File.GetAttributes(subFolder) & FileAttributes.ReparsePoint) != FileAttributes.ReparsePoint));
         }
 
         public static IEnumerable<string> GetFoldersRecursive(string folder)
         {
-            return GraphHelper.ExploreBreadthFirstTree<string>
-            (
-                folder,
-                current => GetFolders(current)
-            );
+            return GraphHelper.ExploreBreadthFirstTree(folder, GetFolders);
         }
     }
 }
