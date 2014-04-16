@@ -17,10 +17,7 @@ namespace Theraot.Threading
                 disposable.DisposedConditional
                     (
                         null,
-                        () =>
-                        {
-                            action.SafeInvoke(disposable);
-                        }
+                        () => action.SafeInvoke(disposable)
                     );
             }
         }
@@ -33,10 +30,7 @@ namespace Theraot.Threading
                 return disposable.DisposedConditional
                     (
                         null,
-                        () =>
-                        {
-                            return action.SafeInvoke(disposable, def);
-                        }
+                        () => action.SafeInvoke(disposable, def)
                     );
             }
             else
@@ -53,10 +47,7 @@ namespace Theraot.Threading
                 return disposable.DisposedConditional
                     (
                         null,
-                        () =>
-                        {
-                            return action.SafeInvoke(disposable, alternative, def);
-                        }
+                        () => action.SafeInvoke(disposable, alternative, def)
                     );
             }
             else
