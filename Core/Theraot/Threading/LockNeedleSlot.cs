@@ -6,8 +6,8 @@ namespace Theraot.Threading
     internal sealed class LockNeedleSlot<T> : IComparable<LockNeedleSlot<T>>, INeedle<T>
     {
         private readonly int _id;
+        private readonly VersionProvider.VersionToken _versionToken;
         private T _target;
-        private VersionProvider.VersionToken _versionToken;
 
         internal LockNeedleSlot(int id, VersionProvider.VersionToken versionToken)
         {
