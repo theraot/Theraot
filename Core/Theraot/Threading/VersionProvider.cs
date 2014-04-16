@@ -68,10 +68,10 @@ namespace Theraot.Threading
 
             public VersionToken Clone()
             {
-                VersionToken result = new VersionToken(_provider, _target, _number);
+                var result = new VersionToken(_provider, _target, _number);
                 if (result.CompareTo(this) > 0)
                 {
-                    SpinWait wait = new SpinWait();
+                    var wait = new SpinWait();
                     do
                     {
                         result._number = _number;

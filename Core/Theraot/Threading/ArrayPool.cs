@@ -97,7 +97,7 @@ namespace Theraot.Threading
         {
             do
             {
-                foreach (var item in Extensions.RemoveWhereEnumerable(_dirtyData, FuncHelper.GetTautologyPredicate<ArrayHolder>()))
+                foreach (var item in _dirtyData.RemoveWhereEnumerable(FuncHelper.GetTautologyPredicate<ArrayHolder>()))
                 {
                     item.ClearIfNeeded();
                 }
@@ -119,11 +119,11 @@ namespace Theraot.Threading
 
         private static T[] GetArrayExtracted(int capacity)
         {
-            ArrayHolder result;
             int index = GetIndex(capacity);
             if (index < _data.Capacity)
             {
                 var bucket = _data.Get(index);
+                ArrayHolder result;
                 if (bucket.TryTake(out result))
                 {
                     return result.Array;
