@@ -138,21 +138,16 @@ namespace Theraot.Threading
             {
                 if (callback == null)
                 {
-                    throw new ArgumentNullException("update");
+                    throw new ArgumentNullException("callback");
                 }
                 else
                 {
                     var newTarget = _provider._target;
-                    var updated = false;
-                    if (!ReferenceEquals(Interlocked.Exchange<Target>(ref _target, newTarget), newTarget))
-                    {
-                        updated = true;
-                    }
-                    if (Interlocked.Exchange(ref _number, newTarget.Number) != newTarget.Number)
-                    {
-                        updated = true;
-                    }
-                    if (updated)
+                    if
+                    (
+                        !ReferenceEquals(Interlocked.Exchange(ref _target, newTarget), newTarget)
+                        || Interlocked.Exchange(ref _number, newTarget.Number) != newTarget.Number
+                    )
                     {
                         callback();
                     }
@@ -162,7 +157,7 @@ namespace Theraot.Threading
             public void Update()
             {
                 var newTarget = _provider._target;
-                Interlocked.Exchange<Target>(ref _target, newTarget);
+                Interlocked.Exchange(ref _target, newTarget);
                 Interlocked.Exchange(ref _number, newTarget.Number);
             }
 
@@ -170,26 +165,18 @@ namespace Theraot.Threading
             {
                 if (callback == null)
                 {
-                    throw new ArgumentNullException("update");
+                    throw new ArgumentNullException("callback");
                 }
                 else
                 {
                     var newTarget = other._target;
-                    var updated = false;
-                    if (!ReferenceEquals(Interlocked.Exchange<Target>(ref _target, newTarget), newTarget))
+                    bool updated = !ReferenceEquals(Interlocked.Exchange(ref _target, newTarget), newTarget) || Interlocked.Exchange(ref _number, other._number) != other._number;
+                    if (CompareTo(other) > 0)
                     {
-                        updated = true;
-                    }
-                    if (Interlocked.Exchange(ref _number, other._number) != other._number)
-                    {
-                        updated = true;
-                    }
-                    if (this.CompareTo(other) > 0)
-                    {
-                        SpinWait wait = new SpinWait();
+                        var wait = new SpinWait();
                         do
                         {
-                            if (!ReferenceEquals(Interlocked.Exchange<Target>(ref _target, newTarget), newTarget))
+                            if (!ReferenceEquals(Interlocked.Exchange(ref _target, newTarget), newTarget))
                             {
                                 updated = true;
                             }
@@ -198,7 +185,7 @@ namespace Theraot.Threading
                                 updated = true;
                             }
                             wait.SpinOnce();
-                        } while (this.CompareTo(other) > 0);
+                        } while (CompareTo(other) > 0);
                     }
                     if (updated)
                     {
@@ -210,17 +197,17 @@ namespace Theraot.Threading
             public void UpdateTo(VersionToken other)
             {
                 var newTarget = _provider._target;
-                Interlocked.Exchange<Target>(ref _target, newTarget);
+                Interlocked.Exchange(ref _target, newTarget);
                 Interlocked.Exchange(ref _number, newTarget.Number);
-                if (this.CompareTo(other) > 0)
+                if (CompareTo(other) > 0)
                 {
-                    SpinWait wait = new SpinWait();
+                    var wait = new SpinWait();
                     do
                     {
-                        Interlocked.Exchange<Target>(ref _target, newTarget);
+                        Interlocked.Exchange(ref _target, newTarget);
                         Interlocked.Exchange(ref _number, other._number);
                         wait.SpinOnce();
-                    } while (this.CompareTo(other) > 0);
+                    } while (CompareTo(other) > 0);
                 }
             }
         }
