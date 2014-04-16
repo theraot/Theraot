@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Threading;
 
 namespace Theraot.Threading
@@ -61,7 +62,7 @@ namespace Theraot.Threading
 
             public override string ToString()
             {
-                return _id.ToString();
+                return _id.ToString(CultureInfo.InvariantCulture);
             }
         }
     }
