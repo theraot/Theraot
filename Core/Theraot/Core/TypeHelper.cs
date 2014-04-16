@@ -178,7 +178,7 @@ namespace Theraot.Core
                 int index = 0;
                 return new ProgressiveLookup<string, Type>
                 (
-                    EnumerableHelper.Create<KeyValuePair<string, Type>>
+                    EnumerableHelper.Create
                     (
                         () =>
                         {
@@ -236,7 +236,7 @@ namespace Theraot.Core
                     if (type.IsGenericType)
                     {
                         type = type.GetGenericTypeDefinition();
-                        if (type.Equals(baseType))
+                        if (baseType == type)
                         {
                             return true;
                         }
@@ -248,7 +248,7 @@ namespace Theraot.Core
             {
                 while (type != null)
                 {
-                    if (type.Equals(baseType))
+                    if (baseType == type)
                     {
                         return true;
                     }
@@ -296,7 +296,7 @@ namespace Theraot.Core
         {
             foreach (var currentInterface in type.GetInterfaces())
             {
-                if (currentInterface.GetGenericTypeDefinition().Equals(interfaceGenericTypeDefinition))
+                if (currentInterface.GetGenericTypeDefinition() == interfaceGenericTypeDefinition)
                 {
                     return true;
                 }
@@ -309,7 +309,7 @@ namespace Theraot.Core
             foreach (var currentInterface in type.GetInterfaces())
             {
                 var match = currentInterface.GetGenericTypeDefinition();
-                if (Array.Exists(interfaceGenericTypeDefinitions, item => item.Equals(match)))
+                if (Array.Exists(interfaceGenericTypeDefinitions, item => item == match))
                 {
                     return true;
                 }
@@ -321,7 +321,7 @@ namespace Theraot.Core
         {
             foreach (var currentInterface in type.GetInterfaces())
             {
-                if (currentInterface.GetGenericTypeDefinition().Equals(interfaceGenericTypeDefinition))
+                if (currentInterface.GetGenericTypeDefinition() == interfaceGenericTypeDefinition)
                 {
                     interfaceType = currentInterface;
                     return true;
@@ -336,7 +336,7 @@ namespace Theraot.Core
             var implementedInterfaces = type.GetInterfaces();
             foreach (var currentInterface in interfaceGenericTypeDefinitions)
             {
-                var index = Array.FindIndex(implementedInterfaces, item => item.GetGenericTypeDefinition().Equals(currentInterface));
+                var index = Array.FindIndex(implementedInterfaces, item => currentInterface == item.GetGenericTypeDefinition());
                 if (index != -1)
                 {
                     interfaceType = implementedInterfaces[index];
@@ -355,7 +355,7 @@ namespace Theraot.Core
             }
             else
             {
-                return type.GetGenericTypeDefinition().Equals(genericTypeDefinition);
+                return type.GetGenericTypeDefinition() == genericTypeDefinition;
             }
         }
 
@@ -363,7 +363,7 @@ namespace Theraot.Core
         {
             foreach (var currentInterface in type.GetInterfaces())
             {
-                if (currentInterface.Equals(interfaceType))
+                if (currentInterface == interfaceType)
                 {
                     return true;
                 }
@@ -462,7 +462,7 @@ namespace Theraot.Core
 
         private static bool IsValueTypeRecursiveExtracted(Type type)
         {
-            var property = typeof(BlittableInfo<>).MakeGenericType(type).GetProperty("Result", BindingFlags.Public | BindingFlags.Static);
+            var property = typeof(ValueTypeInfo<>).MakeGenericType(type).GetProperty("Result", BindingFlags.Public | BindingFlags.Static);
             return (bool)property.GetValue(null, null);
         }
 
@@ -477,10 +477,10 @@ namespace Theraot.Core
                 {
                     if
                     (
-                        type.Equals(typeof(IntPtr)) ||
-                        type.Equals(typeof(UIntPtr)) ||
-                        type.Equals(typeof(char)) ||
-                        type.Equals(typeof(bool))
+                        type == typeof(IntPtr) ||
+                        type == typeof(UIntPtr) ||
+                        type == typeof(char) ||
+                        type == typeof(bool)
                     )
                     {
                         _result = false;
@@ -503,7 +503,7 @@ namespace Theraot.Core
                             }
                         }
                         var attributes = (StructLayoutAttribute[])type.GetCustomAttributes(typeof(StructLayoutAttribute), true);
-                        _result = (attributes != null) && attributes.Length > 0 && attributes[0].Value != LayoutKind.Auto && attributes[0].Pack > 0;
+                        _result = attributes.Length > 0 && attributes[0].Value != LayoutKind.Auto && attributes[0].Pack > 0;
                     }
                     else
                     {
@@ -532,8 +532,8 @@ namespace Theraot.Core
                 {
                     if
                     (
-                        type.Equals(typeof(char)) ||
-                        type.Equals(typeof(bool))
+                        type == typeof(char) ||
+                        type == typeof(bool)
                     )
                     {
                         _result = false;
