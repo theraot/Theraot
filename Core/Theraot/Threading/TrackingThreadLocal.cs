@@ -230,27 +230,5 @@ namespace Theraot.Threading
                 }
             }
         }
-
-        private sealed class Container
-        {
-            private T _value;
-
-            public Container(T value)
-            {
-                _value = value;
-            }
-
-            public T Value
-            {
-                get
-                {
-                    return _value;
-                }
-                set
-                {
-                    _value = value;
-                }
-            }
-        }
     }
 }
