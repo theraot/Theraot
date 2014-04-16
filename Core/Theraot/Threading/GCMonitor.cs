@@ -86,9 +86,6 @@ namespace Theraot.Threading
                 case INT_StatusPending:
                     ThreadingHelper.SpinWaitUntil(ref _status, INT_StatusReady);
                     break;
-
-                default:
-                    break;
             }
         }
 
