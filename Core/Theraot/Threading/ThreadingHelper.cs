@@ -39,6 +39,7 @@ namespace Theraot.Threading
         public static void VolatileWrite<T>(ref T address, T value)
             where T : class
         {
+            GC.KeepAlive(address);
             Thread.MemoryBarrier();
             address = value;
         }
