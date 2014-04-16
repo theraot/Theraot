@@ -6,7 +6,7 @@ namespace Theraot.Threading.Needles
 {
     [Serializable]
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public partial class LazyDisposableNeedle<T> : LazyNeedle<T>, ICacheNeedle<T>
+    public partial class LazyDisposableNeedle<T> : LazyNeedle<T>
         where T : IDisposable
     {
         public LazyDisposableNeedle(Func<T> function)
@@ -45,6 +45,7 @@ namespace Theraot.Threading.Needles
                         if (!WaitHandle.IsAlive)
                         {
                             WaitHandle.Value = new System.Threading.ManualResetEventSlim(false);
+                            GC.KeepAlive(waitHandle);
                         }
                         beforeInitialize.SafeInvoke();
                     }

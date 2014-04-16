@@ -6,7 +6,7 @@ namespace Theraot.Threading.Needles
 {
     [Serializable]
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public sealed class PromiseNeedle<T> : IPromise<T>, IReadOnlyNeedle<T>, ICacheNeedle<T>, IEquatable<PromiseNeedle<T>>
+    public sealed class PromiseNeedle<T> : IPromise<T>, ICacheNeedle<T>, IEquatable<PromiseNeedle<T>>
     {
         private readonly Internal _internal;
 
@@ -156,7 +156,7 @@ namespace Theraot.Threading.Needles
 
         public override string ToString()
         {
-            return string.Format("{{Promise: {0}}}", _internal.ToString());
+            return string.Format("{{Promise: {0}}}", _internal);
         }
 
         public void Wait()
@@ -189,7 +189,7 @@ namespace Theraot.Threading.Needles
         }
 
         [Serializable]
-        private class Internal : IPromised<T>, IObserver<T>, IReadOnlyNeedle<T>, ICacheNeedle<T>, IEquatable<Internal>
+        private class Internal : IPromised<T>, IObserver<T>, IEquatable<Internal>
         {
             private readonly int _hashCode;
             private Exception _error;

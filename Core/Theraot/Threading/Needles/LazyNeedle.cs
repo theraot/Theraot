@@ -147,6 +147,7 @@ namespace Theraot.Threading.Needles
                 try
                 {
                     thread = Thread.CurrentThread;
+                    GC.KeepAlive(thread);
                     var _target = valueFactory.Invoke();
                     SetTarget(_target);
                     Thread.VolatileWrite(ref _status, INT_StatusCompleted);

@@ -18,7 +18,7 @@ namespace Theraot.Factories
         }
 
         public CustomAggregator(Aggregate<TInput, TOutput> craft, TOutput seed)
-            : base((input) => TypeHelper.As<CustomAggregator<TInput, TOutput>>(input)._result)
+            : base(input => TypeHelper.As<CustomAggregator<TInput, TOutput>>(input)._result)
         {
             _craft = Check.NotNullArgument(craft, "craft");
             _result = seed;

@@ -78,7 +78,7 @@ namespace Theraot.Threading.Needles
 
         public override string ToString()
         {
-            return string.Format("{{Promise: {0}}}", _internal.ToString());
+            return string.Format("{{Promise: {0}}}", _internal);
         }
 
         public void Wait()
