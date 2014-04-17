@@ -10,9 +10,8 @@ namespace Theraot.Collections.Specialized
     public sealed class FlagArray : ICollection<bool>, IExtendedCollection<bool>, IEnumerable<bool>, ICloneable<FlagArray>, IList<bool>
     {
         private readonly IReadOnlyCollection<bool> _asReadOnly;
-        private int[] _entries;
         private readonly int _length;
-
+        private int[] _entries;
         public FlagArray(FlagArray prototype)
         {
             if (ReferenceEquals(prototype, null))
