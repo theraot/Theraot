@@ -12,7 +12,6 @@ namespace Theraot.Collections
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
     public sealed class ExtendedDictionary<TKey, TValue> : IExtendedDictionary<TKey, TValue>, IDictionary<TKey, TValue>, ICollection<KeyValuePair<TKey, TValue>>
     {
-        private readonly IEqualityComparer<TKey> _keyComparer;
         private readonly IReadOnlyCollection<TKey> _keysReadonly;
         private readonly IExtendedReadOnlyDictionary<TKey, TValue> _readOnly;
         private readonly IEqualityComparer<TValue> _valueComparer;
@@ -21,7 +20,6 @@ namespace Theraot.Collections
 
         public ExtendedDictionary()
         {
-            _keyComparer = EqualityComparer<TKey>.Default;
             _valueComparer = EqualityComparer<TValue>.Default;
             _wrapped = new Dictionary<TKey, TValue>();
             _readOnly = new ExtendedReadOnlyDictionary<TKey, TValue>(this);
@@ -31,7 +29,6 @@ namespace Theraot.Collections
 
         public ExtendedDictionary(IEnumerable<KeyValuePair<TKey, TValue>> prototype)
         {
-            _keyComparer = EqualityComparer<TKey>.Default;
             _valueComparer = EqualityComparer<TValue>.Default;
             _wrapped = new Dictionary<TKey, TValue>();
             _readOnly = new ExtendedReadOnlyDictionary<TKey, TValue>(this);
@@ -42,9 +39,8 @@ namespace Theraot.Collections
 
         public ExtendedDictionary(IEnumerable<KeyValuePair<TKey, TValue>> prototype, IEqualityComparer<TKey> keyComparer)
         {
-            _keyComparer = Check.NotNullArgument(keyComparer, "keyComparer");
             _valueComparer = EqualityComparer<TValue>.Default;
-            _wrapped = new Dictionary<TKey, TValue>(_keyComparer);
+            _wrapped = new Dictionary<TKey, TValue>(Check.NotNullArgument(keyComparer, "keyComparer"));
             _readOnly = new ExtendedReadOnlyDictionary<TKey, TValue>(this);
             _keysReadonly = new ExtendedReadOnlyCollection<TKey>(_wrapped.Keys);
             _valuesReadonly = new ExtendedReadOnlyCollection<TValue>(_wrapped.Values);
@@ -53,9 +49,8 @@ namespace Theraot.Collections
 
         public ExtendedDictionary(IEqualityComparer<TKey> keyComparer)
         {
-            _keyComparer = Check.NotNullArgument(keyComparer, "keyComparer");
             _valueComparer = EqualityComparer<TValue>.Default;
-            _wrapped = new Dictionary<TKey, TValue>(_keyComparer);
+            _wrapped = new Dictionary<TKey, TValue>(Check.NotNullArgument(keyComparer, "keyComparer"));
             _readOnly = new ExtendedReadOnlyDictionary<TKey, TValue>(this);
             _keysReadonly = new ExtendedReadOnlyCollection<TKey>(_wrapped.Keys);
             _valuesReadonly = new ExtendedReadOnlyCollection<TValue>(_wrapped.Values);
@@ -63,9 +58,8 @@ namespace Theraot.Collections
 
         public ExtendedDictionary(IEnumerable<KeyValuePair<TKey, TValue>> prototype, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
         {
-            _keyComparer = Check.NotNullArgument(keyComparer, "keyComparer");
             _valueComparer = Check.NotNullArgument(valueComparer, "valueComparer");
-            _wrapped = new Dictionary<TKey, TValue>(_keyComparer);
+            _wrapped = new Dictionary<TKey, TValue>(Check.NotNullArgument(keyComparer, "keyComparer"));
             _readOnly = new ExtendedReadOnlyDictionary<TKey, TValue>(this);
             _keysReadonly = new ExtendedReadOnlyCollection<TKey>(_wrapped.Keys);
             _valuesReadonly = new ExtendedReadOnlyCollection<TValue>(_wrapped.Values);
@@ -74,9 +68,8 @@ namespace Theraot.Collections
 
         public ExtendedDictionary(IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
         {
-            _keyComparer = Check.NotNullArgument(keyComparer, "keyComparer");
             _valueComparer = Check.NotNullArgument(valueComparer, "valueComparer");
-            _wrapped = new Dictionary<TKey, TValue>(_keyComparer);
+            _wrapped = new Dictionary<TKey, TValue>(Check.NotNullArgument(keyComparer, "keyComparer"));
             _readOnly = new ExtendedReadOnlyDictionary<TKey, TValue>(this);
             _keysReadonly = new ExtendedReadOnlyCollection<TKey>(_wrapped.Keys);
             _valuesReadonly = new ExtendedReadOnlyCollection<TValue>(_wrapped.Values);
@@ -221,61 +214,26 @@ namespace Theraot.Collections
         public void CopyTo(KeyValuePair<TKey, TValue>[] array)
         {
             Extensions.CanCopyTo(Count, array);
-            Extensions.CopyTo<KeyValuePair<TKey, TValue>>(this, array);
+            Extensions.CopyTo(this, array);
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
             Extensions.CanCopyTo(Count, array, arrayIndex);
-            Extensions.CopyTo<KeyValuePair<TKey, TValue>>(this, array, arrayIndex);
+            Extensions.CopyTo(this, array, arrayIndex);
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex, int countLimit)
         {
             Extensions.CanCopyTo(array, arrayIndex, countLimit);
-            Extensions.CopyTo<KeyValuePair<TKey, TValue>>(this, array, arrayIndex, countLimit);
+            Extensions.CopyTo(this, array, arrayIndex, countLimit);
         }
-
-        public void ExceptWith(IEnumerable<KeyValuePair<TKey, TValue>> other)
-        {
-            Extensions.ExceptWith(this, other);
-        }
-
+        
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
             return _wrapped.GetEnumerator();
         }
-
-        public void IntersectWith(IEnumerable<KeyValuePair<TKey, TValue>> other)
-        {
-            Extensions.IntersectWith(this, other);
-        }
-
-        public bool IsProperSubsetOf(IEnumerable<KeyValuePair<TKey, TValue>> other)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool IsProperSupersetOf(IEnumerable<KeyValuePair<TKey, TValue>> other)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool IsSubsetOf(IEnumerable<KeyValuePair<TKey, TValue>> other)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool IsSupersetOf(IEnumerable<KeyValuePair<TKey, TValue>> other)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public bool Overlaps(IEnumerable<KeyValuePair<TKey, TValue>> other)
-        {
-            throw new System.NotImplementedException();
-        }
-
+        
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
             TKey key = item.Key;
@@ -303,23 +261,7 @@ namespace Theraot.Collections
 
         public bool Remove(KeyValuePair<TKey, TValue> item, IEqualityComparer<KeyValuePair<TKey, TValue>> comparer)
         {
-            return Enumerable.Any
-                   (
-                       this.RemoveWhereEnumerable
-                       (
-                           input => comparer.Equals(input, item)
-                       )
-                   );
-        }
-
-        public bool SetEquals(IEnumerable<KeyValuePair<TKey, TValue>> other)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void SymmetricExceptWith(IEnumerable<KeyValuePair<TKey, TValue>> other)
-        {
-            Extensions.SymmetricExceptWith(this, other);
+            return this.RemoveWhereEnumerable(input => comparer.Equals(input, item)).Any();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
