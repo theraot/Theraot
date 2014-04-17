@@ -9,9 +9,9 @@ namespace Theraot.Collections.Specialized
     [Serializable]
     public sealed class FlagArray : ICollection<bool>, IExtendedCollection<bool>, IEnumerable<bool>, ICloneable<FlagArray>, IList<bool>
     {
-        private IReadOnlyCollection<bool> _asReadOnly;
+        private readonly IReadOnlyCollection<bool> _asReadOnly;
         private int[] _entries;
-        private int _length;
+        private readonly int _length;
 
         public FlagArray(FlagArray prototype)
         {
@@ -47,7 +47,7 @@ namespace Theraot.Collections.Specialized
         {
             if (defaultValue)
             {
-                Fill(defaultValue);
+                Fill(true);
             }
         }
 

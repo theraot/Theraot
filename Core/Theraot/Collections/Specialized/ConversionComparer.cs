@@ -10,8 +10,8 @@ namespace Theraot.Collections.Specialized
     [global::System.Diagnostics.DebuggerNonUserCode]
     public class ConversionComparer<TInput, TOutput> : IComparer<TInput>
     {
-        private IComparer<TOutput> _comparer;
-        private Converter<TInput, TOutput> _converter;
+        private readonly IComparer<TOutput> _comparer;
+        private readonly Converter<TInput, TOutput> _converter;
 
         public ConversionComparer(IComparer<TOutput> comparer, Converter<TInput, TOutput> converter)
         {

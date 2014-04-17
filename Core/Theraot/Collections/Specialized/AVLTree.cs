@@ -84,7 +84,7 @@ namespace Theraot.Collections.Specialized
         {
             var _lower = SearchNearestRight(lower);
             var _upper = SearchNearestLeft(upper);
-            foreach (var item in AVLNode.EnumerateFrom(Search(lower)))
+            foreach (var item in AVLNode.EnumerateFrom(_lower))
             {
                 if (_comparison(_upper.Key, item.Key) > 0)
                 {

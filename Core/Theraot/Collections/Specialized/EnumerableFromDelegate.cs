@@ -54,7 +54,6 @@ namespace Theraot.Collections.Specialized
                         yield return (T)element;
                     }
                 }
-                yield break;
             }
             finally
             {

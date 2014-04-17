@@ -101,12 +101,11 @@ namespace Theraot.Collections.Specialized
 
             internal static void Bound(AVLNode node, TKey key, Comparison<TKey> comparison, out AVLNode lower, out AVLNode upper)
             {
-                int compare;
                 lower = null;
                 upper = null;
                 while (node != null)
                 {
-                    compare = comparison.Invoke(key, node._key);
+                    int compare = comparison.Invoke(key, node._key);
                     if (compare <= 0)
                     {
                         upper = node;
@@ -183,14 +182,7 @@ namespace Theraot.Collections.Specialized
                     {
                         if (node._right == null)
                         {
-                            if (node._left == null)
-                            {
-                                node = null;
-                            }
-                            else
-                            {
-                                node = node._left;
-                            }
+                            node = node._left;
                         }
                         else
                         {
@@ -252,10 +244,9 @@ namespace Theraot.Collections.Specialized
 
             internal static AVLNode Search(AVLNode node, TKey key, Comparison<TKey> comparison)
             {
-                int compare;
                 while (node != null)
                 {
-                    compare = comparison(key, node._key);
+                    int compare = comparison(key, node._key);
                     if (compare == 0)
                     {
                         break;
@@ -274,11 +265,10 @@ namespace Theraot.Collections.Specialized
 
             internal static AVLNode SearchNearestLeft(AVLNode node, TKey key, Comparison<TKey> comparison)
             {
-                int compare;
                 AVLNode result = null;
                 while (node != null)
                 {
-                    compare = comparison.Invoke(key, node._key);
+                    int compare = comparison.Invoke(key, node._key);
                     if (compare >= 0)
                     {
                         result = node;
@@ -301,11 +291,10 @@ namespace Theraot.Collections.Specialized
 
             internal static AVLNode SearchNearestRight(AVLNode node, TKey key, Comparison<TKey> comparison)
             {
-                int compare;
                 AVLNode result = null;
                 while (node != null)
                 {
-                    compare = comparison.Invoke(key, node._key);
+                    int compare = comparison.Invoke(key, node._key);
                     if (compare <= 0)
                     {
                         result = node;

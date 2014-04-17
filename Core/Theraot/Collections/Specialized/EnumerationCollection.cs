@@ -6,7 +6,7 @@ using Theraot.Core;
 namespace Theraot.Collections.Specialized
 {
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public class EnumerationCollection<T> : ICollection<T>, IReadOnlyCollection<T>, IExtendedReadOnlyCollection<T>, IExtendedCollection<T>, IEnumerable<T>
+    public class EnumerationCollection<T> : ICollection<T>, IReadOnlyCollection<T>, IExtendedCollection<T>, IEnumerable<T>
     {
         private readonly Func<T, bool> _contains;
         private readonly Func<int> _count;
@@ -15,8 +15,8 @@ namespace Theraot.Collections.Specialized
         public EnumerationCollection(IEnumerable<T> wrapped)
         {
             _wrapped = Check.NotNullArgument(wrapped, "wrapped");
-            _count = () => Enumerable.Count(_wrapped);
-            _contains = item => System.Linq.Enumerable.Contains(_wrapped, item, EqualityComparer<T>.Default);
+            _count = () => _wrapped.Count();
+            _contains = item => _wrapped.Contains(item, EqualityComparer<T>.Default);
         }
 
         public EnumerationCollection(T[] wrapped)
@@ -30,20 +30,20 @@ namespace Theraot.Collections.Specialized
         {
             _wrapped = Check.NotNullArgument(wrapped, "wrapped");
             _count = () => wrapped.Count;
-            _contains = item => wrapped.Contains(item);
+            _contains = wrapped.Contains;
         }
 
         public EnumerationCollection(IEnumerable<T> wrapped, Func<int> count)
         {
             _wrapped = Check.NotNullArgument(wrapped, "wrapped");
             _count = Check.NotNullArgument(count, "count");
-            _contains = item => System.Linq.Enumerable.Contains(_wrapped, item, EqualityComparer<T>.Default);
+            _contains = item => _wrapped.Contains(item, EqualityComparer<T>.Default);
         }
 
         public EnumerationCollection(IEnumerable<T> wrapped, Func<T, bool> contains)
         {
             _wrapped = Check.NotNullArgument(wrapped, "wrapped");
-            _count = () => Enumerable.Count(_wrapped);
+            _count = () => _wrapped.Count();
             _contains = Check.NotNullArgument(contains, "contains");
         }
 

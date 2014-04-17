@@ -8,7 +8,7 @@ namespace Theraot.Collections.Specialized
 {
     public sealed class EnumCollection<TEnum> : ProgressiveCollection<TEnum>
     {
-        private static EnumCollection<TEnum> instance = new EnumCollection<TEnum>();
+        private static readonly EnumCollection<TEnum> instance = new EnumCollection<TEnum>();
 
         private EnumCollection()
             : base(GetEnumerable())
