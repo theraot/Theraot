@@ -114,7 +114,7 @@ namespace Theraot.Collections
 
         public bool Contains(T item, IEqualityComparer<T> comparer)
         {
-            return Enumerable.Contains(_wrapped, item, comparer);
+            return _wrapped.Contains(item, comparer);
         }
 
         public void CopyTo(T[] array)
@@ -160,7 +160,7 @@ namespace Theraot.Collections
 
         public int IndexOf(T item)
         {
-            return Extensions.IndexOf(_wrapped, item, _comparer);
+            return _wrapped.IndexOf(item, _comparer);
         }
 
         public void Insert(int index, T item)
@@ -170,7 +170,7 @@ namespace Theraot.Collections
 
         public void Move(int indexSource, int indexDestination)
         {
-            Extensions.Move(_wrapped, indexSource, indexDestination);
+            _wrapped.Move(indexSource, indexDestination);
         }
 
         public bool Overlaps(IEnumerable<T> other)
@@ -192,7 +192,7 @@ namespace Theraot.Collections
 
         public bool Remove(T item)
         {
-            foreach (var _item in Extensions.RemoveWhereEnumerable(_wrapped, input => _comparer.Equals(input, item)))
+            foreach (var _item in _wrapped.RemoveWhereEnumerable(input => _comparer.Equals(input, item)))
             {
                 GC.KeepAlive(_item);
                 return true;
@@ -203,7 +203,7 @@ namespace Theraot.Collections
         public bool Remove(T item, IEqualityComparer<T> comparer)
         {
             var __comparer = Check.NotNullArgument(comparer, "comparer");
-            foreach (var _item in Extensions.RemoveWhereEnumerable(_wrapped, input => __comparer.Equals(input, item)))
+            foreach (var _item in _wrapped.RemoveWhereEnumerable(input => __comparer.Equals(input, item)))
             {
                 GC.KeepAlive(_item);
                 return true;
@@ -237,7 +237,7 @@ namespace Theraot.Collections
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
         public bool SetEquals(IEnumerable<T> other)
         {
-            var that = new ProgressiveSet<T>(Enumerable.Distinct(Check.NotNullArgument(other, "other")));
+            var that = new ProgressiveSet<T>(Check.NotNullArgument(other, "other").Distinct());
             foreach (var item in that.Where(input => !Contains(input)))
             {
                 GC.KeepAlive(item);
@@ -245,6 +245,7 @@ namespace Theraot.Collections
             }
             foreach (var item in this.Where(input => !that.Contains(input)))
             {
+                GC.KeepAlive(item);
                 return false;
             }
             return true;
@@ -262,7 +263,7 @@ namespace Theraot.Collections
 
         public void Swap(int indexA, int indexB)
         {
-            Extensions.Swap(_wrapped, indexA, indexB);
+            _wrapped.Swap(indexA, indexB);
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

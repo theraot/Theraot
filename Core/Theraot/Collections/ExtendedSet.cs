@@ -168,7 +168,7 @@ namespace Theraot.Collections
         public bool Remove(T item, IEqualityComparer<T> comparer)
         {
             var _comparer = Check.NotNullArgument(comparer, "comparer");
-            foreach (var _item in Extensions.RemoveWhereEnumerable(_wrapped, input => _comparer.Equals(input, item)))
+            foreach (var _item in _wrapped.RemoveWhereEnumerable(input => _comparer.Equals(input, item)))
             {
                 GC.KeepAlive(_item);
                 return true;

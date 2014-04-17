@@ -207,19 +207,6 @@ namespace Theraot.Collections
             }
         }
 
-        private static ICollection<TItem> AsCollection<TItem>(IEnumerable<TItem> collection)
-        {
-            var _result = collection as ICollection<TItem>;
-            if (_result == null)
-            {
-                return new ProgressiveCollection<TItem>(collection);
-            }
-            else
-            {
-                return _result;
-            }
-        }
-
         private static IEnumerable<T> SkipItemsExtracted<T>(IEnumerable<T> target, int skipCount)
         {
             int count = 0;
@@ -228,7 +215,6 @@ namespace Theraot.Collections
                 if (count < skipCount)
                 {
                     count++;
-                    continue;
                 }
                 else
                 {
@@ -248,7 +234,6 @@ namespace Theraot.Collections
                     {
                         count++;
                     }
-                    continue;
                 }
                 else
                 {
@@ -265,7 +250,6 @@ namespace Theraot.Collections
                 if (count % stepCount == 0)
                 {
                     count++;
-                    continue;
                 }
                 else
                 {
@@ -286,7 +270,6 @@ namespace Theraot.Collections
                     {
                         count++;
                     }
-                    continue;
                 }
                 else
                 {

@@ -8,7 +8,7 @@ namespace Theraot.Collections
 {
     [System.Serializable]
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public sealed class ExtendedReadOnlyDictionary<TKey, TValue> : IReadOnlyCollection<KeyValuePair<TKey, TValue>>, IExtendedReadOnlyCollection<KeyValuePair<TKey, TValue>>, IReadOnlyDictionary<TKey, TValue>, IExtendedReadOnlyDictionary<TKey, TValue>, IExtendedDictionary<TKey, TValue>
+    public sealed class ExtendedReadOnlyDictionary<TKey, TValue> : IReadOnlyCollection<KeyValuePair<TKey, TValue>>, IReadOnlyDictionary<TKey, TValue>, IExtendedDictionary<TKey, TValue>
     {
         private readonly ExtendedReadOnlyCollection<TKey> _keys;
         private readonly ExtendedReadOnlyCollection<TValue> _values;

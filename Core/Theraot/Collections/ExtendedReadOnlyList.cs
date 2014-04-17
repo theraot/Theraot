@@ -10,9 +10,9 @@ namespace Theraot.Collections
     [System.Serializable]
     [global::System.Diagnostics.DebuggerNonUserCode]
     [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "By Design")]
-    public sealed class ExtendedReadOnlyList<T> : IReadOnlyList<T>, IExtendedReadOnlyList<T>, IReadOnlyCollection<T>, IExtendedReadOnlyCollection<T>, IEnumerable<T>, IExtendedCollection<T>, IExtendedList<T>
+    public sealed class ExtendedReadOnlyList<T> : IReadOnlyList<T>, IReadOnlyCollection<T>, IEnumerable<T>, IExtendedCollection<T>, IExtendedList<T>
     {
-        private IList<T> _wrapped;
+        private readonly IList<T> _wrapped;
 
         public ExtendedReadOnlyList(IList<T> wrapped)
         {

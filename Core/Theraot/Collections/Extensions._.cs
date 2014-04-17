@@ -20,7 +20,7 @@ namespace Theraot.Collections
             }
             if (count > array.Length)
             {
-                throw new ArgumentException("array", "The array can not contain the number of elements.");
+                throw new ArgumentException("The array can not contain the number of elements.", "array");
             }
         }
 
@@ -36,7 +36,7 @@ namespace Theraot.Collections
             }
             if (count > array.Length - arrayIndex)
             {
-                throw new ArgumentException("array", "The array can not contain the number of elements.");
+                throw new ArgumentException("The array can not contain the number of elements.", "array");
             }
         }
 
@@ -48,7 +48,7 @@ namespace Theraot.Collections
             }
             if (count > array.Length)
             {
-                throw new ArgumentException("array", "The array can not contain the number of elements.");
+                throw new ArgumentException("The array can not contain the number of elements.", "array");
             }
         }
 
@@ -64,7 +64,7 @@ namespace Theraot.Collections
             }
             if (count > array.Length - arrayIndex)
             {
-                throw new ArgumentException("array", "The array can not contain the number of elements.");
+                throw new ArgumentException("The array can not contain the number of elements.", "array");
             }
         }
 
@@ -84,7 +84,7 @@ namespace Theraot.Collections
             }
             if (countLimit > array.Length - arrayIndex)
             {
-                throw new ArgumentException("array", "The array can not contain the number of elements.");
+                throw new ArgumentException("The array can not contain the number of elements.", "array");
             }
         }
 
@@ -97,7 +97,7 @@ namespace Theraot.Collections
         {
             foreach (T element in Check.NotNullArgument(source, "source"))
             {
-                //Empty
+                GC.KeepAlive(element);
             }
         }
 
@@ -419,9 +419,10 @@ namespace Theraot.Collections
         public static int CountContiguousItems<TItem>(this IEnumerable<TItem> collection, TItem item)
         {
             int result = 0;
+            var equalityComparer = EqualityComparer<TItem>.Default;
             foreach (TItem value in Check.NotNullArgument(collection, "collection"))
             {
-                if (Comparer.Equals(value, item))
+                if (equalityComparer.Equals(value, item))
                 {
                     result++;
                 }
@@ -457,6 +458,7 @@ namespace Theraot.Collections
             foreach (TItem value in Check.NotNullArgument(collection, "collection"))
             {
                 result++;
+                GC.KeepAlive(value);
             }
             return result;
         }
@@ -464,9 +466,10 @@ namespace Theraot.Collections
         public static int CountItems<TItem>(this IEnumerable<TItem> collection, TItem item)
         {
             int result = 0;
+            var equalityComparer = EqualityComparer<TItem>.Default;
             foreach (TItem value in Check.NotNullArgument(collection, "collection"))
             {
-                if (Comparer.Equals(value, item))
+                if (equalityComparer.Equals(value, item))
                 {
                     result++;
                 }
@@ -629,7 +632,6 @@ namespace Theraot.Collections
 
         public static TItem Find<TItem>(this IEnumerable<TItem> collection, Predicate<TItem> predicate)
         {
-            int currentIndex = 0;
             var _predicate = Check.NotNullArgument(predicate, "predicate");
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
@@ -639,7 +641,6 @@ namespace Theraot.Collections
                     {
                         return enumerator.Current;
                     }
-                    currentIndex++;
                 }
                 return default(TItem);
             }
@@ -781,7 +782,6 @@ namespace Theraot.Collections
 
         public static TItem FindLast<TItem>(this IEnumerable<TItem> collection, Predicate<TItem> predicate)
         {
-            int currentIndex = 0;
             var _predicate = Check.NotNullArgument(predicate, "predicate");
             TItem result = default(TItem);
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
@@ -792,7 +792,6 @@ namespace Theraot.Collections
                     {
                         result = enumerator.Current;
                     }
-                    currentIndex++;
                 }
                 return result;
             }
@@ -908,9 +907,9 @@ namespace Theraot.Collections
         public static void For<TItem>(this IEnumerable<TItem> collection, Action<int, TItem> action)
         {
             var _action = Check.NotNullArgument(action, "action");
-            var _collection = Check.NotNullArgument(collection, "collection");
+            IEnumerable<TItem> _collection = Check.NotNullArgument(collection, "collection");
             int index = 0;
-            foreach (TItem item in Check.NotNullArgument(collection, "collection"))
+            foreach (TItem item in _collection)
             {
                 _action.Invoke(index, item);
                 index++;
@@ -923,7 +922,7 @@ namespace Theraot.Collections
             var _collection = Check.NotNullArgument(collection, "collection");
             var _predicate = Check.NotNullArgument(predicate, "predicate");
             int index = 0;
-            foreach (TItem item in Check.NotNullArgument(collection, "collection"))
+            foreach (TItem item in _collection)
             {
                 if (_predicate.Invoke(item))
                 {
@@ -939,7 +938,7 @@ namespace Theraot.Collections
             var _collection = Check.NotNullArgument(collection, "collection");
             var _filter = Check.NotNullArgument(filter, "filter");
             int index = 0;
-            foreach (TItem item in Check.NotNullArgument(collection, "collection"))
+            foreach (TItem item in _collection)
             {
                 if (_filter.Invoke(item, index))
                 {
@@ -981,7 +980,7 @@ namespace Theraot.Collections
             }
             else
             {
-                TValue newValue = TypeHelper.CreateOrDefault<TValue>();
+                var newValue = TypeHelper.CreateOrDefault<TValue>();
                 _dictionary.Add(key, newValue);
                 return newValue;
             }
@@ -1199,25 +1198,13 @@ namespace Theraot.Collections
         public static int IntersectWith<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other)
         {
             var _other = new ProgressiveSet<TItem>(other);
-            return collection.RemoveWhere
-                   (
-                       (TItem input) =>
-                       {
-                           return !_other.Contains(input);
-                       }
-                   );
+            return collection.RemoveWhere(input => !_other.Contains(input));
         }
 
         public static IEnumerable<TItem> IntersectWithEnumerable<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other)
         {
             var _other = new ProgressiveSet<TItem>(other);
-            return collection.RemoveWhereEnumerable
-                   (
-                       (TItem input) =>
-                       {
-                           return !_other.Contains(input);
-                       }
-                   );
+            return collection.RemoveWhereEnumerable(input => !_other.Contains(input));
         }
 
         public static bool IsEmpty<T>(this IEnumerable<T> source)
@@ -1511,15 +1498,15 @@ namespace Theraot.Collections
             {
                 throw new ArgumentOutOfRangeException("count", "Non-negative number is required.");
             }
-            int Count = list.Count;
+            int Count = _list.Count;
             if (count > Count - index)
             {
-                throw new ArgumentException("list", "The list does not contain the number of elements.");
+                throw new ArgumentException("The list does not contain the number of elements.", "list");
             }
             int end = index + count;
             for (; index < end; index++, end++)
             {
-                SwapExtracted<T>(list, index, end);
+                SwapExtracted(_list, index, end);
             }
         }
 
@@ -1530,10 +1517,12 @@ namespace Theraot.Collections
             var _that = new ProgressiveSet<TItem>(_other);
             foreach (var item in _that.Where(input => !_collection.Contains(input)))
             {
+                GC.KeepAlive(item);
                 return false;
             }
             foreach (var item in _collection.Where(input => !_that.Contains(input)))
             {
+                GC.KeepAlive(item);
                 return false;
             }
             return true;
@@ -1556,9 +1545,9 @@ namespace Theraot.Collections
                 int Count = list.Count;
                 if (count > Count - index)
                 {
-                    throw new ArgumentException("list", "The list does not contain the number of elements.");
+                    throw new ArgumentException("The list does not contain the number of elements.", "list");
                 }
-                SortExtracted<T>(_list, index, count + index, _comparer);
+                SortExtracted(_list, index, count + index, _comparer);
             }
         }
 
@@ -1576,22 +1565,22 @@ namespace Theraot.Collections
             int Count = list.Count;
             if (indexA >= Count || indexB >= Count)
             {
-                throw new ArgumentException("list", "The list does not contain the number of elements.");
+                throw new ArgumentException("The list does not contain the number of elements.", "list");
             }
             if (indexA != indexB)
             {
-                SwapExtracted<T>(_list, indexA, indexB);
+                SwapExtracted(_list, indexA, indexB);
             }
         }
 
         public static int SymmetricExceptWith<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other)
         {
-            return collection.AddRange(Extensions.Where(other, (TItem input) => !collection.Remove(input)));
+            return collection.AddRange(Extensions.Where(other, input => !collection.Remove(input)));
         }
 
         public static IEnumerable<TItem> SymmetricExceptWithEnumerable<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other)
         {
-            return collection.AddRangeEnumerable(Extensions.Where(other, (TItem input) => !collection.Remove(input)));
+            return collection.AddRangeEnumerable(Extensions.Where(other, input => !collection.Remove(input)));
         }
 
         public static TItem TakeAndReturn<TItem>(this IDropPoint<TItem> dropPoint)
@@ -1628,7 +1617,7 @@ namespace Theraot.Collections
                 }
                 else
                 {
-                    return new ReadOnlyCollection<TSource>(source.ToArray<TSource>());
+                    return new ReadOnlyCollection<TSource>(source.ToArray());
                 }
             }
         }
@@ -1696,7 +1685,6 @@ namespace Theraot.Collections
 
         public static bool TryFind<TItem>(this IEnumerable<TItem> collection, Predicate<TItem> predicate, out TItem fountItem)
         {
-            int currentIndex = 0;
             var _predicate = Check.NotNullArgument(predicate, "predicate");
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
@@ -1707,7 +1695,6 @@ namespace Theraot.Collections
                         fountItem = enumerator.Current;
                         return true;
                     }
-                    currentIndex++;
                 }
                 fountItem = default(TItem);
                 return false;
@@ -1779,7 +1766,6 @@ namespace Theraot.Collections
 
         public static bool TryFindLast<TItem>(this IEnumerable<TItem> collection, Predicate<TItem> predicate, out TItem foundItem)
         {
-            int currentIndex = 0;
             var _predicate = Check.NotNullArgument(predicate, "predicate");
             foundItem = default(TItem);
             bool found = false;
@@ -1792,7 +1778,6 @@ namespace Theraot.Collections
                         foundItem = enumerator.Current;
                         found = true;
                     }
-                    currentIndex++;
                 }
                 return found;
             }
@@ -1853,12 +1838,12 @@ namespace Theraot.Collections
 
         public static int UnionWith<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other)
         {
-            return Extensions.AddRange(collection, other.Where(input => !collection.Contains(input)));
+            return collection.AddRange(other.Where(input => !collection.Contains(input)));
         }
 
         public static IEnumerable<TItem> UnionWithEnumerable<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other)
         {
-            return Extensions.AddRangeEnumerable(collection, other.Where(input => !collection.Contains(input)));
+            return collection.AddRangeEnumerable(other.Where(input => !collection.Contains(input)));
         }
         public static IEnumerable<TItem> Where<TItem>(IEnumerable<TItem> collection, Predicate<TItem> predicate)
         {
@@ -1958,8 +1943,8 @@ namespace Theraot.Collections
         {
             var _collection = Check.NotNullArgument(collection, "collection");
             var _other = Check.NotNullArgument(other, "other");
-            var _this = AsSet<TItem>(_collection);
-            var _that = AsSet<TItem>(_other);
+            var _this = AsSet(_collection);
+            var _that = AsSet(_other);
             int elementCount = 0;
             int matchCount = 0;
             foreach (var item in _that)
@@ -1984,10 +1969,10 @@ namespace Theraot.Collections
         {
             var _collection = Check.NotNullArgument(collection, "collection");
             var _other = Check.NotNullArgument(other, "other");
-            var _this = AsSet<TItem>(_collection);
-            var _that = AsSet<TItem>(_other);
+            var _this = AsSet(_collection);
+            var _that = AsSet(_other);
             int elementCount = 0;
-            foreach (var item in other)
+            foreach (var item in _that)
             {
                 elementCount++;
                 if (!_this.Contains(item))
@@ -2034,11 +2019,11 @@ namespace Theraot.Collections
             }
             if (indexStart < high)
             {
-                SortExtracted<T>(list, indexStart, high, comparer);
+                SortExtracted(list, indexStart, high, comparer);
             }
             if (low < indexEnd)
             {
-                SortExtracted<T>(list, low, indexEnd, comparer);
+                SortExtracted(list, low, indexEnd, comparer);
             }
         }
 

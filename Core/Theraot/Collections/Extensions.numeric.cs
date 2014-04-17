@@ -275,11 +275,7 @@ namespace Theraot.Collections
             {
                 foreach (var element in _source)
                 {
-                    if (element == null)
-                    {
-                        continue;
-                    }
-                    else
+                    if (element != null)
                     {
                         if (max == null || _comparer.Compare(element, max) > 0)
                         {
@@ -305,7 +301,6 @@ namespace Theraot.Collections
                     {
                         max = element;
                         found = true;
-                        continue;
                     }
                 }
                 if (found)
@@ -619,16 +614,8 @@ namespace Theraot.Collections
             var _comparer = Check.NotNullArgument(comparer, "comparer");
             var _source = Check.NotNullArgument(source, "source");
             var _selector = Check.NotNullArgument(selector, "selector");
-            Func<TSource, int, TResult> __selector = (TSource item, int i) => _selector(item);
-            return Max
-                   (
-                       Enumerable.Select<TSource, TResult>
-                       (
-                           _source,
-                           __selector
-                       ),
-                       _comparer
-                   );
+            Func<TSource, int, TResult> __selector = (item, i) => _selector(item);
+            return Max(_source.Select(__selector), _comparer);
         }
 
         public static int Min(this IEnumerable<int> source, IComparer<int> comparer)
@@ -896,11 +883,7 @@ namespace Theraot.Collections
             {
                 foreach (var element in _source)
                 {
-                    if (element == null)
-                    {
-                        continue;
-                    }
-                    else
+                    if (element != null)
                     {
                         if (min == null || _comparer.Compare(min, element) > 0)
                         {
@@ -926,7 +909,6 @@ namespace Theraot.Collections
                     {
                         min = element;
                         found = true;
-                        continue;
                     }
                 }
                 if (found)
@@ -1240,16 +1222,8 @@ namespace Theraot.Collections
             var _comparer = Check.NotNullArgument(comparer, "comparer");
             var _source = Check.NotNullArgument(source, "source");
             var _selector = Check.NotNullArgument(selector, "selector");
-            Func<TSource, int, TResult> __selector = (TSource item, int i) => _selector(item);
-            return Min
-                   (
-                       Enumerable.Select<TSource, TResult>
-                       (
-                           _source,
-                           __selector
-                       ),
-                       _comparer
-                   );
+            Func<TSource, int, TResult> __selector = (item, i) => _selector(item);
+            return Min(_source.Select(__selector), _comparer);
         }
     }
 }
