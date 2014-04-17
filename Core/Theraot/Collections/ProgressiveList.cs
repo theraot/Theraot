@@ -8,7 +8,7 @@ namespace Theraot.Collections
 {
     [global::System.Diagnostics.DebuggerNonUserCode]
     [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "By Design")]
-    public class ProgressiveList<T> : ProgressiveCollection<T>, IReadOnlyList<T>, IExtendedReadOnlyList<T>, IExtendedList<T>, IList<T>
+    public class ProgressiveList<T> : ProgressiveCollection<T>, IReadOnlyList<T>, IExtendedList<T>, IList<T>
     {
         private readonly IList<T> _cache;
 
@@ -77,7 +77,7 @@ namespace Theraot.Collections
             {
                 if (index >= _cache.Count)
                 {
-                    Progressor.TakeWhile(() => _cache.Count < index + 1);
+                    Progressor.While(() => _cache.Count < index + 1).Consume();
                 }
                 return _cache[index];
             }
@@ -166,9 +166,9 @@ namespace Theraot.Collections
             {
                 int index = _cache.Count - 1;
                 bool found = false;
-                Progressor.TakeWhile
+                Progressor.While
                 (
-                    (T input) =>
+                    input =>
                     {
                         index++;
                         if (Comparer.Equals(input, item))
@@ -181,7 +181,7 @@ namespace Theraot.Collections
                             return true;
                         }
                     }
-                );
+                ).Consume();
                 if (found)
                 {
                     return index;

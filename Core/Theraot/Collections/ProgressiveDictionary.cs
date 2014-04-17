@@ -8,7 +8,7 @@ namespace Theraot.Collections
 {
     [System.Serializable]
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public class ProgressiveDictionary<TKey, TValue> : ProgressiveCollection<KeyValuePair<TKey, TValue>>, IReadOnlyDictionary<TKey, TValue>, IExtendedReadOnlyDictionary<TKey, TValue>, IExtendedDictionary<TKey, TValue>, IDictionary<TKey, TValue>
+    public class ProgressiveDictionary<TKey, TValue> : ProgressiveCollection<KeyValuePair<TKey, TValue>>, IReadOnlyDictionary<TKey, TValue>, IExtendedDictionary<TKey, TValue>, IDictionary<TKey, TValue>
     {
         private readonly IDictionary<TKey, TValue> _cache;
         private readonly IEqualityComparer<TKey> _keyComparer;

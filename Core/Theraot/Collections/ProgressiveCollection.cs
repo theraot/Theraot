@@ -8,7 +8,7 @@ namespace Theraot.Collections
 {
     [System.Serializable]
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public class ProgressiveCollection<T> : IReadOnlyCollection<T>, IExtendedReadOnlyCollection<T>, IExtendedCollection<T>, ICollection<T>
+    public class ProgressiveCollection<T> : IReadOnlyCollection<T>, IExtendedCollection<T>, ICollection<T>
     {
         private readonly ICollection<T> _cache;
         private readonly IEqualityComparer<T> _comparer;
@@ -46,7 +46,7 @@ namespace Theraot.Collections
         {
             get
             {
-                _progressor.TakeAll();
+                _progressor.All().Consume();
                 return _cache.Count;
             }
         }
@@ -125,20 +125,20 @@ namespace Theraot.Collections
 
         public void CopyTo(T[] array)
         {
-            _progressor.TakeAll();
+            _progressor.All().Consume();
             _cache.CopyTo(array, 0);
         }
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            _progressor.TakeAll();
+            _progressor.All().Consume();
             _cache.CopyTo(array, arrayIndex);
         }
 
         public void CopyTo(T[] array, int arrayIndex, int countLimit)
         {
             Extensions.CanCopyTo(array, arrayIndex, countLimit);
-            _progressor.TakeWhile(() => _cache.Count < countLimit);
+            _progressor.While(() => _cache.Count < countLimit).Consume();
             _cache.CopyTo(array, arrayIndex, countLimit);
         }
 

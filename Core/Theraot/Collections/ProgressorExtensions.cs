@@ -17,7 +17,7 @@ namespace Theraot.Collections
             return Check.NotNullArgument(observable, "observable").Subscribe(listener.ToObserver(converter));
         }
 
-        public static IEnumerable<T> TakeAll<T>(this IProgressor<T> progressor)
+        public static IEnumerable<T> All<T>(this IProgressor<T> progressor)
         {
             var _progressor = Check.NotNullArgument(progressor, "progressor");
             T item;
@@ -27,7 +27,7 @@ namespace Theraot.Collections
             }
         }
 
-        public static IEnumerable<T> TakeWhile<T>(this IProgressor<T> progressor, Predicate<T> predicate)
+        public static IEnumerable<T> While<T>(this IProgressor<T> progressor, Predicate<T> predicate)
         {
             var _progressor = Check.NotNullArgument(progressor, "progressor");
             var _condition = Check.NotNullArgument(predicate, "condition");
@@ -45,7 +45,7 @@ namespace Theraot.Collections
             }
         }
 
-        public static IEnumerable<T> TakeWhile<T>(this IProgressor<T> progressor, Func<bool> condition)
+        public static IEnumerable<T> While<T>(this IProgressor<T> progressor, Func<bool> condition)
         {
             var _progressor = Check.NotNullArgument(progressor, "progressor");
             var _condition = Check.NotNullArgument(condition, "condition");

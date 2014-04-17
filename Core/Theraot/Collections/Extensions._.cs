@@ -93,6 +93,14 @@ namespace Theraot.Collections
             return new List<TItem>(target);
         }
 
+        public static void Consume<T>(this IEnumerable<T> source)
+        {
+            foreach (T element in Check.NotNullArgument(source, "source"))
+            {
+                //Empty
+            }
+        }
+
         public static bool Contains<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> items)
         {
             var comparer = EqualityComparer<TItem>.Default;
@@ -1852,15 +1860,6 @@ namespace Theraot.Collections
         {
             return Extensions.AddRangeEnumerable(collection, other.Where(input => !collection.Contains(input)));
         }
-
-        public static void Waste<T>(this IEnumerable<T> source)
-        {
-            foreach (T element in Check.NotNullArgument(source, "source"))
-            {
-                //Empty
-            }
-        }
-
         public static IEnumerable<TItem> Where<TItem>(IEnumerable<TItem> collection, Predicate<TItem> predicate)
         {
             var _predicate = Check.NotNullArgument(predicate, "predicate");

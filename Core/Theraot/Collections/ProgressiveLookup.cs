@@ -8,7 +8,7 @@ namespace Theraot.Collections
 {
     [System.Serializable]
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public class ProgressiveLookup<TKey, TValue> : IReadOnlyDictionary<TKey, IExtendedGrouping<TKey, TValue>>, IExtendedReadOnlyDictionary<TKey, IExtendedGrouping<TKey, TValue>>, IExtendedDictionary<TKey, IExtendedGrouping<TKey, TValue>>, IDictionary<TKey, IExtendedGrouping<TKey, TValue>>, IReadOnlyCollection<KeyValuePair<TKey, IExtendedGrouping<TKey, TValue>>>, IEnumerable<KeyValuePair<TKey, IExtendedGrouping<TKey, TValue>>>, IExtendedCollection<KeyValuePair<TKey, IExtendedGrouping<TKey, TValue>>>, IReadOnlyCollection<IExtendedGrouping<TKey, TValue>>, IEnumerable<IExtendedGrouping<TKey, TValue>>, IExtendedCollection<IExtendedGrouping<TKey, TValue>>, ILookup<TKey, TValue>
+    public class ProgressiveLookup<TKey, TValue> : IReadOnlyDictionary<TKey, IExtendedGrouping<TKey, TValue>>, IExtendedDictionary<TKey, IExtendedGrouping<TKey, TValue>>, IDictionary<TKey, IExtendedGrouping<TKey, TValue>>, IReadOnlyCollection<KeyValuePair<TKey, IExtendedGrouping<TKey, TValue>>>, IEnumerable<KeyValuePair<TKey, IExtendedGrouping<TKey, TValue>>>, IReadOnlyCollection<IExtendedGrouping<TKey, TValue>>, IEnumerable<IExtendedGrouping<TKey, TValue>>, IExtendedCollection<IExtendedGrouping<TKey, TValue>>, ILookup<TKey, TValue>
     {
         private readonly IDictionary<TKey, IExtendedGrouping<TKey, TValue>> _cache;
         private readonly IEqualityComparer<TValue> _itemComparer;
@@ -62,7 +62,7 @@ namespace Theraot.Collections
         {
             get
             {
-                _progressor.TakeAll();
+                _progressor.All().Consume();
                 return _cache.Count;
             }
         }
@@ -322,7 +322,7 @@ namespace Theraot.Collections
 
         public bool Contains(IExtendedGrouping<TKey, TValue> item, IEqualityComparer<IExtendedGrouping<TKey, TValue>> comparer)
         {
-            return Enumerable.Contains(Values, item, comparer);
+            return Values.Contains(item, comparer);
         }
 
         public bool ContainsKey(TKey key)
@@ -347,39 +347,39 @@ namespace Theraot.Collections
 
         public void CopyTo(KeyValuePair<TKey, IExtendedGrouping<TKey, TValue>>[] array)
         {
-            _progressor.TakeAll();
+            _progressor.All().Consume();
             _cache.CopyTo(array, 0);
         }
 
         public void CopyTo(KeyValuePair<TKey, IExtendedGrouping<TKey, TValue>>[] array, int arrayIndex)
         {
-            _progressor.TakeAll();
+            _progressor.All().Consume();
             _cache.CopyTo(array, arrayIndex);
         }
 
         public void CopyTo(KeyValuePair<TKey, IExtendedGrouping<TKey, TValue>>[] array, int arrayIndex, int countLimit)
         {
             Extensions.CanCopyTo(array, arrayIndex, countLimit);
-            _progressor.TakeWhile(() => _cache.Count < countLimit);
+            _progressor.While(() => _cache.Count < countLimit).Consume();
             _cache.CopyTo(array, arrayIndex, countLimit);
         }
 
         public void CopyTo(IExtendedGrouping<TKey, TValue>[] array, int arrayIndex)
         {
-            _progressor.TakeAll();
+            _progressor.All().Consume();
             _cache.Values.CopyTo(array, arrayIndex);
         }
 
         public void CopyTo(IExtendedGrouping<TKey, TValue>[] array)
         {
-            _progressor.TakeAll();
+            _progressor.All().Consume();
             _cache.Values.CopyTo(array, 0);
         }
 
         public void CopyTo(IExtendedGrouping<TKey, TValue>[] array, int arrayIndex, int countLimit)
         {
             Extensions.CanCopyTo(array, arrayIndex, countLimit);
-            _progressor.TakeWhile(() => _cache.Count < countLimit);
+            _progressor.While(() => _cache.Count < countLimit).Consume();
             _cache.Values.CopyTo(array, arrayIndex, countLimit);
         }
 
@@ -539,7 +539,7 @@ namespace Theraot.Collections
 
         [System.Serializable]
         [global::System.Diagnostics.DebuggerNonUserCode]
-        private sealed class Grouping : IExtendedGrouping<TKey, TValue>, IExtendedReadOnlyCollection<TValue>, IExtendedCollection<TValue>, ICollection<TValue>, IGrouping<TKey, TValue>, IEqualityComparer<TValue>
+        private sealed class Grouping : IExtendedGrouping<TKey, TValue>, IExtendedCollection<TValue>, ICollection<TValue>, IGrouping<TKey, TValue>, IEqualityComparer<TValue>
         {
             private readonly ICollection<TValue> _cache;
             private readonly IEqualityComparer<TValue> _comparer;
@@ -554,19 +554,11 @@ namespace Theraot.Collections
                 _cache = new List<TValue>();
             }
 
-            public IEqualityComparer<TValue> Comparer
-            {
-                get
-                {
-                    return _comparer;
-                }
-            }
-
             public int Count
             {
                 get
                 {
-                    _progressor.TakeAll();
+                    _progressor.All().Consume();
                     return _cache.Count;
                 }
             }
@@ -593,19 +585,6 @@ namespace Theraot.Collections
                 {
                     return _key;
                 }
-            }
-
-            internal ICollection<TValue> Cache
-            {
-                get
-                {
-                    return _cache;
-                }
-            }
-
-            public void Close()
-            {
-                _progressor.Close();
             }
 
             public bool Contains(TValue item)
@@ -635,20 +614,20 @@ namespace Theraot.Collections
 
             public void CopyTo(TValue[] array)
             {
-                _progressor.TakeAll();
+                _progressor.All().Consume();
                 _cache.CopyTo(array, 0);
             }
 
             public void CopyTo(TValue[] array, int arrayIndex)
             {
-                _progressor.TakeAll();
+                _progressor.All().Consume();
                 _cache.CopyTo(array, arrayIndex);
             }
 
             public void CopyTo(TValue[] array, int arrayIndex, int countLimit)
             {
                 Extensions.CanCopyTo(array, arrayIndex, countLimit);
-                _progressor.TakeWhile(() => _cache.Count < countLimit);
+                _progressor.While(() => _cache.Count < countLimit).Consume();
                 _cache.CopyTo(array, arrayIndex, countLimit);
             }
 

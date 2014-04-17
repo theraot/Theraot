@@ -6,8 +6,8 @@ namespace Theraot.Collections
 {
     public class KeyValuePairComparer<TKey, TValue> : IComparer<KeyValuePair<TKey, TValue>>
     {
-        private IComparer<TKey> _keyComparer;
-        private IComparer<TValue> _valueComparer;
+        private readonly IComparer<TKey> _keyComparer;
+        private readonly IComparer<TValue> _valueComparer;
 
         public KeyValuePairComparer(IComparer<TKey> keyComparer, IComparer<TValue> valueComparer)
         {
