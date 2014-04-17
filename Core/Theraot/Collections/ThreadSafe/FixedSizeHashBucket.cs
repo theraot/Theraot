@@ -271,6 +271,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="offset">The offset from the default index.</param>
+        /// <param name="value">The value that was removed.</param>
         /// <returns>The index where the value was set; -1 otherwise.</returns>
         public int Remove(TKey key, int offset, out TValue value)
         {

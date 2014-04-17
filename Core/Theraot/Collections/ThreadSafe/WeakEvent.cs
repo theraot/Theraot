@@ -67,7 +67,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public virtual void Invoke(object sender, TEventArgs eventArgs)
         {
-            _eventHandlers.Invoke(new object[] { sender, eventArgs });
+            _eventHandlers.Invoke(new[] { sender, eventArgs });
         }
 
         public void Remove(EventHandler<TEventArgs> value)

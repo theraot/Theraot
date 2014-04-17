@@ -90,7 +90,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public IList<TOutput> GetValues<TOutput>(Converter<T, TOutput> converter)
         {
-            return _entries.GetValues<TOutput>(converter);
+            return _entries.GetValues(converter);
         }
 
         /// <summary>

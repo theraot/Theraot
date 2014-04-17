@@ -518,13 +518,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public int RemoveWhere(Predicate<T> predicate)
         {
-            return _wrapped.RemoveWhere
-               (
-                   input =>
-                   {
-                       return input.IsAlive && predicate(input.Value);
-                   }
-               );
+            return _wrapped.RemoveWhere(input => input.IsAlive && predicate(input.Value));
         }
 
         public bool SetEquals(IEnumerable<T> other)
@@ -557,7 +551,7 @@ namespace Theraot.Collections.ThreadSafe
 
         protected virtual WeakSetBucket<T, TNeedle> OnClone()
         {
-            return new WeakSetBucket<T, TNeedle>(this as IEnumerable<T>, _comparer);
+            return new WeakSetBucket<T, TNeedle>(this, _comparer);
         }
 
         private void GarbageCollected(object sender, EventArgs e)
@@ -579,7 +573,7 @@ namespace Theraot.Collections.ThreadSafe
             EventHandler eventHandler;
             if (ReferenceEquals(_eventHandler.Value, null))
             {
-                eventHandler = new EventHandler(GarbageCollected);
+                eventHandler = GarbageCollected;
                 _eventHandler = new WeakNeedle<EventHandler>(eventHandler);
                 result = true;
             }
@@ -588,7 +582,7 @@ namespace Theraot.Collections.ThreadSafe
                 eventHandler = _eventHandler.Value.Value;
                 if (!_eventHandler.IsAlive)
                 {
-                    eventHandler = new EventHandler(GarbageCollected);
+                    eventHandler = GarbageCollected;
                     _eventHandler.Value = eventHandler;
                     result = true;
                 }
@@ -611,12 +605,12 @@ namespace Theraot.Collections.ThreadSafe
             if (_eventHandler.Value.Retrieve(out eventHandler))
             {
                 GCMonitor.Collected -= eventHandler;
-                _eventHandler = null;
+                _eventHandler.Value = null;
                 return true;
             }
             else
             {
-                _eventHandler = null;
+                _eventHandler.Value = null;
                 return false;
             }
         }

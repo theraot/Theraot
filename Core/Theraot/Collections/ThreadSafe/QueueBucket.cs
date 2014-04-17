@@ -146,7 +146,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public IList<TOutput> GetValues<TOutput>(Converter<T, TOutput> converter)
         {
-            return _entriesNew.GetValues<TOutput>(converter);
+            return _entriesNew.GetValues(converter);
         }
 
         /// <summary>
@@ -259,7 +259,6 @@ namespace Theraot.Collections.ThreadSafe
                 if (IsOperationSafe())
                 {
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
-                    bool done = false;
                     try
                     {
                         Interlocked.Increment(ref _workingThreads);
@@ -277,12 +276,8 @@ namespace Theraot.Collections.ThreadSafe
                         {
                             Interlocked.Decrement(ref _count);
                         }
-                        done = true;
                     }
-                    if (done)
-                    {
-                        return result;
-                    }
+                    return result;
                 }
                 else
                 {
@@ -336,7 +331,6 @@ namespace Theraot.Collections.ThreadSafe
                         {
                             _revision++;
                             Interlocked.Increment(ref _copyingThreads);
-                            T item;
 
                             int capacity = old.Capacity;
                             int offset = old.IndexDequeue;
@@ -344,6 +338,7 @@ namespace Theraot.Collections.ThreadSafe
                             int sourceIndex = Interlocked.Increment(ref _copySourcePosition);
                             while (sourceIndex < capacity)
                             {
+                                T item;
                                 if (old.TryGet((sourceIndex + offset) & (capacity - 1), out item))
                                 {
                                     //HACK

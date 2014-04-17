@@ -158,10 +158,9 @@ namespace Theraot.Collections.ThreadSafe
         public void Add(TKey key, TValue value)
         {
             bool result = false;
-            int revision;
             while (true)
             {
-                revision = _revision;
+                int revision = _revision;
                 if (IsOperationSafe())
                 {
                     bool isOperationSafe;
@@ -215,18 +214,17 @@ namespace Theraot.Collections.ThreadSafe
         public KeyValuePair<TKey, TValue> CharyAdd(TKey key, TValue value)
         {
             bool result = false;
-            int revision;
             KeyValuePair<TKey, TValue> previous = default(KeyValuePair<TKey, TValue>);
-            KeyValuePair<TKey, TValue> tmpPrevious;
             while (true)
             {
-                revision = _revision;
+                int revision = _revision;
                 if (IsOperationSafe())
                 {
                     bool isOperationSafe;
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
                     try
                     {
+                        KeyValuePair<TKey, TValue> tmpPrevious;
                         if (CharyAddExtracted(key, value, entries, out tmpPrevious) != -1)
                         {
                             previous = tmpPrevious;
@@ -259,7 +257,7 @@ namespace Theraot.Collections.ThreadSafe
         public void Clear()
         {
             ThreadingHelper.VolatileWrite(ref _entriesOld, null);
-            var displaced = Interlocked.Exchange(ref _entriesNew, new FixedSizeHashBucket<TKey, TValue>(INT_DefaultCapacity, _keyComparer));
+            ThreadingHelper.VolatileWrite(ref _entriesNew, new FixedSizeHashBucket<TKey, TValue>(INT_DefaultCapacity, _keyComparer));
             Thread.VolatileWrite(ref _status, (int)BucketStatus.Free);
             Thread.VolatileWrite(ref _count, 0);
             _revision++;
@@ -275,10 +273,9 @@ namespace Theraot.Collections.ThreadSafe
         public bool ContainsKey(TKey key)
         {
             bool result = false;
-            int revision;
             while (true)
             {
-                revision = _revision;
+                int revision = _revision;
                 if (IsOperationSafe())
                 {
                     bool isOperationSafe;
@@ -338,10 +335,9 @@ namespace Theraot.Collections.ThreadSafe
         public bool Remove(TKey key)
         {
             bool result = false;
-            int revision;
             while (true)
             {
-                revision = _revision;
+                int revision = _revision;
                 if (IsOperationSafe())
                 {
                     bool isOperationSafe;
@@ -381,18 +377,17 @@ namespace Theraot.Collections.ThreadSafe
         public bool Remove(TKey key, out TValue value)
         {
             bool result = false;
-            int revision;
             value = default(TValue);
-            TValue tmpValue;
             while (true)
             {
-                revision = _revision;
+                int revision = _revision;
                 if (IsOperationSafe())
                 {
                     bool isOperationSafe;
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
                     try
                     {
+                        TValue tmpValue;
                         if (RemoveExtracted(key, entries, out tmpValue))
                         {
                             value = tmpValue;
@@ -431,17 +426,14 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public int RemoveWhereKey(Predicate<TKey> predicate)
         {
-            TKey key;
-            TValue value;
             int removed = 0;
-            int revision;
-        again:
+            again:
             var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
             for (int index = 0; index < entries.Capacity; index++)
             {
                 bool result = false;
             retry:
-                revision = _revision;
+                int revision = _revision;
                 if (IsOperationSafe())
                 {
                     bool isOperationSafe;
@@ -451,6 +443,8 @@ namespace Theraot.Collections.ThreadSafe
                     }
                     try
                     {
+                        TKey key;
+                        TValue value;
                         if (entries.TryGet(index, out key, out value) && predicate(key))
                         {
                             result |= RemoveExtracted(key, entries);
@@ -498,17 +492,13 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public IEnumerable<TValue> RemoveWhereKeyEnumerable(Predicate<TKey> predicate)
         {
-            TKey key;
-            TValue value;
-            int removed = 0;
-            int revision;
-        again:
+            again:
             var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
             for (int index = 0; index < entries.Capacity; index++)
             {
                 bool result = false;
             retry:
-                revision = _revision;
+                int revision = _revision;
                 if (IsOperationSafe())
                 {
                     bool isOperationSafe;
@@ -516,8 +506,10 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         goto again;
                     }
+                    TValue value;
                     try
                     {
+                        TKey key;
                         if (entries.TryGet(index, out key, out value) && predicate(key))
                         {
                             result |= RemoveExtracted(key, entries);
@@ -536,7 +528,6 @@ namespace Theraot.Collections.ThreadSafe
                         if (result)
                         {
                             Interlocked.Decrement(ref _count);
-                            removed++;
                             yield return value;
                         }
                         else
@@ -610,10 +601,9 @@ namespace Theraot.Collections.ThreadSafe
         public bool TryAdd(TKey key, TValue value)
         {
             bool result = false;
-            int revision;
             while (true)
             {
-                revision = _revision;
+                int revision = _revision;
                 if (IsOperationSafe())
                 {
                     bool isOperationSafe;
@@ -632,7 +622,7 @@ namespace Theraot.Collections.ThreadSafe
                         if (result)
                         {
                             Interlocked.Increment(ref _count);
-                            return result;
+                            return true;
                         }
                         else
                         {
@@ -646,7 +636,7 @@ namespace Theraot.Collections.ThreadSafe
                             }
                             else
                             {
-                                return result;
+                                return false;
                             }
                         }
                     }
@@ -672,10 +662,9 @@ namespace Theraot.Collections.ThreadSafe
             value = default(TValue);
             key = default(TKey);
             bool result = false;
-            int revision;
             while (true)
             {
-                revision = _revision;
+                int revision = _revision;
                 if (IsOperationSafe())
                 {
                     bool isOperationSafe;
@@ -719,10 +708,9 @@ namespace Theraot.Collections.ThreadSafe
         {
             value = default(TValue);
             bool result = false;
-            int revision;
             while (true)
             {
-                revision = _revision;
+                int revision = _revision;
                 if (IsOperationSafe())
                 {
                     bool isOperationSafe;
@@ -787,14 +775,13 @@ namespace Theraot.Collections.ThreadSafe
 
         private int CharyAddExtracted(TKey key, TValue value, FixedSizeHashBucket<TKey, TValue> entries, out KeyValuePair<TKey, TValue> previous)
         {
-            var isCollision = true;
             previous = default(KeyValuePair<TKey, TValue>);
             if (entries != null)
             {
                 for (int attempts = 0; attempts < _maxProbing; attempts++)
                 {
                     int index = entries.TryAdd(key, value, attempts, out previous);
-                    isCollision = _keyComparer.Equals(previous.Key, key);
+                    var isCollision = _keyComparer.Equals(previous.Key, key);
                     if (index != -1 || !isCollision)
                     {
                         return index;
@@ -873,11 +860,11 @@ namespace Theraot.Collections.ThreadSafe
                             // If a thread is being aborted here it will causing lost items.
                             _revision++;
                             Interlocked.Increment(ref _copyingThreads);
-                            TKey key;
-                            TValue value;
                             int index = Interlocked.Increment(ref _copyPosition);
                             for (; index < old.Capacity; index = Interlocked.Increment(ref _copyPosition))
                             {
+                                TKey key;
+                                TValue value;
                                 if (old.TryGet(index, out key, out value))
                                 {
                                     // We have read an item, so let's try to add it to the new storage

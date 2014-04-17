@@ -17,14 +17,14 @@ namespace Theraot.Collections.ThreadSafe
             _invoke = InvokeExtracted;
         }
 
-        public WeakDelegateSet(WeakDelegateSet prototype)
-            : base(prototype as IEnumerable<Delegate>)
+        public WeakDelegateSet(IEnumerable<Delegate> prototype)
+            : base(prototype)
         {
             _invoke = InvokeExtracted;
         }
 
-        public WeakDelegateSet(WeakDelegateSet prototype, bool autoRemoveDeadItems, bool reentryGuard)
-            : base(prototype as IEnumerable<Delegate>, autoRemoveDeadItems)
+        public WeakDelegateSet(IEnumerable<Delegate> prototype, bool autoRemoveDeadItems, bool reentryGuard)
+            : base(prototype, autoRemoveDeadItems)
         {
             if (reentryGuard)
             {

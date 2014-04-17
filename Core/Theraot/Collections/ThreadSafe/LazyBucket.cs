@@ -14,7 +14,7 @@ namespace Theraot.Collections.ThreadSafe
     public sealed class LazyBucket<T> : IEnumerable<T>
     {
         private readonly Bucket<LazyNeedle<T>> _entries;
-        private Converter<int, T> _valueFactory;
+        private readonly Converter<int, T> _valueFactory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Bucket{T}" /> class.
@@ -98,7 +98,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            return Extensions.ConvertProgressiveFiltered<LazyNeedle<T>, T>(_entries, input => input.Value, input => input.IsCompleted).GetEnumerator();
+            return _entries.ConvertProgressiveFiltered(input => input.Value, input => input.IsCompleted).GetEnumerator();
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public IList<T> GetValues()
         {
-            return _entries.GetValues<T>(input => input.Value);
+            return _entries.GetValues(input => input.Value);
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public IList<TOutput> GetValues<TOutput>(Converter<T, TOutput> converter)
         {
-            return _entries.GetValues<TOutput>(input => converter.Invoke(input.Value));
+            return _entries.GetValues(input => converter.Invoke(input.Value));
         }
 
         /// <summary>

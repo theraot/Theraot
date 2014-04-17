@@ -166,10 +166,9 @@ namespace Theraot.Collections.ThreadSafe
         public bool Add(T item)
         {
             bool result = false;
-            int revision;
             while (true)
             {
-                revision = _revision;
+                int revision = _revision;
                 if (IsOperationSafe())
                 {
                     bool isOperationSafe;
@@ -188,7 +187,7 @@ namespace Theraot.Collections.ThreadSafe
                         if (result)
                         {
                             Interlocked.Increment(ref _count);
-                            return result;
+                            return true;
                         }
                         else
                         {
@@ -202,7 +201,7 @@ namespace Theraot.Collections.ThreadSafe
                             }
                             else
                             {
-                                return result;
+                                return false;
                             }
                         }
                     }
@@ -236,10 +235,9 @@ namespace Theraot.Collections.ThreadSafe
         public bool Contains(T item)
         {
             bool result = false;
-            int revision;
             while (true)
             {
-                revision = _revision;
+                int revision = _revision;
                 if (IsOperationSafe())
                 {
                     bool isOperationSafe;
@@ -294,7 +292,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public IList<TOutput> GetValues<TOutput>(Converter<T, TOutput> converter)
         {
-            return _entriesNew.GetValues<TOutput>(converter);
+            return _entriesNew.GetValues(converter);
         }
 
         void ICollection<T>.Add(T item)
@@ -312,10 +310,9 @@ namespace Theraot.Collections.ThreadSafe
         public bool Remove(T item)
         {
             bool result = false;
-            int revision;
             while (true)
             {
-                revision = _revision;
+                int revision = _revision;
                 if (IsOperationSafe())
                 {
                     bool isOperationSafe;
@@ -355,18 +352,17 @@ namespace Theraot.Collections.ThreadSafe
         public bool Remove(T item, out T value)
         {
             bool result = false;
-            int revision;
             value = default(T);
-            T tmpValue;
             while (true)
             {
-                revision = _revision;
+                int revision = _revision;
                 if (IsOperationSafe())
                 {
                     bool isOperationSafe;
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
                     try
                     {
+                        T tmpValue;
                         if (RemoveExtracted(item, entries, out tmpValue))
                         {
                             value = tmpValue;
@@ -405,16 +401,14 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public int RemoveWhere(Predicate<T> predicate)
         {
-            T value;
             int removed = 0;
-            int revision;
-        again:
+            again:
             var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
             for (int index = 0; index < entries.Capacity; index++)
             {
                 bool result = false;
             retry:
-                revision = _revision;
+                int revision = _revision;
                 if (IsOperationSafe())
                 {
                     bool isOperationSafe;
@@ -424,6 +418,7 @@ namespace Theraot.Collections.ThreadSafe
                     }
                     try
                     {
+                        T value;
                         if (entries.TryGet(index, out value) && predicate(value))
                         {
                             result |= RemoveExtracted(value, entries);
@@ -471,16 +466,13 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public IEnumerable<T> RemoveWhereEnumerable(Predicate<T> predicate)
         {
-            T value;
-            int removed = 0;
-            int revision;
-        again:
+            again:
             var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
             for (int index = 0; index < entries.Capacity; index++)
             {
                 bool result = false;
             retry:
-                revision = _revision;
+                int revision = _revision;
                 if (IsOperationSafe())
                 {
                     bool isOperationSafe;
@@ -488,6 +480,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         goto again;
                     }
+                    T value;
                     try
                     {
                         if (entries.TryGet(index, out value) && predicate(value))
@@ -508,7 +501,6 @@ namespace Theraot.Collections.ThreadSafe
                         if (result)
                         {
                             Interlocked.Decrement(ref _count);
-                            removed++;
                             yield return value;
                         }
                         else
@@ -542,10 +534,9 @@ namespace Theraot.Collections.ThreadSafe
         {
             item = default(T);
             bool result = false;
-            int revision;
             while (true)
             {
-                revision = _revision;
+                int revision = _revision;
                 if (IsOperationSafe())
                 {
                     bool isOperationSafe;
@@ -677,10 +668,10 @@ namespace Theraot.Collections.ThreadSafe
                             // If a thread is being aborted here it will causing lost items.
                             _revision++;
                             Interlocked.Increment(ref _copyingThreads);
-                            T item;
                             int index = Interlocked.Increment(ref _copyPosition);
                             for (; index < old.Capacity; index = Interlocked.Increment(ref _copyPosition))
                             {
+                                T item;
                                 if (old.TryGet(index, out item))
                                 {
                                     // We have read an item, so let's try to add it to the new storage
