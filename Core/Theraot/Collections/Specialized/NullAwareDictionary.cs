@@ -433,7 +433,7 @@ namespace Theraot.Collections.Specialized
 
         public bool SetEquals(IEnumerable<KeyValuePair<TKey, TValue>> other)
         {
-            return SetEquals(other);
+            return Extensions.SetEquals(this, other);
         }
 
         public void SymmetricExceptWith(IEnumerable<KeyValuePair<TKey, TValue>> other)
@@ -469,7 +469,7 @@ namespace Theraot.Collections.Specialized
 
         public void UnionWith(IEnumerable<KeyValuePair<TKey, TValue>> other)
         {
-            Extensions.AddRange(this, Check.NotNullArgument(other, "other"));
+            this.AddRange(Check.NotNullArgument(other, "other"));
         }
 
         private void ClearForNull()
@@ -515,36 +515,6 @@ namespace Theraot.Collections.Specialized
                     )
                 )
             );
-        }
-
-        private bool SetAddExtracted(KeyValuePair<TKey, TValue> item)
-        {
-            var key = item.Key;
-            var value = item.Value;
-            if (ReferenceEquals(key, null))
-            {
-                if (_hasNull)
-                {
-                    return false;
-                }
-                else
-                {
-                    SetForNull(value);
-                    return true;
-                }
-            }
-            else
-            {
-                try
-                {
-                    _dictionary.Add(key, value);
-                    return true;
-                }
-                catch (ArgumentException)
-                {
-                    return false;
-                }
-            }
         }
 
         private void SetForNull(TValue value)
