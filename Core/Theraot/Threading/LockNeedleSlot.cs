@@ -62,7 +62,7 @@ namespace Theraot.Threading
         public void Free()
         {
             _target = default(T);
-            LockNeedleContext<T>.Free(this);
+            LockNeedleContext<T>.Instance.Free(this);
         }
 
         public bool Lock(LockNeedle<T> needle)
