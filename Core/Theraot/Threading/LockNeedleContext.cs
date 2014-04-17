@@ -18,7 +18,7 @@ namespace Theraot.Threading
         public LockNeedleContext(int capacity)
         {
             _capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
-            _slots = new LazyBucket<LockNeedleSlot<T>>(index => new LockNeedleSlot<T>(index, _version.AdvanceNewToken()), _capacity);
+            _slots = new LazyBucket<LockNeedleSlot<T>>(index => new LockNeedleSlot<T>(this, index, _version.AdvanceNewToken()), _capacity);
             _freeSlots = new QueueBucket<LockNeedleSlot<T>>(_capacity);
         }
 

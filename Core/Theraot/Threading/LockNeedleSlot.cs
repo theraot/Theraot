@@ -10,15 +10,19 @@ namespace Theraot.Threading
         private readonly VersionProvider.VersionToken _versionToken;
         private T _target;
 
-        internal LockNeedleSlot(int id, VersionProvider.VersionToken versionToken)
+        internal LockNeedleSlot(LockNeedleContext<T> context, int id, VersionProvider.VersionToken versionToken)
         {
             if (ReferenceEquals(versionToken, null))
             {
                 throw new ArgumentNullException("versionToken");
             }
+            else if (ReferenceEquals(context, null))
+            {
+                throw new ArgumentNullException("context");
+            }
             else
             {
-                _context = LockNeedleContext<T>.Instance;
+                _context = context;
                 _versionToken = versionToken.Clone();
                 _id = id;
             }

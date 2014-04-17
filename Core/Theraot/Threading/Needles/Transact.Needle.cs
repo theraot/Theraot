@@ -11,7 +11,7 @@ namespace Theraot.Threading.Needles
         public sealed partial class Needle<T> : Theraot.Threading.Needles.Needle<T>, IResource
         {
             private readonly ICloner<T> _cloner;
-            private readonly LockNeedle<Transact> _lockNeedle = new LockNeedle<Transact>();
+            private readonly LockNeedle<Transact> _lockNeedle;
 
             public Needle(T value)
                 : base(value)
@@ -20,6 +20,10 @@ namespace Theraot.Threading.Needles
                 if (ReferenceEquals(_cloner, null))
                 {
                     throw new InvalidOperationException(string.Format("Unable to get a cloner for {0}", typeof(T)));
+                }
+                else
+                {
+                    _lockNeedle = new LockNeedle<Transact>(Transact.Context);
                 }
             }
 
@@ -32,6 +36,7 @@ namespace Theraot.Threading.Needles
                 }
                 else
                 {
+                    _lockNeedle = new LockNeedle<Transact>(Transact.Context);
                     _cloner = cloner;
                 }
             }

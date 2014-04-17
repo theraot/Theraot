@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using Theraot.Collections.Specialized;
 using Theraot.Core;
 using Theraot.Threading.Needles;
@@ -13,26 +14,40 @@ namespace Theraot.Threading
         private int _lock;
         private T _target;
 
-        internal LockNeedle()
+        internal LockNeedle(LockNeedleContext<T> context)
         {
-            _context = LockNeedleContext<T>.Instance;
-            _hashCode = GetHashCode();
-            _capture = new FlagArray(_context.Capacity);
-        }
-
-        internal LockNeedle(T target)
-        {
-            _context = LockNeedleContext<T>.Instance;
-            _target = target;
-            if (ReferenceEquals(target, null))
+            if (ReferenceEquals(context, null))
             {
-                _hashCode = GetHashCode();
+                throw new ArgumentNullException("context");
             }
             else
             {
-                _hashCode = target.GetHashCode();
+                _context = context;
+                _hashCode = GetHashCode();
+                _capture = new FlagArray(_context.Capacity);
             }
-            _capture = new FlagArray(_context.Capacity);
+        }
+
+        internal LockNeedle(LockNeedleContext<T> context, T target)
+        {
+            if (ReferenceEquals(context, null))
+            {
+                throw new ArgumentNullException("context");
+            }
+            else
+            {
+                _context = context;
+                _target = target;
+                if (ReferenceEquals(target, null))
+                {
+                    _hashCode = GetHashCode();
+                }
+                else
+                {
+                    _hashCode = target.GetHashCode();
+                }
+                _capture = new FlagArray(_context.Capacity);
+            }
         }
 
         bool IReadOnlyNeedle<T>.IsAlive
