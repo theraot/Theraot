@@ -10,6 +10,7 @@ namespace Theraot.Threading.Needles
         [ThreadStatic]
         private static Transact _currentTransaction;
 
+        private readonly LockNeedleContext<Transact> _context;
         private readonly Transact _parentTransaction;
         private readonly WeakHashBucket<IResource, object, WeakNeedle<IResource>> _readLog;
         private readonly WeakHashBucket<IResource, object, WeakNeedle<IResource>> _writeLog;
@@ -17,6 +18,7 @@ namespace Theraot.Threading.Needles
 
         public Transact()
         {
+            _context = LockNeedleContext<Transact>.Instance;
             _writeLog = new WeakHashBucket<IResource, object, WeakNeedle<IResource>>();
             _readLog = new WeakHashBucket<IResource, object, WeakNeedle<IResource>>();
             _parentTransaction = _currentTransaction;
@@ -45,7 +47,7 @@ namespace Theraot.Threading.Needles
             {
                 if (CheckValue())
                 {
-                    ThreadingHelper.SpinWaitUntil(() => LockNeedleContext<Transact>.Instance.ClaimSlot(out _lockSlot));
+                    ThreadingHelper.SpinWaitUntil(() => _context.ClaimSlot(out _lockSlot));
                     if (_writeLog.Count > 0)
                     {
                         _lockSlot.Value = this;

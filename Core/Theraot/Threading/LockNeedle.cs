@@ -7,6 +7,7 @@ namespace Theraot.Threading
 {
     internal sealed class LockNeedle<T> : INeedle<T>
     {
+        private readonly LockNeedleContext<T> _context;
         private readonly int _hashCode;
         private FlagArray _capture;
         private int _lock;
@@ -14,12 +15,14 @@ namespace Theraot.Threading
 
         internal LockNeedle()
         {
+            _context = LockNeedleContext<T>.Instance;
             _hashCode = GetHashCode();
-            _capture = new FlagArray(LockNeedleContext<T>.Instance.Capacity);
+            _capture = new FlagArray(_context.Capacity);
         }
 
         internal LockNeedle(T target)
         {
+            _context = LockNeedleContext<T>.Instance;
             _target = target;
             if (ReferenceEquals(target, null))
             {
@@ -29,7 +32,7 @@ namespace Theraot.Threading
             {
                 _hashCode = target.GetHashCode();
             }
-            _capture = new FlagArray(LockNeedleContext<T>.Instance.Capacity);
+            _capture = new FlagArray(_context.Capacity);
         }
 
         bool IReadOnlyNeedle<T>.IsAlive
@@ -45,7 +48,7 @@ namespace Theraot.Threading
             get
             {
                 T value;
-                if (LockNeedleContext<T>.Instance.Read(_lock, out value) || LockNeedleContext<T>.Instance.Read(_capture, out value))
+                if (_context.Read(_lock, out value) || _context.Read(_capture, out value))
                 {
                     _target = value;
                 }

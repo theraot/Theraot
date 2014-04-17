@@ -5,6 +5,7 @@ namespace Theraot.Threading
 {
     internal sealed class LockNeedleSlot<T> : IComparable<LockNeedleSlot<T>>, INeedle<T>
     {
+        private readonly LockNeedleContext<T> _context;
         private readonly int _id;
         private readonly VersionProvider.VersionToken _versionToken;
         private T _target;
@@ -17,6 +18,7 @@ namespace Theraot.Threading
             }
             else
             {
+                _context = LockNeedleContext<T>.Instance;
                 _versionToken = versionToken.Clone();
                 _id = id;
             }
@@ -62,7 +64,7 @@ namespace Theraot.Threading
         public void Free()
         {
             _target = default(T);
-            LockNeedleContext<T>.Instance.Free(this);
+            _context.Free(this);
         }
 
         public bool Lock(LockNeedle<T> needle)
