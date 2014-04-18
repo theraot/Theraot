@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Theraot.Core;
 
 namespace Theraot.Threading.Needles
@@ -11,7 +12,7 @@ namespace Theraot.Threading.Needles
         public sealed partial class Needle<T> : Theraot.Threading.Needles.Needle<T>, IResource
         {
             private readonly ICloner<T> _cloner;
-            private readonly LockNeedle<Transact> _lockNeedle;
+            private readonly LockNeedle<Thread> _lockNeedle;
 
             public Needle(T value)
                 : base(value)
@@ -23,7 +24,7 @@ namespace Theraot.Threading.Needles
                 }
                 else
                 {
-                    _lockNeedle = new LockNeedle<Transact>(Transact.Context);
+                    _lockNeedle = new LockNeedle<Thread>(Transact.Context);
                 }
             }
 
@@ -36,7 +37,7 @@ namespace Theraot.Threading.Needles
                 }
                 else
                 {
-                    _lockNeedle = new LockNeedle<Transact>(Transact.Context);
+                    _lockNeedle = new LockNeedle<Thread>(Transact.Context);
                     _cloner = cloner;
                 }
             }
@@ -79,9 +80,9 @@ namespace Theraot.Threading.Needles
 
             bool IResource.CheckCapture()
             {
-                var transaction = Transact.CurrentTransaction;
+                var thread = Thread.CurrentThread;
                 var check = _lockNeedle.Value;
-                return ReferenceEquals(check, transaction);
+                return ReferenceEquals(check, thread);
             }
 
             bool IResource.CheckValue()
@@ -102,8 +103,9 @@ namespace Theraot.Threading.Needles
             bool IResource.Commit()
             {
                 var transaction = Transact.CurrentTransaction;
+                var thread = Thread.CurrentThread;
                 var check = _lockNeedle.Value;
-                if (ReferenceEquals(check, transaction))
+                if (ReferenceEquals(check, thread))
                 {
                     object value;
                     if (transaction._writeLog.TryGetValue(this, out value))

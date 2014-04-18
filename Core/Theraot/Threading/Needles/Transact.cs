@@ -1,13 +1,14 @@
 #if FAT
 
 using System;
+using System.Threading;
 using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Threading.Needles
 {
     public sealed partial class Transact
     {
-        private static readonly LockNeedleContext<Transact> _context = new LockNeedleContext<Transact>(512);
+        private static readonly LockNeedleContext<Thread> _context = new LockNeedleContext<Thread>(512);
 
         [ThreadStatic]
         private static Transact _currentTransaction;
@@ -15,7 +16,7 @@ namespace Theraot.Threading.Needles
         private readonly Transact _parentTransaction;
         private readonly WeakHashBucket<IResource, object, WeakNeedle<IResource>> _readLog;
         private readonly WeakHashBucket<IResource, object, WeakNeedle<IResource>> _writeLog;
-        private LockNeedleSlot<Transact> _lockSlot;
+        private LockNeedleSlot<Thread> _lockSlot;
 
         public Transact()
         {
@@ -41,9 +42,12 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        internal static LockNeedleContext<Transact> Context
+        internal static LockNeedleContext<Thread> Context
         {
-            get { return _context; }
+            get
+            {
+                return _context;
+            }
         }
 
         public bool Commit()
@@ -55,7 +59,7 @@ namespace Theraot.Threading.Needles
                     ThreadingHelper.SpinWaitUntil(() => _context.ClaimSlot(out _lockSlot));
                     if (_writeLog.Count > 0)
                     {
-                        _lockSlot.Value = this;
+                        _lockSlot.Value = Thread.CurrentThread;
                         foreach (var resource in _writeLog)
                         {
                             resource.Key.Capture();
@@ -163,10 +167,9 @@ namespace Theraot.Threading.Needles
 
         private void Rollback(bool disposing)
         {
-            Transact currentTransaction;
             do
             {
-                currentTransaction = _currentTransaction;
+                Transact currentTransaction = _currentTransaction;
                 if (ReferenceEquals(currentTransaction, this))
                 {
                     break;
@@ -182,8 +185,7 @@ namespace Theraot.Threading.Needles
                         currentTransaction.Rollback(false);
                     }
                 }
-            }
-            while (true);
+            } while (true);
             Uncapture();
             if (disposing)
             {
