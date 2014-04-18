@@ -56,77 +56,84 @@ namespace Theraot.Threading.Needles
             {
                 if (CheckValue())
                 {
-                    ThreadingHelper.SpinWaitUntil(() => _context.ClaimSlot(out _lockSlot));
-                    if (_writeLog.Count > 0)
+                    try
                     {
+                        ThreadingHelper.SpinWaitUntil(() => _context.ClaimSlot(out _lockSlot));
                         _lockSlot.Value = Thread.CurrentThread;
-                        foreach (var resource in _writeLog)
+                        if (_writeLog.Count > 0)
                         {
-                            resource.Key.Capture();
-                        }
-                        foreach (var resource in _readLog)
-                        {
-                            resource.Key.Capture();
-                        }
-                        bool rollback = true;
-                        bool written = false;
-                        try
-                        {
-                            if (CheckCapture())
+                            foreach (var resource1 in _writeLog)
                             {
-                                if (CheckValue())
+                                resource1.Key.Capture();
+                            }
+                            foreach (var resource2 in _readLog)
+                            {
+                                resource2.Key.Capture();
+                            }
+                            bool rollback = true;
+                            bool written = false;
+                            try
+                            {
+                                if (CheckCapture())
                                 {
-                                    foreach (var resource in _writeLog)
+                                    if (CheckValue())
                                     {
-                                        if (resource.Key.Commit())
+                                        foreach (var resource in _writeLog)
                                         {
-                                            written = true;
+                                            if (resource.Key.Commit())
+                                            {
+                                                written = true;
+                                            }
+                                            else
+                                            {
+                                                //unexpected
+                                                return false;
+                                            }
                                         }
-                                        else
-                                        {
-                                            //unexpected
-                                            return false;
-                                        }
+                                        rollback = false;
+                                        return true;
                                     }
-                                    rollback = false;
-                                    return true;
+                                    else
+                                    {
+                                        //the resources has been modified by another thread
+                                        return false;
+                                    }
                                 }
                                 else
                                 {
-                                    //the resources has been modified by another thread
+                                    //the resources has been claimed by another thread
                                     return false;
                                 }
                             }
-                            else
+                            finally
                             {
-                                //the resources has been claimed by another thread
-                                return false;
+                                if (rollback)
+                                {
+                                    if (written)
+                                    {
+                                        //TODO
+                                    }
+                                    Rollback(false);
+                                }
+                                else
+                                {
+                                    Uncapture();
+                                }
                             }
                         }
-                        finally
+                        else
                         {
-                            if (rollback)
-                            {
-                                if (written)
-                                {
-                                    //TODO
-                                }
-                                Rollback(false);
-                                _lockSlot.Free();
-                                _lockSlot = null;
-                            }
-                            else
-                            {
-                                Uncapture();
-                                _lockSlot.Free();
-                                _lockSlot = null;
-                            }
+                            //Nothing to commit
+                            return true;
                         }
                     }
-                    else
+                    finally
                     {
-                        //Nothing to commit
-                        return true;
+                        if (!ReferenceEquals(_lockSlot, null))
+                        {
+                            _lockSlot.Free();
+                            _lockSlot = null;
+                        }
                     }
                 }
                 else
