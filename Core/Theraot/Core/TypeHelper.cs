@@ -268,6 +268,11 @@ namespace Theraot.Core
             return IsAssignableTo(GetNotNullableType(type), parameterInfo.GetNonRefType());
         }
 
+        public static bool IsAtomic(Type type)
+        {
+            return type.IsClass || type.IsPrimitive && Marshal.SizeOf(type) <= IntPtr.Size;
+        }
+
         public static bool IsBinaryPortable(this Type type)
         {
             if (type == null)
