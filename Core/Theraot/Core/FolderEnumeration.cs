@@ -41,32 +41,51 @@ namespace Theraot.Core
 
         public static IEnumerable<string> GetFilesAndFoldersRecursive(string folder, string pattern)
         {
-            return GraphHelper.ExploreBreadthFirstTree
-            (
-                folder,
-                GetFolders,
-                current => GetFiles(current, pattern).Prepend(current)
-            ).SelectMany(input => input);
+            return GetFiles(folder, pattern).Concat
+                (
+                    GraphHelper.ExploreBreadthFirstTree
+                        (
+                            folder,
+                            GetFolders,
+                            current => GetFiles(current, pattern).Prepend(current)
+                        ).SelectMany(input => input)
+                );
         }
 
         public static IEnumerable<string> GetFilesRecursive(string folder, string pattern)
         {
-            return GraphHelper.ExploreBreadthFirstTree
-            (
-                folder,
-                GetFolders,
-                current => GetFiles(current, pattern)
-            ).SelectMany(input => input);
+            return
+                GetFiles(folder, pattern).Concat
+                    (
+                        GraphHelper.ExploreBreadthFirstTree
+                            (
+                                folder,
+                                GetFolders,
+                                current => GetFiles(current, pattern)
+                            ).SelectMany(input => input)
+                    );
         }
 
         public static IEnumerable<string> GetFolders(string folder)
         {
+            try
+            {
 #if NET20 || NET30 || NET35
-            var directories = Directory.GetDirectories(folder);
+                var directories = Directory.GetDirectories(folder);
 #else
             var directories = Directory.EnumerateDirectories(folder);
 #endif
-            return directories.Where(subFolder => ((File.GetAttributes(subFolder) & FileAttributes.ReparsePoint) != FileAttributes.ReparsePoint));
+                return
+                    directories.Where(
+                        subFolder =>
+                            ((File.GetAttributes(subFolder) & FileAttributes.ReparsePoint) !=
+                             FileAttributes.ReparsePoint));
+            }
+            catch
+            {
+                //pokemon
+                return EmptySet<string>.Instance;
+            }
         }
 
         public static IEnumerable<string> GetFoldersRecursive(string folder)
