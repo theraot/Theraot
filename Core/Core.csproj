@@ -378,15 +378,16 @@
     <Compile Include="Theraot\Core\ThreadEqualityComparer.cs" />
     <Compile Include="Theraot\Threading\GCMonitor.cs" />
     <Compile Include="Theraot\Threading\Guard.cs" />
-    <Compile Include="Theraot\Threading\LockNeedle.cs" />
-    <Compile Include="Theraot\Threading\LockNeedleContext.cs" />
-    <Compile Include="Theraot\Threading\LockNeedleSlot.cs" />
+    <Compile Include="Theraot\Threading\NeedleLock.cs" />
+    <Compile Include="Theraot\Threading\LockContext.cs" />
+    <Compile Include="Theraot\Threading\LockSlot.cs" />
     <Compile Include="Theraot\Threading\Needles\CacheNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\CacheNeedle.disposable.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>CacheNeedle.disposable.tt</DependentUpon>
     </Compile>
+    <Compile Include="Theraot\Threading\Needles\LockableNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\PromiseNeedle1.cs" />
     <Compile Include="Theraot\Threading\Needles\DefaultNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\FutureDisposableNeedle.cs" />

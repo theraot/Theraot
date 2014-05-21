@@ -6,15 +6,15 @@ using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
 {
-    internal sealed class LockNeedle<T> : INeedle<T>
+    internal sealed class NeedleLock<T> : INeedle<T>
     {
-        private readonly LockNeedleContext<T> _context;
+        private readonly LockContext<T> _context;
         private readonly int _hashCode;
         private FlagArray _capture;
         private int _lock;
         private T _target;
 
-        internal LockNeedle(LockNeedleContext<T> context)
+        internal NeedleLock(LockContext<T> context)
         {
             if (ReferenceEquals(context, null))
             {
@@ -28,7 +28,7 @@ namespace Theraot.Threading
             }
         }
 
-        internal LockNeedle(LockNeedleContext<T> context, T target)
+        internal NeedleLock(LockContext<T> context, T target)
         {
             if (ReferenceEquals(context, null))
             {
@@ -77,24 +77,24 @@ namespace Theraot.Threading
             }
         }
 
-        public static explicit operator T(LockNeedle<T> needle)
+        public static explicit operator T(NeedleLock<T> needle)
         {
             return Check.NotNullArgument(needle, "needle").Value;
         }
 
-        public static bool operator !=(LockNeedle<T> left, LockNeedle<T> right)
+        public static bool operator !=(NeedleLock<T> left, NeedleLock<T> right)
         {
             return NotEqualsExtracted(left, right);
         }
 
-        public static bool operator ==(LockNeedle<T> left, LockNeedle<T> right)
+        public static bool operator ==(NeedleLock<T> left, NeedleLock<T> right)
         {
             return EqualsExtracted(left, right);
         }
 
         public override bool Equals(object obj)
         {
-            var _obj = obj as LockNeedle<T>;
+            var _obj = obj as NeedleLock<T>;
             if (ReferenceEquals(null, _obj))
             {
                 return _target.Equals(obj);
@@ -105,7 +105,7 @@ namespace Theraot.Threading
             }
         }
 
-        public bool Equals(LockNeedle<T> other)
+        public bool Equals(NeedleLock<T> other)
         {
             return EqualsExtracted(this, other);
         }
@@ -156,7 +156,7 @@ namespace Theraot.Threading
             return Interlocked.CompareExchange(ref _lock, 0, id) == id;
         }
 
-        private static bool EqualsExtracted(LockNeedle<T> left, LockNeedle<T> right)
+        private static bool EqualsExtracted(NeedleLock<T> left, NeedleLock<T> right)
         {
             if (ReferenceEquals(left, null))
             {
@@ -168,7 +168,7 @@ namespace Theraot.Threading
             }
         }
 
-        private static bool NotEqualsExtracted(LockNeedle<T> left, LockNeedle<T> right)
+        private static bool NotEqualsExtracted(NeedleLock<T> left, NeedleLock<T> right)
         {
             if (ReferenceEquals(left, null))
             {

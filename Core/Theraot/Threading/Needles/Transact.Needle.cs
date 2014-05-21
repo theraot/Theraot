@@ -12,7 +12,7 @@ namespace Theraot.Threading.Needles
         public sealed partial class Needle<T> : Theraot.Threading.Needles.Needle<T>, IResource
         {
             private readonly ICloner<T> _cloner;
-            private readonly LockNeedle<Thread> _lockNeedle;
+            private readonly NeedleLock<Thread> _needleLock;
 
             public Needle(T value)
                 : base(value)
@@ -24,7 +24,7 @@ namespace Theraot.Threading.Needles
                 }
                 else
                 {
-                    _lockNeedle = new LockNeedle<Thread>(Transact.Context);
+                    _needleLock = new NeedleLock<Thread>(Transact.Context);
                 }
             }
 
@@ -37,7 +37,7 @@ namespace Theraot.Threading.Needles
                 }
                 else
                 {
-                    _lockNeedle = new LockNeedle<Thread>(Transact.Context);
+                    _needleLock = new NeedleLock<Thread>(Transact.Context);
                     _cloner = cloner;
                 }
             }
@@ -72,7 +72,7 @@ namespace Theraot.Threading.Needles
                     }
                     else
                     {
-                        slot.Capture(_lockNeedle);
+                        slot.Capture(_needleLock);
                         return true;
                     }
                 }
@@ -81,7 +81,7 @@ namespace Theraot.Threading.Needles
             bool IResource.CheckCapture()
             {
                 var thread = Thread.CurrentThread;
-                var check = _lockNeedle.Value;
+                var check = _needleLock.Value;
                 return ReferenceEquals(check, thread);
             }
 
@@ -104,7 +104,7 @@ namespace Theraot.Threading.Needles
             {
                 var transaction = Transact.CurrentTransaction;
                 var thread = Thread.CurrentThread;
-                var check = _lockNeedle.Value;
+                var check = _needleLock.Value;
                 if (ReferenceEquals(check, thread))
                 {
                     object value;
@@ -133,12 +133,12 @@ namespace Theraot.Threading.Needles
                     var slot = transaction._lockSlot;
                     if (!ReferenceEquals(slot, null))
                     {
-                        slot.Uncapture(_lockNeedle);
+                        slot.Uncapture(_needleLock);
                     }
                     transaction._readLog.Remove(this);
                     transaction._writeLog.Remove(this);
                 }
-                _lockNeedle.Free();
+                _needleLock.Free();
             }
 
             private T RetrieveValue(Transact transaction)

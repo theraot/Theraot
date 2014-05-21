@@ -8,7 +8,7 @@ namespace Theraot.Threading.Needles
 {
     public sealed partial class Transact
     {
-        private static readonly LockNeedleContext<Thread> _context = new LockNeedleContext<Thread>(512);
+        private static readonly LockContext<Thread> _context = new LockContext<Thread>(512);
 
         [ThreadStatic]
         private static Transact _currentTransaction;
@@ -16,7 +16,7 @@ namespace Theraot.Threading.Needles
         private readonly Transact _parentTransaction;
         private readonly WeakHashBucket<IResource, object, WeakNeedle<IResource>> _readLog;
         private readonly WeakHashBucket<IResource, object, WeakNeedle<IResource>> _writeLog;
-        private LockNeedleSlot<Thread> _lockSlot;
+        private LockSlot<Thread> _lockSlot;
 
         public Transact()
         {
@@ -42,7 +42,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        internal static LockNeedleContext<Thread> Context
+        internal static LockContext<Thread> Context
         {
             get
             {
