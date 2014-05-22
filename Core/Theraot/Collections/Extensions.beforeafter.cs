@@ -267,19 +267,52 @@ namespace Theraot.Collections
 
         private static IEnumerable<T> BeforeFirstExtracted<T>(IEnumerable<T> target, Action<T> action)
         {
-            foreach (var item in target)
+            var enumerator = target.GetEnumerator();
+            try
             {
-                action.Invoke(item);
-                yield return item;
+                if (enumerator.MoveNext())
+                {
+                    var current = enumerator.Current;
+                    action.Invoke(current);
+                    yield return current;
+                }
+                else
+                {
+                    yield break;
+                }
+                while (enumerator.MoveNext())
+                {
+                    yield return enumerator.Current;
+                }
+            }
+            finally
+            {
+                enumerator.Dispose();
             }
         }
 
         private static IEnumerable<T> BeforeFirstExtracted<T>(IEnumerable<T> target, Action action)
         {
-            foreach (var item in target)
+            var enumerator = target.GetEnumerator();
+            try
             {
-                action.Invoke();
-                yield return item;
+                if (enumerator.MoveNext())
+                {
+                    action.Invoke();
+                    yield return enumerator.Current;
+                }
+                else
+                {
+                    yield break;
+                }
+                while (enumerator.MoveNext())
+                {
+                    yield return enumerator.Current;
+                }
+            }
+            finally
+            {
+                enumerator.Dispose();
             }
         }
     }
