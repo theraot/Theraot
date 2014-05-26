@@ -1,10 +1,9 @@
-﻿<#@ assembly name="$(SolutionDir)\Core\bin\Release_NET45_FAT\Theraot.Core.dll" #>
-<#@ assembly name="System.Core" #>
+﻿<#@ assembly name="System.Core" #>
 <#@ import namespace="System" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
-<#@ import namespace="System.Globalization" #>
-<#@ import namespace="Theraot.Core" #>
-<#@ import namespace="Theraot.Collections" #><#+
+<#@ import namespace="System.Globalization" #><#+
 
     private string ConverterA(KeyValuePair<string, string> input)
     {
@@ -14,6 +13,25 @@
     private string ConverterB(string input)
     {
         return string.Format(CultureInfo.InvariantCulture, "{0} = null;", input);
+    }
+
+    private string Aggregate(IEnumerable<string> lines)
+    {
+        var sb = new StringBuilder();
+        var first = true;
+        foreach (var line in lines)
+        {
+            if (first)
+            {
+                first = false;
+            }
+            else
+            {
+                sb.Append("\n\r                        ");
+            }
+            sb.Append(line);
+        }
+        return sb.ToString();
     }
 
     public string getText
@@ -28,7 +46,11 @@
         IEnumerable<string> toSetToNull
     )
     {
-        string path = Host.ResolvePath(@"@Path").EnsureEnd(System.IO.Path.DirectorySeparatorChar.ToString());
+        string path = Host.ResolvePath(@"..\..\..\..\SharedTemplates");
+        if (!path.EndsWith(System.IO.Path.DirectorySeparatorChar.ToString()))
+        {
+            path += System.IO.Path.DirectorySeparatorChar.ToString();
+        }
         string baseText;
         if (isInherited)
         {
@@ -45,57 +67,24 @@
                 baseText = System.IO.File.ReadAllText(path + "DisposableCriticalTemplate.cs");
             }
         }
-        StringAssembler assambler = new StringAssembler(baseText);
-        if (isSealed)
-        {
-            assambler.Replace("partial", "sealed partial");
-            assambler.Replace("protected virtual", "private");
-            assambler.Replace("protected", "private");
-        }
-        assambler.Replace("@NamespaceName", namespaceName);
-        assambler.Replace("@ClassName/*GenericParams*/", className);
-        assambler.Replace("@ClassName", className.Split('<')[0]);
         var converterA = new Converter<KeyValuePair<string, string>, string>(ConverterA);
         var converterB = new Converter<string, string>(ConverterB);
-        assambler.ReplaceFactory
+        var a = Aggregate(managedCalls.ToList().ConvertAll(converterA));
+        var b = Aggregate(toSetToNull.ToList().ConvertAll(converterB));
+        var c = Aggregate(unmanagedCalls.ToList().ConvertAll(converterA));
+        var x = string.Format
         (
-            "//ReleaseManagedResources",
-            new MultilineBuilder
-                (
-                    "                        ",
-                    "//Empty",
-                    managedCalls.ConvertProgressive<KeyValuePair<string, string>, string>
-                    (
-                        converterA
-                    )
-                )
+            baseText,
+            namespaceName,
+            className,
+            className.Split('<')[0],
+            isSealed ? "sealed partial" : "partial",
+            isSealed ? "private" : "protected virtual",
+            isSealed ? "private" : "protected",
+            a.Length == 0 ? "//Empty" :  a,
+            b.Length == 0 ? "//Empty" :  b,
+            c.Length == 0 ? "//Empty" :  c
         );
-        assambler.ReplaceFactory
-        (
-            "//SetToNull",
-            new MultilineBuilder
-                (
-                    "                        ",
-                    "//Empty",
-                    toSetToNull.ConvertProgressive<string, string>
-                    (
-                        converterB
-                    )
-                )
-        );
-        assambler.ReplaceFactory
-        (
-            "//ReleaseUnmanagedResources",
-            new MultilineBuilder
-                (
-                    "                        ",
-                    "//Empty",
-                    unmanagedCalls.ConvertProgressive<KeyValuePair<string, string>, string>
-                    (
-                        converterA
-                    )
-                )
-        );
-        return assambler.Create();
+        return x;
     }
 #>
