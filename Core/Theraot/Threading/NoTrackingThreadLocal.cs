@@ -210,6 +210,22 @@ namespace Theraot.Threading
             return string.Format(System.Globalization.CultureInfo.InvariantCulture, "[ThreadLocal: IsValueCreated={0}, Value={1}]", IsValueCreated, Value);
         }
 
+        public bool TryGet(out T target)
+        {
+            var bundle = Thread.GetData(_slot);
+            var container = bundle as Container;
+            if (container == null)
+            {
+                target = default(T);
+                return false;
+            }
+            else
+            {
+                target = container.Value;
+                return true;
+            }
+        }
+
         [global::System.Diagnostics.DebuggerNonUserCode]
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2004:RemoveCallsToGCKeepAlive", Justification = "By Design")]
         private void Dispose(bool disposeManagedResources)
