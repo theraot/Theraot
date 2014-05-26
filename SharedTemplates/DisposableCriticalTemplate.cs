@@ -2,10 +2,10 @@
 
 using System;
 
-namespace @NamespaceName
-{
-    public partial class @ClassName/*GenericParams*/ : IDisposable, IExtendedDisposable
-    {
+namespace {0}
+{{
+    public {3} class {1} : IDisposable, IExtendedDisposable
+    {{
         [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         private int _status;
         [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
@@ -14,254 +14,254 @@ namespace @NamespaceName
         [global::System.Diagnostics.DebuggerNonUserCode]
         [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
-        ~@ClassName()
-        {
+        ~{2}()
+        {{
             if (System.Threading.Interlocked.CompareExchange(ref _surviveGarbageCollection, 0, 1) == 0)
-            {
+            {{
                 GC.ReRegisterForFinalize(this);
-            }
+            }}
             else
-            {
+            {{
                 try
-                {
+                {{
                     //Empty
-                }
+                }}
                 finally
-                {
+                {{
                     try
-                    {
+                    {{
                         Dispose(false);
-                    }
+                    }}
                     catch
-                    {
+                    {{
                         //Pokemon
-                    }
-                }
-            }
-        }
+                    }}
+                }}
+            }}
+        }}
 
         [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         public bool IsDisposed
-        {
+        {{
             [global::System.Diagnostics.DebuggerNonUserCode]
             get
-            {
+            {{
                 return _status == -1;
-            }
-        }
+            }}
+        }}
 
         [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
-        protected bool SurviveGarbageCollection
-        {
+        {5} bool SurviveGarbageCollection
+        {{
             [global::System.Diagnostics.DebuggerNonUserCode]
             get
-            {
+            {{
                 return _surviveGarbageCollection != 0;
-            }
+            }}
             [global::System.Diagnostics.DebuggerNonUserCode]
             set
-            {
+            {{
                 _surviveGarbageCollection = value ? 1 : 0;
-            }
-        }
+            }}
+        }}
 
         [global::System.Diagnostics.DebuggerNonUserCode]
         [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         public void Dispose()
-        {
+        {{
             try
-            {
+            {{
                 Dispose(true);
-            }
+            }}
             finally
-            {
+            {{
                 GC.SuppressFinalize(this);
-            }
-        }
+            }}
+        }}
 
         [global::System.Diagnostics.DebuggerNonUserCode]
         [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         public void DisposedConditional(Action whenDisposed, Action whenNotDisposed)
-        {
+        {{
             if (_status == -1)
-            {
+            {{
                 if (!whenDisposed == null)
-                {
+                {{
                     whenDisposed.Invoke();
-                }
-            }
+                }}
+            }}
             else
-            {
+            {{
                 if (!whenNotDisposed == null)
-                {
+                {{
                     if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
-                    {
+                    {{
                         try
-                        {
+                        {{
                             whenNotDisposed.Invoke();
-                        }
+                        }}
                         finally
-                        {
+                        {{
                             System.Threading.Interlocked.Decrement(ref _status);
-                        }
-                    }
+                        }}
+                    }}
                     else
-                    {
+                    {{
                         if (!whenDisposed == null)
-                        {
+                        {{
                             whenDisposed.Invoke();
-                        }
-                    }
-                }
-            }
-        }
+                        }}
+                    }}
+                }}
+            }}
+        }}
 
         [global::System.Diagnostics.DebuggerNonUserCode]
         [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
         public TReturn DisposedConditional<TReturn>(Func<TReturn> whenDisposed, Func<TReturn> whenNotDisposed)
-        {
+        {{
             if (_status == -1)
-            {
+            {{
                 if (whenDisposed == null)
-                {
+                {{
                     return default(TReturn);
-                }
+                }}
                 else
-                {
+                {{
                     return whenDisposed.Invoke();
-                }
-            }
+                }}
+            }}
             else
-            {
+            {{
                 if (whenNotDisposed == null)
-                {
+                {{
                     return default(TReturn);
-                }
+                }}
                 else
-                {
+                {{
                     if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
-                    {
+                    {{
                         try
-                        {
+                        {{
                             return whenNotDisposed.Invoke();
-                        }
+                        }}
                         finally
-                        {
+                        {{
                             System.Threading.Interlocked.Decrement(ref _status);
-                        }
-                    }
+                        }}
+                    }}
                     else
-                    {
+                    {{
                         if (whenDisposed == null)
-                        {
+                        {{
                             return default(TReturn);
-                        }
+                        }}
                         else
-                        {
+                        {{
                             return whenDisposed.Invoke();
-                        }
-                    }
-                }
-            }
-        }
+                        }}
+                    }}
+                }}
+            }}
+        }}
 
         [global::System.Diagnostics.DebuggerNonUserCode]
         [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
-        protected virtual void Dispose(bool disposeManagedResources)
-        {
+        {4} void Dispose(bool disposeManagedResources)
+        {{
             if (TakeDisposalExecution())
-            {
+            {{
                 try
-                {
+                {{
                     if (disposeManagedResources)
-                    {
-                        //ReleaseManagedResources
-                    }
-                }
+                    {{
+                        {6}
+                    }}
+                }}
                 finally
-                {
+                {{
                     try
-                    {
-                        //ReleaseUnmanagedResources
-                    }
+                    {{
+                        {8}
+                    }}
                     finally
-                    {
-                        //SetToNull
-                    }
-                }
-            }
-        }
+                    {{
+                        {7}
+                    }}
+                }}
+            }}
+        }}
 
         [global::System.Diagnostics.DebuggerNonUserCode]
         [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
-        protected void ProtectedCheckDisposed(string exceptionMessegeWhenDisposed)
-        {
+        {5} void ProtectedCheckDisposed(string exceptionMessegeWhenDisposed)
+        {{
             if (IsDisposed)
-            {
+            {{
                 throw new ObjectDisposedException(exceptionMessegeWhenDisposed);
-            }
-        }
+            }}
+        }}
 
         [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
-        protected IDisposable SuspendDisposal()
-        {
+        {5} IDisposable SuspendDisposal()
+        {{
             if (_status == -1)
-            {
+            {{
                 return null;
-            }
+            }}
             else
-            {
+            {{
                 if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
-                {
+                {{
                     return DisposableAkin.Create(() => System.Threading.Interlocked.Decrement(ref _status));
-                }
+                }}
                 else
-                {
+                {{
                     return null;
-                }
-            }
-        }
+                }}
+            }}
+        }}
 
         [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
-        protected bool TakeDisposalExecution()
-        {
+        {5} bool TakeDisposalExecution()
+        {{
             if (_status == -1)
-            {
+            {{
                 return false;
-            }
+            }}
             else
-            {
+            {{
                 return ThreadingHelper.SpinWaitSetUnless(ref _status, -1, 0, -1);
-            }
-        }
+            }}
+        }}
 
         [global::System.Diagnostics.DebuggerNonUserCode]
         [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
-        protected void ThrowDisposedexception()
-        {
+        {5} void ThrowDisposedexception()
+        {{
             throw new ObjectDisposedException(GetType().FullName);
-        }
+        }}
 
         [global::System.Diagnostics.DebuggerNonUserCode]
         [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
-        protected TReturn ThrowDisposedexception<TReturn>()
-        {
+        {5} TReturn ThrowDisposedexception<TReturn>()
+        {{
             throw new ObjectDisposedException(GetType().FullName);
-        }
+        }}
 
         [global::System.Diagnostics.DebuggerNonUserCode]
         [System.CodeDom.Compiler.GeneratedCodeAttribute("DisposableTemplate", "1.0.0.2")]
-        protected bool UnDispose()
-        {
+        {5} bool UnDispose()
+        {{
             if (System.Threading.Thread.VolatileRead(ref _status) == -1)
-            {
+            {{
                 System.Threading.Thread.VolatileWrite(ref _status, 0);
                 return true;
-            }
+            }}
             else
-            {
+            {{
                 return false;
-            }
-        }
-    }
-}
+            }}
+        }}
+    }}
+}}

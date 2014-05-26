@@ -4,36 +4,36 @@ using System;
 
 using Theraot.Threading;
 
-namespace @NamespaceName
-{
-    public partial class @ClassName/*GenericParams*/ : IDisposable, IExtendedDisposable
-    {
+namespace {0}
+{{
+    public partial class {1} : IDisposable, IExtendedDisposable
+    {{
         [global::System.Diagnostics.DebuggerNonUserCode]
         [System.CodeDom.Compiler.GeneratedCodeAttribute("InheritedDisposableTemplate", "1.0.0.0")]
-        protected override void Dispose(bool disposeManagedResources)
-        {
+        {5} override void Dispose(bool disposeManagedResources)
+        {{
             if (TakeDisposalExecution())
-            {
+            {{
                 try
-                {
+                {{
                     if (disposeManagedResources)
-                    {
-                        //ReleaseManagedResources
-                    }
-                }
+                    {{
+                        {6}
+                    }}
+                }}
                 finally
-                {
+                {{
                     try
-                    {
-                        //ReleaseUnmanagedResources
-                    }
+                    {{
+                        {8}
+                    }}
                     finally
-                    {
-                        //SetToNull
-                    }
+                    {{
+                        {7}
+                    }}
                     base.Dispose(disposeManagedResources);
-                }
-            }
-        }
-    }
-}
+                }}
+            }}
+        }}
+    }}
+}}
