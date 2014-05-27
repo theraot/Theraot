@@ -1,7 +1,8 @@
-﻿using System;
+﻿#if NET20 || NET30
+
 using System.Runtime.Serialization;
 
-namespace Theraot.Core.System.Threading
+namespace System.Threading
 {
     [Serializable]
     public class LockRecursionException : Exception
@@ -30,3 +31,5 @@ namespace Theraot.Core.System.Threading
         }
     }
 }
+
+#endif

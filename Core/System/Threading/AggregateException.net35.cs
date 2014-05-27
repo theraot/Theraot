@@ -20,7 +20,6 @@ namespace System.Threading
         private readonly ReadOnlyCollection<Exception> _innerExceptions;
 
         public AggregateException()
-            : base()
         {
             _innerExceptions = new ReadOnlyCollection<Exception>(EmptyList<Exception>.Instance);
         }
@@ -93,7 +92,6 @@ namespace System.Threading
                 else
                 {
                     _innerExceptions = new ReadOnlyCollection<Exception>(value);
-                    return;
                 }
             }
             else
@@ -109,7 +107,7 @@ namespace System.Threading
             (
                 innerExceptions.Where
                 (
-                    (input) => input != null,
+                    input => input != null,
                     ActionHelper.GetThrowAction(new ArgumentException("An element of innerExceptions is null."))
                 ).ToList()
             );
@@ -225,7 +223,7 @@ namespace System.Threading
             {
                 result.Append(Environment.NewLine);
                 result.Append("[ ");
-                result.Append(exception.ToString());
+                result.Append(exception);
                 result.Append(" ]");
                 result.Append(Environment.NewLine);
             }
