@@ -6,7 +6,7 @@ using Theraot.Threading;
 namespace System.Threading
 {
     [System.Diagnostics.DebuggerDisplay("IsValueCreated={IsValueCreated}, Value={ValueForDebugDisplay}")]
-    public sealed partial class ThreadLocal<T> : IDisposable
+    public sealed class ThreadLocal<T> : IDisposable
     {
         private int _disposing;
         private IThreadLocal<T> _wrapped;
@@ -135,28 +135,6 @@ namespace System.Threading
                 {
                     _wrapped.Dispose();
                     _wrapped = null;
-                }
-            }
-        }
-
-        private sealed class Container
-        {
-            private T _value;
-
-            public Container(T value)
-            {
-                _value = value;
-            }
-
-            public T Value
-            {
-                get
-                {
-                    return _value;
-                }
-                set
-                {
-                    _value = value;
                 }
             }
         }

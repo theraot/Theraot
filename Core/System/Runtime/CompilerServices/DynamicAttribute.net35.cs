@@ -10,7 +10,7 @@ namespace System.Runtime.CompilerServices
     {
         private static readonly IList<bool> _empty = Array.AsReadOnly(new[] { true });
 
-        private IList<bool> _transformFlags;
+        private readonly IList<bool> _transformFlags;
 
         public DynamicAttribute()
         {

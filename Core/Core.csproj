@@ -229,6 +229,10 @@
     <Compile Include="System\Collections\ObjectModel\ReadOnlyDictionary.ValueCollection.net40.cs" />
     <Compile Include="System\Collections\ObjectModel\ReadOnlyDictionary.KeyCollection.net40.cs" />
     <Compile Include="System\Collections\ObjectModel\ReadOnlyDictionary.net40.cs" />
+    <Compile Include="System\Collections\Specialized\INotifyCollectionChanged.net30.cs" />
+    <Compile Include="System\Collections\Specialized\NotifyCollectionChangedAction.net30.cs" />
+    <Compile Include="System\Collections\Specialized\NotifyCollectionChangedEventArgs.net30.cs" />
+    <Compile Include="System\Collections\Specialized\NotifyCollectionChangedEventHandler.net30.cs" />
     <Compile Include="System\Collections\StructuralComparisons.net35.cs" />
     <Compile Include="System\Numerics\BigInteger.net35.cs">
       <AutoGen>True</AutoGen>
@@ -547,9 +551,6 @@
     <Compile Include="System\Collections\Generic\ISet.net35.cs" />
     <Compile Include="System\Collections\IStructuralComparable.net35.cs" />
     <Compile Include="System\Collections\IStructuralEquatable.net35.cs" />
-    <Compile Include="System\Collections\Specialized\NotifyCollectionChangedAction.net35.cs" />
-    <Compile Include="System\Collections\Specialized\NotifyCollectionChangedEventArgs.net35.cs" />
-    <Compile Include="System\Collections\Specialized\NotifyCollectionChangedEventHandler.net35.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\Bucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\BucketHelper.cs" />
@@ -630,7 +631,6 @@
     <Compile Include="Theraot\Core\TypeHelper.cs" />
     <Compile Include="System\Tuple1.net35.cs" />
     <Compile Include="System\Tuple.net35.cs" />
-    <Compile Include="System\Collections\Specialized\INotifyCollectionChanged.net35.cs" />
     <Compile Include="Theraot\Threading\RuntimeUniqueIdProdiver.cs" />
     <Compile Include="Theraot\Threading\SingleTimeExecution.cs">
       <SubType>Code</SubType>

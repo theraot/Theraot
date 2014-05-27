@@ -11,9 +11,9 @@ namespace System.Threading
 
         private static readonly TimeSpan _timeout = TimeSpan.FromMilliseconds(INT_LongTimeOutHint);
 
+        private readonly int _spinCount;
         private ManualResetEvent _handle;
         private int _requested;
-        private int _spinCount;
         private int _state;
 
         public ManualResetEventSlim()
@@ -82,7 +82,7 @@ namespace System.Threading
 
         public void Dispose()
         {
-            this.Dispose(true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 
@@ -129,19 +129,11 @@ namespace System.Threading
             else
             {
                 int count = 0;
-                if (IsSet)
-                {
-                    return;
-                }
-                else
+                if (!IsSet)
                 {
                     var start = ThreadingHelper.TicksNow();
-                retry:
-                    if (IsSet)
-                    {
-                        return;
-                    }
-                    else
+                    retry:
+                    if (!IsSet)
                     {
                         if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < INT_LongTimeOutHint)
                         {

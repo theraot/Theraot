@@ -1,10 +1,10 @@
-﻿#if NET20 || NET30 || NET35
+﻿#if NET20
 
 namespace System.Collections.Specialized
 {
     public class NotifyCollectionChangedEventArgs : EventArgs
     {
-        private NotifyCollectionChangedAction _action;
+        private readonly NotifyCollectionChangedAction _action;
         private int _newIndex = -1;
         private IList _newItems;
         private int _oldIndex = -1;
@@ -78,7 +78,7 @@ namespace System.Collections.Specialized
 
         public NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction action, object changedItem, int index)
         {
-            IList changedItems = new object[] { changedItem };
+            IList changedItems = new[] { changedItem };
             _action = action;
             if (action == NotifyCollectionChangedAction.Add)
             {
@@ -147,7 +147,7 @@ namespace System.Collections.Specialized
         }
 
         public NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction action, object changedItem, int index, int oldIndex)
-            : this(action, new object[] { changedItem }, index, oldIndex)
+            : this(action, new[] { changedItem }, index, oldIndex)
         {
             //Empty
         }
@@ -159,7 +159,7 @@ namespace System.Collections.Specialized
             {
                 throw new ArgumentException("This constructor can only be used with the Replace action.", "action");
             }
-            InitializeReplace(new object[] { newItem }, new object[] { oldItem }, index);
+            InitializeReplace(new[] { newItem }, new[] { oldItem }, index);
         }
 
         public NotifyCollectionChangedAction Action
