@@ -224,6 +224,7 @@
     <Compile Include="System\Action7.net35.cs" />
     <Compile Include="System\Action8.net35.cs" />
     <Compile Include="System\Action9.net35.cs" />
+    <Compile Include="System\Collections\Concurrent\ConcurrentDictionary.cs" />
     <Compile Include="System\Collections\Concurrent\IProducerConsumerCollection.net35.cs" />
     <Compile Include="System\Collections\Generic\SortedSet.net35.cs" />
     <Compile Include="System\Collections\ObjectModel\ReadOnlyDictionary.ValueCollection.net40.cs" />
