@@ -10,7 +10,7 @@ namespace Theraot.Core
         {
             //Added in .NET 4.0
             Type type = value.GetType();
-            if (!flag.GetType().Equals(type))
+            if (flag.GetType() != type)
             {
                 throw new ArgumentException("Enum types don't match");
             }

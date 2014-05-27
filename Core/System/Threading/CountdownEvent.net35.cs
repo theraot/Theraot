@@ -8,9 +8,9 @@ namespace System.Threading
     [DebuggerDisplay("Initial Count={InitialCount}, Current Count={CurrentCount}")]
     public class CountdownEvent : IDisposable
     {
+        private readonly ManualResetEventSlim _event;
         private int _currentCount;
         private volatile bool _disposed;
-        private ManualResetEventSlim _event;
         private int _initialCount;
 
         public CountdownEvent(int initialCount)
@@ -26,7 +26,7 @@ namespace System.Threading
                 _event = new ManualResetEventSlim();
                 if (initialCount == 0)
                 {
-                    this._event.Set();
+                    _event.Set();
                 }
             }
         }
@@ -51,7 +51,7 @@ namespace System.Threading
         {
             get
             {
-                return this._initialCount;
+                return _initialCount;
             }
         }
 
@@ -68,7 +68,7 @@ namespace System.Threading
             get
             {
                 CheckDisposed();
-                return this._event.WaitHandle;
+                return _event.WaitHandle;
             }
         }
 
@@ -98,7 +98,7 @@ namespace System.Threading
 
         public void Reset(int count)
         {
-            this.CheckDisposed();
+            CheckDisposed();
             if (count < 0)
             {
                 throw new ArgumentOutOfRangeException("count");
@@ -120,7 +120,7 @@ namespace System.Threading
 
         public bool Signal()
         {
-            this.CheckDisposed();
+            CheckDisposed();
             if (Thread.VolatileRead(ref _currentCount) <= 0)
             {
                 throw new InvalidOperationException("Below Zero");
@@ -222,8 +222,8 @@ namespace System.Threading
 
         public bool Wait(TimeSpan timeout)
         {
-            long totalMilliseconds = (long)timeout.TotalMilliseconds;
-            if (totalMilliseconds < (long)-1 || totalMilliseconds > (long)int.MaxValue)
+            var totalMilliseconds = (long)timeout.TotalMilliseconds;
+            if (totalMilliseconds < -1L || totalMilliseconds > int.MaxValue)
             {
                 throw new ArgumentOutOfRangeException("timeout");
             }
