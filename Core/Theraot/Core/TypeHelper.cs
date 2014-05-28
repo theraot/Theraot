@@ -241,7 +241,10 @@ namespace Theraot.Core
                             return true;
                         }
                     }
-                    type = type.BaseType;
+                    else
+                    {
+                        type = type.BaseType;
+                    }
                 }
             }
             else
@@ -514,6 +517,7 @@ namespace Theraot.Core
 
             public static bool Result
             {
+                // Accessed via Reflection
                 get
                 {
                     return _result;
@@ -566,6 +570,7 @@ namespace Theraot.Core
 
             public static bool Result
             {
+                // Accessed via Reflection
                 get
                 {
                     return _result;
@@ -607,6 +612,7 @@ namespace Theraot.Core
 
             public static bool Result
             {
+                // Accessed via Reflection
                 get
                 {
                     return _result;

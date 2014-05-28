@@ -85,6 +85,7 @@ namespace Theraot.Collections
                     yield return item;
                 }
             }
+            // Infinite Loop - This method creates an endless IEnumerable<T>
         }
 
         public static IEnumerable<T> ExceptWhere<T>(this IEnumerable<T> source, Predicate<T> predicate)
