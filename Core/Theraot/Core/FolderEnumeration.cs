@@ -12,6 +12,7 @@ namespace Theraot.Core
     {
         public static IEnumerable<string> GetFiles(string folder, string pattern)
         {
+            // TODO handle exceptions
             IEnumerable<string> fileEntries = null;
             try
             {
@@ -68,6 +69,7 @@ namespace Theraot.Core
 
         public static IEnumerable<string> GetFolders(string folder)
         {
+            // TODO handle exceptions
             try
             {
 #if NET20 || NET30 || NET35
