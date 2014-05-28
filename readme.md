@@ -33,14 +33,14 @@ Theraot's Libraries...
   - includes lock-free and wait-free structures developed in `HashBucket` (another project of mine).
   - includes (among others) the following types to be used in old versions of .NET back to .NET 2.0:
     - `System.Collections.Concurrent`: Work in progress
-    - `System.Collections.Generic.HashSet<T>`: Done
+    - `System.Collections.Generic.HashSet<T>`: Done [See Note 1]
     - `System.Collections.Generic.SortedSet<T>`: Done
     - `System.Collections.Linq`: Up to .NET 3.5
     - `System.Collections.Linq.Expressions`: Up to .NET 3.5
     - `System.Collections.ObjectModel.ObservableCollection<T>`: Work in progress
     - `System.Collections.ObjectModel.ReadOnlyDictionary<TKey, TValue>`: Done
     - `System.Collections.StructuralComparisons`: Done
-    - `System.Numerics.BigInteger`: Done [Taken from Mono][See Note 1]
+    - `System.Numerics.BigInteger`: Done [Taken from Mono][See Note 2]
     - `System.Numerics.Complex`: Done [Taken from Mono]
     - `System.Runtime.CompilerServices.DynamicAttribute`: Done
     - `System.Runtime.CompilerServices.ExtensionAttribute`: Done
@@ -61,11 +61,13 @@ Theraot's Libraries...
     - `System.Tuple<*>`: Done
     - `System.WeakReference<T>`: Done
   - Uses less than 1MB in disk.
-  - Keeps a consistent code style in the whole code [See Note 2]
-    
-Note 1: I have provided the optimization for the cast from `System.Numerics.BigInteger` to float and double. I have contributed code to Mono.
+  - Keeps a consistent code style in the whole code [See Note 3]
 
-Note 2: I intent to keep the code readable, yet documentation is low priority at this point. 
+Note 1: `HashSet<T>` is available in .NET 3.5 and even though Theraot.Core adds `ISet<T>` it wont cast to it on .NET 3.5.
+
+Note 2: I have provided the optimization for the cast from `System.Numerics.BigInteger` to float and double. I have contributed code to Mono.
+
+Note 3: I intent to keep the code readable, yet documentation is low priority at this point. 
 
 ---
 **Extended Features**
@@ -177,6 +179,8 @@ There are a few things that are beyond the scope of my work:
   - I have no intention to backport GUI libraries.
   - I cannot modify `EventHandler<T>` to remove the generic constraint that's present in .NET prior .NET 4.5. For workaround see below.
   - I cannot modify `OperationCanceledException` to add support to `CancellationToken`. For workaround see below.
+  - I cannot modify `HashSet<T>` on .NET 3.5 to allow casting to `ISet<T>`
+  - In the type `IGrouping<TKey, TElement>` `TKey` is covariant from .NET 4.0 onward, I cannot make it covariant in .NET 3.5.
 
 This features are not planned to be added or improved:
 
@@ -226,7 +230,7 @@ License
 
 The code is under MIT license
 
-    Copyright (c) 2011 - 2013 Alfonso J. Ramos and the individual authors of the included files
+    Copyright (c) 2011 - 2014 Alfonso J. Ramos and the individual authors of the included files
 
     Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
