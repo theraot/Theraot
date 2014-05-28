@@ -156,10 +156,9 @@ namespace Theraot.Threading.Needles
 
         private void Rollback(bool disposing)
         {
-            Transact currentTransaction;
             do
             {
-                currentTransaction = _currentTransaction;
+                Transact currentTransaction = _currentTransaction;
                 if (ReferenceEquals(currentTransaction, this))
                 {
                     break;
@@ -175,8 +174,7 @@ namespace Theraot.Threading.Needles
                         currentTransaction.Rollback(false);
                     }
                 }
-            }
-            while (true);
+            } while (true);
             Uncapture();
             if (disposing)
             {
