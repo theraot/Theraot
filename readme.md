@@ -63,7 +63,7 @@ Theraot's Libraries...
   - Uses less than 1MB in disk.
   - Keeps a consistent code style in the whole code [See Note 3]
 
-Note 1: `HashSet<T>` is available in .NET 3.5 and even though Theraot.Core adds ISet<T> it wont cast to it on .NET 3.5.
+Note 1: `HashSet<T>` is available in .NET 3.5 and even though Theraot.Core adds `ISet<T>` it wont cast to it on .NET 3.5.
 
 Note 2: I have provided the optimization for the cast from `System.Numerics.BigInteger` to float and double. I have contributed code to Mono.
 
