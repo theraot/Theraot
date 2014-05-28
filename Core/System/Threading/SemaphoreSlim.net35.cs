@@ -19,9 +19,13 @@ namespace System.Threading
 
         public SemaphoreSlim(int initialCount, int maxCount)
         {
-            if (initialCount < 0 || initialCount > maxCount || maxCount < 0)
+            if (initialCount < 0 || initialCount > maxCount)
             {
-                throw new ArgumentOutOfRangeException("initialCount < 0 || initialCount > maxCount || maxCount < 0");
+                throw new ArgumentOutOfRangeException("initialCount", "initialCount < 0 || initialCount > maxCount");
+            }
+            else if (maxCount <= 0)
+            {
+                throw new ArgumentOutOfRangeException("initialCount", "maxCount < 0");
             }
             else
             {
