@@ -30,33 +30,30 @@ namespace System.Linq
 {
     internal class SortSequenceContext<TElement, TKey> : SortContext<TElement>
     {
-        private IComparer<TKey> comparer;
+        private readonly IComparer<TKey> _comparer;
+        private readonly Func<TElement, TKey> _selector;
         private TKey[] keys;
-        private Func<TElement, TKey> selector;
 
         public SortSequenceContext(Func<TElement, TKey> selector, IComparer<TKey> comparer, SortDirection direction, SortContext<TElement> childContext)
             : base(direction, childContext)
         {
-            this.selector = selector;
-            this.comparer = comparer;
+            _selector = selector;
+            _comparer = comparer;
         }
 
         public override int Compare(int firstIndex, int secondIndex)
         {
-            int comparison = comparer.Compare(keys[firstIndex], keys[secondIndex]);
-
+            int comparison = _comparer.Compare(keys[firstIndex], keys[secondIndex]);
             if (comparison == 0)
             {
                 if (ChildContext != null)
                 {
                     return ChildContext.Compare(firstIndex, secondIndex);
                 }
-
                 comparison = Direction == SortDirection.Descending
                              ? secondIndex - firstIndex
                              : firstIndex - secondIndex;
             }
-
             return Direction == SortDirection.Descending ? -comparison : comparison;
         }
 
@@ -66,11 +63,10 @@ namespace System.Linq
             {
                 ChildContext.Initialize(elements);
             }
-
             keys = new TKey[elements.Length];
             for (int i = 0; i < keys.Length; i++)
             {
-                keys[i] = selector(elements[i]);
+                keys[i] = _selector(elements[i]);
             }
         }
     }

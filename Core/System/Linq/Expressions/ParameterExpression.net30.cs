@@ -6,7 +6,7 @@ namespace System.Linq.Expressions
 {
     public sealed class ParameterExpression : Expression
     {
-        private string _name;
+        private readonly string _name;
 
         internal ParameterExpression(Type type, string name)
             : base(ExpressionType.Parameter, type)

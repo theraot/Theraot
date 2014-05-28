@@ -7,8 +7,8 @@ namespace System.Linq.Expressions
 {
     public class LambdaExpression : Expression
     {
-        private Expression body;
-        private ReadOnlyCollection<ParameterExpression> parameters;
+        private readonly Expression body;
+        private readonly ReadOnlyCollection<ParameterExpression> parameters;
 
         internal LambdaExpression(Type delegateType, Expression body, ReadOnlyCollection<ParameterExpression> parameters)
             : base(ExpressionType.Lambda, delegateType)

@@ -7,9 +7,9 @@ namespace System.Linq.Expressions
 {
     internal class CompilationContext
     {
-        private List<object> _globals = new List<object>();
+        private readonly List<object> _globals = new List<object>();
         private Dictionary<LambdaExpression, List<ParameterExpression>> _hoistedMap;
-        private List<EmitContext> _units = new List<EmitContext>();
+        private readonly List<EmitContext> _units = new List<EmitContext>();
 
         public int AddCompilationUnit(LambdaExpression lambda)
         {
@@ -85,7 +85,7 @@ namespace System.Linq.Expressions
         {
             private Dictionary<LambdaExpression, List<ParameterExpression>> _hoisted_map;
             private LambdaExpression _lambda;
-            private Dictionary<ParameterExpression, LambdaExpression> _parameter_to_lambda = new Dictionary<ParameterExpression, LambdaExpression>();
+            private readonly Dictionary<ParameterExpression, LambdaExpression> _parameter_to_lambda = new Dictionary<ParameterExpression, LambdaExpression>();
 
             public Dictionary<LambdaExpression, List<ParameterExpression>> Process(LambdaExpression lambda)
             {
@@ -135,9 +135,9 @@ namespace System.Linq.Expressions
 
         private class ParameterReplacer : ExpressionTransformer
         {
-            private CompilationContext _context;
-            private object[] _locals;
-            private ExecutionScope _scope;
+            private readonly CompilationContext _context;
+            private readonly object[] _locals;
+            private readonly ExecutionScope _scope;
 
             public ParameterReplacer(CompilationContext context, ExecutionScope scope, object[] locals)
             {

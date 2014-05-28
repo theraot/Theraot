@@ -7,8 +7,8 @@ namespace System.Linq.Expressions
 {
     public abstract class MemberBinding
     {
-        private MemberBindingType _bindingType;
-        private MemberInfo _member;
+        private readonly MemberBindingType _bindingType;
+        private readonly MemberInfo _member;
 
         protected MemberBinding(MemberBindingType bindingType, MemberInfo member)
         {
@@ -42,7 +42,7 @@ namespace System.Linq.Expressions
         internal LocalBuilder EmitLoadMember(EmitContext emitContext, LocalBuilder local)
         {
             emitContext.EmitLoadSubject(local);
-            return _member.OnFieldOrProperty<LocalBuilder>
+            return _member.OnFieldOrProperty
             (
                 field => EmitLoadField(emitContext, field),
                 prop => EmitLoadProperty(emitContext, prop)

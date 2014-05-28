@@ -26,7 +26,7 @@ namespace System.Linq
 {
     internal class Grouping<TK, T> : IGrouping<TK, T>
     {
-        private IEnumerable<T> group;
+        private readonly IEnumerable<T> group;
         private TK key;
 
         public Grouping(TK key, IEnumerable<T> group)

@@ -9,9 +9,9 @@ using Theraot.Core;
 
 namespace System.Linq
 {
-    public class Lookup<TKey, TElement> : IEnumerable<IGrouping<TKey, TElement>>, ILookup<TKey, TElement>
+    public class Lookup<TKey, TElement> : ILookup<TKey, TElement>
     {
-        private IDictionary<TKey, Grouping> _groupings;
+        private readonly IDictionary<TKey, Grouping> _groupings;
 
         internal Lookup(IEqualityComparer<TKey> comparer)
         {
@@ -81,9 +81,9 @@ namespace System.Linq
             var _elementSelector = Check.NotNullArgument(elementSelector, "elementSelector");
             var _keySelector = Check.NotNullArgument(keySelector, "keySelector");
             var result = new Lookup<TKey, TElement>(comparer);
-            foreach (TSource item in source)
+            foreach (TSource item in _source)
             {
-                result.GetOrCreateGrouping(keySelector(item)).Add(_elementSelector(item));
+                result.GetOrCreateGrouping(_keySelector(item)).Add(_elementSelector(item));
             }
             return result;
         }
@@ -103,7 +103,7 @@ namespace System.Linq
 
         internal sealed class Grouping : IGrouping<TKey, TElement>
         {
-            private Collection<TElement> _items;
+            private readonly Collection<TElement> _items;
             private TKey _key;
 
             internal Grouping(TKey key)

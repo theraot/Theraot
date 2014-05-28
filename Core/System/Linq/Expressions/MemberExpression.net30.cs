@@ -7,8 +7,8 @@ namespace System.Linq.Expressions
 {
     public sealed class MemberExpression : Expression
     {
-        private Expression _expression;
-        private MemberInfo _member;
+        private readonly Expression _expression;
+        private readonly MemberInfo _member;
 
         internal MemberExpression(Expression expression, MemberInfo member, Type type)
             : base(ExpressionType.MemberAccess, type)

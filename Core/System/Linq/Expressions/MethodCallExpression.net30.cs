@@ -7,9 +7,9 @@ namespace System.Linq.Expressions
 {
     public sealed class MethodCallExpression : Expression
     {
-        private ReadOnlyCollection<Expression> _arguments;
-        private MethodInfo _method;
-        private Expression _obj;
+        private readonly ReadOnlyCollection<Expression> _arguments;
+        private readonly MethodInfo _method;
+        private readonly Expression _obj;
 
         internal MethodCallExpression(MethodInfo method, ReadOnlyCollection<Expression> arguments)
             : base(ExpressionType.Call, method.ReturnType)

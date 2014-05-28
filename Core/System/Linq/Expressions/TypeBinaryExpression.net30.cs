@@ -6,8 +6,8 @@ namespace System.Linq.Expressions
 {
     public sealed class TypeBinaryExpression : Expression
     {
-        private Expression _expression;
-        private Type _typeOperand;
+        private readonly Expression _expression;
+        private readonly Type _typeOperand;
 
         internal TypeBinaryExpression(ExpressionType nodeType, Expression expression, Type typeOperand, Type type)
             : base(nodeType, type)

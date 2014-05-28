@@ -8,7 +8,7 @@ namespace System.Linq.Expressions
 {
     public sealed class NewArrayExpression : Expression
     {
-        private ReadOnlyCollection<Expression> _expressions;
+        private readonly ReadOnlyCollection<Expression> _expressions;
 
         internal NewArrayExpression(ExpressionType expressionType, Type type, ReadOnlyCollection<Expression> expressions)
             : base(expressionType, type)

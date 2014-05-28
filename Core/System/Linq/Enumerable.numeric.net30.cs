@@ -13,7 +13,7 @@ namespace System.Linq
             long count = 0L;
             foreach (int item in Check.NotNullArgument(source, "source"))
             {
-                sum += (long)item;
+                sum += item;
                 count++;
             }
             if (count == 0L)
@@ -22,22 +22,22 @@ namespace System.Linq
             }
             else
             {
-                return (double)sum / (double)count;
+                return sum / (double)count;
             }
         }
 
         public static double Average<TSource>(this IEnumerable<TSource> source, Func<TSource, int> selector)
         {
-            return Average(Select<TSource, int>(source, selector));
+            return Average(Select(source, selector));
         }
 
         public static double? Average(this IEnumerable<int?> source)
         {
             long sum = 0L;
             long count = 0L;
-            foreach (int? item in Where<int?>(Check.NotNullArgument(source, "source"), (int? n) => n.HasValue))
+            foreach (int? item in Where(Check.NotNullArgument(source, "source"), n => n.HasValue))
             {
-                sum += (long)item.Value;
+                sum += item.Value;
                 count++;
             }
             if (count == 0L)
@@ -46,13 +46,13 @@ namespace System.Linq
             }
             else
             {
-                return (double)sum / (double)count;
+                return sum / (double)count;
             }
         }
 
         public static double? Average<TSource>(this IEnumerable<TSource> source, Func<TSource, int?> selector)
         {
-            return Average(Select<TSource, int?>(source, selector));
+            return Average(Select(source, selector));
         }
 
         public static double Average(this IEnumerable<long> source)
@@ -70,20 +70,20 @@ namespace System.Linq
             }
             else
             {
-                return (double)sum / (double)count;
+                return sum / (double)count;
             }
         }
 
         public static double Average<TSource>(this IEnumerable<TSource> source, Func<TSource, long> selector)
         {
-            return Average(Select<TSource, long>(source, selector));
+            return Average(Select(source, selector));
         }
 
         public static double? Average(this IEnumerable<long?> source)
         {
             long sum = 0L;
             long count = 0L;
-            foreach (long? item in Where<long?>(Check.NotNullArgument(source, "source"), (long? n) => n.HasValue))
+            foreach (long? item in Where(Check.NotNullArgument(source, "source"), n => n.HasValue))
             {
                 sum += item.Value;
                 count++;
@@ -94,13 +94,13 @@ namespace System.Linq
             }
             else
             {
-                return (double)sum / (double)count;
+                return sum / (double)count;
             }
         }
 
         public static double? Average<TSource>(this IEnumerable<TSource> source, Func<TSource, long?> selector)
         {
-            return Average(Select<TSource, long?>(source, selector));
+            return Average(Select(source, selector));
         }
 
         public static float Average(this IEnumerable<float> source)
@@ -118,20 +118,20 @@ namespace System.Linq
             }
             else
             {
-                return sum / (float)count;
+                return sum / count;
             }
         }
 
         public static float Average<TSource>(this IEnumerable<TSource> source, Func<TSource, float> selector)
         {
-            return Average(Select<TSource, float>(source, selector));
+            return Average(Select(source, selector));
         }
 
         public static float? Average(this IEnumerable<float?> source)
         {
             float sum = 0.0f;
             long count = 0L;
-            foreach (float? nullable in Where<float?>(Check.NotNullArgument(source, "source"), (float? n) => n.HasValue))
+            foreach (float? nullable in Where(Check.NotNullArgument(source, "source"), n => n.HasValue))
             {
                 sum += nullable.Value;
                 count++;
@@ -142,13 +142,13 @@ namespace System.Linq
             }
             else
             {
-                return sum / (float)count;
+                return sum / count;
             }
         }
 
         public static float? Average<TSource>(this IEnumerable<TSource> source, Func<TSource, float?> selector)
         {
-            return Average(Select<TSource, float?>(source, selector));
+            return Average(Select(source, selector));
         }
 
         public static double Average(this IEnumerable<double> source)
@@ -166,20 +166,20 @@ namespace System.Linq
             }
             else
             {
-                return sum / (double)count;
+                return sum / count;
             }
         }
 
         public static double Average<TSource>(this IEnumerable<TSource> source, Func<TSource, double> selector)
         {
-            return Average(Select<TSource, double>(source, selector));
+            return Average(Select(source, selector));
         }
 
         public static double? Average(this IEnumerable<double?> source)
         {
             double sum = 0.0d;
             long count = 0L;
-            foreach (double? item in Where<double?>(Check.NotNullArgument(source, "source"), (double? n) => n.HasValue))
+            foreach (double? item in Where(Check.NotNullArgument(source, "source"), n => n.HasValue))
             {
                 sum += item.Value;
                 count++;
@@ -190,13 +190,13 @@ namespace System.Linq
             }
             else
             {
-                return sum / (double)count;
+                return sum / count;
             }
         }
 
         public static double? Average<TSource>(this IEnumerable<TSource> source, Func<TSource, double?> selector)
         {
-            return Average(Select<TSource, double?>(source, selector));
+            return Average(Select(source, selector));
         }
 
         public static decimal Average(this IEnumerable<decimal> source)
@@ -220,19 +220,19 @@ namespace System.Linq
 
         public static decimal Average<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal> selector)
         {
-            return Average(Select<TSource, decimal>(source, selector));
+            return Average(Select(source, selector));
         }
 
         public static decimal? Average(this IEnumerable<decimal?> source)
         {
             decimal sum = 0.0m;
             long count = 0L;
-            foreach (decimal? item in Where<decimal?>(Check.NotNullArgument(source, "source"), (decimal? n) => n.HasValue))
+            foreach (decimal? item in Where(Check.NotNullArgument(source, "source"), n => n.HasValue))
             {
                 sum += item.Value;
                 count++;
             }
-            if (count == (long)0)
+            if (count == 0)
             {
                 return null;
             }
@@ -244,7 +244,7 @@ namespace System.Linq
 
         public static decimal? Average<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal?> selector)
         {
-            return Average(Select<TSource, decimal?>(source, selector));
+            return Average(Select(source, selector));
         }
 
         public static int Max(this IEnumerable<int> source)
@@ -471,11 +471,7 @@ namespace System.Linq
             {
                 foreach (var element in _source)
                 {
-                    if (element == null)
-                    {
-                        continue;
-                    }
-                    else
+                    if (element != null)
                     {
                         if (max == null || comparer.Compare(element, max) > 0)
                         {
@@ -501,7 +497,6 @@ namespace System.Linq
                     {
                         max = element;
                         found = true;
-                        continue;
                     }
                 }
                 if (found)
@@ -784,10 +779,10 @@ namespace System.Linq
         {
             var _source = Check.NotNullArgument(source, "source");
             var _selector = Check.NotNullArgument(selector, "selector");
-            Func<TSource, int, TResult> __selector = (TSource item, int i) => _selector(item);
+            Func<TSource, int, TResult> __selector = (item, i) => _selector(item);
             return Max
                    (
-                       Enumerable.SelectExtracted<TSource, TResult>
+                       Enumerable.SelectExtracted
                        (
                            _source,
                            __selector
@@ -1048,7 +1043,6 @@ namespace System.Linq
                     {
                         min = element;
                         found = true;
-                        continue;
                     }
                 }
                 if (found)
@@ -1332,10 +1326,10 @@ namespace System.Linq
         {
             var _source = Check.NotNullArgument(source, "source");
             var _selector = Check.NotNullArgument(selector, "selector");
-            Func<TSource, int, TResult> __selector = (TSource item, int i) => _selector(item);
+            Func<TSource, int, TResult> __selector = (item, i) => _selector(item);
             return Min
                    (
-                       Enumerable.SelectExtracted<TSource, TResult>
+                       Enumerable.SelectExtracted
                        (
                            _source,
                            __selector
@@ -1378,7 +1372,7 @@ namespace System.Linq
 
         public static int Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, int> selector)
         {
-            return Sum(Select<TSource, int>(source, selector));
+            return Sum(Select(source, selector));
         }
 
         public static int? Sum(this IEnumerable<int?> source)
@@ -1396,7 +1390,7 @@ namespace System.Linq
 
         public static int? Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, int?> selector)
         {
-            return Sum(Select<TSource, int?>(source, selector));
+            return Sum(Select(source, selector));
         }
 
         public static long Sum(this IEnumerable<long> source)
@@ -1411,7 +1405,7 @@ namespace System.Linq
 
         public static long Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, long> selector)
         {
-            return Sum(Select<TSource, long>(source, selector));
+            return Sum(Select(source, selector));
         }
 
         public static long? Sum(this IEnumerable<long?> source)
@@ -1429,7 +1423,7 @@ namespace System.Linq
 
         public static long? Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, long?> selector)
         {
-            return Sum(Select<TSource, long?>(source, selector));
+            return Sum(Select(source, selector));
         }
 
         public static float Sum(this IEnumerable<float> source)
@@ -1444,7 +1438,7 @@ namespace System.Linq
 
         public static float Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, float> selector)
         {
-            return Sum(Select<TSource, float>(source, selector));
+            return Sum(Select(source, selector));
         }
 
         public static float? Sum(this IEnumerable<float?> source)
@@ -1454,7 +1448,7 @@ namespace System.Linq
             {
                 if (item.HasValue)
                 {
-                    sum += (float)item.GetValueOrDefault();
+                    sum += item.GetValueOrDefault();
                 }
             }
             return sum;
@@ -1462,7 +1456,7 @@ namespace System.Linq
 
         public static float? Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, float?> selector)
         {
-            return Sum(Select<TSource, float?>(source, selector));
+            return Sum(Select(source, selector));
         }
 
         public static double Sum(this IEnumerable<double> source)
@@ -1477,7 +1471,7 @@ namespace System.Linq
 
         public static double Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, double> selector)
         {
-            return Sum(Select<TSource, double>(source, selector));
+            return Sum(Select(source, selector));
         }
 
         public static double? Sum(this IEnumerable<double?> source)
@@ -1487,15 +1481,15 @@ namespace System.Linq
             {
                 if (item.HasValue)
                 {
-                    sum += (double)item.GetValueOrDefault();
+                    sum += item.GetValueOrDefault();
                 }
             }
-            return new double?(sum);
+            return sum;
         }
 
         public static double? Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, double?> selector)
         {
-            return Sum(Select<TSource, double?>(source, selector));
+            return Sum(Select(source, selector));
         }
 
         public static decimal Sum(this IEnumerable<decimal> source)
@@ -1510,7 +1504,7 @@ namespace System.Linq
 
         public static decimal Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal> selector)
         {
-            return Sum(Select<TSource, decimal>(source, selector));
+            return Sum(Select(source, selector));
         }
 
         public static decimal? Sum(this IEnumerable<decimal?> source)
@@ -1523,12 +1517,12 @@ namespace System.Linq
                     sum += item.GetValueOrDefault();
                 }
             }
-            return new decimal?(sum);
+            return sum;
         }
 
         public static decimal? Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal?> selector)
         {
-            return Sum(Select<TSource, decimal?>(source, selector));
+            return Sum(Select(source, selector));
         }
     }
 }

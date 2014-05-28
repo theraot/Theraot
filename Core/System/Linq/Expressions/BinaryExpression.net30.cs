@@ -8,12 +8,12 @@ namespace System.Linq.Expressions
 {
     public sealed class BinaryExpression : Expression
     {
-        private LambdaExpression _conversion;
-        private bool _isLifted;
-        private Expression _left;
-        private bool _liftToNull;
-        private MethodInfo _method;
-        private Expression _right;
+        private readonly LambdaExpression _conversion;
+        private readonly bool _isLifted;
+        private readonly Expression _left;
+        private readonly bool _liftToNull;
+        private readonly MethodInfo _method;
+        private readonly Expression _right;
 
         internal BinaryExpression(ExpressionType nodeType, Type type, Expression left, Expression right)
             : base(nodeType, type)

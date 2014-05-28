@@ -7,7 +7,7 @@ namespace System.Linq.Expressions
 {
     public sealed class MemberAssignment : MemberBinding
     {
-        private Expression expression;
+        private readonly Expression expression;
 
         internal MemberAssignment(MemberInfo member, Expression expression)
             : base(MemberBindingType.Assignment, member)

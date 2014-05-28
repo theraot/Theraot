@@ -32,9 +32,9 @@ namespace System.Linq
 {
     internal class QuickSort<TElement>
     {
-        private SortContext<TElement> _context;
-        private TElement[] _elements;
-        private int[] _indexes;
+        private readonly SortContext<TElement> _context;
+        private readonly TElement[] _elements;
+        private readonly int[] _indexes;
 
         private QuickSort(IEnumerable<TElement> source, SortContext<TElement> context)
         {
@@ -46,12 +46,10 @@ namespace System.Linq
         public static IEnumerable<TElement> Sort(IEnumerable<TElement> source, SortContext<TElement> context)
         {
             var sorter = new QuickSort<TElement>(source, context);
-
             sorter.PerformSort();
-
-            for (int i = 0; i < sorter._indexes.Length; i++)
+            foreach (int item in sorter._indexes)
             {
-                yield return sorter._elements[sorter._indexes[i]];
+                yield return sorter._elements[item];
             }
         }
 
@@ -115,9 +113,7 @@ namespace System.Linq
             {
                 return;
             }
-
             _context.Initialize(_elements);
-
             // Then sorts the elements according to the collected
             // key values and the selected ordering
             Sort(0, _indexes.Length - 1);
@@ -145,10 +141,8 @@ namespace System.Linq
                         break;
                     }
                 }
-
                 // Restore pivot
                 Swap(l, right - 1);
-
                 // Partition and sort
                 Sort(left, l - 1);
                 Sort(l + 1, right);
