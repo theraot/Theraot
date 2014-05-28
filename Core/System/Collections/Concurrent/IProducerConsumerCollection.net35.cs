@@ -4,8 +4,7 @@ using System.Collections.Generic;
 
 namespace System.Collections.Concurrent
 {
-    public interface IProducerConsumerCollection<T> : IEnumerable<T>,
-    ICollection, IEnumerable
+    public interface IProducerConsumerCollection<T> : IEnumerable<T>, ICollection
     {
         void CopyTo(T[] array, int index);
 

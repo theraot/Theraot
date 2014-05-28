@@ -10,11 +10,11 @@ using Theraot.Core;
 namespace System.Collections.Generic
 {
     [SerializableAttribute]
-    public class SortedSet<T> : ISet<T>, ICollection<T>, IEnumerable<T>, ICollection, IEnumerable, ISerializable, IDeserializationCallback
+    public class SortedSet<T> : ISet<T>, ICollection, ISerializable, IDeserializationCallback
     {
         private IComparer<T> _comparer;
         private SerializationInfo _serializationInfo;
-        private AVLTree<T, T> _wrapped;
+        private readonly AVLTree<T, T> _wrapped;
 
         public SortedSet()
         {
@@ -147,7 +147,7 @@ namespace System.Collections.Generic
         public void CopyTo(Array array, int index)
         {
             Extensions.CanCopyTo(Count, array, index);
-            Extensions.DeprecatedCopyTo(this, array, index);
+            this.DeprecatedCopyTo(array, index);
         }
 
         public void ExceptWith(IEnumerable<T> other)
@@ -310,13 +310,13 @@ namespace System.Collections.Generic
         protected virtual void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             var _info = Check.NotNullArgument(info, "info");
-            info.AddValue("Comparer", _comparer, typeof(IComparer<T>));
-            info.AddValue("Count", Count);
+            _info.AddValue("Comparer", _comparer, typeof(IComparer<T>));
+            _info.AddValue("Count", Count);
             if (Count > 0)
             {
-                info.AddValue("Items", this.ToArray(), typeof(T[]));
+                _info.AddValue("Items", this.ToArray(), typeof(T[]));
             }
-            info.AddValue("Version", 0);
+            _info.AddValue("Version", 0);
         }
 
         protected virtual void OnDeserialization(object sender)
@@ -340,9 +340,9 @@ namespace System.Collections.Generic
                         }
                         else
                         {
-                            for (int index = 0; index < (int)value.Length; index++)
+                            foreach (T item in value)
                             {
-                                Add(value[index]);
+                                Add(item);
                             }
                         }
                     }
@@ -357,11 +357,11 @@ namespace System.Collections.Generic
         }
 
         [Serializable]
-        private sealed class SortedSubSet : SortedSet<T>, IEnumerable<T>, IEnumerable
+        private sealed class SortedSubSet : SortedSet<T>
         {
-            private T _lower;
-            private T _upper;
-            private new SortedSet<T> _wrapped;
+            private readonly T _lower;
+            private readonly T _upper;
+            private new readonly SortedSet<T> _wrapped;
 
             public SortedSubSet(SortedSet<T> set, T lower, T upper)
                 : base(set.Comparer)
@@ -494,11 +494,6 @@ namespace System.Collections.Generic
                     info.AddValue("uBoundActive", true);
                     base.GetObjectData(info, context);
                 }
-            }
-
-            protected override void OnDeserialization(object sender)
-            {
-                base.OnDeserialization(sender);
             }
 
             private bool InRange(T item)
