@@ -7,8 +7,8 @@ namespace System.Linq.Expressions
 {
     public abstract class MemberBinding
     {
-        private MemberBindingType _bindingType;
-        private MemberInfo _member;
+        private readonly MemberBindingType _bindingType;
+        private readonly MemberInfo _member;
 
         protected MemberBinding(MemberBindingType bindingType, MemberInfo member)
         {
@@ -42,7 +42,7 @@ namespace System.Linq.Expressions
         internal LocalBuilder EmitLoadMember(EmitContext emitContext, LocalBuilder local)
         {
             emitContext.EmitLoadSubject(local);
-            return _member.OnFieldOrProperty<LocalBuilder>
+            return _member.OnFieldOrProperty
             (
                 field => EmitLoadField(emitContext, field),
                 prop => EmitLoadProperty(emitContext, prop)
@@ -51,9 +51,9 @@ namespace System.Linq.Expressions
 
         private LocalBuilder EmitLoadField(EmitContext emitContext, FieldInfo field)
         {
-            var store = emitContext.ILGenerator.DeclareLocal(field.FieldType);
-            emitContext.ILGenerator.Emit(OpCodes.Ldfld, field);
-            emitContext.ILGenerator.Emit(OpCodes.Stloc, store);
+            var store = emitContext.ig.DeclareLocal(field.FieldType);
+            emitContext.ig.Emit(OpCodes.Ldfld, field);
+            emitContext.ig.Emit(OpCodes.Stloc, store);
             return store;
         }
 
@@ -66,9 +66,9 @@ namespace System.Linq.Expressions
             }
             else
             {
-                var store = emitContext.ILGenerator.DeclareLocal(property.PropertyType);
+                var store = emitContext.ig.DeclareLocal(property.PropertyType);
                 emitContext.EmitCall(getter);
-                emitContext.ILGenerator.Emit(OpCodes.Stloc, store);
+                emitContext.ig.Emit(OpCodes.Stloc, store);
                 return store;
             }
         }

@@ -194,23 +194,25 @@ namespace System.Linq
             else
             {
                 var list = _source as IList<TSource>;
-                if (list == null)
-                {
-                    long count = 0L;
-                    foreach (var item in _source)
-                    {
-                        if (index == count)
-                        {
-                            return item;
-                        }
-                        count++;
-                    }
-                    throw new ArgumentOutOfRangeException();
-                }
-                else
+                if (list != null)
                 {
                     return list[index];
                 }
+                var readOnlyList = source as IReadOnlyList<TSource>;
+                if (readOnlyList != null)
+                {
+                    return readOnlyList[index];
+                }
+                long count = 0L;
+                foreach (var item in _source)
+                {
+                    if (index == count)
+                    {
+                        return item;
+                    }
+                    count++;
+                }
+                throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -224,20 +226,7 @@ namespace System.Linq
             else
             {
                 var list = _source as IList<TSource>;
-                if (list == null)
-                {
-                    long count = 0L;
-                    foreach (var item in _source)
-                    {
-                        if (index == count)
-                        {
-                            return item;
-                        }
-                        count++;
-                    }
-                    return default(TSource);
-                }
-                else
+                if (list != null)
                 {
                     if (index < list.Count)
                     {
@@ -248,6 +237,28 @@ namespace System.Linq
                         return default(TSource);
                     }
                 }
+                var readOnlyList = source as IReadOnlyList<TSource>;
+                if (readOnlyList != null)
+                {
+                    if (index < readOnlyList.Count)
+                    {
+                        return readOnlyList[index];
+                    }
+                    else
+                    {
+                        return default(TSource);
+                    }
+                }
+                long count = 0L;
+                foreach (var item in _source)
+                {
+                    if (index == count)
+                    {
+                        return item;
+                    }
+                    count++;
+                }
+                return default(TSource);
             }
         }
 

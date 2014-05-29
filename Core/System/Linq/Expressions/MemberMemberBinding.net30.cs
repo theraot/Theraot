@@ -8,7 +8,7 @@ namespace System.Linq.Expressions
 {
     public sealed class MemberMemberBinding : MemberBinding
     {
-        private ReadOnlyCollection<MemberBinding> _bindings;
+        private readonly ReadOnlyCollection<MemberBinding> _bindings;
 
         internal MemberMemberBinding(MemberInfo member, ReadOnlyCollection<MemberBinding> bindings)
             : base(MemberBindingType.MemberBinding, member)

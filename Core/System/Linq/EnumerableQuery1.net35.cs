@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 
 namespace System.Linq
 {
-    public class EnumerableQuery<T> : EnumerableQuery, IOrderedQueryable<T>, IQueryable<T>, IQueryProvider
+    public class EnumerableQuery<T> : EnumerableQuery, IOrderedQueryable<T>, IQueryProvider
     {
         private readonly QueryableEnumerable<T> queryable;
 

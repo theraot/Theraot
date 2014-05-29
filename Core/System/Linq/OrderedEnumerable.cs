@@ -32,7 +32,7 @@ namespace System.Linq
 {
     internal abstract class OrderedEnumerable<TElement> : IOrderedEnumerable<TElement>
     {
-        private IEnumerable<TElement> source;
+        private readonly IEnumerable<TElement> source;
 
         protected OrderedEnumerable(IEnumerable<TElement> source)
         {

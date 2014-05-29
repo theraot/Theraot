@@ -8,7 +8,7 @@ namespace System.Linq.Expressions
 {
     public sealed class NewArrayExpression : Expression
     {
-        private ReadOnlyCollection<Expression> _expressions;
+        private readonly ReadOnlyCollection<Expression> _expressions;
 
         internal NewArrayExpression(ExpressionType expressionType, Type type, ReadOnlyCollection<Expression> expressions)
             : base(expressionType, type)
@@ -63,23 +63,23 @@ namespace System.Linq.Expressions
             emitContext.EmitCollection(_expressions);
             if (rank == 1)
             {
-                emitContext.ILGenerator.Emit(OpCodes.Newarr, type);
+                emitContext.ig.Emit(OpCodes.Newarr, type);
                 return;
             }
-            emitContext.ILGenerator.Emit(OpCodes.Newobj, GetArrayConstructor(type, rank));
+            emitContext.ig.Emit(OpCodes.Newobj, GetArrayConstructor(type, rank));
         }
 
         private void EmitNewArrayInit(EmitContext emitContext, Type type)
         {
             var size = _expressions.Count;
-            emitContext.ILGenerator.Emit(OpCodes.Ldc_I4, size);
-            emitContext.ILGenerator.Emit(OpCodes.Newarr, type);
+            emitContext.ig.Emit(OpCodes.Ldc_I4, size);
+            emitContext.ig.Emit(OpCodes.Newarr, type);
             for (int i = 0; i < size; i++)
             {
-                emitContext.ILGenerator.Emit(OpCodes.Dup);
-                emitContext.ILGenerator.Emit(OpCodes.Ldc_I4, i);
+                emitContext.ig.Emit(OpCodes.Dup);
+                emitContext.ig.Emit(OpCodes.Ldc_I4, i);
                 _expressions[i].Emit(emitContext);
-                emitContext.ILGenerator.Emit(OpCodes.Stelem, type);
+                emitContext.ig.Emit(OpCodes.Stelem, type);
             }
         }
     }

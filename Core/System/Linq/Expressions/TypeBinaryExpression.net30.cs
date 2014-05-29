@@ -6,8 +6,8 @@ namespace System.Linq.Expressions
 {
     public sealed class TypeBinaryExpression : Expression
     {
-        private Expression _expression;
-        private Type _typeOperand;
+        private readonly Expression _expression;
+        private readonly Type _typeOperand;
 
         internal TypeBinaryExpression(ExpressionType nodeType, Expression expression, Type typeOperand, Type type)
             : base(nodeType, type)
@@ -34,14 +34,15 @@ namespace System.Linq.Expressions
 
         internal override void Emit(EmitContext emitContext)
         {
+            var ig = emitContext.ig;
             if (_expression.Type == typeof(void))
             {
-                emitContext.ILGenerator.Emit(OpCodes.Ldc_I4_0);
+                ig.Emit(OpCodes.Ldc_I4_0);
                 return;
             }
             emitContext.EmitIsInst(_expression, _typeOperand);
-            emitContext.ILGenerator.Emit(OpCodes.Ldnull);
-            emitContext.ILGenerator.Emit(OpCodes.Cgt_Un);
+            ig.Emit(OpCodes.Ldnull);
+            ig.Emit(OpCodes.Cgt_Un);
         }
     }
 }

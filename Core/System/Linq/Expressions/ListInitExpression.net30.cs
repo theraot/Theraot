@@ -6,8 +6,8 @@ namespace System.Linq.Expressions
 {
     public sealed class ListInitExpression : Expression
     {
-        private ReadOnlyCollection<ElementInit> _initializers;
-        private NewExpression _newExpression;
+        private readonly ReadOnlyCollection<ElementInit> _initializers;
+        private readonly NewExpression _newExpression;
 
         internal ListInitExpression(NewExpression newExpression, ReadOnlyCollection<ElementInit> initializers)
             : base(ExpressionType.ListInit, newExpression.Type)

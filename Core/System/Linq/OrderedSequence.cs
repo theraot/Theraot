@@ -32,10 +32,10 @@ namespace System.Linq
 {
     internal class OrderedSequence<TElement, TKey> : OrderedEnumerable<TElement>
     {
-        private IComparer<TKey> _comparer;
-        private SortDirection _direction;
-        private OrderedEnumerable<TElement> _parent;
-        private Func<TElement, TKey> _selector;
+        private readonly IComparer<TKey> _comparer;
+        private readonly SortDirection _direction;
+        private readonly OrderedEnumerable<TElement> _parent;
+        private readonly Func<TElement, TKey> _selector;
 
         internal OrderedSequence(IEnumerable<TElement> source, Func<TElement, TKey> keySelector, IComparer<TKey> comparer, SortDirection direction)
             : base(source)

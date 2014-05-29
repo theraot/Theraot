@@ -4,10 +4,7 @@ namespace System.Linq
 {
     public abstract class EnumerableExecutor
     {
-        protected EnumerableExecutor()
-        {
-            //Empty
-        }
+        //Empty
     }
 }
 
