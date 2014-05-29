@@ -101,8 +101,7 @@ namespace System.Linq.Expressions
                         break;
 
                     default:
-                        throw new ArgumentException(string.Format("Unhandled expression type: '{0}'",
-                            expression.NodeType));
+                        throw new ArgumentException(string.Format("Unhandled expression type: '{0}'", expression.NodeType));
                 }
             }
         }

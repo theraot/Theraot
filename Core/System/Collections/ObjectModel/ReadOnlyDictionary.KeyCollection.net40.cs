@@ -9,7 +9,7 @@ namespace System.Collections.ObjectModel
     public partial class ReadOnlyDictionary<TKey, TValue>
     {
         [System.Serializable]
-        public sealed class KeyCollection : ICollection<TKey>, IEnumerable<TKey>, ICollection, IEnumerable
+        public sealed class KeyCollection : ICollection<TKey>, ICollection
         {
             private readonly ICollection<TKey> _wrapped;
 

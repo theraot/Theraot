@@ -7,7 +7,7 @@ namespace Theraot.Core
     {
         public static void ThrowIfSourceDisposed(CancellationToken cancellationToken)
         {
-            //CancellationToken.WaitHandle is documented to throw ObjectDispodesException is the source of the CancellationToken is disposed.
+            //CancellationToken.WaitHandle is documented to throw ObjectDispodesException if the source of the CancellationToken is disposed.
             GC.KeepAlive(cancellationToken.WaitHandle);
         }
     }
