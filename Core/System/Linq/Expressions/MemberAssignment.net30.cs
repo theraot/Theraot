@@ -7,7 +7,7 @@ namespace System.Linq.Expressions
 {
     public sealed class MemberAssignment : MemberBinding
     {
-        private Expression expression;
+        private readonly Expression expression;
 
         internal MemberAssignment(MemberInfo member, Expression expression)
             : base(MemberBindingType.Assignment, member)
@@ -34,7 +34,7 @@ namespace System.Linq.Expressions
         {
             emitContext.EmitLoadSubject(local);
             expression.Emit(emitContext);
-            emitContext.ILGenerator.Emit(OpCodes.Stfld, field);
+            emitContext.ig.Emit(OpCodes.Stfld, field);
         }
 
         private void EmitPropertyAssignment(EmitContext emitContext, PropertyInfo property, LocalBuilder local)

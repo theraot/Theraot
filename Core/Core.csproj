@@ -234,6 +234,31 @@
     <Compile Include="System\Collections\Specialized\NotifyCollectionChangedEventArgs.net30.cs" />
     <Compile Include="System\Collections\Specialized\NotifyCollectionChangedEventHandler.net30.cs" />
     <Compile Include="System\Collections\StructuralComparisons.net35.cs" />
+    <Compile Include="System\Linq\Expressions\ConstantExpression.net30.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ConstantExpression.net30.tt</DependentUpon>
+    </Compile>
+    <Compile Include="System\Linq\Expressions\EmitContext.net30.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EmitContext.net30.tt</DependentUpon>
+    </Compile>
+    <Compile Include="System\Linq\Expressions\ExpressionPrinter.net35.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ExpressionPrinter.net35.tt</DependentUpon>
+    </Compile>
+    <Compile Include="System\Linq\Expressions\NewExpression.net30.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NewExpression.net30.tt</DependentUpon>
+    </Compile>
+    <Compile Include="System\Linq\Expressions\UnaryExpression.net30.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UnaryExpression.net30.tt</DependentUpon>
+    </Compile>
     <Compile Include="System\Numerics\BigInteger.net35.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -294,12 +319,8 @@
     <Compile Include="System\Linq\EnumerableQuery1.net35.cs" />
     <Compile Include="System\Linq\Expressions\BinaryExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\ConditionalExpression.net30.cs" />
-    <Compile Include="System\Linq\Expressions\ConstantExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\ElementInit.net30.cs" />
-    <Compile Include="System\Linq\Expressions\EmitContext.net30.cs" />
-    <Compile Include="System\Linq\Expressions\CompilationContext.net30.cs" />
     <Compile Include="System\Linq\Expressions\Expression.net30.cs" />
-    <Compile Include="System\Linq\Expressions\ExpressionPrinter.net35.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTransformer.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionVisitor.net35.cs" />
     <Compile Include="System\Linq\Expressions\Expression1.net30.cs" />
@@ -316,10 +337,8 @@
     <Compile Include="System\Linq\Expressions\MemberMemberBinding.net30.cs" />
     <Compile Include="System\Linq\Expressions\MethodCallExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\NewArrayExpression.net30.cs" />
-    <Compile Include="System\Linq\Expressions\NewExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\ParameterExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\TypeBinaryExpression.net30.cs" />
-    <Compile Include="System\Linq\Expressions\UnaryExpression.net30.cs" />
     <Compile Include="System\Linq\Grouping.cs" />
     <Compile Include="System\Linq\IOrderedQueryable.cs" />
     <Compile Include="System\Linq\IOrderedQueryable1.net30.cs" />
@@ -692,6 +711,26 @@
   </ProjectExtensions>
   <ItemGroup>
     <None Include="OpenSourceKey.snk" />
+    <None Include="System\Linq\Expressions\ConstantExpression.net30.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ConstantExpression.net30.cs</LastGenOutput>
+    </None>
+    <None Include="System\Linq\Expressions\EmitContext.net30.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>EmitContext.net30.cs</LastGenOutput>
+    </None>
+    <None Include="System\Linq\Expressions\ExpressionPrinter.net35.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ExpressionPrinter.net35.cs</LastGenOutput>
+    </None>
+    <None Include="System\Linq\Expressions\NewExpression.net30.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NewExpression.net30.cs</LastGenOutput>
+    </None>
+    <None Include="System\Linq\Expressions\UnaryExpression.net30.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>UnaryExpression.net30.cs</LastGenOutput>
+    </None>
     <None Include="System\Numerics\BigInteger.net35.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BigInteger.net35.cs</LastGenOutput>

@@ -7,8 +7,8 @@ namespace System.Linq.Expressions
 {
     public sealed class MemberExpression : Expression
     {
-        private Expression _expression;
-        private MemberInfo _member;
+        private readonly Expression _expression;
+        private readonly MemberInfo _member;
 
         internal MemberExpression(Expression expression, MemberInfo member, Type type)
             : base(ExpressionType.MemberAccess, type)
@@ -46,12 +46,12 @@ namespace System.Linq.Expressions
         {
             if (field.IsStatic)
             {
-                emitContext.ILGenerator.Emit(OpCodes.Ldsfld, field);
+                emitContext.ig.Emit(OpCodes.Ldsfld, field);
             }
             else
             {
                 emitContext.EmitLoadSubject(_expression);
-                emitContext.ILGenerator.Emit(OpCodes.Ldfld, field);
+                emitContext.ig.Emit(OpCodes.Ldfld, field);
             }
         }
 

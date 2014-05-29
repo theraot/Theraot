@@ -8,12 +8,12 @@ namespace System.Linq.Expressions
 {
     public sealed class BinaryExpression : Expression
     {
-        private LambdaExpression _conversion;
-        private bool _isLifted;
-        private Expression _left;
-        private bool _liftToNull;
-        private MethodInfo _method;
-        private Expression _right;
+        private readonly LambdaExpression _conversion;
+        private readonly bool _isLifted;
+        private readonly Expression _left;
+        private readonly bool _liftToNull;
+        private readonly MethodInfo _method;
+        private readonly Expression _right;
 
         internal BinaryExpression(ExpressionType nodeType, Type type, Expression left, Expression right)
             : base(nodeType, type)
@@ -175,12 +175,12 @@ namespace System.Linq.Expressions
         {
             _left.Emit(emitContext);
             _right.Emit(emitContext);
-            emitContext.ILGenerator.Emit(OpCodes.Ldelem, Type);
+            emitContext.ig.Emit(OpCodes.Ldelem, Type);
         }
 
         private void EmitBinaryOperator(EmitContext emitContext)
         {
-            var ig = emitContext.ILGenerator;
+            var ig = emitContext.ig;
             bool is_unsigned = IsUnsigned(_left.Type);
             switch (NodeType)
             {
@@ -319,7 +319,7 @@ namespace System.Linq.Expressions
 
         private void EmitCoalesce(EmitContext emitContext)
         {
-            var ig = emitContext.ILGenerator;
+            var ig = emitContext.ig;
             var done = ig.DefineLabel();
             var load_right = ig.DefineLabel();
             var left = emitContext.EmitStored(_left);
@@ -349,7 +349,7 @@ namespace System.Linq.Expressions
 
         private void EmitConvertedCoalesce(EmitContext emitContext)
         {
-            var ig = emitContext.ILGenerator;
+            var ig = emitContext.ig;
             var done = ig.DefineLabel();
             var load_right = ig.DefineLabel();
             var left = emitContext.EmitStored(_left);
@@ -373,7 +373,7 @@ namespace System.Linq.Expressions
 
         private void EmitLeftLiftedToNullBinary(EmitContext emitContext)
         {
-            var ig = emitContext.ILGenerator;
+            var ig = emitContext.ig;
             var ret = ig.DefineLabel();
             var done = ig.DefineLabel();
             var left = emitContext.EmitStored(_left);
@@ -404,7 +404,7 @@ namespace System.Linq.Expressions
 
         private void EmitLiftedLogical(EmitContext emitContext)
         {
-            var ig = emitContext.ILGenerator;
+            var ig = emitContext.ig;
             var and = NodeType == ExpressionType.And;
             var left = emitContext.EmitStored(_left);
             var right = emitContext.EmitStored(_right);
@@ -427,7 +427,7 @@ namespace System.Linq.Expressions
 
         private void EmitLiftedLogicalShortCircuit(EmitContext emitContext)
         {
-            var ig = emitContext.ILGenerator;
+            var ig = emitContext.ig;
             var and = NodeType == ExpressionType.AndAlso;
             var left_is_null = ig.DefineLabel();
             var ret_from_left = ig.DefineLabel();
@@ -466,7 +466,7 @@ namespace System.Linq.Expressions
 
         private void EmitLiftedRelationalBinary(EmitContext emitContext)
         {
-            var ig = emitContext.ILGenerator;
+            var ig = emitContext.ig;
             var left = emitContext.EmitStored(_left);
             var right = emitContext.EmitStored(_right);
             var ret = ig.DefineLabel();
@@ -511,7 +511,7 @@ namespace System.Linq.Expressions
 
         private void EmitLiftedToNullBinary(EmitContext emitContext)
         {
-            var ig = emitContext.ILGenerator;
+            var ig = emitContext.ig;
             var left = emitContext.EmitStored(_left);
             var right = emitContext.EmitStored(_right);
             var result = ig.DeclareLocal(Type);
@@ -533,7 +533,7 @@ namespace System.Linq.Expressions
 
         private void EmitLiftedToNullUserDefinedOperator(EmitContext emitContext)
         {
-            var ig = emitContext.ILGenerator;
+            var ig = emitContext.ig;
             var ret = ig.DefineLabel();
             var done = ig.DefineLabel();
             var left = emitContext.EmitStored(_left);
@@ -555,7 +555,7 @@ namespace System.Linq.Expressions
 
         private void EmitLiftedUserDefinedOperator(EmitContext emitContext)
         {
-            var ig = emitContext.ILGenerator;
+            var ig = emitContext.ig;
             var ret_true = ig.DefineLabel();
             var ret_false = ig.DefineLabel();
             var done = ig.DefineLabel();
@@ -636,7 +636,7 @@ namespace System.Linq.Expressions
 
         private void EmitLogicalShortCircuit(EmitContext emitContext)
         {
-            var ig = emitContext.ILGenerator;
+            var ig = emitContext.ig;
             var and = NodeType == ExpressionType.AndAlso;
             var ret = ig.DefineLabel();
             var done = ig.DefineLabel();
@@ -674,7 +674,7 @@ namespace System.Linq.Expressions
 
         private void EmitUserDefinedLiftedLogicalShortCircuit(EmitContext emitContext)
         {
-            var ig = emitContext.ILGenerator;
+            var ig = emitContext.ig;
             var and = NodeType == ExpressionType.AndAlso;
             var left_is_null = ig.DefineLabel();
             var ret_left = ig.DefineLabel();
@@ -706,7 +706,7 @@ namespace System.Linq.Expressions
 
         private void EmitUserDefinedLogicalShortCircuit(EmitContext emitContext)
         {
-            var ig = emitContext.ILGenerator;
+            var ig = emitContext.ig;
             var and = NodeType == ExpressionType.AndAlso;
             var done = ig.DefineLabel();
             var left = emitContext.EmitStored(_left);

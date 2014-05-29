@@ -6,8 +6,8 @@ namespace System.Linq.Expressions
 {
     public sealed class InvocationExpression : Expression
     {
-        private ReadOnlyCollection<Expression> _arguments;
-        private Expression _expression;
+        private readonly ReadOnlyCollection<Expression> _arguments;
+        private readonly Expression _expression;
 
         internal InvocationExpression(Expression expression, Type type, ReadOnlyCollection<Expression> arguments)
             : base(ExpressionType.Invoke, type)

@@ -6,9 +6,9 @@ namespace System.Linq.Expressions
 {
     public sealed class ConditionalExpression : Expression
     {
-        private Expression _ifFalse;
-        private Expression _ifTrue;
-        private Expression _test;
+        private readonly Expression _ifFalse;
+        private readonly Expression _ifTrue;
+        private readonly Expression _test;
 
         internal ConditionalExpression(Expression test, Expression ifTrue, Expression ifFalse)
             : base(ExpressionType.Conditional, ifTrue.Type)
@@ -44,7 +44,7 @@ namespace System.Linq.Expressions
 
         internal override void Emit(EmitContext emitContext)
         {
-            var ig = emitContext.ILGenerator;
+            var ig = emitContext.ig;
             var false_target = ig.DefineLabel();
             var end_target = ig.DefineLabel();
             _test.Emit(emitContext);

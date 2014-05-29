@@ -8,11 +8,7 @@ namespace System.Linq.Expressions
     {
         protected virtual void Visit(Expression expression)
         {
-            if (expression == null)
-            {
-                return;
-            }
-            else
+            if (expression != null)
             {
                 switch (expression.NodeType)
                 {
@@ -25,7 +21,7 @@ namespace System.Linq.Expressions
                     case ExpressionType.Quote:
                     case ExpressionType.TypeAs:
                     case ExpressionType.UnaryPlus:
-                        VisitUnary((UnaryExpression)expression);
+                        VisitUnary((UnaryExpression) expression);
                         break;
 
                     case ExpressionType.Add:
@@ -52,60 +48,61 @@ namespace System.Linq.Expressions
                     case ExpressionType.RightShift:
                     case ExpressionType.LeftShift:
                     case ExpressionType.ExclusiveOr:
-                        VisitBinary((BinaryExpression)expression);
+                        VisitBinary((BinaryExpression) expression);
                         break;
 
                     case ExpressionType.TypeIs:
-                        VisitTypeIs((TypeBinaryExpression)expression);
+                        VisitTypeIs((TypeBinaryExpression) expression);
                         break;
 
                     case ExpressionType.Conditional:
-                        VisitConditional((ConditionalExpression)expression);
+                        VisitConditional((ConditionalExpression) expression);
                         break;
 
                     case ExpressionType.Constant:
-                        VisitConstant((ConstantExpression)expression);
+                        VisitConstant((ConstantExpression) expression);
                         break;
 
                     case ExpressionType.Parameter:
-                        VisitParameter((ParameterExpression)expression);
+                        VisitParameter((ParameterExpression) expression);
                         break;
 
                     case ExpressionType.MemberAccess:
-                        VisitMemberAccess((MemberExpression)expression);
+                        VisitMemberAccess((MemberExpression) expression);
                         break;
 
                     case ExpressionType.Call:
-                        VisitMethodCall((MethodCallExpression)expression);
+                        VisitMethodCall((MethodCallExpression) expression);
                         break;
 
                     case ExpressionType.Lambda:
-                        VisitLambda((LambdaExpression)expression);
+                        VisitLambda((LambdaExpression) expression);
                         break;
 
                     case ExpressionType.New:
-                        VisitNew((NewExpression)expression);
+                        VisitNew((NewExpression) expression);
                         break;
 
                     case ExpressionType.NewArrayInit:
                     case ExpressionType.NewArrayBounds:
-                        VisitNewArray((NewArrayExpression)expression);
+                        VisitNewArray((NewArrayExpression) expression);
                         break;
 
                     case ExpressionType.Invoke:
-                        VisitInvocation((InvocationExpression)expression);
+                        VisitInvocation((InvocationExpression) expression);
                         break;
 
                     case ExpressionType.MemberInit:
-                        VisitMemberInit((MemberInitExpression)expression);
+                        VisitMemberInit((MemberInitExpression) expression);
                         break;
 
                     case ExpressionType.ListInit:
-                        VisitListInit((ListInitExpression)expression);
+                        VisitListInit((ListInitExpression) expression);
                         break;
 
                     default:
-                        throw new ArgumentException(string.Format("Unhandled expression type: '{0}'", expression.NodeType));
+                        throw new ArgumentException(string.Format("Unhandled expression type: '{0}'",
+                            expression.NodeType));
                 }
             }
         }

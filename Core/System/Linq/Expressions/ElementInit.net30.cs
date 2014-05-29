@@ -8,8 +8,8 @@ namespace System.Linq.Expressions
 {
     public sealed class ElementInit
     {
-        private MethodInfo _addMethod;
-        private ReadOnlyCollection<Expression> _arguments;
+        private readonly MethodInfo _addMethod;
+        private readonly ReadOnlyCollection<Expression> _arguments;
 
         internal ElementInit(MethodInfo addMethod, ReadOnlyCollection<Expression> arguments)
         {
@@ -50,7 +50,7 @@ namespace System.Linq.Expressions
             {
                 return;
             }
-            emitContext.ILGenerator.Emit(OpCodes.Pop);
+            emitContext.ig.Emit(OpCodes.Pop);
         }
     }
 }

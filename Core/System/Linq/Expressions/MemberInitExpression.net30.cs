@@ -6,8 +6,8 @@ namespace System.Linq.Expressions
 {
     public sealed class MemberInitExpression : Expression
     {
-        private ReadOnlyCollection<MemberBinding> _bindings;
-        private NewExpression _newExpression;
+        private readonly ReadOnlyCollection<MemberBinding> _bindings;
+        private readonly NewExpression _newExpression;
 
         internal MemberInitExpression(NewExpression newExpression, ReadOnlyCollection<MemberBinding> bindings)
             : base(ExpressionType.MemberInit, newExpression.Type)
