@@ -34,14 +34,15 @@ namespace System.Linq.Expressions
 
         internal override void Emit(EmitContext emitContext)
         {
+            var ig = emitContext.ig;
             if (_expression.Type == typeof(void))
             {
-                emitContext.ILGenerator.Emit(OpCodes.Ldc_I4_0);
+                ig.Emit(OpCodes.Ldc_I4_0);
                 return;
             }
             emitContext.EmitIsInst(_expression, _typeOperand);
-            emitContext.ILGenerator.Emit(OpCodes.Ldnull);
-            emitContext.ILGenerator.Emit(OpCodes.Cgt_Un);
+            ig.Emit(OpCodes.Ldnull);
+            ig.Emit(OpCodes.Cgt_Un);
         }
     }
 }

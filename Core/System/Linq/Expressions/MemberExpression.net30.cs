@@ -46,12 +46,12 @@ namespace System.Linq.Expressions
         {
             if (field.IsStatic)
             {
-                emitContext.ILGenerator.Emit(OpCodes.Ldsfld, field);
+                emitContext.ig.Emit(OpCodes.Ldsfld, field);
             }
             else
             {
                 emitContext.EmitLoadSubject(_expression);
-                emitContext.ILGenerator.Emit(OpCodes.Ldfld, field);
+                emitContext.ig.Emit(OpCodes.Ldfld, field);
             }
         }
 

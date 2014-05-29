@@ -44,7 +44,7 @@ namespace System.Linq.Expressions
 
         internal override void Emit(EmitContext emitContext)
         {
-            var ig = emitContext.ILGenerator;
+            var ig = emitContext.ig;
             var false_target = ig.DefineLabel();
             var end_target = ig.DefineLabel();
             _test.Emit(emitContext);

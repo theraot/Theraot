@@ -6,7 +6,7 @@ namespace System.Runtime.CompilerServices
 {
     public class ExecutionScope
     {
-        private int _compilationUnit;
+        private readonly int _compilationUnit;
         private CompilationContext _context;
         private object[] _globals;
         private object[] _locals;
@@ -67,15 +67,11 @@ namespace System.Runtime.CompilerServices
             }
         }
 
-        internal int CompilationUnit
+        internal int compilation_unit
         {
             get
             {
                 return _compilationUnit;
-            }
-            set
-            {
-                _compilationUnit = value;
             }
         }
 

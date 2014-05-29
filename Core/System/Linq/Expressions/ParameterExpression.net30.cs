@@ -47,14 +47,14 @@ namespace System.Linq.Expressions
                 emitContext.EmitParentScope();
             }
             emitContext.EmitLoadLocals();
-            emitContext.ILGenerator.Emit(OpCodes.Ldc_I4, position);
-            emitContext.ILGenerator.Emit(OpCodes.Ldelem, typeof(object));
+            emitContext.ig.Emit(OpCodes.Ldc_I4, position);
+            emitContext.ig.Emit(OpCodes.Ldelem, typeof(object));
             emitContext.EmitLoadStrongBoxValue(Type);
         }
 
         private void EmitLocalParameter(EmitContext emitContext, int position)
         {
-            emitContext.ILGenerator.Emit(OpCodes.Ldarg, position);
+            emitContext.ig.Emit(OpCodes.Ldarg, position);
         }
     }
 }

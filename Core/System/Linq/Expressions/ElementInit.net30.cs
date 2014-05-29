@@ -50,7 +50,7 @@ namespace System.Linq.Expressions
             {
                 return;
             }
-            emitContext.ILGenerator.Emit(OpCodes.Pop);
+            emitContext.ig.Emit(OpCodes.Pop);
         }
     }
 }

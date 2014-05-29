@@ -49,7 +49,7 @@ namespace System.Linq.Expressions
         {
             body.Emit(emitContext);
             EmitPopIfNeeded(emitContext);
-            emitContext.ILGenerator.Emit(OpCodes.Ret);
+            emitContext.ig.Emit(OpCodes.Ret);
         }
 
         internal Type GetReturnType()
@@ -61,7 +61,7 @@ namespace System.Linq.Expressions
         {
             if (GetReturnType() == typeof(void) && body.Type != typeof(void))
             {
-                emitContext.ILGenerator.Emit(OpCodes.Pop);
+                emitContext.ig.Emit(OpCodes.Pop);
             }
         }
     }

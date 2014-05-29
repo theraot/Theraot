@@ -51,9 +51,9 @@ namespace System.Linq.Expressions
 
         private LocalBuilder EmitLoadField(EmitContext emitContext, FieldInfo field)
         {
-            var store = emitContext.ILGenerator.DeclareLocal(field.FieldType);
-            emitContext.ILGenerator.Emit(OpCodes.Ldfld, field);
-            emitContext.ILGenerator.Emit(OpCodes.Stloc, store);
+            var store = emitContext.ig.DeclareLocal(field.FieldType);
+            emitContext.ig.Emit(OpCodes.Ldfld, field);
+            emitContext.ig.Emit(OpCodes.Stloc, store);
             return store;
         }
 
@@ -66,9 +66,9 @@ namespace System.Linq.Expressions
             }
             else
             {
-                var store = emitContext.ILGenerator.DeclareLocal(property.PropertyType);
+                var store = emitContext.ig.DeclareLocal(property.PropertyType);
                 emitContext.EmitCall(getter);
-                emitContext.ILGenerator.Emit(OpCodes.Stloc, store);
+                emitContext.ig.Emit(OpCodes.Stloc, store);
                 return store;
             }
         }
