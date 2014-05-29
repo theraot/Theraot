@@ -40,7 +40,7 @@ namespace System.Threading
         {
             get
             {
-                return Theraot.Threading.ThreadingHelper.IsSingleCPU ? true : _count % Theraot.Threading.ThreadingHelper.SleepCountHint == 0;
+                return Theraot.Threading.ThreadingHelper.IsSingleCPU || _count % Theraot.Threading.ThreadingHelper.SleepCountHint == 0;
             }
         }
 

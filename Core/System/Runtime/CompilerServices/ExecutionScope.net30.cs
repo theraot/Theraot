@@ -67,6 +67,7 @@ namespace System.Runtime.CompilerServices
             }
         }
 
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:ElementMustBeginWithUpperCaseLetter", Justification = "Mono compatibility")]
         internal int compilation_unit
         {
             get

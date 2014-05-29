@@ -115,7 +115,7 @@ namespace System.Threading
 
         public override bool Equals(object other)
         {
-            return (other is CancellationToken) ? Equals((CancellationToken)other) : false;
+            return (other is CancellationToken) && Equals((CancellationToken)other);
         }
 
         public override int GetHashCode()

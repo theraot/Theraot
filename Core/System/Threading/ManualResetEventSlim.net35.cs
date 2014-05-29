@@ -130,7 +130,7 @@ namespace System.Threading
                 if (!IsSet)
                 {
                     var start = ThreadingHelper.TicksNow();
-                    retry:
+                retry:
                     if (!IsSet)
                     {
                         if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < INT_LongTimeOutHint)
@@ -372,7 +372,7 @@ namespace System.Threading
             var start = ThreadingHelper.TicksNow();
             if (!IsSet)
             {
-                retry:
+            retry:
                 if (!IsSet)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
