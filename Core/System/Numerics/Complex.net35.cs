@@ -35,8 +35,8 @@ namespace System.Numerics
         public static readonly Complex ImaginaryOne = new Complex(0, 1);
         public static readonly Complex One = new Complex(1, 0);
         public static readonly Complex Zero = new Complex(0, 0);
-        private double _imaginary;
-        private double _real;
+        private readonly double _imaginary;
+        private readonly double _real;
 
         public Complex(double real, double imaginary)
         {
@@ -278,7 +278,7 @@ namespace System.Numerics
 
         public static bool operator !=(Complex left, Complex right)
         {
-            return left._real != right._real || left._imaginary != right._imaginary;
+            return !left._real.Equals(right._real) || !left._imaginary.Equals(right._imaginary);
         }
 
         public static Complex operator *(Complex left, Complex right)
@@ -311,7 +311,7 @@ namespace System.Numerics
 
         public static bool operator ==(Complex left, Complex right)
         {
-            return left._real == right._real && left._imaginary == right._imaginary;
+            return left._real.Equals(right._real) && left._imaginary.Equals(right._imaginary);
         }
 
         public static Complex Pow(Complex value, double power)
@@ -380,19 +380,19 @@ namespace System.Numerics
 
         public bool Equals(Complex value)
         {
-            return _real == value._real && _imaginary == value._imaginary;
+            return _real.Equals(value._real) && _imaginary.Equals(value._imaginary);
         }
 
         public override bool Equals(object obj)
         {
-            if (obj == null || !(obj is Complex))
+            if (obj is Complex)
             {
-                return false;
+                var other = (Complex)obj;
+                return _real.Equals(other._real) && _imaginary.Equals(other._imaginary);
             }
             else
             {
-                Complex other = (Complex)obj;
-                return _real == other._real && _imaginary == other._imaginary;
+                return false;
             }
         }
 

@@ -8,11 +8,11 @@ using Theraot.Core;
 namespace System.Collections.ObjectModel
 {
     [System.Serializable]
-    public partial class ReadOnlyDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollection<KeyValuePair<TKey, TValue>>, IDictionary, ICollection, IReadOnlyDictionary<TKey, TValue>, IReadOnlyCollection<KeyValuePair<TKey, TValue>>, IEnumerable<KeyValuePair<TKey, TValue>>, IEnumerable
+    public partial class ReadOnlyDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IDictionary, IReadOnlyDictionary<TKey, TValue>
     {
-        private KeyCollection _keys;
-        private ValueCollection _values;
-        private IDictionary<TKey, TValue> _wrapped;
+        private readonly KeyCollection _keys;
+        private readonly ValueCollection _values;
+        private readonly IDictionary<TKey, TValue> _wrapped;
 
         public ReadOnlyDictionary(IDictionary<TKey, TValue> dictionary)
         {

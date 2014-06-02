@@ -9,8 +9,6 @@ namespace System.Threading
         private const int INT_DefaultSpinCount = 10;
         private const int INT_LongTimeOutHint = 160;
 
-        private static readonly TimeSpan _timeout = TimeSpan.FromMilliseconds(INT_LongTimeOutHint);
-
         private readonly int _spinCount;
         private ManualResetEvent _handle;
         private int _requested;
@@ -132,7 +130,7 @@ namespace System.Threading
                 if (!IsSet)
                 {
                     var start = ThreadingHelper.TicksNow();
-                    retry:
+                retry:
                     if (!IsSet)
                     {
                         if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < INT_LongTimeOutHint)
@@ -368,22 +366,14 @@ namespace System.Threading
             }
         }
 
-        private bool WaitExtracted(CancellationToken cancellationToken)
+        private void WaitExtracted(CancellationToken cancellationToken)
         {
             int count = 0;
             var start = ThreadingHelper.TicksNow();
-            if (IsSet)
-            {
-                return true;
-            }
-            else
+            if (!IsSet)
             {
             retry:
-                if (IsSet)
-                {
-                    return true;
-                }
-                else
+                if (!IsSet)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
                     GC.KeepAlive(cancellationToken.WaitHandle);
@@ -395,7 +385,7 @@ namespace System.Threading
                     else
                     {
                         var handle = RetrieveWaitHandle();
-                        return handle.WaitOne();
+                        handle.WaitOne();
                     }
                 }
             }

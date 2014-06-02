@@ -30,13 +30,15 @@ namespace System.Threading
 {
     public struct CancellationTokenRegistration : IDisposable, IEquatable<CancellationTokenRegistration>
     {
-        private int _id;
+        private readonly int _hashCode;
+        private readonly int _id;
         private CancellationTokenSource _source;
 
         internal CancellationTokenRegistration(int id, CancellationTokenSource source)
         {
             _id = id;
             _source = source;
+            _hashCode = _id.GetHashCode() ^ (_source == null ? 0 : _source.GetHashCode());
         }
 
         public static bool operator !=(CancellationTokenRegistration left, CancellationTokenRegistration right)
@@ -52,7 +54,7 @@ namespace System.Threading
         public void Dispose()
         {
             var source = Interlocked.Exchange(ref _source, null);
-            if (ReferenceEquals(source, null))
+            if (!ReferenceEquals(source, null))
             {
                 source.RemoveCallback(this);
             }
@@ -65,12 +67,12 @@ namespace System.Threading
 
         public override bool Equals(object obj)
         {
-            return (obj is CancellationTokenRegistration) ? Equals((CancellationTokenRegistration)obj) : false;
+            return (obj is CancellationTokenRegistration) && Equals((CancellationTokenRegistration)obj);
         }
 
         public override int GetHashCode()
         {
-            return _id.GetHashCode() ^ (_source == null ? 0 : _source.GetHashCode());
+            return _hashCode;
         }
     }
 }

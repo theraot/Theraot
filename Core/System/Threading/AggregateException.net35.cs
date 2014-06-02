@@ -124,8 +124,10 @@ namespace System.Threading
         public AggregateException Flatten()
         {
             var inner = new List<Exception>();
-            var queue = new ExtendedQueue<AggregateException>();
-            queue.Add(this);
+            var queue = new ExtendedQueue<AggregateException>
+            {
+                this
+            };
             AggregateException current;
             while (queue.TryTake(out current))
             {

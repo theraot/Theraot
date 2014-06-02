@@ -8,7 +8,7 @@ namespace System.Collections.Generic
 {
     [Serializable]
     [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "Backport")]
-    public class HashSet<T> : ICollection<T>, IEnumerable<T>, IEnumerable, ISerializable, IDeserializationCallback, ISet<T>
+    public class HashSet<T> : ISerializable, IDeserializationCallback, ISet<T>
     {
         private readonly Dictionary<T, object> _wrapped;
 

@@ -38,11 +38,11 @@ namespace System.Threading
         internal static readonly CancellationTokenSource CanceledSource = new CancellationTokenSource();
         internal static readonly CancellationTokenSource NoneSource = new CancellationTokenSource();
         private static readonly TimerCallback _timerCallback;
+        private readonly ManualResetEvent _handle;
         private HashBucket<CancellationTokenRegistration, Action> _callbacks;
         private bool _canceled;
         private int _currentId = int.MinValue;
         private bool _disposed;
-        private ManualResetEvent _handle;
         private CancellationTokenRegistration[] _linkedTokens;
         private Timer _timer;
 
@@ -126,7 +126,7 @@ namespace System.Threading
                 }
                 else
                 {
-                    CancellationTokenSource src = new CancellationTokenSource();
+                    var src = new CancellationTokenSource();
                     Action action = src.SafeLinkedCancel;
                     var registrations = new List<CancellationTokenRegistration>(tokens.Length);
                     foreach (CancellationToken token in tokens)
@@ -151,11 +151,7 @@ namespace System.Threading
         public void Cancel(bool throwOnFirstException)
         {
             CheckDisposed();
-            if (_canceled)
-            {
-                return;
-            }
-            else
+            if (!_canceled)
             {
                 Thread.MemoryBarrier();
                 _canceled = true;
@@ -164,9 +160,9 @@ namespace System.Threading
                 List<Exception> exceptions = null;
                 try
                 {
-                    Action callback;
                     for (int id = int.MinValue + 1; id <= _currentId; id++)
                     {
+                        Action callback;
                         if (_callbacks.Remove(new CancellationTokenRegistration(id, this), out callback) && callback != null)
                         {
                             if (throwOnFirstException)
@@ -216,11 +212,7 @@ namespace System.Threading
             else
             {
                 CheckDisposed();
-                if (_canceled || millisecondsDelay == Timeout.Infinite)
-                {
-                    return;
-                }
-                else
+                if (!_canceled && millisecondsDelay != Timeout.Infinite)
                 {
                     if (object.ReferenceEquals(_timer, null))
                     {
@@ -276,16 +268,12 @@ namespace System.Threading
         internal void RemoveCallback(CancellationTokenRegistration reg)
         {
             // Ignore call if the source has been disposed
-            if (_disposed)
+            if (!_disposed)
             {
-                return;
-            }
-            else
-            {
-                Action dummy;
                 var callbacks = _callbacks;
                 if (!object.ReferenceEquals(callbacks, null))
                 {
+                    Action dummy;
                     callbacks.Remove(reg, out dummy);
                 }
             }
