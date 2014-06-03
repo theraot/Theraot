@@ -398,12 +398,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        internal void Recycle()
-        {
-            RecycleExtracted();
-            GC.SuppressFinalize(this);
-        }
-
         private bool InsertExtracted(int index, object item, out object previous)
         {
             previous = Interlocked.CompareExchange(ref _entries[index], item ?? BucketHelper.Null, null);
