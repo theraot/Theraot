@@ -253,22 +253,22 @@ namespace System.Collections.Generic
             Extensions.UnionWith(this, other);
         }
 
-        internal virtual bool AddExtracted(T item)
+        protected virtual bool AddExtracted(T item)
         {
             return _wrapped.AddNonDuplicate(item, item);
         }
 
-        internal virtual int GetCount()
+        protected virtual int GetCount()
         {
             return _wrapped.Count;
         }
 
-        internal virtual IEnumerator<T> GetEnumeratorExtracted()
+        protected virtual IEnumerator<T> GetEnumeratorExtracted()
         {
             return _wrapped.ConvertProgressive(input => input.Key).GetEnumerator();
         }
 
-        internal virtual T GetMax()
+        protected virtual T GetMax()
         {
             var node = _wrapped.Root;
             if (node == null)
@@ -285,7 +285,7 @@ namespace System.Collections.Generic
             }
         }
 
-        internal virtual T GetMin()
+        protected virtual T GetMin()
         {
             var node = _wrapped.Root;
             if (node == null)
@@ -300,11 +300,6 @@ namespace System.Collections.Generic
                 }
                 return node.Key;
             }
-        }
-
-        internal virtual bool RemoveExtracted(T item)
-        {
-            return _wrapped.Remove(item);
         }
 
         protected virtual void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -354,6 +349,11 @@ namespace System.Collections.Generic
                     _serializationInfo = null;
                 }
             }
+        }
+
+        protected virtual bool RemoveExtracted(T item)
+        {
+            return _wrapped.Remove(item);
         }
 
         [Serializable]
@@ -420,7 +420,7 @@ namespace System.Collections.Generic
                 }
             }
 
-            internal override bool AddExtracted(T item)
+            protected override bool AddExtracted(T item)
             {
                 if (!InRange(item))
                 {
@@ -432,17 +432,17 @@ namespace System.Collections.Generic
                 }
             }
 
-            internal override int GetCount()
+            protected override int GetCount()
             {
                 return System.Linq.Enumerable.Count(_wrapped._wrapped.Range(_lower, _upper));
             }
 
-            internal override IEnumerator<T> GetEnumeratorExtracted()
+            protected override IEnumerator<T> GetEnumeratorExtracted()
             {
                 return _wrapped._wrapped.Range(_lower, _upper).ConvertProgressive(input => input.Key).GetEnumerator();
             }
 
-            internal override T GetMax()
+            protected override T GetMax()
             {
                 var bound = _wrapped._wrapped.SearchNearestLeft(_upper);
                 if (bound == null || Comparer.Compare(_lower, bound.Key) > 0)
@@ -455,7 +455,7 @@ namespace System.Collections.Generic
                 }
             }
 
-            internal override T GetMin()
+            protected override T GetMin()
             {
                 var bound = _wrapped._wrapped.SearchNearestRight(_lower);
                 if (bound == null || Comparer.Compare(_upper, bound.Key) < 0)
@@ -465,18 +465,6 @@ namespace System.Collections.Generic
                 else
                 {
                     return bound.Key;
-                }
-            }
-
-            internal override bool RemoveExtracted(T item)
-            {
-                if (!InRange(item))
-                {
-                    return false;
-                }
-                else
-                {
-                    return _wrapped.RemoveExtracted(item);
                 }
             }
 
@@ -493,6 +481,18 @@ namespace System.Collections.Generic
                     info.AddValue("lBoundActive", true);
                     info.AddValue("uBoundActive", true);
                     base.GetObjectData(info, context);
+                }
+            }
+
+            protected override bool RemoveExtracted(T item)
+            {
+                if (!InRange(item))
+                {
+                    return false;
+                }
+                else
+                {
+                    return _wrapped.RemoveExtracted(item);
                 }
             }
 
