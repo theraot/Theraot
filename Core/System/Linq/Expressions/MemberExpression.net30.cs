@@ -62,10 +62,7 @@ namespace System.Linq.Expressions
             {
                 emitContext.EmitLoadSubject(_expression);
             }
-            else
-            {
-                emitContext.EmitCall(getter);
-            }
+            emitContext.EmitCall(getter);
         }
     }
 }
