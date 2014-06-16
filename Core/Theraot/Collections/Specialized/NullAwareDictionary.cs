@@ -180,7 +180,7 @@ namespace Theraot.Collections.Specialized
         {
             get
             {
-                if (ReferenceEquals(key, null))
+                if (ReferenceEquals(key, null)) // key can be null
                 {
                     if (_hasNull)
                     {
@@ -198,7 +198,7 @@ namespace Theraot.Collections.Specialized
             }
             set
             {
-                if (ReferenceEquals(key, null))
+                if (ReferenceEquals(key, null)) // key can be null
                 {
                     SetForNull(value);
                 }
@@ -211,7 +211,7 @@ namespace Theraot.Collections.Specialized
 
         public void Add(TKey key, TValue value)
         {
-            if (ReferenceEquals(key, null))
+            if (ReferenceEquals(key, null)) // key can be null
             {
                 if (_hasNull)
                 {
@@ -276,7 +276,7 @@ namespace Theraot.Collections.Specialized
 
         public bool ContainsKey(TKey key)
         {
-            if (ReferenceEquals(key, null))
+            if (ReferenceEquals(key, null)) // key can be null
             {
                 return _hasNull;
             }
@@ -289,7 +289,7 @@ namespace Theraot.Collections.Specialized
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
             Extensions.CanCopyTo(Count, array, arrayIndex);
-            Extensions.CopyTo<KeyValuePair<TKey, TValue>>(this, array);
+            Extensions.CopyTo(this, array);
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array)
@@ -357,7 +357,7 @@ namespace Theraot.Collections.Specialized
 
         public bool Remove(TKey key)
         {
-            if (ReferenceEquals(key, null))
+            if (ReferenceEquals(key, null)) // key can be null
             {
                 if (_hasNull)
                 {
@@ -448,7 +448,7 @@ namespace Theraot.Collections.Specialized
 
         public bool TryGetValue(TKey key, out TValue value)
         {
-            if (ReferenceEquals(key, null))
+            if (ReferenceEquals(key, null)) // key can be null
             {
                 if (_hasNull)
                 {

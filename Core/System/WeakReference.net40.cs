@@ -11,7 +11,7 @@ namespace System
        where T : class
     {
         private GCHandle _handle;
-        private bool _trackResurrection;
+        private readonly bool _trackResurrection;
 
         public WeakReference(T target)
             : this(target, false)
@@ -33,7 +33,7 @@ namespace System
             }
             else
             {
-                T value = (T)info.GetValue("TrackedObject", typeof(T));
+                var value = (T)info.GetValue("TrackedObject", typeof(T));
                 _trackResurrection = info.GetBoolean("TrackResurrection");
                 SetTarget(value);
             }
@@ -64,7 +64,7 @@ namespace System
             }
             else
             {
-                info.AddValue("TrackedObject", this.Target, typeof(T));
+                info.AddValue("TrackedObject", Target, typeof(T));
                 info.AddValue("TrackResurrection", _trackResurrection);
             }
         }

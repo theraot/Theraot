@@ -8,7 +8,7 @@ namespace System.Collections.Generic
 {
     [Serializable]
     [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "Backport")]
-    public class HashSet<T> : ISerializable, IDeserializationCallback, ISet<T>
+    public class HashSet<T> : ISet<T>, ISerializable, IDeserializationCallback
     {
         private readonly Dictionary<T, object> _wrapped;
 
@@ -440,7 +440,7 @@ namespace System.Collections.Generic
             }
         }
 
-        private struct Enumerator : IEnumerator<T>, IDisposable, IEnumerator
+        private struct Enumerator : IEnumerator<T>
         {
             private Dictionary<T, object>.Enumerator _enumerator;
 

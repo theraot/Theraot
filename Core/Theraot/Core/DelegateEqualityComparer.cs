@@ -27,7 +27,7 @@ namespace Theraot.Core
 
         public int GetHashCode(Delegate obj)
         {
-            if (ReferenceEquals(obj, null))
+            if (ReferenceEquals(obj, null)) // obj can be null
             {
                 return 0;
             }

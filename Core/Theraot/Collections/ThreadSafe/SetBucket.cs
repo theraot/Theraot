@@ -12,7 +12,7 @@ namespace Theraot.Collections.ThreadSafe
     /// <remarks>
     /// Consider wrapping this class to implement <see cref="ISet{T}" /> or any other desired interface.
     /// </remarks>
-    public sealed class SetBucket<T> : IEnumerable<T>, ICollection<T>
+    public sealed class SetBucket<T> : ICollection<T>
     {
         //TODO: throw ArgumentException when trying to add items with same hash
 

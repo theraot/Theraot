@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Theraot.Collections.Specialized
 {
     [Serializable]
-    public sealed partial class AVLTree<TKey, TValue> : IEnumerable<AVLTree<TKey, TValue>.AVLNode>
+    public sealed partial class AVLTree<TKey, TValue>
     {
         private readonly Comparison<TKey> _comparison;
 
