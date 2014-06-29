@@ -15,9 +15,9 @@ namespace Theraot.Core
 
         public OrderedEnumerable(IEnumerable<TElement> source, Func<TElement, TKey> keySelector, IComparer<TKey> comparer)
         {
+            _comparer = comparer ?? Comparer<TKey>.Default;
             _source = Check.NotNullArgument(source, "source");
             _selector = Check.NotNullArgument(keySelector, "keySelector");
-            _comparer = Check.NotNullArgument(comparer, "comparer");
         }
 
         public IOrderedEnumerable<TElement> CreateOrderedEnumerable<TNewKey>(Func<TElement, TNewKey> keySelector, IComparer<TNewKey> comparer, bool descending)
