@@ -219,17 +219,13 @@ namespace System.Linq.Expressions
 
         public static MemberAssignment Bind(MethodInfo propertyAccessor, Expression expression)
         {
-            if (propertyAccessor == null)
-            {
-                throw new ArgumentNullException("propertyAccessor");
-            }
-            else if (expression == null)
+            if (expression == null)
             {
                 throw new ArgumentNullException("expression");
             }
             else
             {
-                CheckNonGenericMethod(propertyAccessor);
+                CheckNonGenericMethod(propertyAccessor, "propertyAccessor");
                 var property = GetAssociatedProperty(propertyAccessor);
                 if (property == null)
                 {
@@ -1431,7 +1427,7 @@ namespace System.Linq.Expressions
                     for (int index = 0; index < mmbs.Count; index++)
                     {
                         var member = mmbs[index];
-                        Type type = null;
+                        Type type;
                         switch (member.MemberType)
                         {
                             case MemberTypes.Field:
@@ -1532,11 +1528,32 @@ namespace System.Linq.Expressions
 
         public static UnaryExpression Not(Expression expression, MethodInfo method)
         {
-            Func<Type, bool> validator = type => IsIntOrBool(type);
-            method = UnaryCoreCheck("op_LogicalNot", expression, method, validator);
-            if (method == null)
+            if (expression == null)
             {
-                method = UnaryCoreCheck("op_OnesComplement", expression, method, validator);
+                throw new ArgumentNullException("expression");
+            }
+            else
+            {
+                if (method == null)
+                {
+                    var type = expression.Type.GetNotNullableType();
+                    if (!IsIntOrBool(type))
+                    {
+                        method = GetUnaryOperator("op_LogicalNot", type, expression.Type)
+                            ?? GetUnaryOperator("op_OnesComplement", type, expression.Type);
+                        if (method == null)
+                        {
+                            throw new InvalidOperationException
+                            (
+                                string.Format("Operation OnesComplement not defined for {0}", expression.Type)
+                            );
+                        }
+                    }
+                }
+                else
+                {
+                    method = CheckUnaryMethod(method, expression.Type);
+                }
             }
             return MakeSimpleUnary(ExpressionType.Not, expression, method);
         }
@@ -1597,36 +1614,29 @@ namespace System.Linq.Expressions
 
         public static MemberExpression Property(Expression expression, MethodInfo propertyAccessor)
         {
-            if (propertyAccessor == null)
+            CheckNonGenericMethod(propertyAccessor, "propertyAccessor");
+            if (!propertyAccessor.IsStatic)
             {
-                throw new ArgumentNullException("propertyAccessor");
-            }
-            else
-            {
-                CheckNonGenericMethod(propertyAccessor);
-                if (!propertyAccessor.IsStatic)
+                if (expression == null)
                 {
-                    if (expression == null)
-                    {
-                        throw new ArgumentNullException("expression");
-                    }
-                    if (!expression.Type.IsAssignableTo(propertyAccessor.DeclaringType))
-                    {
-                        throw new ArgumentException("expression");
-                    }
+                    throw new ArgumentNullException("expression");
                 }
+                if (!expression.Type.IsAssignableTo(propertyAccessor.DeclaringType))
+                {
+                    throw new ArgumentException("expression");
+                }
+            }
 
-                // .NET does not mandate that if the property is static, that the expression must be null
-                // fixes a bug exposed by Orchard's ContentItemRecordAlteration.Alteration
-                // else if (expression != null)
-                // throw new ArgumentException ("expression");
-                var prop = GetAssociatedProperty(propertyAccessor);
-                if (prop == null)
-                {
-                    throw new ArgumentException(string.Format("Method {0} has no associated property", propertyAccessor));
-                }
-                return new MemberExpression(expression, prop, prop.PropertyType);
+            // .NET does not mandate that if the property is static, that the expression must be null
+            // fixes a bug exposed by Orchard's ContentItemRecordAlteration.Alteration
+            // else if (expression != null)
+            // throw new ArgumentException ("expression");
+            var prop = GetAssociatedProperty(propertyAccessor);
+            if (prop == null)
+            {
+                throw new ArgumentException(string.Format("Method {0} has no associated property", propertyAccessor));
             }
+            return new MemberExpression(expression, prop, prop.PropertyType);
         }
 
         public static MemberExpression Property(Expression expression, PropertyInfo property)
@@ -1814,7 +1824,7 @@ namespace System.Linq.Expressions
 
         public static UnaryExpression UnaryPlus(Expression expression, MethodInfo method)
         {
-            method = UnaryCoreCheck("op_UnaryPlus", expression, method, type => IsNumber(type));
+            method = UnaryCoreCheck("op_UnaryPlus", expression, method, IsNumber);
             return MakeSimpleUnary(ExpressionType.UnaryPlus, expression, method);
         }
 
@@ -1983,10 +1993,10 @@ namespace System.Linq.Expressions
             }
             else
             {
-                Type ltype = left.Type;
-                Type rtype = right.Type;
-                Type ultype = ltype.GetNotNullableType();
-                Type urtype = rtype.GetNotNullableType();
+                var ltype = left.Type;
+                var rtype = right.Type;
+                var ultype = ltype.GetNotNullableType();
+                var urtype = rtype.GetNotNullableType();
                 if (operName == "op_BitwiseOr" || operName == "op_BitwiseAnd")
                 {
                     if (ultype == typeof(bool))
@@ -2112,16 +2122,16 @@ namespace System.Linq.Expressions
             {
                 throw new ArgumentException(string.Format("Different number of arguments in delegate {0}", delegateType), "delegateType");
             }
-            for (int i = 0; i < invoke_parameters.Length; i++)
+            for (int index = 0; index < invoke_parameters.Length; index++)
             {
-                var parameter = parameters[i];
+                var parameter = parameters[index];
                 if (parameter == null)
                 {
                     throw new ArgumentNullException("parameters");
                 }
-                if (!CanAssign(parameter.Type, invoke_parameters[i].ParameterType))
+                if (!CanAssign(parameter.Type, invoke_parameters[index].ParameterType))
                 {
-                    throw new ArgumentException(string.Format("Can not assign a {0} to a {1}", invoke_parameters[i].ParameterType, parameter.Type));
+                    throw new ArgumentException(string.Format("Can not assign a {0} to a {1}", invoke_parameters[index].ParameterType, parameter.Type));
                 }
             }
             if (invoke.ReturnType != typeof(void))
@@ -2191,7 +2201,7 @@ namespace System.Linq.Expressions
 
         private static ReadOnlyCollection<Expression> CheckMethodArguments(MethodBase method, IEnumerable<Expression> arguments)
         {
-            CheckNonGenericMethod(method);
+            CheckNonGenericMethod(method, "method");
             var _arguments = CreateArgumentList(arguments);
             var parameters = method.GetParameters();
             if (_arguments.Count != parameters.Length)
@@ -2204,26 +2214,33 @@ namespace System.Linq.Expressions
                 {
                     if (_arguments[index] == null)
                     {
-                        throw new ArgumentNullException("_arguments");
+                        throw new ArgumentNullException("arguments");
                     }
                     else if (!IsAssignableToParameterType(_arguments[index].Type, parameters[index]))
                     {
                         if (!parameters[index].ParameterType.IsExpression())
                         {
-                            throw new ArgumentException("_arguments");
+                            throw new ArgumentException("Not assignable to expected type", "arguments");
                         }
-                        _arguments[index] = Expression.Quote(_arguments[index]);
+                        else
+                        {
+                            _arguments[index] = Expression.Quote(_arguments[index]);
+                        }
                     }
                 }
                 return _arguments.ToReadOnlyCollection();
             }
         }
 
-        private static void CheckNonGenericMethod(MethodBase method)
+        private static void CheckNonGenericMethod(MethodBase method, string parameterName)
         {
-            if (method.IsGenericMethodDefinition || method.ContainsGenericParameters)
+            if (method == null)
             {
-                throw new ArgumentException("Can not used open generic methods");
+                throw new ArgumentNullException(parameterName);
+            }
+            else if (method.IsGenericMethodDefinition || method.ContainsGenericParameters)
+            {
+                throw new ArgumentException("Can not used open generic methods", parameterName);
             }
         }
 
@@ -2269,7 +2286,7 @@ namespace System.Linq.Expressions
 
         private static Type[] CollectTypes(IEnumerable<Expression> expressions)
         {
-            IEnumerable<Type> temp = System.Linq.Enumerable.Select(expressions, input => input.Type);
+            var temp = System.Linq.Enumerable.Select(expressions, input => input.Type);
             return Enumerable.ToArray(temp);
         }
 
@@ -2285,15 +2302,15 @@ namespace System.Linq.Expressions
             }
             else
             {
-                Type notNullableType = left.Type.GetNotNullableType();
+                var notNullableType = left.Type.GetNotNullableType();
                 if (left.Type != right.Type || method.ReturnType != notNullableType)
                 {
                     throw new ArgumentException("left, right and return type must match");
                 }
                 else
                 {
-                    MethodInfo trueOperator = Expression.GetTrueOperator(notNullableType);
-                    MethodInfo falseOperator = Expression.GetFalseOperator(notNullableType);
+                    var trueOperator = Expression.GetTrueOperator(notNullableType);
+                    var falseOperator = Expression.GetFalseOperator(notNullableType);
                     if (trueOperator == null || falseOperator == null)
                     {
                         throw new ArgumentException("Operators true and false are required but not defined");
@@ -2307,7 +2324,7 @@ namespace System.Linq.Expressions
         {
             if (arguments == null)
             {
-                return arguments.ToReadOnlyCollection();
+                return EmptyList<Expression>.Instance;
             }
             else
             {
@@ -2326,10 +2343,10 @@ namespace System.Linq.Expressions
             ).Invoke(new object[] { body, parameters });
         }
 
-        private static ReadOnlyCollection<ElementInit> CreateInitializers(MethodInfo addMethod, ReadOnlyCollection<Expression> initializers)
+        private static ReadOnlyCollection<ElementInit> CreateInitializers(MethodInfo addMethod, IEnumerable<Expression> initializers)
         {
             var temp = System.Linq.Enumerable.Select(initializers, input => Expression.ElementInit(addMethod, input));
-            return Theraot.Collections.Extensions.ToReadOnlyCollection(temp);
+            return temp.ToReadOnlyCollection();
         }
 
         private static MethodInfo GetAddMethod(Type type, Type arg)
@@ -2345,11 +2362,14 @@ namespace System.Linq.Expressions
             }
             else
             {
-                foreach (var property in method.DeclaringType.GetProperties(All))
+                if (method.DeclaringType != null)
                 {
-                    if (method.Equals(property.GetGetMethod(true)) || method.Equals(property.GetSetMethod(true)))
+                    foreach (var property in method.DeclaringType.GetProperties(All))
                     {
-                        return property;
+                        if (method.Equals(property.GetGetMethod(true)) || method.Equals(property.GetSetMethod(true)))
+                        {
+                            return property;
+                        }
                     }
                 }
                 return null;
@@ -2358,7 +2378,7 @@ namespace System.Linq.Expressions
 
         private static MethodInfo GetBinaryOperator(string operName, Type onType, Expression left, Expression right)
         {
-            MethodInfo[] methods = onType.GetMethods(PublicStatic);
+            var methods = onType.GetMethods(PublicStatic);
             foreach (var method in methods)
             {
                 if (method.Name == operName)
@@ -2384,10 +2404,6 @@ namespace System.Linq.Expressions
                     // Method has papers in order.
                     return method;
                 }
-                else
-                {
-                    continue;
-                }
             }
             return null;
         }
@@ -2405,17 +2421,17 @@ namespace System.Linq.Expressions
             }
             if (return_type != typeof(void))
             {
-                Type[] type = new Type[(int)parameters.Length + 1];
-                for (int index = 0; index < (int)type.Length - 1; index++)
+                var type = new Type[parameters.Length + 1];
+                for (int index = 0; index < type.Length - 1; index++)
                 {
                     type[index] = parameters[index].Type;
                 }
-                type[(int)type.Length - 1] = return_type;
+                type[type.Length - 1] = return_type;
                 return Expression.GetFuncType(type);
             }
             else
             {
-                ParameterExpression[] parameterExpressionArray = parameters;
+                var parameterExpressionArray = parameters;
                 return Expression.GetActionType
                 (
                     System.Linq.Enumerable.ToArray
@@ -2678,7 +2694,7 @@ namespace System.Linq.Expressions
             Type result = null;
             if (left.Type.IsNullable())
             {
-                Type lbase = left.Type.GetNotNullableType();
+                var lbase = left.Type.GetNotNullableType();
                 if (!right.Type.IsNullable() && right.Type.IsAssignableTo(lbase))
                 {
                     result = lbase;
@@ -2817,10 +2833,10 @@ namespace System.Linq.Expressions
             {
                 return false;
             }
-            for (int i = 0; i < parameters.Length; i++)
+            for (int index = 0; index < parameters.Length; index++)
             {
-                var type = parameterTypes[i];
-                var parameter = parameters[i];
+                var type = parameterTypes[index];
+                var parameter = parameters[index];
                 if (!IsAssignableToParameterType(type, parameter)
                         && !IsExpressionOfParameter(type, parameter.ParameterType))
                 {
@@ -2848,7 +2864,7 @@ namespace System.Linq.Expressions
                     input =>
                     MethodMatch(input, methodName, parameterTypes, argumentTypes)
                 );
-            if (Theraot.Collections.Extensions.HasAtLeast(methods, 2))
+            if (methods.HasAtLeast(2))
             {
                 throw new InvalidOperationException("Too many method candidates");
             }
@@ -2877,33 +2893,41 @@ namespace System.Linq.Expressions
             return null;
         }
 
-        private static MethodInfo UnaryCoreCheck(string operName, Expression expression, MethodInfo method, Func<Type, bool> validator)
+        private static MethodInfo UnaryCoreCheck(string operatorName, Expression expression, MethodInfo method, Func<Type, bool> validator)
         {
             if (expression == null)
             {
                 throw new ArgumentNullException("expression");
             }
-            if (method != null)
+            else
             {
-                return CheckUnaryMethod(method, expression.Type);
-            }
-            var type = expression.Type.GetNotNullableType();
-            if (validator(type))
-            {
-                return null;
-            }
-            if (operName != null)
-            {
-                method = GetUnaryOperator(operName, type, expression.Type);
-                if (method != null)
+                if (method == null)
                 {
-                    return method;
+                    var type = expression.Type.GetNotNullableType();
+                    if (validator(type))
+                    {
+                        return null;
+                    }
+                    else if (operatorName != null)
+                    {
+                        method = GetUnaryOperator(operatorName, type, expression.Type);
+                        if (method != null)
+                        {
+                            return method;
+                        }
+                    }
+                    throw new InvalidOperationException
+                        (
+                            string.Format("Operation {0} not defined for {1}",
+                            operatorName != null ? operatorName.Substring(3) : "is",
+                            expression.Type)
+                        );
+                }
+                else
+                {
+                    return CheckUnaryMethod(method, expression.Type);
                 }
             }
-            throw new InvalidOperationException
-            (
-                string.Format("Operation {0} not defined for {1}", operName != null ? operName.Substring(3) : "is", expression.Type)
-            );
         }
     }
 }
