@@ -556,6 +556,7 @@ namespace Theraot.Core
 
             public static bool Result
             {
+                // Accessed via Reflection
                 get
                 {
                     return _result;
@@ -608,6 +609,7 @@ namespace Theraot.Core
 
             public static bool Result
             {
+                // Accessed via Reflection
                 get
                 {
                     return _result;
@@ -649,6 +651,7 @@ namespace Theraot.Core
 
             public static bool Result
             {
+                // Accessed via Reflection
                 get
                 {
                     return _result;
