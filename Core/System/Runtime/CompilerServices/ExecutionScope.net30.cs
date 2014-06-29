@@ -4,11 +4,21 @@ using System.Linq.Expressions;
 
 namespace System.Runtime.CompilerServices
 {
-    public class ExecutionScope
+    public partial class ExecutionScope
     {
+        //These fields are accessed via Reflection
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Microsoft's Design")]
         public object[] Globals;
+
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Microsoft's Design")]
         public object[] Locals;
+
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Microsoft's Design")]
         public ExecutionScope Parent;
+    }
+
+    public partial class ExecutionScope
+    {
         private readonly int _compilationUnit;
         private CompilationContext _context;
 

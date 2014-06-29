@@ -1,8 +1,7 @@
-//
 // ExpressionTransformer.cs
 //
 // Authors:
-//	Roei Erez (roeie@mainsoft.com)
+//  Roei Erez (roeie@mainsoft.com)
 //  Jb Evain (jbevain@novell.com)
 //
 // Copyright (C) 2007 Novell, Inc (http://www.novell.com)
@@ -25,7 +24,6 @@
 // LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-//
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -222,8 +220,14 @@ namespace System.Linq.Expressions
         {
             var n = VisitNew(init.NewExpression);
             var initializers = VisitElementInitializerList(init.Initializers);
-            if (n != init.NewExpression || initializers != init.Initializers) return Expression.ListInit(n, initializers);
-            return init;
+            if (n != init.NewExpression || initializers != init.Initializers)
+            {
+                return Expression.ListInit(n, initializers);
+            }
+            else
+            {
+                return init;
+            }
         }
 
         protected virtual Expression VisitMemberAccess(MemberExpression m)
