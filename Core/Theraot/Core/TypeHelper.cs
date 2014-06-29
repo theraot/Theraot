@@ -144,7 +144,7 @@ namespace Theraot.Core
             }
             else
             {
-                MethodInfo methodInfo = _delegateType.GetMethod("Invoke");
+                var methodInfo = _delegateType.GetMethod("Invoke");
                 if (methodInfo == null)
                 {
                     throw new ArgumentException("Not a delegate.");
@@ -174,7 +174,7 @@ namespace Theraot.Core
             }
             else
             {
-                Type[] types = assembly.GetTypes();
+                var types = assembly.GetTypes();
                 int index = 0;
                 return new ProgressiveLookup<string, Type>
                 (
@@ -241,7 +241,10 @@ namespace Theraot.Core
                             return true;
                         }
                     }
-                    type = type.BaseType;
+                    else
+                    {
+                        type = type.BaseType;
+                    }
                 }
             }
             else
@@ -258,9 +261,45 @@ namespace Theraot.Core
             return false;
         }
 
+        public static bool IsArrayTypeAssignableTo(Type type, Type target)
+        {
+            if (!type.IsArray || !target.IsArray)
+            {
+                return false;
+            }
+            else if (type.GetArrayRank() != target.GetArrayRank())
+            {
+                return false;
+            }
+            else
+            {
+                return type.GetElementType().IsAssignableTo(target.GetElementType());
+            }
+        }
+
+        public static bool IsArrayTypeAssignableToInterface(Type type, Type target)
+        {
+            if (!type.IsArray)
+            {
+                return false;
+            }
+            else
+            {
+                return
+                    (
+                        target.IsGenericInstanceOf(typeof(IList<>)) ||
+                        target.IsGenericInstanceOf(typeof(ICollection<>)) ||
+                        target.IsGenericInstanceOf(typeof(IEnumerable<>))
+                    )
+                    && type.GetElementType() == target.GetGenericArguments()[0];
+            }
+        }
+
         public static bool IsAssignableTo(this Type type, Type target)
         {
-            return target.IsAssignableFrom(type);
+            return target.IsAssignableFrom(type)
+                || IsArrayTypeAssignableTo(type, target)
+                || IsArrayTypeAssignableToInterface(type, target);
         }
 
         public static bool IsAssignableTo(this Type type, ParameterInfo parameterInfo)
@@ -296,7 +335,7 @@ namespace Theraot.Core
         {
             foreach (var currentInterface in type.GetInterfaces())
             {
-                if (currentInterface.GetGenericTypeDefinition() == interfaceGenericTypeDefinition)
+                if (currentInterface.IsGenericInstanceOf(interfaceGenericTypeDefinition))
                 {
                     return true;
                 }
@@ -308,10 +347,13 @@ namespace Theraot.Core
         {
             foreach (var currentInterface in type.GetInterfaces())
             {
-                var match = currentInterface.GetGenericTypeDefinition();
-                if (Array.Exists(interfaceGenericTypeDefinitions, item => item == match))
+                if (currentInterface.IsGenericTypeDefinition)
                 {
-                    return true;
+                    var match = currentInterface.GetGenericTypeDefinition();
+                    if (Array.Exists(interfaceGenericTypeDefinitions, item => item == match))
+                    {
+                        return true;
+                    }
                 }
             }
             return false;
@@ -321,7 +363,7 @@ namespace Theraot.Core
         {
             foreach (var currentInterface in type.GetInterfaces())
             {
-                if (currentInterface.GetGenericTypeDefinition() == interfaceGenericTypeDefinition)
+                if (currentInterface.IsGenericInstanceOf(interfaceGenericTypeDefinition))
                 {
                     interfaceType = currentInterface;
                     return true;
@@ -336,7 +378,7 @@ namespace Theraot.Core
             var implementedInterfaces = type.GetInterfaces();
             foreach (var currentInterface in interfaceGenericTypeDefinitions)
             {
-                var index = Array.FindIndex(implementedInterfaces, item => currentInterface == item.GetGenericTypeDefinition());
+                var index = Array.FindIndex(implementedInterfaces, item => item.IsGenericInstanceOf(currentInterface));
                 if (index != -1)
                 {
                     interfaceType = implementedInterfaces[index];
@@ -547,7 +589,7 @@ namespace Theraot.Core
                 {
                     if (type.IsValueType)
                     {
-                        foreach (FieldInfo field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+                        foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
                         {
                             if (!IsBlittableExtracted(field.FieldType))
                             {

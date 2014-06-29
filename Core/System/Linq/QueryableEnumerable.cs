@@ -1,8 +1,9 @@
+//
 // QueryableEnumerable<TElement>.cs
 //
 // Authors:
-// Roei Erez (roeie@mainsoft.com)
-// Jb Evain (jbevain@novell.com)
+//	Roei Erez (roeie@mainsoft.com)
+//	Jb Evain (jbevain@novell.com)
 //
 // Copyright (C) 2008 Novell, Inc (http://www.novell.com)
 //
@@ -24,6 +25,7 @@
 // LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
 
 using System.Collections;
 using System.Collections.Generic;
@@ -43,8 +45,8 @@ namespace System.Linq
 
     internal class QueryableEnumerable<TElement> : IQueryableEnumerable<TElement>, IQueryProvider
     {
-        private readonly Expression _expression;
         private readonly IEnumerable<TElement> _enumerable;
+        private readonly Expression _expression;
 
         public QueryableEnumerable(IEnumerable<TElement> enumerable)
         {
@@ -131,19 +133,25 @@ namespace System.Linq
             {
                 return _enumerable.ToString();
             }
-            if (_expression == null)
+            else if (_expression == null)
             {
                 return base.ToString();
             }
-            var constant = _expression as ConstantExpression;
-            if (constant != null && constant.Value == this)
+            else
             {
-                return base.ToString();
+                var constant = _expression as ConstantExpression;
+                if (constant != null && constant.Value == this)
+                {
+                    return base.ToString();
+                }
+                else
+                {
+                    return _expression.ToString();
+                }
             }
-            return _expression.ToString();
         }
 
-        internal static Expression TransformQueryable(Expression expression)
+        private static Expression TransformQueryable(Expression expression)
         {
             return new QueryableTransformer().Transform(expression);
         }
