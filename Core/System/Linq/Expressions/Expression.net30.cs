@@ -19,8 +19,8 @@ namespace System.Linq.Expressions
         internal const BindingFlags PublicInstance = BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
         internal const BindingFlags PublicStatic = BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy;
 
-        private ExpressionType _nodeType;
-        private Type _type;
+        private readonly ExpressionType _nodeType;
+        private readonly Type _type;
 
         protected Expression(ExpressionType nodeType, Type type)
         {
@@ -274,23 +274,29 @@ namespace System.Linq.Expressions
             {
                 throw new ArgumentNullException("method");
             }
-            else if (instance == null && !method.IsStatic)
+            if (method.IsStatic)
             {
-                throw new ArgumentNullException("instance");
-            }
-            else if (method.IsStatic && instance != null)
-            {
-                throw new ArgumentException("instance");
-            }
-            else if (!method.IsStatic && !instance.Type.IsAssignableTo(method.DeclaringType))
-            {
-                throw new ArgumentException("Type is not assignable to the declaring type of the method");
+                if (instance != null)
+                {
+                    throw new ArgumentException("instance");
+                }
             }
             else
             {
-                var _arguments = CheckMethodArguments(method, arguments);
-                return new MethodCallExpression(instance, method, _arguments);
+                if (instance == null)
+                {
+                    throw new ArgumentNullException("instance");
+                }
+                else
+                {
+                    if (!instance.Type.IsAssignableTo(method.DeclaringType))
+                    {
+                        throw new ArgumentException("Type is not assignable to the declaring type of the method");
+                    }
+                }
             }
+            var _arguments = CheckMethodArguments(method, arguments);
+            return new MethodCallExpression(instance, method, _arguments);
         }
 
         public static MethodCallExpression Call(Expression instance, string methodName, Type[] typeArguments, params Expression[] arguments)
@@ -415,7 +421,7 @@ namespace System.Linq.Expressions
                 }
                 else
                 {
-                    if (!type.IsAssignableFrom(value.GetType()))
+                    if (!type.IsAssignableFrom(value.GetType())) //OK
                     {
                         throw new ArgumentException();
                     }
@@ -477,17 +483,20 @@ namespace System.Linq.Expressions
                 throw new ArgumentNullException("type");
             }
             var et = expression.Type;
-            if (method != null)
+            if (method == null)
+            {
+                if (IsReferenceConversion(et, type))
+                {
+                    return Convert(expression, type, null);
+                }
+                else if (!IsPrimitiveConversion(et, type))
+                {
+                    method = GetUserConversionMethod(et, type);
+                }
+            }
+            else
             {
                 CheckUnaryMethod(method, et);
-            }
-            else if (IsReferenceConversion(et, type))
-            {
-                return Convert(expression, type, method);
-            }
-            else if (!IsPrimitiveConversion(et, type))
-            {
-                method = GetUserConversionMethod(et, type);
             }
             return new UnaryExpression(ExpressionType.ConvertChecked, expression, type, method, IsConvertNodeLifted(method, expression, type));
         }
@@ -690,6 +699,9 @@ namespace System.Linq.Expressions
                     case 16:
                         action = typeof(Action<,,,,,,,,,,,,,,,>);
                         break;
+
+                    default:
+                        return null;
                 }
                 return action.MakeGenericType(typeArgs);
             }
@@ -773,6 +785,9 @@ namespace System.Linq.Expressions
                     case 16:
                         func = typeof(Func<,,,,,,,,,,,,,,,>);
                         break;
+
+                    default:
+                        return null;
                 }
                 return func.MakeGenericType(typeArgs);
             }
@@ -1318,7 +1333,7 @@ namespace System.Linq.Expressions
 
         public static UnaryExpression Negate(Expression expression, MethodInfo method)
         {
-            method = UnaryCoreCheck("op_UnaryNegation", expression, method, type => IsSignedNumber(type));
+            method = UnaryCoreCheck("op_UnaryNegation", expression, method, IsSignedNumber);
             return MakeSimpleUnary(ExpressionType.Negate, expression, method);
         }
 
@@ -1329,7 +1344,7 @@ namespace System.Linq.Expressions
 
         public static UnaryExpression NegateChecked(Expression expression, MethodInfo method)
         {
-            method = UnaryCoreCheck("op_UnaryNegation", expression, method, type => IsSignedNumber(type));
+            method = UnaryCoreCheck("op_UnaryNegation", expression, method, IsSignedNumber);
             return MakeSimpleUnary(ExpressionType.NegateChecked, expression, method);
         }
 
@@ -1351,29 +1366,22 @@ namespace System.Linq.Expressions
 
         public static NewExpression New(Type type)
         {
-            if (type == null)
+            CheckNotNullNorVoid(type, "type");
+            var args = (null as IEnumerable<Expression>).ToReadOnlyCollection();
+            if (type.IsValueType)
             {
-                throw new ArgumentNullException("type");
+                return new NewExpression(type, args);
             }
             else
             {
-                CheckNotVoid(type);
-                var args = (null as IEnumerable<Expression>).ToReadOnlyCollection();
-                if (type.IsValueType)
+                var ctor = type.GetConstructor(Type.EmptyTypes);
+                if (ctor == null)
                 {
-                    return new NewExpression(type, args);
+                    throw new ArgumentException("Type doesn't have a parameter less constructor");
                 }
                 else
                 {
-                    var ctor = type.GetConstructor(Type.EmptyTypes);
-                    if (ctor == null)
-                    {
-                        throw new ArgumentException("Type doesn't have a parameter less constructor");
-                    }
-                    else
-                    {
-                        return new NewExpression(ctor, args, null);
-                    }
+                    return new NewExpression(ctor, args, null);
                 }
             }
         }
@@ -1440,7 +1448,10 @@ namespace System.Linq.Expressions
                                 {
                                     throw new ArgumentException("Property must have a getter");
                                 }
-                                type = (member as PropertyInfo).PropertyType;
+                                else
+                                {
+                                    type = prop.PropertyType;
+                                }
                                 break;
 
                             default:
@@ -1463,17 +1474,13 @@ namespace System.Linq.Expressions
 
         public static NewArrayExpression NewArrayBounds(Type type, IEnumerable<Expression> bounds)
         {
-            if (type == null)
-            {
-                throw new ArgumentNullException("type");
-            }
-            else if (bounds == null)
+            if (bounds == null)
             {
                 throw new ArgumentNullException("bounds");
             }
             else
             {
-                CheckNotVoid(type);
+                CheckNotNullNorVoid(type, "type");
                 var array_bounds = bounds.ToReadOnlyCollection();
                 foreach (var expression in array_bounds)
                 {
@@ -1493,17 +1500,13 @@ namespace System.Linq.Expressions
 
         public static NewArrayExpression NewArrayInit(Type type, IEnumerable<Expression> initializers)
         {
-            if (type == null)
-            {
-                throw new ArgumentNullException("type");
-            }
-            else if (initializers == null)
+            if (initializers == null)
             {
                 throw new ArgumentNullException("initializers");
             }
             else
             {
-                CheckNotVoid(type);
+                CheckNotNullNorVoid(type, "type");
                 var inits = initializers.ToReadOnlyCollection();
                 foreach (var expression in inits)
                 {
@@ -1573,15 +1576,8 @@ namespace System.Linq.Expressions
 
         public static ParameterExpression Parameter(Type type, string name)
         {
-            if (type == null)
-            {
-                throw new ArgumentNullException("type");
-            }
-            else
-            {
-                CheckNotVoid(type);
-                return new ParameterExpression(type, name);
-            }
+            CheckNotNullNorVoid(type, "type");
+            return new ParameterExpression(type, name);
         }
 
         public static BinaryExpression Power(Expression left, Expression right)
@@ -1804,13 +1800,9 @@ namespace System.Linq.Expressions
             {
                 throw new ArgumentNullException("expression");
             }
-            else if (type == null)
-            {
-                throw new ArgumentNullException("type");
-            }
             else
             {
-                CheckNotVoid(type);
+                CheckNotNullNorVoid(type, "type");
                 return new TypeBinaryExpression(ExpressionType.TypeIs, expression, type, typeof(bool));
             }
         }
@@ -2084,7 +2076,7 @@ namespace System.Linq.Expressions
             }
         }
 
-        private static void CheckForNull<T>(ReadOnlyCollection<T> collection, string name)
+        private static void CheckForNull<T>(IEnumerable<T> collection, string name)
             where T : class
         {
             foreach (var t in collection)
@@ -2235,11 +2227,15 @@ namespace System.Linq.Expressions
             }
         }
 
-        private static void CheckNotVoid(Type type)
+        private static void CheckNotNullNorVoid(Type type, string parameterName)
         {
-            if (type == typeof(void))
+            if (type == null)
             {
-                throw new ArgumentException("Type can't be void");
+                throw new ArgumentNullException("type");
+            }
+            else if (type == typeof(void))
+            {
+                throw new ArgumentException("Type can't be void", parameterName);
             }
         }
 
@@ -2709,7 +2705,10 @@ namespace System.Linq.Expressions
         private static BinaryExpression MakeConvertedCoalesce(Expression left, Expression right, LambdaExpression conversion)
         {
             var invoke = conversion.Type.GetInvokeMethod();
-            CheckNotVoid(invoke.ReturnType);
+            if (invoke.ReturnType == typeof(void))
+            {
+                throw new ArgumentException("Return type can't be void");
+            }
             if (invoke.ReturnType != right.Type)
             {
                 throw new InvalidOperationException("Conversion return type doesn't march right type");
