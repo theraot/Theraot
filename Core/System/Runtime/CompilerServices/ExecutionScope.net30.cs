@@ -6,11 +6,11 @@ namespace System.Runtime.CompilerServices
 {
     public class ExecutionScope
     {
+        public object[] Globals;
+        public object[] Locals;
+        public ExecutionScope Parent;
         private readonly int _compilationUnit;
         private CompilationContext _context;
-        private object[] _globals;
-        private object[] _locals;
-        private ExecutionScope _parent;
 
         internal ExecutionScope(CompilationContext context)
             : this(context, 0)
@@ -20,51 +20,15 @@ namespace System.Runtime.CompilerServices
         internal ExecutionScope(CompilationContext context, int compilationUnit, ExecutionScope parent, object[] locals)
             : this(context, compilationUnit)
         {
-            _parent = parent;
-            _locals = locals;
+            Parent = parent;
+            Locals = locals;
         }
 
         private ExecutionScope(CompilationContext context, int compilationUnit)
         {
             _context = context;
             _compilationUnit = compilationUnit;
-            _globals = context.GetGlobals();
-        }
-
-        public object[] Globals
-        {
-            get
-            {
-                return _globals;
-            }
-            set
-            {
-                _globals = value;
-            }
-        }
-
-        public object[] Locals
-        {
-            get
-            {
-                return _locals;
-            }
-            set
-            {
-                _locals = value;
-            }
-        }
-
-        public ExecutionScope Parent
-        {
-            get
-            {
-                return _parent;
-            }
-            set
-            {
-                _parent = value;
-            }
+            Globals = context.GetGlobals();
         }
 
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:ElementMustBeginWithUpperCaseLetter", Justification = "Mono compatibility")]
