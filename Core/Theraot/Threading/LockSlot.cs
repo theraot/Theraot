@@ -71,19 +71,9 @@ namespace Theraot.Threading
             _context.Free(this);
         }
 
-        public bool Lock(NeedleLock<T> needle)
-        {
-            return needle.Lock(_id);
-        }
-
         public void Uncapture(NeedleLock<T> needle)
         {
             needle.Uncapture(_id);
-        }
-
-        public bool Unlock(NeedleLock<T> needle)
-        {
-            return needle.Unlock(_id);
         }
 
         internal void Unfree()

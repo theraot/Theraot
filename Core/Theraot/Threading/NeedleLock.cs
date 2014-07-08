@@ -11,7 +11,6 @@ namespace Theraot.Threading
         private readonly LockContext<T> _context;
         private readonly int _hashCode;
         private FlagArray _capture;
-        private int _lock;
         private T _target;
 
         internal NeedleLock(LockContext<T> context)
@@ -63,7 +62,7 @@ namespace Theraot.Threading
             get
             {
                 T value;
-                if (_context.Read(_lock, out value) || _context.Read(_capture, out value))
+                if (_context.Read(_capture, out value))
                 {
                     _target = value;
                 }
@@ -141,19 +140,9 @@ namespace Theraot.Threading
             _capture[id] = true;
         }
 
-        internal bool Lock(int id)
-        {
-            return Interlocked.CompareExchange(ref _lock, id, 0) == 0;
-        }
-
         internal void Uncapture(int id)
         {
             _capture[id] = false;
-        }
-
-        internal bool Unlock(int id)
-        {
-            return Interlocked.CompareExchange(ref _lock, 0, id) == id;
         }
 
         private static bool EqualsExtracted(NeedleLock<T> left, NeedleLock<T> right)
