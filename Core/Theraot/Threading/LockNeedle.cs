@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using Theraot.Collections;
 using Theraot.Collections.Specialized;
 using Theraot.Core;
 using Theraot.Threading.Needles;
@@ -94,7 +95,7 @@ namespace Theraot.Threading
 
         public void Free()
         {
-            if (System.Linq.Enumerable.Count(ThreadingHelper.VolatileRead(ref _capture).Flags) == 0)
+            if (ThreadingHelper.VolatileRead(ref _capture).Flags.IsEmpty())
             {
                 _target = default(T);
             }
