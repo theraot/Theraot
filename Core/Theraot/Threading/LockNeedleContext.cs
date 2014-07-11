@@ -73,10 +73,10 @@ namespace Theraot.Threading
 
         internal static bool Read(FlagArray flags, out T value)
         {
-            LockNeedleSlot<T> testSlot;
             LockNeedleSlot<T> bestSlot = null;
             foreach (var flag in flags.Flags)
             {
+                LockNeedleSlot<T> testSlot;
                 if (_slots.TryGet(flag, out testSlot))
                 {
                     if (ReferenceEquals(bestSlot, null))

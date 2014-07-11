@@ -1,7 +1,7 @@
 // ExpressionTransformer.cs
 //
 // Authors:
-//    Roei Erez (roeie@mainsoft.com)
+//  Roei Erez (roeie@mainsoft.com)
 //  Jb Evain (jbevain@novell.com)
 //
 // Copyright (C) 2007 Novell, Inc (http://www.novell.com)
@@ -129,9 +129,9 @@ namespace System.Linq.Expressions
 
         protected virtual Expression VisitBinary(BinaryExpression b)
         {
-            Expression left = Visit(b.Left);
-            Expression right = Visit(b.Right);
-            Expression conversion = Visit(b.Conversion);
+            var left = Visit(b.Left);
+            var right = Visit(b.Right);
+            var conversion = Visit(b.Conversion);
             if (left != b.Left || right != b.Right || conversion != b.Conversion)
             {
                 if (b.NodeType == ExpressionType.Coalesce && b.Conversion != null)
@@ -171,9 +171,9 @@ namespace System.Linq.Expressions
 
         protected virtual Expression VisitConditional(ConditionalExpression c)
         {
-            Expression test = Visit(c.Test);
-            Expression ifTrue = Visit(c.IfTrue);
-            Expression ifFalse = Visit(c.IfFalse);
+            var test = Visit(c.Test);
+            var ifTrue = Visit(c.IfTrue);
+            var ifFalse = Visit(c.IfFalse);
             if (test != c.Test || ifTrue != c.IfTrue || ifFalse != c.IfFalse)
             {
                 return Expression.Condition(test, ifTrue, ifFalse);
@@ -188,12 +188,8 @@ namespace System.Linq.Expressions
 
         protected virtual ElementInit VisitElementInitializer(ElementInit initializer)
         {
-            ReadOnlyCollection<Expression> arguments = VisitExpressionList(initializer.Arguments);
-            if (arguments != initializer.Arguments)
-            {
-                return Expression.ElementInit(initializer.AddMethod, arguments);
-            }
-            return initializer;
+            var arguments = VisitExpressionList(initializer.Arguments);
+            return arguments != initializer.Arguments ? Expression.ElementInit(initializer.AddMethod, arguments) : initializer;
         }
 
         protected virtual IEnumerable<ElementInit> VisitElementInitializerList(ReadOnlyCollection<ElementInit> original)
@@ -204,48 +200,39 @@ namespace System.Linq.Expressions
         protected virtual ReadOnlyCollection<Expression> VisitExpressionList(ReadOnlyCollection<Expression> original)
         {
             var list = VisitList(original, Visit);
-            if (list == null)
-            {
-                return original;
-            }
-            return new ReadOnlyCollection<Expression>(list);
+            return list == null ? original : new ReadOnlyCollection<Expression>(list);
         }
 
         protected virtual Expression VisitInvocation(InvocationExpression iv)
         {
             IEnumerable<Expression> args = VisitExpressionList(iv.Arguments);
-            Expression expr = Visit(iv.Expression);
-            if (args != iv.Arguments || expr != iv.Expression)
-            {
-                return Expression.Invoke(expr, args);
-            }
-            return iv;
+            var expr = Visit(iv.Expression);
+            return args != iv.Arguments || expr != iv.Expression ? Expression.Invoke(expr, args) : iv;
         }
 
         protected virtual Expression VisitLambda(LambdaExpression lambda)
         {
-            Expression body = Visit(lambda.Body);
-            if (body != lambda.Body)
-            {
-                return Expression.Lambda(lambda.Type, body, lambda.Parameters);
-            }
-            return lambda;
+            var body = Visit(lambda.Body);
+            return body != lambda.Body ? Expression.Lambda(lambda.Type, body, lambda.Parameters) : lambda;
         }
 
         protected virtual Expression VisitListInit(ListInitExpression init)
         {
-            NewExpression n = VisitNew(init.NewExpression);
-            IEnumerable<ElementInit> initializers = VisitElementInitializerList(init.Initializers);
+            var n = VisitNew(init.NewExpression);
+            var initializers = VisitElementInitializerList(init.Initializers);
             if (n != init.NewExpression || initializers != init.Initializers)
             {
                 return Expression.ListInit(n, initializers);
             }
-            return init;
+            else
+            {
+                return init;
+            }
         }
 
         protected virtual Expression VisitMemberAccess(MemberExpression m)
         {
-            Expression exp = Visit(m.Expression);
+            var exp = Visit(m.Expression);
             if (exp != m.Expression)
             {
                 return Expression.MakeMemberAccess(exp, m.Member);
@@ -255,48 +242,32 @@ namespace System.Linq.Expressions
 
         protected virtual MemberAssignment VisitMemberAssignment(MemberAssignment assignment)
         {
-            Expression e = Visit(assignment.Expression);
-            if (e != assignment.Expression)
-            {
-                return Expression.Bind(assignment.Member, e);
-            }
-            return assignment;
+            var e = Visit(assignment.Expression);
+            return e != assignment.Expression ? Expression.Bind(assignment.Member, e) : assignment;
         }
 
         protected virtual Expression VisitMemberInit(MemberInitExpression init)
         {
-            NewExpression n = VisitNew(init.NewExpression);
-            IEnumerable<MemberBinding> bindings = VisitBindingList(init.Bindings);
-            if (n != init.NewExpression || bindings != init.Bindings)
-            {
-                return Expression.MemberInit(n, bindings);
-            }
-            return init;
+            var n = VisitNew(init.NewExpression);
+            var bindings = VisitBindingList(init.Bindings);
+            return n != init.NewExpression || bindings != init.Bindings ? Expression.MemberInit(n, bindings) : init;
         }
 
         protected virtual MemberListBinding VisitMemberListBinding(MemberListBinding binding)
         {
-            IEnumerable<ElementInit> initializers = VisitElementInitializerList(binding.Initializers);
-            if (initializers != binding.Initializers)
-            {
-                return Expression.ListBind(binding.Member, initializers);
-            }
-            return binding;
+            var initializers = VisitElementInitializerList(binding.Initializers);
+            return initializers != binding.Initializers ? Expression.ListBind(binding.Member, initializers) : binding;
         }
 
         protected virtual MemberMemberBinding VisitMemberMemberBinding(MemberMemberBinding binding)
         {
-            IEnumerable<MemberBinding> bindings = VisitBindingList(binding.Bindings);
-            if (bindings != binding.Bindings)
-            {
-                return Expression.MemberBind(binding.Member, bindings);
-            }
-            return binding;
+            var bindings = VisitBindingList(binding.Bindings);
+            return bindings != binding.Bindings ? Expression.MemberBind(binding.Member, bindings) : binding;
         }
 
         protected virtual Expression VisitMethodCall(MethodCallExpression m)
         {
-            Expression obj = Visit(m.Object);
+            var obj = Visit(m.Object);
             IEnumerable<Expression> args = VisitExpressionList(m.Arguments);
             if (obj != m.Object || args != m.Arguments)
             {
@@ -308,18 +279,14 @@ namespace System.Linq.Expressions
         protected virtual NewExpression VisitNew(NewExpression nex)
         {
             IEnumerable<Expression> args = VisitExpressionList(nex.Arguments);
-            if (args != nex.Arguments)
-            {
-                if (nex.Members != null)
-                {
-                    return Expression.New(nex.Constructor, args, nex.Members);
-                }
-                else
-                {
-                    return Expression.New(nex.Constructor, args);
-                }
-            }
-            return nex;
+            return args != nex.Arguments
+                ?
+                (
+                    nex.Members != null
+                    ? Expression.New(nex.Constructor, args, nex.Members)
+                    : Expression.New(nex.Constructor, args)
+                )
+                : nex;
         }
 
         protected virtual Expression VisitNewArray(NewArrayExpression na)
@@ -346,49 +313,37 @@ namespace System.Linq.Expressions
 
         protected virtual Expression VisitTypeIs(TypeBinaryExpression b)
         {
-            Expression expr = Visit(b.Expression);
-            if (expr != b.Expression)
-            {
-                return Expression.TypeIs(expr, b.TypeOperand);
-            }
-            return b;
+            var expr = Visit(b.Expression);
+            return expr != b.Expression ? Expression.TypeIs(expr, b.TypeOperand) : b;
         }
 
         protected virtual Expression VisitUnary(UnaryExpression u)
         {
-            Expression operand = Visit(u.Operand);
-            if (operand != u.Operand)
-            {
-                return Expression.MakeUnary(u.NodeType, operand, u.Type, u.Method);
-            }
-            return u;
+            var operand = Visit(u.Operand);
+            return operand != u.Operand ? Expression.MakeUnary(u.NodeType, operand, u.Type, u.Method) : u;
         }
-
         private IList<TElement> VisitList<TElement>(ReadOnlyCollection<TElement> original, Func<TElement, TElement> visit)
         {
             List<TElement> list = null;
-            for (int i = 0, n = original.Count; i < n; i++)
+            var count = original.Count;
+            for (int index = 0; index < count; index++)
             {
-                TElement element = visit(original[i]);
+                var element = visit(original[index]);
                 if (list != null)
                 {
                     list.Add(element);
                 }
-                else if (!EqualityComparer<TElement>.Default.Equals(element, original[i]))
+                else if (!EqualityComparer<TElement>.Default.Equals(element, original[index]))
                 {
-                    list = new List<TElement>(n);
-                    for (int j = 0; j < i; j++)
+                    list = new List<TElement>(count);
+                    for (int subIndex = 0; subIndex < index; subIndex++)
                     {
-                        list.Add(original[j]);
+                        list.Add(original[subIndex]);
                     }
                     list.Add(element);
                 }
             }
-            if (list != null)
-            {
-                return list;
-            }
-            return original;
+            return list != null ? (IList<TElement>) list : original;
         }
     }
 }

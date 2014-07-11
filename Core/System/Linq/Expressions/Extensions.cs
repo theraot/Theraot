@@ -26,6 +26,7 @@
 
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
@@ -41,62 +42,26 @@ namespace System.Linq.Expressions
             return self.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Instance);
         }
 
-        /*public static Type GetNotNullableType(this Type self)
+        public static Type GetNotNullableType(this Type self)
         {
-            return self.IsNullable() ? self.GetFirstGenericArgument() : self;
-        }*/
+            return self.IsNullable() ? self.GetGenericArguments()[0] : self;
+        }
 
         public static Type[] GetParameterTypes(this MethodBase self)
         {
             var parameters = self.GetParameters();
             var types = new Type[parameters.Length];
-            for (int i = 0; i < types.Length; i++)
+            for (int index = 0; index < types.Length; index++)
             {
-                types[i] = parameters[i].ParameterType;
+                types[index] = parameters[index].ParameterType;
             }
             return types;
         }
-
-        /*public static bool IsAssignableTo(this Type self, Type type)
-        {
-            return type.IsAssignableFrom(self)
-                   || ArrayTypeAreAssignable(self, type)
-                   || ArrayTypeIsAssignableToInterface(self, type);
-        }*/
 
         public static bool IsExpression(this Type self)
         {
             return self == typeof(Expression) || self.IsSubclassOf(typeof(Expression));
         }
-
-        /*public static bool IsGenericImplementationOf(this Type self, Type type, out Type generic_iface)
-        {
-            foreach (var iface in self.GetInterfaces())
-            {
-                if (!iface.IsGenericInstanceOf(type))
-                {
-                    continue;
-                }
-                generic_iface = iface;
-                return true;
-            }
-            generic_iface = null;
-            return false;
-        }
-
-        public static bool IsGenericInstanceOf(this Type self, Type type)
-        {
-            if (!self.IsGenericType)
-            {
-                return false;
-            }
-            return self.GetGenericTypeDefinition() == type;
-        }
-
-        public static bool IsNullable(this Type self)
-        {
-            return self.IsValueType && self.IsGenericInstanceOf(typeof(Nullable<>));
-        }*/
 
         public static MethodInfo MakeGenericMethodFrom(this MethodInfo self, MethodInfo method)
         {
@@ -107,11 +72,6 @@ namespace System.Linq.Expressions
         {
             return self.MakeGenericType(type.GetGenericArguments());
         }
-
-        /*public static Type MakeNullableType(this Type self)
-        {
-            return typeof(Nullable<>).MakeGenericType(self);
-        }*/
 
         public static Type MakeStrongBoxType(this Type self)
         {
@@ -149,31 +109,5 @@ namespace System.Linq.Expressions
                     throw new ArgumentException();
             }
         }
-
-        /*private static bool ArrayTypeAreAssignable(Type type, Type candidate)
-        {
-            if (!type.IsArray || !candidate.IsArray)
-            {
-                return false;
-            }
-            if (type.GetArrayRank() != candidate.GetArrayRank())
-            {
-                return false;
-            }
-            return type.GetElementType().IsAssignableTo(candidate.GetElementType());
-        }
-
-        private static bool ArrayTypeIsAssignableToInterface(Type type, Type candidate)
-        {
-            if (!type.IsArray)
-            {
-                return false;
-            }
-            if (!(candidate.IsGenericInstanceOf(typeof(IList<>)) || candidate.IsGenericInstanceOf(typeof(ICollection<>)) || candidate.IsGenericInstanceOf(typeof(IEnumerable<>))))
-            {
-                return false;
-            }
-            return type.GetElementType() == candidate.GetFirstGenericArgument();
-        }*/
     }
 }
