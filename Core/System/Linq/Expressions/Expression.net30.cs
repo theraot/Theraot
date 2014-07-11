@@ -2916,12 +2916,7 @@ namespace System.Linq.Expressions
                             return method;
                         }
                     }
-                    throw new InvalidOperationException
-                        (
-                            string.Format("Operation {0} not defined for {1}",
-                            operatorName != null ? operatorName.Substring(3) : "is",
-                            expression.Type)
-                        );
+                    throw new InvalidOperationException (string.Format("Operation {0} not defined for {1}", operatorName != null ? operatorName.Substring(3) : "is", expression.Type));
                 }
                 else
                 {
