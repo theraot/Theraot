@@ -146,13 +146,9 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentOutOfRangeException("arrayIndex", "arrayIndex < 0");
             }
-            if (arrayIndex >= array.Length)
+            if (Count > array.Length - arrayIndex)
             {
-                throw new ArgumentException("arrayIndex is greater than the length of the destination array.");
-            }
-            if (Count > array.Length)
-            {
-                throw new ArgumentException("the Count property is larger than the size of the destination array.");
+                throw new ArgumentException("The array can not contain the number of elements.", "array");
             }
             _wrapped.Keys.CopyTo(array, arrayIndex);
         }
@@ -163,17 +159,17 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException("array");
             }
-            else if (arrayIndex < 0 || count < 0)
+            if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException("arrayIndex", "arrayIndex < 0");
+                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
             }
-            else if (arrayIndex >= array.Length)
+            if (count < 0)
             {
-                throw new ArgumentException("arrayIndex is greater than the length of the destination array.");
+                throw new ArgumentOutOfRangeException("count", "Non-negative number is required.");
             }
-            else if (count > array.Length - arrayIndex)
+            if (count > array.Length - arrayIndex)
             {
-                throw new ArgumentException("count is greater than the available space from the index to the end of the destination array.");
+                throw new ArgumentException("The array can not contain the number of elements.", "array");
             }
             else
             {
