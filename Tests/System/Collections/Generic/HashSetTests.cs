@@ -490,8 +490,8 @@ namespace MonoTests.System.Collections.Generic
         public void Enumerator_Current()
         {
 #pragma warning disable 0168
-            var e1 = new HashSet<int>.Enumerator();
-            Assert.IsFalse(Throws(delegate { var x = e1.Current; }));
+            /*var e1 = new HashSet<int>.Enumerator();
+            Assert.IsFalse(Throws(delegate { var x = e1.Current; }));*/
 
             var d = new HashSet<int>();
             var e2 = d.GetEnumerator();
