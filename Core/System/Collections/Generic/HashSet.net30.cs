@@ -92,6 +92,11 @@ namespace System.Collections.Generic
             }
         }
 
+        public static IEqualityComparer<HashSet<T>> CreateSetComparer()
+        {
+            return HashSetEqualityComparer.Instance;
+        }
+
         public bool Add(T item)
         {
             if (_wrapped.ContainsKey(item))
@@ -478,6 +483,55 @@ namespace System.Collections.Generic
             public bool MoveNext()
             {
                 return _enumerator.MoveNext();
+            }
+        }
+
+        private sealed class HashSetEqualityComparer : IEqualityComparer<HashSet<T>>
+        {
+            public static readonly HashSetEqualityComparer Instance = new HashSetEqualityComparer();
+
+            public bool Equals(HashSet<T> left, HashSet<T> right)
+            {
+                if (left == right)
+                {
+                    return true;
+                }
+                else
+                {
+                    if (left == null || right == null || left.Count != right.Count)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        foreach (var item in left)
+                        {
+                            if (!right.Contains(item))
+                            {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                }
+            }
+
+            public int GetHashCode(HashSet<T> hashset)
+            {
+                try
+                {
+                    IEqualityComparer<T> comparer = EqualityComparer<T>.Default;
+                    int hash = 0;
+                    foreach (var item in hashset)
+                    {
+                        hash ^= comparer.GetHashCode(item);
+                    }
+                    return hash;
+                }
+                catch (NullReferenceException exception)
+                {
+                    throw new ArgumentNullException("hashset", exception);
+                }
             }
         }
     }
