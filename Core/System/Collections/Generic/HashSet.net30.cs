@@ -524,9 +524,9 @@ namespace System.Collections.Generic
                     }
                     return hash;
                 }
-                catch (NullReferenceException exception)
+                catch (NullReferenceException)
                 {
-                    throw new ArgumentNullException("hashset", exception);
+                    return 0;
                 }
             }
         }
