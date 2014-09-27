@@ -104,7 +104,7 @@ namespace Theraot.Collections
         public static bool Contains<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> items)
         {
             var comparer = EqualityComparer<TItem>.Default;
-            var _collection = new ProgressiveSet<TItem>(Check.NotNullArgument(collection, "collection"));
+            var _collection = collection as ICollection<TItem> ?? new ProgressiveSet<TItem>(Check.NotNullArgument(collection, "collection"));
             foreach (TItem item in Check.NotNullArgument(items, "items"))
             {
                 if (!_collection.Contains(item, comparer))
@@ -118,7 +118,7 @@ namespace Theraot.Collections
         public static bool Contains<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> items, IEqualityComparer<TItem> comparer)
         {
             var _comparer = comparer ?? EqualityComparer<TItem>.Default;
-            var _collection = new ProgressiveSet<TItem>(Check.NotNullArgument(collection, "collection"));
+            var _collection = collection as ICollection<TItem> ?? new ProgressiveSet<TItem>(Check.NotNullArgument(collection, "collection"));
             foreach (TItem item in Check.NotNullArgument(items, "items"))
             {
                 if (!_collection.Contains(item, _comparer))
@@ -132,7 +132,7 @@ namespace Theraot.Collections
         public static bool ContainsAny<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> items)
         {
             IEqualityComparer<TItem> comparer = EqualityComparer<TItem>.Default;
-            var _collection = new ProgressiveSet<TItem>(Check.NotNullArgument(collection, "collection"));
+            var _collection = collection as ICollection<TItem> ?? new ProgressiveSet<TItem>(Check.NotNullArgument(collection, "collection"));
             foreach (TItem item in Check.NotNullArgument(items, "items"))
             {
                 if (_collection.Contains(item, comparer))
@@ -146,7 +146,7 @@ namespace Theraot.Collections
         public static bool ContainsAny<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> items, IEqualityComparer<TItem> comparer)
         {
             var _comparer = comparer ?? EqualityComparer<TItem>.Default;
-            var _collection = new ProgressiveSet<TItem>(Check.NotNullArgument(collection, "collection"));
+            var _collection = collection as ICollection<TItem> ?? new ProgressiveSet<TItem>(Check.NotNullArgument(collection, "collection"));
             foreach (TItem item in Check.NotNullArgument(items, "items"))
             {
                 if (_collection.Contains(item, _comparer))
@@ -1197,13 +1197,13 @@ namespace Theraot.Collections
 
         public static int IntersectWith<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other)
         {
-            var _other = new ProgressiveSet<TItem>(other);
+            var _other = other as ICollection<TItem> ?? new ProgressiveSet<TItem>(other);
             return collection.RemoveWhere(input => !_other.Contains(input));
         }
 
         public static IEnumerable<TItem> IntersectWithEnumerable<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other)
         {
-            var _other = new ProgressiveSet<TItem>(other);
+            var _other = other as ICollection<TItem> ?? new ProgressiveSet<TItem>(other);
             return collection.RemoveWhereEnumerable(input => !_other.Contains(input));
         }
 
@@ -1514,7 +1514,7 @@ namespace Theraot.Collections
         {
             var _collection = Check.NotNullArgument(collection, "collection");
             var _other = Check.NotNullArgument(other, "other");
-            var _that = new ProgressiveSet<TItem>(_other);
+            var _that = _other as ICollection<TItem> ?? new ProgressiveSet<TItem>(_other);
             foreach (var item in _that.Where(input => !_collection.Contains(input)))
             {
                 GC.KeepAlive(item);
