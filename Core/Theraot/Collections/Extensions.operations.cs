@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-
 using Theraot.Collections.Specialized;
 using Theraot.Core;
 
@@ -26,6 +25,19 @@ namespace Theraot.Collections
         public static IEnumerable<T> Append<T>(this IEnumerable<T> target, T append, Predicate<T> match)
         {
             return new ExtendedFilteredEnumerable<T>(target, AsUnaryEnumerable(append), match);
+        }
+
+        public static ICollection<TItem> AsCollection<TItem>(IEnumerable<TItem> collection)
+        {
+            var _result = collection as ICollection<TItem>;
+            if (_result == null)
+            {
+                return new ProgressiveCollection<TItem>(collection);
+            }
+            else
+            {
+                return _result;
+            }
         }
 
         public static IList<TItem> AsList<TItem>(IEnumerable<TItem> collection)
