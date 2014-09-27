@@ -1,21 +1,22 @@
 ﻿#if NET20 || NET30
 
+using Theraot.Collections;
+using Theraot.Collections.Specialized;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
-using Theraot.Collections;
 
 namespace System.Collections.Generic
 {
     [Serializable]
     [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "Backport")]
-    public class HashSet<T> : ISet<T>, ISerializable, IDeserializationCallback
+    public class HashSet<T> : ISet<T>, ISerializable
     {
-        private readonly Dictionary<T, object> _wrapped;
+        private readonly NullAwareDictionary<T, object> _wrapped;
 
         public HashSet()
         {
-            _wrapped = new Dictionary<T, object>();
+            _wrapped = new NullAwareDictionary<T, object>();
         }
 
         public HashSet(IEnumerable<T> collection)
@@ -26,7 +27,7 @@ namespace System.Collections.Generic
             }
             else
             {
-                _wrapped = new Dictionary<T, object>();
+                _wrapped = new NullAwareDictionary<T, object>();
                 foreach (T item in collection)
                 {
                     _wrapped[item] = null;
@@ -36,7 +37,7 @@ namespace System.Collections.Generic
 
         public HashSet(IEqualityComparer<T> comparer)
         {
-            _wrapped = new Dictionary<T, object>(comparer);
+            _wrapped = new NullAwareDictionary<T, object>(comparer);
         }
 
         public HashSet(IEnumerable<T> collection, IEqualityComparer<T> comparer)
@@ -47,7 +48,7 @@ namespace System.Collections.Generic
             }
             else
             {
-                _wrapped = new Dictionary<T, object>(comparer);
+                _wrapped = new NullAwareDictionary<T, object>(comparer);
                 foreach (T item in collection)
                 {
                     _wrapped[item] = null;
@@ -264,11 +265,6 @@ namespace System.Collections.Generic
             return IsSupersetOf(other, false);
         }
 
-        public void OnDeserialization(object sender)
-        {
-            _wrapped.OnDeserialization(sender);
-        }
-
         public bool Overlaps(IEnumerable<T> other)
         {
             if (other == null)
@@ -440,8 +436,8 @@ namespace System.Collections.Generic
 
         private struct Enumerator : IEnumerator<T>
         {
+            private readonly IEnumerator<KeyValuePair<T, object>> _enumerator;
             private bool valid;
-            private Dictionary<T, object>.Enumerator _enumerator;
 
             public Enumerator(HashSet<T> hashSet)
             {
@@ -480,7 +476,7 @@ namespace System.Collections.Generic
             void IEnumerator.Reset()
             {
                 valid = false;
-                (_enumerator as IEnumerator).Reset();
+                _enumerator.Reset();
             }
 
             public bool MoveNext()
