@@ -1,10 +1,9 @@
 ﻿#if NET20 || NET30
 
-using Theraot.Collections;
-using Theraot.Collections.Specialized;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
+using Theraot.Collections;
+using Theraot.Collections.Specialized;
 
 namespace System.Collections.Generic
 {
@@ -247,22 +246,22 @@ namespace System.Collections.Generic
 
         public bool IsProperSubsetOf(IEnumerable<T> other)
         {
-            return IsSubsetOf(other, true);
+            return IsSubsetOf(ToHashSet(other), true);
         }
 
         public bool IsProperSupersetOf(IEnumerable<T> other)
         {
-            return IsSupersetOf(other, true);
+            return IsSupersetOf(ToHashSet(other), true);
         }
 
         public bool IsSubsetOf(IEnumerable<T> other)
         {
-            return IsSubsetOf(other, false);
+            return IsSubsetOf(ToHashSet(other), false);
         }
 
         public bool IsSupersetOf(IEnumerable<T> other)
         {
-            return IsSupersetOf(other, false);
+            return IsSupersetOf(ToHashSet(other), false);
         }
 
         public bool Overlaps(IEnumerable<T> other)
@@ -295,25 +294,7 @@ namespace System.Collections.Generic
 
         public int RemoveWhere(Predicate<T> match)
         {
-            if (match == null)
-            {
-                throw new ArgumentNullException("match");
-            }
-            else
-            {
-                int removeCount = 0;
-                foreach (KeyValuePair<T, object> item in _wrapped)
-                {
-                    if (match(item.Key))
-                    {
-                        if (_wrapped.Remove(item.Key))
-                        {
-                            removeCount++;
-                        }
-                    }
-                }
-                return removeCount;
-            }
+            return Extensions.RemoveWhere(this, match);
         }
 
         public bool SetEquals(IEnumerable<T> other)
@@ -323,7 +304,7 @@ namespace System.Collections.Generic
                 throw new ArgumentNullException("other");
             }
             int containsCount = 0;
-            foreach (T item in Enumerable.Distinct(other))
+            foreach (T item in ToHashSet(other))
             {
                 if (!_wrapped.ContainsKey(item))
                 {
@@ -431,6 +412,20 @@ namespace System.Collections.Generic
                 {
                     return true;
                 }
+            }
+        }
+
+        private IEnumerable<T> ToHashSet(IEnumerable<T> other)
+        {
+            var test = other as HashSet<T>;
+            var comparer = Comparer;
+            if (test != null && comparer.Equals(test.Comparer))
+            {
+                return test;
+            }
+            else
+            {
+                return new HashSet<T>(other, comparer);
             }
         }
 
