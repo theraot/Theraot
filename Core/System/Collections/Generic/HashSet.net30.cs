@@ -3,6 +3,7 @@
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
+using Theraot.Collections;
 
 namespace System.Collections.Generic
 {
@@ -239,11 +240,7 @@ namespace System.Collections.Generic
             }
             else
             {
-                _wrapped.Clear();
-                foreach (T item in other)
-                {
-                    _wrapped[item] = null;
-                }
+                Extensions.IntersectWith(this, other);
             }
         }
 
