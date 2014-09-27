@@ -440,11 +440,13 @@ namespace System.Collections.Generic
 
         private struct Enumerator : IEnumerator<T>
         {
+            private bool valid;
             private Dictionary<T, object>.Enumerator _enumerator;
 
             public Enumerator(HashSet<T> hashSet)
             {
                 _enumerator = hashSet._wrapped.GetEnumerator();
+                valid = false;
             }
 
             public T Current
@@ -459,7 +461,14 @@ namespace System.Collections.Generic
             {
                 get
                 {
-                    return _enumerator.Current.Key;
+                    if (valid)
+                    {
+                        return _enumerator.Current.Key;
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Call MoveNext first or use IEnumerator<T>");
+                    }
                 }
             }
 
@@ -470,12 +479,14 @@ namespace System.Collections.Generic
 
             void IEnumerator.Reset()
             {
+                valid = false;
                 (_enumerator as IEnumerator).Reset();
             }
 
             public bool MoveNext()
             {
-                return _enumerator.MoveNext();
+                valid = _enumerator.MoveNext();
+                return valid;
             }
         }
 
