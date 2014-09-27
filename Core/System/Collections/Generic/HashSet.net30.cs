@@ -429,22 +429,24 @@ namespace System.Collections.Generic
             }
         }
 
-        private struct Enumerator : IEnumerator<T>
+        public struct Enumerator : IEnumerator<T>
         {
             private readonly IEnumerator<KeyValuePair<T, object>> _enumerator;
             private bool valid;
+            private T current;
 
             public Enumerator(HashSet<T> hashSet)
             {
                 _enumerator = hashSet._wrapped.GetEnumerator();
                 valid = false;
+                current = default(T);
             }
 
             public T Current
             {
                 get
                 {
-                    return _enumerator.Current.Key;
+                    return current;
                 }
             }
 
@@ -454,7 +456,7 @@ namespace System.Collections.Generic
                 {
                     if (valid)
                     {
-                        return _enumerator.Current.Key;
+                        return current;
                     }
                     else
                     {
@@ -471,12 +473,14 @@ namespace System.Collections.Generic
             void IEnumerator.Reset()
             {
                 valid = false;
+                current = _enumerator.Current.Key;
                 _enumerator.Reset();
             }
 
             public bool MoveNext()
             {
                 valid = _enumerator.MoveNext();
+                current = _enumerator.Current.Key;
                 return valid;
             }
         }
