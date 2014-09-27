@@ -1468,7 +1468,7 @@ namespace Theraot.Collections
             return ExceptWith
                    (
                        _collection,
-                       new ProgressiveCollection<TItem>(Check.NotNullArgument(converter, "converter").Invoke(_collection))
+                       new List<TItem>(Check.NotNullArgument(converter, "converter").Invoke(_collection))
                    );
         }
 
@@ -1483,7 +1483,7 @@ namespace Theraot.Collections
             return ExceptWithEnumerable
                    (
                        _collection,
-                       new ProgressiveCollection<TItem>(Check.NotNullArgument(converter, "converter").Invoke(_collection))
+                       new List<TItem>(Check.NotNullArgument(converter, "converter").Invoke(_collection))
                    );
         }
 
