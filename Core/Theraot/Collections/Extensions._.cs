@@ -1227,22 +1227,22 @@ namespace Theraot.Collections
 
         public static bool IsProperSubsetOf<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> other)
         {
-            return IsSubsetOf(collection, other, true);
+            return IsSubsetOf(Check.NotNullArgument(collection, "collection"), Check.NotNullArgument(other, "other"), true);
         }
 
         public static bool IsProperSupersetOf<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> other)
         {
-            return IsSupersetOf(collection, other, true);
+            return IsSupersetOf(Check.NotNullArgument(collection, "collection"), Check.NotNullArgument(other, "other"), true);
         }
 
         public static bool IsSubsetOf<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> other)
         {
-            return IsSubsetOf(collection, other, false);
+            return IsSubsetOf(Check.NotNullArgument(collection, "collection"), Check.NotNullArgument(other, "other"), false);
         }
 
         public static bool IsSupersetOf<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> other)
         {
-            return IsSupersetOf(collection, other, false);
+            return IsSupersetOf(Check.NotNullArgument(collection, "collection"), Check.NotNullArgument(other, "other"), false);
         }
 
         public static int LastIndexOf<TItem>(this IEnumerable<TItem> collection, TItem item, int index, IEqualityComparer<TItem> comparer)
@@ -1954,16 +1954,14 @@ namespace Theraot.Collections
 
         private static bool IsSubsetOf<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> other, bool proper)
         {
-            var _collection = Check.NotNullArgument(collection, "collection");
-            var _other = Check.NotNullArgument(other, "other");
-            var _this = AsSet(_collection);
-            var _that = AsSet(_other);
+            var _this = AsDistinctCollection(collection);
+            var _that = AsDistinctCollection(other);
             int elementCount = 0;
             int matchCount = 0;
             foreach (var item in _that)
             {
                 elementCount++;
-                if (_collection.Contains(item))
+                if (_this.Contains(item))
                 {
                     matchCount++;
                 }
@@ -1980,10 +1978,8 @@ namespace Theraot.Collections
 
         private static bool IsSupersetOf<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> other, bool proper)
         {
-            var _collection = Check.NotNullArgument(collection, "collection");
-            var _other = Check.NotNullArgument(other, "other");
-            var _this = AsSet(_collection);
-            var _that = AsSet(_other);
+            var _this = AsDistinctCollection(collection);
+            var _that = AsDistinctCollection(other);
             int elementCount = 0;
             foreach (var item in _that)
             {
