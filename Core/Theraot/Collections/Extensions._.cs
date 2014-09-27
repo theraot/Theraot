@@ -1206,6 +1206,19 @@ namespace Theraot.Collections
             var _other = other as ICollection<TItem> ?? new ProgressiveSet<TItem>(other);
             return collection.RemoveWhereEnumerable(input => !_other.Contains(input));
         }
+        public static int IntersectWith<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other, IEqualityComparer<TItem> comparer)
+        {
+            var _comparer = comparer ?? EqualityComparer<TItem>.Default;
+            var _other = other as ICollection<TItem> ?? new ProgressiveSet<TItem>(other);
+            return collection.RemoveWhere(input => !_other.Contains(input, _comparer));
+        }
+
+        public static IEnumerable<TItem> IntersectWithEnumerable<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other, IEqualityComparer<TItem> comparer)
+        {
+            var _comparer = comparer ?? EqualityComparer<TItem>.Default;
+            var _other = other as ICollection<TItem> ?? new ProgressiveSet<TItem>(other);
+            return collection.RemoveWhereEnumerable(input => !_other.Contains(input, _comparer));
+        }
 
         public static bool IsEmpty<T>(this IEnumerable<T> source)
         {
