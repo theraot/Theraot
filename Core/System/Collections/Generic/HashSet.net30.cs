@@ -240,7 +240,7 @@ namespace System.Collections.Generic
             }
             else
             {
-                Extensions.IntersectWith(this, other);
+                this.IntersectWith(other, _wrapped.Comparer);
             }
         }
 
