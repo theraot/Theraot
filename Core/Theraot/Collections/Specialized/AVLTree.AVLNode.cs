@@ -15,12 +15,10 @@ namespace Theraot.Collections.Specialized
             private AVLNode _left;
             private AVLNode _right;
 
-            internal AVLNode(TKey key, TValue value, AVLNode left, AVLNode right)
+            internal AVLNode(TKey key, TValue value)
             {
                 _key = key;
                 _value = value;
-                _left = left;
-                _right = right;
             }
 
             public TKey Key
@@ -78,11 +76,11 @@ namespace Theraot.Collections.Specialized
             {
                 if (node == null)
                 {
-                    node = new AVLNode(key, value, null, null);
+                    node = new AVLNode(key, value);
                 }
                 else
                 {
-                    AddExtracted(node, key, value, comparison);
+                    AddExtracted(ref node, key, value, comparison);
                 }
             }
 
@@ -90,12 +88,12 @@ namespace Theraot.Collections.Specialized
             {
                 if (node == null)
                 {
-                    node = new AVLNode(key, value, null, null);
+                    node = new AVLNode(key, value);
                     return true;
                 }
                 else
                 {
-                    return AddNonDuplicateExtracted(node, key, value, comparison);
+                    return AddNonDuplicateExtracted(ref node, key, value, comparison);
                 }
             }
 
@@ -129,43 +127,64 @@ namespace Theraot.Collections.Specialized
                 }
             }
 
-            internal static IEnumerable<AVLNode> EnumerateFrom(AVLNode node)
+            internal static IEnumerable<AVLNode> EnumerateFrom(AVLNode node, TKey key, Comparison<TKey> comparison)
             {
-                if (node != null)
+                var stack = new ExtendedStack<AVLNode>();
+                while (node != null)
                 {
-                    yield return node;
-                    var stack = new ExtendedStack<AVLNode>();
-                    while (node != null || stack.TryTake(out node))
+                    int compare = comparison.Invoke(key, node._key);
+                    if (compare == 0)
                     {
-                        while (node != null)
+                        break;
+                    }
+                    else
+                    {
+                        if (compare > 0)
+                        {
+                            node = node._right;
+                        }
+                        else
                         {
                             stack.Add(node);
                             node = node._left;
                         }
-                        if (stack.TryTake(out node))
-                        {
-                            yield return node;
-                        }
-                        node = node._right;
                     }
                 }
+                do
+                {
+                    if (node != null)
+                    {
+                        yield return node;
+                        foreach (var item in EnumerateRoot(node._right))
+                        {
+                            yield return item;
+                        }
+                    }
+                } while (stack.TryTake(out node));
             }
 
             internal static IEnumerable<AVLNode> EnumerateRoot(AVLNode node)
             {
-                var stack = new ExtendedStack<AVLNode>();
-                while (node != null || stack.TryTake(out node))
+                if (node != null)
                 {
-                    while (node != null)
+                    var stack = new ExtendedStack<AVLNode>();
+                    for (; ; )
                     {
-                        stack.Add(node);
-                        node = node._left;
+                        while (node != null)
+                        {
+                            stack.Add(node);
+                            node = node.Left;
+                        }
+                        if (stack.TryTake(out node))
+                        {
+                            yield return node;
+                            node = node.Right;
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
-                    if (stack.TryTake(out node))
-                    {
-                        yield return node;
-                    }
-                    node = node._right;
                 }
             }
 
@@ -197,27 +216,46 @@ namespace Theraot.Collections.Specialized
                                 while (successor._left != null)
                                 {
                                     trunk = successor;
-                                    successor = successor._left;
+                                    successor = trunk._left;
                                 }
                                 if (ReferenceEquals(trunk, successor))
                                 {
-                                    node._right = null;
+                                    node._right = successor._right;
+                                    if (successor._right != null)
+                                    {
+                                        node._balance--;
+                                    }
                                 }
                                 else
                                 {
-                                    trunk._left = null;
+                                    trunk._left = successor._right;
+                                    if (successor._right != null)
+                                    {
+                                        trunk._balance++;
+                                    }
                                 }
-                                node = new AVLNode(successor._key, successor._value, node._left, node._right);
+                                var tmpLeft = node._left;
+                                var tmpRight = node._right;
+                                var tmpBalance = node._balance;
+                                node = new AVLNode(successor._key, successor._value)
+                                {
+                                    _left = tmpLeft,
+                                    _right = tmpRight,
+                                    _balance = tmpBalance
+                                };
                             }
                         }
-                        MakeBalanced(ref node);
+                        if (node != null)
+                        {
+                            MakeBalanced(ref node);
+                        }
                         return true;
                     }
                     else if (compare < 0)
                     {
-                        node._balance++;
                         if (Remove(ref node._left, key, comparison))
                         {
+                            node._balance++;
                             MakeBalanced(ref node);
                             return true;
                         }
@@ -228,9 +266,9 @@ namespace Theraot.Collections.Specialized
                     }
                     else
                     {
-                        node._balance--;
                         if (Remove(ref node._right, key, comparison))
                         {
+                            node._balance--;
                             MakeBalanced(ref node);
                             return true;
                         }
@@ -315,19 +353,19 @@ namespace Theraot.Collections.Specialized
                 return result;
             }
 
-            private static void AddExtracted(AVLNode node, TKey key, TValue value, Comparison<TKey> comparison)
+            private static void AddExtracted(ref AVLNode node, TKey key, TValue value, Comparison<TKey> comparison)
             {
                 int comparisonResult = comparison(key, node._key);
                 if (comparisonResult < 0)
                 {
                     if (node._left == null)
                     {
-                        node._left = new AVLNode(key, value, null, null);
+                        node._left = new AVLNode(key, value);
                         node._balance--;
                     }
                     else
                     {
-                        AddExtracted(node._left, key, value, comparison);
+                        AddExtracted(ref node._left, key, value, comparison);
                         node._balance--;
                     }
                 }
@@ -335,33 +373,33 @@ namespace Theraot.Collections.Specialized
                 {
                     if (node._right == null)
                     {
-                        node._right = new AVLNode(key, value, null, null);
+                        node._right = new AVLNode(key, value);
                         node._balance++;
                     }
                     else
                     {
-                        AddExtracted(node._right, key, value, comparison);
+                        AddExtracted(ref node._right, key, value, comparison);
                         node._balance++;
                     }
                 }
                 MakeBalanced(ref node);
             }
 
-            private static bool AddNonDuplicateExtracted(AVLNode node, TKey key, TValue value, Comparison<TKey> comparison)
+            private static bool AddNonDuplicateExtracted(ref AVLNode node, TKey key, TValue value, Comparison<TKey> comparison)
             {
                 int comparisonResult = comparison(key, node._key);
                 if (comparisonResult < 0)
                 {
                     if (node._left == null)
                     {
-                        node._left = new AVLNode(key, value, null, null);
+                        node._left = new AVLNode(key, value);
                         node._balance--;
                         MakeBalanced(ref node);
                         return true;
                     }
                     else
                     {
-                        if (AddNonDuplicateExtracted(node._left, key, value, comparison))
+                        if (AddNonDuplicateExtracted(ref node._left, key, value, comparison))
                         {
                             node._balance--;
                             MakeBalanced(ref node);
@@ -377,14 +415,14 @@ namespace Theraot.Collections.Specialized
                 {
                     if (node._right == null)
                     {
-                        node._right = new AVLNode(key, value, null, null);
+                        node._right = new AVLNode(key, value);
                         node._balance++;
                         MakeBalanced(ref node);
                         return true;
                     }
                     else
                     {
-                        if (AddNonDuplicateExtracted(node._right, key, value, comparison))
+                        if (AddNonDuplicateExtracted(ref node._right, key, value, comparison))
                         {
                             node._balance++;
                             MakeBalanced(ref node);
@@ -463,9 +501,12 @@ namespace Theraot.Collections.Specialized
                     var root = node;
                     var right = node._right;
                     var rightLeft = node._right._left;
+                    node._right = rightLeft;
+                    right._left = root;
                     node = right;
-                    node._left = root;
-                    node._left._right = rightLeft;
+                    var check = root._balance + right._balance;
+                    root._balance = root._balance - (check / 2) - 1;
+                    right._balance = right._balance + (check % 2) - 2;
                 }
             }
 
@@ -476,9 +517,12 @@ namespace Theraot.Collections.Specialized
                     var root = node;
                     var left = node._left;
                     var leftRight = node._left._right;
+                    node._left = leftRight;
+                    left._right = root;
                     node = left;
-                    node._right = root;
-                    node._right._left = leftRight;
+                    var check = root._balance + left._balance;
+                    root._balance = root._balance - (check / 2) + 1;
+                    left._balance = left._balance + (check % 2) + 2;
                 }
             }
         }

@@ -18,12 +18,13 @@ namespace System.Collections.Generic
 
         public SortedSet()
         {
+            _comparer = Comparer<T>.Default;
             _wrapped = new AVLTree<T, T>();
         }
 
         public SortedSet(IComparer<T> comparer)
         {
-            _comparer = Check.NotNullArgument(comparer, "comparer");
+            _comparer = comparer ?? Comparer<T>.Default;
             _wrapped = new AVLTree<T, T>(_comparer);
         }
 
@@ -45,6 +46,12 @@ namespace System.Collections.Generic
             {
                 _wrapped.AddNonDuplicate(item, item);
             }
+        }
+
+        protected SortedSet(AVLTree<T, T> wrapped, IComparer<T> comparer)
+        {
+            _wrapped = wrapped ?? new AVLTree<T, T>();
+            _comparer = comparer ?? Comparer<T>.Default;
         }
 
         protected SortedSet(SerializationInfo info, StreamingContext context)
@@ -364,7 +371,7 @@ namespace System.Collections.Generic
             private new readonly SortedSet<T> _wrapped;
 
             public SortedSubSet(SortedSet<T> set, T lower, T upper)
-                : base(set.Comparer)
+                : base(set._wrapped, set.Comparer)
             {
                 _wrapped = set;
                 _lower = lower;
