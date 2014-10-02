@@ -277,6 +277,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Theraot\Collections\Specialized\FlagArray.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\WeakCancellableEvent.cs" />
     <Compile Include="Theraot\Core\CancellationTokenHelper.cs" />
     <Compile Include="Theraot\Core\FolderEnumeration.cs">
       <SubType>Code</SubType>
