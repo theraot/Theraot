@@ -119,17 +119,24 @@ namespace Theraot.Threading.Needles
 
         public void Wait()
         {
-            var handle = _waitHandle.Value;
-            if (handle != null)
+            if (_initializerThread == Thread.CurrentThread)
             {
-                try
+                throw new InvalidOperationException();
+            }
+            else
+            {
+                var handle = _waitHandle.Value;
+                if (handle != null)
                 {
-                    handle.Wait();
-                }
-                catch
-                {
-                    // Pokemon
-                    // Came late to the party, initialization was done
+                    try
+                    {
+                        handle.Wait();
+                    }
+                    catch
+                    {
+                        // Pokemon
+                        // Came late to the party, initialization was done
+                    }
                 }
             }
         }

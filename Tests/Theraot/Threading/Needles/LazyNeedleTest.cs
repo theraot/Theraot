@@ -1,12 +1,12 @@
-﻿using System;
+﻿using NUnit.Framework;
+using System;
 using System.Threading;
-using NUnit.Framework;
 using Theraot.Threading.Needles;
 
 namespace Tests.Theraot.Threading.Needles
 {
     [TestFixture]
-    class LazyNeedleTest
+    internal class LazyNeedleTest
     {
         [Test]
         public void ConstructorWithNull()
@@ -27,6 +27,7 @@ namespace Tests.Theraot.Threading.Needles
             var needle = new LazyNeedle<int>(() => 5);
             Assert.AreEqual(needle.Value, 5);
         }
+
         [Test]
         public void DefaultConstructor()
         {
@@ -43,6 +44,7 @@ namespace Tests.Theraot.Threading.Needles
             Assert.IsFalse(c.IsAlive);
             Assert.Throws(typeof(NullReferenceException), () => GC.KeepAlive(c.Value));
         }
+
         [Test]
         public void FixedHashCode()
         {
@@ -179,12 +181,13 @@ namespace Tests.Theraot.Threading.Needles
             Assert.IsFalse(c.IsAlive);
             Assert.IsTrue(c.IsCompleted);
         }
+
         [Test]
         public void ValueFactoryReentry()
         {
-            LazyNeedle<int>[] needle = {null};
+            LazyNeedle<int>[] needle = { null };
             needle[0] = new LazyNeedle<int>(() => ReferenceEquals(needle[0], null) ? 0 : needle[0].Value);
-            Assert.Throws(typeof (InvalidOperationException), needle[0].Initialize);
+            Assert.Throws(typeof(InvalidOperationException), needle[0].Initialize);
         }
 
         [Test]
@@ -229,6 +232,25 @@ namespace Tests.Theraot.Threading.Needles
             needle.Initialize();
             Assert.IsTrue(needle.IsCompleted);
             Assert.AreEqual(needle.Value, 5);
+        }
+
+        [Test]
+        public void WaitingNested()
+        {
+            LazyNeedle<int>[] needle = { null };
+            needle[0] = new LazyNeedle<int>(() =>
+            {
+                if (ReferenceEquals(needle[0], null))
+                {
+                    return 0;
+                }
+                else
+                {
+                    needle[0].Wait();
+                    return 0;
+                }
+            });
+            Assert.Throws(typeof(InvalidOperationException), needle[0].Initialize);
         }
     }
 }
