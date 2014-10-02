@@ -37,7 +37,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="System\Collections\Generic\HashSetTests.cs" />
+    <Compile Include="System\Collections\Generic\HashSetTest.cs" />
     <Compile Include="System\Collections\Generic\SortedSetTest.cs" />
     <Compile Include="Theraot\Collections\Specialized\AVLTest.cs" />
   </ItemGroup>
@@ -46,6 +46,9 @@
       <Project>{b5078871-4299-49ed-b921-3b5ebe57336a}</Project>
       <Name>Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Theraot\Threading\Needles\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
