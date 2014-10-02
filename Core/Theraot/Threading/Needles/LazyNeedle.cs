@@ -8,36 +8,34 @@ namespace Theraot.Threading.Needles
     [global::System.Diagnostics.DebuggerNonUserCode]
     public class LazyNeedle<T> : Needle<T>, ICacheNeedle<T>, IEquatable<LazyNeedle<T>>, IPromise<T>
     {
-        private const int INT_StatusCompleted = 1;
-        private const int INT_StatusFree = 0;
-        private const int INT_StatusWorking = 2;
-        private readonly Func<T> _valueFactory;
-        private int _status;
+        private Thread _initializerThread;
+        private Func<T> _valueFactory;
         private StructNeedle<ManualResetEventSlim> _waitHandle;
 
         public LazyNeedle(Func<T> valueFactory)
-            : this(valueFactory, default(T))
+            : base(default(T))
         {
-            //Empty
+            _valueFactory = Check.NotNullArgument(valueFactory, "valueFactory");
+            _waitHandle = new StructNeedle<ManualResetEventSlim>(new ManualResetEventSlim(false));
         }
 
-        public LazyNeedle(Func<T> valueFactory, T target)
+        public LazyNeedle(T target)
             : base(target)
         {
-            Func<T> __valueFactory = valueFactory ?? FuncHelper.GetReturnFunc(target);
-            Thread thread = null;
-            _waitHandle = new StructNeedle<ManualResetEventSlim>(new ManualResetEventSlim(false));
-            _valueFactory = () => FullMode(__valueFactory, ref thread);
+            _valueFactory = null;
+            _waitHandle = null;
+        }
+
+        public LazyNeedle()
+            : base(default(T))
+        {
+            _valueFactory = null;
+            _waitHandle = null;
         }
 
         ~LazyNeedle()
         {
-            var waitHandle = _waitHandle.Value;
-            if (!ReferenceEquals(waitHandle, null))
-            {
-                waitHandle.Dispose();
-            }
-            _waitHandle.Value = null;
+            ReleaseWaitHandle();
         }
 
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
@@ -71,7 +69,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return Thread.VolatileRead(ref _status) == INT_StatusCompleted;
+                return !_waitHandle.IsAlive;
             }
         }
 
@@ -85,7 +83,8 @@ namespace Theraot.Threading.Needles
             set
             {
                 SetTarget(value);
-                Thread.VolatileWrite(ref _status, INT_StatusCompleted);
+                _valueFactory = null;
+                ReleaseWaitHandle();
             }
         }
 
@@ -115,18 +114,30 @@ namespace Theraot.Threading.Needles
 
         public virtual void Initialize()
         {
-            _valueFactory.Invoke();
+            InitializeExtracted();
         }
 
         public void Wait()
         {
-            _waitHandle.Value.Wait();
+            var handle = _waitHandle.Value;
+            if (handle != null)
+            {
+                try
+                {
+                    handle.Wait();
+                }
+                catch
+                {
+                    // Pokemon
+                    // Came late to the party, initialization was done
+                }
+            }
         }
 
         protected virtual void Initialize(Action beforeInitialize)
         {
             var _beforeInitialize = Check.NotNullArgument(beforeInitialize, "beforeInitialize");
-            if (Thread.VolatileRead(ref _status) == INT_StatusFree)
+            if (ThreadingHelper.VolatileRead(ref _valueFactory) != null)
             {
                 try
                 {
@@ -134,55 +145,75 @@ namespace Theraot.Threading.Needles
                 }
                 finally
                 {
-                    _valueFactory.Invoke();
+                    InitializeExtracted();
                 }
             }
         }
 
-        private T FullMode(Func<T> valueFactory, ref Thread thread)
+        private void InitializeExtracted()
         {
         back:
-            if (Interlocked.CompareExchange(ref _status, INT_StatusWorking, INT_StatusFree) == INT_StatusFree)
+            var valueFactory = Interlocked.Exchange(ref _valueFactory, null);
+            if (valueFactory == null)
             {
-                try
-                {
-                    thread = Thread.CurrentThread;
-                    GC.KeepAlive(thread);
-                    var _target = valueFactory.Invoke();
-                    SetTarget(_target);
-                    Thread.VolatileWrite(ref _status, INT_StatusCompleted);
-                    return _target;
-                }
-                catch (Exception)
-                {
-                    Thread.VolatileWrite(ref _status, INT_StatusFree);
-                    throw;
-                }
-                finally
-                {
-                    _waitHandle.Value.Set();
-                    thread = null;
-                }
-            }
-            else
-            {
-                if (ReferenceEquals(thread, Thread.CurrentThread))
+                if (_initializerThread == Thread.CurrentThread)
                 {
                     throw new InvalidOperationException();
                 }
                 else
                 {
-                    _waitHandle.Value.Wait();
-                    if (Thread.VolatileRead(ref _status) == INT_StatusCompleted)
+                    var handle = _waitHandle.Value;
+                    if (handle != null)
                     {
-                        return base.Value;
-                    }
-                    else
-                    {
-                        goto back;
+                        try
+                        {
+                            _waitHandle.Value.Wait();
+                            if (ThreadingHelper.VolatileRead(ref _valueFactory) != null)
+                            {
+                                goto back;
+                            }
+                            else
+                            {
+                                ReleaseWaitHandle();
+                            }
+                        }
+                        catch
+                        {
+                            // Pokemon
+                            // Came late to the party, initialization is done
+                        }
                     }
                 }
             }
+            else
+            {
+                _initializerThread = Thread.CurrentThread;
+                try
+                {
+                    SetTarget(valueFactory.Invoke());
+                    ReleaseWaitHandle();
+                }
+                catch (Exception)
+                {
+                    ThreadingHelper.VolatileWrite(ref _valueFactory, valueFactory);
+                    _waitHandle.Value.Set();
+                    throw;
+                }
+                finally
+                {
+                    _initializerThread = null;
+                }
+            }
+        }
+
+        private void ReleaseWaitHandle()
+        {
+            var waitHandle = _waitHandle.Value;
+            if (!ReferenceEquals(waitHandle, null))
+            {
+                waitHandle.Dispose();
+            }
+            _waitHandle.Value = null;
         }
     }
 }

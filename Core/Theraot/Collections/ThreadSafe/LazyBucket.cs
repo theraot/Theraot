@@ -132,7 +132,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public bool Insert(int index, T item)
         {
-            return _entries.Insert(index, new LazyNeedle<T>(null, item));
+            return _entries.Insert(index, new LazyNeedle<T>(item));
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace Theraot.Collections.ThreadSafe
         public bool Insert(int index, T item, out T previous)
         {
             LazyNeedle<T> _previous;
-            if (_entries.Insert(index, new LazyNeedle<T>(null, item), out _previous))
+            if (_entries.Insert(index, new LazyNeedle<T>(item), out _previous))
             {
                 previous = default(T);
                 return true;
@@ -229,7 +229,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool Set(int index, T item, out bool isNew)
         {
-            return _entries.Set(index, new LazyNeedle<T>(null, item), out isNew);
+            return _entries.Set(index, new LazyNeedle<T>(item), out isNew);
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

@@ -40,6 +40,9 @@
     <Compile Include="System\Collections\Generic\HashSetTest.cs" />
     <Compile Include="System\Collections\Generic\SortedSetTest.cs" />
     <Compile Include="Theraot\Collections\Specialized\AVLTest.cs" />
+    <Compile Include="Theraot\Threading\Needles\LazyNeedleTest.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">
@@ -47,9 +50,7 @@
       <Name>Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Theraot\Threading\Needles\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
