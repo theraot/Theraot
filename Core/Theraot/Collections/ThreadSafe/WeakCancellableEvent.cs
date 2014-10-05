@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel;
 
 namespace Theraot.Collections.ThreadSafe
@@ -13,7 +12,7 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         public WeakCancellableEvent(bool reentryGuard)
-            :base(reentryGuard)
+            : base(reentryGuard)
         {
             //Empty
         }

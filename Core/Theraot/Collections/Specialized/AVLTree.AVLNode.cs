@@ -168,7 +168,7 @@ namespace Theraot.Collections.Specialized
                 if (node != null)
                 {
                     var stack = new ExtendedStack<AVLNode>();
-                    for (; ; )
+                    for (;;)
                     {
                         while (node != null)
                         {
