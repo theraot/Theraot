@@ -20,6 +20,28 @@ namespace Theraot.Threading.Needles
             _waitHandle = new StructNeedle<ManualResetEventSlim>(new ManualResetEventSlim(false));
         }
 
+        public LazyNeedle(Func<T> valueFactory, bool cacheExceptions)
+            : base(default(T))
+        {
+            _valueFactory = Check.NotNullArgument(valueFactory, "valueFactory");
+            if (cacheExceptions)
+            {
+                _valueFactory = () =>
+                {
+                    try
+                    {
+                        return valueFactory.Invoke();
+                    }
+                    catch (Exception exc)
+                    {
+                        _valueFactory = FuncHelper.GetThrowFunc<T>(exc);
+                        throw;
+                    }
+                };
+            }
+            _waitHandle = new StructNeedle<ManualResetEventSlim>(new ManualResetEventSlim(false));
+        }
+
         public LazyNeedle(T target)
             : base(target)
         {
@@ -203,7 +225,10 @@ namespace Theraot.Threading.Needles
                 }
                 catch (Exception)
                 {
-                    ThreadingHelper.VolatileWrite(ref _valueFactory, valueFactory);
+                    if (_valueFactory == null)
+                    {
+                        ThreadingHelper.VolatileWrite(ref _valueFactory, valueFactory);
+                    }
                     _waitHandle.Value.Set();
                     throw;
                 }

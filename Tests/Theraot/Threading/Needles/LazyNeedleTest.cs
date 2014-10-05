@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Reflection;
+using NUnit.Framework;
 using System;
 using System.Threading;
 using Theraot.Threading.Needles;
@@ -251,6 +252,39 @@ namespace Tests.Theraot.Threading.Needles
                 }
             });
             Assert.Throws(typeof(InvalidOperationException), needle[0].Initialize);
+        }
+
+        [Test]
+        public void CacheException()
+        {
+            int count = 0;
+
+            // No Cache
+            var a = new LazyNeedle<int>(() =>
+            {
+                if (count == 0)
+                {
+                    count++;
+                    throw new InvalidOperationException();
+                }
+                else return count;
+            });
+            Assert.Throws(typeof(InvalidOperationException), () => GC.KeepAlive(a.Value));
+            Assert.AreEqual(a.Value, 1);
+
+            // Cache
+            count = 0;
+            a = new LazyNeedle<int>(() =>
+            {
+                if (count == 0)
+                {
+                    count++;
+                    throw new InvalidOperationException();
+                }
+                else return count;
+            }, true);
+            Assert.Throws(typeof(InvalidOperationException), () => GC.KeepAlive(a.Value));
+            Assert.Throws(typeof(InvalidOperationException), () => GC.KeepAlive(a.Value)); // Did cache
         }
     }
 }
