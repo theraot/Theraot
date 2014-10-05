@@ -3,8 +3,6 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{4B27EBC2-6E81-4163-BFB9-BEF871F33E16}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -143,6 +141,8 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>5</LangVersion>
     <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET30|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -152,6 +152,8 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>5</LangVersion>
     <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET35|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -161,12 +163,18 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <LangVersion>5</LangVersion>
     <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET40|AnyCPU'">
     <OutputPath>bin\Debug_NET40\</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET45|AnyCPU'">
     <OutputPath>bin\Debug_NET45\</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="DisposableTemplate.cs">
@@ -206,7 +214,7 @@
       <Properties>
         <Policies>
           <TextStylePolicy EolMarker="Windows" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/x-csharp" />
-          <CSharpFormattingPolicy IndentSwitchBody="True" AnonymousMethodBraceStyle="NextLine" PropertyBraceStyle="NextLine" PropertyGetBraceStyle="NextLine" PropertySetBraceStyle="NextLine" EventBraceStyle="NextLine" EventAddBraceStyle="NextLine" EventRemoveBraceStyle="NextLine" StatementBraceStyle="NextLine" ElseNewLinePlacement="NewLine" ElseIfNewLinePlacement="SameLine" CatchNewLinePlacement="NewLine" FinallyNewLinePlacement="NewLine" ArrayInitializerWrapping="DoNotChange" ArrayInitializerBraceStyle="NextLine" BeforeMethodDeclarationParentheses="False" BeforeMethodCallParentheses="False" BeforeConstructorDeclarationParentheses="False" BeforeDelegateDeclarationParentheses="False" NewParentheses="False" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
+          <CSharpFormattingPolicy IndentSwitchBody="True" AnonymousMethodBraceStyle="NextLine" PropertyBraceStyle="NextLine" PropertyGetBraceStyle="NextLine" PropertySetBraceStyle="NextLine" EventBraceStyle="NextLine" EventAddBraceStyle="NextLine" EventRemoveBraceStyle="NextLine" StatementBraceStyle="NextLine" ElseNewLinePlacement="NewLine" CatchNewLinePlacement="NewLine" FinallyNewLinePlacement="NewLine" ArrayInitializerWrapping="DoNotChange" ArrayInitializerBraceStyle="NextLine" BeforeMethodDeclarationParentheses="False" BeforeMethodCallParentheses="False" BeforeConstructorDeclarationParentheses="False" BeforeDelegateDeclarationParentheses="False" NewParentheses="False" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
           <TextStylePolicy EolMarker="Windows" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
           <TextStylePolicy EolMarker="Windows" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="application/config+xml" />
           <XmlFormattingPolicy inheritsSet="null" scope="application/config+xml" />
