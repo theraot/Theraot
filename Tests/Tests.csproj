@@ -47,6 +47,7 @@
     <Compile Include="System\LazyTestEx.cs" />
     <Compile Include="System\LazyTest.cs" />
     <Compile Include="System\Linq\EnumerableAsQueryableTest.cs" />
+    <Compile Include="System\Linq\LookUpTest.cs" />
     <Compile Include="System\Threading\LazyInitializerTest.cs" />
     <Compile Include="System\Threading\VolatileTest.cs" />
     <Compile Include="System\TupleTest.cs" />
