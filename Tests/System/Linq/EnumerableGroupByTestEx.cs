@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using NUnit.Framework;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using NUnit.Framework;
-using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
-using System.Reflection;
-using System.Collections;
+using Theraot.Core;
 
 namespace MonoTests.System.Linq
 {
-
     [TestFixture]
     public class EnumerableAsQueryableTestEx
     {
@@ -63,7 +56,7 @@ namespace MonoTests.System.Linq
         public void GroupByOverloadC()
         {
             var _src = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = _src.GroupBy<int, bool, string>(i => i > 5, (key, group) => string.Concat(group.ToArray()), null);
+            var r = _src.GroupBy<int, bool, string>(i => i > 5, (key, group) => StringHelper.Concat(group.ToArray()), null);
             var _r = r.ToArray();
             Assert.AreEqual(_r.Length, 2);
             Assert.AreEqual(_r[0], "12345");
@@ -74,7 +67,7 @@ namespace MonoTests.System.Linq
         public void GroupByOverloadD()
         {
             var _src = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = _src.GroupBy<int, bool, int, string>(i => i > 5, j => j + 1, (key, group) => string.Concat(group.ToArray()), null);
+            var r = _src.GroupBy<int, bool, int, string>(i => i > 5, j => j + 1, (key, group) => StringHelper.Concat(group.ToArray()), null);
             var _r = r.ToArray();
             Assert.AreEqual(_r.Length, 2);
             Assert.AreEqual(_r[0], "23456");
