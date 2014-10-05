@@ -85,7 +85,11 @@ namespace Theraot.Threading
 
         public static T[] GetArray(int capacity)
         {
-            if (capacity < INT_MinCapacity)
+            if (capacity == 0)
+            {
+                return _emptyArray;
+            }
+            else if (capacity < INT_MinCapacity)
             {
                 capacity = INT_MinCapacity;
             }
