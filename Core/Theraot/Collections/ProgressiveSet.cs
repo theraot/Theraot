@@ -33,46 +33,56 @@ namespace Theraot.Collections
         }
 
         protected ProgressiveSet(IProgressor<T> wrapped, ISet<T> cache, IEqualityComparer<T> comparer)
-            : base((out T value) =>
-            {
-            again:
-                if (wrapped.TryTake(out value))
+            : base
+            (
+                (out T value) =>
                 {
-                    if (cache.Contains(value))
+                again:
+                    if (wrapped.TryTake(out value))
                     {
-                        goto again;
+                        if (cache.Contains(value))
+                        {
+                            goto again;
+                        }
+                        return true;
                     }
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }, cache, comparer)
+                    else
+                    {
+                        return false;
+                    }
+                },
+                cache,
+                comparer
+            )
         {
             //Empty
         }
 
         private ProgressiveSet(IEnumerator<T> enumerator, ISet<T> cache, IEqualityComparer<T> comparer)
-            : base((out T value) =>
-            {
-            again:
-                if (enumerator.MoveNext())
+            : base
+            (
+                (out T value) =>
                 {
-                    value = enumerator.Current;
-                    if (cache.Contains(value))
+                again:
+                    if (enumerator.MoveNext())
                     {
-                        goto again;
+                        value = enumerator.Current;
+                        if (cache.Contains(value))
+                        {
+                            goto again;
+                        }
+                        return true;
                     }
-                    return true;
-                }
-                else
-                {
-                    enumerator.Dispose();
-                    value = default(T);
-                    return false;
-                }
-            }, cache, comparer)
+                    else
+                    {
+                        enumerator.Dispose();
+                        value = default(T);
+                        return false;
+                    }
+                },
+                cache,
+                comparer
+            )
         {
             //Empty
         }
