@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Theraot.Core;
 
 namespace Theraot.Collections
 {
@@ -26,13 +27,52 @@ namespace Theraot.Collections
         }
 
         protected ProgressiveSet(IEnumerable<T> wrapped, ISet<T> cache, IEqualityComparer<T> comparer)
-            : base(wrapped, cache, comparer)
+            : this(Check.NotNullArgument(wrapped, "wrapped").GetEnumerator(), cache, comparer)
         {
             //Empty
         }
 
         protected ProgressiveSet(IProgressor<T> wrapped, ISet<T> cache, IEqualityComparer<T> comparer)
-            : base(wrapped, cache, comparer)
+            : base((out T value) =>
+            {
+            again:
+                if (wrapped.TryTake(out value))
+                {
+                    if (cache.Contains(value))
+                    {
+                        goto again;
+                    }
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }, cache, comparer)
+        {
+            //Empty
+        }
+
+        private ProgressiveSet(IEnumerator<T> enumerator, ISet<T> cache, IEqualityComparer<T> comparer)
+            : base((out T value) =>
+            {
+            again:
+                if (enumerator.MoveNext())
+                {
+                    value = enumerator.Current;
+                    if (cache.Contains(value))
+                    {
+                        goto again;
+                    }
+                    return true;
+                }
+                else
+                {
+                    enumerator.Dispose();
+                    value = default(T);
+                    return false;
+                }
+            }, cache, comparer)
         {
             //Empty
         }

@@ -42,6 +42,14 @@ namespace Theraot.Collections
             _comparer = comparer ?? EqualityComparer<T>.Default;
         }
 
+        protected ProgressiveCollection(TryTake<T> tryTake, ICollection<T> cache, IEqualityComparer<T> comparer)
+        {
+            _cache = Check.NotNullArgument(cache, "cache");
+            _progressor = new Progressor<T>(tryTake);
+            _progressor.SubscribeAction(_cache.Add);
+            _comparer = comparer ?? EqualityComparer<T>.Default;
+        }
+
         public int Count
         {
             get
