@@ -143,7 +143,7 @@ namespace Theraot.Core
                 }
                 else
                 {
-                    return (TReturn)_constructorInfo.Invoke(_emptyObjects);
+                    return (TReturn)_constructorInfo.Invoke(EmptyObjects);
                 }
             }
         }
