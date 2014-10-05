@@ -136,6 +136,7 @@ namespace System.Linq
 
         public static int Count<TSource>(this IEnumerable<TSource> source)
         {
+            Check.NotNullArgument(source, "source");
             var collection = source as ICollection<TSource>;
             if (collection == null)
             {
