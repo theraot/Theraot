@@ -91,14 +91,12 @@ namespace System.Linq
         private ICollection<TElement> GetOrCreateGrouping(TKey key)
         {
             Grouping grouping;
-            if (_groupings.TryGetValue(key, out grouping))
+            if (!_groupings.TryGetValue(key, out grouping))
             {
-                return grouping.Items;
+                grouping = new Grouping(key);
+                _groupings.Add(key, grouping);
             }
-            else
-            {
-                return EmptySet<TElement>.Instance;
-            }
+            return grouping.Items;
         }
 
         internal sealed class Grouping : IGrouping<TKey, TElement>
