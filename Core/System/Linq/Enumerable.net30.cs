@@ -356,7 +356,7 @@ namespace System.Linq
 
         public static IEnumerable<IGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer)
         {
-            return Check.NotNullArgument(source, "source").ToLookup(Check.NotNullArgument(keySelector, "keySelector"), Check.NotNullArgument(elementSelector, "elementSelector"), Check.NotNullArgument(comparer, "comparer"));
+            return Check.NotNullArgument(source, "source").ToLookup(Check.NotNullArgument(keySelector, "keySelector"), Check.NotNullArgument(elementSelector, "elementSelector"), comparer ?? EqualityComparer<TKey>.Default);
         }
 
         public static IEnumerable<TResult> GroupBy<TSource, TKey, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TKey, IEnumerable<TSource>, TResult> resultSelector)
@@ -372,7 +372,7 @@ namespace System.Linq
                        (
                            Check.NotNullArgument(source, "source"),
                            Check.NotNullArgument(keySelector, "keySelector"),
-                           Check.NotNullArgument(comparer, "comparer")
+                           comparer ?? EqualityComparer<TKey>.Default
                        ),
                        grouping => resultSelector(grouping.Key, grouping)
                    );
@@ -392,7 +392,7 @@ namespace System.Linq
                            Check.NotNullArgument(source, "source"),
                            Check.NotNullArgument(keySelector, "keySelector"),
                            Check.NotNullArgument(elementSelector, "elementSelector"),
-                           Check.NotNullArgument(comparer, "comparer")
+                           comparer ?? EqualityComparer<TKey>.Default
                        ),
                        grouping => Check.NotNullArgument(resultSelector, "resultSelector")(grouping.Key, grouping)
                    );
