@@ -8,6 +8,7 @@ namespace Theraot.Threading.Needles
     [global::System.Diagnostics.DebuggerNonUserCode]
     public class LazyNeedle<T> : Needle<T>, ICacheNeedle<T>, IEquatable<LazyNeedle<T>>, IPromise<T>
     {
+        [NonSerialized]
         private Thread _initializerThread;
         private Func<T> _valueFactory;
         private StructNeedle<ManualResetEventSlim> _waitHandle;

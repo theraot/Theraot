@@ -352,6 +352,7 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+        [SecurityPermission(SecurityAction.Demand, Flags = SecurityPermissionFlag.SerializationFormatter)]
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("dictionary", _dictionary, typeof(Dictionary<TKey, TValue>));
