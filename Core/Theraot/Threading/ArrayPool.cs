@@ -4,6 +4,7 @@ using System.Threading;
 using Theraot.Collections;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
+using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
 {
@@ -18,7 +19,7 @@ namespace Theraot.Threading
         private static readonly List<ArrayHolder> _dirtyData;
         private static readonly T[] _emptyArray;
         private static readonly ReentryGuard _guard;
-        private static readonly Work _recycle;
+        private static readonly LazyNeedle<Work> _recycle;
         private static int _done;
 
         static ArrayPool()
@@ -32,7 +33,7 @@ namespace Theraot.Threading
                 _emptyArray = new T[0];
             }
             //---
-            _recycle = WorkContext.DefaultContext.AddWork(CleanUp);
+            _recycle = new LazyNeedle<Work>(() => WorkContext.DefaultContext.AddWork(CleanUp));
             _data = new LazyBucket<FixedSizeQueueBucket<ArrayHolder>>
             (
                 _ => new FixedSizeQueueBucket<ArrayHolder>(INT_PoolSize),
@@ -131,7 +132,7 @@ namespace Theraot.Threading
                 var holder = new ArrayHolder(array);
                 bucket.Add(holder);
                 _dirtyData.Add(holder);
-                _recycle.Start();
+                _recycle.Value.Start();
             }
         }
 
