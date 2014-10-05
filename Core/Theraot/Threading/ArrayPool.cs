@@ -23,7 +23,14 @@ namespace Theraot.Threading
 
         static ArrayPool()
         {
-            _emptyArray = new T[0];
+            if (typeof(T) == typeof(Type))
+            {
+                _emptyArray = (T[])(object)Type.EmptyTypes;
+            }
+            else
+            {
+                _emptyArray = new T[0];
+            }
             //---
             _recycle = WorkContext.DefaultContext.AddWork(CleanUp);
             _data = new LazyBucket<FixedSizeQueueBucket<ArrayHolder>>
