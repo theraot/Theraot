@@ -628,15 +628,7 @@ namespace System.Linq
 
         public static IEnumerable<TSource> Reverse<TSource>(this IEnumerable<TSource> source)
         {
-            var stack = new Stack<TSource>();
-            foreach (TSource item in Check.NotNullArgument(source, "source"))
-            {
-                stack.Push(item);
-            }
-            foreach (TSource item in stack)
-            {
-                yield return item;
-            }
+            return ReverseExtracted(Check.NotNullArgument(source, "source"));
         }
 
         public static IEnumerable<TResult> Select<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector)
@@ -1037,6 +1029,19 @@ namespace System.Linq
             for (int index = 0; index < count; index++)
             {
                 yield return element;
+            }
+        }
+
+        private static IEnumerable<TSource> ReverseExtracted<TSource>(IEnumerable<TSource> source)
+        {
+            var stack = new Stack<TSource>();
+            foreach (TSource item in source)
+            {
+                stack.Push(item);
+            }
+            foreach (TSource item in stack)
+            {
+                yield return item;
             }
         }
 
