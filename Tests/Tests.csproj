@@ -17,7 +17,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET_4_0</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET_4_0;NET_4_5</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -47,6 +47,7 @@
     <Compile Include="System\LazyTestEx.cs" />
     <Compile Include="System\LazyTest.cs" />
     <Compile Include="System\Threading\LazyInitializerTest.cs" />
+    <Compile Include="System\Threading\VolatileTest.cs" />
     <Compile Include="System\TupleTest.cs" />
     <Compile Include="Theraot\Collections\Specialized\AVLTest.cs" />
     <Compile Include="Theraot\Threading\Needles\LazyNeedleTest.cs">
