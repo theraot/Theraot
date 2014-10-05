@@ -222,7 +222,7 @@ namespace System.Linq
             var _source = Check.NotNullArgument(source, "source");
             if (index < 0)
             {
-                throw new ArgumentOutOfRangeException("index", index, "index < 0");
+                return default(TSource);
             }
             else
             {
