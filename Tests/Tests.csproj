@@ -35,7 +35,7 @@
       <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="Theraot.Core">
-      <HintPath>..\Core\bin\Debug_NET20\Theraot.Core.dll</HintPath>
+      <HintPath>..\Core\bin\Debug\Theraot.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
