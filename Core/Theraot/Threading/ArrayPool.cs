@@ -16,12 +16,15 @@ namespace Theraot.Threading
 
         private static readonly LazyBucket<FixedSizeQueueBucket<ArrayHolder>> _data;
         private static readonly List<ArrayHolder> _dirtyData;
+        private static readonly T[] _emptyArray;
         private static readonly ReentryGuard _guard;
         private static readonly Work _recycle;
         private static int _done;
 
         static ArrayPool()
         {
+            _emptyArray = new T[0];
+            //---
             _recycle = WorkContext.DefaultContext.AddWork(CleanUp);
             _data = new LazyBucket<FixedSizeQueueBucket<ArrayHolder>>
             (
@@ -32,6 +35,14 @@ namespace Theraot.Threading
             _guard = new ReentryGuard();
             Thread.MemoryBarrier();
             Thread.VolatileWrite(ref _done, 1);
+        }
+
+        public static T[] EmptyArray
+        {
+            get
+            {
+                return _emptyArray;
+            }
         }
 
         public static bool DonateArray(T[] array)
