@@ -1588,12 +1588,12 @@ namespace Theraot.Collections
 
         public static int SymmetricExceptWith<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other)
         {
-            return collection.AddRange(Extensions.Where(other, input => !collection.Remove(input)));
+            return collection.AddRange(Extensions.Where(other.Distinct(), input => !collection.Remove(input)));
         }
 
         public static IEnumerable<TItem> SymmetricExceptWithEnumerable<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other)
         {
-            return collection.AddRangeEnumerable(Extensions.Where(other, input => !collection.Remove(input)));
+            return collection.AddRangeEnumerable(Extensions.Where(other.Distinct(), input => !collection.Remove(input)));
         }
 
         public static TItem TakeAndReturn<TItem>(this IDropPoint<TItem> dropPoint)
