@@ -270,22 +270,12 @@ namespace System.Linq
 
         public static IEnumerable<TSource> Except<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second)
         {
-            return Except(first, second, null);
+            return ExceptExtracted(Check.NotNullArgument(first, "first"), Check.NotNullArgument(second, "second"), null);
         }
 
         public static IEnumerable<TSource> Except<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
         {
-            comparer = comparer ?? EqualityComparer<TSource>.Default;
-            var _first = Check.NotNullArgument(first, "first");
-            var _second = Check.NotNullArgument(second, "second");
-            var items = new HashSet<TSource>(_second, comparer);
-            foreach (var item in _first)
-            {
-                if (items.Add(item))
-                {
-                    yield return item;
-                }
-            }
+            return ExceptExtracted(Check.NotNullArgument(first, "first"), Check.NotNullArgument(second, "second"), comparer);
         }
 
         public static TSource First<TSource>(this IEnumerable<TSource> source)
@@ -1022,6 +1012,19 @@ namespace System.Linq
                     found.Add(item, null);
                 }
                 yield return item;
+            }
+        }
+
+        private static IEnumerable<TSource> ExceptExtracted<TSource>(IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
+        {
+            comparer = comparer ?? EqualityComparer<TSource>.Default;
+            var items = new HashSet<TSource>(second, comparer);
+            foreach (var item in first)
+            {
+                if (items.Add(item))
+                {
+                    yield return item;
+                }
             }
         }
 
