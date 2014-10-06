@@ -283,6 +283,23 @@ namespace Theraot.Collections
             }
         }
 
+        public static ProgressiveLookup<TKey, TValue> Create(IEnumerable<TValue> source, Func<TValue, TKey> keySelector, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
+        {
+            Check.NotNullArgument(source, "source");
+            Check.NotNullArgument(keySelector, "keySelector");
+            var wrapped = source.ConvertProgressive(item => new KeyValuePair<TKey, TValue>(keySelector.Invoke(item), item));
+            return new ProgressiveLookup<TKey, TValue>(wrapped, keyComparer, valueComparer);
+        }
+
+        public static ProgressiveLookup<TKey, TValue> Create<TSource>(IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TValue> elementSelector, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
+        {
+            Check.NotNullArgument(source, "source");
+            Check.NotNullArgument(elementSelector, "elementSelector");
+            Check.NotNullArgument(keySelector, "keySelector");
+            var wrapped = source.ConvertProgressive(item => new KeyValuePair<TKey, TValue>(keySelector.Invoke(item), elementSelector.Invoke(item)));
+            return new ProgressiveLookup<TKey, TValue>(wrapped, keyComparer, valueComparer);
+        }
+
         public bool Contains(KeyValuePair<TKey, IExtendedGrouping<TKey, TValue>> item)
         {
             if (_cache.Contains(item))
