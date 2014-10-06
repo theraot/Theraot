@@ -1,4 +1,6 @@
 ﻿using NUnit.Framework;
+using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Theraot.Core;
@@ -8,6 +10,17 @@ namespace MonoTests.System.Linq
     [TestFixture]
     public class EnumerableAsQueryableTestEx
     {
+        [Test]
+        public void GroupByIsDefered()
+        {
+            var _src = new IterateAndCount(10);
+            var a = _src.GroupBy<int, bool>(i => i > 5, null);
+            var b = _src.GroupBy<int, bool, string>(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            var c = _src.GroupBy<int, bool, string>(i => i > 5, (key, group) => StringHelper.Concat(group.ToArray()), null);
+            var d = _src.GroupBy<int, bool, int, string>(i => i > 5, j => j + 1, (key, group) => StringHelper.Concat(group.ToArray()), null);
+            Assert.AreEqual(_src.Total, 0);
+        }
+
         [Test]
         public void GroupByOverloadA()
         {
@@ -72,6 +85,45 @@ namespace MonoTests.System.Linq
             Assert.AreEqual(_r.Length, 2);
             Assert.AreEqual(_r[0], "23456");
             Assert.AreEqual(_r[1], "7891011");
+        }
+
+        [Test]
+        public void ToLookupIsImmediate()
+        {
+            var _src = new IterateAndCount(10);
+            var a = _src.ToLookup(i => i > 5, null);
+            var b = _src.ToLookup<int, bool, string>(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            Assert.AreEqual(_src.Total, 20);
+        }
+
+        public class IterateAndCount : IEnumerable<int>
+        {
+            private readonly int _count;
+            private int _total = 0;
+
+            public IterateAndCount(int count)
+            {
+                _count = count;
+            }
+
+            public int Total
+            {
+                get { return _total; }
+            }
+
+            public IEnumerator<int> GetEnumerator()
+            {
+                for (int index = 0; index < _count; index++)
+                {
+                    _total = Total + 1;
+                    yield return Total;
+                }
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
         }
     }
 }
