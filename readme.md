@@ -202,7 +202,9 @@ The following are the notable methods that has been added to existing types:
 
 Others:
 
-  - The class `ReaderWriterLockSlim` was added in .NET 3.5, if `ReaderWriterLock` is not good enough, I suggest the use of memory transaction via `Theraot.Threading.Needles.Transact`.
+  - The class `ReaderWriterLockSlim` was added in .NET 3.5, if `ReaderWriterLock` is not good enough:
+    - Try using `Theraot.Threading.ReadWriteLock`.
+    - Otherwise use of memory transaction via `Theraot.Threading.Needles.Transact`.
   - The classes added in .NET 4.5 that require `EventHandler<T>` without the generic constraint may get backported using `Theraot.Core.NewEventHandler<T>`. Avoid using `EventHandler<T>` explicitly in those cases.
   - The classes added in .NET 4.0 or .NET 4.5 that require `OperationCanceledException.CancellationToken` et al. may get backported using `Theraot.Core.NewOperationCanceledException`. Avoid creating this exceptions yourself.
   - The class `TimeZoneInfo` was added in .NET 3.5... pending.

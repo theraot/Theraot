@@ -58,6 +58,7 @@
     <Compile Include="Theraot\Threading\Needles\LazyNeedleTest.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Theraot\Threading\ReadWriteLockTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

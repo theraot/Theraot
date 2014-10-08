@@ -462,6 +462,7 @@
       <DependentUpon>WeakNeedle.disposable.tt</DependentUpon>
     </Compile>
     <Compile Include="Theraot\Threading\ArrayPool.cs" />
+    <Compile Include="Theraot\Threading\ReadWriteLock.cs" />
     <Compile Include="Theraot\Threading\ReentryGuard.cs" />
     <Compile Include="System\Threading\ThreadLocal.net35.cs">
       <SubType>Code</SubType>
