@@ -277,6 +277,8 @@
     <Compile Include="System\Threading\SpinWait.net35.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Theraot\Collections\ActionObserver.cs" />
+    <Compile Include="Theraot\Collections\ObservableExtensions.cs" />
     <Compile Include="Theraot\Collections\Specialized\FlagArray.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\WeakCancellableEvent.cs" />
     <Compile Include="Theraot\Core\CancellationTokenHelper.cs" />
