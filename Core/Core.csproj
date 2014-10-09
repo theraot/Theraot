@@ -483,17 +483,12 @@
     <Compile Include="Theraot\Collections\IExtendedGrouping.cs" />
     <Compile Include="Theraot\Collections\IExtendedLookup.cs" />
     <Compile Include="Theraot\Collections\IExtendedReadOnlyCollection.cs" />
-    <Compile Include="Theraot\Collections\IProgressor.cs" />
     <Compile Include="Theraot\Collections\IProxyObservable.cs" />
     <Compile Include="Theraot\Collections\KeyValuePairComparer.cs" />
     <Compile Include="Theraot\Collections\KeyValuePairEqualityComparer.cs" />
     <Compile Include="Theraot\Collections\ProgressiveLookup.cs" />
     <Compile Include="Theraot\Collections\Progressor.cs" />
-    <Compile Include="Theraot\Collections\ProgressorBase.cs" />
-    <Compile Include="Theraot\Collections\ProgressorBuilder.cs" />
-    <Compile Include="Theraot\Collections\ProgressorExtensions.cs" />
     <Compile Include="Theraot\Collections\ProxyObservable.cs" />
-    <Compile Include="Theraot\Collections\SilentProgressor.cs" />
     <Compile Include="Theraot\Collections\Specialized\AVLTree.cs" />
     <Compile Include="Theraot\Collections\Specialized\ConversionComparer.cs" />
     <Compile Include="Theraot\Collections\Specialized\AVLTree.AVLNode.cs" />

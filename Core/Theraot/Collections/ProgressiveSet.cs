@@ -20,7 +20,7 @@ namespace Theraot.Collections
             //Empty
         }
 
-        internal ProgressiveSet(IProgressor<T> wrapped, IEqualityComparer<T> comparer)
+        internal ProgressiveSet(Progressor<T> wrapped, IEqualityComparer<T> comparer)
             : this(wrapped, new ExtendedSet<T>(comparer), comparer)
         {
             //Empty
@@ -32,7 +32,7 @@ namespace Theraot.Collections
             //Empty
         }
 
-        protected ProgressiveSet(IProgressor<T> wrapped, ISet<T> cache, IEqualityComparer<T> comparer)
+        protected ProgressiveSet(Progressor<T> wrapped, ISet<T> cache, IEqualityComparer<T> comparer)
             : base
             (
                 (out T value) =>

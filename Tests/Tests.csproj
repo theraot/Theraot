@@ -54,6 +54,7 @@
     <Compile Include="System\Threading\LazyInitializerTest.cs" />
     <Compile Include="System\Threading\VolatileTest.cs" />
     <Compile Include="System\TupleTest.cs" />
+    <Compile Include="Theraot\Collections\ProgressorTest.cs" />
     <Compile Include="Theraot\Collections\Specialized\AVLTest.cs" />
     <Compile Include="Theraot\Threading\Needles\LazyNeedleTest.cs">
       <SubType>Code</SubType>

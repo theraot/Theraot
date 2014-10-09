@@ -11,7 +11,7 @@ namespace Theraot.Collections
         private EmptySet()
             : base(BuildEmptyEnumerable())
         {
-            Progressor.All().Consume();
+            Progressor.AsEnumerable().Consume();
         }
 
         public static EmptySet<T> Instance

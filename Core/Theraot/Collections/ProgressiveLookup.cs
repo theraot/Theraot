@@ -14,9 +14,9 @@ namespace Theraot.Collections
         private readonly IEqualityComparer<TValue> _itemComparer;
         private readonly IEqualityComparer<TKey> _keyComparer;
         private readonly ProgressiveSet<TKey> _keysReadonly;
-        private readonly IProgressor<KeyValuePair<TKey, TValue>> _lowProgressor;
+        private readonly Progressor<KeyValuePair<TKey, TValue>> _lowProgressor;
         private readonly IEqualityComparer<KeyValuePair<TKey, IExtendedGrouping<TKey, TValue>>> _pairComparer;
-        private readonly IProgressor<KeyValuePair<TKey, IExtendedGrouping<TKey, TValue>>> _progressor;
+        private readonly Progressor<KeyValuePair<TKey, IExtendedGrouping<TKey, TValue>>> _progressor;
         private readonly IEqualityComparer<IExtendedGrouping<TKey, TValue>> _valueComparer;
         private readonly ProgressiveSet<IExtendedGrouping<TKey, TValue>> _valuesReadonly;
 
@@ -40,29 +40,29 @@ namespace Theraot.Collections
             _valueComparer = EqualityComparer<IExtendedGrouping<TKey, TValue>>.Default;
             _pairComparer = new KeyValuePairEqualityComparer<TKey, IExtendedGrouping<TKey, TValue>>(_keyComparer, _valueComparer);
             _lowProgressor = new Progressor<KeyValuePair<TKey, TValue>>(wrapped);
-            _progressor = ProgressorBuilder.CreateConversionProgressor(_lowProgressor, Process);
-            _valuesReadonly = new ProgressiveSet<IExtendedGrouping<TKey, TValue>>(ProgressorBuilder.CreateConversionProgressor(_progressor, input => input.Value), _valueComparer);
-            _keysReadonly = new ProgressiveSet<TKey>(ProgressorBuilder.CreateConversionProgressor(_progressor, input => input.Key), keyComparer);
+            _progressor = Progressor<KeyValuePair<TKey, IExtendedGrouping<TKey, TValue>>>.CreateConverted(_lowProgressor, Process);
+            _valuesReadonly = new ProgressiveSet<IExtendedGrouping<TKey, TValue>>(Progressor<IExtendedGrouping<TKey, TValue>>.CreateConverted(_progressor, input => input.Value), _valueComparer);
+            _keysReadonly = new ProgressiveSet<TKey>(Progressor<TKey>.CreateConverted(_progressor, input => input.Key), keyComparer);
         }
 
-        protected ProgressiveLookup(IProgressor<KeyValuePair<TKey, TValue>> wrapped, IDictionary<TKey, IExtendedGrouping<TKey, TValue>> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> itemComparer)
+        protected ProgressiveLookup(Progressor<KeyValuePair<TKey, TValue>> wrapped, IDictionary<TKey, IExtendedGrouping<TKey, TValue>> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> itemComparer)
         {
             _cache = Check.NotNullArgument(cache, "cache");
             _keyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
             _itemComparer = itemComparer ?? EqualityComparer<TValue>.Default;
             _valueComparer = EqualityComparer<IExtendedGrouping<TKey, TValue>>.Default;
             _pairComparer = new KeyValuePairEqualityComparer<TKey, IExtendedGrouping<TKey, TValue>>(_keyComparer, _valueComparer);
-            _lowProgressor = ProgressorBuilder.CreateProgressor(wrapped);
-            _progressor = ProgressorBuilder.CreateConversionProgressor(_lowProgressor, Process);
-            _valuesReadonly = new ProgressiveSet<IExtendedGrouping<TKey, TValue>>(ProgressorBuilder.CreateConversionProgressor(_progressor, input => input.Value), _valueComparer);
-            _keysReadonly = new ProgressiveSet<TKey>(ProgressorBuilder.CreateConversionProgressor(_progressor, input => input.Key), keyComparer);
+            _lowProgressor = new Progressor<KeyValuePair<TKey, TValue>>(wrapped);
+            _progressor = Progressor<KeyValuePair<TKey, IExtendedGrouping<TKey, TValue>>>.CreateConverted(_lowProgressor, Process);
+            _valuesReadonly = new ProgressiveSet<IExtendedGrouping<TKey, TValue>>(Progressor<IExtendedGrouping<TKey, TValue>>.CreateConverted(_progressor, input => input.Value), _valueComparer);
+            _keysReadonly = new ProgressiveSet<TKey>(Progressor<TKey>.CreateConverted(_progressor, input => input.Key), keyComparer);
         }
 
         public int Count
         {
             get
             {
-                _progressor.All().Consume();
+                _progressor.AsEnumerable().Consume();
                 return _cache.Count;
             }
         }
@@ -208,7 +208,7 @@ namespace Theraot.Collections
             }
         }
 
-        protected IProgressor<KeyValuePair<TKey, IExtendedGrouping<TKey, TValue>>> Progressor
+        protected Progressor<KeyValuePair<TKey, IExtendedGrouping<TKey, TValue>>> Progressor
         {
             get
             {
@@ -285,19 +285,34 @@ namespace Theraot.Collections
 
         public static ProgressiveLookup<TKey, TValue> Create(IEnumerable<TValue> source, Func<TValue, TKey> keySelector, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
         {
-            Check.NotNullArgument(source, "source");
             Check.NotNullArgument(keySelector, "keySelector");
-            var wrapped = source.ConvertProgressive(item => new KeyValuePair<TKey, TValue>(keySelector.Invoke(item), item));
-            return new ProgressiveLookup<TKey, TValue>(wrapped, keyComparer, valueComparer);
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            else
+            {
+                var wrapped =
+                    source.ConvertProgressive(item => new KeyValuePair<TKey, TValue>(keySelector.Invoke(item), item));
+                return new ProgressiveLookup<TKey, TValue>(wrapped, keyComparer, valueComparer);
+            }
         }
 
         public static ProgressiveLookup<TKey, TValue> Create<TSource>(IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TValue> elementSelector, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
         {
-            Check.NotNullArgument(source, "source");
             Check.NotNullArgument(elementSelector, "elementSelector");
             Check.NotNullArgument(keySelector, "keySelector");
-            var wrapped = source.ConvertProgressive(item => new KeyValuePair<TKey, TValue>(keySelector.Invoke(item), elementSelector.Invoke(item)));
-            return new ProgressiveLookup<TKey, TValue>(wrapped, keyComparer, valueComparer);
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            else
+            {
+                var wrapped =
+                    source.ConvertProgressive(
+                        item => new KeyValuePair<TKey, TValue>(keySelector.Invoke(item), elementSelector.Invoke(item)));
+                return new ProgressiveLookup<TKey, TValue>(wrapped, keyComparer, valueComparer);
+            }
         }
 
         public bool Contains(KeyValuePair<TKey, IExtendedGrouping<TKey, TValue>> item)
@@ -364,13 +379,13 @@ namespace Theraot.Collections
 
         public void CopyTo(KeyValuePair<TKey, IExtendedGrouping<TKey, TValue>>[] array)
         {
-            _progressor.All().Consume();
+            _progressor.AsEnumerable().Consume();
             _cache.CopyTo(array, 0);
         }
 
         public void CopyTo(KeyValuePair<TKey, IExtendedGrouping<TKey, TValue>>[] array, int arrayIndex)
         {
-            _progressor.All().Consume();
+            _progressor.AsEnumerable().Consume();
             _cache.CopyTo(array, arrayIndex);
         }
 
@@ -383,13 +398,13 @@ namespace Theraot.Collections
 
         public void CopyTo(IExtendedGrouping<TKey, TValue>[] array, int arrayIndex)
         {
-            _progressor.All().Consume();
+            _progressor.AsEnumerable().Consume();
             _cache.Values.CopyTo(array, arrayIndex);
         }
 
         public void CopyTo(IExtendedGrouping<TKey, TValue>[] array)
         {
-            _progressor.All().Consume();
+            _progressor.AsEnumerable().Consume();
             _cache.Values.CopyTo(array, 0);
         }
 
@@ -540,7 +555,7 @@ namespace Theraot.Collections
             {
                 var newCollection = new Grouping
                 (
-                    ProgressorBuilder.CreateFilterProgressor
+                    Progressor<TValue>.CreatedFilteredConverted
                     (
                         _lowProgressor,
                         input => _keyComparer.Equals(input.Key, key),
@@ -561,9 +576,9 @@ namespace Theraot.Collections
             private readonly ICollection<TValue> _cache;
             private readonly IEqualityComparer<TValue> _comparer;
             private readonly TKey _key;
-            private readonly IProgressor<TValue> _progressor;
+            private readonly Progressor<TValue> _progressor;
 
-            internal Grouping(IProgressor<TValue> wrapped, IEqualityComparer<TValue> comparer, TKey key)
+            internal Grouping(Progressor<TValue> wrapped, IEqualityComparer<TValue> comparer, TKey key)
             {
                 _progressor = Check.NotNullArgument(wrapped, "wrapped");
                 _key = key;
@@ -575,7 +590,7 @@ namespace Theraot.Collections
             {
                 get
                 {
-                    _progressor.All().Consume();
+                    _progressor.AsEnumerable().Consume();
                     return _cache.Count;
                 }
             }
@@ -631,13 +646,13 @@ namespace Theraot.Collections
 
             public void CopyTo(TValue[] array)
             {
-                _progressor.All().Consume();
+                _progressor.AsEnumerable().Consume();
                 _cache.CopyTo(array, 0);
             }
 
             public void CopyTo(TValue[] array, int arrayIndex)
             {
-                _progressor.All().Consume();
+                _progressor.AsEnumerable().Consume();
                 _cache.CopyTo(array, arrayIndex);
             }
 
