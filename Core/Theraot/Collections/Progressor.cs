@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
@@ -237,6 +238,64 @@ namespace Theraot.Collections
                         }
                         value = default(T);
                         return false;
+                    }
+                    finally
+                    {
+                        ThreadingHelper.VolatileWrite(ref control, null);
+                    }
+                },
+                proxy
+            );
+        }
+
+        public static Progressor<T> CreateDistinct(Progressor<T> wrapped)
+        {
+            Thread control = null;
+
+            var buffer = new HashBucket<T, bool>();
+            Predicate<T> newFilter = item => ThreadingHelper.VolatileRead(ref control) != Thread.CurrentThread && !buffer.ContainsKey(item);
+            wrapped.SubscribeAction(item => { if (newFilter(item)) buffer.Add(item, false); });
+            var proxy = new ProxyObservable<T>();
+            wrapped.SubscribeFiltered
+            (
+                proxy,
+                item =>
+                {
+                    bool seen;
+                    return !buffer.TryGetValue(item, out seen) || !seen;
+                }
+            );
+            return new Progressor<T>
+            (
+                (out T value) =>
+                {
+                    try
+                    {
+                        ThreadingHelper.VolatileWrite(ref control, Thread.CurrentThread);
+                    again:
+                        foreach (var item in buffer.Where(item => !item.Value))
+                        {
+                            value = item.Key;
+                            buffer.Set(value, true);
+                            return true;
+                        }
+                        if (wrapped.TryTake(out value))
+                        {
+                            bool seen;
+                            if (!buffer.TryGetValue(value, out seen) || !seen)
+                            {
+                                buffer.Set(value, true);
+                                return true;
+                            }
+                            else
+                            {
+                                goto again;
+                            }
+                        }
+                        else
+                        {
+                            return false;
+                        }
                     }
                     finally
                     {

@@ -60,6 +60,31 @@ namespace Tests.Theraot.Collections
         }
 
         [Test]
+        public void DistinctProgressor()
+        {
+            var source = new Progressor<int>(new[] { 0, 0, 1, 1, 2, 0, 1, 3, 4, 4, 4, 4, 5, 5, 5, 0, 1, 3 });
+            var progresor = Progressor<int>.CreateDistinct(source);
+            int indexA = 0;
+            int indexB = 0;
+            progresor.SubscribeAction
+            (
+                value =>
+                {
+                    Assert.AreEqual(value, indexB);
+                    indexB++;
+                }
+            );
+            int item;
+            while (progresor.TryTake(out item))
+            {
+                Assert.AreEqual(item, indexA);
+                indexA++;
+            }
+            Assert.AreEqual(indexA, 6);
+            Assert.AreEqual(indexA, indexB);
+        }
+
+        [Test]
         public void EnumerableProgressor()
         {
             var source = new[] { 0, 1, 2, 3, 4, 5 };
