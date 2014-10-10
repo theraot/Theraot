@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace Theraot.Threading
 {
-    internal interface IReadWriteLock
+    internal interface IReadWriteLock : IDisposable
     {
         bool CurrentThreadIsReader { get; }
 
@@ -22,7 +22,7 @@ namespace Theraot.Threading
         bool TryEnterWrite(out IDisposable engagement);
     }
 
-    public class ReadWriteLock : Theraot.Threading.IReadWriteLock
+    public sealed class ReadWriteLock : Theraot.Threading.IReadWriteLock, IDisposable
     {
         private readonly IReadWriteLock _wrapped;
 
@@ -75,6 +75,11 @@ namespace Theraot.Threading
             }
         }
 
+        public void Dispose()
+        {
+            _wrapped.Dispose();
+        }
+
         public IDisposable EnterRead()
         {
             return _wrapped.EnterRead();
@@ -96,11 +101,11 @@ namespace Theraot.Threading
         }
     }
 
-    internal class NoReentrantReadWriteLock : Theraot.Threading.IReadWriteLock
+    internal sealed partial class NoReentrantReadWriteLock : Theraot.Threading.IReadWriteLock
     {
-        private readonly ManualResetEventSlim _freeToRead = new ManualResetEventSlim(false);
-        private readonly ManualResetEventSlim _freeToWrite = new ManualResetEventSlim(false);
         private int _edge;
+        private ManualResetEventSlim _freeToRead = new ManualResetEventSlim(false);
+        private ManualResetEventSlim _freeToWrite = new ManualResetEventSlim(false);
         private int _master;
         private Thread _ownerThread;
         private int _readCount;
@@ -326,12 +331,12 @@ namespace Theraot.Threading
         }
     }
 
-    internal class ReentrantReadWriteLock : Theraot.Threading.IReadWriteLock
+    internal sealed partial class ReentrantReadWriteLock : Theraot.Threading.IReadWriteLock
     {
-        private readonly NoTrackingThreadLocal<int> _currentReadingCount = new NoTrackingThreadLocal<int>(() => 0);
-        private readonly ManualResetEventSlim _freeToRead = new ManualResetEventSlim(false);
-        private readonly ManualResetEventSlim _freeToWrite = new ManualResetEventSlim(false);
+        private NoTrackingThreadLocal<int> _currentReadingCount = new NoTrackingThreadLocal<int>(() => 0);
         private int _edge;
+        private ManualResetEventSlim _freeToRead = new ManualResetEventSlim(false);
+        private ManualResetEventSlim _freeToWrite = new ManualResetEventSlim(false);
         private int _master;
         private Thread _ownerThread;
         private int _readCount;
