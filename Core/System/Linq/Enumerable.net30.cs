@@ -508,14 +508,7 @@ namespace System.Linq
                 result = item;
                 found = true;
             }
-            if (found)
-            {
-                return result;
-            }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            return result;
         }
 
         public static long LongCount<TSource>(this IEnumerable<TSource> source)
