@@ -47,6 +47,22 @@ namespace MonoTests.System.Linq
         }
 
         [Test]
+        public void GroupByOverloadAEx()
+        {
+            var _src = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var r = _src.GroupBy<int, bool>(i => i > 5, null);
+            var _r = r.ToArray();
+            Assert.AreEqual(_r.Length, 2);
+            bool first = true;
+            foreach (var g in _r)
+            {
+                Assert.AreEqual(g.Key, !first);
+                Assert.AreEqual(g.Count(), 5);
+                first = false;
+            }
+        }
+
+        [Test]
         public void GroupByOverloadB()
         {
             var _src = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -72,6 +88,22 @@ namespace MonoTests.System.Linq
         }
 
         [Test]
+        public void GroupByOverloadBEx()
+        {
+            var _src = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var r = _src.GroupBy<int, bool, string>(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            var _r = r.ToArray();
+            Assert.AreEqual(_r.Length, 2);
+            bool first = true;
+            foreach (var g in _r)
+            {
+                Assert.AreEqual(g.Key, !first);
+                Assert.AreEqual(g.Count(), 5);
+                first = false;
+            }
+        }
+
+        [Test]
         public void GroupByOverloadC()
         {
             var _src = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -91,6 +123,17 @@ namespace MonoTests.System.Linq
             Assert.AreEqual(_r.Length, 2);
             Assert.AreEqual(_r[0], "23456");
             Assert.AreEqual(_r[1], "7891011");
+        }
+
+        [Test]
+        public void GroupByOverloadDEx()
+        {
+            var _src = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var r = _src.GroupBy<int, bool, int, string>(i => i > 5, FuncHelper.GetIdentityFunc<int>(), (key, group) => StringHelper.Concat(group.ToArray()), null);
+            var _r = r.ToArray();
+            Assert.AreEqual(_r.Length, 2);
+            Assert.AreEqual(_r[0], "12345");
+            Assert.AreEqual(_r[1], "678910");
         }
 
         [Test]
