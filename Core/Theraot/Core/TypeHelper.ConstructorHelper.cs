@@ -79,6 +79,7 @@ namespace Theraot.Core
             private static readonly Func<TReturn> _createOrDefault;
             private static readonly Func<TReturn> _createOrFail;
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "False Positive")]
             static ConstructorHelper()
             {
                 Type[] typeArguments = Type.EmptyTypes;
@@ -218,6 +219,7 @@ namespace Theraot.Core
             private static readonly Func<T, TReturn> _createOrDefault;
             private static readonly Func<T, TReturn> _createOrFail;
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "False Positive")]
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T) };
@@ -357,6 +359,7 @@ namespace Theraot.Core
             private static readonly Func<T1, T2, TReturn> _createOrDefault;
             private static readonly Func<T1, T2, TReturn> _createOrFail;
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "False Positive")]
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2) };
@@ -496,6 +499,7 @@ namespace Theraot.Core
             private static readonly Func<T1, T2, T3, TReturn> _createOrDefault;
             private static readonly Func<T1, T2, T3, TReturn> _createOrFail;
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "False Positive")]
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3) };
@@ -635,6 +639,7 @@ namespace Theraot.Core
             private static readonly Func<T1, T2, T3, T4, TReturn> _createOrDefault;
             private static readonly Func<T1, T2, T3, T4, TReturn> _createOrFail;
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "False Positive")]
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4) };
@@ -774,6 +779,7 @@ namespace Theraot.Core
             private static readonly Func<T1, T2, T3, T4, T5, TReturn> _createOrDefault;
             private static readonly Func<T1, T2, T3, T4, T5, TReturn> _createOrFail;
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "False Positive")]
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5) };
@@ -913,6 +919,7 @@ namespace Theraot.Core
             private static readonly Func<T1, T2, T3, T4, T5, T6, TReturn> _createOrDefault;
             private static readonly Func<T1, T2, T3, T4, T5, T6, TReturn> _createOrFail;
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "False Positive")]
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6) };
@@ -1052,6 +1059,7 @@ namespace Theraot.Core
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, TReturn> _createOrDefault;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, TReturn> _createOrFail;
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "False Positive")]
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7) };
@@ -1191,6 +1199,7 @@ namespace Theraot.Core
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> _createOrDefault;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> _createOrFail;
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "False Positive")]
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8) };
@@ -1330,6 +1339,7 @@ namespace Theraot.Core
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> _createOrDefault;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> _createOrFail;
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "False Positive")]
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9) };
@@ -1469,6 +1479,7 @@ namespace Theraot.Core
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> _createOrDefault;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> _createOrFail;
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "False Positive")]
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10) };
@@ -1608,6 +1619,7 @@ namespace Theraot.Core
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> _createOrDefault;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> _createOrFail;
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "False Positive")]
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11) };
@@ -1747,6 +1759,7 @@ namespace Theraot.Core
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> _createOrDefault;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> _createOrFail;
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "False Positive")]
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12) };
@@ -1886,6 +1899,7 @@ namespace Theraot.Core
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> _createOrDefault;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> _createOrFail;
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "False Positive")]
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13) };
@@ -2025,6 +2039,7 @@ namespace Theraot.Core
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> _createOrDefault;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> _createOrFail;
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "False Positive")]
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14) };
@@ -2164,6 +2179,7 @@ namespace Theraot.Core
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> _createOrDefault;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> _createOrFail;
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "False Positive")]
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof(T15) };
@@ -2303,6 +2319,7 @@ namespace Theraot.Core
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> _createOrDefault;
             private static readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> _createOrFail;
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "False Positive")]
             static ConstructorHelper()
             {
                 Type[] typeArguments = new Type[] { typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof(T15), typeof(T16) };
