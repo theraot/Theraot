@@ -161,19 +161,19 @@ namespace System
         {
             if (!ReferenceEquals(rest, null))
             {
-                if (typeof (TRest).IsGenericType)
+                if (typeof(TRest).IsGenericType)
                 {
-                    Type type = typeof (TRest).GetGenericTypeDefinition();
+                    Type type = typeof(TRest).GetGenericTypeDefinition();
                     if
                         (
-                        type == typeof (Tuple<>) ||
-                        type == typeof (Tuple<,>) ||
-                        type == typeof (Tuple<,,>) ||
-                        type == typeof (Tuple<,,,>) ||
-                        type == typeof (Tuple<,,,,>) ||
-                        type == typeof (Tuple<,,,,,>) ||
-                        type == typeof (Tuple<,,,,,,>) ||
-                        type == typeof (Tuple<,,,,,,,>)
+                        type == typeof(Tuple<>) ||
+                        type == typeof(Tuple<,>) ||
+                        type == typeof(Tuple<,,>) ||
+                        type == typeof(Tuple<,,,>) ||
+                        type == typeof(Tuple<,,,,>) ||
+                        type == typeof(Tuple<,,,,,>) ||
+                        type == typeof(Tuple<,,,,,,>) ||
+                        type == typeof(Tuple<,,,,,,,>)
                         )
                     {
                         return;

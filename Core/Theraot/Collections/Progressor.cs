@@ -20,7 +20,16 @@ namespace Theraot.Collections
 
             Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0;
             var buffer = new QueueBucket<T>();
-            wrapped.SubscribeAction(item => { if (newFilter(item)) buffer.Add(item); });
+            wrapped.SubscribeAction
+            (
+                item =>
+                {
+                    if (newFilter(item))
+                    {
+                        buffer.Add(item);
+                    }
+                }
+            );
             _proxy = new ProxyObservable<T>();
 
             _tryTake = (out T value) =>
@@ -128,7 +137,16 @@ namespace Theraot.Collections
 
             Predicate<TInput> newFilter = item => Thread.VolatileRead(ref control) == 0;
             var buffer = new QueueBucket<T>();
-            wrapped.SubscribeAction(item => { if (newFilter(item)) buffer.Add(converter(item)); });
+            wrapped.SubscribeAction
+            (
+                item =>
+                {
+                    if (newFilter(item))
+                    {
+                        buffer.Add(converter(item));
+                    }
+                }
+            );
             var proxy = new ProxyObservable<T>();
 
             return new Progressor<T>
@@ -171,7 +189,16 @@ namespace Theraot.Collections
 
             Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0 && filter(item);
             var buffer = new QueueBucket<T>();
-            wrapped.SubscribeAction(item => { if (newFilter(item)) buffer.Add(item); });
+            wrapped.SubscribeAction
+            (
+                item =>
+                {
+                    if (newFilter(item))
+                    {
+                        buffer.Add(item);
+                    }
+                }
+            );
             var proxy = new ProxyObservable<T>();
 
             return new Progressor<T>
@@ -221,7 +248,16 @@ namespace Theraot.Collections
 
             Predicate<TInput> newFilter = item => Thread.VolatileRead(ref control) == 0 && filter(item);
             var buffer = new QueueBucket<T>();
-            wrapped.SubscribeAction(item => { if (newFilter(item)) buffer.Add(converter(item)); });
+            wrapped.SubscribeAction
+            (
+                item =>
+                {
+                    if (newFilter(item))
+                    {
+                        buffer.Add(converter(item));
+                    }
+                }
+            );
             var proxy = new ProxyObservable<T>();
 
             return new Progressor<T>
@@ -271,7 +307,16 @@ namespace Theraot.Collections
 
             var buffer = new HashBucket<T, bool>();
             Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0 && !buffer.ContainsKey(item);
-            wrapped.SubscribeAction(item => { if (newFilter(item)) buffer.Add(item, false); });
+            wrapped.SubscribeAction
+            (
+                item =>
+                {
+                    if (newFilter(item))
+                    {
+                        buffer.Add(item, false);
+                    }
+                }
+            );
             var proxy = new ProxyObservable<T>();
 
             return new Progressor<T>

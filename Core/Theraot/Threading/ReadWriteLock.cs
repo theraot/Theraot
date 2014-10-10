@@ -158,7 +158,10 @@ namespace Theraot.Threading
         public bool TryEnterRead(out IDisposable engagement)
         {
             engagement = null;
-            if (!CanRead()) return false;
+            if (!CanRead())
+            {
+                return false;
+            }
             engagement = DisposableAkin.Create(DoneRead);
             return true;
         }
@@ -166,7 +169,10 @@ namespace Theraot.Threading
         public bool TryEnterWrite(out IDisposable engagement)
         {
             engagement = null;
-            if (!CanWrite()) return false;
+            if (!CanWrite())
+            {
+                return false;
+            }
             engagement = DisposableAkin.Create(DoneWrite);
             return true;
         }
@@ -403,7 +409,10 @@ namespace Theraot.Threading
         public bool TryEnterRead(out IDisposable engagement)
         {
             engagement = null;
-            if (!CanRead()) return false;
+            if (!CanRead())
+            {
+                return false;
+            }
             engagement = DisposableAkin.Create(DoneRead);
             return true;
         }
