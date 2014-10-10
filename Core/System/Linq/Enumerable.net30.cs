@@ -385,22 +385,12 @@ namespace System.Linq
 
         public static IEnumerable<TSource> Intersect<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second)
         {
-            return Intersect(first, second, null);
+            return IntersectExtracted(Check.NotNullArgument(first, "first"), Check.NotNullArgument(second, "second"), EqualityComparer<TSource>.Default);
         }
 
         public static IEnumerable<TSource> Intersect<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
         {
-            comparer = comparer ?? EqualityComparer<TSource>.Default;
-            var _first = Check.NotNullArgument(first, "first");
-            var _second = Check.NotNullArgument(second, "second");
-            var items = new HashSet<TSource>(_second, comparer);
-            foreach (TSource element in _first)
-            {
-                if (items.Remove(element))
-                {
-                    yield return element;
-                }
-            }
+            return IntersectExtracted(Check.NotNullArgument(first, "first"), Check.NotNullArgument(second, "second"), comparer ?? EqualityComparer<TSource>.Default);
         }
 
         public static IEnumerable<TResult> Join<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<TOuter, TInner, TResult> resultSelector)
@@ -1037,6 +1027,18 @@ namespace System.Linq
                         ),
                     grouping => Check.NotNullArgument(resultSelector, "resultSelector")(grouping.Key, grouping)
                 );
+        }
+
+        private static IEnumerable<TSource> IntersectExtracted<TSource>(IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
+        {
+            var items = new HashSet<TSource>(second, comparer);
+            foreach (TSource element in first)
+            {
+                if (items.Remove(element))
+                {
+                    yield return element;
+                }
+            }
         }
 
         private static IEnumerable<TResult> RepeatExtracted<TResult>(TResult element, int count)
