@@ -599,56 +599,22 @@ namespace System.Linq
 
         public static IEnumerable<TResult> SelectMany<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, IEnumerable<TResult>> selector)
         {
-            var _selector = Check.NotNullArgument(selector, "selector");
-            foreach (TSource key in Check.NotNullArgument(source, "source"))
-            {
-                foreach (TResult item in _selector(key))
-                {
-                    yield return item;
-                }
-            }
+            return SelectManyExtracted(Check.NotNullArgument(source, "source"), Check.NotNullArgument(selector, "selector"));
         }
 
         public static IEnumerable<TResult> SelectMany<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, int, IEnumerable<TResult>> selector)
         {
-            var _selector = Check.NotNullArgument(selector, "selector");
-            int count = 0;
-            foreach (TSource key in Check.NotNullArgument(source, "source"))
-            {
-                foreach (TResult item in _selector(key, count))
-                {
-                    yield return item;
-                }
-                count++;
-            }
+            return SelectManyExtracted(Check.NotNullArgument(source, "source"), Check.NotNullArgument(selector, "selector"));
         }
 
         public static IEnumerable<TResult> SelectMany<TSource, TCollection, TResult>(this IEnumerable<TSource> source, Func<TSource, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
         {
-            var _collectionSelector = Check.NotNullArgument(collectionSelector, "collectionSelector");
-            var _resultSelector = Check.NotNullArgument(resultSelector, "resultSelector");
-            foreach (TSource element in Check.NotNullArgument(source, "source"))
-            {
-                foreach (TCollection collection in _collectionSelector(element))
-                {
-                    yield return _resultSelector(element, collection);
-                }
-            }
+            return SelectManyExtracted(Check.NotNullArgument(source, "source"), Check.NotNullArgument(collectionSelector, "collectionSelector"), Check.NotNullArgument(resultSelector, "resultSelector"));
         }
 
         public static IEnumerable<TResult> SelectMany<TSource, TCollection, TResult>(this IEnumerable<TSource> source, Func<TSource, int, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
         {
-            var _collectionSelector = Check.NotNullArgument(collectionSelector, "collectionSelector");
-            var _resultSelector = Check.NotNullArgument(resultSelector, "resultSelector");
-            int count = 0;
-            foreach (TSource element in Check.NotNullArgument(source, "source"))
-            {
-                foreach (TCollection collection in _collectionSelector(element, count))
-                {
-                    yield return _resultSelector(element, collection);
-                }
-                count++;
-            }
+            return SelectManyExtracted(Check.NotNullArgument(source, "source"), Check.NotNullArgument(collectionSelector, "collectionSelector"), Check.NotNullArgument(resultSelector, "resultSelector"));
         }
 
         public static bool SequenceEqual<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second)
@@ -1066,6 +1032,56 @@ namespace System.Linq
             foreach (TSource item in source)
             {
                 yield return selector(item, count);
+                count++;
+            }
+        }
+
+        private static IEnumerable<TResult> SelectManyExtracted<TSource, TResult>(IEnumerable<TSource> source, Func<TSource, IEnumerable<TResult>> selector)
+        {
+            foreach (TSource key in source)
+            {
+                foreach (TResult item in selector(key))
+                {
+                    yield return item;
+                }
+            }
+        }
+
+        private static IEnumerable<TResult> SelectManyExtracted<TSource, TResult>(IEnumerable<TSource> source, Func<TSource, int, IEnumerable<TResult>> selector)
+        {
+            int count = 0;
+            foreach (TSource key in source)
+            {
+                foreach (TResult item in selector(key, count))
+                {
+                    yield return item;
+                }
+                count++;
+            }
+        }
+
+        private static IEnumerable<TResult> SelectManyExtracted<TSource, TCollection, TResult>(IEnumerable<TSource> source,
+            Func<TSource, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
+        {
+            foreach (TSource element in source)
+            {
+                foreach (TCollection collection in collectionSelector(element))
+                {
+                    yield return resultSelector(element, collection);
+                }
+            }
+        }
+
+        private static IEnumerable<TResult> SelectManyExtracted<TSource, TCollection, TResult>(IEnumerable<TSource> source,
+            Func<TSource, int, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
+        {
+            int count = 0;
+            foreach (TSource element in source)
+            {
+                foreach (TCollection collection in collectionSelector(element, count))
+                {
+                    yield return resultSelector(element, collection);
+                }
                 count++;
             }
         }
