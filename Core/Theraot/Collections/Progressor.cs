@@ -22,7 +22,6 @@ namespace Theraot.Collections
             var buffer = new QueueBucket<T>();
             wrapped.SubscribeAction(item => { if (newFilter(item)) buffer.Add(item); });
             _proxy = new ProxyObservable<T>();
-            wrapped.Subscribe(_proxy);
 
             _tryTake = (out T value) =>
             {
@@ -31,6 +30,7 @@ namespace Theraot.Collections
                     ThreadingHelper.VolatileWrite(ref control, Thread.CurrentThread);
                     if (buffer.TryTake(out value) || wrapped.TryTake(out value))
                     {
+                        _proxy.OnNext(value);
                         return true;
                     }
                     else
@@ -89,8 +89,20 @@ namespace Theraot.Collections
             var buffer = new QueueBucket<T>();
             wrapped.SubscribeAction(buffer.Add);
             _proxy = new ProxyObservable<T>();
-            wrapped.Subscribe(_proxy);
-            _tryTake = buffer.TryTake;
+
+            _tryTake = (out T value) =>
+            {
+                if (buffer.TryTake(out value))
+                {
+                    _proxy.OnNext(value);
+                    return true;
+                }
+                else
+                {
+                    value = default(T);
+                    return false;
+                }
+            };
         }
 
         private Progressor(TryTake<T> tryTake, ProxyObservable<T> proxy)
@@ -118,7 +130,6 @@ namespace Theraot.Collections
             var buffer = new QueueBucket<T>();
             wrapped.SubscribeAction(item => { if (newFilter(item)) buffer.Add(converter(item)); });
             var proxy = new ProxyObservable<T>();
-            wrapped.SubscribeConverted(proxy, converter);
 
             return new Progressor<T>
             (
@@ -130,11 +141,13 @@ namespace Theraot.Collections
                         TInput item;
                         if (buffer.TryTake(out value))
                         {
+                            proxy.OnNext(value);
                             return true;
                         }
                         else if (wrapped.TryTake(out item))
                         {
                             value = converter(item);
+                            proxy.OnNext(value);
                             return true;
                         }
                         value = default(T);
@@ -160,7 +173,6 @@ namespace Theraot.Collections
             var buffer = new QueueBucket<T>();
             wrapped.SubscribeAction(item => { if (newFilter(item)) buffer.Add(item); });
             var proxy = new ProxyObservable<T>();
-            wrapped.SubscribeFiltered(proxy, filter);
 
             return new Progressor<T>
             (
@@ -172,12 +184,14 @@ namespace Theraot.Collections
                     again:
                         if (buffer.TryTake(out value))
                         {
+                            proxy.OnNext(value);
                             return true;
                         }
                         else if (wrapped.TryTake(out value))
                         {
                             if (filter(value))
                             {
+                                proxy.OnNext(value);
                                 return true;
                             }
                             else
@@ -209,7 +223,6 @@ namespace Theraot.Collections
             var buffer = new QueueBucket<T>();
             wrapped.SubscribeAction(item => { if (newFilter(item)) buffer.Add(converter(item)); });
             var proxy = new ProxyObservable<T>();
-            wrapped.SubscribeFilteredConverted(proxy, filter, converter);
 
             return new Progressor<T>
             (
@@ -222,6 +235,7 @@ namespace Theraot.Collections
                     again:
                         if (buffer.TryTake(out value))
                         {
+                            proxy.OnNext(value);
                             return true;
                         }
                         else if (wrapped.TryTake(out item))
@@ -229,6 +243,7 @@ namespace Theraot.Collections
                             if (filter(item))
                             {
                                 value = converter(item);
+                                proxy.OnNext(value);
                                 return true;
                             }
                             else
@@ -256,15 +271,7 @@ namespace Theraot.Collections
             Predicate<T> newFilter = item => ThreadingHelper.VolatileRead(ref control) != Thread.CurrentThread && !buffer.ContainsKey(item);
             wrapped.SubscribeAction(item => { if (newFilter(item)) buffer.Add(item, false); });
             var proxy = new ProxyObservable<T>();
-            wrapped.SubscribeFiltered
-            (
-                proxy,
-                item =>
-                {
-                    bool seen;
-                    return !buffer.TryGetValue(item, out seen) || !seen;
-                }
-            );
+
             return new Progressor<T>
             (
                 (out T value) =>
@@ -277,6 +284,7 @@ namespace Theraot.Collections
                         {
                             value = item.Key;
                             buffer.Set(value, true);
+                            proxy.OnNext(value);
                             return true;
                         }
                         if (wrapped.TryTake(out value))
@@ -285,6 +293,7 @@ namespace Theraot.Collections
                             if (!buffer.TryGetValue(value, out seen) || !seen)
                             {
                                 buffer.Set(value, true);
+                                proxy.OnNext(value);
                                 return true;
                             }
                             else
