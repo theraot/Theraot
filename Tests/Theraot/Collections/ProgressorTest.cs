@@ -139,6 +139,7 @@ namespace Tests.Theraot.Collections
         {
             var source = new Progressor<int>(new[] { 0, 1, 2, 3, 4, 5 });
             var progresor = new Progressor<int>((source as IObservable<int>));
+            source.AsEnumerable().Consume();
             int indexA = 0;
             int indexB = 0;
             progresor.SubscribeAction
@@ -149,7 +150,6 @@ namespace Tests.Theraot.Collections
                     indexB++;
                 }
             );
-            source.AsEnumerable().Consume();
             int item;
             while (progresor.TryTake(out item))
             {

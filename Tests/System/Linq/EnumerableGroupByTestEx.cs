@@ -33,11 +33,14 @@ namespace MonoTests.System.Linq
             foreach (var g in _r)
             {
                 Assert.AreEqual(g.Key, !first);
+                var count = 0;
                 foreach (var item in g)
                 {
                     Assert.AreEqual(item, index + 1);
                     index++;
+                    count++;
                 }
+                Assert.AreEqual(count, 5);
                 first = false;
             }
             Assert.AreEqual(index, 10);
@@ -55,11 +58,14 @@ namespace MonoTests.System.Linq
             foreach (var g in _r)
             {
                 Assert.AreEqual(g.Key, !first);
+                var count = 0;
                 foreach (var item in g)
                 {
                     Assert.AreEqual(item, "str: " + (index + 1).ToString(CultureInfo.InvariantCulture));
                     index++;
+                    count++;
                 }
+                Assert.AreEqual(count, 5);
                 first = false;
             }
             Assert.AreEqual(index, 10);
