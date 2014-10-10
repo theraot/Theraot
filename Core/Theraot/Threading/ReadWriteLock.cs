@@ -434,7 +434,10 @@ namespace Theraot.Threading
             }
             else
             {
-                if (!CanWrite()) return false;
+                if (!CanWrite())
+                {
+                    return false;
+                }
                 engagement = DisposableAkin.Create(DoneWrite);
                 return true;
             }
