@@ -330,59 +330,6 @@ namespace System.Linq
             return FirstOrDefault(source.Where(predicate));
         }
 
-        public static IEnumerable<IGrouping<TKey, TSource>> GroupBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
-        {
-            return ToLookup(source, keySelector, FuncHelper.GetIdentityFunc<TSource>(), EqualityComparer<TKey>.Default);
-        }
-
-        public static IEnumerable<IGrouping<TKey, TSource>> GroupBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer)
-        {
-            return ToLookup(source, keySelector, FuncHelper.GetIdentityFunc<TSource>(), comparer ?? EqualityComparer<TKey>.Default);
-        }
-
-        public static IEnumerable<IGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector)
-        {
-            return ToLookup(source, keySelector, elementSelector, EqualityComparer<TKey>.Default);
-        }
-
-        public static IEnumerable<IGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer)
-        {
-            return ToLookup(source, keySelector, elementSelector, comparer ?? EqualityComparer<TKey>.Default);
-        }
-
-        public static IEnumerable<TResult> GroupBy<TSource, TKey, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TKey, IEnumerable<TSource>, TResult> resultSelector)
-        {
-            return GroupByExtracted(Check.NotNullArgument(source, "source"), Check.NotNullArgument(keySelector, "keySelector"), Check.NotNullArgument(resultSelector, "resultSelector"), null);
-        }
-
-        public static IEnumerable<TResult> GroupBy<TSource, TKey, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TKey, IEnumerable<TSource>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
-        {
-            return GroupByExtracted(Check.NotNullArgument(source, "source"), Check.NotNullArgument(keySelector, "keySelector"), Check.NotNullArgument(resultSelector, "resultSelector"), comparer);
-        }
-
-        public static IEnumerable<TResult> GroupBy<TSource, TKey, TElement, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, Func<TKey, IEnumerable<TElement>, TResult> resultSelector)
-        {
-            return GroupByExtracted(Check.NotNullArgument(source, "source"), Check.NotNullArgument(keySelector, "keySelector"), Check.NotNullArgument(elementSelector, "elementSelector"), Check.NotNullArgument(resultSelector, "resultSelector"), null);
-        }
-
-        public static IEnumerable<TResult> GroupBy<TSource, TKey, TElement, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, Func<TKey, IEnumerable<TElement>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
-        {
-            return GroupByExtracted(Check.NotNullArgument(source, "source"), Check.NotNullArgument(keySelector, "keySelector"), Check.NotNullArgument(elementSelector, "elementSelector"), Check.NotNullArgument(resultSelector, "resultSelector"), comparer);
-        }
-
-        public static IEnumerable<TResult> GroupJoin<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<TOuter, IEnumerable<TInner>, TResult> resultSelector)
-        {
-            return outer.GroupJoin(inner, outerKeySelector, innerKeySelector, resultSelector, null);
-        }
-
-        public static IEnumerable<TResult> GroupJoin<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<TOuter, IEnumerable<TInner>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
-        {
-            var _outerKeySelector = Check.NotNullArgument(outerKeySelector, "outerKeySelector");
-            var _resultSelector = Check.NotNullArgument(resultSelector, "resultSelector");
-            var lookup = Check.NotNullArgument(inner, "inner").ToLookup(Check.NotNullArgument(innerKeySelector, "innerKeySelector"), comparer);
-            return Select(Check.NotNullArgument(outer, "outer"), outerItem => _resultSelector(outerItem, lookup[_outerKeySelector(outerItem)]));
-        }
-
         public static IEnumerable<TSource> Intersect<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second)
         {
             return IntersectExtracted(Check.NotNullArgument(first, "first"), Check.NotNullArgument(second, "second"), EqualityComparer<TSource>.Default);
@@ -391,19 +338,6 @@ namespace System.Linq
         public static IEnumerable<TSource> Intersect<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
         {
             return IntersectExtracted(Check.NotNullArgument(first, "first"), Check.NotNullArgument(second, "second"), comparer ?? EqualityComparer<TSource>.Default);
-        }
-
-        public static IEnumerable<TResult> Join<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<TOuter, TInner, TResult> resultSelector)
-        {
-            return outer.Join(inner, outerKeySelector, innerKeySelector, resultSelector, null);
-        }
-
-        public static IEnumerable<TResult> Join<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<TOuter, TInner, TResult> resultSelector, IEqualityComparer<TKey> comparer)
-        {
-            var _outerKeySelector = Check.NotNullArgument(outerKeySelector, "outerKeySelector");
-            var _resultSelector = Check.NotNullArgument(resultSelector, "resultSelector");
-            ILookup<TKey, TInner> lookup = Check.NotNullArgument(inner, "inner").ToLookup(Check.NotNullArgument(innerKeySelector, "innerKeySelector"), comparer);
-            return SelectMany(Check.NotNullArgument(outer, "outer"), outerItem => lookup[_outerKeySelector.Invoke(outerItem)], _resultSelector);
         }
 
         public static TSource Last<TSource>(this IEnumerable<TSource> source)
@@ -901,7 +835,7 @@ namespace System.Linq
             bool foundNull = false;
             foreach (var item in source)
             {
-                if (item == null)
+                if (ReferenceEquals(item, null))
                 {
                     if (foundNull)
                     {
@@ -932,36 +866,6 @@ namespace System.Linq
                     yield return item;
                 }
             }
-        }
-
-        private static IEnumerable<TResult> GroupByExtracted<TSource, TKey, TResult>(IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TKey, IEnumerable<TSource>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
-        {
-            return Select
-                (
-                    ToLookup
-                        (
-                            source,
-                            keySelector,
-                            comparer ?? EqualityComparer<TKey>.Default
-                        ),
-                    grouping => resultSelector(grouping.Key, grouping)
-                );
-        }
-
-        private static IEnumerable<TResult> GroupByExtracted<TSource, TKey, TElement, TResult>(IEnumerable<TSource> source, Func<TSource, TKey> keySelector,
-            Func<TSource, TElement> elementSelector, Func<TKey, IEnumerable<TElement>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
-        {
-            return Select
-                (
-                    ToLookup
-                        (
-                            source,
-                            keySelector,
-                            elementSelector,
-                            comparer ?? EqualityComparer<TKey>.Default
-                        ),
-                    grouping => Check.NotNullArgument(resultSelector, "resultSelector")(grouping.Key, grouping)
-                );
         }
 
         private static IEnumerable<TSource> IntersectExtracted<TSource>(IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
@@ -1042,8 +946,7 @@ namespace System.Linq
             }
         }
 
-        private static IEnumerable<TResult> SelectManyExtracted<TSource, TCollection, TResult>(IEnumerable<TSource> source,
-            Func<TSource, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
+        private static IEnumerable<TResult> SelectManyExtracted<TSource, TCollection, TResult>(IEnumerable<TSource> source, Func<TSource, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
         {
             foreach (TSource element in source)
             {
@@ -1054,8 +957,7 @@ namespace System.Linq
             }
         }
 
-        private static IEnumerable<TResult> SelectManyExtracted<TSource, TCollection, TResult>(IEnumerable<TSource> source,
-            Func<TSource, int, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
+        private static IEnumerable<TResult> SelectManyExtracted<TSource, TCollection, TResult>(IEnumerable<TSource> source, Func<TSource, int, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
         {
             int count = 0;
             foreach (TSource element in source)
