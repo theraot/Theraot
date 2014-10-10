@@ -11,6 +11,7 @@ namespace Theraot.Collections.ThreadSafe
     /// <remarks>
     /// Consider wrapping this class to implement <see cref="ICollection{T}" /> or any other desired interface.
     /// </remarks>
+    [Serializable]
     public sealed class LazyBucket<T> : IEnumerable<T>
     {
         private readonly Bucket<LazyNeedle<T>> _entries;

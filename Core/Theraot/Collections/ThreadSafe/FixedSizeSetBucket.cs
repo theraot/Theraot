@@ -8,6 +8,7 @@ namespace Theraot.Collections.ThreadSafe
     /// Represent a fixed size thread-safe wait-free hash based set.
     /// </summary>
     /// <typeparam name="T">The type of the item.</typeparam>
+    [Serializable]
     public sealed class FixedSizeSetBucket<T> : IEnumerable<T>
     {
         private readonly int _capacity;

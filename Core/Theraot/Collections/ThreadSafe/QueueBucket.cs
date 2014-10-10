@@ -9,6 +9,7 @@ namespace Theraot.Collections.ThreadSafe
     /// Represent a thread-safe lock-free queue.
     /// </summary>
     /// <typeparam name="T">The type of the item.</typeparam>
+    [Serializable]
     public sealed class QueueBucket<T> : IEnumerable<T>
     {
         private const int INT_DefaultCapacity = 64;
