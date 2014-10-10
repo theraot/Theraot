@@ -16,9 +16,9 @@ namespace Theraot.Collections
 
         public Progressor(Progressor<T> wrapped)
         {
-            Thread control = null;
+            int control = 0;
 
-            Predicate<T> newFilter = item => ThreadingHelper.VolatileRead(ref control) != Thread.CurrentThread;
+            Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0;
             var buffer = new QueueBucket<T>();
             wrapped.SubscribeAction(item => { if (newFilter(item)) buffer.Add(item); });
             _proxy = new ProxyObservable<T>();
@@ -27,7 +27,7 @@ namespace Theraot.Collections
             {
                 try
                 {
-                    ThreadingHelper.VolatileWrite(ref control, Thread.CurrentThread);
+                    Thread.VolatileWrite(ref control, 1);
                     if (buffer.TryTake(out value) || wrapped.TryTake(out value))
                     {
                         _proxy.OnNext(value);
@@ -40,7 +40,7 @@ namespace Theraot.Collections
                 }
                 finally
                 {
-                    ThreadingHelper.VolatileWrite(ref control, null);
+                    Thread.VolatileWrite(ref control, 0);
                 }
             };
         }
@@ -124,9 +124,9 @@ namespace Theraot.Collections
             Check.NotNullArgument(wrapped, "wrapped");
             Check.NotNullArgument(converter, "converter");
 
-            Thread control = null;
+            int control = 0;
 
-            Predicate<TInput> newFilter = item => ThreadingHelper.VolatileRead(ref control) != Thread.CurrentThread;
+            Predicate<TInput> newFilter = item => Thread.VolatileRead(ref control) == 0;
             var buffer = new QueueBucket<T>();
             wrapped.SubscribeAction(item => { if (newFilter(item)) buffer.Add(converter(item)); });
             var proxy = new ProxyObservable<T>();
@@ -135,7 +135,7 @@ namespace Theraot.Collections
             (
                 (out T value) =>
                 {
-                    ThreadingHelper.VolatileWrite(ref control, Thread.CurrentThread);
+                    Thread.VolatileWrite(ref control, 1);
                     try
                     {
                         TInput item;
@@ -155,7 +155,7 @@ namespace Theraot.Collections
                     }
                     finally
                     {
-                        ThreadingHelper.VolatileWrite(ref control, null);
+                        Thread.VolatileWrite(ref control, 0);
                     }
                 },
                 proxy
@@ -167,9 +167,9 @@ namespace Theraot.Collections
             Check.NotNullArgument(wrapped, "wrapped");
             Check.NotNullArgument(filter, "filter");
 
-            Thread control = null;
+            int control = 0;
 
-            Predicate<T> newFilter = item => ThreadingHelper.VolatileRead(ref control) != Thread.CurrentThread && filter(item);
+            Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0 && filter(item);
             var buffer = new QueueBucket<T>();
             wrapped.SubscribeAction(item => { if (newFilter(item)) buffer.Add(item); });
             var proxy = new ProxyObservable<T>();
@@ -178,7 +178,7 @@ namespace Theraot.Collections
             (
                 (out T value) =>
                 {
-                    ThreadingHelper.VolatileWrite(ref control, Thread.CurrentThread);
+                    Thread.VolatileWrite(ref control, 1);
                     try
                     {
                     again:
@@ -204,7 +204,7 @@ namespace Theraot.Collections
                     }
                     finally
                     {
-                        ThreadingHelper.VolatileWrite(ref control, null);
+                        Thread.VolatileWrite(ref control, 0);
                     }
                 },
                 proxy
@@ -217,9 +217,9 @@ namespace Theraot.Collections
             Check.NotNullArgument(filter, "filter");
             Check.NotNullArgument(converter, "converter");
 
-            Thread control = null;
+            int control = 0;
 
-            Predicate<TInput> newFilter = item => ThreadingHelper.VolatileRead(ref control) != Thread.CurrentThread && filter(item);
+            Predicate<TInput> newFilter = item => Thread.VolatileRead(ref control) == 0 && filter(item);
             var buffer = new QueueBucket<T>();
             wrapped.SubscribeAction(item => { if (newFilter(item)) buffer.Add(converter(item)); });
             var proxy = new ProxyObservable<T>();
@@ -228,7 +228,7 @@ namespace Theraot.Collections
             (
                 (out T value) =>
                 {
-                    ThreadingHelper.VolatileWrite(ref control, Thread.CurrentThread);
+                    Thread.VolatileWrite(ref control, 1);
                     try
                     {
                         TInput item;
@@ -256,7 +256,7 @@ namespace Theraot.Collections
                     }
                     finally
                     {
-                        ThreadingHelper.VolatileWrite(ref control, null);
+                        Thread.VolatileWrite(ref control, 0);
                     }
                 },
                 proxy
@@ -265,10 +265,12 @@ namespace Theraot.Collections
 
         public static Progressor<T> CreateDistinct(Progressor<T> wrapped)
         {
-            Thread control = null;
+            Check.NotNullArgument(wrapped, "wrapped");
+
+            int control = 0;
 
             var buffer = new HashBucket<T, bool>();
-            Predicate<T> newFilter = item => ThreadingHelper.VolatileRead(ref control) != Thread.CurrentThread && !buffer.ContainsKey(item);
+            Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0 && !buffer.ContainsKey(item);
             wrapped.SubscribeAction(item => { if (newFilter(item)) buffer.Add(item, false); });
             var proxy = new ProxyObservable<T>();
 
@@ -278,7 +280,7 @@ namespace Theraot.Collections
                 {
                     try
                     {
-                        ThreadingHelper.VolatileWrite(ref control, Thread.CurrentThread);
+                        Thread.VolatileWrite(ref control, 0);
                     again:
                         foreach (var item in buffer.Where(item => !item.Value))
                         {
@@ -308,7 +310,7 @@ namespace Theraot.Collections
                     }
                     finally
                     {
-                        ThreadingHelper.VolatileWrite(ref control, null);
+                        Thread.VolatileWrite(ref control, 1);
                     }
                 },
                 proxy
