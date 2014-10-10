@@ -420,6 +420,7 @@
     <Compile Include="Theraot\Core\ThreadEqualityComparer.cs" />
     <Compile Include="Theraot\Threading\GCMonitor.cs" />
     <Compile Include="Theraot\Threading\Guard.cs" />
+    <Compile Include="Theraot\Threading\IReadWriteLock.cs" />
     <Compile Include="Theraot\Threading\LockNeedle.cs" />
     <Compile Include="Theraot\Threading\LockNeedleContext.cs" />
     <Compile Include="Theraot\Threading\LockNeedleSlot.cs" />
@@ -473,8 +474,9 @@
       <DependentUpon>WeakNeedle.disposable.tt</DependentUpon>
     </Compile>
     <Compile Include="Theraot\Threading\ArrayPool.cs" />
+    <Compile Include="Theraot\Threading\NoReentrantReadWriteLock.cs" />
     <Compile Include="Theraot\Threading\ReadWriteLock.cs" />
-    <Compile Include="Theraot\Threading\ReadWriteLock.disposable.cs" />
+    <Compile Include="Theraot\Threading\ReentrantReadWriteLock.cs" />
     <Compile Include="Theraot\Threading\ReentryGuard.cs" />
     <Compile Include="System\Threading\ThreadLocal.net35.cs">
       <SubType>Code</SubType>
