@@ -624,25 +624,7 @@ namespace System.Linq
 
         public static bool SequenceEqual<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
         {
-            if (comparer == null)
-            {
-                comparer = EqualityComparer<TSource>.Default;
-            }
-            using (IEnumerator<TSource> first_enumerator = first.GetEnumerator(), second_enumerator = second.GetEnumerator())
-            {
-                while (first_enumerator.MoveNext())
-                {
-                    if (!second_enumerator.MoveNext())
-                    {
-                        return false;
-                    }
-                    if (!comparer.Equals(first_enumerator.Current, second_enumerator.Current))
-                    {
-                        return false;
-                    }
-                }
-                return !second_enumerator.MoveNext();
-            }
+            return SequenceEqualExtracted(Check.NotNullArgument(first, "first"), Check.NotNullArgument(second, "second"), comparer ?? EqualityComparer<TSource>.Default);
         }
 
         public static TSource Single<TSource>(this IEnumerable<TSource> source)
@@ -1083,6 +1065,25 @@ namespace System.Linq
                     yield return resultSelector(element, collection);
                 }
                 count++;
+            }
+        }
+
+        private static bool SequenceEqualExtracted<TSource>(IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
+        {
+            using (IEnumerator<TSource> first_enumerator = first.GetEnumerator(), second_enumerator = second.GetEnumerator())
+            {
+                while (first_enumerator.MoveNext())
+                {
+                    if (!second_enumerator.MoveNext())
+                    {
+                        return false;
+                    }
+                    if (!comparer.Equals(first_enumerator.Current, second_enumerator.Current))
+                    {
+                        return false;
+                    }
+                }
+                return !second_enumerator.MoveNext();
             }
         }
 
