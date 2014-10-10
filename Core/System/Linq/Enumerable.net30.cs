@@ -540,13 +540,7 @@ namespace System.Linq
 
         public static IEnumerable<TResult> OfType<TResult>(this IEnumerable source)
         {
-            foreach (object item in Check.NotNullArgument(source, "source"))
-            {
-                if (item is TResult)
-                {
-                    yield return (TResult)item;
-                }
-            }
+            return OfTypeExtracted<TResult>(Check.NotNullArgument(source, "source"));
         }
 
         public static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
@@ -1030,6 +1024,17 @@ namespace System.Linq
                 if (items.Remove(element))
                 {
                     yield return element;
+                }
+            }
+        }
+
+        private static IEnumerable<TResult> OfTypeExtracted<TResult>(IEnumerable source)
+        {
+            foreach (object item in source)
+            {
+                if (item is TResult)
+                {
+                    yield return (TResult)item;
                 }
             }
         }
