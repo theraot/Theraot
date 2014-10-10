@@ -164,7 +164,14 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                return left._target.Equals(right._target);
+                if (ReferenceEquals(right, null))
+                {
+                    return false;
+                }
+                else
+                {
+                    return left._target.Equals(right._target);
+                }
             }
         }
 
@@ -176,7 +183,14 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                return !left._target.Equals(right._target);
+                if (ReferenceEquals(right, null))
+                {
+                    return true;
+                }
+                else
+                {
+                    return !left._target.Equals(right._target);
+                }
             }
         }
     }

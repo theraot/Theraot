@@ -12,7 +12,7 @@ namespace Theraot.Collections
     {
         private readonly ICollection<T> _cache;
         private readonly IEqualityComparer<T> _comparer;
-        private readonly IProgressor<T> _progressor;
+        private readonly Progressor<T> _progressor;
 
         public ProgressiveCollection(IEnumerable<T> wrapped)
             : this(wrapped, new ExtendedSet<T>(), null)
@@ -30,15 +30,23 @@ namespace Theraot.Collections
         {
             _cache = Check.NotNullArgument(cache, "cache");
             _progressor = new Progressor<T>(wrapped);
-            _progressor.SubscribeAction(_cache.Add);
+            _progressor.SubscribeAction(obj => _cache.Add(obj));
             _comparer = comparer ?? EqualityComparer<T>.Default;
         }
 
-        protected ProgressiveCollection(IProgressor<T> wrapped, ICollection<T> cache, IEqualityComparer<T> comparer)
+        protected ProgressiveCollection(Progressor<T> wrapped, ICollection<T> cache, IEqualityComparer<T> comparer)
         {
             _cache = Check.NotNullArgument(cache, "cache");
-            _progressor = Check.NotNullArgument(wrapped, "wrapped");
-            _progressor.SubscribeAction(_cache.Add);
+            _progressor = new Progressor<T>(Check.NotNullArgument(wrapped, "wrapped"));
+            _progressor.SubscribeAction(obj => _cache.Add(obj));
+            _comparer = comparer ?? EqualityComparer<T>.Default;
+        }
+
+        protected ProgressiveCollection(TryTake<T> tryTake, ICollection<T> cache, IEqualityComparer<T> comparer)
+        {
+            _cache = Check.NotNullArgument(cache, "cache");
+            _progressor = new Progressor<T>(tryTake);
+            _progressor.SubscribeAction(obj => _cache.Add(obj));
             _comparer = comparer ?? EqualityComparer<T>.Default;
         }
 
@@ -46,7 +54,7 @@ namespace Theraot.Collections
         {
             get
             {
-                _progressor.All().Consume();
+                _progressor.AsEnumerable().Consume();
                 return _cache.Count;
             }
         }
@@ -85,7 +93,7 @@ namespace Theraot.Collections
             }
         }
 
-        protected IProgressor<T> Progressor
+        protected Progressor<T> Progressor
         {
             get
             {
@@ -125,13 +133,13 @@ namespace Theraot.Collections
 
         public void CopyTo(T[] array)
         {
-            _progressor.All().Consume();
+            _progressor.AsEnumerable().Consume();
             _cache.CopyTo(array, 0);
         }
 
         public void CopyTo(T[] array, int arrayIndex)
         {
-            _progressor.All().Consume();
+            _progressor.AsEnumerable().Consume();
             _cache.CopyTo(array, arrayIndex);
         }
 

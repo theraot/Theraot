@@ -102,11 +102,12 @@ namespace Theraot.Core
         {
             var _iterate = Check.NotNullArgument(iterate, "iterate");
             var currentState = initialState;
-            do
+            while (true)
             {
                 currentState = _iterate.Invoke(currentState);
                 yield return currentState;
-            } while (true);
+            }
+            // Infinite Loop - This method creates an endless IEnumerable<T>
         }
 
         public static IEnumerable<TResult> CreateInfinite<TState, TResult>(TState initialState, Func<TState, TState> iterate, Converter<TState, TResult> resultSelector)
@@ -114,11 +115,12 @@ namespace Theraot.Core
             var _iterate = Check.NotNullArgument(iterate, "iterate");
             var _resultSelector = Check.NotNullArgument(resultSelector, "resultSelector");
             var currentState = initialState;
-            do
+            while (true)
             {
                 currentState = _iterate.Invoke(currentState);
                 yield return _resultSelector.Invoke(currentState);
-            } while (true);
+            }
+            // Infinite Loop - This method creates an endless IEnumerable<T>
         }
 
         public static IEnumerable<TResult> CreateInfinite<TState, TResult>(TState initialState, Func<TState, TState> iterate, Func<TState, TResult> resultSelector)
@@ -126,11 +128,12 @@ namespace Theraot.Core
             var _iterate = Check.NotNullArgument(iterate, "iterate");
             var _resultSelector = Check.NotNullArgument(resultSelector, "resultSelector");
             var currentState = initialState;
-            do
+            while (true)
             {
                 currentState = _iterate.Invoke(currentState);
                 yield return _resultSelector.Invoke(currentState);
-            } while (true);
+            }
+            // Infinite Loop - This method creates an endless IEnumerable<T>
         }
 
         public static IEnumerable<T> CreateInfinite<T>(Func<T> iterate)
@@ -140,6 +143,7 @@ namespace Theraot.Core
             {
                 yield return _iterate.Invoke();
             }
+            // Infinite Loop - This method creates an endless IEnumerable<T>
         }
 
         public static IEnumerable<TResult> CreateInfinite<TState, TResult>(Func<TState> iterate, Converter<TState, TResult> resultSelector)
@@ -150,6 +154,7 @@ namespace Theraot.Core
             {
                 yield return _resultSelector(_iterate.Invoke());
             }
+            // Infinite Loop - This method creates an endless IEnumerable<T>
         }
 
         public static IEnumerable<TResult> CreateInfinite<TState, TResult>(Func<TState> iterate, Func<TState, TResult> resultSelector)
@@ -160,6 +165,7 @@ namespace Theraot.Core
             {
                 yield return _resultSelector(_iterate.Invoke());
             }
+            // Infinite Loop - This method creates an endless IEnumerable<T>
         }
     }
 }

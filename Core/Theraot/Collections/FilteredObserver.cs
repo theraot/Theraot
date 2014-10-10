@@ -8,12 +8,12 @@ namespace Theraot.Collections
     public sealed class FilteredObserver<T> : IObserver<T>
     {
         private readonly IObserver<T> _observer;
-        private readonly Predicate<T> _predicate;
+        private readonly Predicate<T> filter;
 
-        public FilteredObserver(IObserver<T> observer, Predicate<T> predicate)
+        public FilteredObserver(IObserver<T> observer, Predicate<T> filter)
         {
             _observer = Check.NotNullArgument(observer, "observer");
-            _predicate = Check.NotNullArgument(predicate, "predicate");
+            this.filter = Check.NotNullArgument(filter, "filter");
         }
 
         public void OnCompleted()
@@ -28,7 +28,7 @@ namespace Theraot.Collections
 
         public void OnNext(T value)
         {
-            if (_predicate(value))
+            if (filter(value))
             {
                 _observer.OnNext(value);
             }

@@ -176,12 +176,12 @@ namespace Theraot.Collections
 
         public void Move(int oldIndex, int newIndex)
         {
-            Extensions.Move(_wrapped, oldIndex, newIndex);
+            _wrapped.Move(oldIndex, newIndex);
         }
 
         public void Swap(int indexA, int indexB)
         {
-            Extensions.Swap(_wrapped, indexA, indexB);
+            _wrapped.Swap(indexA, indexB);
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

@@ -23,7 +23,7 @@ namespace Theraot.Core
         }
     }
 
-    public partial class NewOperationCanceledException : OperationCanceledException
+    public partial class NewOperationCanceledException
     {
 #if NET20 || NET30 || NET35
 

@@ -202,7 +202,9 @@ The following are the notable methods that has been added to existing types:
 
 Others:
 
-  - The class `ReaderWriterLockSlim` was added in .NET 3.5, if `ReaderWriterLock` is not good enough, I suggest the use of memory transaction via `Theraot.Threading.Needles.Transact`.
+  - The class `ReaderWriterLockSlim` was added in .NET 3.5, if `ReaderWriterLock` is not good enough:
+    - Try using `Theraot.Threading.ReadWriteLock`.
+    - Otherwise use of memory transaction via `Theraot.Threading.Needles.Transact`.
   - The classes added in .NET 4.5 that require `EventHandler<T>` without the generic constraint may get backported using `Theraot.Core.NewEventHandler<T>`. Avoid using `EventHandler<T>` explicitly in those cases.
   - The classes added in .NET 4.0 or .NET 4.5 that require `OperationCanceledException.CancellationToken` et al. may get backported using `Theraot.Core.NewOperationCanceledException`. Avoid creating this exceptions yourself.
   - The class `TimeZoneInfo` was added in .NET 3.5... pending.
@@ -217,6 +219,20 @@ Compiling
 ---
 
 The compiling configuration has been set for ease of batch building from Visual Studio, building from Xamarin Studio is also supported.
+
+---
+Tests
+---
+
+This repository includes a test proyect for NUnit 2.6.3 you can use any NUnit test runner to execute the tests. The library is included nunit.framework.dll for ease of use.
+
+To run the unit test you can use one of the following:
+  - NUnit test runner included in the NUnit installation available from nunit.org
+  - From Xamarin Studio using the NUnit integration
+  - From Visual Studio using the Test Explorer with NUnit Test Adapter available from visualstudiogallery.msdn.microsoft.com
+  - From Visual Studio with TestDriven.net
+  - From Visual Studio with Reshaper
+  - Any other test runner compatible with NUnit
 
 ---
 Help
@@ -239,6 +255,8 @@ The code is under MIT license
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 The reason for this license is that this library includes code from Mono under MIT License.
+
+This repository also includes a copy of NUnit 2.6.3 which includes its own license file.
 
 ---
 Warranty

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Theraot.Core;
 
 namespace Theraot.Collections.ThreadSafe
@@ -8,6 +9,7 @@ namespace Theraot.Collections.ThreadSafe
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the value.</typeparam>
+    [Serializable]
     public sealed class FixedSizeHashBucket<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>
     {
         private readonly int _capacity;
@@ -134,10 +136,10 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Returns an <see cref="IEnumerator{KeyValuePair{TKey, TValue}}" /> that allows to iterate through the collection.
+        /// Returns an <see><cref>IEnumerator{KeyValuePair{TKey, TValue}}</cref></see> that allows to iterate through the collection.
         /// </summary>
         /// <returns>
-        /// A <see cref="IEnumerator{KeyValuePair{TKey, TValue}}" /> that can be used to iterate through the collection.
+        /// A <see><cref>IEnumerator{KeyValuePair{TKey, TValue}}</cref></see> that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
@@ -160,7 +162,7 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Gets the an <see cref="IEnumerable{KeyValuePair{TKey, TValue}}" /> that allows to iterate over the contained keys and associated values.
+        /// Gets the an <see><cref>IEnumerable{KeyValuePair{TKey, TValue}}</cref></see> that allows to iterate over the contained keys and associated values.
         /// </summary>
         public IEnumerable<KeyValuePair<TKey, TValue>> GetKeyValuePairEnumerable()
         {

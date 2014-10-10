@@ -11,6 +11,7 @@ namespace System
         public Progress()
         {
             _context = SynchronizationContext.Current;
+            //TODO handle the case where SynchronizationContext.Current is null
         }
 
         public Progress(Action<T> handler)
@@ -23,7 +24,7 @@ namespace System
             else
             {
                 _handler = handler;
-                _callback = new SendOrPostCallback(Callback);
+                _callback = Callback;
             }
         }
 
@@ -32,14 +33,14 @@ namespace System
 
         public void Report(T value)
         {
-            this.OnReport(value);
+            OnReport(value);
         }
 
         protected virtual void OnReport(T value)
         {
             if (_callback != null || ProgressChanged != null)
             {
-                _context.Post(_callback, value);
+                _context.Post(_callback, value); //TODO: _context may be null
             }
         }
 

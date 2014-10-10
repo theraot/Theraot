@@ -22,7 +22,7 @@ namespace Theraot.Core
             var originalAsReverse = comparer as ReverseComparer<T>;
             if (ReferenceEquals(originalAsReverse, null))
             {
-                return new ReverseComparer<T>(comparer);
+                return new ReverseComparer<T>(comparer ?? Comparer<T>.Default);
             }
             else
             {

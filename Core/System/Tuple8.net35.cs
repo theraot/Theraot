@@ -20,7 +20,7 @@ namespace System
 
         public Tuple(T1 item1, T2 item2, T3 item3, T4 item4, T5 item5, T6 item6, T7 item7, TRest rest)
         {
-            CheckType();
+            CheckType(rest);
             _item1 = item1;
             _item2 = item2;
             _item3 = item3;
@@ -153,30 +153,34 @@ namespace System
 
         public override string ToString()
         {
-            return string.Format(CultureInfo.InvariantCulture, "({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7})", _item1, _item2, _item3, _item4, _item5, _item6, _item7, _rest);
+            var restString = _rest.ToString();
+            return string.Format(CultureInfo.InvariantCulture, "({0}, {1}, {2}, {3}, {4}, {5}, {6}, {7})", _item1, _item2, _item3, _item4, _item5, _item6, _item7, restString.Substring(1, restString.Length - 2));
         }
 
-        private static void CheckType()
+        private static void CheckType(TRest rest)
         {
-            if (typeof(TRest).IsGenericType)
+            if (!ReferenceEquals(rest, null))
             {
-                Type type = typeof(TRest).GetGenericTypeDefinition();
-                if
-                (
-                    type == typeof(Tuple<>) ||
-                    type == typeof(Tuple<,>) ||
-                    type == typeof(Tuple<,,>) ||
-                    type == typeof(Tuple<,,,>) ||
-                    type == typeof(Tuple<,,,,>) ||
-                    type == typeof(Tuple<,,,,,>) ||
-                    type == typeof(Tuple<,,,,,,>) ||
-                    type == typeof(Tuple<,,,,,,,>)
-                )
+                if (typeof(TRest).IsGenericType)
                 {
-                    return;
+                    Type type = typeof(TRest).GetGenericTypeDefinition();
+                    if
+                        (
+                        type == typeof(Tuple<>) ||
+                        type == typeof(Tuple<,>) ||
+                        type == typeof(Tuple<,,>) ||
+                        type == typeof(Tuple<,,,>) ||
+                        type == typeof(Tuple<,,,,>) ||
+                        type == typeof(Tuple<,,,,,>) ||
+                        type == typeof(Tuple<,,,,,,>) ||
+                        type == typeof(Tuple<,,,,,,,>)
+                        )
+                    {
+                        return;
+                    }
                 }
             }
-            throw new ArgumentException("rest", "The last element of an eight element tuple must be a Tuple.");
+            throw new ArgumentException("The last element of an eight element tuple must be a Tuple.", "rest");
         }
 
         private int CompareTo(object other, IComparer comparer)

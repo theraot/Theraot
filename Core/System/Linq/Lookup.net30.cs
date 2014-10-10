@@ -3,9 +3,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Theraot.Collections;
 using Theraot.Collections.Specialized;
 using Theraot.Core;
+using Theraot.Threading;
 
 namespace System.Linq
 {
@@ -44,7 +44,7 @@ namespace System.Linq
                 }
                 else
                 {
-                    return EmptySet<TElement>.Instance;
+                    return ArrayPool<TElement>.EmptyArray;
                 }
             }
         }
@@ -91,14 +91,12 @@ namespace System.Linq
         private ICollection<TElement> GetOrCreateGrouping(TKey key)
         {
             Grouping grouping;
-            if (_groupings.TryGetValue(key, out grouping))
+            if (!_groupings.TryGetValue(key, out grouping))
             {
-                return grouping.Items;
+                grouping = new Grouping(key);
+                _groupings.Add(key, grouping);
             }
-            else
-            {
-                return EmptySet<TElement>.Instance;
-            }
+            return grouping.Items;
         }
 
         internal sealed class Grouping : IGrouping<TKey, TElement>

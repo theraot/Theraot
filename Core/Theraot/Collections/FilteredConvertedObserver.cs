@@ -9,13 +9,13 @@ namespace Theraot.Collections
     {
         private readonly Converter<TInput, TOutput> _converter;
         private readonly IObserver<TOutput> _observer;
-        private readonly Predicate<TInput> _predicate;
+        private readonly Predicate<TInput> filter;
 
-        public FilteredConvertedObserver(IObserver<TOutput> observer, Converter<TInput, TOutput> converter, Predicate<TInput> predicate)
+        public FilteredConvertedObserver(IObserver<TOutput> observer, Predicate<TInput> filter, Converter<TInput, TOutput> converter)
         {
             _observer = Check.NotNullArgument(observer, "observer");
             _converter = Check.NotNullArgument(converter, "converter");
-            _predicate = Check.NotNullArgument(predicate, "predicate");
+            this.filter = Check.NotNullArgument(filter, "filter");
         }
 
         public void OnCompleted()
@@ -30,7 +30,7 @@ namespace Theraot.Collections
 
         public void OnNext(TInput value)
         {
-            if (_predicate(value))
+            if (filter(value))
             {
                 _observer.OnNext(_converter.Invoke(value));
             }

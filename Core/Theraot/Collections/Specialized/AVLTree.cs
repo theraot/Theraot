@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Theraot.Collections.Specialized
 {
     [Serializable]
-    public sealed partial class AVLTree<TKey, TValue> : IEnumerable<AVLTree<TKey, TValue>.AVLNode>
+    public sealed partial class AVLTree<TKey, TValue>
     {
         private readonly Comparison<TKey> _comparison;
 
@@ -82,11 +82,9 @@ namespace Theraot.Collections.Specialized
 
         public IEnumerable<AVLTree<TKey, TValue>.AVLNode> Range(TKey lower, TKey upper)
         {
-            var _lower = SearchNearestRight(lower);
-            var _upper = SearchNearestLeft(upper);
-            foreach (var item in AVLNode.EnumerateFrom(_lower))
+            foreach (var item in AVLNode.EnumerateFrom(_root, lower, _comparison))
             {
-                if (_comparison(_upper.Key, item.Key) > 0)
+                if (_comparison(item.Key, upper) > 0)
                 {
                     break;
                 }
@@ -99,7 +97,15 @@ namespace Theraot.Collections.Specialized
 
         public bool Remove(TKey key)
         {
-            return AVLNode.Remove(ref _root, key, _comparison);
+            if (AVLNode.Remove(ref _root, key, _comparison))
+            {
+                _count--;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public AVLNode Search(TKey key)

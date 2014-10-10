@@ -33,7 +33,7 @@ namespace System
         }
 
         public Lazy(LazyThreadSafetyMode mode)
-            : this(FuncHelper.GetDefaultFunc<T>(), mode, false)
+            : this(TypeHelper.GetCreateOrFail<T>(), mode, false)
         {
             //Empty
         }
@@ -61,19 +61,13 @@ namespace System
                         {
                             var threads = new HashSet<Thread>();
                             _valueFactory =
-                                () =>
-                                {
-                                    return CachingNoneMode(__valueFactory, threads);
-                                };
+                                () => CachingNoneMode(__valueFactory, threads);
                         }
                         else
                         {
                             var threads = new HashSet<Thread>();
                             _valueFactory =
-                                () =>
-                                {
-                                    return NoneMode(__valueFactory, threads);
-                                };
+                                () => NoneMode(__valueFactory, threads);
                         }
                     }
                     break;
@@ -81,25 +75,18 @@ namespace System
                 case LazyThreadSafetyMode.PublicationOnly:
                     {
                         _valueFactory =
-                            () =>
-                            {
-                                return PublicationOnlyMode(__valueFactory);
-                            };
+                            () => PublicationOnlyMode(__valueFactory);
                     }
                     break;
 
-                default:
-                case LazyThreadSafetyMode.ExecutionAndPublication:
+                default: /*LazyThreadSafetyMode.ExecutionAndPublication*/
                     {
                         if (cacheExceptions)
                         {
                             Thread thread = null;
                             var waitHandle = new ManualResetEvent(false);
                             _valueFactory =
-                                () =>
-                                {
-                                    return CachingFullMode(__valueFactory, waitHandle, ref thread);
-                                };
+                                () => CachingFullMode(__valueFactory, waitHandle, ref thread);
                         }
                         else
                         {
@@ -107,10 +94,7 @@ namespace System
                             var waitHandle = new ManualResetEvent(false);
                             int preIsValueCreated = 0;
                             _valueFactory =
-                                () =>
-                                {
-                                    return FullMode(__valueFactory, waitHandle, ref thread, ref preIsValueCreated);
-                                };
+                                () => FullMode(__valueFactory, waitHandle, ref thread, ref preIsValueCreated);
                         }
                     }
                     break;
@@ -140,9 +124,8 @@ namespace System
             {
                 try
                 {
-                    T _target;
                     thread = Thread.CurrentThread;
-                    _target = valueFactory.Invoke();
+                    T _target = valueFactory.Invoke();
                     _valueFactory = FuncHelper.GetReturnFunc(_target);
                     return _target;
                 }
@@ -175,8 +158,6 @@ namespace System
             {
                 try
                 {
-                    T _target;
-
                     // lock (threads) // This is meant to not be thread-safe
                     {
                         if (threads.Contains(currentThread))
@@ -188,7 +169,7 @@ namespace System
                             threads.Add(currentThread);
                         }
                     }
-                    _target = valueFactory();
+                    T _target = valueFactory();
                     _valueFactory = FuncHelper.GetReturnFunc(_target);
                     Thread.VolatileWrite(ref _isValueCreated, 1);
                     return _target;
@@ -264,8 +245,6 @@ namespace System
             {
                 try
                 {
-                    T _target;
-
                     // lock (threads) // This is meant to not be thread-safe
                     {
                         if (threads.Contains(currentThread))
@@ -277,7 +256,7 @@ namespace System
                             threads.Add(currentThread);
                         }
                     }
-                    _target = valueFactory();
+                    T _target = valueFactory();
                     _valueFactory = FuncHelper.GetReturnFunc(_target);
                     Thread.VolatileWrite(ref _isValueCreated, 1);
                     return _target;

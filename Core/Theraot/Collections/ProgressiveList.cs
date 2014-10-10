@@ -30,7 +30,7 @@ namespace Theraot.Collections
             _cache = Check.NotNullArgument(cache, "cache");
         }
 
-        protected ProgressiveList(IProgressor<T> wrapped, IList<T> cache, IEqualityComparer<T> comparer)
+        protected ProgressiveList(Progressor<T> wrapped, IList<T> cache, IEqualityComparer<T> comparer)
             : base(wrapped, cache, comparer)
         {
             _cache = Check.NotNullArgument(cache, "cache");

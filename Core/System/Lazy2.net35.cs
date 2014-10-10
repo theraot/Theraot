@@ -4,10 +4,9 @@ namespace System
 {
     public class Lazy<T, TMetadata> : Lazy<T>
     {
-        private TMetadata _metadata;
+        private readonly TMetadata _metadata;
 
         public Lazy(TMetadata metadata)
-            : base()
         {
             _metadata = metadata;
         }

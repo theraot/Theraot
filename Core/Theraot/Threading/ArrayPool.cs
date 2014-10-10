@@ -4,6 +4,7 @@ using System.Threading;
 using Theraot.Collections;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
+using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
 {
@@ -16,13 +17,23 @@ namespace Theraot.Threading
 
         private static readonly LazyBucket<FixedSizeQueueBucket<ArrayHolder>> _data;
         private static readonly List<ArrayHolder> _dirtyData;
+        private static readonly T[] _emptyArray;
         private static readonly ReentryGuard _guard;
-        private static readonly Work _recycle;
+        private static readonly LazyNeedle<Work> _recycle;
         private static int _done;
 
         static ArrayPool()
         {
-            _recycle = WorkContext.DefaultContext.AddWork(CleanUp);
+            if (typeof(T) == typeof(Type))
+            {
+                _emptyArray = (T[])(object)Type.EmptyTypes;
+            }
+            else
+            {
+                _emptyArray = new T[0];
+            }
+            //---
+            _recycle = new LazyNeedle<Work>(() => WorkContext.DefaultContext.AddWork(CleanUp));
             _data = new LazyBucket<FixedSizeQueueBucket<ArrayHolder>>
             (
                 _ => new FixedSizeQueueBucket<ArrayHolder>(INT_PoolSize),
@@ -32,6 +43,14 @@ namespace Theraot.Threading
             _guard = new ReentryGuard();
             Thread.MemoryBarrier();
             Thread.VolatileWrite(ref _done, 1);
+        }
+
+        public static T[] EmptyArray
+        {
+            get
+            {
+                return _emptyArray;
+            }
         }
 
         public static bool DonateArray(T[] array)
@@ -66,7 +85,11 @@ namespace Theraot.Threading
 
         public static T[] GetArray(int capacity)
         {
-            if (capacity < INT_MinCapacity)
+            if (capacity == 0)
+            {
+                return _emptyArray;
+            }
+            else if (capacity < INT_MinCapacity)
             {
                 capacity = INT_MinCapacity;
             }
@@ -113,7 +136,7 @@ namespace Theraot.Threading
                 var holder = new ArrayHolder(array);
                 bucket.Add(holder);
                 _dirtyData.Add(holder);
-                _recycle.Start();
+                _recycle.Value.Start();
             }
         }
 

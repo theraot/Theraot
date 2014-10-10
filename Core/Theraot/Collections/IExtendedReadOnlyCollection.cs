@@ -4,6 +4,7 @@ namespace Theraot.Collections
 {
     public interface IExtendedReadOnlyCollection<T> : IReadOnlyCollection<T>
     {
+        // Intended to collide with ICollection<T>
         bool Contains(T item);
 
         bool Contains(T item, IEqualityComparer<T> comparer);
