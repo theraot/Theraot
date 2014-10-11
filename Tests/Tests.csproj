@@ -53,6 +53,7 @@
     <Compile Include="System\Linq\EnumerableMoreTest.cs" />
     <Compile Include="System\Linq\LookUpTest.cs" />
     <Compile Include="System\Threading\CancellationTokenSourceTest.cs" />
+    <Compile Include="System\Threading\CancellationTokenTests.cs" />
     <Compile Include="System\Threading\LazyInitializerTest.cs" />
     <Compile Include="System\Threading\VolatileTest.cs" />
     <Compile Include="System\TupleTest.cs" />
