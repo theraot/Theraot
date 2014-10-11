@@ -272,14 +272,14 @@
     <Compile Include="System\Threading\CancellationTokenSource.net35.cs" />
     <Compile Include="System\Threading\CountdownEvent.net35.cs" />
     <None Include="System\Threading\LazyInitializer.mono" />
-    <None Include="System\Threading\LazyInitializer.tt">
+    <None Include="System\Threading\LazyInitializer.net35.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>LazyInitializer.cs</LastGenOutput>
+      <LastGenOutput>LazyInitializer.net35.cs</LastGenOutput>
     </None>
-    <Compile Include="System\Threading\LazyInitializer.cs">
+    <Compile Include="System\Threading\LazyInitializer.net35.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>LazyInitializer.tt</DependentUpon>
+      <DependentUpon>LazyInitializer.net35.tt</DependentUpon>
     </Compile>
     <Compile Include="System\Threading\LockRecursionException.cs" />
     <Compile Include="System\Threading\SemaphoreSlim.net35.cs" />
