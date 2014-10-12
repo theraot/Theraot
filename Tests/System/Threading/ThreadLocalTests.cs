@@ -110,6 +110,10 @@ namespace MonoTests.System.Threading
         [Category("NotDotNet")] // nunit results in stack overflow
         public void MultipleReferenceToValueTest()
         {
+            if (Environment.Version.Major >= 4)
+            {
+                throw new NotSupportedException("Results in stack overflow - blame Microsoft");
+            }
             threadLocal = new ThreadLocal<int>(() => threadLocal.Value + 1);
 
             var value = threadLocal.Value;
