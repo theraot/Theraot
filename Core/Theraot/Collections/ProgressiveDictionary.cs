@@ -28,22 +28,71 @@ namespace Theraot.Collections
         }
 
         protected ProgressiveDictionary(IEnumerable<KeyValuePair<TKey, TValue>> wrapped, IDictionary<TKey, TValue> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
-            : base(wrapped, cache, new KeyValuePairEqualityComparer<TKey, TValue>(keyComparer, valueComparer))
+            : this(wrapped.GetEnumerator(), cache, new KeyValuePairEqualityComparer<TKey, TValue>(keyComparer, valueComparer))
         {
             _cache = Check.NotNullArgument(cache, "cache");
             _keyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
-            _valuesReadonly = new ProgressiveSet<TValue>(ProgressorBuilder.CreateConversionProgressor(Progressor, input => input.Value), valueComparer);
-            _keysReadonly = new ProgressiveSet<TKey>(ProgressorBuilder.CreateConversionProgressor(Progressor, input => input.Key), keyComparer);
+            _valuesReadonly = new ProgressiveSet<TValue>(Progressor<TValue>.CreateConverted(Progressor, input => input.Value), valueComparer);
+            _keysReadonly = new ProgressiveSet<TKey>(Progressor<TKey>.CreateConverted(Progressor, input => input.Key), keyComparer);
         }
 
-        protected ProgressiveDictionary(IProgressor<KeyValuePair<TKey, TValue>> wrapped, IDictionary<TKey, TValue> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
-            : base(wrapped, cache, new KeyValuePairEqualityComparer<TKey, TValue>(keyComparer, valueComparer))
+        protected ProgressiveDictionary(Progressor<KeyValuePair<TKey, TValue>> wrapped, IDictionary<TKey, TValue> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
+            : base
+            (
+                (out KeyValuePair<TKey, TValue> pair) =>
+                {
+                again:
+                    if (wrapped.TryTake(out pair))
+                    {
+                        if (cache.ContainsKey(pair.Key))
+                        {
+                            goto again;
+                        }
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                },
+                cache,
+                new KeyValuePairEqualityComparer<TKey, TValue>(keyComparer, valueComparer)
+            )
         {
             _cache = Check.NotNullArgument(cache, "cache");
             _keyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
             _keyComparer = EqualityComparer<TKey>.Default;
-            _valuesReadonly = new ProgressiveSet<TValue>(ProgressorBuilder.CreateConversionProgressor(Progressor, input => input.Value), valueComparer);
-            _keysReadonly = new ProgressiveSet<TKey>(ProgressorBuilder.CreateConversionProgressor(Progressor, input => input.Key), keyComparer);
+            _valuesReadonly = new ProgressiveSet<TValue>(Progressor<TValue>.CreateConverted(Progressor, input => input.Value), valueComparer);
+            _keysReadonly = new ProgressiveSet<TKey>(Progressor<TKey>.CreateConverted(Progressor, input => input.Key), keyComparer);
+        }
+
+        private ProgressiveDictionary(IEnumerator<KeyValuePair<TKey, TValue>> enumerator, IDictionary<TKey, TValue> cache, KeyValuePairEqualityComparer<TKey, TValue> comparer)
+            : base
+            (
+                (out KeyValuePair<TKey, TValue> pair) =>
+                {
+                again:
+                    if (enumerator.MoveNext())
+                    {
+                        pair = enumerator.Current;
+                        if (cache.ContainsKey(pair.Key))
+                        {
+                            goto again;
+                        }
+                        return true;
+                    }
+                    else
+                    {
+                        enumerator.Dispose();
+                        pair = default(KeyValuePair<TKey, TValue>);
+                        return false;
+                    }
+                },
+                cache,
+                comparer
+            )
+        {
+            //Empty
         }
 
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns True")]

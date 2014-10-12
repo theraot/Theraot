@@ -104,7 +104,7 @@ namespace Theraot.Collections
         public static bool Contains<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> items)
         {
             var comparer = EqualityComparer<TItem>.Default;
-            var _collection = new ProgressiveSet<TItem>(Check.NotNullArgument(collection, "collection"));
+            var _collection = collection as ICollection<TItem> ?? new ProgressiveSet<TItem>(Check.NotNullArgument(collection, "collection"));
             foreach (TItem item in Check.NotNullArgument(items, "items"))
             {
                 if (!_collection.Contains(item, comparer))
@@ -118,7 +118,7 @@ namespace Theraot.Collections
         public static bool Contains<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> items, IEqualityComparer<TItem> comparer)
         {
             var _comparer = comparer ?? EqualityComparer<TItem>.Default;
-            var _collection = new ProgressiveSet<TItem>(Check.NotNullArgument(collection, "collection"));
+            var _collection = collection as ICollection<TItem> ?? new ProgressiveSet<TItem>(Check.NotNullArgument(collection, "collection"));
             foreach (TItem item in Check.NotNullArgument(items, "items"))
             {
                 if (!_collection.Contains(item, _comparer))
@@ -132,7 +132,7 @@ namespace Theraot.Collections
         public static bool ContainsAny<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> items)
         {
             IEqualityComparer<TItem> comparer = EqualityComparer<TItem>.Default;
-            var _collection = new ProgressiveSet<TItem>(Check.NotNullArgument(collection, "collection"));
+            var _collection = collection as ICollection<TItem> ?? new ProgressiveSet<TItem>(Check.NotNullArgument(collection, "collection"));
             foreach (TItem item in Check.NotNullArgument(items, "items"))
             {
                 if (_collection.Contains(item, comparer))
@@ -146,7 +146,7 @@ namespace Theraot.Collections
         public static bool ContainsAny<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> items, IEqualityComparer<TItem> comparer)
         {
             var _comparer = comparer ?? EqualityComparer<TItem>.Default;
-            var _collection = new ProgressiveSet<TItem>(Check.NotNullArgument(collection, "collection"));
+            var _collection = collection as ICollection<TItem> ?? new ProgressiveSet<TItem>(Check.NotNullArgument(collection, "collection"));
             foreach (TItem item in Check.NotNullArgument(items, "items"))
             {
                 if (_collection.Contains(item, _comparer))
@@ -1197,14 +1197,27 @@ namespace Theraot.Collections
 
         public static int IntersectWith<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other)
         {
-            var _other = new ProgressiveSet<TItem>(other);
+            var _other = other as ICollection<TItem> ?? new ProgressiveSet<TItem>(other);
             return collection.RemoveWhere(input => !_other.Contains(input));
         }
 
         public static IEnumerable<TItem> IntersectWithEnumerable<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other)
         {
-            var _other = new ProgressiveSet<TItem>(other);
+            var _other = other as ICollection<TItem> ?? new ProgressiveSet<TItem>(other);
             return collection.RemoveWhereEnumerable(input => !_other.Contains(input));
+        }
+        public static int IntersectWith<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other, IEqualityComparer<TItem> comparer)
+        {
+            var _comparer = comparer ?? EqualityComparer<TItem>.Default;
+            var _other = other as ICollection<TItem> ?? new ProgressiveSet<TItem>(other);
+            return collection.RemoveWhere(input => !_other.Contains(input, _comparer));
+        }
+
+        public static IEnumerable<TItem> IntersectWithEnumerable<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other, IEqualityComparer<TItem> comparer)
+        {
+            var _comparer = comparer ?? EqualityComparer<TItem>.Default;
+            var _other = other as ICollection<TItem> ?? new ProgressiveSet<TItem>(other);
+            return collection.RemoveWhereEnumerable(input => !_other.Contains(input, _comparer));
         }
 
         public static bool IsEmpty<T>(this IEnumerable<T> source)
@@ -1214,22 +1227,22 @@ namespace Theraot.Collections
 
         public static bool IsProperSubsetOf<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> other)
         {
-            return IsSubsetOf(collection, other, true);
+            return IsSubsetOf(Check.NotNullArgument(collection, "collection"), Check.NotNullArgument(other, "other"), true);
         }
 
         public static bool IsProperSupersetOf<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> other)
         {
-            return IsSupersetOf(collection, other, true);
+            return IsSupersetOf(Check.NotNullArgument(collection, "collection"), Check.NotNullArgument(other, "other"), true);
         }
 
         public static bool IsSubsetOf<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> other)
         {
-            return IsSubsetOf(collection, other, false);
+            return IsSubsetOf(Check.NotNullArgument(collection, "collection"), Check.NotNullArgument(other, "other"), false);
         }
 
         public static bool IsSupersetOf<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> other)
         {
-            return IsSupersetOf(collection, other, false);
+            return IsSupersetOf(Check.NotNullArgument(collection, "collection"), Check.NotNullArgument(other, "other"), false);
         }
 
         public static int LastIndexOf<TItem>(this IEnumerable<TItem> collection, TItem item, int index, IEqualityComparer<TItem> comparer)
@@ -1468,7 +1481,7 @@ namespace Theraot.Collections
             return ExceptWith
                    (
                        _collection,
-                       new ProgressiveCollection<TItem>(Check.NotNullArgument(converter, "converter").Invoke(_collection))
+                       new List<TItem>(Check.NotNullArgument(converter, "converter").Invoke(_collection))
                    );
         }
 
@@ -1483,7 +1496,7 @@ namespace Theraot.Collections
             return ExceptWithEnumerable
                    (
                        _collection,
-                       new ProgressiveCollection<TItem>(Check.NotNullArgument(converter, "converter").Invoke(_collection))
+                       new List<TItem>(Check.NotNullArgument(converter, "converter").Invoke(_collection))
                    );
         }
 
@@ -1514,7 +1527,7 @@ namespace Theraot.Collections
         {
             var _collection = Check.NotNullArgument(collection, "collection");
             var _other = Check.NotNullArgument(other, "other");
-            var _that = new ProgressiveSet<TItem>(_other);
+            var _that = _other as ICollection<TItem> ?? new ProgressiveSet<TItem>(_other);
             foreach (var item in _that.Where(input => !_collection.Contains(input)))
             {
                 GC.KeepAlive(item);
@@ -1575,12 +1588,12 @@ namespace Theraot.Collections
 
         public static int SymmetricExceptWith<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other)
         {
-            return collection.AddRange(Extensions.Where(other, input => !collection.Remove(input)));
+            return collection.AddRange(Extensions.Where(other.Distinct(), input => !collection.Remove(input)));
         }
 
         public static IEnumerable<TItem> SymmetricExceptWithEnumerable<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other)
         {
-            return collection.AddRangeEnumerable(Extensions.Where(other, input => !collection.Remove(input)));
+            return collection.AddRangeEnumerable(Extensions.Where(other.Distinct(), input => !collection.Remove(input)));
         }
 
         public static TItem TakeAndReturn<TItem>(this IDropPoint<TItem> dropPoint)
@@ -1941,16 +1954,14 @@ namespace Theraot.Collections
 
         private static bool IsSubsetOf<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> other, bool proper)
         {
-            var _collection = Check.NotNullArgument(collection, "collection");
-            var _other = Check.NotNullArgument(other, "other");
-            var _this = AsSet(_collection);
-            var _that = AsSet(_other);
+            var _this = AsDistinctCollection(collection);
+            var _that = AsDistinctCollection(other);
             int elementCount = 0;
             int matchCount = 0;
             foreach (var item in _that)
             {
                 elementCount++;
-                if (_collection.Contains(item))
+                if (_this.Contains(item))
                 {
                     matchCount++;
                 }
@@ -1967,10 +1978,8 @@ namespace Theraot.Collections
 
         private static bool IsSupersetOf<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> other, bool proper)
         {
-            var _collection = Check.NotNullArgument(collection, "collection");
-            var _other = Check.NotNullArgument(other, "other");
-            var _this = AsSet(_collection);
-            var _that = AsSet(_other);
+            var _this = AsDistinctCollection(collection);
+            var _that = AsDistinctCollection(other);
             int elementCount = 0;
             foreach (var item in _that)
             {

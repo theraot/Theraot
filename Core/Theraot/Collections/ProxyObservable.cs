@@ -1,6 +1,5 @@
 using System;
-using System.Collections.Generic;
-
+using Theraot.Collections.ThreadSafe;
 using Theraot.Threading;
 
 namespace Theraot.Collections
@@ -8,11 +7,11 @@ namespace Theraot.Collections
     [Serializable]
     public sealed class ProxyObservable<T> : IObservable<T>, IObserver<T>, IProxyObservable<T>
     {
-        private readonly HashSet<IObserver<T>> _observers;
+        private readonly SetBucket<IObserver<T>> _observers;
 
         public ProxyObservable()
         {
-            _observers = new HashSet<IObserver<T>>();
+            _observers = new SetBucket<IObserver<T>>();
         }
 
         public void OnCompleted()

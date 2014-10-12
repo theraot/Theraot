@@ -3,8 +3,6 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{B5078871-4299-49ED-B921-3B5EBE57336A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -25,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <LangVersion>default</LangVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -35,6 +34,7 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <LangVersion>default</LangVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET20|AnyCPU'">
     <Optimize>False</Optimize>
@@ -235,6 +235,9 @@
     <Compile Include="System\Collections\Specialized\NotifyCollectionChangedEventArgs.net30.cs" />
     <Compile Include="System\Collections\Specialized\NotifyCollectionChangedEventHandler.net30.cs" />
     <Compile Include="System\Collections\StructuralComparisons.net35.cs" />
+    <Compile Include="System\Linq\Enumerable.join.net30.cs" />
+    <Compile Include="System\Linq\Enumerable.groupjoin.net30.cs" />
+    <Compile Include="System\Linq\Enumerable.groupby.net30.cs" />
     <Compile Include="System\Linq\Expressions\ConstantExpression.net30.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -269,6 +272,16 @@
     <Compile Include="System\Threading\CancellationTokenRegistration.net35.cs" />
     <Compile Include="System\Threading\CancellationTokenSource.net35.cs" />
     <Compile Include="System\Threading\CountdownEvent.net35.cs" />
+    <None Include="System\Threading\LazyInitializer.mono" />
+    <None Include="System\Threading\LazyInitializer.net35.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>LazyInitializer.net35.cs</LastGenOutput>
+    </None>
+    <Compile Include="System\Threading\LazyInitializer.net35.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>LazyInitializer.net35.tt</DependentUpon>
+    </Compile>
     <Compile Include="System\Threading\LockRecursionException.cs" />
     <Compile Include="System\Threading\SemaphoreSlim.net35.cs" />
     <Compile Include="System\Threading\SpinLock.net35.cs">
@@ -277,7 +290,10 @@
     <Compile Include="System\Threading\SpinWait.net35.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Theraot\Collections\ActionObserver.cs" />
+    <Compile Include="Theraot\Collections\ObservableExtensions.cs" />
     <Compile Include="Theraot\Collections\Specialized\FlagArray.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\WeakCancellableEvent.cs" />
     <Compile Include="Theraot\Core\CancellationTokenHelper.cs" />
     <Compile Include="Theraot\Core\FolderEnumeration.cs">
       <SubType>Code</SubType>
@@ -411,6 +427,10 @@
     <Compile Include="Theraot\Threading\NeedleLock.cs" />
     <Compile Include="Theraot\Threading\LockContext.cs" />
     <Compile Include="Theraot\Threading\LockSlot.cs" />
+    <Compile Include="Theraot\Threading\IReadWriteLock.cs" />
+    <Compile Include="Theraot\Threading\LockNeedle.cs" />
+    <Compile Include="Theraot\Threading\LockNeedleContext.cs" />
+    <Compile Include="Theraot\Threading\LockNeedleSlot.cs" />
     <Compile Include="Theraot\Threading\Needles\CacheNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\CacheNeedle.disposable.cs">
       <AutoGen>True</AutoGen>
@@ -462,6 +482,9 @@
       <DependentUpon>WeakNeedle.disposable.tt</DependentUpon>
     </Compile>
     <Compile Include="Theraot\Threading\ArrayPool.cs" />
+    <Compile Include="Theraot\Threading\NoReentrantReadWriteLock.cs" />
+    <Compile Include="Theraot\Threading\ReadWriteLock.cs" />
+    <Compile Include="Theraot\Threading\ReentrantReadWriteLock.cs" />
     <Compile Include="Theraot\Threading\ReentryGuard.cs" />
     <Compile Include="System\Threading\ThreadLocal.net35.cs">
       <SubType>Code</SubType>
@@ -480,17 +503,12 @@
     <Compile Include="Theraot\Collections\IExtendedGrouping.cs" />
     <Compile Include="Theraot\Collections\IExtendedLookup.cs" />
     <Compile Include="Theraot\Collections\IExtendedReadOnlyCollection.cs" />
-    <Compile Include="Theraot\Collections\IProgressor.cs" />
     <Compile Include="Theraot\Collections\IProxyObservable.cs" />
     <Compile Include="Theraot\Collections\KeyValuePairComparer.cs" />
     <Compile Include="Theraot\Collections\KeyValuePairEqualityComparer.cs" />
     <Compile Include="Theraot\Collections\ProgressiveLookup.cs" />
     <Compile Include="Theraot\Collections\Progressor.cs" />
-    <Compile Include="Theraot\Collections\ProgressorBase.cs" />
-    <Compile Include="Theraot\Collections\ProgressorBuilder.cs" />
-    <Compile Include="Theraot\Collections\ProgressorExtensions.cs" />
     <Compile Include="Theraot\Collections\ProxyObservable.cs" />
-    <Compile Include="Theraot\Collections\SilentProgressor.cs" />
     <Compile Include="Theraot\Collections\Specialized\AVLTree.cs" />
     <Compile Include="Theraot\Collections\Specialized\ConversionComparer.cs" />
     <Compile Include="Theraot\Collections\Specialized\AVLTree.AVLNode.cs" />
@@ -705,7 +723,7 @@
       <Properties>
         <Policies>
           <TextStylePolicy EolMarker="Windows" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/x-csharp" />
-          <CSharpFormattingPolicy IndentSwitchBody="True" AnonymousMethodBraceStyle="NextLine" PropertyBraceStyle="NextLine" PropertyGetBraceStyle="NextLine" PropertySetBraceStyle="NextLine" EventBraceStyle="NextLine" EventAddBraceStyle="NextLine" EventRemoveBraceStyle="NextLine" StatementBraceStyle="NextLine" ElseNewLinePlacement="NewLine" ElseIfNewLinePlacement="SameLine" CatchNewLinePlacement="NewLine" FinallyNewLinePlacement="NewLine" ArrayInitializerWrapping="DoNotChange" ArrayInitializerBraceStyle="NextLine" BeforeMethodDeclarationParentheses="False" BeforeMethodCallParentheses="False" BeforeConstructorDeclarationParentheses="False" BeforeDelegateDeclarationParentheses="False" NewParentheses="False" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
+          <CSharpFormattingPolicy IndentSwitchBody="True" AnonymousMethodBraceStyle="NextLine" PropertyBraceStyle="NextLine" PropertyGetBraceStyle="NextLine" PropertySetBraceStyle="NextLine" EventBraceStyle="NextLine" EventAddBraceStyle="NextLine" EventRemoveBraceStyle="NextLine" StatementBraceStyle="NextLine" ElseNewLinePlacement="NewLine" CatchNewLinePlacement="NewLine" FinallyNewLinePlacement="NewLine" ArrayInitializerWrapping="DoNotChange" ArrayInitializerBraceStyle="NextLine" BeforeMethodDeclarationParentheses="False" BeforeMethodCallParentheses="False" BeforeConstructorDeclarationParentheses="False" BeforeDelegateDeclarationParentheses="False" NewParentheses="False" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
           <TextStylePolicy EolMarker="Windows" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
         </Policies>
       </Properties>

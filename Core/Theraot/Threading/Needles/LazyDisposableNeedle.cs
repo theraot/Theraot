@@ -15,8 +15,8 @@ namespace Theraot.Threading.Needles
             //Empty
         }
 
-        public LazyDisposableNeedle(Func<T> function, T target)
-            : base(function, target)
+        public LazyDisposableNeedle(T target)
+            : base(target)
         {
             //Empty
         }

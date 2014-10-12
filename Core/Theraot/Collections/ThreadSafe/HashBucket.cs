@@ -13,6 +13,7 @@ namespace Theraot.Collections.ThreadSafe
     /// <remarks>
     /// Consider wrapping this class to implement <see cref="IDictionary{TKey, TValue}" /> or any other desired interface.
     /// </remarks>
+    [Serializable]
     public sealed class HashBucket<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>
     {
         //TODO: throw ArgumentException when trying to add items with same hash
@@ -427,7 +428,7 @@ namespace Theraot.Collections.ThreadSafe
         public int RemoveWhereKey(Predicate<TKey> predicate)
         {
             int removed = 0;
-            again:
+        again:
             var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
             for (int index = 0; index < entries.Capacity; index++)
             {
@@ -492,7 +493,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public IEnumerable<TValue> RemoveWhereKeyEnumerable(Predicate<TKey> predicate)
         {
-            again:
+        again:
             var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
             for (int index = 0; index < entries.Capacity; index++)
             {

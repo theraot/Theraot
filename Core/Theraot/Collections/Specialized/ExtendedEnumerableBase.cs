@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 
-using Theraot.Core;
-
 namespace Theraot.Collections.Specialized
 {
     [global::System.Diagnostics.DebuggerNonUserCode]
@@ -13,7 +11,7 @@ namespace Theraot.Collections.Specialized
 
         protected ExtendedEnumerableBase(IEnumerable<T> target, IEnumerable<T> append)
         {
-            _target = Check.NotNullArgument(target, "target");
+            _target = target ?? EmptySet<T>.Instance;
             _append = append ?? EmptySet<T>.Instance;
         }
 

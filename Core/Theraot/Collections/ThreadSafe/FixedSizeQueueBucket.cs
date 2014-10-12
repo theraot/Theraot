@@ -9,6 +9,7 @@ namespace Theraot.Collections.ThreadSafe
     /// <summary>
     /// Represent a fixed size thread-safe wait-free queue.
     /// </summary>
+    [Serializable]
     public sealed class FixedSizeQueueBucket<T> : IEnumerable<T>
     {
         private readonly int _capacity;

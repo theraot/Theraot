@@ -12,6 +12,7 @@ namespace Theraot.Collections.ThreadSafe
     /// <remarks>
     /// Consider wrapping this class to implement <see cref="ISet{T}" /> or any other desired interface.
     /// </remarks>
+    [Serializable]
     public sealed class SetBucket<T> : ICollection<T>
     {
         //TODO: throw ArgumentException when trying to add items with same hash
@@ -402,7 +403,7 @@ namespace Theraot.Collections.ThreadSafe
         public int RemoveWhere(Predicate<T> predicate)
         {
             int removed = 0;
-            again:
+        again:
             var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
             for (int index = 0; index < entries.Capacity; index++)
             {
@@ -466,7 +467,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public IEnumerable<T> RemoveWhereEnumerable(Predicate<T> predicate)
         {
-            again:
+        again:
             var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
             for (int index = 0; index < entries.Capacity; index++)
             {

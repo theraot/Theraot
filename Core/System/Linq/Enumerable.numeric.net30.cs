@@ -1351,11 +1351,7 @@ namespace System.Linq
                 }
                 else
                 {
-                    int end = start + count;
-                    for (int index = start; index < end; index++)
-                    {
-                        yield return index;
-                    }
+                    return RangeExtracted(start, count);
                 }
             }
         }
@@ -1523,6 +1519,15 @@ namespace System.Linq
         public static decimal? Sum<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal?> selector)
         {
             return Sum(Select(source, selector));
+        }
+
+        private static IEnumerable<int> RangeExtracted(int start, int count)
+        {
+            int end = start + count;
+            for (int index = start; index < end; index++)
+            {
+                yield return index;
+            }
         }
     }
 }

@@ -1,20 +1,21 @@
 ﻿#if NET20 || NET30
 
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
+using Theraot.Collections;
+using Theraot.Collections.Specialized;
 
 namespace System.Collections.Generic
 {
     [Serializable]
     [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "Backport")]
-    public class HashSet<T> : ISet<T>, ISerializable, IDeserializationCallback
+    public class HashSet<T> : ISet<T>, ISerializable
     {
-        private readonly Dictionary<T, object> _wrapped;
+        private readonly NullAwareDictionary<T, object> _wrapped;
 
         public HashSet()
         {
-            _wrapped = new Dictionary<T, object>();
+            _wrapped = new NullAwareDictionary<T, object>();
         }
 
         public HashSet(IEnumerable<T> collection)
@@ -25,7 +26,7 @@ namespace System.Collections.Generic
             }
             else
             {
-                _wrapped = new Dictionary<T, object>();
+                _wrapped = new NullAwareDictionary<T, object>();
                 foreach (T item in collection)
                 {
                     _wrapped[item] = null;
@@ -35,7 +36,7 @@ namespace System.Collections.Generic
 
         public HashSet(IEqualityComparer<T> comparer)
         {
-            _wrapped = new Dictionary<T, object>(comparer);
+            _wrapped = new NullAwareDictionary<T, object>(comparer);
         }
 
         public HashSet(IEnumerable<T> collection, IEqualityComparer<T> comparer)
@@ -46,7 +47,7 @@ namespace System.Collections.Generic
             }
             else
             {
-                _wrapped = new Dictionary<T, object>(comparer);
+                _wrapped = new NullAwareDictionary<T, object>(comparer);
                 foreach (T item in collection)
                 {
                     _wrapped[item] = null;
@@ -90,6 +91,11 @@ namespace System.Collections.Generic
             {
                 return false;
             }
+        }
+
+        public static IEqualityComparer<HashSet<T>> CreateSetComparer()
+        {
+            return HashSetEqualityComparer.Instance;
         }
 
         public bool Add(T item)
@@ -141,13 +147,9 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentOutOfRangeException("arrayIndex", "arrayIndex < 0");
             }
-            if (arrayIndex >= array.Length)
+            if (Count > array.Length - arrayIndex)
             {
-                throw new ArgumentException("arrayIndex is greater than the length of the destination array.");
-            }
-            if (Count > array.Length)
-            {
-                throw new ArgumentException("the Count property is larger than the size of the destination array.");
+                throw new ArgumentException("The array can not contain the number of elements.", "array");
             }
             _wrapped.Keys.CopyTo(array, arrayIndex);
         }
@@ -158,17 +160,17 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException("array");
             }
-            else if (arrayIndex < 0 || count < 0)
+            if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException("arrayIndex", "arrayIndex < 0");
+                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
             }
-            else if (arrayIndex >= array.Length)
+            if (count < 0)
             {
-                throw new ArgumentException("arrayIndex is greater than the length of the destination array.");
+                throw new ArgumentOutOfRangeException("count", "Non-negative number is required.");
             }
-            else if (count > array.Length - arrayIndex)
+            if (count > array.Length - arrayIndex)
             {
-                throw new ArgumentException("count is greater than the available space from the index to the end of the destination array.");
+                throw new ArgumentException("The array can not contain the number of elements.", "array");
             }
             else
             {
@@ -238,37 +240,28 @@ namespace System.Collections.Generic
             }
             else
             {
-                _wrapped.Clear();
-                foreach (T item in other)
-                {
-                    _wrapped[item] = null;
-                }
+                this.IntersectWith(other, _wrapped.Comparer);
             }
         }
 
         public bool IsProperSubsetOf(IEnumerable<T> other)
         {
-            return IsSubsetOf(other, true);
+            return IsSubsetOf(ToHashSet(other), true);
         }
 
         public bool IsProperSupersetOf(IEnumerable<T> other)
         {
-            return IsSupersetOf(other, true);
+            return IsSupersetOf(ToHashSet(other), true);
         }
 
         public bool IsSubsetOf(IEnumerable<T> other)
         {
-            return IsSubsetOf(other, false);
+            return IsSubsetOf(ToHashSet(other), false);
         }
 
         public bool IsSupersetOf(IEnumerable<T> other)
         {
-            return IsSupersetOf(other, false);
-        }
-
-        public void OnDeserialization(object sender)
-        {
-            _wrapped.OnDeserialization(sender);
+            return IsSupersetOf(ToHashSet(other), false);
         }
 
         public bool Overlaps(IEnumerable<T> other)
@@ -301,25 +294,7 @@ namespace System.Collections.Generic
 
         public int RemoveWhere(Predicate<T> match)
         {
-            if (match == null)
-            {
-                throw new ArgumentNullException("match");
-            }
-            else
-            {
-                int removeCount = 0;
-                foreach (KeyValuePair<T, object> item in _wrapped)
-                {
-                    if (match(item.Key))
-                    {
-                        if (_wrapped.Remove(item.Key))
-                        {
-                            removeCount++;
-                        }
-                    }
-                }
-                return removeCount;
-            }
+            return Extensions.RemoveWhere(this, match);
         }
 
         public bool SetEquals(IEnumerable<T> other)
@@ -329,7 +304,7 @@ namespace System.Collections.Generic
                 throw new ArgumentNullException("other");
             }
             int containsCount = 0;
-            foreach (T item in Enumerable.Distinct(other))
+            foreach (T item in ToHashSet(other))
             {
                 if (!_wrapped.ContainsKey(item))
                 {
@@ -440,20 +415,38 @@ namespace System.Collections.Generic
             }
         }
 
-        private struct Enumerator : IEnumerator<T>
+        private IEnumerable<T> ToHashSet(IEnumerable<T> other)
         {
-            private Dictionary<T, object>.Enumerator _enumerator;
+            var test = other as HashSet<T>;
+            var comparer = Comparer;
+            if (test != null && comparer.Equals(test.Comparer))
+            {
+                return test;
+            }
+            else
+            {
+                return new HashSet<T>(other, comparer);
+            }
+        }
+
+        public struct Enumerator : IEnumerator<T>
+        {
+            private readonly IEnumerator<KeyValuePair<T, object>> _enumerator;
+            private bool valid;
+            private T current;
 
             public Enumerator(HashSet<T> hashSet)
             {
                 _enumerator = hashSet._wrapped.GetEnumerator();
+                valid = false;
+                current = default(T);
             }
 
             public T Current
             {
                 get
                 {
-                    return _enumerator.Current.Key;
+                    return current;
                 }
             }
 
@@ -461,7 +454,14 @@ namespace System.Collections.Generic
             {
                 get
                 {
-                    return _enumerator.Current.Key;
+                    if (valid)
+                    {
+                        return current;
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Call MoveNext first or use IEnumerator<T>");
+                    }
                 }
             }
 
@@ -472,12 +472,65 @@ namespace System.Collections.Generic
 
             void IEnumerator.Reset()
             {
-                (_enumerator as IEnumerator).Reset();
+                valid = false;
+                current = _enumerator.Current.Key;
+                _enumerator.Reset();
             }
 
             public bool MoveNext()
             {
-                return _enumerator.MoveNext();
+                valid = _enumerator.MoveNext();
+                current = _enumerator.Current.Key;
+                return valid;
+            }
+        }
+
+        private sealed class HashSetEqualityComparer : IEqualityComparer<HashSet<T>>
+        {
+            public static readonly HashSetEqualityComparer Instance = new HashSetEqualityComparer();
+
+            public bool Equals(HashSet<T> left, HashSet<T> right)
+            {
+                if (left == right)
+                {
+                    return true;
+                }
+                else
+                {
+                    if (left == null || right == null || left.Count != right.Count)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        foreach (var item in left)
+                        {
+                            if (!right.Contains(item))
+                            {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                }
+            }
+
+            public int GetHashCode(HashSet<T> hashset)
+            {
+                try
+                {
+                    IEqualityComparer<T> comparer = EqualityComparer<T>.Default;
+                    int hash = 0;
+                    foreach (var item in hashset)
+                    {
+                        hash ^= comparer.GetHashCode(item);
+                    }
+                    return hash;
+                }
+                catch (NullReferenceException)
+                {
+                    return 0;
+                }
             }
         }
     }

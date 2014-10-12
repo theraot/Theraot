@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Theraot.Core;
 
 namespace Theraot.Collections.ThreadSafe
@@ -8,6 +9,7 @@ namespace Theraot.Collections.ThreadSafe
     /// </summary>
     /// <typeparam name="TKey">The type of the key.</typeparam>
     /// <typeparam name="TValue">The type of the value.</typeparam>
+    [Serializable]
     public sealed class FixedSizeHashBucket<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>
     {
         private readonly int _capacity;

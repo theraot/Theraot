@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-
 using Theraot.Collections.Specialized;
 using Theraot.Core;
 
@@ -28,6 +27,45 @@ namespace Theraot.Collections
             return new ExtendedFilteredEnumerable<T>(target, AsUnaryEnumerable(append), match);
         }
 
+        public static ICollection<TItem> AsCollection<TItem>(IEnumerable<TItem> collection)
+        {
+            var _result = collection as ICollection<TItem>;
+            if (_result == null)
+            {
+                return new ProgressiveCollection<TItem>(collection);
+            }
+            else
+            {
+                return _result;
+            }
+        }
+
+        public static ICollection<TItem> AsDistinctCollection<TItem>(IEnumerable<TItem> collection)
+        {
+            // Workaround for .NET 3.5 when all you want is Contains and no duplicates
+#if NET35
+            var _resultHashSet = collection as HashSet<TItem>;
+            if (_resultHashSet == null)
+            {
+                var _resultISet = collection as ISet<TItem>;
+                if (_resultISet == null)
+                {
+                    return new ProgressiveSet<TItem>(collection);
+                }
+                else
+                {
+                    return _resultISet;
+                }
+            }
+            else
+            {
+                return _resultHashSet;
+            }
+#else
+            return AsSet(collection);
+#endif
+        }
+
         public static IList<TItem> AsList<TItem>(IEnumerable<TItem> collection)
         {
             var _result = collection as IList<TItem>;
@@ -43,14 +81,15 @@ namespace Theraot.Collections
 
         public static ISet<TItem> AsSet<TItem>(IEnumerable<TItem> collection)
         {
-            var _result = collection as ISet<TItem>;
-            if (_result == null)
+            // Remember that On .NET 3.5 HashSet is not an ISet
+            var _resultISet = collection as ISet<TItem>;
+            if (_resultISet == null)
             {
                 return new ProgressiveSet<TItem>(collection);
             }
             else
             {
-                return _result;
+                return _resultISet;
             }
         }
 

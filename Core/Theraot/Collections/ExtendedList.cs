@@ -237,7 +237,7 @@ namespace Theraot.Collections
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
         public bool SetEquals(IEnumerable<T> other)
         {
-            var that = new ProgressiveSet<T>(Check.NotNullArgument(other, "other").Distinct());
+            var that = Extensions.AsDistinctCollection(Check.NotNullArgument(other, "other"));
             foreach (var item in that.Where(input => !Contains(input)))
             {
                 GC.KeepAlive(item);

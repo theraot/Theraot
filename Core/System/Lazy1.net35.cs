@@ -33,7 +33,7 @@ namespace System
         }
 
         public Lazy(LazyThreadSafetyMode mode)
-            : this(FuncHelper.GetDefaultFunc<T>(), mode, false)
+            : this(TypeHelper.GetCreateOrFail<T>(), mode, false)
         {
             //Empty
         }

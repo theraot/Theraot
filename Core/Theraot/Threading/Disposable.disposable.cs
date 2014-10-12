@@ -6,6 +6,27 @@ namespace Theraot.Threading
     {
         private int _status;
 
+        [global::System.Diagnostics.DebuggerNonUserCode]
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
+        ~Disposable()
+        {
+            try
+            {
+                //Empty
+            }
+            finally
+            {
+                try
+                {
+                    Dispose(false);
+                }
+                catch
+                {
+                    //Pokemon
+                }
+            }
+        }
+
         public bool IsDisposed
         {
             [global::System.Diagnostics.DebuggerNonUserCode]

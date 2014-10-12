@@ -4,24 +4,18 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Theraot.Collections;
+using Theraot.Threading;
 
 namespace Theraot.Core
 {
     [global::System.Diagnostics.DebuggerNonUserCode]
     public static partial class TypeHelper
     {
-        private static readonly object[] _emptyObjects;
-
-        static TypeHelper()
-        {
-            _emptyObjects = new object[0];
-        }
-
         public static object[] EmptyObjects
         {
             get
             {
-                return _emptyObjects;
+                return ArrayPool<object>.EmptyArray;                
             }
         }
 
