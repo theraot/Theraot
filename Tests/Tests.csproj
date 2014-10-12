@@ -58,6 +58,7 @@
     <Compile Include="System\Threading\LazyInitializerTest.cs" />
     <Compile Include="System\Threading\ManualResetEventSlimTests.cs" />
     <Compile Include="System\Threading\SpinLockTests.cs" />
+    <Compile Include="System\Threading\ThreadLocalTestsEx.cs" />
     <Compile Include="System\Threading\ThreadLocalTests.cs" />
     <Compile Include="System\Threading\VolatileTest.cs" />
     <Compile Include="System\TupleTest.cs" />

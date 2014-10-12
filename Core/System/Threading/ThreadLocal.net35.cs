@@ -12,13 +12,13 @@ namespace System.Threading
         private IThreadLocal<T> _wrapped;
 
         public ThreadLocal()
-            : this(TypeHelper.GetCreateOrDefault<T>(), false)
+            : this(TypeHelper.GetDefault<T>(), false)
         {
             //Empty
         }
 
         public ThreadLocal(bool trackAllValues)
-            : this(TypeHelper.GetCreateOrDefault<T>(), trackAllValues)
+            : this(TypeHelper.GetDefault<T>(), trackAllValues)
         {
             //Empty
         }
