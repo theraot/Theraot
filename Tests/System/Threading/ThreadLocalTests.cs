@@ -66,6 +66,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
+        [Category("NotDotNet")] // Running this test against .NET 4.0 fails
         public void InitializeThrowingTest()
         {
             int callTime = 0;
