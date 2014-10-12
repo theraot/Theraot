@@ -1,3 +1,5 @@
+#if NET20 || NET30
+
 using System.Collections.Generic;
 
 namespace System.Linq
@@ -178,3 +180,5 @@ namespace System.Linq
         }
     }
 }
+
+#endif
