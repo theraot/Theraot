@@ -197,6 +197,7 @@ namespace Tests.Theraot.Threading.Needles
             var completedWas = false;
             var threadDone = 0;
             var control = 0;
+            var readed = 0;
             var needle = new LazyNeedle<int>(() =>
             {
                 Interlocked.Increment(ref control); return 5;
@@ -208,13 +209,14 @@ namespace Tests.Theraot.Threading.Needles
                 needle.Initialize();
                 Interlocked.Increment(ref threadDone);
             });
-            var threadB = new Thread(() => Assert.AreEqual(needle.Value, 5));
+            var threadB = new Thread(() => readed = needle.Value);
             threadA.Start();
             threadB.Start();
             threadA.Join();
             threadB.Join();
             needle.Initialize();
             Assert.IsTrue(needle.IsCompleted);
+            Assert.AreEqual(readed, 5);
             Assert.AreEqual(needle.Value, 5);
             Assert.AreEqual(control, 1);
             Assert.AreEqual(threadDone, 1);
