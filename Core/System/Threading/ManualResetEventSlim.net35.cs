@@ -45,7 +45,7 @@ namespace System.Threading
             {
                 if (Thread.VolatileRead(ref _state) == -1)
                 {
-                    throw new ObjectDisposedException(GetType().FullName);
+                    return false;
                 }
                 else
                 {
@@ -74,7 +74,14 @@ namespace System.Threading
         {
             get
             {
-                return RetrieveWaitHandle();
+                if (Thread.VolatileRead(ref _state) == -1)
+                {
+                    throw new ObjectDisposedException(GetType().FullName);
+                }
+                else
+                {
+                    return RetrieveWaitHandle();
+                }
             }
         }
 
@@ -105,7 +112,7 @@ namespace System.Threading
         {
             if (Thread.VolatileRead(ref _state) == -1)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                // Silent fail
             }
             else
             {
