@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿#if !NET40
+
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -144,3 +146,5 @@ namespace MonoTests.System.Threading
         }
     }
 }
+
+#endif
