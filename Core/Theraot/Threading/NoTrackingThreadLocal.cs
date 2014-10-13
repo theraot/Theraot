@@ -101,7 +101,7 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    return Thread.GetData(_slot) is Container;
+                    return Thread.GetData(_slot) is ReadOnlyStructNeedle<T>;
                 }
             }
         }
@@ -125,16 +125,28 @@ namespace Theraot.Threading
                 else
                 {
                     var bundle = Thread.GetData(_slot);
-                    var container = bundle as Container;
-                    if (container == null)
+                    var needle = bundle as INeedle<T>;
+                    if (needle == null)
                     {
-                        T result = _valueFactory.Invoke();
-                        Thread.SetData(_slot, new Container(result));
-                        return result;
+                        try
+                        {
+                            Thread.SetData(_slot, ThreadLocalHelper<T>.RecursionGuardNeedle);
+                            T result = _valueFactory.Invoke();
+                            Thread.SetData(_slot, new ReadOnlyStructNeedle<T>(result));
+                            return result;
+                        }
+                        catch (Exception exception)
+                        {
+                            if (!ReferenceEquals(exception, ThreadLocalHelper.RecursionGuardException))
+                            {
+                                Thread.SetData(_slot, new ExceptionStructNeedle<T>(exception));
+                            }
+                            throw;
+                        }
                     }
                     else
                     {
-                        return container.Value;
+                        return needle.Value;
                     }
                 }
             }
@@ -146,16 +158,7 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    var bundle = Thread.GetData(_slot);
-                    var container = bundle as Container;
-                    if (container == null)
-                    {
-                        Thread.SetData(_slot, new Container(value));
-                    }
-                    else
-                    {
-                        container.Value = value;
-                    }
+                    Thread.SetData(_slot, new ReadOnlyStructNeedle<T>(value));
                 }
             }
         }
@@ -220,28 +223,6 @@ namespace Theraot.Threading
                 {
                     _slot = null;
                     _valueFactory = null;
-                }
-            }
-        }
-
-        private sealed class Container
-        {
-            private T _value;
-
-            public Container(T value)
-            {
-                _value = value;
-            }
-
-            public T Value
-            {
-                get
-                {
-                    return _value;
-                }
-                set
-                {
-                    _value = value;
                 }
             }
         }
