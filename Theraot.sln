@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
+# Visual Studio 2012
 VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedTemplates", "SharedTemplates\SharedTemplates.csproj", "{4B27EBC2-6E81-4163-BFB9-BEF871F33E16}"
@@ -108,8 +108,7 @@ Global
 		{F4C29B9E-2C6A-4556-9B90-A15841FF6F78}.Release_NET45|Any CPU.ActiveCfg = Release|Any CPU
 		{F4C29B9E-2C6A-4556-9B90-A15841FF6F78}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
+	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = SharedTemplates\SharedTemplates.csproj
@@ -122,5 +121,10 @@ Global
 		$2.TabsToSpaces = False
 		$2.inheritsSet = VisualStudio
 		$2.inheritsScope = text/plain
+		$0.VersionControlPolicy = $3
+		$3.inheritsSet = Mono
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
