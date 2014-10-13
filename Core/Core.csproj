@@ -602,6 +602,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ThreadingHelper.SpinWait.tt</DependentUpon>
     </Compile>
+    <Compile Include="Theraot\Threading\ThreadLocalHelper1.cs" />
     <Compile Include="Theraot\Threading\ThreadLocalHelper.cs" />
     <Compile Include="Theraot\Threading\TrackingThreadLocal.cs" />
     <Compile Include="Theraot\Threading\CriticalDisposable.cs">

@@ -7,15 +7,13 @@ namespace MonoTests.System.Threading
     [TestFixtureAttribute]
     public class ThreadLocalTestsEx
     {
-        private int nTimes;
-        private ThreadLocal<int> threadLocal;
-
         [Test]
         public void ThreadLocalDoesNotUseTheDefaultConstructor()
         {
-            var local = new ThreadLocal<Random>();
-
-            Assert.AreEqual(null, local.Value);
+            using (var local = new ThreadLocal<Random>())
+            {
+                Assert.AreEqual(null, local.Value);
+            }
         }
 
         [Test]
@@ -43,8 +41,11 @@ namespace MonoTests.System.Threading
                     typeof(InvalidOperationException),
                     () =>
                     {
-                        threadLocal = new ThreadLocal<int>(() => threadLocal.Value + 1, false);
-                        GC.KeepAlive(threadLocal.Value);
+                        ThreadLocal<int>[] threadLocal = {null};
+                        using (threadLocal[0] = new ThreadLocal<int>(() => threadLocal[0] != null ? threadLocal[0].Value + 1 : 0, false))
+                        {
+                            GC.KeepAlive(threadLocal[0].Value);
+                        }
                     }
                 );
             Assert.Throws
@@ -52,50 +53,61 @@ namespace MonoTests.System.Threading
                     typeof(InvalidOperationException),
                     () =>
                     {
-                        threadLocal = new ThreadLocal<int>(() => threadLocal.Value + 1, true);
-                        GC.KeepAlive(threadLocal.Value);
+                        ThreadLocal<int>[] threadLocal = {null};
+                        using (threadLocal[0] = new ThreadLocal<int>(() => threadLocal[0] != null ? threadLocal[0].Value + 1 : 0, true))
+                        {
+                            GC.KeepAlive(threadLocal[0].Value);
+                        }
                     }
                 );
         }
-
         private void TestException(bool tracking)
         {
             int callTime = 0;
-            threadLocal = new ThreadLocal<int>(() =>
+            using
+            (
+                var threadLocal = new ThreadLocal<int>
+                (
+                    () =>
+                    {
+                        Interlocked.Increment(ref callTime);
+                        throw new ApplicationException("foo");
+                    },
+                    tracking
+                )
+            )
             {
-                Interlocked.Increment(ref callTime);
-                throw new ApplicationException("foo");
-            }, tracking);
 
-            Exception exception = null;
+                Exception exception = null;
 
-            try
-            {
-                var foo = threadLocal.Value;
+                try
+                {
+                    GC.KeepAlive(threadLocal.Value);
+                }
+                catch (Exception e)
+                {
+                    exception = e;
+                }
+
+                Assert.IsNotNull(exception, "#1");
+                Assert.That(exception, Is.TypeOf(typeof (ApplicationException)), "#2");
+                Assert.AreEqual(1, callTime, "#3");
+
+                exception = null;
+
+                try
+                {
+                    GC.KeepAlive(threadLocal.Value);
+                }
+                catch (Exception e)
+                {
+                    exception = e;
+                }
+
+                Assert.IsNotNull(exception, "#4");
+                Assert.That(exception, Is.TypeOf(typeof (ApplicationException)), "#5");
+                Assert.AreEqual(1, callTime, "#6");
             }
-            catch (Exception e)
-            {
-                exception = e;
-            }
-
-            Assert.IsNotNull(exception, "#1");
-            Assert.That(exception, Is.TypeOf(typeof (ApplicationException)), "#2");
-            Assert.AreEqual(1, callTime, "#3");
-
-            exception = null;
-
-            try
-            {
-                var foo = threadLocal.Value;
-            }
-            catch (Exception e)
-            {
-                exception = e;
-            }
-
-            Assert.IsNotNull(exception, "#4");
-            Assert.That(exception, Is.TypeOf(typeof (ApplicationException)), "#5");
-            Assert.AreEqual(1, callTime, "#6");
         }
     }
 }
