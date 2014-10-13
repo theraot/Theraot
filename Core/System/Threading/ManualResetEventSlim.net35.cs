@@ -342,9 +342,9 @@ namespace System.Threading
                 }
                 else
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < millisecondsTimeout)
                     {
-                        cancellationToken.ThrowIfCancellationRequested();
                         GC.KeepAlive(cancellationToken.WaitHandle);
                         if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < INT_LongTimeOutHint)
                         {
@@ -357,18 +357,16 @@ namespace System.Threading
                             var remaining = (int)(millisecondsTimeout - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start));
                             if (remaining > 0)
                             {
-                                return handle.WaitOne(remaining);
-                            }
-                            else
-                            {
-                                return false;
+                                if (handle.WaitOne(remaining))
+                                {
+                                    cancellationToken.ThrowIfCancellationRequested();
+                                    return true;
+                                }
                             }
                         }
                     }
-                    else
-                    {
-                        return false;
-                    }
+                    cancellationToken.ThrowIfCancellationRequested();
+                    return false;
                 }
             }
         }
