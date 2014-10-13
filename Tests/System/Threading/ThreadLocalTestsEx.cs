@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace MonoTests.System.Threading
@@ -7,15 +8,6 @@ namespace MonoTests.System.Threading
     [TestFixtureAttribute]
     public class ThreadLocalTestsEx
     {
-        [Test]
-        public void ThreadLocalDoesNotUseTheDefaultConstructor()
-        {
-            using (var local = new ThreadLocal<Random>())
-            {
-                Assert.AreEqual(null, local.Value);
-            }
-        }
-
         [Test]
         [Category("NotDotNet")] // Running this test against .NET 4.0 fails
         public void InitializeThrowingTest()
@@ -41,7 +33,7 @@ namespace MonoTests.System.Threading
                     typeof(InvalidOperationException),
                     () =>
                     {
-                        ThreadLocal<int>[] threadLocal = {null};
+                        ThreadLocal<int>[] threadLocal = { null };
                         using (threadLocal[0] = new ThreadLocal<int>(() => threadLocal[0] != null ? threadLocal[0].Value + 1 : 0, false))
                         {
                             GC.KeepAlive(threadLocal[0].Value);
@@ -53,7 +45,7 @@ namespace MonoTests.System.Threading
                     typeof(InvalidOperationException),
                     () =>
                     {
-                        ThreadLocal<int>[] threadLocal = {null};
+                        ThreadLocal<int>[] threadLocal = { null };
                         using (threadLocal[0] = new ThreadLocal<int>(() => threadLocal[0] != null ? threadLocal[0].Value + 1 : 0, true))
                         {
                             GC.KeepAlive(threadLocal[0].Value);
@@ -61,6 +53,48 @@ namespace MonoTests.System.Threading
                     }
                 );
         }
+
+        [Test]
+        public void TestValues()
+        {
+            var count = 0;
+            var threadLocal = new ThreadLocal<int>(() => count++, true);
+            using (threadLocal)
+            {
+                LaunchAndWaitThread(threadLocal);
+                LaunchAndWaitThread(threadLocal);
+                LaunchAndWaitThread(threadLocal);
+                var expected = new List<int> { 0, 1, 2 };
+                foreach (var item in threadLocal.Values)
+                {
+                    Assert.IsTrue(expected.Remove(item));
+                }
+            }
+            using (var tlocal = new ThreadLocal<int>(() => 0, false))
+            {
+                Assert.Throws
+                (
+                    typeof(InvalidOperationException),
+                    () => GC.KeepAlive(tlocal.Values));
+            }
+        }
+
+        [Test]
+        public void ThreadLocalDoesNotUseTheDefaultConstructor()
+        {
+            using (var local = new ThreadLocal<Random>())
+            {
+                Assert.AreEqual(null, local.Value);
+            }
+        }
+
+        private static void LaunchAndWaitThread(ThreadLocal<int> threadLocal)
+        {
+            var thread = new Thread(() => GC.KeepAlive(threadLocal.Value));
+            thread.Start();
+            thread.Join();
+        }
+
         private void TestException(bool tracking)
         {
             int callTime = 0;
@@ -77,7 +111,6 @@ namespace MonoTests.System.Threading
                 )
             )
             {
-
                 Exception exception = null;
 
                 try
@@ -90,7 +123,7 @@ namespace MonoTests.System.Threading
                 }
 
                 Assert.IsNotNull(exception, "#1");
-                Assert.That(exception, Is.TypeOf(typeof (ApplicationException)), "#2");
+                Assert.That(exception, Is.TypeOf(typeof(ApplicationException)), "#2");
                 Assert.AreEqual(1, callTime, "#3");
 
                 exception = null;
@@ -105,7 +138,7 @@ namespace MonoTests.System.Threading
                 }
 
                 Assert.IsNotNull(exception, "#4");
-                Assert.That(exception, Is.TypeOf(typeof (ApplicationException)), "#5");
+                Assert.That(exception, Is.TypeOf(typeof(ApplicationException)), "#5");
                 Assert.AreEqual(1, callTime, "#6");
             }
         }

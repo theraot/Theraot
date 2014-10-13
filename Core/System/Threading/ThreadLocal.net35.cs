@@ -1,5 +1,6 @@
 ﻿#if NET20 || NET30 || NET35
 
+using System.Collections.Generic;
 using Theraot.Core;
 using Theraot.Threading;
 
@@ -104,6 +105,14 @@ namespace System.Threading
                 {
                     _wrapped.Value = value;
                 }
+            }
+        }
+
+        public IList<T> Values
+        {
+            get
+            {
+                return _wrapped.Values;
             }
         }
 
