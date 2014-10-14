@@ -484,22 +484,24 @@ namespace System.Linq
 
         public static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
-            return source.OrderBy(keySelector, null);
+            return OrderBy(source, keySelector, null);
         }
 
         public static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey> comparer)
         {
-            return new OrderedEnumerable<TSource, TKey>(source, keySelector, comparer);
+            LinqCheck.SourceAndKeySelector(source, keySelector);
+            return new OrderedSequence<TSource, TKey>(source, keySelector, comparer, SortDirection.Ascending);
         }
 
         public static IOrderedEnumerable<TSource> OrderByDescending<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
-            return source.OrderByDescending(keySelector, null);
+            return OrderByDescending<TSource, TKey>(source, keySelector, null);
         }
 
         public static IOrderedEnumerable<TSource> OrderByDescending<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey> comparer)
         {
-            return new OrderedEnumerable<TSource, TKey>(source, keySelector, comparer.Reverse());
+            LinqCheck.SourceAndKeySelector(source, keySelector);
+            return new OrderedSequence<TSource, TKey>(source, keySelector, comparer, SortDirection.Descending);
         }
 
         public static IEnumerable<TResult> Repeat<TResult>(TResult element, int count)
