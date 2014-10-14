@@ -113,7 +113,7 @@ namespace System.Linq
             }
             else
             {
-                return Enumerable.CastExtracted<TResult>(Check.NotNullArgument(source, "source"));   
+                return Enumerable.CastExtracted<TResult>(Check.NotNullArgument(source, "source"));
             }
         }
 
@@ -672,7 +672,7 @@ namespace System.Linq
 
         public static IEnumerable<TSource> Take<TSource>(this IEnumerable<TSource> source, int count)
         {
-            return TakeWhile(source, (item, index) => index < count);
+            return Check.NotNullArgument(source, "source").TakeWhileExtracted(count);
         }
 
         public static IEnumerable<TSource> TakeWhile<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
@@ -790,7 +790,7 @@ namespace System.Linq
         {
             foreach (object obj in source)
             {
-                yield return (TResult) obj;
+                yield return (TResult)obj;
             }
         }
 
@@ -1017,6 +1017,20 @@ namespace System.Linq
                     {
                         count++;
                     }
+                }
+            }
+        }
+
+        private static IEnumerable<TSource> TakeWhileExtracted<TSource>(this IEnumerable<TSource> source, int maxCount)
+        {
+            int count = 0;
+            foreach (TSource item in source)
+            {
+                yield return item;
+                count++;
+                if (count == maxCount)
+                {
+                    break;
                 }
             }
         }
