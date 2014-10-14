@@ -194,31 +194,43 @@ namespace Tests.Theraot.Threading.Needles
         [Test]
         public void Waiting()
         {
-            var completedWas = false;
+            var waitStarted = 0;
             var threadDone = 0;
             var control = 0;
+            var readed = 0;
             var needle = new LazyNeedle<int>(() =>
             {
                 Interlocked.Increment(ref control); return 5;
             });
             var threadA = new Thread(() =>
             {
-                completedWas = needle.IsCompleted;
+                Thread.VolatileWrite(ref waitStarted, 1);
                 needle.Wait();
                 needle.Initialize();
                 Interlocked.Increment(ref threadDone);
             });
-            var threadB = new Thread(() => Assert.AreEqual(needle.Value, 5));
+            var threadB = new Thread
+            (
+                () =>
+                {
+                    while (Thread.VolatileRead(ref waitStarted) == 0)
+                    {
+                        Thread.Sleep(0);
+                    }
+                    readed = needle.Value;
+                }
+            );
             threadA.Start();
             threadB.Start();
             threadA.Join();
             threadB.Join();
             needle.Initialize();
             Assert.IsTrue(needle.IsCompleted);
+            Assert.AreEqual(readed, 5);
             Assert.AreEqual(needle.Value, 5);
             Assert.AreEqual(control, 1);
             Assert.AreEqual(threadDone, 1);
-            Assert.AreEqual(completedWas, false);
+            Assert.AreEqual(waitStarted, 1);
         }
 
         [Test]

@@ -160,10 +160,12 @@ namespace System.Threading
                 List<Exception> exceptions = null;
                 try
                 {
-                    for (int id = int.MinValue + 1; id <= _currentId; id++)
+                    int id = _currentId;
+                    do
                     {
                         Action callback;
-                        if (_callbacks.Remove(new CancellationTokenRegistration(id, this), out callback) && callback != null)
+                        if (_callbacks.Remove(new CancellationTokenRegistration(id, this), out callback) &&
+                            callback != null)
                         {
                             if (throwOnFirstException)
                             {
@@ -185,7 +187,7 @@ namespace System.Threading
                                 }
                             }
                         }
-                    }
+                    } while (id-- != int.MinValue);
                 }
                 finally
                 {
@@ -265,7 +267,7 @@ namespace System.Threading
             return tokenReg;
         }
 
-        internal void RemoveCallback(CancellationTokenRegistration reg)
+        internal bool RemoveCallback(CancellationTokenRegistration reg)
         {
             // Ignore call if the source has been disposed
             if (!_disposed)
@@ -274,9 +276,10 @@ namespace System.Threading
                 if (!object.ReferenceEquals(callbacks, null))
                 {
                     Action dummy;
-                    callbacks.Remove(reg, out dummy);
+                    return callbacks.Remove(reg, out dummy);
                 }
             }
+            return true;
         }
 
         protected virtual void Dispose(bool disposing)

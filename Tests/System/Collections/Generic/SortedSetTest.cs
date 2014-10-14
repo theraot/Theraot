@@ -486,6 +486,7 @@ namespace MonoTests.System.Collections.Generic
 		}
 
 		[Test]
+        [Category("NotDotNet")] // Running this test against .NET 4.0 fails
 		public void TestSetCompares ()
 		{
 			var empty = new SortedSet<int> ();

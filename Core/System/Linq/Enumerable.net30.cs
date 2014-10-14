@@ -431,7 +431,6 @@ namespace System.Linq
         public static TSource LastOrDefault<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
             var _predicate = Check.NotNullArgument(predicate, "predicate");
-            var found = false;
             var result = default(TSource);
             foreach (var item in Check.NotNullArgument(source, "source"))
             {
@@ -440,7 +439,6 @@ namespace System.Linq
                     continue;
                 }
                 result = item;
-                found = true;
             }
             return result;
         }

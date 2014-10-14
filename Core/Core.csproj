@@ -272,14 +272,14 @@
     <Compile Include="System\Threading\CancellationTokenSource.net35.cs" />
     <Compile Include="System\Threading\CountdownEvent.net35.cs" />
     <None Include="System\Threading\LazyInitializer.mono" />
-    <None Include="System\Threading\LazyInitializer.tt">
+    <None Include="System\Threading\LazyInitializer.net35.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>LazyInitializer.cs</LastGenOutput>
+      <LastGenOutput>LazyInitializer.net35.cs</LastGenOutput>
     </None>
-    <Compile Include="System\Threading\LazyInitializer.cs">
+    <Compile Include="System\Threading\LazyInitializer.net35.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>LazyInitializer.tt</DependentUpon>
+      <DependentUpon>LazyInitializer.net35.tt</DependentUpon>
     </Compile>
     <Compile Include="System\Threading\LockRecursionException.cs" />
     <Compile Include="System\Threading\SemaphoreSlim.net35.cs" />
@@ -433,6 +433,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CacheNeedle.disposable.tt</DependentUpon>
     </Compile>
+    <Compile Include="Theraot\Threading\Needles\ExceptionStructNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\PromiseNeedle1.cs" />
     <Compile Include="Theraot\Threading\Needles\DefaultNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\FutureDisposableNeedle.cs" />
@@ -461,6 +462,7 @@
       <DependentUpon>ReadOnlyDisposableNeedle.disposable.tt</DependentUpon>
     </Compile>
     <Compile Include="Theraot\Threading\Needles\ReadOnlyNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\ReadOnlyStructNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\StructNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\Transact.cs" />
     <Compile Include="Theraot\Threading\Needles\Transact.disposable.cs" />
@@ -600,6 +602,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ThreadingHelper.SpinWait.tt</DependentUpon>
     </Compile>
+    <Compile Include="Theraot\Threading\ThreadLocalHelper1.cs" />
+    <Compile Include="Theraot\Threading\ThreadLocalHelper.cs" />
     <Compile Include="Theraot\Threading\TrackingThreadLocal.cs" />
     <Compile Include="Theraot\Threading\CriticalDisposable.cs">
       <SubType>Code</SubType>

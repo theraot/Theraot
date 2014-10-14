@@ -45,7 +45,7 @@ namespace System.Threading
             {
                 if (Thread.VolatileRead(ref _state) == -1)
                 {
-                    throw new ObjectDisposedException(GetType().FullName);
+                    return false;
                 }
                 else
                 {
@@ -74,7 +74,14 @@ namespace System.Threading
         {
             get
             {
-                return RetrieveWaitHandle();
+                if (Thread.VolatileRead(ref _state) == -1)
+                {
+                    throw new ObjectDisposedException(GetType().FullName);
+                }
+                else
+                {
+                    return RetrieveWaitHandle();
+                }
             }
         }
 
@@ -105,7 +112,7 @@ namespace System.Threading
         {
             if (Thread.VolatileRead(ref _state) == -1)
             {
-                throw new ObjectDisposedException(GetType().FullName);
+                // Silent fail
             }
             else
             {
@@ -335,9 +342,9 @@ namespace System.Threading
                 }
                 else
                 {
+                    cancellationToken.ThrowIfCancellationRequested();
                     if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < millisecondsTimeout)
                     {
-                        cancellationToken.ThrowIfCancellationRequested();
                         GC.KeepAlive(cancellationToken.WaitHandle);
                         if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < INT_LongTimeOutHint)
                         {
@@ -350,18 +357,16 @@ namespace System.Threading
                             var remaining = (int)(millisecondsTimeout - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start));
                             if (remaining > 0)
                             {
-                                return handle.WaitOne(remaining);
-                            }
-                            else
-                            {
-                                return false;
+                                if (handle.WaitOne(remaining))
+                                {
+                                    cancellationToken.ThrowIfCancellationRequested();
+                                    return true;
+                                }
                             }
                         }
                     }
-                    else
-                    {
-                        return false;
-                    }
+                    cancellationToken.ThrowIfCancellationRequested();
+                    return false;
                 }
             }
         }
