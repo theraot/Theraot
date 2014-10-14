@@ -173,7 +173,7 @@ namespace Theraot.Threading
         {
             get
             {
-                return _slots.GetPairs().ConvertAll(input => input.Value.Value);
+                return _slots.GetPairs().ConvertFiltered(input => input.Value.Value, input => input.Value is ReadOnlyStructNeedle<T>);
             }
         }
 

@@ -71,6 +71,7 @@ namespace MonoTests.System.Threading
                 {
                     Assert.IsTrue(expected.Remove(item));
                 }
+                Assert.AreEqual(expected.Count, 0);
             }
             using (var tlocal = new ThreadLocal<int>(() => 0, false))
             {
@@ -82,11 +83,48 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
+        public void TestValuesWithExceptions()
+        {
+            var count = 0;
+            var threadLocal = new ThreadLocal<int>
+            (
+                () =>
+                {
+                    count++;
+                    throw new Exception("Burn!");
+                },
+                true
+            );
+            using (threadLocal)
+            {
+                LaunchAndWaitThread(threadLocal);
+                LaunchAndWaitThread(threadLocal);
+                LaunchAndWaitThread(threadLocal);
+                Assert.AreEqual(threadLocal.Values.Count, 0);
+            }
+            Assert.AreEqual(count, 3);
+        }
+
+        [Test]
         public void ThreadLocalDoesNotUseTheDefaultConstructor()
         {
             using (var local = new ThreadLocal<Random>())
             {
                 Assert.AreEqual(null, local.Value);
+            }
+        }
+
+        [Test]
+        public void ValuesIsNewCopy()
+        {
+            var threadLocal = new ThreadLocal<int>(() => 0, true);
+            using (threadLocal)
+            {
+                LaunchAndWaitThread(threadLocal);
+                var values = threadLocal.Values;
+                Assert.IsFalse(ReferenceEquals(values, threadLocal.Values));
+                values.Add(5);
+                Assert.AreEqual(threadLocal.Values.Count, 1);
             }
         }
 
