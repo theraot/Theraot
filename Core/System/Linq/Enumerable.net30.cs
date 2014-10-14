@@ -107,7 +107,14 @@ namespace System.Linq
 
         public static IEnumerable<TResult> Cast<TResult>(this IEnumerable source)
         {
-            return Enumerable.CastExtracted<TResult>(Check.NotNullArgument(source, "source"));
+            if (source is IEnumerable<TResult>)
+            {
+                return source as IEnumerable<TResult>;
+            }
+            else
+            {
+                return Enumerable.CastExtracted<TResult>(Check.NotNullArgument(source, "source"));   
+            }
         }
 
         public static IEnumerable<TSource> Concat<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second)
@@ -783,7 +790,7 @@ namespace System.Linq
         {
             foreach (object obj in source)
             {
-                yield return (TResult)obj;
+                yield return (TResult) obj;
             }
         }
 
