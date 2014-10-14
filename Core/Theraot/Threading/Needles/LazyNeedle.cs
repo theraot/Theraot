@@ -244,6 +244,7 @@ namespace Theraot.Threading.Needles
             var waitHandle = _waitHandle.Value;
             if (!ReferenceEquals(waitHandle, null))
             {
+                waitHandle.Set();
                 waitHandle.Dispose();
             }
             _waitHandle.Value = null;

@@ -435,6 +435,7 @@
       <DependentUpon>CacheNeedle.disposable.tt</DependentUpon>
     </Compile>
     <Compile Include="Theraot\Threading\Needles\LockableNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\ExceptionStructNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\PromiseNeedle1.cs" />
     <Compile Include="Theraot\Threading\Needles\DefaultNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\FutureDisposableNeedle.cs" />
@@ -463,6 +464,7 @@
       <DependentUpon>ReadOnlyDisposableNeedle.disposable.tt</DependentUpon>
     </Compile>
     <Compile Include="Theraot\Threading\Needles\ReadOnlyNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\ReadOnlyStructNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\StructNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\Transact.cs" />
     <Compile Include="Theraot\Threading\Needles\Transact.disposable.cs" />
@@ -602,6 +604,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ThreadingHelper.SpinWait.tt</DependentUpon>
     </Compile>
+    <Compile Include="Theraot\Threading\ThreadLocalHelper1.cs" />
+    <Compile Include="Theraot\Threading\ThreadLocalHelper.cs" />
     <Compile Include="Theraot\Threading\TrackingThreadLocal.cs" />
     <Compile Include="Theraot\Threading\CriticalDisposable.cs">
       <SubType>Code</SubType>

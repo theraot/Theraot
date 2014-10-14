@@ -124,6 +124,11 @@ namespace System.Threading
 
         public void TryEnter(ref bool lockTaken)
         {
+            if (lockTaken)
+            {
+                lockTaken = false;
+                throw new ArgumentException();
+            }
             TryEnter(0, ref lockTaken);
         }
 
@@ -163,10 +168,12 @@ namespace System.Threading
             if (useMemoryBarrier)
             {
                 Thread.VolatileWrite(ref _isHeld, 0);
+                ThreadingHelper.VolatileWrite(ref _ownerThread, null);
             }
             else
             {
                 _isHeld = 0;
+                _ownerThread = null;
             }
         }
     }

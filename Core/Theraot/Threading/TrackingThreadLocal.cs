@@ -15,7 +15,7 @@ namespace Theraot.Threading
         private const int INT_MaxProcessorCount = 32;
 
         private int _disposing;
-        private HashBucket<Thread, T> _slots;
+        private HashBucket<Thread, INeedle<T>> _slots;
         private Func<T> _valueFactory;
 
         public TrackingThreadLocal()
@@ -31,14 +31,10 @@ namespace Theraot.Threading
                 throw new ArgumentNullException("valueFactory");
             }
             _valueFactory = valueFactory;
-            if (Environment.ProcessorCount < INT_MaxProcessorCount)
-            {
-                _slots = new HashBucket<Thread, T>(Environment.ProcessorCount * 2, INT_MaxProbingHint);
-            }
-            else
-            {
-                _slots = new HashBucket<Thread, T>(INT_MaxProcessorCount * 2, INT_MaxProbingHint);
-            }
+            int capacity = Environment.ProcessorCount < INT_MaxProcessorCount
+                ? Environment.ProcessorCount * 2
+                : INT_MaxProcessorCount * 2;
+            _slots = new HashBucket<Thread, INeedle<T>>(capacity, INT_MaxProbingHint);
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
@@ -112,7 +108,15 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    return _slots.ContainsKey(Thread.CurrentThread);
+                    INeedle<T> needle;
+                    if (_slots.TryGetValue(Thread.CurrentThread, out needle))
+                    {
+                        return needle is ReadOnlyStructNeedle<T>;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
         }
@@ -127,13 +131,29 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    T value;
-                    if (!_slots.TryGetValue(Thread.CurrentThread, out value))
+                    INeedle<T> needle;
+                    if (_slots.TryGetValue(Thread.CurrentThread, out needle))
                     {
-                        value = _valueFactory.Invoke();
-                        _slots.Set(Thread.CurrentThread, value);
+                        return needle.Value;
                     }
-                    return value;
+                    else
+                    {
+                        try
+                        {
+                            _slots.Set(Thread.CurrentThread, ThreadLocalHelper<T>.RecursionGuardNeedle);
+                            T result = _valueFactory.Invoke();
+                            _slots.Set(Thread.CurrentThread, new ReadOnlyStructNeedle<T>(result));
+                            return result;
+                        }
+                        catch (Exception exception)
+                        {
+                            if (!ReferenceEquals(exception, ThreadLocalHelper.RecursionGuardException))
+                            {
+                                _slots.Set(Thread.CurrentThread, new ExceptionStructNeedle<T>(exception));
+                            }
+                            throw;
+                        }
+                    }
                 }
             }
             set
@@ -144,7 +164,7 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    _slots.Set(Thread.CurrentThread, value);
+                    _slots.Set(Thread.CurrentThread, new ReadOnlyStructNeedle<T>(value));
                 }
             }
         }
@@ -153,7 +173,7 @@ namespace Theraot.Threading
         {
             get
             {
-                return _slots.GetPairs().ConvertAll(input => input.Value);
+                return _slots.GetPairs().ConvertFiltered(input => input.Value.Value, input => input.Value is ReadOnlyStructNeedle<T>);
             }
         }
 

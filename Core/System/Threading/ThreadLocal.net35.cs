@@ -1,5 +1,6 @@
 ﻿#if NET20 || NET30 || NET35
 
+using System.Collections.Generic;
 using Theraot.Core;
 using Theraot.Threading;
 
@@ -12,13 +13,13 @@ namespace System.Threading
         private IThreadLocal<T> _wrapped;
 
         public ThreadLocal()
-            : this(TypeHelper.GetCreateOrDefault<T>(), false)
+            : this(TypeHelper.GetDefault<T>(), false)
         {
             //Empty
         }
 
         public ThreadLocal(bool trackAllValues)
-            : this(TypeHelper.GetCreateOrDefault<T>(), trackAllValues)
+            : this(TypeHelper.GetDefault<T>(), trackAllValues)
         {
             //Empty
         }
@@ -104,6 +105,14 @@ namespace System.Threading
                 {
                     _wrapped.Value = value;
                 }
+            }
+        }
+
+        public IList<T> Values
+        {
+            get
+            {
+                return _wrapped.Values;
             }
         }
 

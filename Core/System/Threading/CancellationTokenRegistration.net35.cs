@@ -53,10 +53,13 @@ namespace System.Threading
 
         public void Dispose()
         {
-            var source = Interlocked.Exchange(ref _source, null);
+            var source = _source;
             if (!ReferenceEquals(source, null))
             {
-                source.RemoveCallback(this);
+                if (source.RemoveCallback(this))
+                {
+                    _source = null;
+                }
             }
         }
 
