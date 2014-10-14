@@ -59,6 +59,8 @@
     <Compile Include="System\Collections\Generic\HashSetTestEx.cs" />
     <Compile Include="System\Collections\Generic\HashSetTest.cs" />
     <Compile Include="System\Collections\Generic\SortedSetTest.cs" />
+    <Compile Include="System\Collections\Specialized\CollectionChangedEventValidators.cs" />
+    <Compile Include="System\Collections\Specialized\NotifyCollectionChangedEventArgsTest.cs" />
     <Compile Include="System\Collections\StructuralComparisonsTestEx.cs" />
     <Compile Include="System\Collections\StructuralComparisonsTest.cs" />
     <Compile Include="System\LazyTestEx.cs" />
