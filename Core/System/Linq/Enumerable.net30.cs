@@ -1025,14 +1025,17 @@ namespace System.Linq
 
         private static IEnumerable<TSource> TakeWhileExtracted<TSource>(this IEnumerable<TSource> source, int maxCount)
         {
-            int count = 0;
-            foreach (TSource item in source)
+            if (maxCount > 0)
             {
-                yield return item;
-                count++;
-                if (count == maxCount)
+                int count = 0;
+                foreach (TSource item in source)
                 {
-                    break;
+                    yield return item;
+                    count++;
+                    if (count == maxCount)
+                    {
+                        break;
+                    }
                 }
             }
         }
