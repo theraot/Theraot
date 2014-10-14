@@ -192,24 +192,31 @@ namespace System.Threading
 
         public void Handle(Func<Exception, bool> predicate)
         {
-            var failed = new List<Exception>();
-            foreach (var exception in _innerExceptions)
+            if (predicate == null)
             {
-                try
+                throw new ArgumentNullException("predicate");
+            }
+            else
+            {
+                var failed = new List<Exception>();
+                foreach (var exception in _innerExceptions)
                 {
-                    if (!predicate(exception))
+                    try
                     {
-                        failed.Add(exception);
+                        if (!predicate(exception))
+                        {
+                            failed.Add(exception);
+                        }
+                    }
+                    catch
+                    {
+                        throw new AggregateException(failed);
                     }
                 }
-                catch
+                if (failed.Count > 0)
                 {
                     throw new AggregateException(failed);
                 }
-            }
-            if (failed.Count > 0)
-            {
-                throw new AggregateException(failed);
             }
         }
 
