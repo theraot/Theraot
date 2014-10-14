@@ -65,6 +65,7 @@
     <Compile Include="System\Linq\EnumerableGroupByTestEx.cs" />
     <Compile Include="System\Linq\EnumerableAsQueryableTest.cs" />
     <Compile Include="System\Linq\EnumerableMoreTest.cs" />
+    <Compile Include="System\Linq\EnumerableTest.cs" />
     <Compile Include="System\Linq\LookUpTest.cs" />
     <Compile Include="System\Threading\CancellationTokenSourceTest.cs" />
     <Compile Include="System\Threading\CancellationTokenTests.cs" />
