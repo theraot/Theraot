@@ -153,7 +153,7 @@ namespace System.Threading
             while (true)
             {
                 Exception item;
-                if (result._innerExceptions.Count == 0 || ReferenceEquals(null, item = result._innerExceptions[0]))
+                if (result._innerExceptions.Count != 1 || ReferenceEquals(null, item = result._innerExceptions[0]))
                 {
                     return result;
                 }
