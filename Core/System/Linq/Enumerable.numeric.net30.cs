@@ -1523,8 +1523,7 @@ namespace System.Linq
 
         private static IEnumerable<int> RangeExtracted(int start, int count)
         {
-            int end = start + count;
-            for (int index = start; index < end; index++)
+            for (int index = start; count > 0; count--, index++)
             {
                 yield return index;
             }
