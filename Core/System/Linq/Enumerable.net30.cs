@@ -690,22 +690,34 @@ namespace System.Linq
 
         public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
-            return source.ThenBy(keySelector, null);
+            return ThenBy(source, keySelector, null);
         }
 
         public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey> comparer)
         {
-            return Check.NotNullArgument(source, "source").CreateOrderedEnumerable(keySelector, comparer, false);
+            LinqCheck.SourceAndKeySelector(source, keySelector);
+            var oe = source as OrderedEnumerable <TSource>;
+            if (oe != null)
+            {
+                return oe.CreateOrderedEnumerable(keySelector, comparer, false);
+            }
+            return source.CreateOrderedEnumerable(keySelector, comparer, false);
         }
 
         public static IOrderedEnumerable<TSource> ThenByDescending<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
-            return source.ThenByDescending(keySelector, null);
+            return ThenByDescending(source, keySelector, null);
         }
 
         public static IOrderedEnumerable<TSource> ThenByDescending<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey> comparer)
         {
-            return Check.NotNullArgument(source, "source").CreateOrderedEnumerable(keySelector, comparer, true);
+            LinqCheck.SourceAndKeySelector(source, keySelector);
+            var oe = source as OrderedEnumerable <TSource>;
+            if (oe != null)
+            {
+                return oe.CreateOrderedEnumerable(keySelector, comparer, true);
+            }
+            return source.CreateOrderedEnumerable(keySelector, comparer, true);
         }
 
         public static TSource[] ToArray<TSource>(this IEnumerable<TSource> source)
