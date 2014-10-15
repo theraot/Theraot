@@ -216,7 +216,7 @@ namespace Theraot.Threading
         public bool TryGet(out T target)
         {
             var bundle = Thread.GetData(_slot);
-            var container = bundle as Container;
+            var container = bundle as INeedle<T>;
             if (container == null)
             {
                 target = default(T);

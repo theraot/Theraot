@@ -234,7 +234,17 @@ namespace Theraot.Threading
 
         public bool TryGet(out T target)
         {
-            return _slots.TryGetValue(Thread.CurrentThread, out target);
+            INeedle<T> tmp;
+            if (_slots.TryGetValue(Thread.CurrentThread, out tmp))
+            {
+                target = tmp.Value;
+                return true;
+            }
+            else
+            {
+                target = default(T);
+                return false;
+            }
         }
 
         public void Uncreate()
