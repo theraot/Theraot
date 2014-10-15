@@ -1,36 +1,53 @@
-﻿using System.Threading;
-using Theraot.Collections;
+﻿using System;
+using System.Threading;
+﻿using Theraot.Collections;
 using Theraot.Collections.Specialized;
 using Theraot.Core;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
 {
-    internal sealed class LockNeedle<T> : INeedle<T>
+    internal sealed class NeedleLock<T> : INeedle<T>
     {
+        private readonly LockContext<T> _context;
         private readonly int _hashCode;
         private FlagArray _capture;
-        private int _lock;
         private T _target;
 
-        internal LockNeedle()
+        internal NeedleLock(LockContext<T> context)
         {
-            _hashCode = GetHashCode();
-            _capture = new FlagArray(LockNeedleContext<T>.Capacity);
-        }
-
-        internal LockNeedle(T target)
-        {
-            _target = target;
-            if (ReferenceEquals(target, null))
+            if (ReferenceEquals(context, null))
             {
-                _hashCode = GetHashCode();
+                throw new ArgumentNullException("context");
             }
             else
             {
-                _hashCode = target.GetHashCode();
+                _context = context;
+                _hashCode = GetHashCode();
+                _capture = new FlagArray(_context.Capacity);
             }
-            _capture = new FlagArray(LockNeedleContext<T>.Capacity);
+        }
+
+        internal NeedleLock(LockContext<T> context, T target)
+        {
+            if (ReferenceEquals(context, null))
+            {
+                throw new ArgumentNullException("context");
+            }
+            else
+            {
+                _context = context;
+                _target = target;
+                if (ReferenceEquals(target, null))
+                {
+                    _hashCode = GetHashCode();
+                }
+                else
+                {
+                    _hashCode = target.GetHashCode();
+                }
+                _capture = new FlagArray(_context.Capacity);
+            }
         }
 
         bool IReadOnlyNeedle<T>.IsAlive
@@ -46,7 +63,7 @@ namespace Theraot.Threading
             get
             {
                 T value;
-                if (LockNeedleContext<T>.Read(_lock, out value) || LockNeedleContext<T>.Read(_capture, out value))
+                if (_context.Read(_capture, out value))
                 {
                     _target = value;
                 }
@@ -60,24 +77,24 @@ namespace Theraot.Threading
             }
         }
 
-        public static explicit operator T(LockNeedle<T> needle)
+        public static explicit operator T(NeedleLock<T> needle)
         {
             return Check.NotNullArgument(needle, "needle").Value;
         }
 
-        public static bool operator !=(LockNeedle<T> left, LockNeedle<T> right)
+        public static bool operator !=(NeedleLock<T> left, NeedleLock<T> right)
         {
             return NotEqualsExtracted(left, right);
         }
 
-        public static bool operator ==(LockNeedle<T> left, LockNeedle<T> right)
+        public static bool operator ==(NeedleLock<T> left, NeedleLock<T> right)
         {
             return EqualsExtracted(left, right);
         }
 
         public override bool Equals(object obj)
         {
-            var _obj = obj as LockNeedle<T>;
+            var _obj = obj as NeedleLock<T>;
             if (ReferenceEquals(null, _obj))
             {
                 return _target.Equals(obj);
@@ -88,7 +105,7 @@ namespace Theraot.Threading
             }
         }
 
-        public bool Equals(LockNeedle<T> other)
+        public bool Equals(NeedleLock<T> other)
         {
             return EqualsExtracted(this, other);
         }
@@ -124,22 +141,12 @@ namespace Theraot.Threading
             _capture[id] = true;
         }
 
-        internal bool Lock(int id)
-        {
-            return Interlocked.CompareExchange(ref _lock, id, 0) == 0;
-        }
-
         internal void Uncapture(int id)
         {
             _capture[id] = false;
         }
 
-        internal bool Unlock(int id)
-        {
-            return Interlocked.CompareExchange(ref _lock, 0, id) == id;
-        }
-
-        private static bool EqualsExtracted(LockNeedle<T> left, LockNeedle<T> right)
+        private static bool EqualsExtracted(NeedleLock<T> left, NeedleLock<T> right)
         {
             if (ReferenceEquals(left, null))
             {
@@ -151,7 +158,7 @@ namespace Theraot.Threading
             }
         }
 
-        private static bool NotEqualsExtracted(LockNeedle<T> left, LockNeedle<T> right)
+        private static bool NotEqualsExtracted(NeedleLock<T> left, NeedleLock<T> right)
         {
             if (ReferenceEquals(left, null))
             {

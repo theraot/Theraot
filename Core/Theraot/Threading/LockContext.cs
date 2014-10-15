@@ -5,23 +5,22 @@ using Theraot.Core;
 
 namespace Theraot.Threading
 {
-    internal static class LockNeedleContext<T>
+    internal class LockContext<T>
     {
-        private static readonly int _capacity;
-        private static readonly QueueBucket<LockNeedleSlot<T>> _freeSlots;
-        private static readonly LazyBucket<LockNeedleSlot<T>> _slots;
-        private static readonly VersionProvider _version = new VersionProvider();
-        private static int _index;
+        private readonly int _capacity;
+        private readonly QueueBucket<LockSlot<T>> _freeSlots;
+        private readonly LazyBucket<LockSlot<T>> _slots;
+        private readonly VersionProvider _version = new VersionProvider();
+        private int _index;
 
-        static LockNeedleContext()
+        public LockContext(int capacity)
         {
-            _capacity = 512;
-            _capacity = NumericHelper.PopulationCount(_capacity) == 1 ? _capacity : NumericHelper.NextPowerOf2(_capacity);
-            _slots = new LazyBucket<LockNeedleSlot<T>>(index => new LockNeedleSlot<T>(index, _version.AdvanceNewToken()), _capacity);
-            _freeSlots = new QueueBucket<LockNeedleSlot<T>>(_capacity);
+            _capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
+            _slots = new LazyBucket<LockSlot<T>>(index => new LockSlot<T>(this, index, _version.AdvanceNewToken()), _capacity);
+            _freeSlots = new QueueBucket<LockSlot<T>>(_capacity);
         }
 
-        internal static int Capacity
+        internal int Capacity
         {
             get
             {
@@ -29,7 +28,7 @@ namespace Theraot.Threading
             }
         }
 
-        public static bool ClaimSlot(out LockNeedleSlot<T> slot)
+        public bool ClaimSlot(out LockSlot<T> slot)
         {
             if (TryClaimFreeSlot(out slot))
             {
@@ -51,14 +50,14 @@ namespace Theraot.Threading
             }
         }
 
-        internal static void Free(LockNeedleSlot<T> slot)
+        internal void Free(LockSlot<T> slot)
         {
             _freeSlots.Add(slot);
         }
 
-        internal static bool Read(int flag, out T value)
+        internal bool Read(int flag, out T value)
         {
-            LockNeedleSlot<T> slot;
+            LockSlot<T> slot;
             if (_slots.TryGet(flag, out slot))
             {
                 value = slot.Value;
@@ -71,12 +70,12 @@ namespace Theraot.Threading
             }
         }
 
-        internal static bool Read(FlagArray flags, out T value)
+        internal bool Read(FlagArray flags, out T value)
         {
-            LockNeedleSlot<T> bestSlot = null;
+            LockSlot<T> bestSlot = null;
             foreach (var flag in flags.Flags)
             {
-                LockNeedleSlot<T> testSlot;
+                LockSlot<T> testSlot;
                 if (_slots.TryGet(flag, out testSlot))
                 {
                     if (ReferenceEquals(bestSlot, null))
@@ -104,7 +103,7 @@ namespace Theraot.Threading
             }
         }
 
-        private static bool TryClaimFreeSlot(out LockNeedleSlot<T> slot)
+        private bool TryClaimFreeSlot(out LockSlot<T> slot)
         {
             if (_freeSlots.TryTake(out slot))
             {

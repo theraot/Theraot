@@ -232,6 +232,21 @@ namespace Theraot.Threading
             return string.Format(System.Globalization.CultureInfo.InvariantCulture, "[ThreadLocal: IsValueCreated={0}, Value={1}]", IsValueCreated, Value);
         }
 
+        public bool TryGet(out T target)
+        {
+            INeedle<T> tmp;
+            if (_slots.TryGetValue(Thread.CurrentThread, out tmp))
+            {
+                target = tmp.Value;
+                return true;
+            }
+            else
+            {
+                target = default(T);
+                return false;
+            }
+        }
+
         public void Uncreate()
         {
             _slots.Remove(Thread.CurrentThread);

@@ -3,20 +3,26 @@ using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
 {
-    internal sealed class LockNeedleSlot<T> : IComparable<LockNeedleSlot<T>>, INeedle<T>
+    internal sealed class LockSlot<T> : IComparable<LockSlot<T>>, INeedle<T>
     {
+        private readonly LockContext<T> _context;
         private readonly int _id;
         private readonly VersionProvider.VersionToken _versionToken;
         private T _target;
 
-        internal LockNeedleSlot(int id, VersionProvider.VersionToken versionToken)
+        internal LockSlot(LockContext<T> context, int id, VersionProvider.VersionToken versionToken)
         {
             if (ReferenceEquals(versionToken, null))
             {
                 throw new ArgumentNullException("versionToken");
             }
+            else if (ReferenceEquals(context, null))
+            {
+                throw new ArgumentNullException("context");
+            }
             else
             {
+                _context = context;
                 _versionToken = versionToken.Clone();
                 _id = id;
             }
@@ -42,12 +48,12 @@ namespace Theraot.Threading
             }
         }
 
-        public void Capture(LockNeedle<T> needle)
+        public void Capture(NeedleLock<T> needle)
         {
             needle.Capture(_id);
         }
 
-        public int CompareTo(LockNeedleSlot<T> other)
+        public int CompareTo(LockSlot<T> other)
         {
             if (ReferenceEquals(other, null))
             {
@@ -62,22 +68,12 @@ namespace Theraot.Threading
         public void Free()
         {
             _target = default(T);
-            LockNeedleContext<T>.Free(this);
+            _context.Free(this);
         }
 
-        public bool Lock(LockNeedle<T> needle)
-        {
-            return needle.Lock(_id);
-        }
-
-        public void Uncapture(LockNeedle<T> needle)
+        public void Uncapture(NeedleLock<T> needle)
         {
             needle.Uncapture(_id);
-        }
-
-        public bool Unlock(LockNeedle<T> needle)
-        {
-            return needle.Unlock(_id);
         }
 
         internal void Unfree()
