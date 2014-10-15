@@ -238,50 +238,26 @@
     <Compile Include="System\Linq\Enumerable.join.net30.cs" />
     <Compile Include="System\Linq\Enumerable.groupjoin.net30.cs" />
     <Compile Include="System\Linq\Enumerable.groupby.net30.cs" />
-    <Compile Include="System\Linq\Expressions\ConstantExpression.net30.cs">
+    <Compile Include="System\Linq\Expressions\ConstantExpression.net30.cs" />
+    <Compile Include="System\Linq\Expressions\EmitContext.net30.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionPrinter.net35.cs" />
+    <Compile Include="System\Linq\Expressions\NewExpression.net30.cs" />
+    <Compile Include="System\Linq\Expressions\UnaryExpression.net30.cs" />
+    <Compile Include="mono.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>ConstantExpression.net30.tt</DependentUpon>
+      <DependentUpon>mono.tt</DependentUpon>
     </Compile>
-    <Compile Include="System\Linq\Expressions\EmitContext.net30.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EmitContext.net30.tt</DependentUpon>
-    </Compile>
-    <Compile Include="System\Linq\Expressions\ExpressionPrinter.net35.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ExpressionPrinter.net35.tt</DependentUpon>
-    </Compile>
-    <Compile Include="System\Linq\Expressions\NewExpression.net30.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>NewExpression.net30.tt</DependentUpon>
-    </Compile>
-    <Compile Include="System\Linq\Expressions\UnaryExpression.net30.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>UnaryExpression.net30.tt</DependentUpon>
-    </Compile>
-    <Compile Include="System\Numerics\BigInteger.net35.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>BigInteger.net35.tt</DependentUpon>
-    </Compile>
+    <Compile Include="System\Numerics\BigInteger.net35.cs" />
     <Compile Include="System\Threading\CancellationToken.net35.cs" />
     <Compile Include="System\Threading\CancellationTokenRegistration.net35.cs" />
     <Compile Include="System\Threading\CancellationTokenSource.net35.cs" />
     <Compile Include="System\Threading\CountdownEvent.net35.cs" />
-    <None Include="System\Threading\LazyInitializer.mono" />
-    <None Include="System\Threading\LazyInitializer.net35.tt">
+    <None Include="mono.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>LazyInitializer.net35.cs</LastGenOutput>
+      <LastGenOutput>mono.cs</LastGenOutput>
     </None>
-    <Compile Include="System\Threading\LazyInitializer.net35.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>LazyInitializer.net35.tt</DependentUpon>
-    </Compile>
+    <Compile Include="System\Threading\LazyInitializer.net35.cs" />
     <Compile Include="System\Threading\LockRecursionException.cs" />
     <Compile Include="System\Threading\SemaphoreSlim.net35.cs" />
     <Compile Include="System\Threading\SpinLock.net35.cs">
@@ -732,30 +708,6 @@
   </ProjectExtensions>
   <ItemGroup>
     <None Include="OpenSourceKey.snk" />
-    <None Include="System\Linq\Expressions\ConstantExpression.net30.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ConstantExpression.net30.cs</LastGenOutput>
-    </None>
-    <None Include="System\Linq\Expressions\EmitContext.net30.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>EmitContext.net30.cs</LastGenOutput>
-    </None>
-    <None Include="System\Linq\Expressions\ExpressionPrinter.net35.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ExpressionPrinter.net35.cs</LastGenOutput>
-    </None>
-    <None Include="System\Linq\Expressions\NewExpression.net30.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>NewExpression.net30.cs</LastGenOutput>
-    </None>
-    <None Include="System\Linq\Expressions\UnaryExpression.net30.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>UnaryExpression.net30.cs</LastGenOutput>
-    </None>
-    <None Include="System\Numerics\BigInteger.net35.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>BigInteger.net35.cs</LastGenOutput>
-    </None>
     <None Include="Theraot\Collections\Extensions.interleave.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Extensions.interleave.cs</LastGenOutput>

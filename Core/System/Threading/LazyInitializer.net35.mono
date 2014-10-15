@@ -26,6 +26,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#if NET_4_0
+
 namespace System.Threading
 {
 	public static class LazyInitializer
@@ -84,3 +86,4 @@ namespace System.Threading
 		}
 	}
 }
+#endif

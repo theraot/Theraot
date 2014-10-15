@@ -143,26 +143,32 @@ namespace System.Linq
 
         public static int Count<TSource>(this IEnumerable<TSource> source)
         {
-            Check.NotNullArgument(source, "source");
-            var collection = source as ICollection<TSource>;
-            if (collection == null)
+            if (source == null)
             {
-                int result = 0;
-                using (var item = source.GetEnumerator())
-                {
-                    while (item.MoveNext())
-                    {
-                        checked
-                        {
-                            result++;
-                        }
-                    }
-                }
-                return result;
+                throw new ArgumentNullException("source");
             }
             else
             {
-                return collection.Count;
+                var collection = source as ICollection<TSource>;
+                if (collection == null)
+                {
+                    int result = 0;
+                    using (var item = source.GetEnumerator())
+                    {
+                        while (item.MoveNext())
+                        {
+                            checked
+                            {
+                                result++;
+                            }
+                        }
+                    }
+                    return result;
+                }
+                else
+                {
+                    return collection.Count;
+                }
             }
         }
 
@@ -349,36 +355,42 @@ namespace System.Linq
 
         public static TSource Last<TSource>(this IEnumerable<TSource> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var collection = _source as ICollection<TSource>;
-            if (collection != null && collection.Count == 0)
+            if (source == null)
             {
-                throw new InvalidOperationException();
+                throw new ArgumentNullException("source");
             }
             else
             {
-                var list = _source as IList<TSource>;
-                if (list == null)
+                var collection = source as ICollection<TSource>;
+                if (collection != null && collection.Count == 0)
                 {
-                    var found = false;
-                    var result = default(TSource);
-                    foreach (var item in source)
-                    {
-                        result = item;
-                        found = true;
-                    }
-                    if (found)
-                    {
-                        return result;
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException();
-                    }
+                    throw new InvalidOperationException();
                 }
                 else
                 {
-                    return list[list.Count - 1];
+                    var list = source as IList<TSource>;
+                    if (list == null)
+                    {
+                        var found = false;
+                        var result = default(TSource);
+                        foreach (var item in source)
+                        {
+                            result = item;
+                            found = true;
+                        }
+                        if (found)
+                        {
+                            return result;
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException();
+                        }
+                    }
+                    else
+                    {
+                        return list[list.Count - 1];
+                    }
                 }
             }
         }
@@ -409,29 +421,35 @@ namespace System.Linq
 
         public static TSource LastOrDefault<TSource>(this IEnumerable<TSource> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var list = _source as IList<TSource>;
-            if (list == null)
+            if (source == null)
             {
-                var found = false;
-                var result = default(TSource);
-                foreach (var item in source)
-                {
-                    result = item;
-                    found = true;
-                }
-                if (found)
-                {
-                    return result;
-                }
-                else
-                {
-                    return default(TSource);
-                }
+                throw new ArgumentNullException("source");
             }
             else
             {
-                return list.Count > 0 ? list[list.Count - 1] : default(TSource);
+                var list = source as IList<TSource>;
+                if (list == null)
+                {
+                    var found = false;
+                    var result = default(TSource);
+                    foreach (var item in source)
+                    {
+                        result = item;
+                        found = true;
+                    }
+                    if (found)
+                    {
+                        return result;
+                    }
+                    else
+                    {
+                        return default(TSource);
+                    }
+                }
+                else
+                {
+                    return list.Count > 0 ? list[list.Count - 1] : default(TSource);
+                }
             }
         }
 
@@ -495,7 +513,7 @@ namespace System.Linq
 
         public static IOrderedEnumerable<TSource> OrderByDescending<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
-            return OrderByDescending<TSource, TKey>(source, keySelector, null);
+            return OrderByDescending(source, keySelector, null);
         }
 
         public static IOrderedEnumerable<TSource> OrderByDescending<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey> comparer)
@@ -696,7 +714,7 @@ namespace System.Linq
         public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey> comparer)
         {
             LinqCheck.SourceAndKeySelector(source, keySelector);
-            var oe = source as OrderedEnumerable <TSource>;
+            var oe = source as OrderedEnumerable<TSource>;
             if (oe != null)
             {
                 return oe.CreateOrderedEnumerable(keySelector, comparer, false);
@@ -712,7 +730,7 @@ namespace System.Linq
         public static IOrderedEnumerable<TSource> ThenByDescending<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector, IComparer<TKey> comparer)
         {
             LinqCheck.SourceAndKeySelector(source, keySelector);
-            var oe = source as OrderedEnumerable <TSource>;
+            var oe = source as OrderedEnumerable<TSource>;
             if (oe != null)
             {
                 return oe.CreateOrderedEnumerable(keySelector, comparer, true);
