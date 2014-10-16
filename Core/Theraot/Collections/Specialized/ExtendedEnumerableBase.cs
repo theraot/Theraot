@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Theraot.Core.Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections.Specialized
 {
@@ -11,8 +12,8 @@ namespace Theraot.Collections.Specialized
 
         protected ExtendedEnumerableBase(IEnumerable<T> target, IEnumerable<T> append)
         {
-            _target = target ?? EmptySet<T>.Instance;
-            _append = append ?? EmptySet<T>.Instance;
+            _target = target ?? ArrayReservoir<T>.EmptyArray;
+            _append = append ?? ArrayReservoir<T>.EmptyArray;
         }
 
         protected IEnumerable<T> Append

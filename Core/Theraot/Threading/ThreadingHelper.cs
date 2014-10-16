@@ -9,24 +9,6 @@ namespace Theraot.Threading
         internal static readonly bool IsSingleCPU = Environment.ProcessorCount == 1;
         internal static readonly int SleepCountHint = 10;
         private const int INT_MaxTime = 200;
-        private static readonly RuntimeUniqueIdProdiver _threadIdProvider = new RuntimeUniqueIdProdiver();
-        private static readonly NoTrackingThreadLocal<RuntimeUniqueIdProdiver.UniqueId> _threadRuntimeUniqueId = new NoTrackingThreadLocal<RuntimeUniqueIdProdiver.UniqueId>(_threadIdProvider.GetNextId);
-
-        public static bool HasThreadUniqueId
-        {
-            get
-            {
-                return _threadRuntimeUniqueId.IsValueCreated;
-            }
-        }
-
-        public static RuntimeUniqueIdProdiver.UniqueId ThreadUniqueId
-        {
-            get
-            {
-                return _threadRuntimeUniqueId.Value;
-            }
-        }
 
         public static T VolatileRead<T>(ref T address)
             where T : class

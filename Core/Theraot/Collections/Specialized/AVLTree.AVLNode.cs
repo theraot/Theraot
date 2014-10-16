@@ -129,7 +129,7 @@ namespace Theraot.Collections.Specialized
 
             internal static IEnumerable<AVLNode> EnumerateFrom(AVLNode node, TKey key, Comparison<TKey> comparison)
             {
-                var stack = new ExtendedStack<AVLNode>();
+                var stack = new Stack<AVLNode>();
                 while (node != null)
                 {
                     int compare = comparison.Invoke(key, node._key);
@@ -145,12 +145,12 @@ namespace Theraot.Collections.Specialized
                         }
                         else
                         {
-                            stack.Add(node);
+                            stack.Push(node);
                             node = node._left;
                         }
                     }
                 }
-                do
+                while (true)
                 {
                     if (node != null)
                     {
@@ -160,23 +160,29 @@ namespace Theraot.Collections.Specialized
                             yield return item;
                         }
                     }
-                } while (stack.TryTake(out node));
+                    if (stack.Count == 0)
+                    {
+                        break;
+                    }
+                    node = stack.Pop();
+                }
             }
 
             internal static IEnumerable<AVLNode> EnumerateRoot(AVLNode node)
             {
                 if (node != null)
                 {
-                    var stack = new ExtendedStack<AVLNode>();
+                    var stack = new Stack<AVLNode>();
                     for (;;)
                     {
                         while (node != null)
                         {
-                            stack.Add(node);
+                            stack.Push(node);
                             node = node.Left;
                         }
-                        if (stack.TryTake(out node))
+                        if (stack.Count > 0)
                         {
+                            node = stack.Pop();
                             yield return node;
                             node = node.Right;
                         }

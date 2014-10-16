@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Theraot.Collections.Specialized;
 using Theraot.Core;
-using Theraot.Threading;
+using Theraot.Core.Theraot.Collections.ThreadSafe;
 
 namespace System.Linq
 {
@@ -44,7 +44,7 @@ namespace System.Linq
                 }
                 else
                 {
-                    return ArrayPool<TElement>.EmptyArray;
+                    return ArrayReservoir<TElement>.EmptyArray;
                 }
             }
         }

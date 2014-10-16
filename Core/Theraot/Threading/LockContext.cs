@@ -1,3 +1,5 @@
+#if FAT
+
 using System.Threading;
 using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
@@ -117,3 +119,5 @@ namespace Theraot.Threading
         }
     }
 }
+
+#endif

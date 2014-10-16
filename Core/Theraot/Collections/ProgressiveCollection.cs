@@ -8,20 +8,20 @@ namespace Theraot.Collections
 {
     [System.Serializable]
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public class ProgressiveCollection<T> : IReadOnlyCollection<T>, IExtendedCollection<T>, ICollection<T>
+    public partial class ProgressiveCollection<T> : IReadOnlyCollection<T>, ICollection<T>
     {
         private readonly ICollection<T> _cache;
         private readonly IEqualityComparer<T> _comparer;
         private readonly Progressor<T> _progressor;
 
         public ProgressiveCollection(IEnumerable<T> wrapped)
-            : this(wrapped, new ExtendedSet<T>(), null)
+            : this(wrapped, new HashSet<T>(), null)
         {
             //Empty
         }
 
         public ProgressiveCollection(IEnumerable<T> wrapped, IEqualityComparer<T> comparer)
-            : this(wrapped, new ExtendedSet<T>(comparer), comparer)
+            : this(wrapped, new HashSet<T>(comparer), comparer)
         {
             //Empty
         }
@@ -73,15 +73,6 @@ namespace Theraot.Collections
             get
             {
                 return true;
-            }
-        }
-
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns this")]
-        IReadOnlyCollection<T> IExtendedCollection<T>.AsReadOnly
-        {
-            get
-            {
-                return this;
             }
         }
 
@@ -179,12 +170,6 @@ namespace Theraot.Collections
 
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
         bool ICollection<T>.Remove(T item)
-        {
-            throw new NotSupportedException();
-        }
-
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
-        bool IExtendedCollection<T>.Remove(T item, IEqualityComparer<T> comparer)
         {
             throw new NotSupportedException();
         }

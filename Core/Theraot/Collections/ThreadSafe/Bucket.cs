@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using Theraot.Core.Theraot.Collections.ThreadSafe;
 using Theraot.Threading;
 
 namespace Theraot.Collections.ThreadSafe
@@ -26,7 +27,7 @@ namespace Theraot.Collections.ThreadSafe
         public Bucket(int capacity)
         {
             _count = 0;
-            _entries = ArrayPool<object>.GetArray(capacity);
+            _entries = ArrayReservoir<object>.GetArray(capacity);
             _capacity = _entries.Length;
         }
 
@@ -407,7 +408,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private void RecycleExtracted()
         {
-            ArrayPool<object>.DonateArray(_entries);
+            ArrayReservoir<object>.DonateArray(_entries);
             _entries = null;
         }
 

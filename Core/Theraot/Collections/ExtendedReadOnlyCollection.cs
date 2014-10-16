@@ -7,7 +7,7 @@ namespace Theraot.Collections
 {
     [System.Serializable]
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public sealed class ExtendedReadOnlyCollection<T> : IReadOnlyCollection<T>, IExtendedReadOnlyCollection<T>, IEnumerable<T>, IExtendedCollection<T>
+    public sealed partial class ExtendedReadOnlyCollection<T> : IReadOnlyCollection<T>, ICollection<T>
     {
         private readonly ICollection<T> _wrapped;
 
@@ -82,11 +82,6 @@ namespace Theraot.Collections
         }
 
         bool ICollection<T>.Remove(T item)
-        {
-            throw new NotSupportedException();
-        }
-
-        bool IExtendedCollection<T>.Remove(T item, IEqualityComparer<T> comparer)
         {
             throw new NotSupportedException();
         }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if FAT
+
+using System;
 
 namespace Theraot.Threading
 {
@@ -14,3 +16,5 @@ namespace Theraot.Threading
         TReturn DisposedConditional<TReturn>(Func<TReturn> whenDisposed, Func<TReturn> whenNotDisposed);
     }
 }
+
+#endif

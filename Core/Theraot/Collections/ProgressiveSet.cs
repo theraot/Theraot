@@ -6,8 +6,9 @@ namespace Theraot.Collections
 {
     [System.Serializable]
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public class ProgressiveSet<T> : ProgressiveCollection<T>, IExtendedReadOnlySet<T>, IExtendedSet<T>, ISet<T>
+    public partial class ProgressiveSet<T> : ProgressiveCollection<T>, ISet<T>
     {
+        // Note: these constructors uses ExtendedSet because HashSet is not an ISet<T> in .NET 3.5 and base class needs an ISet<T>
         public ProgressiveSet(IEnumerable<T> wrapped)
             : this(wrapped, new ExtendedSet<T>(), null)
         {
@@ -96,15 +97,6 @@ namespace Theraot.Collections
             }
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns this")]
-        IReadOnlySet<T> IExtendedSet<T>.AsReadOnly
-        {
-            get
-            {
-                return this;
-            }
-        }
-
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
         void ICollection<T>.Add(T item)
         {
@@ -119,18 +111,6 @@ namespace Theraot.Collections
 
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
         bool ICollection<T>.Remove(T item)
-        {
-            throw new NotSupportedException();
-        }
-
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
-        bool IExtendedSet<T>.Add(T item)
-        {
-            throw new NotSupportedException();
-        }
-
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
-        bool IExtendedSet<T>.Remove(T item, IEqualityComparer<T> comparer)
         {
             throw new NotSupportedException();
         }

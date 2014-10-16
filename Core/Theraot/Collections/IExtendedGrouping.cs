@@ -1,3 +1,5 @@
+#if FAT
+
 using System.Linq;
 
 namespace Theraot.Collections
@@ -11,3 +13,5 @@ namespace Theraot.Collections
         //Empty
     }
 }
+
+#endif

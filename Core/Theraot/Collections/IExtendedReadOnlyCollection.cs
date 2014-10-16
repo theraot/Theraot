@@ -1,3 +1,5 @@
+#if FAT
+
 using System.Collections.Generic;
 
 namespace Theraot.Collections
@@ -16,3 +18,5 @@ namespace Theraot.Collections
         void CopyTo(T[] array, int arrayIndex, int countLimit);
     }
 }
+
+#endif

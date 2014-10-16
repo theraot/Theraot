@@ -1,3 +1,5 @@
+#if FAT
+
 using System.Collections.Generic;
 
 namespace Theraot.Collections
@@ -36,3 +38,5 @@ namespace Theraot.Collections
         void Swap(int indexA, int indexB);
     }
 }
+
+#endif
