@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Reflection;
 using Theraot.Collections;
 using Theraot.Core;
+using Theraot.Core.Theraot.Collections.ThreadSafe;
 
 namespace System.Linq.Expressions
 {
@@ -629,7 +630,7 @@ namespace System.Linq.Expressions
             }
             else
             {
-                Type action = null;
+                Type action;
                 switch (typeArgs.Length)
                 {
                     case 1:
@@ -715,7 +716,7 @@ namespace System.Linq.Expressions
             }
             else
             {
-                Type func = null;
+                Type func;
                 switch (typeArgs.Length)
                 {
                     case 1:
@@ -2286,8 +2287,8 @@ namespace System.Linq.Expressions
 
         private static Type[] CollectTypes(IEnumerable<Expression> expressions)
         {
-            var temp = System.Linq.Enumerable.Select(expressions, input => input.Type);
-            return Enumerable.ToArray(temp);
+            var temp = expressions.Select(input => input.Type);
+            return temp.ToArray();
         }
 
         private static MethodInfo ConditionalBinaryCheck(string oper, Expression left, Expression right, MethodInfo method)
@@ -2324,11 +2325,11 @@ namespace System.Linq.Expressions
         {
             if (arguments == null)
             {
-                return EmptyList<Expression>.Instance;
+                return ArrayReservoir<Expression>.EmptyArray;
             }
             else
             {
-                return System.Linq.Enumerable.ToList(arguments);
+                return arguments.ToList();
             }
         }
 
@@ -2345,7 +2346,7 @@ namespace System.Linq.Expressions
 
         private static ReadOnlyCollection<ElementInit> CreateInitializers(MethodInfo addMethod, IEnumerable<Expression> initializers)
         {
-            var temp = System.Linq.Enumerable.Select(initializers, input => Expression.ElementInit(addMethod, input));
+            var temp = initializers.Select(input => Expression.ElementInit(addMethod, input));
             return temp.ToReadOnlyCollection();
         }
 
@@ -2434,14 +2435,7 @@ namespace System.Linq.Expressions
                 var parameterExpressionArray = parameters;
                 return Expression.GetActionType
                 (
-                    System.Linq.Enumerable.ToArray
-                    (
-                        System.Linq.Enumerable.Select
-                        (
-                            parameterExpressionArray,
-                            p => p.Type
-                        )
-                    )
+                    parameterExpressionArray.Select(p => p.Type).ToArray()
                 );
             }
         }
@@ -2858,12 +2852,7 @@ namespace System.Linq.Expressions
 
         private static MethodInfo TryGetMethod(Type type, string methodName, BindingFlags flags, Type[] parameterTypes, Type[] argumentTypes)
         {
-            var methods = System.Linq.Enumerable.Where
-                (
-                    type.GetMethods(flags),
-                    input =>
-                    MethodMatch(input, methodName, parameterTypes, argumentTypes)
-                );
+            var methods = type.GetMethods(flags).Where(input => MethodMatch(input, methodName, parameterTypes, argumentTypes));
             if (methods.HasAtLeast(2))
             {
                 throw new InvalidOperationException("Too many method candidates");
@@ -2916,7 +2905,7 @@ namespace System.Linq.Expressions
                             return method;
                         }
                     }
-                    throw new InvalidOperationException (string.Format("Operation {0} not defined for {1}", operatorName != null ? operatorName.Substring(3) : "is", expression.Type));
+                    throw new InvalidOperationException(string.Format("Operation {0} not defined for {1}", operatorName != null ? operatorName.Substring(3) : "is", expression.Type));
                 }
                 else
                 {

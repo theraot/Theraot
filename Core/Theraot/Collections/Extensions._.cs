@@ -6,6 +6,7 @@ using System.Linq;
 
 using Theraot.Collections.Specialized;
 using Theraot.Core;
+using Theraot.Core.Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections
 {
@@ -1011,7 +1012,7 @@ namespace Theraot.Collections
             }
             else
             {
-                TValue newValue = create.SafeInvoke(default(TValue));
+                TValue newValue = create == null ? default(TValue) : create();
                 _dictionary.Add(key, newValue);
                 return newValue;
             }
@@ -1596,19 +1597,6 @@ namespace Theraot.Collections
             return collection.AddRangeEnumerable(Extensions.Where(other.Distinct(), input => !collection.Remove(input)));
         }
 
-        public static TItem TakeAndReturn<TItem>(this IDropPoint<TItem> dropPoint)
-        {
-            TItem item;
-            if (Check.NotNullArgument(dropPoint, "dropPoint").TryTake(out item))
-            {
-                return item;
-            }
-            else
-            {
-                throw new InvalidOperationException();
-            }
-        }
-
         public static TItem[] ToArray<TItem>(this ICollection<TItem> collection)
         {
             Check.NotNullArgument(collection, "collection");
@@ -1619,7 +1607,7 @@ namespace Theraot.Collections
         {
             if (source == null)
             {
-                return new ReadOnlyCollection<TSource>(EmptyList<TSource>.Instance);
+                return new ReadOnlyCollection<TSource>(ArrayReservoir<TSource>.EmptyArray);
             }
             else
             {
@@ -1793,59 +1781,6 @@ namespace Theraot.Collections
                     }
                 }
                 return found;
-            }
-        }
-
-        public static bool TryTakeAndIgnore<TItem>(this IDropPoint<TItem> dropPoint)
-        {
-            TItem item;
-            return Check.NotNullArgument(dropPoint, "dropPoint").TryTake(out item);
-        }
-
-        public static bool TryTakeUntil<TItem>(this IDropPoint<TItem> dropPoint, Predicate<TItem> check, out TItem item)
-        {
-            var _check = Check.NotNullArgument(check, "check");
-            var _dropPoint = Check.NotNullArgument(dropPoint, "dropPoint");
-        back:
-            if (_dropPoint.TryTake(out item))
-            {
-                if (_check(item))
-                {
-                    return true;
-                }
-                else
-                {
-                    goto back;
-                }
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public static bool TryTakeUntil<TItem>(this IDropPoint<TItem> dropPoint, Predicate<TItem> check, ICollection<TItem> trail)
-        {
-            var _check = Check.NotNullArgument(check, "check");
-            var _dropPoint = Check.NotNullArgument(dropPoint, "dropPoint");
-            var _trail = Check.NotNullArgument(trail, "trail");
-            TItem item;
-        back:
-            if (_dropPoint.TryTake(out item))
-            {
-                if (_check(item))
-                {
-                    return true;
-                }
-                else
-                {
-                    _trail.Add(item);
-                    goto back;
-                }
-            }
-            else
-            {
-                return false;
             }
         }
 

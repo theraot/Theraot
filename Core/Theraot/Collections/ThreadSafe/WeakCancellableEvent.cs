@@ -1,3 +1,5 @@
+#if FAT
+
 using System.ComponentModel;
 
 namespace Theraot.Collections.ThreadSafe
@@ -30,3 +32,5 @@ namespace Theraot.Collections.ThreadSafe
         }
     }
 }
+
+#endif

@@ -200,6 +200,8 @@ The following are the notable methods that has been added to existing types:
   - `Stopwatch.Restart` was added in .NET 4.0, use `StopwatchExtensions.Restart` instead.
   - `StringBuilder.Clear` was added in .NET 4.0, use `StringBuilderExtensions.Clear` instead.
 
+Note: the class `ReadOnlyCollection` exists since .NET 2.0, it takes a `IList<T>` instead of `ICollection<T>` and does not implement `IReadOnlyCollection<T>` which was added in .NET 4.5 - the class `ExtendedReadOnlyColletion<T>` aliviates this problems.
+
 Others:
 
   - The class `ReaderWriterLockSlim` was added in .NET 3.5, if `ReaderWriterLock` is not good enough:

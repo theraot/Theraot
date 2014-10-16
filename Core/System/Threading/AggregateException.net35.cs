@@ -21,19 +21,19 @@ namespace System.Threading
 
         public AggregateException()
         {
-            _innerExceptions = new ReadOnlyCollection<Exception>(EmptyList<Exception>.Instance);
+            _innerExceptions = new ReadOnlyCollection<Exception>(new Exception[0]);
         }
 
         public AggregateException(string message)
             : base(message)
         {
-            _innerExceptions = new ReadOnlyCollection<Exception>(EmptyList<Exception>.Instance);
+            _innerExceptions = new ReadOnlyCollection<Exception>(new Exception[0]);
         }
 
         public AggregateException(string message, Exception exception)
             : base(message, Check.NotNullArgument(exception, "exception"))
         {
-            _innerExceptions = new ReadOnlyCollection<Exception>(exception.AsUnaryList());
+            _innerExceptions = new ReadOnlyCollection<Exception>(new[] { exception });
         }
 
         public AggregateException(params Exception[] innerExceptions)
@@ -60,7 +60,7 @@ namespace System.Threading
                     "innerExceptions"
                 ),
                 message,
-                System.Linq.Enumerable.FirstOrDefault(innerExceptions)
+                innerExceptions.FirstOrDefault()
             )
         {
             //Empty
@@ -124,19 +124,17 @@ namespace System.Threading
         public AggregateException Flatten()
         {
             var inner = new List<Exception>();
-            var queue = new ExtendedQueue<AggregateException>
+            var queue = new Queue<AggregateException>();
+            queue.Enqueue(this);
+            while (queue.Count > 0)
             {
-                this
-            };
-            AggregateException current;
-            while (queue.TryTake(out current))
-            {
+                AggregateException current = queue.Dequeue();
                 foreach (var exception in current._innerExceptions)
                 {
                     var aggregatedException = exception as AggregateException;
                     if (aggregatedException != null)
                     {
-                        queue.Add(aggregatedException);
+                        queue.Enqueue(aggregatedException);
                     }
                     else
                     {

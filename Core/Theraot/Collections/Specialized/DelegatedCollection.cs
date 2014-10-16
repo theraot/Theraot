@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Collections.ObjectModel;
 using Theraot.Core;
+using Theraot.Core.Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections.Specialized
 {
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public class DelegatedCollection<T> : IExtendedCollection<T>
+    public partial class DelegatedCollection<T> : ICollection<T>
     {
         private readonly IReadOnlyCollection<T> _readOnly;
         private readonly Func<ICollection<T>> _wrapped;
@@ -45,7 +46,7 @@ namespace Theraot.Collections.Specialized
         {
             get
             {
-                return _wrapped.Invoke() ?? EmptySet<T>.Instance;
+                return _wrapped.Invoke() ?? ArrayReservoir<T>.EmptyArray;
             }
         }
 

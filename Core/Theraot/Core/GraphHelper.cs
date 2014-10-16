@@ -1,3 +1,5 @@
+#if FAT
+
 using System;
 using System.Collections.Generic;
 using Theraot.Collections;
@@ -482,3 +484,5 @@ namespace Theraot.Core
         }
     }
 }
+
+#endif

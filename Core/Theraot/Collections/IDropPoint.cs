@@ -1,3 +1,5 @@
+#if FAT
+
 namespace Theraot.Collections
 {
     [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "By Design")]
@@ -10,3 +12,5 @@ namespace Theraot.Collections
         bool TryTake(out T item);
     }
 }
+
+#endif

@@ -1,89 +1,10 @@
-﻿using System;
+﻿#if FAT
+
+using System;
 using System.Threading;
 
 namespace Theraot.Threading.Needles
 {
-    public interface ILockable
-    {
-        bool HasOwner { get; }
-
-        bool Capture();
-
-        bool CheckAccess(Thread thread);
-
-        void Uncapture();
-    }
-
-    public sealed class Lockable : ILockable
-    {
-        private readonly LockableContext _context;
-        private readonly NeedleLock<Thread> _lock;
-
-        public Lockable(LockableContext context)
-        {
-            if (ReferenceEquals(context, null))
-            {
-                throw new ArgumentNullException("context");
-            }
-            else
-            {
-                _context = context;
-                _lock = new NeedleLock<Thread>(context._context);
-            }
-        }
-
-        public bool HasOwner
-        {
-            get
-            {
-                return !ReferenceEquals(_lock.Value, null);
-            }
-        }
-
-        public bool Capture()
-        {
-            _context._slot.Value.Capture(_lock);
-            return ReferenceEquals(_lock.Value, Thread.CurrentThread);
-        }
-
-        public bool CheckAccess(Thread thread)
-        {
-            var value = _lock.Value;
-            return ReferenceEquals(value, thread) || ReferenceEquals(value, null);
-        }
-
-        public void Uncapture()
-        {
-            LockSlot<Thread> slot;
-            if (_context._slot.TryGet(out slot))
-            {
-                slot.Uncapture(_lock);
-            }
-            _lock.Free();
-        }
-    }
-
-    public sealed class LockableContext
-    {
-        internal readonly LockContext<Thread> _context;
-        internal TrackingThreadLocal<LockSlot<Thread>> _slot;
-
-        public LockableContext(int capacity)
-        {
-            _context = new LockContext<Thread>(capacity);
-            _slot = new TrackingThreadLocal<LockSlot<Thread>>
-                (
-                    () =>
-                    {
-                        LockSlot<Thread> _lockSlot = null;
-                        ThreadingHelper.SpinWaitUntil(() => _context.ClaimSlot(out _lockSlot));
-                        _lockSlot.Value = Thread.CurrentThread;
-                        return _lockSlot;
-                    }
-                );
-        }
-    }
-
     public sealed class LockableNeedle<T, TNeedle> : INeedle<T>, ILockable
         where TNeedle : class, INeedle<T>
     {
@@ -133,7 +54,7 @@ namespace Theraot.Threading.Needles
                 }
                 else
                 {
-                    throw new InvalidOperationException("");
+                    throw new InvalidOperationException();
                 }
             }
         }
@@ -162,3 +83,5 @@ namespace Theraot.Threading.Needles
         }
     }
 }
+
+#endif

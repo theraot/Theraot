@@ -6,7 +6,7 @@ using Theraot.Core;
 namespace Theraot.Collections.Specialized
 {
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public class EnumerationCollection<T> : ICollection<T>, IReadOnlyCollection<T>, IExtendedCollection<T>, IEnumerable<T>
+    public partial class EnumerationCollection<T> : ICollection<T>, IReadOnlyCollection<T>
     {
         private readonly Func<T, bool> _contains;
         private readonly Func<int> _count;
@@ -71,15 +71,6 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns this")]
-        IReadOnlyCollection<T> IExtendedCollection<T>.AsReadOnly
-        {
-            get
-            {
-                return this;
-            }
-        }
-
         public bool Contains(T item)
         {
             return _contains.Invoke(item);
@@ -129,10 +120,9 @@ namespace Theraot.Collections.Specialized
             throw new NotSupportedException();
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
-        bool IExtendedCollection<T>.Remove(T item, IEqualityComparer<T> comparer)
+        public int IndexOf(T item)
         {
-            throw new NotSupportedException();
+            return _wrapped.IndexOf(item);
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
