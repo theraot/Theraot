@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using Theraot.Collections;
-using Theraot.Threading;
+using Theraot.Core.Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Core
 {
@@ -15,7 +14,7 @@ namespace Theraot.Core
         {
             get
             {
-                return ArrayPool<object>.EmptyArray;                
+                return ArrayReservoir<object>.EmptyArray;
             }
         }
 
@@ -160,31 +159,6 @@ namespace Theraot.Core
             return GetDelegateMethodInfo(delegateType).ReturnType;
         }
 
-        public static ILookup<string, Type> GetNamespaces(this Assembly assembly)
-        {
-            if (assembly == null)
-            {
-                throw new ArgumentNullException("assembly");
-            }
-            else
-            {
-                var types = assembly.GetTypes();
-                int index = 0;
-                return new ProgressiveLookup<string, Type>
-                (
-                    EnumerableHelper.Create
-                    (
-                        () =>
-                        {
-                            index++;
-                            return index < types.Length;
-                        },
-                        () => new KeyValuePair<string, Type>(types[index].Namespace, types[index])
-                    )
-                );
-            }
-        }
-
         public static Type GetNonRefType(this ParameterInfo parameterInfo)
         {
             var parameterType = parameterInfo.ParameterType;
@@ -299,6 +273,11 @@ namespace Theraot.Core
         public static bool IsAssignableTo(this Type type, ParameterInfo parameterInfo)
         {
             return IsAssignableTo(GetNotNullableType(type), parameterInfo.GetNonRefType());
+        }
+
+        public static bool IsAtomic(Type type)
+        {
+            return type.IsClass || (type.IsPrimitive && Marshal.SizeOf(type) <= IntPtr.Size);
         }
 
         public static bool IsBinaryPortable(this Type type)

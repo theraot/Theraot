@@ -1,32 +1,11 @@
 using System;
 using System.Collections.Generic;
-using Theraot.Collections.Specialized;
 using Theraot.Core;
 
 namespace Theraot.Collections
 {
     public static partial class Extensions
     {
-        public static IEnumerable<T> Append<T>(this IEnumerable<T> target, IEnumerable<T> append)
-        {
-            return new ExtendedEnumerable<T>(target, append);
-        }
-
-        public static IEnumerable<T> Append<T>(this IEnumerable<T> target, T append)
-        {
-            return new ExtendedEnumerable<T>(target, AsUnaryEnumerable(append));
-        }
-
-        public static IEnumerable<T> Append<T>(this IEnumerable<T> target, IEnumerable<T> append, Predicate<T> match)
-        {
-            return new ExtendedFilteredEnumerable<T>(target, append, match);
-        }
-
-        public static IEnumerable<T> Append<T>(this IEnumerable<T> target, T append, Predicate<T> match)
-        {
-            return new ExtendedFilteredEnumerable<T>(target, AsUnaryEnumerable(append), match);
-        }
-
         public static ICollection<TItem> AsCollection<TItem>(IEnumerable<TItem> collection)
         {
             var _result = collection as ICollection<TItem>;
@@ -114,28 +93,10 @@ namespace Theraot.Collections
                    );
         }
 
-        public static IEnumerable<T> Cycle<T>(this IEnumerable<T> source)
-        {
-            var _source = Check.NotNullArgument(source, "source");
-            while (true)
-            {
-                foreach (var item in _source)
-                {
-                    yield return item;
-                }
-            }
-            // Infinite Loop - This method creates an endless IEnumerable<T>
-        }
-
         public static IEnumerable<T> ExceptWhere<T>(this IEnumerable<T> source, Predicate<T> predicate)
         {
             var _predicate = Check.NotNullArgument(predicate, "predicate");
             return Where(Check.NotNullArgument(source, "source"), item => !_predicate.Invoke(item));
-        }
-
-        public static IEnumerable<T> Filter<T>(this IEnumerable<T> target, Predicate<T> match)
-        {
-            return new ExtendedFilteredEnumerable<T>(target, null, match);
         }
 
         public static bool HasAtLeast<TSource>(this IEnumerable<TSource> source, int count)
@@ -171,26 +132,6 @@ namespace Theraot.Collections
                     return collection.Count > count;
                 }
             }
-        }
-
-        public static IEnumerable<T> Prepend<T>(this IEnumerable<T> target, IEnumerable<T> prepend)
-        {
-            return new ExtendedEnumerable<T>(prepend, target);
-        }
-
-        public static IEnumerable<T> Prepend<T>(this IEnumerable<T> target, T prepend)
-        {
-            return new ExtendedEnumerable<T>(AsUnaryEnumerable(prepend), target);
-        }
-
-        public static IEnumerable<T> Prepend<T>(this IEnumerable<T> target, IEnumerable<T> prepend, Predicate<T> match)
-        {
-            return new ExtendedFilteredEnumerable<T>(prepend, target, match);
-        }
-
-        public static IEnumerable<T> Prepend<T>(this IEnumerable<T> target, T prepend, Predicate<T> match)
-        {
-            return new ExtendedFilteredEnumerable<T>(AsUnaryEnumerable(prepend), target, match);
         }
 
         public static IEnumerable<T> SkipItems<T>(this IEnumerable<T> target, int skipCount)

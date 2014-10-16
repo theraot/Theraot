@@ -37,27 +37,6 @@ namespace Theraot.Threading
             _slots = new HashBucket<Thread, INeedle<T>>(capacity, INT_MaxProbingHint);
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
-        ~TrackingThreadLocal()
-        {
-            try
-            {
-                //Empty
-            }
-            finally
-            {
-                try
-                {
-                    Dispose(false);
-                }
-                catch
-                {
-                    //Pokemon
-                }
-            }
-        }
-
         bool IExpected.IsCanceled
         {
             get
@@ -185,13 +164,10 @@ namespace Theraot.Threading
         [global::System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {
-            try
+            if (Interlocked.CompareExchange(ref _disposing, 1, 0) == 0)
             {
-                Dispose(true);
-            }
-            finally
-            {
-                GC.SuppressFinalize(this);
+                _slots = null;
+                _valueFactory = null;
             }
         }
 
@@ -232,23 +208,24 @@ namespace Theraot.Threading
             return string.Format(System.Globalization.CultureInfo.InvariantCulture, "[ThreadLocal: IsValueCreated={0}, Value={1}]", IsValueCreated, Value);
         }
 
+        public bool TryGet(out T target)
+        {
+            INeedle<T> tmp;
+            if (_slots.TryGetValue(Thread.CurrentThread, out tmp))
+            {
+                target = tmp.Value;
+                return true;
+            }
+            else
+            {
+                target = default(T);
+                return false;
+            }
+        }
+
         public void Uncreate()
         {
             _slots.Remove(Thread.CurrentThread);
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCode]
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2004:RemoveCallsToGCKeepAlive", Justification = "By Design")]
-        private void Dispose(bool disposeManagedResources)
-        {
-            if (disposeManagedResources)
-            {
-                if (Interlocked.CompareExchange(ref _disposing, 1, 0) == 0)
-                {
-                    _slots = null;
-                    _valueFactory = null;
-                }
-            }
         }
     }
 }

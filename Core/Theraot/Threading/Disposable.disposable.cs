@@ -2,7 +2,7 @@
 
 namespace Theraot.Threading
 {
-    public sealed partial class Disposable : IDisposable, IExtendedDisposable
+    public sealed partial class Disposable : IDisposable
     {
         private int _status;
 

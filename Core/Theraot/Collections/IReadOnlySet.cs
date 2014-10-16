@@ -1,3 +1,5 @@
+#if FAT
+
 using System.Collections.Generic;
 
 namespace Theraot.Collections
@@ -18,3 +20,5 @@ namespace Theraot.Collections
         bool SetEquals(IEnumerable<T> other);
     }
 }
+
+#endif

@@ -40,7 +40,7 @@ namespace System
         {
             if (_callback != null || ProgressChanged != null)
             {
-                _context.Post(_callback, value); //TODO: _context may be null
+                _context.Post(_callback, value); //TODO: Context may be null
             }
         }
 

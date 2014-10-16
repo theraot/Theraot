@@ -21,19 +21,19 @@ namespace System.Threading
 
         public AggregateException()
         {
-            _innerExceptions = new ReadOnlyCollection<Exception>(EmptyList<Exception>.Instance);
+            _innerExceptions = new ReadOnlyCollection<Exception>(new Exception[0]);
         }
 
         public AggregateException(string message)
             : base(message)
         {
-            _innerExceptions = new ReadOnlyCollection<Exception>(EmptyList<Exception>.Instance);
+            _innerExceptions = new ReadOnlyCollection<Exception>(new Exception[0]);
         }
 
         public AggregateException(string message, Exception exception)
             : base(message, Check.NotNullArgument(exception, "exception"))
         {
-            _innerExceptions = new ReadOnlyCollection<Exception>(exception.AsUnaryList());
+            _innerExceptions = new ReadOnlyCollection<Exception>(new[] { exception });
         }
 
         public AggregateException(params Exception[] innerExceptions)
@@ -60,7 +60,7 @@ namespace System.Threading
                     "innerExceptions"
                 ),
                 message,
-                System.Linq.Enumerable.FirstOrDefault(innerExceptions)
+                innerExceptions.FirstOrDefault()
             )
         {
             //Empty
@@ -124,19 +124,17 @@ namespace System.Threading
         public AggregateException Flatten()
         {
             var inner = new List<Exception>();
-            var queue = new ExtendedQueue<AggregateException>
+            var queue = new Queue<AggregateException>();
+            queue.Enqueue(this);
+            while (queue.Count > 0)
             {
-                this
-            };
-            AggregateException current;
-            while (queue.TryTake(out current))
-            {
+                AggregateException current = queue.Dequeue();
                 foreach (var exception in current._innerExceptions)
                 {
                     var aggregatedException = exception as AggregateException;
                     if (aggregatedException != null)
                     {
-                        queue.Add(aggregatedException);
+                        queue.Enqueue(aggregatedException);
                     }
                     else
                     {
@@ -153,7 +151,7 @@ namespace System.Threading
             while (true)
             {
                 Exception item;
-                if (result._innerExceptions.Count == 0 || ReferenceEquals(null, item = result._innerExceptions[0]))
+                if (result._innerExceptions.Count != 1 || ReferenceEquals(null, item = result._innerExceptions[0]))
                 {
                     return result;
                 }
@@ -192,24 +190,31 @@ namespace System.Threading
 
         public void Handle(Func<Exception, bool> predicate)
         {
-            var failed = new List<Exception>();
-            foreach (var exception in _innerExceptions)
+            if (predicate == null)
             {
-                try
+                throw new ArgumentNullException("predicate");
+            }
+            else
+            {
+                var failed = new List<Exception>();
+                foreach (var exception in _innerExceptions)
                 {
-                    if (!predicate(exception))
+                    try
                     {
-                        failed.Add(exception);
+                        if (!predicate(exception))
+                        {
+                            failed.Add(exception);
+                        }
+                    }
+                    catch
+                    {
+                        throw new AggregateException(failed);
                     }
                 }
-                catch
+                if (failed.Count > 0)
                 {
                     throw new AggregateException(failed);
                 }
-            }
-            if (failed.Count > 0)
-            {
-                throw new AggregateException(failed);
             }
         }
 

@@ -1,3 +1,5 @@
+#if FAT
+
 using System;
 
 namespace Theraot.Threading
@@ -21,3 +23,5 @@ namespace Theraot.Threading
         bool TryEnterWrite(out IDisposable engagement);
     }
 }
+
+#endif

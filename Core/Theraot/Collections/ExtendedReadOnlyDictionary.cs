@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if FAT
+
+using System;
 using System.Collections.Generic;
 
 using Theraot.Collections.Specialized;
@@ -235,3 +237,5 @@ namespace Theraot.Collections
         }
     }
 }
+
+#endif

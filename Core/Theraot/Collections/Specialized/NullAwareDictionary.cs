@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
@@ -10,7 +11,7 @@ namespace Theraot.Collections.Specialized
     [System.Serializable]
     [global::System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
-    public sealed class NullAwareDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollection<KeyValuePair<TKey, TValue>>, IExtendedDictionary<TKey, TValue>, ISerializable
+    public sealed partial class NullAwareDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ISerializable
     {
         private static readonly TKey _typedNull = TypeHelper.Cast<TKey>(null);
 
@@ -21,7 +22,7 @@ namespace Theraot.Collections.Specialized
         private ExtendedReadOnlyCollection<TKey> _keys;
 
         [NonSerialized]
-        private ExtendedReadOnlyDictionary<TKey, TValue> _readOnly;
+        private IReadOnlyDictionary<TKey, TValue> _readOnly;
 
         [NonSerialized]
         private IEqualityComparer<TValue> _valueComparer;
@@ -144,46 +145,6 @@ namespace Theraot.Collections.Specialized
             get
             {
                 return false;
-            }
-        }
-
-        IReadOnlyCollection<KeyValuePair<TKey, TValue>> IExtendedCollection<KeyValuePair<TKey, TValue>>.AsReadOnly
-        {
-            get
-            {
-                return _readOnly;
-            }
-        }
-
-        IReadOnlyCollection<TKey> IExtendedReadOnlyDictionary<TKey, TValue>.Keys
-        {
-            get
-            {
-                return _keys;
-            }
-        }
-
-        IReadOnlyCollection<TValue> IExtendedReadOnlyDictionary<TKey, TValue>.Values
-        {
-            get
-            {
-                return _values;
-            }
-        }
-
-        IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys
-        {
-            get
-            {
-                return _keys;
-            }
-        }
-
-        IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values
-        {
-            get
-            {
-                return _values;
             }
         }
 
@@ -520,7 +481,7 @@ namespace Theraot.Collections.Specialized
             _valueComparer = EqualityComparer<TValue>.Default;
             _keys = new ExtendedReadOnlyCollection<TKey>(_dictionary.Keys);
             _values = new ExtendedReadOnlyCollection<TValue>(_dictionary.Values);
-            _readOnly = new ExtendedReadOnlyDictionary<TKey, TValue>(this);
+            _readOnly = new ReadOnlyDictionary<TKey, TValue>(this);
         }
 
         private void InitializeNullable()
@@ -554,7 +515,7 @@ namespace Theraot.Collections.Specialized
                     )
                 )
             );
-            _readOnly = new ExtendedReadOnlyDictionary<TKey, TValue>(this);
+            _readOnly = new ReadOnlyDictionary<TKey, TValue>(this);
         }
 
         private void SetForNull(TValue value)

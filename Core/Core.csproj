@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;FAT</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;FAT;NET20</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -237,50 +237,279 @@
     <Compile Include="System\Linq\Enumerable.join.net30.cs" />
     <Compile Include="System\Linq\Enumerable.groupjoin.net30.cs" />
     <Compile Include="System\Linq\Enumerable.groupby.net30.cs" />
-    <Compile Include="System\Linq\Expressions\ConstantExpression.net30.cs">
+    <Compile Include="System\Linq\Expressions\ConstantExpression.net30.cs" />
+    <Compile Include="System\Linq\Expressions\EmitContext.net30.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionPrinter.net35.cs" />
+    <Compile Include="System\Linq\Expressions\NewExpression.net30.cs" />
+    <Compile Include="System\Linq\Expressions\UnaryExpression.net30.cs" />
+    <Compile Include="mono.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>ConstantExpression.net30.tt</DependentUpon>
+      <DependentUpon>mono.tt</DependentUpon>
     </Compile>
-    <Compile Include="System\Linq\Expressions\EmitContext.net30.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>EmitContext.net30.tt</DependentUpon>
-    </Compile>
-    <Compile Include="System\Linq\Expressions\ExpressionPrinter.net35.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ExpressionPrinter.net35.tt</DependentUpon>
-    </Compile>
-    <Compile Include="System\Linq\Expressions\NewExpression.net30.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>NewExpression.net30.tt</DependentUpon>
-    </Compile>
-    <Compile Include="System\Linq\Expressions\UnaryExpression.net30.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>UnaryExpression.net30.tt</DependentUpon>
-    </Compile>
-    <Compile Include="System\Numerics\BigInteger.net35.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>BigInteger.net35.tt</DependentUpon>
-    </Compile>
+    <Compile Include="System\Numerics\BigInteger.net35.cs" />
     <Compile Include="System\Threading\CancellationToken.net35.cs" />
     <Compile Include="System\Threading\CancellationTokenRegistration.net35.cs" />
     <Compile Include="System\Threading\CancellationTokenSource.net35.cs" />
     <Compile Include="System\Threading\CountdownEvent.net35.cs" />
-    <None Include="System\Threading\LazyInitializer.mono" />
-    <None Include="System\Threading\LazyInitializer.net35.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>LazyInitializer.net35.cs</LastGenOutput>
-    </None>
-    <Compile Include="System\Threading\LazyInitializer.net35.cs">
+    <Compile Include="Theraot\Collections\ActionObserver.cs" />
+    <Compile Include="Theraot\Collections\ConversionSet.cs" />
+    <Compile Include="Theraot\Collections\ConvertedObserver.cs" />
+    <Compile Include="Theraot\Collections\EmptyList.cs" />
+    <Compile Include="Theraot\Collections\EmptySet.cs" />
+    <Compile Include="Theraot\Collections\ExtendedDictionary.cs" />
+    <Compile Include="Theraot\Collections\ExtendedList.cs" />
+    <Compile Include="Theraot\Collections\ExtendedQueue.cs" />
+    <Compile Include="Theraot\Collections\ExtendedReadOnlyCollection.cs" />
+    <Compile Include="Theraot\Collections\ExtendedReadOnlyCollection.extended.cs" />
+    <Compile Include="Theraot\Collections\ExtendedReadOnlyDictionary.cs" />
+    <Compile Include="Theraot\Collections\ExtendedReadOnlyList.cs" />
+    <Compile Include="Theraot\Collections\ExtendedReadOnlySet.cs" />
+    <Compile Include="Theraot\Collections\ExtendedSet.cs" />
+    <Compile Include="Theraot\Collections\ExtendedStack.cs" />
+    <Compile Include="Theraot\Collections\Extensions.add.cs" />
+    <Compile Include="Theraot\Collections\Extensions.beforeafter.cs" />
+    <Compile Include="Theraot\Collections\Extensions.drop.cs" />
+    <Compile Include="Theraot\Collections\Extensions.extra.cs" />
+    <Compile Include="Theraot\Collections\Extensions.insert.cs" />
+    <Compile Include="Theraot\Collections\Extensions.interleave.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>LazyInitializer.net35.tt</DependentUpon>
+      <DependentUpon>Extensions.interleave.tt</DependentUpon>
     </Compile>
+    <Compile Include="Theraot\Collections\Extensions.numeric.cs" />
+    <Compile Include="Theraot\Collections\Extensions.operations.cs" />
+    <Compile Include="Theraot\Collections\Extensions.zip.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Extensions.zip.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Theraot\Collections\Extensions._.cs" />
+    <Compile Include="Theraot\Collections\FilteredConvertedObserver.cs" />
+    <Compile Include="Theraot\Collections\FilteredObserver.cs" />
+    <Compile Include="Theraot\Collections\IDropPoint.cs" />
+    <Compile Include="Theraot\Collections\IExtendedCollection.cs" />
+    <Compile Include="Theraot\Collections\IExtendedDictionary.cs" />
+    <Compile Include="Theraot\Collections\IExtendedGrouping.cs" />
+    <Compile Include="Theraot\Collections\IExtendedList.cs" />
+    <Compile Include="Theraot\Collections\IExtendedLookup.cs" />
+    <Compile Include="Theraot\Collections\IExtendedReadOnlyCollection.cs" />
+    <Compile Include="Theraot\Collections\IExtendedReadOnlyDictionary.cs" />
+    <Compile Include="Theraot\Collections\IExtendedReadOnlyList.cs" />
+    <Compile Include="Theraot\Collections\IExtendedReadOnlySet.cs" />
+    <Compile Include="Theraot\Collections\IExtendedSet.cs" />
+    <Compile Include="Theraot\Collections\IProxyObservable.cs" />
+    <Compile Include="Theraot\Collections\IReadOnlyDropPoint.cs" />
+    <Compile Include="Theraot\Collections\IReadOnlySet.cs" />
+    <Compile Include="Theraot\Collections\KeyValuePairComparer.cs" />
+    <Compile Include="Theraot\Collections\KeyValuePairEqualityComparer.cs" />
+    <Compile Include="Theraot\Collections\ObservableExtensions.cs" />
+    <Compile Include="Theraot\Collections\ProgressiveCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Theraot\Collections\ProgressiveCollection.extended.cs" />
+    <Compile Include="Theraot\Collections\ProgressiveDictionary.cs" />
+    <Compile Include="Theraot\Collections\ProgressiveList.cs" />
+    <Compile Include="Theraot\Collections\ProgressiveList.extended.cs" />
+    <Compile Include="Theraot\Collections\ProgressiveLookup.cs" />
+    <Compile Include="Theraot\Collections\ProgressiveSet.cs" />
+    <Compile Include="Theraot\Collections\ProgressiveSet.extended.cs" />
+    <Compile Include="Theraot\Collections\Progressor.cs" />
+    <Compile Include="Theraot\Collections\ProxyObservable.cs" />
+    <Compile Include="Theraot\Collections\Specialized\AVLTree.AVLNode.cs" />
+    <Compile Include="Theraot\Collections\Specialized\AVLTree.cs" />
+    <Compile Include="Theraot\Collections\Specialized\ConditionalExtendedEnumerable.cs" />
+    <Compile Include="Theraot\Collections\Specialized\ConversionComparer.cs" />
+    <Compile Include="Theraot\Collections\Specialized\ConvertionEqualityComparer.cs" />
+    <Compile Include="Theraot\Collections\Specialized\CustomComparer.cs" />
+    <Compile Include="Theraot\Collections\Specialized\CustomEqualityComparer.cs" />
+    <Compile Include="Theraot\Collections\Specialized\DelegatedCollection.cs" />
+    <Compile Include="Theraot\Collections\Specialized\DelegatedCollection.extended.cs" />
+    <Compile Include="Theraot\Collections\Specialized\EnumCollection.cs" />
+    <Compile Include="Theraot\Collections\Specialized\EnumerableFromDelegate.cs" />
+    <Compile Include="Theraot\Collections\Specialized\EnumerationCollection.cs" />
+    <Compile Include="Theraot\Collections\Specialized\EnumerationCollection.extended.cs" />
+    <Compile Include="Theraot\Collections\Specialized\EnumerationSet.cs" />
+    <Compile Include="Theraot\Collections\Specialized\ExtendedEnumerable.cs" />
+    <Compile Include="Theraot\Collections\Specialized\ExtendedEnumerableBase.cs" />
+    <Compile Include="Theraot\Collections\Specialized\ExtendedFilteredEnumerable.cs" />
+    <Compile Include="Theraot\Collections\Specialized\FlagArray.cs" />
+    <Compile Include="Theraot\Collections\Specialized\NeedleConversionEqualityComparer.cs" />
+    <Compile Include="Theraot\Collections\Specialized\NullAwareDictionary.cs" />
+    <Compile Include="Theraot\Collections\Specialized\NullAwareDictionary.extended.cs" />
+    <Compile Include="Theraot\Collections\Specialized\OrderedCollection.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\ArrayReservoir.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\Bucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\BucketHelper.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\BucketStatus.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\CircularBucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\FixedSizeHashBucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\FixedSizeQueueBucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\FixedSizeSetBucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\HashBucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\LazyBucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\QueueBucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\SetBucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\WeakCancellableEvent.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\WeakDelegateSet.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\WeakEvent.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\WeakHashBucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\WeakSetBucket.cs" />
+    <Compile Include="Theraot\Collections\TryTake.cs" />
+    <Compile Include="Theraot\Core\ActionHelper.cs">
+      <DependentUpon>ActionHelper.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Theraot\Core\CancellationTokenHelper.cs" />
+    <Compile Include="Theraot\Core\Check.cs" />
+    <Compile Include="Theraot\Core\CloneHelper.cs" />
+    <Compile Include="Theraot\Core\ComparerExtensions.cs" />
+    <Compile Include="Theraot\Core\DebugHelper.cs" />
+    <Compile Include="Theraot\Core\DelegateDeepEqualityComparer.cs" />
+    <Compile Include="Theraot\Core\DelegateEqualityComparer.cs" />
+    <Compile Include="Theraot\Core\DelegateExtensions.cs" />
+    <Compile Include="Theraot\Core\EnumerableHelper.cs" />
+    <Compile Include="Theraot\Core\EnumHelper.cs" />
+    <Compile Include="Theraot\Core\EqualityComparerHelper.cs" />
+    <Compile Include="Theraot\Core\EqualityComparerHelper1.cs" />
+    <Compile Include="Theraot\Core\Ersatz.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Ersatz.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Theraot\Core\FolderEnumeration.cs" />
+    <Compile Include="Theraot\Core\FuncHelper.cs">
+      <DependentUpon>FuncHelper.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Theraot\Core\FuncHelper.predicate.cs" />
+    <Compile Include="Theraot\Core\FuncHelper._.cs" />
+    <Compile Include="Theraot\Core\GraphHelper.cs" />
+    <Compile Include="Theraot\Core\ICloneable.cs" />
+    <Compile Include="Theraot\Core\ICloner.cs" />
+    <Compile Include="Theraot\Core\MonitorHelper.cs" />
+    <Compile Include="Theraot\Core\NewEventHandler.cs" />
+    <Compile Include="Theraot\Core\NewOperationCanceledException.cs" />
+    <Compile Include="Theraot\Core\NumericHelper.Binary.cs" />
+    <Compile Include="Theraot\Core\NumericHelper.build.cs" />
+    <Compile Include="Theraot\Core\NumericHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Theraot\Core\OrderedEnumerable.cs" />
+    <Compile Include="Theraot\Core\PrimeHelper.array.cs" />
+    <Compile Include="Theraot\Core\PrimeHelper.cs" />
+    <Compile Include="Theraot\Core\Range.cs" />
+    <Compile Include="Theraot\Core\RangeExtensions.cs" />
+    <Compile Include="Theraot\Core\Reference.cs" />
+    <Compile Include="Theraot\Core\StopwatchExtensions.cs" />
+    <Compile Include="Theraot\Core\StreamExtensions.cs" />
+    <Compile Include="Theraot\Core\StringBuilderExtensions.cs" />
+    <Compile Include="Theraot\Core\StringHelper.cs" />
+    <Compile Include="Theraot\Core\ThreadEqualityComparer.cs" />
+    <Compile Include="Theraot\Core\TraceRoute.cs" />
+    <Compile Include="Theraot\Core\TracertNode.cs" />
+    <Compile Include="Theraot\Core\TupleEqualityComparer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TupleEqualityComparer.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Theraot\Core\TypeHelper.ConstructorHelper.cs">
+      <DependentUpon>TypeHelper.ConstructorHelper.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Theraot\Core\TypeHelper.cs" />
+    <Compile Include="Theraot\Core\TypeHelper.extra.cs" />
+    <Compile Include="Theraot\Threading\ArrayPool.cs" />
+    <Compile Include="Theraot\Threading\CriticalDisposable.cs" />
+    <Compile Include="Theraot\Threading\CriticalDisposable.disposable.cs" />
+    <Compile Include="Theraot\Threading\Disposable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Theraot\Threading\Disposable.disposable.cs">
+      <DependentUpon>Disposable.cs</DependentUpon>
+      <SubType>Code</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Theraot\Threading\Disposable.extended.cs" />
+    <Compile Include="Theraot\Threading\DisposableAkin.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Theraot\Threading\DisposableExtensions.cs" />
+    <Compile Include="Theraot\Threading\GCMonitor.internal.cs" />
+    <Compile Include="Theraot\Threading\GCMonitor.cs" />
+    <Compile Include="Theraot\Threading\Guard.cs" />
+    <Compile Include="Theraot\Threading\IExtendedDisposable.cs" />
+    <Compile Include="Theraot\Threading\IReadWriteLock.cs" />
+    <Compile Include="Theraot\Threading\IThreadLocal.cs" />
+    <Compile Include="Theraot\Threading\LockContext.cs" />
+    <Compile Include="Theraot\Threading\LockSlot.cs" />
+    <Compile Include="Theraot\Threading\NeedleLock.cs" />
+    <Compile Include="Theraot\Threading\Needles\CacheNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\CacheNeedle.disposable.cs" />
+    <Compile Include="Theraot\Threading\Needles\DefaultNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\ExceptionStructNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\FutureDisposableNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\FutureNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\ICacheNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\IExpected.cs" />
+    <Compile Include="Theraot\Threading\Needles\ILockable.cs" />
+    <Compile Include="Theraot\Threading\Needles\INeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\IPromise.cs" />
+    <Compile Include="Theraot\Threading\Needles\IPromised.cs" />
+    <Compile Include="Theraot\Threading\Needles\IReadOnlyNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\LazyDisposableNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\LazyDisposableNeedle.disposable.cs" />
+    <Compile Include="Theraot\Threading\Needles\LazyNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\Lockable.cs" />
+    <Compile Include="Theraot\Threading\Needles\LockableContext.cs" />
+    <Compile Include="Theraot\Threading\Needles\LockableNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\Needle.cs" />
+    <Compile Include="Theraot\Threading\Needles\NeedleHelper.cs" />
+    <Compile Include="Theraot\Threading\Needles\NotNull.cs" />
+    <Compile Include="Theraot\Threading\Needles\PromiseNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\PromiseNeedle1.cs" />
+    <Compile Include="Theraot\Threading\Needles\ReadOnlyDisposableNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\ReadOnlyDisposableNeedle.disposable.cs" />
+    <Compile Include="Theraot\Threading\Needles\ReadOnlyNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\ReadOnlyStructNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\StructNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\Transact.cs" />
+    <Compile Include="Theraot\Threading\Needles\Transact.disposable.cs" />
+    <Compile Include="Theraot\Threading\Needles\Transact.IResource.cs" />
+    <Compile Include="Theraot\Threading\Needles\Transact.Needle.cs" />
+    <Compile Include="Theraot\Threading\Needles\Transact.Needle.disposable.cs" />
+    <Compile Include="Theraot\Threading\Needles\WeakDelegateNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\WeakNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\WeakNeedle.disposable.cs" />
+    <Compile Include="Theraot\Threading\Needles\WeakNeedle.extended.cs" />
+    <Compile Include="Theraot\Threading\NoReentrantReadWriteLock.cs" />
+    <Compile Include="Theraot\Threading\NoTrackingThreadLocal.cs" />
+    <Compile Include="Theraot\Threading\ReadWriteLock.cs" />
+    <Compile Include="Theraot\Threading\ReentrantReadWriteLock.cs" />
+    <Compile Include="Theraot\Threading\ReentryGuard.cs" />
+    <Compile Include="Theraot\Threading\RuntimeUniqueIdProdiver.cs" />
+    <Compile Include="Theraot\Threading\SingleTimeExecution.cs" />
+    <Compile Include="Theraot\Threading\ThreadingHelper.cs" />
+    <Compile Include="Theraot\Threading\ThreadingHelper.extra.cs" />
+    <Compile Include="Theraot\Threading\ThreadingHelper.SpinWait.cs">
+      <DependentUpon>ThreadingHelper.SpinWait.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Theraot\Threading\ThreadLocalHelper.cs" />
+    <Compile Include="Theraot\Threading\ThreadLocalHelper1.cs" />
+    <Compile Include="Theraot\Threading\TrackingThreadLocal.cs" />
+    <Compile Include="Theraot\Threading\VersionProvider.cs" />
+    <Compile Include="Theraot\Threading\Work.cs" />
+    <Compile Include="Theraot\Threading\WorkContext.cs" />
+    <None Include="mono.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>mono.cs</LastGenOutput>
+    </None>
+    <Compile Include="System\Threading\LazyInitializer.net35.cs" />
     <Compile Include="System\Threading\LockRecursionException.cs" />
     <Compile Include="System\Threading\SemaphoreSlim.net35.cs" />
     <Compile Include="System\Threading\SpinLock.net35.cs">
@@ -289,21 +518,6 @@
     <Compile Include="System\Threading\SpinWait.net35.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Theraot\Collections\ActionObserver.cs" />
-    <Compile Include="Theraot\Collections\ObservableExtensions.cs" />
-    <Compile Include="Theraot\Collections\Specialized\FlagArray.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\WeakCancellableEvent.cs" />
-    <Compile Include="Theraot\Core\CancellationTokenHelper.cs" />
-    <Compile Include="Theraot\Core\FolderEnumeration.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Theraot\Core\GraphHelper.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Theraot\Core\MonitorHelper.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Theraot\Core\NewEventHandler.cs" />
     <Compile Include="System\Func1.net30.cs" />
     <Compile Include="System\Func10.net35.cs" />
     <Compile Include="System\Func11.net35.cs" />
@@ -384,169 +598,16 @@
     <Compile Include="System\Threading\Tasks\TaskCreationOption.net35.cs" />
     <Compile Include="System\Threading\Tasks\TaskStatus.net35.cs" />
     <Compile Include="System\WeakReference.net40.cs" />
-    <Compile Include="Theraot\Collections\Extensions.interleave.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Extensions.interleave.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Theraot\Collections\Specialized\NeedleConversionEqualityComparer.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\WeakDelegateSet.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\WeakEvent.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\WeakHashBucket.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\WeakSetBucket.cs" />
-    <Compile Include="Theraot\Core\DelegateDeepEqualityComparer.cs" />
-    <Compile Include="Theraot\Core\DelegateEqualityComparer.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\BucketStatus.cs" />
-    <Compile Include="Theraot\Core\Ersatz.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Ersatz.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Theraot\Core\NewOperationCanceledException.cs" />
-    <Compile Include="Theraot\Core\FuncHelper.predicate.cs" />
-    <Compile Include="Theraot\Core\NumericHelper.build.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Theraot\Core\NumericHelper.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Theraot\Core\PrimeHelper.array.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Theraot\Core\PrimeHelper.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Theraot\Core\Range.cs" />
-    <Compile Include="Theraot\Core\RangeExtensions.cs" />
-    <Compile Include="Theraot\Core\StopwatchExtensions.cs" />
-    <Compile Include="Theraot\Core\StringBuilderExtensions.cs" />
-    <Compile Include="Theraot\Core\ThreadEqualityComparer.cs" />
-    <Compile Include="Theraot\Threading\GCMonitor.cs" />
-    <Compile Include="Theraot\Threading\Guard.cs" />
-    <Compile Include="Theraot\Threading\IReadWriteLock.cs" />
-    <Compile Include="Theraot\Threading\LockNeedle.cs" />
-    <Compile Include="Theraot\Threading\LockNeedleContext.cs" />
-    <Compile Include="Theraot\Threading\LockNeedleSlot.cs" />
-    <Compile Include="Theraot\Threading\Needles\CacheNeedle.cs" />
-    <Compile Include="Theraot\Threading\Needles\CacheNeedle.disposable.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CacheNeedle.disposable.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Theraot\Threading\Needles\ExceptionStructNeedle.cs" />
-    <Compile Include="Theraot\Threading\Needles\PromiseNeedle1.cs" />
-    <Compile Include="Theraot\Threading\Needles\DefaultNeedle.cs" />
-    <Compile Include="Theraot\Threading\Needles\FutureDisposableNeedle.cs" />
-    <Compile Include="Theraot\Threading\Needles\FutureNeedle.cs" />
-    <Compile Include="Theraot\Threading\Needles\ICacheNeedle.cs" />
-    <Compile Include="Theraot\Threading\Needles\IExpected.cs" />
-    <Compile Include="Theraot\Threading\Needles\INeedle.cs" />
-    <Compile Include="Theraot\Threading\Needles\IPromise.cs" />
-    <Compile Include="Theraot\Threading\Needles\IPromised.cs" />
-    <Compile Include="Theraot\Threading\Needles\IReadOnlyNeedle.cs" />
-    <Compile Include="Theraot\Threading\Needles\LazyDisposableNeedle.cs" />
-    <Compile Include="Theraot\Threading\Needles\LazyDisposableNeedle.disposable.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>LazyDisposableNeedle.disposable.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Theraot\Threading\Needles\LazyNeedle.cs" />
-    <Compile Include="Theraot\Threading\Needles\Needle.cs" />
-    <Compile Include="Theraot\Threading\Needles\NeedleHelper.cs" />
-    <Compile Include="Theraot\Threading\Needles\NotNull.cs" />
-    <Compile Include="Theraot\Threading\Needles\PromiseNeedle.cs" />
-    <Compile Include="Theraot\Threading\Needles\ReadOnlyDisposableNeedle.cs" />
-    <Compile Include="Theraot\Threading\Needles\ReadOnlyDisposableNeedle.disposable.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ReadOnlyDisposableNeedle.disposable.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Theraot\Threading\Needles\ReadOnlyNeedle.cs" />
-    <Compile Include="Theraot\Threading\Needles\ReadOnlyStructNeedle.cs" />
-    <Compile Include="Theraot\Threading\Needles\StructNeedle.cs" />
-    <Compile Include="Theraot\Threading\Needles\Transact.cs" />
-    <Compile Include="Theraot\Threading\Needles\Transact.disposable.cs" />
-    <Compile Include="Theraot\Threading\Needles\Transact.IResource.cs" />
-    <Compile Include="Theraot\Threading\Needles\Transact.Needle.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Theraot\Threading\Needles\Transact.Needle.disposable.cs" />
-    <Compile Include="Theraot\Threading\Needles\WeakDelegateNeedle.cs" />
-    <Compile Include="Theraot\Threading\Needles\WeakNeedle.cs" />
-    <Compile Include="Theraot\Threading\Needles\WeakNeedle.disposable.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>WeakNeedle.disposable.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Theraot\Threading\ArrayPool.cs" />
-    <Compile Include="Theraot\Threading\NoReentrantReadWriteLock.cs" />
-    <Compile Include="Theraot\Threading\ReadWriteLock.cs" />
-    <Compile Include="Theraot\Threading\ReentrantReadWriteLock.cs" />
-    <Compile Include="Theraot\Threading\ReentryGuard.cs" />
     <Compile Include="System\Threading\ThreadLocal.net35.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="System\Threading\Volatile.net40.cs" />
-    <Compile Include="Theraot\Collections\ConvertedObserver.cs" />
-    <Compile Include="Theraot\Collections\EmptyList.cs" />
-    <Compile Include="Theraot\Collections\Extensions.numeric.cs" />
-    <Compile Include="Theraot\Collections\Extensions.zip.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Extensions.zip.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Theraot\Collections\FilteredConvertedObserver.cs" />
-    <Compile Include="Theraot\Collections\FilteredObserver.cs" />
-    <Compile Include="Theraot\Collections\IExtendedGrouping.cs" />
-    <Compile Include="Theraot\Collections\IExtendedLookup.cs" />
-    <Compile Include="Theraot\Collections\IExtendedReadOnlyCollection.cs" />
-    <Compile Include="Theraot\Collections\IProxyObservable.cs" />
-    <Compile Include="Theraot\Collections\KeyValuePairComparer.cs" />
-    <Compile Include="Theraot\Collections\KeyValuePairEqualityComparer.cs" />
-    <Compile Include="Theraot\Collections\ProgressiveLookup.cs" />
-    <Compile Include="Theraot\Collections\Progressor.cs" />
-    <Compile Include="Theraot\Collections\ProxyObservable.cs" />
-    <Compile Include="Theraot\Collections\Specialized\AVLTree.cs" />
-    <Compile Include="Theraot\Collections\Specialized\ConversionComparer.cs" />
-    <Compile Include="Theraot\Collections\Specialized\AVLTree.AVLNode.cs" />
-    <Compile Include="Theraot\Collections\Specialized\CustomComparer.cs" />
-    <Compile Include="Theraot\Collections\Specialized\EnumerableFromDelegate.cs" />
-    <Compile Include="Theraot\Collections\Specialized\EnumCollection.cs" />
     <Compile Include="System\Linq\Enumerable.net30.cs" />
     <Compile Include="System\Linq\Enumerable.numeric.net30.cs" />
     <Compile Include="System\Linq\IGrouping.net30.cs" />
     <Compile Include="System\Linq\ILookup.net30.cs" />
     <Compile Include="System\Linq\IOrderedEnumerable.net30.cs" />
     <Compile Include="System\Linq\Lookup.net30.cs" />
-    <Compile Include="Theraot\Collections\IExtendedCollection.cs" />
-    <Compile Include="Theraot\Collections\IExtendedReadOnlyDictionary.cs" />
-    <Compile Include="Theraot\Collections\IExtendedReadOnlyList.cs" />
-    <Compile Include="Theraot\Collections\ProgressiveCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Theraot\Collections\ProgressiveSet.cs" />
-    <Compile Include="Theraot\Collections\Specialized\EnumerationSet.cs" />
-    <Compile Include="Theraot\Collections\TryTake.cs" />
-    <Compile Include="Theraot\Core\ActionHelper.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ActionHelper.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Theraot\Core\CloneHelper.cs" />
-    <Compile Include="Theraot\Core\EnumHelper.cs" />
-    <Compile Include="Theraot\Core\EqualityComparerHelper1.cs" />
-    <Compile Include="Theraot\Core\EnumerableHelper.cs" />
-    <Compile Include="Theraot\Core\EqualityComparerHelper.cs" />
-    <Compile Include="Theraot\Core\FuncHelper.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>FuncHelper.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Theraot\Core\FuncHelper._.cs" />
-    <Compile Include="Theraot\Core\ICloneable.cs" />
-    <Compile Include="Theraot\Core\ICloner.cs" />
-    <Compile Include="Theraot\Core\NumericHelper.Binary.cs" />
-    <Compile Include="Theraot\Core\OrderedEnumerable.cs" />
     <Compile Include="System\Tuple8.net35.cs" />
     <Compile Include="System\Tuple7.net35.cs" />
     <Compile Include="System\Tuple6.net35.cs" />
@@ -554,131 +615,48 @@
     <Compile Include="System\Tuple3.net35.cs" />
     <Compile Include="System\Tuple4.net35.cs" />
     <Compile Include="System\Tuple2.net35.cs" />
-    <Compile Include="Theraot\Collections\Specialized\ConditionalExtendedEnumerable.cs" />
-    <Compile Include="Theraot\Collections\Specialized\ConvertionEqualityComparer.cs" />
-    <Compile Include="Theraot\Collections\Specialized\CustomEqualityComparer.cs" />
-    <Compile Include="Theraot\Collections\Extensions.beforeafter.cs" />
-    <Compile Include="Theraot\Collections\Specialized\EnumerationCollection.cs" />
-    <Compile Include="Theraot\Collections\Extensions.insert.cs" />
-    <Compile Include="Theraot\Collections\Specialized\NullAwareDictionary.cs" />
-    <Compile Include="Theraot\Collections\Specialized\OrderedCollection.cs" />
-    <Compile Include="Theraot\Core\ComparerExtensions.cs" />
-    <Compile Include="Theraot\Core\Reference.cs" />
-    <Compile Include="Theraot\Core\StreamExtensions.cs" />
-    <Compile Include="Theraot\Core\TraceRoute.cs" />
-    <Compile Include="Theraot\Core\TracertNode.cs" />
-    <Compile Include="Theraot\Core\TupleEqualityComparer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>TupleEqualityComparer.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Theraot\Core\TypeHelper.ConstructorHelper.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>TypeHelper.ConstructorHelper.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Theraot\Factories\Aggregate.cs" />
-    <Compile Include="Theraot\Factories\CustomAggregator.cs" />
-    <Compile Include="Theraot\Factories\CustomDeferredAggregator.cs" />
-    <Compile Include="Theraot\Factories\CustomDeferredSyncAggregator.cs" />
-    <Compile Include="Theraot\Factories\CustomFactory.cs" />
-    <Compile Include="Theraot\Factories\CustomSyncAggregator.cs" />
     <Compile Include="System\Collections\Generic\HashSet.net30.cs" />
     <Compile Include="System\Collections\Generic\ISet.net35.cs" />
     <Compile Include="System\Collections\IStructuralComparable.net35.cs" />
     <Compile Include="System\Collections\IStructuralEquatable.net35.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\Bucket.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\BucketHelper.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\CircularBucket.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\FixedSizeSetBucket.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\QueueBucket.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\FixedSizeQueueBucket.cs" />
-    <Compile Include="Theraot\Threading\IThreadLocal.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\LazyBucket.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\SetBucket.cs" />
-    <Compile Include="Theraot\Threading\ThreadingHelper.SpinWait.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ThreadingHelper.SpinWait.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Theraot\Threading\ThreadLocalHelper1.cs" />
-    <Compile Include="Theraot\Threading\ThreadLocalHelper.cs" />
-    <Compile Include="Theraot\Threading\TrackingThreadLocal.cs" />
-    <Compile Include="Theraot\Threading\CriticalDisposable.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Theraot\Threading\CriticalDisposable.disposable.cs">
-      <DependentUpon>CriticalDisposable.cs</DependentUpon>
-      <SubType>Code</SubType>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Theraot\Threading\Disposable.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Theraot\Threading\Disposable.disposable.cs">
-      <DependentUpon>Disposable.cs</DependentUpon>
-      <SubType>Code</SubType>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Theraot\Threading\DisposableAkin.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Theraot\Threading\DisposableExtensions.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\HashBucket.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\FixedSizeHashBucket.cs" />
-    <Compile Include="Theraot\Threading\IExtendedDisposable.cs" />
-    <Compile Include="Theraot\Core\Check.cs" />
-    <Compile Include="Theraot\Collections\Extensions.add.cs" />
-    <Compile Include="Theraot\Collections\ConversionSet.cs" />
-    <Compile Include="Theraot\Collections\Specialized\DelegatedCollection.cs" />
-    <Compile Include="Theraot\Collections\EmptySet.cs" />
-    <Compile Include="Theraot\Collections\Extensions._.cs" />
-    <Compile Include="Theraot\Collections\Extensions.operations.cs" />
-    <Compile Include="Theraot\Collections\ExtendedDictionary.cs" />
-    <Compile Include="Theraot\Collections\Specialized\ExtendedEnumerable.cs" />
-    <Compile Include="Theraot\Collections\Specialized\ExtendedEnumerableBase.cs" />
-    <Compile Include="Theraot\Collections\Specialized\ExtendedFilteredEnumerable.cs" />
-    <Compile Include="Theraot\Collections\ExtendedList.cs" />
-    <Compile Include="Theraot\Collections\ExtendedQueue.cs" />
-    <Compile Include="Theraot\Collections\ExtendedSet.cs" />
-    <Compile Include="Theraot\Collections\ExtendedStack.cs" />
-    <Compile Include="Theraot\Collections\IDropPoint.cs" />
-    <Compile Include="Theraot\Collections\IExtendedDictionary.cs" />
-    <Compile Include="Theraot\Collections\IExtendedList.cs" />
-    <Compile Include="Theraot\Collections\IExtendedSet.cs" />
     <Compile Include="System\Collections\Generic\IReadOnlyCollection.net40.cs" />
     <Compile Include="System\Collections\Generic\IReadOnlyDictionary.net40.cs" />
-    <Compile Include="Theraot\Collections\IReadOnlyDropPoint.cs" />
     <Compile Include="System\Collections\Generic\IReadOnlyList.net40.cs" />
-    <Compile Include="Theraot\Collections\IReadOnlySet.cs" />
-    <Compile Include="Theraot\Collections\ProgressiveDictionary.cs" />
-    <Compile Include="Theraot\Collections\ProgressiveList.cs" />
-    <Compile Include="Theraot\Collections\ExtendedReadOnlyCollection.cs" />
-    <Compile Include="Theraot\Collections\ExtendedReadOnlyDictionary.cs" />
-    <Compile Include="Theraot\Collections\ExtendedReadOnlyList.cs" />
-    <Compile Include="Theraot\Collections\ExtendedReadOnlySet.cs" />
-    <Compile Include="Theraot\Core\DelegateExtensions.cs" />
-    <Compile Include="Theraot\Factories\AggregatorExtensions.cs" />
-    <Compile Include="Theraot\Factories\IAggregator.cs" />
-    <Compile Include="Theraot\Factories\IFactory.cs" />
-    <Compile Include="Theraot\Core\DebugHelper.cs" />
-    <Compile Include="Theraot\Core\MultilineBuilder.cs" />
-    <Compile Include="Theraot\Core\StringAssembler.cs" />
-    <Compile Include="Theraot\Core\StringHelper.cs" />
-    <Compile Include="Theraot\Core\TypeHelper.cs" />
     <Compile Include="System\Tuple1.net35.cs" />
     <Compile Include="System\Tuple.net35.cs" />
-    <Compile Include="Theraot\Threading\RuntimeUniqueIdProdiver.cs" />
-    <Compile Include="Theraot\Threading\SingleTimeExecution.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Theraot\Threading\ThreadingHelper.cs" />
-    <Compile Include="Theraot\Threading\NoTrackingThreadLocal.cs" />
-    <Compile Include="Theraot\Threading\VersionProvider.cs" />
-    <Compile Include="Theraot\Collections\IExtendedReadOnlySet.cs" />
-    <Compile Include="Theraot\Threading\Work.cs" />
-    <Compile Include="Theraot\Threading\WorkContext.cs" />
+    <None Include="Theraot\Collections\Extensions.interleave.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Extensions.interleave.cs</LastGenOutput>
+    </None>
+    <None Include="Theraot\Collections\Extensions.zip.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Extensions.zip.cs</LastGenOutput>
+    </None>
+    <None Include="Theraot\Core\ActionHelper.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ActionHelper.cs</LastGenOutput>
+    </None>
+    <None Include="Theraot\Core\Ersatz.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Ersatz.cs</LastGenOutput>
+    </None>
+    <None Include="Theraot\Core\FuncHelper.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>FuncHelper.cs</LastGenOutput>
+    </None>
+    <None Include="Theraot\Core\TupleEqualityComparer.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>TupleEqualityComparer.cs</LastGenOutput>
+    </None>
+    <None Include="Theraot\Core\TypeHelper.ConstructorHelper.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>TypeHelper.ConstructorHelper.cs</LastGenOutput>
+    </None>
+    <None Include="Theraot\Threading\ThreadingHelper.SpinWait.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ThreadingHelper.SpinWait.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -730,88 +708,6 @@
   </ProjectExtensions>
   <ItemGroup>
     <None Include="OpenSourceKey.snk" />
-    <None Include="System\Linq\Expressions\ConstantExpression.net30.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ConstantExpression.net30.cs</LastGenOutput>
-    </None>
-    <None Include="System\Linq\Expressions\EmitContext.net30.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>EmitContext.net30.cs</LastGenOutput>
-    </None>
-    <None Include="System\Linq\Expressions\ExpressionPrinter.net35.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ExpressionPrinter.net35.cs</LastGenOutput>
-    </None>
-    <None Include="System\Linq\Expressions\NewExpression.net30.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>NewExpression.net30.cs</LastGenOutput>
-    </None>
-    <None Include="System\Linq\Expressions\UnaryExpression.net30.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>UnaryExpression.net30.cs</LastGenOutput>
-    </None>
-    <None Include="System\Numerics\BigInteger.net35.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>BigInteger.net35.cs</LastGenOutput>
-    </None>
-    <None Include="Theraot\Collections\Extensions.interleave.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Extensions.interleave.cs</LastGenOutput>
-    </None>
-    <None Include="Theraot\Collections\Extensions.zip.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Extensions.zip.cs</LastGenOutput>
-    </None>
-    <None Include="Theraot\Core\ActionHelper.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ActionHelper.cs</LastGenOutput>
-      <DeployService-Deploy>True</DeployService-Deploy>
-    </None>
-    <None Include="Theraot\Core\Ersatz.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Ersatz.cs</LastGenOutput>
-    </None>
-    <None Include="Theraot\Core\FuncHelper.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>FuncHelper.cs</LastGenOutput>
-    </None>
-    <None Include="Theraot\Core\TupleEqualityComparer.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>TupleEqualityComparer.cs</LastGenOutput>
-    </None>
-    <None Include="Theraot\Core\TypeHelper.ConstructorHelper.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>TypeHelper.ConstructorHelper.cs</LastGenOutput>
-    </None>
-    <None Include="Theraot\Threading\Needles\CacheNeedle.disposable.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>CacheNeedle.disposable.cs</LastGenOutput>
-    </None>
-    <None Include="Theraot\Threading\Needles\DisposableTemplate.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>DisposableTemplate.ttinclude</LastGenOutput>
-    </None>
-    <None Include="Theraot\Threading\Needles\DisposableTemplate.ttinclude">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DisposableTemplate.tt</DependentUpon>
-    </None>
-    <None Include="Theraot\Threading\Needles\LazyDisposableNeedle.disposable.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>LazyDisposableNeedle.disposable.cs</LastGenOutput>
-    </None>
-    <None Include="Theraot\Threading\Needles\ReadOnlyDisposableNeedle.disposable.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ReadOnlyDisposableNeedle.disposable.cs</LastGenOutput>
-    </None>
-    <None Include="Theraot\Threading\Needles\WeakNeedle.disposable.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>WeakNeedle.disposable.cs</LastGenOutput>
-    </None>
-    <None Include="Theraot\Threading\ThreadingHelper.SpinWait.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ThreadingHelper.SpinWait.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup />
 </Project>

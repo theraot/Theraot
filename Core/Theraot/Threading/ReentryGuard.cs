@@ -1,5 +1,5 @@
 ﻿using System;
-using Theraot.Collections;
+using System.Collections.Generic;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
@@ -7,15 +7,15 @@ namespace Theraot.Threading
     [global::System.Diagnostics.DebuggerNonUserCode]
     public sealed class ReentryGuard
     {
-        private StructNeedle<NoTrackingThreadLocal<Tuple<ExtendedQueue<Action>, Guard>>> _workQueue;
+        private StructNeedle<NoTrackingThreadLocal<Tuple<Queue<Action>, Guard>>> _workQueue;
 
         public ReentryGuard()
         {
-            _workQueue = new StructNeedle<NoTrackingThreadLocal<Tuple<ExtendedQueue<Action>, Guard>>>
+            _workQueue = new StructNeedle<NoTrackingThreadLocal<Tuple<Queue<Action>, Guard>>>
                 (
-                    new NoTrackingThreadLocal<Tuple<ExtendedQueue<Action>, Guard>>
+                    new NoTrackingThreadLocal<Tuple<Queue<Action>, Guard>>
                     (
-                        () => new Tuple<ExtendedQueue<Action>, Guard>(new ExtendedQueue<Action>(), new Guard())
+                        () => new Tuple<Queue<Action>, Guard>(new Queue<Action>(), new Guard())
                     )
                 );
         }
@@ -69,11 +69,11 @@ namespace Theraot.Threading
             return result;
         }
 
-        private static IPromise AddExecution(Action action, Tuple<ExtendedQueue<Action>, Guard> local)
+        private static IPromise AddExecution(Action action, Tuple<Queue<Action>, Guard> local)
         {
             IPromised promised;
             var result = new PromiseNeedle(out promised, false);
-            local.Item1.Add
+            local.Item1.Enqueue
             (
                 () =>
                 {
@@ -91,11 +91,11 @@ namespace Theraot.Threading
             return result;
         }
 
-        private static IPromise<T> AddExecution<T>(Func<T> action, Tuple<ExtendedQueue<Action>, Guard> local)
+        private static IPromise<T> AddExecution<T>(Func<T> action, Tuple<Queue<Action>, Guard> local)
         {
             IPromised<T> promised;
             var result = new PromiseNeedle<T>(out promised, false);
-            local.Item1.Add
+            local.Item1.Enqueue
             (
                 () =>
                 {
@@ -112,11 +112,11 @@ namespace Theraot.Threading
             return result;
         }
 
-        private static void ExecutePending(Tuple<ExtendedQueue<Action>, Guard> local)
+        private static void ExecutePending(Tuple<Queue<Action>, Guard> local)
         {
-            Action action;
-            while (local.Item1.Count > 0 && local.Item1.TryTake(out action))
+            while (local.Item1.Count > 0)
             {
+                Action action = local.Item1.Dequeue();
                 action.Invoke();
             }
         }

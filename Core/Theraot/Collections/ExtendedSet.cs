@@ -10,7 +10,8 @@ namespace Theraot.Collections
     [global::System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
     [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "By Design")]
-    public sealed class ExtendedSet<T> : IExtendedSet<T>, IEnumerable<T>, ICloneable, ICollection<T>, ISet<T>, ICloneable<ExtendedSet<T>>
+#if FAT
+    public sealed class ExtendedSet<T> : IExtendedSet<T>, ICloneable, ICollection<T>, ISet<T>, ICloneable<ExtendedSet<T>>
     {
         private readonly IReadOnlySet<T> _readOnly;
         private readonly HashSet<T> _wrapped;
@@ -48,6 +49,35 @@ namespace Theraot.Collections
                 return _readOnly;
             }
         }
+
+#else
+    public sealed class ExtendedSet<T> : ICloneable, ICollection<T>, ISet<T>
+    {
+        private readonly HashSet<T> _wrapped;
+
+        public ExtendedSet()
+        {
+            _wrapped = new HashSet<T>();
+        }
+
+        public ExtendedSet(IEnumerable<T> prototype)
+        {
+            _wrapped = new HashSet<T>();
+            this.AddRange(prototype);
+        }
+
+        public ExtendedSet(IEnumerable<T> prototype, IEqualityComparer<T> comparer)
+        {
+            _wrapped = new HashSet<T>(comparer);
+            this.AddRange(prototype);
+        }
+
+        public ExtendedSet(IEqualityComparer<T> comparer)
+        {
+            _wrapped = new HashSet<T>(comparer);
+        }
+
+#endif
 
         public int Count
         {
