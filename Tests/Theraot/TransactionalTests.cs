@@ -244,7 +244,7 @@ namespace Tests.Theraot
                 {
                     const int movement = 2;
                     needleA.Value += movement;
-                    throw new InvalidOperationException("Oh no!");
+                    ThrowException();
                     // Really, it is evident this code will not run
                     needleB.Value -= movement;
                     transact.Commit();
@@ -358,6 +358,11 @@ namespace Tests.Theraot
                 return;
             }
             Assert.Fail(":(");
+        }
+
+        private static void ThrowException()
+        {
+            throw new InvalidOperationException("Oh no!");
         }
     }
 }
