@@ -23,7 +23,7 @@ namespace Theraot.Threading
         {
             try
             {
-                //Empty
+                // Empty
             }
             finally
             {
@@ -31,9 +31,10 @@ namespace Theraot.Threading
                 {
                     Dispose(false);
                 }
-                catch
+                catch (Exception exception)
                 {
-                    //Pokemon
+                    // Pokemon - fields may be partially collected.
+                    GC.KeepAlive(exception);
                 }
             }
         }
@@ -55,14 +56,6 @@ namespace Theraot.Threading
         public static DisposableAkin Create()
         {
             return new DisposableAkin(ActionHelper.GetNoopAction(), Thread.CurrentThread);
-        }
-
-        public void CheckDisposed(string exceptionMessageWhenDisposed)
-        {
-            if (_thread == null)
-            {
-                throw new ObjectDisposedException(exceptionMessageWhenDisposed);
-            }
         }
 
         public bool Dispose(Func<bool> condition)

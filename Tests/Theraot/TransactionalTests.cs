@@ -250,9 +250,10 @@ namespace Tests.Theraot
                     transact.Commit();
                 }
             }
-            catch
+            catch (Exception exception)
             {
                 // Pokemon
+                GC.KeepAlive(exception);
             }
             // We did not commit
             Assert.AreEqual(needleA.Value, 5);

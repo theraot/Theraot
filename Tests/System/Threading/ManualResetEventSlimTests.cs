@@ -158,8 +158,9 @@ namespace MonoTests.System.Threading
                 mre.Wait(10000, token.Token);
                 Assert.Fail("#0");
             }
-            catch (OperationCanceledException e)
+            catch (OperationCanceledException exception)
             {
+                GC.KeepAlive(exception);
             }
         }
 

@@ -14,7 +14,7 @@ namespace Theraot.Threading.Needles
         {
             try
             {
-                //Empty
+                // Empty
             }
             finally
             {
@@ -22,9 +22,10 @@ namespace Theraot.Threading.Needles
                 {
                     Dispose(false);
                 }
-                catch
+                catch (Exception exception)
                 {
-                    //Pokemon
+                    // Pokemon - fields may be partially collected.
+                    GC.KeepAlive(exception);
                 }
             }
         }

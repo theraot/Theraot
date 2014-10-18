@@ -42,7 +42,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        internal static LockContext<Thread> Context
+        private static LockContext<Thread> Context
         {
             get
             {

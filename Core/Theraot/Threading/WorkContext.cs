@@ -136,9 +136,10 @@ namespace Theraot.Threading
                 {
                     DisposeExtracted();
                 }
-                catch
+                catch (Exception exception)
                 {
-                    //Pokemon
+                    // Pokemon - fields may be partially collected.
+                    GC.KeepAlive(exception);
                 }
             }
         }
@@ -174,6 +175,7 @@ namespace Theraot.Threading
             if (_disposable)
             {
                 DisposeExtracted();
+                GC.SuppressFinalize(this);
             }
         }
 
@@ -194,9 +196,10 @@ namespace Theraot.Threading
                         Execute(item);
                     }
                 }
-                catch
+                catch (Exception exception)
                 {
                     // Pokemon
+                    GC.KeepAlive(exception);
                 }
                 finally
                 {
@@ -269,7 +272,6 @@ namespace Theraot.Threading
                 {
                     _work = false;
                     _threads = null;
-                    GC.SuppressFinalize(this);
                 }
             }
         }

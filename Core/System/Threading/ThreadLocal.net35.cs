@@ -56,14 +56,7 @@ namespace System.Threading
             }
             finally
             {
-                try
-                {
-                    Dispose(false);
-                }
-                catch
-                {
-                    //Pokemon
-                }
+                Dispose(false);
             }
         }
 

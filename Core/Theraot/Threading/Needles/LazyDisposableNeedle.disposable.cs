@@ -14,18 +14,11 @@ namespace Theraot.Threading.Needles
         {
             try
             {
-                //Empty
+                // Empty
             }
             finally
             {
-                try
-                {
-                    Dispose(false);
-                }
-                catch
-                {
-                    //Pokemon
-                }
+                Dispose(false);
             }
         }
 
@@ -138,12 +131,20 @@ namespace Theraot.Threading.Needles
         [global::System.Diagnostics.DebuggerNonUserCode]
         protected virtual void Dispose(bool disposeManagedResources)
         {
-            if (TakeDisposalExecution())
+            try
             {
-                if (disposeManagedResources)
+                if (TakeDisposalExecution())
                 {
-                    OnDispose();
+                    if (disposeManagedResources)
+                    {
+                        OnDispose();
+                    }
                 }
+            }
+            catch (Exception exception)
+            {
+                // Pokemon - fields may be partially collected.
+                GC.KeepAlive(exception);
             }
         }
 

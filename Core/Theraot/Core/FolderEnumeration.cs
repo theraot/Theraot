@@ -26,11 +26,11 @@ namespace Theraot.Core
             }
             catch (DirectoryNotFoundException)
             {
-                //Empty
+                // Empty
             }
             catch (UnauthorizedAccessException)
             {
-                //Empty
+                // Empty
             }
             if (fileEntries != null)
             {
@@ -87,7 +87,7 @@ namespace Theraot.Core
             }
             catch
             {
-                //pokemon
+                // Pokemon
                 return EmptySet<string>.Instance;
             }
         }

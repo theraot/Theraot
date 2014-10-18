@@ -97,7 +97,7 @@ namespace Theraot.Threading
             {
                 try
                 {
-                    //Empty
+                    // Empty
                 }
                 finally
                 {
@@ -110,9 +110,10 @@ namespace Theraot.Threading
                             Internal.Invoke();
                         }
                     }
-                    catch
+                    catch (Exception exception)
                     {
-                        //Pokemon
+                        // Pokemon - there shouldn't be exceptions here, yet we really don't want them
+                        GC.KeepAlive(exception);
                     }
                 }
             }

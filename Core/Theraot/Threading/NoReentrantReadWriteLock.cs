@@ -15,18 +15,11 @@ namespace Theraot.Threading
         {
             try
             {
-                //Empty
+                // Empty
             }
             finally
             {
-                try
-                {
-                    Dispose(false);
-                }
-                catch
-                {
-                    //Pokemon
-                }
+                Dispose(false);
             }
         }
 

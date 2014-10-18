@@ -49,9 +49,10 @@ namespace Theraot.Threading
                         _collectedEventHandlers.RemoveDeadItems();
                         _collectedEventHandlers.Invoke(null, new EventArgs());
                     }
-                    catch
+                    catch (Exception exception)
                     {
-                        //Pokemon
+                        // Pokemon
+                        GC.KeepAlive(exception);
                     }
                     Thread.VolatileWrite(ref _status, INT_StatusReady);
                 }

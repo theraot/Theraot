@@ -157,10 +157,10 @@ namespace Theraot.Threading.Needles
                     {
                         handle.Wait();
                     }
-                    catch
+                    catch (ObjectDisposedException exception)
                     {
-                        // Pokemon
                         // Came late to the party, initialization was done
+                        GC.KeepAlive(exception);
                     }
                 }
             }
@@ -209,10 +209,10 @@ namespace Theraot.Threading.Needles
                                 ReleaseWaitHandle();
                             }
                         }
-                        catch
+                        catch (ObjectDisposedException exception)
                         {
-                            // Pokemon
                             // Came late to the party, initialization is done
+                            GC.KeepAlive(exception);
                         }
                     }
                 }

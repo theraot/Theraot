@@ -14,7 +14,7 @@ namespace Theraot.Threading
         {
             try
             {
-                //Empty
+                // Empty
             }
             finally
             {
@@ -22,9 +22,10 @@ namespace Theraot.Threading
                 {
                     Dispose(false);
                 }
-                catch
+                catch (Exception exception)
                 {
-                    //Pokemon
+                    // Pokemon - fields may be partially collected.
+                    GC.KeepAlive(exception);
                 }
             }
         }
@@ -139,35 +140,17 @@ namespace Theraot.Threading
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2004:RemoveCallsToGCKeepAlive", Justification = "By Design")]
         private void Dispose(bool disposeManagedResources)
         {
+            GC.KeepAlive(disposeManagedResources);
             if (TakeDisposalExecution())
             {
                 try
                 {
-                    if (disposeManagedResources)
-                    {
-                        //Empty
-                    }
+                    _release();
                 }
                 finally
                 {
-                    try
-                    {
-                        _release();
-                    }
-                    finally
-                    {
-                        _release = null;
-                    }
+                    _release = null;
                 }
-            }
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCode]
-        private void ProtectedCheckDisposed(string exceptionMessegeWhenDisposed)
-        {
-            if (IsDisposed)
-            {
-                throw new ObjectDisposedException(exceptionMessegeWhenDisposed);
             }
         }
 
@@ -181,18 +164,6 @@ namespace Theraot.Threading
             {
                 return ThreadingHelper.SpinWaitSetUnless(ref _status, -1, 0, -1);
             }
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCode]
-        private void ThrowDisposedexception()
-        {
-            throw new ObjectDisposedException(GetType().FullName);
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCode]
-        private TReturn ThrowDisposedexception<TReturn>()
-        {
-            throw new ObjectDisposedException(GetType().FullName);
         }
     }
 }
