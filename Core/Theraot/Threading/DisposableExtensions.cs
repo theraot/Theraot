@@ -12,7 +12,7 @@ namespace Theraot.Threading
         public static void DisposableSafeWith<T>(this T disposable, Action<T> action)
             where T : IExtendedDisposable
         {
-            if (disposable != null)
+            if (!ReferenceEquals(disposable, null))
             {
                 disposable.DisposedConditional
                     (
@@ -25,7 +25,7 @@ namespace Theraot.Threading
         public static TReturn DisposableSafeWith<T, TReturn>(this T disposable, Func<T, TReturn> action, TReturn def)
             where T : IExtendedDisposable
         {
-            if (disposable != null)
+            if (!ReferenceEquals(disposable, null))
             {
                 return disposable.DisposedConditional
                     (
@@ -42,7 +42,7 @@ namespace Theraot.Threading
         public static TReturn DisposableSafeWith<T, TReturn>(this T disposable, Func<T, TReturn> action, Func<TReturn> alternative, TReturn def)
             where T : IExtendedDisposable
         {
-            if (disposable != null)
+            if (!ReferenceEquals(disposable, null))
             {
                 return disposable.DisposedConditional
                     (
@@ -127,7 +127,7 @@ namespace Theraot.Threading
 
         public static void SafeWith<T>(this T obj, Action<T> action)
         {
-            if (obj != null)
+            if (!ReferenceEquals(obj, null))
             {
                 action.SafeInvoke(obj);
             }
@@ -135,7 +135,7 @@ namespace Theraot.Threading
 
         public static TReturn SafeWith<T, TReturn>(this T obj, Func<T, TReturn> action, TReturn def)
         {
-            if (obj != null)
+            if (!ReferenceEquals(obj, null))
             {
                 return action.SafeInvoke(obj, def);
             }
@@ -147,7 +147,7 @@ namespace Theraot.Threading
 
         public static TReturn SafeWith<T, TReturn>(this T obj, Func<T, TReturn> action, Func<TReturn> alternative, TReturn def)
         {
-            if (obj != null)
+            if (!ReferenceEquals(obj, null))
             {
                 return action.SafeInvoke(obj, alternative, def);
             }
