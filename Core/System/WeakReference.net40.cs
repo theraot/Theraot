@@ -39,22 +39,6 @@ namespace System
             }
         }
 
-        public T Target
-        {
-            [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
-            get
-            {
-                T value;
-                TryGetTarget(out value);
-                return value;
-            }
-            [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
-            set
-            {
-                SetTarget(value);
-            }
-        }
-
         [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
@@ -64,7 +48,9 @@ namespace System
             }
             else
             {
-                info.AddValue("TrackedObject", Target, typeof(T));
+                T value;
+                TryGetTarget(out value);
+                info.AddValue("TrackedObject", value, typeof(T));
                 info.AddValue("TrackResurrection", _trackResurrection);
             }
         }
