@@ -320,7 +320,7 @@
     <Compile Include="Theraot\Collections\Specialized\AVLTree.cs" />
     <Compile Include="Theraot\Collections\Specialized\ConditionalExtendedEnumerable.cs" />
     <Compile Include="Theraot\Collections\Specialized\ConversionComparer.cs" />
-    <Compile Include="Theraot\Collections\Specialized\ConvertionEqualityComparer.cs" />
+    <Compile Include="Theraot\Collections\Specialized\ConversionEqualityComparer.cs" />
     <Compile Include="Theraot\Collections\Specialized\CustomComparer.cs" />
     <Compile Include="Theraot\Collections\Specialized\CustomEqualityComparer.cs" />
     <Compile Include="Theraot\Collections\Specialized\DelegatedCollection.cs" />

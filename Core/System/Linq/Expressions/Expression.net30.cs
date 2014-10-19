@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reflection;
 using Theraot.Collections;
+using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
 
 namespace System.Linq.Expressions
