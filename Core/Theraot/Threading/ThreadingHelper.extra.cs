@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-
-namespace Theraot.Threading
+﻿namespace Theraot.Threading
 {
     public static partial class ThreadingHelper
     {

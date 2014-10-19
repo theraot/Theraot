@@ -293,7 +293,7 @@ namespace Theraot.Threading
                     }
                     else if (_works.Count == 0)
                     {
-                        if (count == ThreadingHelper.SleepCountHint)
+                        if (count == ThreadingHelper.INT_SleepCountHint)
                         {
                             try
                             {
