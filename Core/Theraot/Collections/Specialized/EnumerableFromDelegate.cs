@@ -13,7 +13,7 @@ namespace Theraot.Collections.Specialized
 
         public EnumerableFromDelegate(Func<IEnumerator> getEnumerator)
         {
-            _getEnumerator = getEnumerator.ChainConvertion(ConvertEnumerator);
+            _getEnumerator = getEnumerator.ChainConversion(ConvertEnumerator);
         }
 
         public IEnumerator<T> GetEnumerator()

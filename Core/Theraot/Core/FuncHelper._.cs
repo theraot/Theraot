@@ -4,7 +4,7 @@ namespace Theraot.Core
 {
     public static partial class FuncHelper
     {
-        public static Func<TOutput> ChainConvertion<TInput, TOutput>(this Func<TInput> source, Converter<TInput, TOutput> converter)
+        public static Func<TOutput> ChainConversion<TInput, TOutput>(this Func<TInput> source, Converter<TInput, TOutput> converter)
         {
             var _converter = Check.NotNullArgument(converter, "converter");
             var _source = Check.NotNullArgument(source, "source");
