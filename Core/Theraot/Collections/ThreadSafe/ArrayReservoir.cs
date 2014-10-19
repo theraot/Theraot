@@ -1,7 +1,7 @@
 ﻿using System;
 using Theraot.Threading;
 
-namespace Theraot.Core.Theraot.Collections.ThreadSafe
+namespace Theraot.Collections.ThreadSafe
 {
     internal class ArrayReservoir<T>
     {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using Theraot.Core.Theraot.Collections.ThreadSafe;
 using Theraot.Threading;
 
 namespace Theraot.Collections.ThreadSafe

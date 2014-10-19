@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
-using Theraot.Core.Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections.Specialized
 {

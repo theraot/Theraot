@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using Theraot.Core.Theraot.Collections.ThreadSafe;
+using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Core
 {

@@ -4,8 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Theraot.Collections.Specialized;
+using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
-using Theraot.Core.Theraot.Collections.ThreadSafe;
 
 namespace System.Linq
 {

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Theraot.Core.Theraot.Collections.ThreadSafe;
+using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Collections.Specialized
 {

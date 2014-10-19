@@ -7,7 +7,6 @@ using System.Globalization;
 using System.Reflection;
 using Theraot.Collections;
 using Theraot.Core;
-using Theraot.Core.Theraot.Collections.ThreadSafe;
 
 namespace System.Linq.Expressions
 {
