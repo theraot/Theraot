@@ -25,22 +25,6 @@ namespace Theraot.Threading
             }
         }
 
-        public bool CurrentThreadIsReader
-        {
-            get
-            {
-                return _wrapped.CurrentThreadIsReader;
-            }
-        }
-
-        public bool CurrentThreadIsWriter
-        {
-            get
-            {
-                return _wrapped.CurrentThreadIsWriter;
-            }
-        }
-
         public bool HasReader
         {
             get
@@ -54,6 +38,22 @@ namespace Theraot.Threading
             get
             {
                 return _wrapped.HasWriter;
+            }
+        }
+
+        public bool IsCurrentThreadReader
+        {
+            get
+            {
+                return _wrapped.IsCurrentThreadReader;
+            }
+        }
+
+        public bool IsCurrentThreadWriter
+        {
+            get
+            {
+                return _wrapped.IsCurrentThreadWriter;
             }
         }
 

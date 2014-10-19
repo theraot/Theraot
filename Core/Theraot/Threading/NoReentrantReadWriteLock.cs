@@ -174,22 +174,6 @@ namespace Theraot.Threading
         private int _readCount;
         private int _writeCount;
 
-        public bool CurrentThreadIsReader
-        {
-            get
-            {
-                throw new NotSupportedException("Only a ReentratReadWriteLock keeps tracks of which thread is a reader.");
-            }
-        }
-
-        public bool CurrentThreadIsWriter
-        {
-            get
-            {
-                return Thread.CurrentThread == _ownerThread;
-            }
-        }
-
         public bool HasReader
         {
             get
@@ -203,6 +187,22 @@ namespace Theraot.Threading
             get
             {
                 return _ownerThread != null;
+            }
+        }
+
+        public bool IsCurrentThreadReader
+        {
+            get
+            {
+                throw new NotSupportedException("Only a ReentratReadWriteLock keeps tracks of which thread is a reader.");
+            }
+        }
+
+        public bool IsCurrentThreadWriter
+        {
+            get
+            {
+                return Thread.CurrentThread == _ownerThread;
             }
         }
 
@@ -326,7 +326,7 @@ namespace Theraot.Threading
                     switch (check)
                     {
                         case -2:
-                            // Write mode already requested
+                        // Write mode already requested
                         case -1:
                             // There is a writer
                             // Go to wait
@@ -360,7 +360,7 @@ namespace Theraot.Threading
                     switch (check)
                     {
                         case -2:
-                            // Write mode already requested
+                        // Write mode already requested
                         case -1:
                             // There is another writer
                             // Go to wait
