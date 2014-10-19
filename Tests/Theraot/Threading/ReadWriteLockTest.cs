@@ -14,7 +14,7 @@ namespace Tests.Theraot.Threading
             var x = new ReadWriteLock();
             using (x.EnterRead())
             {
-                Assert.IsFalse(x.CurrentThreadIsWriter);
+                Assert.IsFalse(x.IsCurrentThreadWriter);
             }
         }
 
@@ -27,7 +27,7 @@ namespace Tests.Theraot.Threading
             {
                 if (x.TryEnterRead(out engagement))
                 {
-                    Assert.IsFalse(x.CurrentThreadIsWriter);
+                    Assert.IsFalse(x.IsCurrentThreadWriter);
                 }
                 else
                 {
@@ -49,7 +49,7 @@ namespace Tests.Theraot.Threading
             var x = new ReadWriteLock();
             using (x.EnterWrite())
             {
-                Assert.IsTrue(x.CurrentThreadIsWriter);
+                Assert.IsTrue(x.IsCurrentThreadWriter);
             }
         }
 
@@ -62,7 +62,7 @@ namespace Tests.Theraot.Threading
             {
                 if (x.TryEnterWrite(out engagement))
                 {
-                    Assert.IsTrue(x.CurrentThreadIsWriter);
+                    Assert.IsTrue(x.IsCurrentThreadWriter);
                 }
                 else
                 {
@@ -86,7 +86,7 @@ namespace Tests.Theraot.Threading
             Assert.IsFalse(x.HasReader);
             using (x.EnterRead())
             {
-                Assert.IsTrue(x.CurrentThreadIsReader);
+                Assert.IsTrue(x.IsCurrentThreadReader);
                 Assert.IsTrue(x.HasReader);
             }
             // Not Reentrant ReadWriteLock is not
@@ -94,7 +94,7 @@ namespace Tests.Theraot.Threading
             Assert.IsFalse(y.HasReader);
             using (y.EnterRead())
             {
-                Assert.Throws(typeof(NotSupportedException), () => GC.KeepAlive(y.CurrentThreadIsReader));
+                Assert.Throws(typeof(NotSupportedException), () => GC.KeepAlive(y.IsCurrentThreadReader));
                 Assert.IsTrue(y.HasReader);
             }
             // ReadWriteLock is not reentrant by default
@@ -102,7 +102,7 @@ namespace Tests.Theraot.Threading
             Assert.IsFalse(z.HasReader);
             using (z.EnterRead())
             {
-                Assert.Throws(typeof(NotSupportedException), () => GC.KeepAlive(z.CurrentThreadIsReader));
+                Assert.Throws(typeof(NotSupportedException), () => GC.KeepAlive(z.IsCurrentThreadReader));
                 Assert.IsTrue(z.HasReader);
             }
         }
@@ -115,7 +115,7 @@ namespace Tests.Theraot.Threading
             Assert.IsFalse(x.HasWriter);
             using (x.EnterWrite())
             {
-                Assert.IsTrue(x.CurrentThreadIsWriter);
+                Assert.IsTrue(x.IsCurrentThreadWriter);
                 Assert.IsTrue(x.HasWriter);
             }
             // Not Reentrant ReadWriteLock is not
@@ -123,7 +123,7 @@ namespace Tests.Theraot.Threading
             Assert.IsFalse(y.HasWriter);
             using (y.EnterWrite())
             {
-                Assert.IsTrue(y.CurrentThreadIsWriter);
+                Assert.IsTrue(y.IsCurrentThreadWriter);
                 Assert.IsTrue(y.HasWriter);
             }
             // ReadWriteLock is not reentrant by default
@@ -131,7 +131,7 @@ namespace Tests.Theraot.Threading
             Assert.IsFalse(z.HasWriter);
             using (z.EnterWrite())
             {
-                Assert.IsTrue(z.CurrentThreadIsWriter);
+                Assert.IsTrue(z.IsCurrentThreadWriter);
                 Assert.IsTrue(z.HasWriter);
             }
         }
@@ -144,7 +144,7 @@ namespace Tests.Theraot.Threading
             var doneThread = false;
             using (x.EnterWrite())
             {
-                Assert.IsTrue(x.CurrentThreadIsWriter);
+                Assert.IsTrue(x.IsCurrentThreadWriter);
                 var a = new Thread
                 (
                     () =>
@@ -185,7 +185,7 @@ namespace Tests.Theraot.Threading
             {
                 if (x.TryEnterWrite(out engagementA))
                 {
-                    Assert.IsTrue(x.CurrentThreadIsWriter);
+                    Assert.IsTrue(x.IsCurrentThreadWriter);
                     var a = new Thread
                     (
                         () =>
@@ -243,7 +243,7 @@ namespace Tests.Theraot.Threading
             a.Start();
             using (x.EnterRead())
             {
-                Assert.IsFalse(x.CurrentThreadIsWriter);
+                Assert.IsFalse(x.IsCurrentThreadWriter);
                 IDisposable engagement = null;
                 try
                 {
@@ -266,7 +266,7 @@ namespace Tests.Theraot.Threading
             {
                 using (x.EnterWrite())
                 {
-                    Assert.IsTrue(x.CurrentThreadIsWriter);
+                    Assert.IsTrue(x.IsCurrentThreadWriter);
                     Assert.IsTrue(ok);
                 }
             }
@@ -280,7 +280,7 @@ namespace Tests.Theraot.Threading
             var doneThread = false;
             using (x.EnterRead())
             {
-                Assert.IsFalse(x.CurrentThreadIsWriter);
+                Assert.IsFalse(x.IsCurrentThreadWriter);
                 var a = new Thread
                 (
                     () =>
@@ -321,7 +321,7 @@ namespace Tests.Theraot.Threading
             {
                 if (x.TryEnterRead(out engagementA))
                 {
-                    Assert.IsFalse(x.CurrentThreadIsWriter);
+                    Assert.IsFalse(x.IsCurrentThreadWriter);
                     var a = new Thread
                     (
                         () =>
@@ -368,7 +368,7 @@ namespace Tests.Theraot.Threading
             var doneThread = false;
             using (x.EnterWrite())
             {
-                Assert.IsTrue(x.CurrentThreadIsWriter);
+                Assert.IsTrue(x.IsCurrentThreadWriter);
                 var a = new Thread
                 (
                     () =>
@@ -409,7 +409,7 @@ namespace Tests.Theraot.Threading
             {
                 if (x.TryEnterWrite(out engagementA))
                 {
-                    Assert.IsTrue(x.CurrentThreadIsWriter);
+                    Assert.IsTrue(x.IsCurrentThreadWriter);
                     var a = new Thread
                     (
                         () =>
@@ -456,7 +456,7 @@ namespace Tests.Theraot.Threading
             var doneThread = false;
             using (x.EnterRead())
             {
-                Assert.IsFalse(x.CurrentThreadIsWriter);
+                Assert.IsFalse(x.IsCurrentThreadWriter);
                 var a = new Thread
                 (
                     () =>
@@ -500,7 +500,7 @@ namespace Tests.Theraot.Threading
             {
                 if (x.TryEnterRead(out engagementA))
                 {
-                    Assert.IsFalse(x.CurrentThreadIsWriter);
+                    Assert.IsFalse(x.IsCurrentThreadWriter);
                     var a = new Thread
                     (
                         () =>
@@ -548,10 +548,10 @@ namespace Tests.Theraot.Threading
             var x = new ReadWriteLock();
             using (x.EnterRead())
             {
-                Assert.IsFalse(x.CurrentThreadIsWriter);
+                Assert.IsFalse(x.IsCurrentThreadWriter);
                 using (x.EnterRead())
                 {
-                    Assert.IsFalse(x.CurrentThreadIsWriter);
+                    Assert.IsFalse(x.IsCurrentThreadWriter);
                 }
             }
         }
@@ -565,13 +565,13 @@ namespace Tests.Theraot.Threading
             {
                 if (x.TryEnterRead(out engagementA))
                 {
-                    Assert.IsFalse(x.CurrentThreadIsWriter);
+                    Assert.IsFalse(x.IsCurrentThreadWriter);
                     IDisposable engagementB = null;
                     try
                     {
                         if (x.TryEnterRead(out engagementB))
                         {
-                            Assert.IsFalse(x.CurrentThreadIsWriter);
+                            Assert.IsFalse(x.IsCurrentThreadWriter);
                         }
                         else
                         {
@@ -606,11 +606,11 @@ namespace Tests.Theraot.Threading
             var x = new ReadWriteLock(true); // This code results in a dead lock in a not reentrant ReadWriteLock
             using (x.EnterRead())
             {
-                Assert.IsFalse(x.CurrentThreadIsWriter);
+                Assert.IsFalse(x.IsCurrentThreadWriter);
                 // If a thread is a reader it can become a writer as long as there are no other readers
                 using (x.EnterWrite())
                 {
-                    Assert.IsTrue(x.CurrentThreadIsWriter);
+                    Assert.IsTrue(x.IsCurrentThreadWriter);
                 }
             }
         }
@@ -624,7 +624,7 @@ namespace Tests.Theraot.Threading
             {
                 if (x.TryEnterRead(out engagementA))
                 {
-                    Assert.IsFalse(x.CurrentThreadIsWriter);
+                    Assert.IsFalse(x.IsCurrentThreadWriter);
                     IDisposable engagementB = null;
                     try
                     {
@@ -635,7 +635,7 @@ namespace Tests.Theraot.Threading
                         else
                         {
                             // Not reentrant ReadWriteLock will not be able to upgrade the lock
-                            Assert.IsFalse(x.CurrentThreadIsWriter);   
+                            Assert.IsFalse(x.IsCurrentThreadWriter);   
                         }
                     }
                     finally
@@ -665,14 +665,14 @@ namespace Tests.Theraot.Threading
             {
                 if (y.TryEnterRead(out engagementC))
                 {
-                    Assert.IsFalse(y.CurrentThreadIsWriter);
+                    Assert.IsFalse(y.IsCurrentThreadWriter);
                     IDisposable engagementD = null;
                     try
                     {
                         if (y.TryEnterWrite(out engagementD))
                         {
                             // Reentrant ReadWriteLock will be able to upgrade the lock
-                            Assert.IsTrue(y.CurrentThreadIsWriter);
+                            Assert.IsTrue(y.IsCurrentThreadWriter);
                         }
                         else
                         {
@@ -723,13 +723,13 @@ namespace Tests.Theraot.Threading
             {
                 if (x.TryEnterWrite(out engagementA))
                 {
-                    Assert.IsTrue(x.CurrentThreadIsWriter);
+                    Assert.IsTrue(x.IsCurrentThreadWriter);
                     IDisposable engagementB = null;
                     try
                     {
                         if (x.TryEnterRead(out engagementB))
                         {
-                            Assert.IsTrue(x.CurrentThreadIsWriter);
+                            Assert.IsTrue(x.IsCurrentThreadWriter);
                         }
                         else
                         {
@@ -767,13 +767,13 @@ namespace Tests.Theraot.Threading
             {
                 if (x.TryEnterWrite(out engagementA))
                 {
-                    Assert.IsTrue(x.CurrentThreadIsWriter);
+                    Assert.IsTrue(x.IsCurrentThreadWriter);
                     IDisposable engagementB = null;
                     try
                     {
                         if (x.TryEnterWrite(out engagementB))
                         {
-                            Assert.IsTrue(x.CurrentThreadIsWriter);
+                            Assert.IsTrue(x.IsCurrentThreadWriter);
                         }
                         else
                         {
@@ -916,7 +916,7 @@ namespace Tests.Theraot.Threading
             {
                 if (x.TryEnterWrite(out engagementB))
                 {
-                    Assert.IsTrue(x.CurrentThreadIsWriter);
+                    Assert.IsTrue(x.IsCurrentThreadWriter);
                     b.Start();
                     w.Set();
                     Thread.Sleep(10);
@@ -1084,7 +1084,7 @@ namespace Tests.Theraot.Threading
                     w1.WaitOne();
                     using (x.EnterWrite())
                     {
-                        Assert.IsTrue(x.CurrentThreadIsWriter);
+                        Assert.IsTrue(x.IsCurrentThreadWriter);
                         ok = Interlocked.Increment(ref z[0]) == 6;
                     }
                 }
