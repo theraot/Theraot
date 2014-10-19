@@ -57,21 +57,6 @@ namespace Theraot.Threading
             _freeSlots.Add(slot);
         }
 
-        internal bool Read(int flag, out T value)
-        {
-            LockSlot<T> slot;
-            if (_slots.TryGet(flag, out slot))
-            {
-                value = slot.Value;
-                return true;
-            }
-            else
-            {
-                value = default(T);
-                return false;
-            }
-        }
-
         internal bool Read(FlagArray flags, out T value)
         {
             LockSlot<T> bestSlot = null;

@@ -40,14 +40,7 @@ namespace Theraot.Threading
             {
                 _context = context;
                 _target = target;
-                if (ReferenceEquals(target, null))
-                {
-                    _hashCode = GetHashCode();
-                }
-                else
-                {
-                    _hashCode = target.GetHashCode();
-                }
+                _hashCode = ReferenceEquals(target, null) ? GetHashCode() : target.GetHashCode();
                 _capture = new FlagArray(_context.Capacity);
             }
         }
