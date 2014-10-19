@@ -19,22 +19,12 @@ namespace Theraot.Threading
 
         private static readonly LazyBucket<FixedSizeQueueBucket<ArrayHolder>> _data;
         private static readonly List<ArrayHolder> _dirtyData;
-        private static readonly T[] _emptyArray;
         private static readonly ReentryGuard _guard;
         private static readonly LazyNeedle<Work> _recycle;
         private static int _done;
 
         static ArrayPool()
         {
-            if (typeof(T) == typeof(Type))
-            {
-                _emptyArray = (T[])(object)Type.EmptyTypes;
-            }
-            else
-            {
-                _emptyArray = new T[0];
-            }
-            //---
             _recycle = new LazyNeedle<Work>(() => WorkContext.DefaultContext.AddWork(CleanUp));
             _data = new LazyBucket<FixedSizeQueueBucket<ArrayHolder>>
             (
@@ -47,15 +37,7 @@ namespace Theraot.Threading
             Thread.VolatileWrite(ref _done, 1);
         }
 
-        public static T[] EmptyArray
-        {
-            get
-            {
-                return _emptyArray;
-            }
-        }
-
-        public static bool DonateArray(T[] array)
+        internal static bool DonateArray(T[] array)
         {
             if (ReferenceEquals(array, null) || GCMonitor.FinalizingForUnload)
             {
@@ -85,11 +67,11 @@ namespace Theraot.Threading
             }
         }
 
-        public static T[] GetArray(int capacity)
+        internal static T[] GetArray(int capacity)
         {
             if (capacity == 0)
             {
-                return _emptyArray;
+                return ArrayReservoir<T>.EmptyArray;
             }
             else if (capacity < INT_MinCapacity)
             {

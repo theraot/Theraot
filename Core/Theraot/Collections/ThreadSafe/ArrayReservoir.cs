@@ -1,13 +1,24 @@
 ﻿using System;
-using Theraot.Core;
+
+#if FAT
+
 using Theraot.Threading;
+
+#else
+
+using Theraot.Core;
+
+#endif
 
 namespace Theraot.Collections.ThreadSafe
 {
-    internal class ArrayReservoir<T>
+    public static class ArrayReservoir<T>
     {
+#if !FAT
         private const int INT_MaxCapacity = 1024;
         private const int INT_MinCapacity = 16;
+#endif
+
         private static readonly T[] _emptyArray;
 
         static ArrayReservoir()
@@ -30,7 +41,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public static void DonateArray(T[] entries)
+        internal static void DonateArray(T[] entries)
         {
 #if FAT
             ArrayPool<T>.DonateArray(entries);
@@ -39,6 +50,9 @@ namespace Theraot.Collections.ThreadSafe
 
         internal static T[] GetArray(int capacity)
         {
+#if FAT
+            return ArrayPool<T>.GetArray(capacity);
+#else
             if (capacity == 0)
             {
                 return _emptyArray;
@@ -59,9 +73,6 @@ namespace Theraot.Collections.ThreadSafe
                     capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
                 }
             }
-#if FAT
-            return ArrayPool<T>.GetArray(capacity);
-#else
             return new T[capacity];
 #endif
         }
