@@ -7,7 +7,7 @@ using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
 {
-    public sealed partial class Work : ICloneable, IPromise
+    public sealed partial class Work : ICloneable, IPromise, ICloneable<Work>
     {
         private const int INT_StatusCompleted = 2;
         private const int INT_StatusNew = 0;
