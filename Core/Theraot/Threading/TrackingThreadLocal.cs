@@ -222,10 +222,5 @@ namespace Theraot.Threading
                 return false;
             }
         }
-
-        public void Uncreate()
-        {
-            _slots.Remove(Thread.CurrentThread);
-        }
     }
 }
