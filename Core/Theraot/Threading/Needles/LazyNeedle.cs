@@ -12,6 +12,7 @@ namespace Theraot.Threading.Needles
     {
         [NonSerialized]
         private Thread _initializerThread;
+
         private Func<T> _valueFactory;
         private StructNeedle<ManualResetEventSlim> _waitHandle;
 
@@ -140,6 +141,13 @@ namespace Theraot.Threading.Needles
         public virtual void Initialize()
         {
             InitializeExtracted();
+        }
+
+        public bool TryGet(out T target)
+        {
+            var result = IsCompleted;
+            target = base.Value;
+            return result;
         }
 
         public void Wait()

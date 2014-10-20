@@ -1,3 +1,5 @@
+using Theraot.Threading.Needles;
+
 #if FAT
 
 using System;
@@ -20,7 +22,7 @@ namespace Theraot.Threading
         private readonly QueueBucket<Work> _works;
         private int _dedidatedThreadCount;
         private AutoResetEvent _event;
-        private LazyBucket<Thread> _threads;
+        private NeedleBucket<Thread, LazyNeedle<Thread>> _threads;
         private int _waitRequest;
         private volatile bool _work;
         private int _workingDedicatedThreadCount;
@@ -111,7 +113,7 @@ namespace Theraot.Threading
                         };
                     }
                 }
-                _threads = new LazyBucket<Thread>
+                _threads = new NeedleBucket<Thread, LazyNeedle<Thread>>
                     (
                         valueFactory,
                         dedicatedThreads

@@ -347,7 +347,7 @@
     <Compile Include="Theraot\Collections\ThreadSafe\FixedSizeQueueBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\FixedSizeSetBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\HashBucket.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\LazyBucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\NeedleBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\QueueBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\SetBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\WeakCancellableEvent.cs" />

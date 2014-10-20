@@ -1,5 +1,5 @@
+using Theraot.Threading.Needles;
 #if FAT
-
 using System.Threading;
 using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
@@ -11,14 +11,14 @@ namespace Theraot.Threading
     {
         private readonly int _capacity;
         private readonly QueueBucket<LockSlot<T>> _freeSlots;
-        private readonly LazyBucket<LockSlot<T>> _slots;
+        private readonly NeedleBucket<LockSlot<T>, LazyNeedle<LockSlot<T>>> _slots;
         private readonly VersionProvider _version = new VersionProvider();
         private int _index;
 
         public LockContext(int capacity)
         {
             _capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
-            _slots = new LazyBucket<LockSlot<T>>(index => new LockSlot<T>(this, index, _version.AdvanceNewToken()), _capacity);
+            _slots = new NeedleBucket<LockSlot<T>, LazyNeedle<LockSlot<T>>>(index => new LockSlot<T>(this, index, _version.AdvanceNewToken()), _capacity);
             _freeSlots = new QueueBucket<LockSlot<T>>(_capacity);
         }
 

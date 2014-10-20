@@ -105,9 +105,22 @@ namespace Theraot.Threading.Needles
 
         public static bool TryGet<T>(this IReadOnlyNeedle<T> needle, out T target)
         {
-            var _needle = Check.NotNullArgument(needle, "needle");
-            target = _needle.Value;
-            return _needle.IsAlive;
+            if (needle == null)
+            {
+                throw new ArgumentNullException("needle");
+            }
+            else
+            {
+                if (needle is ICacheNeedle<T>)
+                {
+                    return (needle as ICacheNeedle<T>).TryGet(out target);
+                }
+                else
+                {
+                    target = needle.Value;
+                    return needle.IsAlive;      
+                }
+            }
         }
 
         private static class DeferredNeedleCreator<T, TNeedle>

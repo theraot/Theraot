@@ -17,7 +17,7 @@ namespace Theraot.Threading
         private const int INT_MinCapacity = 16;
         private const int INT_PoolSize = 16;
 
-        private static readonly LazyBucket<FixedSizeQueueBucket<ArrayHolder>> _data;
+        private static readonly NeedleBucket<FixedSizeQueueBucket<ArrayHolder>, LazyNeedle<FixedSizeQueueBucket<ArrayHolder>>> _data;
         private static readonly List<ArrayHolder> _dirtyData;
         private static readonly ReentryGuard _guard;
         private static readonly LazyNeedle<Work> _recycle;
@@ -26,7 +26,7 @@ namespace Theraot.Threading
         static ArrayPool()
         {
             _recycle = new LazyNeedle<Work>(() => WorkContext.DefaultContext.AddWork(CleanUp));
-            _data = new LazyBucket<FixedSizeQueueBucket<ArrayHolder>>
+            _data = new NeedleBucket<FixedSizeQueueBucket<ArrayHolder>, LazyNeedle<FixedSizeQueueBucket<ArrayHolder>>>
             (
                 _ => new FixedSizeQueueBucket<ArrayHolder>(INT_PoolSize),
                 NumericHelper.Log2(INT_MaxCapacity) - NumericHelper.Log2(INT_MinCapacity)

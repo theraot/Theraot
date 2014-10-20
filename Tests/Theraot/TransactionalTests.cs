@@ -276,7 +276,7 @@ namespace Tests.Theraot
         [Test]
         public void TransactionalDataStructure()
         {
-            var bucket = new LazyBucket<Transact.Needle<int>>(index => new Transact.Needle<int>(index), 5);
+            var bucket = new NeedleBucket<int, Transact.Needle<int>>(index => index, 5);
             var handle = new ManualResetEvent(false);
             var didA = false;
             var didB = false;
@@ -292,7 +292,7 @@ namespace Tests.Theraot
                         // foreach will not trigger the creation of items
                         for (var index = 0; index < 5; index++)
                         {
-                            bucket.Get(index).Value++;
+                            bucket.GetNeedle(index).Value++;
                         }
                         didA = transact.Commit();
                         Interlocked.Increment(ref count[1]);
@@ -310,7 +310,7 @@ namespace Tests.Theraot
                         // foreach will not trigger the creation of items
                         for (var index = 0; index < 5; index++)
                         {
-                            bucket.Get(index).Value *= 2;
+                            bucket.GetNeedle(index).Value *= 2;
                         }
                         didB = transact.Commit();
                         Interlocked.Increment(ref count[1]);
@@ -327,7 +327,7 @@ namespace Tests.Theraot
                 Thread.Sleep(0);
             }
             handle.Close();
-            var result = bucket.ConvertAll(input => input.Value);
+            var result = bucket;
             // These are more likely in debug mode
             // (+1)
             if (result.SequenceEqual(new[] { 1, 2, 3, 4, 5 }))

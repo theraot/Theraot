@@ -109,6 +109,13 @@ namespace Theraot.Threading.Needles
             Thread.VolatileWrite(ref _status, 0);
         }
 
+        public bool TryGet(out T target)
+        {
+            var result = IsCompleted;
+            target = base.Value;
+            return result;
+        }
+
         protected virtual void Initialize(Action beforeInitialize)
         {
             var _beforeInitialize = Check.NotNullArgument(beforeInitialize, "beforeInitialize");
