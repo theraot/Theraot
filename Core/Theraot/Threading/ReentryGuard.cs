@@ -71,7 +71,7 @@ namespace Theraot.Threading
 
         private static IPromise AddExecution(Action action, Tuple<Queue<Action>, Guard> local)
         {
-            IPromised promised;
+            PromiseNeedle.Promised promised;
             var result = new PromiseNeedle(out promised, false);
             local.Item1.Enqueue
             (
@@ -93,7 +93,7 @@ namespace Theraot.Threading
 
         private static IPromise<T> AddExecution<T>(Func<T> action, Tuple<Queue<Action>, Guard> local)
         {
-            IPromised<T> promised;
+            PromiseNeedle<T>.Promised promised;
             var result = new PromiseNeedle<T>(out promised, false);
             local.Item1.Enqueue
             (

@@ -9,7 +9,7 @@ using Theraot.Threading.Needles;
 namespace Theraot.Threading
 {
     [System.Diagnostics.DebuggerDisplay("IsValueCreated={IsValueCreated}, Value={ValueForDebugDisplay}")]
-    public sealed class TrackingThreadLocal<T> : IDisposable, IThreadLocal<T>, IPromise<T>, IPromised<T>
+    public sealed class TrackingThreadLocal<T> : IDisposable, IThreadLocal<T>, IPromise<T>, ICacheNeedle<T>, IObserver<T>
     {
         private const int INT_MaxProbingHint = 4;
         private const int INT_MaxProcessorCount = 32;
@@ -190,7 +190,14 @@ namespace Theraot.Threading
 
         void IObserver<T>.OnError(Exception error)
         {
-            //Empty
+            if (Thread.VolatileRead(ref _disposing) == 1)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
+            else
+            {
+                _slots.Set(Thread.CurrentThread, new ExceptionStructNeedle<T>(error));
+            }
         }
 
         void IObserver<T>.OnNext(T value)

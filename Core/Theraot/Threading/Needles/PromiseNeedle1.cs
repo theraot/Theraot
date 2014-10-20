@@ -8,54 +8,54 @@ namespace Theraot.Threading.Needles
     [global::System.Diagnostics.DebuggerNonUserCode]
     public sealed class PromiseNeedle<T> : IPromise<T>, ICacheNeedle<T>, IEquatable<PromiseNeedle<T>>
     {
-        private readonly Internal _internal;
+        private readonly Promised _promised;
 
         public PromiseNeedle(bool done)
         {
-            _internal = new Internal();
+            _promised = new Promised();
             if (done)
             {
-                _internal.OnCompleted();
+                _promised.OnCompleted();
             }
         }
 
         public PromiseNeedle(T target)
         {
-            _internal = new Internal(target);
+            _promised = new Promised(target);
         }
 
         public PromiseNeedle(Exception exception)
         {
-            _internal = new Internal(exception);
+            _promised = new Promised(exception);
         }
 
-        public PromiseNeedle(out IPromised<T> promised, bool done)
+        public PromiseNeedle(out Promised promised, bool done)
         {
-            _internal = new Internal();
+            _promised = new Promised();
             if (done)
             {
-                _internal.OnCompleted();
+                _promised.OnCompleted();
             }
-            promised = _internal;
+            promised = _promised;
         }
 
-        public PromiseNeedle(out IPromised<T> promised, T target)
+        public PromiseNeedle(out Promised promised, T target)
         {
-            _internal = new Internal(target);
-            promised = _internal;
+            _promised = new Promised(target);
+            promised = _promised;
         }
 
-        public PromiseNeedle(out IPromised<T> promised, Exception exception)
+        public PromiseNeedle(out Promised promised, Exception exception)
         {
-            _internal = new Internal(exception);
-            promised = _internal;
+            _promised = new Promised(exception);
+            promised = _promised;
         }
 
         public Exception Error
         {
             get
             {
-                return _internal.Error;
+                return _promised.Error;
             }
         }
 
@@ -83,7 +83,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return _internal.IsCanceled;
+                return _promised.IsCanceled;
             }
         }
 
@@ -91,7 +91,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return _internal.IsCompleted;
+                return _promised.IsCompleted;
             }
         }
 
@@ -99,7 +99,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return _internal.IsFaulted;
+                return _promised.IsFaulted;
             }
         }
 
@@ -107,7 +107,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return _internal.Value;
+                return _promised.Value;
             }
         }
 
@@ -135,7 +135,7 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                return _internal.IsCompleted && _internal.Value.Equals(obj);
+                return _promised.IsCompleted && _promised.Value.Equals(obj);
             }
         }
 
@@ -146,7 +146,7 @@ namespace Theraot.Threading.Needles
 
         public override int GetHashCode()
         {
-            return _internal.GetHashCode();
+            return _promised.GetHashCode();
         }
 
         void INeedle<T>.Free()
@@ -156,12 +156,12 @@ namespace Theraot.Threading.Needles
 
         public override string ToString()
         {
-            return string.Format("{{Promise: {0}}}", _internal);
+            return string.Format("{{Promise: {0}}}", _promised);
         }
 
         public void Wait()
         {
-            _internal.Wait();
+            _promised.Wait();
         }
 
         private static bool EqualsExtracted(PromiseNeedle<T> left, PromiseNeedle<T> right)
@@ -189,7 +189,7 @@ namespace Theraot.Threading.Needles
         }
 
         [Serializable]
-        private class Internal : IPromised<T>, IObserver<T>, IEquatable<Internal>
+        public class Promised : ICacheNeedle<T>, IObserver<T>, IEquatable<Promised>
         {
             private readonly int _hashCode;
             private Exception _error;
@@ -197,28 +197,21 @@ namespace Theraot.Threading.Needles
             private T _target;
             private StructNeedle<ManualResetEvent> _waitHandle;
 
-            public Internal()
+            public Promised()
             {
                 _waitHandle = new ManualResetEvent(false);
                 _hashCode = base.GetHashCode();
             }
 
-            public Internal(T target)
+            public Promised(T target)
             {
                 _target = target;
-                if (ReferenceEquals(target, null))
-                {
-                    _hashCode = base.GetHashCode();
-                }
-                else
-                {
-                    _hashCode = target.GetHashCode();
-                }
+                _hashCode = ReferenceEquals(target, null) ? base.GetHashCode() : target.GetHashCode();
                 Thread.VolatileWrite(ref _isCompleted, 1);
                 _waitHandle = new ManualResetEvent(true);
             }
 
-            public Internal(Exception error)
+            public Promised(Exception error)
             {
                 _error = error;
                 _hashCode = error.GetHashCode();
@@ -226,7 +219,7 @@ namespace Theraot.Threading.Needles
                 _waitHandle = new ManualResetEvent(true);
             }
 
-            ~Internal()
+            ~Promised()
             {
                 var waitHandle = _waitHandle.Value;
                 if (!ReferenceEquals(waitHandle, null))
@@ -297,7 +290,7 @@ namespace Theraot.Threading.Needles
                 }
             }
 
-            public bool Equals(Internal other)
+            public bool Equals(Promised other)
             {
                 if (IsCompleted)
                 {
@@ -325,7 +318,7 @@ namespace Theraot.Threading.Needles
 
             public override bool Equals(object obj)
             {
-                var _obj = obj as Internal;
+                var _obj = obj as Promised;
                 return _obj != null && Equals(_obj);
             }
 

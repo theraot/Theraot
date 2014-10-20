@@ -8,7 +8,7 @@ namespace Theraot.Threading
 {
     [System.Diagnostics.DebuggerDisplay("IsValueCreated={IsValueCreated}, Value={ValueForDebugDisplay}")]
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public sealed class NoTrackingThreadLocal<T> : IDisposable, IThreadLocal<T>, IPromise<T>, IPromised<T>
+    public sealed class NoTrackingThreadLocal<T> : IDisposable, IThreadLocal<T>, IPromise<T>, ICacheNeedle<T>, IObserver<T>
     {
         private int _disposing;
         private LocalDataStoreSlot _slot;
@@ -171,7 +171,14 @@ namespace Theraot.Threading
 
         void IObserver<T>.OnError(Exception error)
         {
-            //Empty
+            if (Thread.VolatileRead(ref _disposing) == 1)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
+            else
+            {
+                Thread.SetData(_slot, new ExceptionStructNeedle<T>(error));
+            }
         }
 
         void IObserver<T>.OnNext(T value)
