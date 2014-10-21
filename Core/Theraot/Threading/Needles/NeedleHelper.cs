@@ -107,7 +107,8 @@ namespace Theraot.Threading.Needles
         {
             if (needle == null)
             {
-                throw new ArgumentNullException("needle");
+                target = default(T);
+                return false;
             }
             else
             {

@@ -320,8 +320,9 @@ namespace Theraot.Collections.ThreadSafe
             int index = Index(key, offset);
             KeyValuePair<TKey, TValue> oldEntry;
             isNew = !_entries.TryGet(index, out oldEntry);
-            if ((isNew || _keyComparer.Equals(key, oldEntry.Key)) && _entries.Set(index, new KeyValuePair<TKey, TValue>(key, value), out isNew))
+            if (isNew || _keyComparer.Equals(key, oldEntry.Key))
             {
+                _entries.Set(index, new KeyValuePair<TKey, TValue>(key, value), out isNew);
                 return index;
             }
             else

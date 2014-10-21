@@ -307,8 +307,9 @@ namespace Theraot.Collections.ThreadSafe
             int index = Index(item, offset);
             T oldEntry;
             isNew = !_entries.TryGet(index, out oldEntry);
-            if ((isNew || _comparer.Equals(item, oldEntry)) && _entries.Set(index, item, out isNew))
+            if (isNew || _comparer.Equals(item, oldEntry))
             {
+                _entries.Set(index, item, out isNew);
                 return index;
             }
             else

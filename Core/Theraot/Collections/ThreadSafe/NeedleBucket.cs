@@ -23,7 +23,7 @@ namespace Theraot.Collections.ThreadSafe
         private readonly Converter<int, TNeedle> _needleFactory;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Bucket{T}" /> class.
+        /// Initializes a new instance of the <see cref="NeedleBucket{T, TNeedle}" /> class.
         /// </summary>
         /// <param name = "valueFactory">The delegate that is invoked to do the lazy initialization of the items given their index.</param>
         /// <param name="capacity">The capacity.</param>
@@ -41,8 +41,32 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 else
                 {
-                    // TODO: recycle wasted needles
-                    _needleFactory = index => NeedleHelper.CreateNeedle<T, TNeedle>(valueFactory(index));
+                    _needleFactory = index => NeedleReservoir<T, TNeedle>.GetNeedle(valueFactory(index));
+                    _entries = new Bucket<TNeedle>(capacity);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NeedleBucket{T, TNeedle}" /> class.
+        /// </summary>
+        /// <param name = "valueFactory">The delegate that is invoked to do the lazy initialization of the items.</param>
+        /// <param name="capacity">The capacity.</param>
+        public NeedleBucket(Func<T> valueFactory, int capacity)
+        {
+            if (ReferenceEquals(valueFactory, null))
+            {
+                throw new ArgumentNullException("valueFactory");
+            }
+            else
+            {
+                if (!NeedleHelper.CanCreateNeedle<T, TNeedle>())
+                {
+                    throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
+                }
+                else
+                {
+                    _needleFactory = index => NeedleReservoir<T, TNeedle>.GetNeedle(valueFactory());
                     _entries = new Bucket<TNeedle>(capacity);
                 }
             }
@@ -84,6 +108,51 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
+        /// Sets the item at the specified index.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="item">The item.</param>
+        /// <param name="previous">The previous item in the specified index.</param>
+        /// <returns>
+        ///   <c>true</c> if the item was new; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        public bool Exchange(int index, T item, out T previous)
+        {
+            TNeedle _previous;
+            if (_entries.Exchange(index, NeedleReservoir<T, TNeedle>.GetNeedle(item), out _previous))
+            {
+                previous = default(T);
+                return true;
+            }
+            else
+            {
+                // TryGet is null resistant
+                _previous.TryGet(out previous);
+                // This is a needle that is no longer referenced, we donate it
+                NeedleReservoir<T, TNeedle>.DonateNeedle(_previous);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Sets the needle at the specified index.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="needle">The needle.</param>
+        /// <param name="previous">The previous item in the specified index.</param>
+        /// <returns>
+        ///   <c>true</c> if the item was new; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        public bool ExchangeNeedle(int index, TNeedle needle, out TNeedle previous)
+        {
+            // This may allow null to enter, this may also give null as previous if null was allowed to enter
+            // We don't donate because we return the needle
+            return _entries.Exchange(index, needle, out previous);
+        }
+
+        /// <summary>
         /// Retrieve or creates a new item at the specified index.
         /// </summary>
         /// <param name="index">The index.</param>
@@ -91,16 +160,34 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public T Get(int index)
         {
-            TNeedle _previous;
-            var newNeedle = _needleFactory(index);
-            if (_entries.Insert(index, newNeedle, out _previous))
+            if (index < 0 || index >= _entries.Capacity)
             {
-                return newNeedle.Value;
+                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
+            }
+            // Using TryGet first just avoid wasting a needle
+            TNeedle _previous;
+            if (_entries.TryGetExtracted(index, out _previous))
+            {
+                // Null resistant
+                T previous;
+                _previous.TryGet(out previous);
+                return previous;
+                // We don't donate because we didn't remove
             }
             else
             {
-                //_previous should be null because null is never added
-                return _previous.Value;
+                var newNeedle = _needleFactory(index);
+                if (_entries.InsertExtracted(index, newNeedle, out _previous))
+                {
+                    return newNeedle.Value;
+                }
+                else
+                {
+                    // we just failed to insert, meaning that we created a usless needle
+                    // donate it
+                    NeedleReservoir<T, TNeedle>.DonateNeedle(newNeedle);
+                    return _previous.Value;
+                }
             }
         }
 
@@ -112,7 +199,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            foreach (TNeedle needle in _entries)
+            foreach (var needle in _entries)
             {
                 T item;
                 if (needle.TryGet(out item))
@@ -138,7 +225,9 @@ namespace Theraot.Collections.ThreadSafe
             }
             else
             {
-                //_previous should be null because null is never added
+                // we just failed to insert, meaning that we created a usless needle
+                // donate it
+                NeedleReservoir<T, TNeedle>.DonateNeedle(newNeedle);
                 return _previous;
             }
         }
@@ -164,6 +253,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public IList<T> GetValues()
         {
+            // Allowing this to trigger the Values
             return _entries.GetValues(input => input.Value);
         }
 
@@ -172,6 +262,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public IList<TOutput> GetValues<TOutput>(Converter<T, TOutput> converter)
         {
+            // Allowing this to trigger the Values
             return _entries.GetValues(input => converter.Invoke(input.Value));
         }
 
@@ -190,7 +281,10 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public bool Insert(int index, T item)
         {
-            return _entries.Insert(index, NeedleHelper.CreateNeedle<T, TNeedle>(item));
+            // Only succeeds if there was nothing there before
+            // meaning that if this succeeds it replaced nothing
+            // If this fails whatever was there is still there
+            return _entries.Insert(index, NeedleReservoir<T, TNeedle>.GetNeedle(item));
         }
 
         /// <summary>
@@ -210,15 +304,17 @@ namespace Theraot.Collections.ThreadSafe
         public bool Insert(int index, T item, out T previous)
         {
             TNeedle _previous;
-            if (_entries.Insert(index, NeedleHelper.CreateNeedle<T, TNeedle>(item), out _previous))
+            if (_entries.Insert(index, NeedleReservoir<T, TNeedle>.GetNeedle(item), out _previous))
             {
                 previous = default(T);
                 return true;
             }
             else
             {
-                //_previous should be null because null is never added
+                // TryGet is null resistant
                 _previous.TryGet(out previous);
+                // Donate it
+                NeedleReservoir<T, TNeedle>.DonateNeedle(_previous);
                 return false;
             }
         }
@@ -238,6 +334,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public bool InsertNeedle(int index, TNeedle needle)
         {
+            // This may allow null to enter
             return _entries.Insert(index, needle);
         }
 
@@ -257,6 +354,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public bool InsertNeedle(int index, TNeedle needle, out TNeedle previous)
         {
+            // This may allow null to enter, this may also give null as previous if null was allowed to enter
             return _entries.Insert(index, needle, out previous);
         }
 
@@ -287,8 +385,10 @@ namespace Theraot.Collections.ThreadSafe
             TNeedle _previous;
             if (_entries.RemoveAt(index, out _previous))
             {
-                //_previous should be null because null is never added
+                // TryGet is null resistant
                 _previous.TryGet(out previous);
+                // Donate it
+                NeedleReservoir<T, TNeedle>.DonateNeedle(_previous);
                 return true;
             }
             else
@@ -318,13 +418,11 @@ namespace Theraot.Collections.ThreadSafe
         /// <param name="index">The index.</param>
         /// <param name="item">The item.</param>
         /// <param name="isNew">if set to <c>true</c> the index was not previously used.</param>
-        /// <returns>
-        ///   <c>true</c> if the item was set; otherwise, <c>false</c>.
-        /// </returns>
         /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
-        public bool Set(int index, T item, out bool isNew)
+        public void Set(int index, T item, out bool isNew)
         {
-            return _entries.Set(index, NeedleHelper.CreateNeedle<T, TNeedle>(item), out isNew);
+            //This may have replaced something
+            _entries.Set(index, NeedleReservoir<T, TNeedle>.GetNeedle(item), out isNew);
         }
 
         /// <summary>
@@ -333,13 +431,11 @@ namespace Theraot.Collections.ThreadSafe
         /// <param name="index">The index.</param>
         /// <param name="needle">The needle.</param>
         /// <param name="isNew">if set to <c>true</c> the index was not previously used.</param>
-        /// <returns>
-        ///   <c>true</c> if the needle was set; otherwise, <c>false</c>.
-        /// </returns>
         /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
-        public bool SetNeedle(int index, TNeedle needle, out bool isNew)
+        public void SetNeedle(int index, TNeedle needle, out bool isNew)
         {
-            return _entries.Set(index, needle, out isNew);
+            // This may allow null to enter
+            _entries.Set(index, needle, out isNew);
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
@@ -361,7 +457,9 @@ namespace Theraot.Collections.ThreadSafe
             TNeedle _previous;
             if (_entries.TryGet(index, out _previous))
             {
-                value = _previous.Value;
+                // Null resistant
+                _previous.TryGet(out value);
+                // We don't donate because we didn't remove
                 return true;
             }
             else

@@ -208,19 +208,12 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         //HACK
-        internal bool Set(int index, T item, out bool isNew)
+        internal void Set(int index, T item, out bool isNew)
         {
-            if (_entries.Set(index, item, out isNew))
+            _entries.Set(index, item, out isNew);
+            if (isNew)
             {
-                if (isNew)
-                {
-                    Interlocked.Increment(ref _preCount);
-                }
-                return true;
-            }
-            else
-            {
-                return false;
+                Interlocked.Increment(ref _preCount);
             }
         }
     }

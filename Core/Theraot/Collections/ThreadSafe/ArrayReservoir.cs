@@ -41,10 +41,10 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        internal static void DonateArray(T[] entries)
+        internal static void DonateArray(T[] donation)
         {
 #if FAT
-            ArrayPool<T>.DonateArray(entries);
+            ArrayPool<T>.DonateArray(donation);
 #endif
         }
 
