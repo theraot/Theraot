@@ -71,11 +71,11 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        bool IReadOnlyNeedle<T>.IsAlive
+        public bool IsAlive
         {
             get
             {
-                return IsCompleted;
+                return _promised.IsAlive;
             }
         }
 
@@ -194,7 +194,7 @@ namespace Theraot.Threading.Needles
         }
 
         [Serializable]
-        public class Promised : ICacheNeedle<T>, IObserver<T>, IEquatable<Promised>
+        public sealed class Promised : ICacheNeedle<T>, IObserver<T>, IEquatable<Promised>
         {
             private readonly int _hashCode;
             private Exception _error;
@@ -243,11 +243,11 @@ namespace Theraot.Threading.Needles
                 }
             }
 
-            bool IReadOnlyNeedle<T>.IsAlive
+            public bool IsAlive
             {
                 get
                 {
-                    return Thread.VolatileRead(ref _isCompleted) == 1;
+                    return !ReferenceEquals(_target, null);
                 }
             }
 

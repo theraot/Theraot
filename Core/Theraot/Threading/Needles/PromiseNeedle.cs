@@ -87,7 +87,7 @@ namespace Theraot.Threading.Needles
         }
 
         [Serializable]
-        public class Promised : IEquatable<Promised>, IObserver<object>
+        public sealed class Promised : IEquatable<Promised>, IObserver<object>
         {
             private readonly int _hashCode;
             private Exception _error;
