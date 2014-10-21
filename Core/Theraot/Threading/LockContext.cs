@@ -1,9 +1,10 @@
-using Theraot.Threading.Needles;
 #if FAT
+
 using System.Threading;
 using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
+using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
 {

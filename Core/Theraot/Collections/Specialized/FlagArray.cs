@@ -14,6 +14,7 @@ namespace Theraot.Collections.Specialized
         private readonly IReadOnlyCollection<bool> _asReadOnly;
         private readonly int _length;
         private int[] _entries;
+
         public FlagArray(FlagArray prototype)
         {
             if (ReferenceEquals(prototype, null))

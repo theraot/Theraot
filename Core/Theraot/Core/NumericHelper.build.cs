@@ -110,7 +110,7 @@ namespace Theraot.Core
         {
             return (ulong)hi << 32 | lo;
         }
-        
+
         public static void GetParts(long value, out int lo, out int hi)
         {
             unchecked

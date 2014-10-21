@@ -188,6 +188,11 @@ namespace Theraot.Threading.Needles
                 return _hashCode;
             }
 
+            void IObserver<object>.OnNext(object value)
+            {
+                OnCompleted();
+            }
+
             public void OnCompleted()
             {
                 _error = null;
@@ -224,11 +229,6 @@ namespace Theraot.Threading.Needles
             public void Wait()
             {
                 _waitHandle.Value.WaitOne();
-            }
-
-            void IObserver<object>.OnNext(object value)
-            {
-                OnCompleted();
             }
         }
     }

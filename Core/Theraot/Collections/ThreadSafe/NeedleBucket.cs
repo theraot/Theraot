@@ -1,7 +1,8 @@
-using System.Globalization;
 #if FAT
+
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Collections.ThreadSafe
@@ -36,7 +37,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 if (!NeedleHelper.CanCreateNeedle<T, TNeedle>())
                 {
-                    throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof (TNeedle).Name));
+                    throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
                 }
                 else
                 {

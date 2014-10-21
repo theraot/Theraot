@@ -228,12 +228,12 @@ namespace Theraot.Collections
             Extensions.CanCopyTo(array, arrayIndex, countLimit);
             Extensions.CopyTo(this, array, arrayIndex, countLimit);
         }
-        
+
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
             return _wrapped.GetEnumerator();
         }
-        
+
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
             TKey key = item.Key;

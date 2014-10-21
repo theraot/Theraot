@@ -11,6 +11,7 @@ namespace System.Threading
         private readonly int _maxCount;
         private int _count;
         private bool _disposed;
+
         public SemaphoreSlim(int initialCount)
             : this(initialCount, int.MaxValue)
         {

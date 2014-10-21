@@ -1,11 +1,6 @@
 #if FAT
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Security.Permissions;
-using Theraot.Core;
 
 namespace Theraot.Collections.Specialized
 {

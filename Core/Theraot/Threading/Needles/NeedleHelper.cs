@@ -118,7 +118,7 @@ namespace Theraot.Threading.Needles
                 else
                 {
                     target = needle.Value;
-                    return needle.IsAlive;      
+                    return needle.IsAlive;
                 }
             }
         }

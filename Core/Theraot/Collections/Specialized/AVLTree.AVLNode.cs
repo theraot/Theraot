@@ -173,7 +173,7 @@ namespace Theraot.Collections.Specialized
                 if (node != null)
                 {
                     var stack = new Stack<AVLNode>();
-                    for (;;)
+                    while (true)
                     {
                         while (node != null)
                         {

@@ -6,8 +6,8 @@ namespace Theraot.Threading
     [global::System.Diagnostics.DebuggerNonUserCode]
     public static partial class ThreadingHelper
     {
-        internal static readonly bool IsSingleCPU = Environment.ProcessorCount == 1;
         internal const int INT_SleepCountHint = 10;
+        internal static readonly bool IsSingleCPU = Environment.ProcessorCount == 1;
         private const int INT_MaxTime = 200;
 
         public static T VolatileRead<T>(ref T address)

@@ -2,8 +2,6 @@
 
 using System;
 
-using Theraot.Threading;
-
 namespace Theraot.Threading.Needles
 {
     public partial class CacheNeedle<T> : IDisposable, IExtendedDisposable
