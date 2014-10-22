@@ -200,6 +200,7 @@ namespace Theraot.Threading.Needles
             {
                 using (suspention)
                 {
+                    // TODO: recyle handle?
                     var oldHandle = _handle;
                     _handle = GetNewHandle(value, trackResurrection);
                     if (oldHandle.IsAllocated)

@@ -54,7 +54,7 @@ namespace Theraot.Threading.Needles
                 }
                 else
                 {
-                    throw new InvalidOperationException();
+                    throw new InvalidOperationException("The current Thread doesn't have access.");
                 }
             }
         }
@@ -74,6 +74,10 @@ namespace Theraot.Threading.Needles
             if (_lockable.CheckAccess(Thread.CurrentThread))
             {
                 _needle.Free();
+            }
+            else
+            {
+                throw new InvalidOperationException("The current Thread doesn't have access.");
             }
         }
 

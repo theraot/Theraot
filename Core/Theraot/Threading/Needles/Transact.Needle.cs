@@ -11,6 +11,7 @@ namespace Theraot.Threading.Needles
     {
         public sealed partial class Needle<T> : Theraot.Threading.Needles.Needle<T>, IResource
         {
+            // TODO: Free must be under the transaction
             private readonly ICloner<T> _cloner;
             private readonly NeedleLock<Thread> _needleLock;
 

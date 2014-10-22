@@ -151,7 +151,7 @@ namespace Theraot.Threading.Needles
 
         void INeedle<T>.Free()
         {
-            //Empty
+            throw new NotSupportedException();
         }
 
         public override string ToString()
@@ -392,6 +392,7 @@ namespace Theraot.Threading.Needles
 
             public void Wait()
             {
+                // TODO: allow early disposal of _waitHandle - see LazyNeedle
                 _waitHandle.Value.WaitOne();
             }
         }

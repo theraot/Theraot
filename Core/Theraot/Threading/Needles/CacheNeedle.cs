@@ -12,6 +12,7 @@ namespace Theraot.Threading.Needles
     public partial class CacheNeedle<T> : WeakNeedle<T>, ICacheNeedle<T>
         where T : class
     {
+        // TODO: put on pair with LazyNeedle
         private int _status;
         private Func<T> _valueFactory;
         private StructNeedle<ManualResetEvent> _waitHandle;
