@@ -1,5 +1,3 @@
-#if FAT
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -98,5 +96,3 @@ namespace Theraot.Core
         }
     }
 }
-
-#endif
