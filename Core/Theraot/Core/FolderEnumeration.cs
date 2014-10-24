@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 
 using Theraot.Collections;
+using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Core
 {
@@ -36,7 +37,7 @@ namespace Theraot.Core
             }
             else
             {
-                return EmptySet<string>.Instance;
+                return ArrayReservoir<string>.EmptyArray;
             }
         }
 
@@ -48,7 +49,7 @@ namespace Theraot.Core
                         (
                             folder,
                             GetFolders,
-                            current => GetFiles(current, pattern).Prepend(current)
+                            current => current.AsUnaryEnumerable().Concat(GetFiles(current, pattern))
                         ).SelectMany(input => input)
                 );
         }
@@ -86,7 +87,7 @@ namespace Theraot.Core
             catch
             {
                 // Pokemon
-                return EmptySet<string>.Instance;
+                return ArrayReservoir<string>.EmptyArray;
             }
         }
 
