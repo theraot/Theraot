@@ -22,7 +22,7 @@ namespace Theraot.Threading.Needles
                 {
                     try
                     {
-                        this.UnmanagedDispose();
+                        ReleaseWaitHandle();
                     }
                     finally
                     {

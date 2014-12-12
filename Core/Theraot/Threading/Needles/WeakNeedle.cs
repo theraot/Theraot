@@ -39,15 +39,8 @@ namespace Theraot.Threading.Needles
         public WeakNeedle(T target, bool trackResurrection)
         {
             _trackResurrection = trackResurrection;
-            Allocate(target, _trackResurrection);
-            if (IsAliveExtracted())
-            {
-                _hashCode = target.GetHashCode();
-            }
-            else
-            {
-                _hashCode = GetHashCode();
-            }
+            SetTargetValue(target);
+            _hashCode = IsAliveExtracted() ? target.GetHashCode() : GetHashCode();
         }
 
         public virtual bool IsAlive
@@ -78,7 +71,7 @@ namespace Theraot.Threading.Needles
             [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
             set
             {
-                Allocate(value, _trackResurrection);
+                SetTargetValue(value);
             }
         }
 
@@ -183,13 +176,13 @@ namespace Theraot.Threading.Needles
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
-        protected void Allocate(T value, bool trackResurrection)
+        protected void SetTargetValue(T value)
         {
             var suspention = SuspendDisposal();
             if (ReferenceEquals(suspention, null))
             {
                 ReleaseExtracted();
-                _handle = GetNewHandle(value, trackResurrection);
+                _handle = GetNewHandle(value, _trackResurrection);
                 if (Interlocked.CompareExchange(ref _managedDisposal, 0, 1) == 1)
                 {
                     GC.ReRegisterForFinalize(this);
@@ -202,7 +195,7 @@ namespace Theraot.Threading.Needles
                 {
                     // TODO: recyle handle?
                     var oldHandle = _handle;
-                    _handle = GetNewHandle(value, trackResurrection);
+                    _handle = GetNewHandle(value, _trackResurrection);
                     if (oldHandle.IsAllocated)
                     {
                         oldHandle.Free();

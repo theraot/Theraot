@@ -107,7 +107,7 @@ namespace Theraot.Threading.Needles
             set
             {
                 SetTargetValue(value);
-                _valueFactory = null;
+                ThreadingHelper.VolatileWrite(ref _valueFactory, null);
                 ReleaseWaitHandle();
             }
         }

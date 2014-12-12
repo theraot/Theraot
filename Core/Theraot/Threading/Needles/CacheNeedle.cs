@@ -1,5 +1,3 @@
-#if FAT
-
 using System;
 using System.Threading;
 
@@ -13,9 +11,10 @@ namespace Theraot.Threading.Needles
         where T : class
     {
         // TODO: put on pair with LazyNeedle
-        private int _status;
+        private Thread _initializerThread;
+
         private Func<T> _valueFactory;
-        private StructNeedle<ManualResetEvent> _waitHandle;
+        private StructNeedle<ManualResetEventSlim> _waitHandle;
 
         public CacheNeedle(Func<T> valueFactory)
             : this(valueFactory, false)
@@ -24,9 +23,10 @@ namespace Theraot.Threading.Needles
         }
 
         public CacheNeedle(Func<T> valueFactory, bool trackResurrection)
-            : this(valueFactory, default(T), trackResurrection)
+            : base(default(T), trackResurrection)
         {
-            //Empty
+            _valueFactory = Check.NotNullArgument(valueFactory, "valueFactory");
+            _waitHandle = new StructNeedle<ManualResetEventSlim>(new ManualResetEventSlim(false));
         }
 
         public CacheNeedle(Func<T> valueFactory, T target)
@@ -38,10 +38,49 @@ namespace Theraot.Threading.Needles
         public CacheNeedle(Func<T> valueFactory, T target, bool trackResurrection)
             : base(target, trackResurrection)
         {
-            Func<T> __valueFactory = valueFactory ?? FuncHelper.GetReturnFunc(target);
-            Thread thread = null;
-            _waitHandle = new StructNeedle<ManualResetEvent>(new ManualResetEvent(false));
-            _valueFactory = () => FullMode(__valueFactory, ref thread);
+            _valueFactory = Check.NotNullArgument(valueFactory, "valueFactory");
+            _waitHandle = new StructNeedle<ManualResetEventSlim>(new ManualResetEventSlim(false));
+        }
+
+        public CacheNeedle(Func<T> valueFactory, T target, bool trackResurrection, bool cacheExceptions)
+            : base(target, trackResurrection)
+        {
+            _valueFactory = Check.NotNullArgument(valueFactory, "valueFactory");
+            if (cacheExceptions)
+            {
+                _valueFactory = () =>
+                {
+                    try
+                    {
+                        return valueFactory.Invoke();
+                    }
+                    catch (Exception exc)
+                    {
+                        _valueFactory = FuncHelper.GetThrowFunc<T>(exc);
+                        throw;
+                    }
+                };
+            }
+            _waitHandle = new StructNeedle<ManualResetEventSlim>(new ManualResetEventSlim(false));
+        }
+
+        public CacheNeedle(T target)
+            : base(target)
+        {
+            _valueFactory = null;
+            _waitHandle = null;
+        }
+
+        public CacheNeedle()
+            : base(default(T))
+        {
+            _valueFactory = null;
+            _waitHandle = null;
+        }
+
+        ~CacheNeedle()
+        {
+            ReleaseWaitHandle();
         }
 
         public T CachedTarget
@@ -66,7 +105,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return false;
+                return false; //TODO
             }
         }
 
@@ -74,7 +113,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return (Thread.VolatileRead(ref _status) != 0) && IsAlive;
+                return !_waitHandle.IsAlive;
             }
         }
 
@@ -87,12 +126,14 @@ namespace Theraot.Threading.Needles
             }
             set
             {
-                Allocate(value, TrackResurrection);
-                Thread.VolatileWrite(ref _status, 1);
+                SetTargetValue(value);
+                //TODO add a method to do this
+                //ThreadingHelper.VolatileWrite(ref _valueFactory, null);
+                ReleaseWaitHandle();
             }
         }
 
-        protected INeedle<ManualResetEvent> WaitHandle
+        protected INeedle<ManualResetEventSlim> WaitHandle
         {
             get
             {
@@ -100,15 +141,21 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public virtual void Initialize()
+        public bool Equals(CacheNeedle<T> other)
         {
-            _valueFactory.Invoke();
+            return !ReferenceEquals(other, null) && base.Equals(other);
         }
 
-        public virtual void InvalidateCache()
+        public virtual void Initialize()
+        {
+            InitializeExtracted();
+        }
+
+        //TODO look at ThreadLocal solution
+        /*public virtual void InvalidateCache()
         {
             Thread.VolatileWrite(ref _status, 0);
-        }
+        }*/
 
         public bool TryGet(out T target)
         {
@@ -117,10 +164,34 @@ namespace Theraot.Threading.Needles
             return result;
         }
 
+        public void Wait()
+        {
+            if (_initializerThread == Thread.CurrentThread)
+            {
+                throw new InvalidOperationException();
+            }
+            else
+            {
+                var handle = _waitHandle.Value;
+                if (handle != null)
+                {
+                    try
+                    {
+                        handle.Wait();
+                    }
+                    catch (ObjectDisposedException exception)
+                    {
+                        // Came late to the party, initialization was done
+                        GC.KeepAlive(exception);
+                    }
+                }
+            }
+        }
+
         protected virtual void Initialize(Action beforeInitialize)
         {
             var _beforeInitialize = Check.NotNullArgument(beforeInitialize, "beforeInitialize");
-            if (Thread.VolatileRead(ref _status) == 0)
+            if (ThreadingHelper.VolatileRead(ref _valueFactory) != null)
             {
                 try
                 {
@@ -128,67 +199,77 @@ namespace Theraot.Threading.Needles
                 }
                 finally
                 {
-                    _valueFactory.Invoke();
+                    InitializeExtracted();
                 }
             }
         }
 
-        private T FullMode(Func<T> valueFactory, ref Thread thread)
+        private void InitializeExtracted()
         {
         back:
-            if (Interlocked.CompareExchange(ref _status, 2, 0) == 0)
+            var valueFactory = Interlocked.Exchange(ref _valueFactory, null);
+            if (valueFactory == null)
             {
-                try
-                {
-                    thread = Thread.CurrentThread;
-                    GC.KeepAlive(thread);
-                    var _target = valueFactory.Invoke();
-                    Allocate(_target, TrackResurrection);
-                    Thread.VolatileWrite(ref _status, 1);
-                    return _target;
-                }
-                catch (Exception)
-                {
-                    Thread.VolatileWrite(ref _status, 0);
-                    throw;
-                }
-                finally
-                {
-                    _waitHandle.Value.Set();
-                    thread = null;
-                }
-            }
-            else
-            {
-                if (ReferenceEquals(thread, Thread.CurrentThread))
+                if (_initializerThread == Thread.CurrentThread)
                 {
                     throw new InvalidOperationException();
                 }
                 else
                 {
-                    _waitHandle.Value.WaitOne();
-                    if (Thread.VolatileRead(ref _status) == 1)
+                    var handle = _waitHandle.Value;
+                    if (handle != null)
                     {
-                        return base.Value;
+                        try
+                        {
+                            _waitHandle.Value.Wait();
+                            if (ThreadingHelper.VolatileRead(ref _valueFactory) != null)
+                            {
+                                goto back;
+                            }
+                            else
+                            {
+                                ReleaseWaitHandle();
+                            }
+                        }
+                        catch (ObjectDisposedException exception)
+                        {
+                            // Came late to the party, initialization is done
+                            GC.KeepAlive(exception);
+                        }
                     }
-                    else
-                    {
-                        goto back;
-                    }
+                }
+            }
+            else
+            {
+                _initializerThread = Thread.CurrentThread;
+                try
+                {
+                    SetTargetValue(valueFactory.Invoke());
+                    ReleaseWaitHandle();
+                }
+                catch (Exception exception)
+                {
+                    //SetTargetError(exception);
+                    Interlocked.CompareExchange(ref _valueFactory, valueFactory, null);
+                    _waitHandle.Value.Set();
+                    throw;
+                }
+                finally
+                {
+                    _initializerThread = null;
                 }
             }
         }
 
-        private void UnmanagedDispose()
+        private void ReleaseWaitHandle()
         {
             var waitHandle = _waitHandle.Value;
             if (!ReferenceEquals(waitHandle, null))
             {
-                waitHandle.Close();
+                waitHandle.Set();
+                waitHandle.Dispose();
             }
             _waitHandle.Value = null;
         }
     }
 }
-
-#endif
