@@ -13,6 +13,14 @@ namespace Theraot.Threading.Needles
             _exception = exception;
         }
 
+        public Exception Error
+        {
+            get
+            {
+                return _exception;
+            }
+        }
+
         T INeedle<T>.Value
         {
             get

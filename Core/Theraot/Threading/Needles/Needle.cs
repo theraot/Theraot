@@ -33,17 +33,18 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public Needle(INeedle<T> target)
+        public Exception Error
         {
-            _target = target;
-            if (IsAlive)
+            get
             {
-                _hashCode = target.GetHashCode();
-            }
-            else
-            {
-                _hashCode = base.GetHashCode();
-                _target = null;
+                if (_target is ExceptionStructNeedle<T>)
+                {
+                    return ((ExceptionStructNeedle<T>)_target).Error;
+                }
+                else
+                {
+                    return null;
+                }
             }
         }
 
@@ -65,7 +66,7 @@ namespace Theraot.Threading.Needles
             }
             set
             {
-                SetTarget(value);
+                SetTargetValue(value);
             }
         }
 
@@ -117,16 +118,6 @@ namespace Theraot.Threading.Needles
             return _hashCode;
         }
 
-        public Needle<T> Simplify()
-        {
-            var result = this;
-            while (result._target is Needle<T>)
-            {
-                result = result._target as Needle<T>;
-            }
-            return result;
-        }
-
         public override string ToString()
         {
             var target = Value;
@@ -140,24 +131,24 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        internal INeedle<T> CompareExchange(INeedle<T> value, INeedle<T> comparand)
+        protected void SetTargetError(Exception error)
         {
-            return Interlocked.CompareExchange(ref _target, value, comparand);
+            _target = new ExceptionStructNeedle<T>(error);
+            Thread.MemoryBarrier();
         }
 
-        protected void SetTarget(T value)
+        protected void SetTargetValue(T value)
         {
-            if (ReferenceEquals(_target, null))
+            if (_target is StructNeedle<T>)
+            {
+                _target.Value = value;
+            }
+            else
             {
                 _target = new StructNeedle<T>(value);
                 Thread.MemoryBarrier();
             }
-            else
-            {
-                _target.Value = value;
-            }
         }
-
         private static bool EqualsExtracted(Needle<T> left, Needle<T> right)
         {
             if (ReferenceEquals(left, null))
@@ -197,5 +188,6 @@ namespace Theraot.Threading.Needles
         }
     }
 }
+
 
 #endif

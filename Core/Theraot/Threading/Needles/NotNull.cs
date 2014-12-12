@@ -29,7 +29,7 @@ namespace Theraot.Threading.Needles
                 }
                 else
                 {
-                    SetTarget(value);
+                    SetTargetValue(value);
                 }
             }
         }

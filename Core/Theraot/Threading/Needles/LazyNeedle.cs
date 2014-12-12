@@ -110,7 +110,7 @@ namespace Theraot.Threading.Needles
             }
             set
             {
-                SetTarget(value);
+                SetTargetValue(value);
                 _valueFactory = null;
                 ReleaseWaitHandle();
             }
@@ -232,7 +232,7 @@ namespace Theraot.Threading.Needles
                 _initializerThread = Thread.CurrentThread;
                 try
                 {
-                    SetTarget(valueFactory.Invoke());
+                    SetTargetValue(valueFactory.Invoke());
                     ReleaseWaitHandle();
                 }
                 catch (Exception)
