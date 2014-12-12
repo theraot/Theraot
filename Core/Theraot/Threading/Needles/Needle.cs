@@ -1,4 +1,4 @@
-#if FAT
+#if FAT 
 
 using System;
 using System.Threading;
@@ -57,6 +57,13 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        public bool IsFaulted
+        {
+            get
+            {
+                return _target is ExceptionStructNeedle<T>;
+            }
+        }
         public virtual T Value
         {
             get
@@ -188,6 +195,5 @@ namespace Theraot.Threading.Needles
         }
     }
 }
-
 
 #endif
