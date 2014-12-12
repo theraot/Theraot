@@ -107,7 +107,7 @@ namespace Theraot.Threading.Needles
             set
             {
                 SetTargetValue(value);
-                ThreadingHelper.VolatileWrite(ref _valueFactory, null);
+                ReleaseValueFactory();
                 ReleaseWaitHandle();
             }
         }
@@ -139,6 +139,11 @@ namespace Theraot.Threading.Needles
         public virtual void Initialize()
         {
             InitializeExtracted();
+        }
+
+        public void ReleaseValueFactory()
+        {
+            ThreadingHelper.VolatileWrite(ref _valueFactory, null);
         }
 
         public bool TryGet(out T target)

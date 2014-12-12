@@ -7,7 +7,7 @@ namespace Theraot.Threading.Needles
 {
     [Serializable]
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public partial class CacheNeedle<T> : WeakNeedle<T>, ICacheNeedle<T>
+    public partial class CacheNeedle<T> : WeakNeedle<T>, ICacheNeedle<T>, IEquatable<CacheNeedle<T>>, IPromise<T>
         where T : class
     {
         // TODO: put on pair with LazyNeedle
@@ -105,7 +105,15 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return false; //TODO
+                return IsFaulted;
+            }
+        }
+
+        Exception IPromise.Error
+        {
+            get
+            {
+                return Error;
             }
         }
 
@@ -127,8 +135,6 @@ namespace Theraot.Threading.Needles
             set
             {
                 SetTargetValue(value);
-                //TODO add a method to do this
-                //ThreadingHelper.VolatileWrite(ref _valueFactory, null);
                 ReleaseWaitHandle();
             }
         }
@@ -151,11 +157,10 @@ namespace Theraot.Threading.Needles
             InitializeExtracted();
         }
 
-        //TODO look at ThreadLocal solution
-        /*public virtual void InvalidateCache()
+        public void ReleaseValueFactory()
         {
-            Thread.VolatileWrite(ref _status, 0);
-        }*/
+            ThreadingHelper.VolatileWrite(ref _valueFactory, null);
+        }
 
         public bool TryGet(out T target)
         {
@@ -163,7 +168,6 @@ namespace Theraot.Threading.Needles
             target = base.Value;
             return result;
         }
-
         public void Wait()
         {
             if (_initializerThread == Thread.CurrentThread)
@@ -249,7 +253,7 @@ namespace Theraot.Threading.Needles
                 }
                 catch (Exception exception)
                 {
-                    //SetTargetError(exception);
+                    SetTargetError(exception);
                     Interlocked.CompareExchange(ref _valueFactory, valueFactory, null);
                     _waitHandle.Value.Set();
                     throw;
