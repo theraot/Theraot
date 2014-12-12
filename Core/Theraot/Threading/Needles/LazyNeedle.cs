@@ -11,7 +11,6 @@ namespace Theraot.Threading.Needles
     public class LazyNeedle<T> : Needle<T>, ICacheNeedle<T>, IEquatable<LazyNeedle<T>>, IPromise<T>
     {
         // TODO: Free and valueFactory?
-        // TODO: Error and cached exception?
         [NonSerialized]
         private Thread _initializerThread;
 
@@ -75,21 +74,19 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
         bool IExpected.IsFaulted
         {
             get
             {
-                return false;
+                return IsFaulted;
             }
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns null")]
         Exception IPromise.Error
         {
             get
             {
-                return null;
+                return Error;
             }
         }
 
@@ -235,12 +232,10 @@ namespace Theraot.Threading.Needles
                     SetTargetValue(valueFactory.Invoke());
                     ReleaseWaitHandle();
                 }
-                catch (Exception)
+                catch (Exception exception)
                 {
-                    if (_valueFactory == null)
-                    {
-                        ThreadingHelper.VolatileWrite(ref _valueFactory, valueFactory);
-                    }
+                    SetTargetError(exception);
+                    Interlocked.CompareExchange(ref _valueFactory, valueFactory, null);
                     _waitHandle.Value.Set();
                     throw;
                 }
