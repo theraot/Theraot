@@ -53,8 +53,40 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_Add.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_AddChecked.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_And.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_AndAlso.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_ArrayIndex.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_ArrayLength.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_Bind.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTest_Call.net35.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_Condition.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_Divide.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_ElementInit.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_Equal.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_ExclusiveOr.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_Field.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_GreaterThanOrEqual.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_LeftShift.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_LessThan.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_LessThanOrEqual.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_Lift.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_ListBind.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_Modulo.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_Multiply.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_MultiplyChecked.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_NotEqual.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_Or.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_OrElse.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_Power.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_Property.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_PropertyOrField.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTest_Quote.net35.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_RightShift.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_Subtract.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_SubtractChecked.cs" />
     <Compile Include="throwback.cs">
       <DependentUpon>throwback.tt</DependentUpon>
       <AutoGen>True</AutoGen>
