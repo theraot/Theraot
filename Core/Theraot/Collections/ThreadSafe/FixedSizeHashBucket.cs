@@ -124,15 +124,8 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return index;
                 }
-                else
-                {
-                    return -1;
-                }
             }
-            else
-            {
-                return -1;
-            }
+            return -1;
         }
 
         /// <summary>
@@ -207,8 +200,17 @@ namespace Theraot.Collections.ThreadSafe
         public int Index(TKey key, int offset)
         {
             var hash = _keyComparer.GetHashCode(key);
-            var index = (hash + offset) & (_capacity - 1);
-            return index;
+            return (hash + offset) & (_capacity - 1);
+        }
+
+        /// <summary>
+        /// Determinates the index for a given hashcode.
+        /// </summary>
+        /// <param name="hashcode">The hashcode to look for.</param>
+        /// <param name="offset">The offset from the default index.</param>
+        public int IndexByHashCode(int hashcode, int offset)
+        {
+            return (hashcode + offset) & (_capacity - 1);
         }
 
         /// <summary>
@@ -239,20 +241,9 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         return index;
                     }
-                    else
-                    {
-                        return -1;
-                    }
-                }
-                else
-                {
-                    return -1;
                 }
             }
-            else
-            {
-                return -1;
-            }
+            return -1;
         }
 
         /// <summary>
@@ -288,23 +279,37 @@ namespace Theraot.Collections.ThreadSafe
                         value = entry.Value;
                         return index;
                     }
-                    else
+                }
+            }
+            value = default(TValue);
+            return -1;
+        }
+
+        /// <summary>
+        /// Attempts to removes the specified key.
+        /// </summary>
+        /// <param name="hashcode">The hashcode to look for.</param>
+        /// <param name="keyCheck">The key predicate.</param>
+        /// <param name="offset">The offset from the default index.</param>
+        /// <param name="value">The value that was removed.</param>
+        /// <returns>The index where the value was set; -1 otherwise.</returns>
+        public int Remove(int hashcode, Predicate<TKey> keyCheck, int offset, out TValue value)
+        {
+            int index = IndexByHashCode(hashcode, offset);
+            KeyValuePair<TKey, TValue> entry;
+            if (_entries.TryGet(index, out entry))
+            {
+                if (keyCheck.Invoke(entry.Key))
+                {
+                    if (_entries.RemoveAt(index))
                     {
-                        value = default(TValue);
-                        return -1;
+                        value = entry.Value;
+                        return index;
                     }
                 }
-                else
-                {
-                    value = default(TValue);
-                    return -1;
-                }
             }
-            else
-            {
-                value = default(TValue);
-                return -1;
-            }
+            value = default(TValue);
+            return -1;
         }
 
         /// <summary>
@@ -459,6 +464,30 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         /// Tries the retrieve the value associated with the specified key.
         /// </summary>
+        /// <param name="hashcode">The hashcode to look for.</param>
+        /// <param name="keyCheck">The key predicate.</param>
+        /// <param name="offset">The offset from the default index.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>The index where the value was set; otherwise -1.</returns>
+        public int TryGetValue(int hashcode, Predicate<TKey> keyCheck, int offset, out TValue value)
+        {
+            int index = IndexByHashCode(hashcode, offset);
+            KeyValuePair<TKey, TValue> entry;
+            if (_entries.TryGet(index, out entry))
+            {
+                if (keyCheck.Invoke(entry.Key))
+                {
+                    value = entry.Value;
+                    return index;
+                }
+            }
+            value = default(TValue);
+            return -1;
+        }
+
+        /// <summary>
+        /// Tries the retrieve the value associated with the specified key.
+        /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="offset">The offset from the default index.</param>
         /// <param name="value">The value.</param>
@@ -474,17 +503,9 @@ namespace Theraot.Collections.ThreadSafe
                     value = entry.Value;
                     return index;
                 }
-                else
-                {
-                    value = default(TValue);
-                    return -1;
-                }
             }
-            else
-            {
-                value = default(TValue);
-                return -1;
-            }
+            value = default(TValue);
+            return -1;
         }
     }
 }

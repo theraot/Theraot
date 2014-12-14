@@ -274,7 +274,7 @@ namespace Theraot.Threading.Needles
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
         protected void SetTargetValue(T value)
         {
-            var suspention = SuspendDisposal();
+            var suspention = SuspendDisposal(); //TODO avoid creating the suspention object
             var target = new StructNeedle<T>(value);
             if (ReferenceEquals(suspention, null))
             {

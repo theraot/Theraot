@@ -165,7 +165,7 @@ namespace Theraot.Collections.ThreadSafe
                 if (IsOperationSafe())
                 {
                     bool isOperationSafe;
-                    bool isCollision = false;
+                    bool isCollision;
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
                     try
                     {
@@ -416,6 +416,55 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
+        /// Removes a key by hashcode and a key predicate.
+        /// </summary>
+        /// <param name="hashcode">The hashcode to look for.</param>
+        /// <param name="keyCheck">The key predicate.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified key was removed; otherwise, <c>false</c>.
+        /// </returns>
+        public bool Remove(int hashcode, Predicate<TKey> keyCheck, out TValue value)
+        {
+            bool result = false;
+            value = default(TValue);
+            while (true)
+            {
+                int revision = _revision;
+                if (IsOperationSafe())
+                {
+                    bool isOperationSafe;
+                    var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
+                    try
+                    {
+                        TValue tmpValue;
+                        if (RemoveExtracted(hashcode, keyCheck, entries, out tmpValue))
+                        {
+                            value = tmpValue;
+                            result = true;
+                        }
+                    }
+                    finally
+                    {
+                        isOperationSafe = IsOperationSafe(entries, revision);
+                    }
+                    if (isOperationSafe)
+                    {
+                        if (result)
+                        {
+                            Interlocked.Decrement(ref _count);
+                        }
+                        return result;
+                    }
+                }
+                else
+                {
+                    CooperativeGrow();
+                }
+            }
+        }
+
+        /// <summary>
         /// Removes the keys and associated values where the key satisfies the predicate.
         /// </summary>
         /// <param name="predicate">The predicate.</param>
@@ -608,7 +657,7 @@ namespace Theraot.Collections.ThreadSafe
                 if (IsOperationSafe())
                 {
                     bool isOperationSafe;
-                    bool isCollision = false;
+                    bool isCollision;
                     var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
                     try
                     {
@@ -742,6 +791,51 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
+        /// Tries to retrieve the value by hashcode and key predicate.
+        /// </summary>
+        /// <param name="hashcode">The hashcode to look for.</param>
+        /// <param name="keyCheck">The key predicate.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        ///   <c>true</c> if the value was retrieved; otherwise, <c>false</c>.
+        /// </returns>
+        public bool TryGetValue(int hashcode, Predicate<TKey> keyCheck, out TValue value)
+        {
+            value = default(TValue);
+            bool result = false;
+            while (true)
+            {
+                int revision = _revision;
+                if (IsOperationSafe())
+                {
+                    bool isOperationSafe;
+                    var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
+                    try
+                    {
+                        TValue tmpValue;
+                        if (TryGetValueExtracted(hashcode, keyCheck, entries, out tmpValue))
+                        {
+                            value = tmpValue;
+                            result = true;
+                        }
+                    }
+                    finally
+                    {
+                        isOperationSafe = IsOperationSafe(entries, revision);
+                    }
+                    if (isOperationSafe)
+                    {
+                        return result;
+                    }
+                }
+                else
+                {
+                    CooperativeGrow();
+                }
+            }
+        }
+
+        /// <summary>
         /// Removes all the elements.
         /// </summary>
         /// <returns>
@@ -831,7 +925,7 @@ namespace Theraot.Collections.ThreadSafe
                                 //The new capacity is twice the old capacity, the capacity must be a power of two.
                                 var newCapacity = _entriesNew.Capacity * 2;
                                 _entriesOld = Interlocked.Exchange(ref _entriesNew, new FixedSizeHashBucket<TKey, TValue>(newCapacity, _keyComparer));
-                                oldStatus = Interlocked.CompareExchange(ref _status, (int)BucketStatus.Copy, (int)BucketStatus.Waiting);
+                                Interlocked.CompareExchange(ref _status, (int)BucketStatus.Copy, (int)BucketStatus.Waiting);
                             }
                             finally
                             {
@@ -956,6 +1050,22 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        private bool RemoveExtracted(int hashcode, Predicate<TKey> keyCheck, FixedSizeHashBucket<TKey, TValue> entries, out TValue value)
+        {
+            value = default(TValue);
+            if (entries != null)
+            {
+                for (int attempts = 0; attempts < _maxProbing; attempts++)
+                {
+                    if (entries.Remove(hashcode, keyCheck, attempts, out value) != -1)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         private bool RemoveExtracted(TKey key, FixedSizeHashBucket<TKey, TValue> entries)
         {
             if (entries != null)
@@ -1035,6 +1145,21 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
+        private bool TryGetValueExtracted(int hashcode, Predicate<TKey> keyCheck, FixedSizeHashBucket<TKey, TValue> entries, out TValue value)
+        {
+            value = default(TValue);
+            if (entries != null)
+            {
+                for (int attempts = 0; attempts < _maxProbing; attempts++)
+                {
+                    if (entries.TryGetValue(hashcode, keyCheck, attempts, out value) != -1)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
         private bool TryGetValueExtracted(TKey key, FixedSizeHashBucket<TKey, TValue> entries, out TValue value)
         {
             value = default(TValue);

@@ -368,6 +368,9 @@ namespace Tests.Theraot
             //T_T - This is what was found: [0, 2, 4, 3, 4]
             //T_T - This is what was found: [1, 2, 3, 4, 4]
             //T_T - This is what was found: [1, 1, 2, 6, 8]
+            //T_T - This is what was found: [0, 2, 4, 3, 4]
+            //T_T - This is what was found: [0, 2, 2, 3, 4]
+            //T_T - This is what was found: [0, 2, 2, 3, 4]
             Assert.Fail("T_T - This is what was found: [{0}, {1}, {2}, {3}, {4}]", found[0], found[1], found[2], found[3], found[4]);
         }
 

@@ -486,18 +486,8 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool Remove(TKey key)
         {
-            TNeedle needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
             TValue found;
-            if (_wrapped.Remove(needle, out found))
-            {
-                needle.Dispose();
-                return true;
-            }
-            else
-            {
-                needle.Dispose();
-                return false;
-            }
+            return _wrapped.Remove(GetHashCode(key), _key => Equals(key, _key.Value), out found);
         }
 
         public int RemoveDeadItems()
@@ -550,17 +540,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool TryGet(TKey key, out TValue value)
         {
-            TNeedle needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
-            if (_wrapped.TryGetValue(needle, out value))
-            {
-                needle.Dispose();
-                return true;
-            }
-            else
-            {
-                needle.Dispose();
-                return false;
-            }
+            return _wrapped.TryGetValue(GetHashCode(key), _key => Equals(key, _key.Value), out value);
         }
 
         public bool TryGet(int index, out TKey key, out TValue value)
@@ -580,17 +560,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool TryGetValue(TKey key, out TValue value)
         {
-            TNeedle needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
-            if (_wrapped.TryGetValue(needle, out value))
-            {
-                needle.Dispose();
-                return true;
-            }
-            else
-            {
-                needle.Dispose();
-                return false;
-            }
+            return _wrapped.TryGetValue(GetHashCode(key), _key => Equals(key, _key.Value), out value);
         }
 
         protected virtual WeakHashBucket<TKey, TValue, TNeedle> OnClone()
