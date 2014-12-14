@@ -243,24 +243,28 @@ namespace Theraot.Threading.Needles
                 using (suspention)
                 {
                     var oldHandle = _handle;
-                    try
+                    if (oldHandle.IsAllocated)
                     {
-                        oldHandle.Target = target;
+                        try
+                        {
+                            oldHandle.Target = target;
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            // Empty
+                        }
                     }
-                    catch (InvalidOperationException)
+                    _handle = CreateHandle(target, _trackResurrection);
+                    if (oldHandle.IsAllocated)
                     {
-                        _handle = CreateHandle(target, _trackResurrection);
-                        if (oldHandle.IsAllocated)
+                        oldHandle.Free();
+                        try
                         {
                             oldHandle.Free();
-                            try
-                            {
-                                oldHandle.Free();
-                            }
-                            catch (InvalidOperationException)
-                            {
-                                //Empty
-                            }
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            //Empty
                         }
                     }
                 }
@@ -287,24 +291,29 @@ namespace Theraot.Threading.Needles
                 using (suspention)
                 {
                     var oldHandle = _handle;
-                    try
+                    if (oldHandle.IsAllocated)
                     {
-                        oldHandle.Target = target;
+                        try
+                        {
+                            oldHandle.Target = target;
+                            return;
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            // Empty
+                        }
                     }
-                    catch (InvalidOperationException)
+                    _handle = CreateHandle(target, _trackResurrection);
+                    if (oldHandle.IsAllocated)
                     {
-                        _handle = CreateHandle(target, _trackResurrection);
-                        if (oldHandle.IsAllocated)
+                        oldHandle.Free();
+                        try
                         {
                             oldHandle.Free();
-                            try
-                            {
-                                oldHandle.Free();
-                            }
-                            catch (InvalidOperationException)
-                            {
-                                //Empty
-                            }
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            //Empty
                         }
                     }
                 }
