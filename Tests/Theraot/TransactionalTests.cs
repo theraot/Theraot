@@ -18,6 +18,7 @@ namespace Tests.Theraot
             var needleA = new Transact.Needle<int>(5);
             var needleB = new Transact.Needle<int>(5);
             Assert.AreEqual(needleA.Value, 5);
+            Assert.AreEqual(needleB.Value, 5);
             ThreadPool.QueueUserWorkItem
             (
                 _ =>
@@ -28,8 +29,8 @@ namespace Tests.Theraot
                         handle.WaitOne();
                         needleA.Value += 2;
                         transact.Commit();
-                        Interlocked.Increment(ref count[1]);
                     }
+                    Interlocked.Increment(ref count[1]);
                 }
             );
             ThreadPool.QueueUserWorkItem
@@ -42,8 +43,8 @@ namespace Tests.Theraot
                         handle.WaitOne();
                         needleB.Value += 5;
                         transact.Commit();
-                        Interlocked.Increment(ref count[1]);
                     }
+                    Interlocked.Increment(ref count[1]);
                 }
             );
             while (Thread.VolatileRead(ref count[0]) != 2)
@@ -56,7 +57,8 @@ namespace Tests.Theraot
                 Thread.Sleep(0);
             }
             // Both
-            Assert.IsTrue(needleA.Value == 7 && needleB.Value == 10);
+            Assert.AreEqual(7, needleA.Value);
+            Assert.AreEqual(10, needleB.Value);
             handle.Close();
         }
 
@@ -85,9 +87,10 @@ namespace Tests.Theraot
                 {
                     using (var transact = new Transact())
                     {
+                        Interlocked.Increment(ref count[0]);
                         do
                         {
-                            Interlocked.Increment(ref count[0]);
+                            Thread.Sleep(0);
                             handle.WaitOne();
                             needle.Value += 2;
                         } while (!transact.Commit());
@@ -101,14 +104,15 @@ namespace Tests.Theraot
                 {
                     using (var transact = new Transact())
                     {
+                        Interlocked.Increment(ref count[0]);
                         do
                         {
-                            Interlocked.Increment(ref count[0]);
+                            Thread.Sleep(0);
                             handle.WaitOne();
                             needle.Value += 5;
                         } while (!transact.Commit());
-                        Interlocked.Increment(ref count[1]);
                     }
+                    Interlocked.Increment(ref count[1]);
                 }
             );
             while (Thread.VolatileRead(ref count[0]) != 2)
@@ -121,7 +125,8 @@ namespace Tests.Theraot
                 Thread.Sleep(0);
             }
             // Both
-            Assert.IsTrue(needle.Value == 12);
+            // This is initial 5 with +2 and +5 - that's 12
+            Assert.AreEqual(12, needle.Value);
             handle.Close();
         }
 
@@ -357,7 +362,13 @@ namespace Tests.Theraot
                 Assert.IsTrue(didB);
                 return;
             }
-            Assert.Fail(":(");
+            var found = result.ToArray();
+            //TODO
+            //T_T - This is what was found: [0, 2, 4, 6, 4]
+            //T_T - This is what was found: [0, 2, 4, 3, 4]
+            //T_T - This is what was found: [1, 2, 3, 4, 4]
+            //T_T - This is what was found: [1, 1, 2, 6, 8]
+            Assert.Fail("T_T - This is what was found: [{0}, {1}, {2}, {3}, {4}]", found[0], found[1], found[2], found[3], found[4]);
         }
 
         private static void ThrowException()
