@@ -6,6 +6,7 @@
 #define NET_4_5
 
 using Theraot.Core;
+using Theraot.Collections;
 
 //
 // EmitContext.cs

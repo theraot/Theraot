@@ -239,6 +239,7 @@
     <Compile Include="System\Linq\Enumerable.groupby.net30.cs" />
     <Compile Include="System\Linq\Expressions\ConstantExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\EmitContext.net30.cs" />
+    <Compile Include="System\Linq\Expressions\Expression.net30.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionPrinter.net35.cs" />
     <Compile Include="System\Linq\Expressions\NewExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\UnaryExpression.net30.cs" />
@@ -550,7 +551,6 @@
     <Compile Include="System\Linq\Expressions\BinaryExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\ConditionalExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\ElementInit.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Expression.net30.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTransformer.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionVisitor.net35.cs" />
     <Compile Include="System\Linq\Expressions\Expression1.net30.cs" />

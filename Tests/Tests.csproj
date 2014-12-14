@@ -53,6 +53,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_Call.net35.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTest_Quote.net35.cs" />
+    <Compile Include="throwback.cs">
+      <DependentUpon>throwback.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="ParallelTestHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="System\AggregateExceptionTests.cs" />
@@ -69,7 +76,6 @@
     <Compile Include="System\Linq\EnumerableAsQueryableTest.cs" />
     <Compile Include="System\Linq\EnumerableMoreTest.cs" />
     <Compile Include="System\Linq\EnumerableTest.cs" />
-    <Compile Include="System\Linq\Expressions\ExpressionTest_Call.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTest_Coalesce.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTest_Constant.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTest_Convert.cs" />
@@ -85,7 +91,6 @@
     <Compile Include="System\Linq\Expressions\ExpressionTest_NewArrayBounds.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTest_NewArrayInit.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTest_Not.cs" />
-    <Compile Include="System\Linq\Expressions\ExpressionTest_Quote.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTest_TypeAs.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTest_TypeIs.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTest_UnaryPlus.cs" />
@@ -112,9 +117,14 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <None Include="throwback.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>throwback.cs</LastGenOutput>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup />
