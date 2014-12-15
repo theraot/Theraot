@@ -10,7 +10,7 @@ namespace Theraot.Threading.Needles
     public partial class CacheNeedle<T> : WeakNeedle<T>, ICacheNeedle<T>, IEquatable<CacheNeedle<T>>, IPromise<T>
         where T : class
     {
-        // TODO: put on pair with LazyNeedle
+        [NonSerialized]
         private Thread _initializerThread;
 
         private Func<T> _valueFactory;
@@ -76,11 +76,6 @@ namespace Theraot.Threading.Needles
         {
             _valueFactory = null;
             _waitHandle = null;
-        }
-
-        ~CacheNeedle()
-        {
-            ReleaseWaitHandle();
         }
 
         public T CachedTarget
