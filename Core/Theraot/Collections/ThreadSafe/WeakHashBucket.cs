@@ -515,8 +515,18 @@ namespace Theraot.Collections.ThreadSafe
 
         public void Set(TKey key, TValue value)
         {
-            TNeedle needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
-            _wrapped.Set(needle, value);
+            var needle = new TNeedle[1];
+            _wrapped.Set
+            (
+                GetHashCode(key),
+                _key => !_key.IsAlive || Equals(key, _key.Value),
+                () =>
+                {
+                    needle[0] = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
+                    return needle[0];
+                },
+                value
+            );
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

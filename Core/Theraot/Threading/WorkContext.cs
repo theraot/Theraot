@@ -322,6 +322,10 @@ namespace Theraot.Threading
                     }
                 }
             }
+            catch (ThreadAbortException)
+            {
+                // Nothing to do
+            }
             catch
             {
                 // Pokemon

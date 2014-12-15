@@ -348,6 +348,32 @@ namespace Theraot.Collections.ThreadSafe
             return Set(key, value, 0, out isNew);
         }
 
+        /// <summary>
+        /// Sets the value associated with the specified key.
+        /// </summary>
+        /// <param name="hashcode">The hashcode to look for.</param>
+        /// <param name="keyCheck">The key predicate.</param>
+        /// /// <param name="keyFactory">The key factory.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="offset">The offset from the default index.</param>
+        /// <param name="isNew">if set to <c>true</c> the key was not present before.</param>
+        /// <returns>The index where the value was set; -1 otherwise.</returns>
+        public int Set(int hashcode, Predicate<TKey> keyCheck, Func<TKey> keyFactory, TValue value, int offset, out bool isNew)
+        {
+            int index = IndexByHashCode(hashcode, offset);
+            KeyValuePair<TKey, TValue> oldEntry;
+            isNew = !_entries.TryGet(index, out oldEntry);
+            if (isNew || keyCheck.Invoke(oldEntry.Key))
+            {
+                _entries.Set(index, new KeyValuePair<TKey, TValue>(keyFactory.Invoke(), value), out isNew);
+                return index;
+            }
+            else
+            {
+                return -1;
+            }
+        }
+
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();

@@ -635,6 +635,49 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        /// <summary>
+        /// Sets the value associated with the specified key.
+        /// </summary>
+        /// <param name="hashcode">The hashcode to look for.</param>
+        /// <param name="keyCheck">The key predicate.</param>
+        /// <param name="keyFactory">The key predicate.</param>
+        /// <param name="value">The value.</param>
+        public void Set(int hashcode, Predicate<TKey> keyCheck, Func<TKey> keyFactory, TValue value)
+        {
+            while (true)
+            {
+                int revision = _revision;
+                if (IsOperationSafe())
+                {
+                    bool isNew;
+                    var entries = ThreadingHelper.VolatileRead(ref _entriesNew);
+                    if (SetExtracted(hashcode, keyCheck, keyFactory, value, entries, out isNew) != -1)
+                    {
+                        if (IsOperationSafe(entries, revision))
+                        {
+                            if (isNew)
+                            {
+                                Interlocked.Increment(ref _count);
+                            }
+                            break;
+                        }
+                        else
+                        {
+                            int oldStatus = Interlocked.CompareExchange(ref _status, (int)BucketStatus.GrowRequested, (int)BucketStatus.Free);
+                            if (oldStatus == (int)BucketStatus.Free)
+                            {
+                                _revision++;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    CooperativeGrow();
+                }
+            }
+        }
+
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
@@ -1097,6 +1140,23 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
+        private int SetExtracted(int hashcode, Predicate<TKey> keyCheck, Func<TKey> keyFactory, TValue value, FixedSizeHashBucket<TKey, TValue> entries, out bool isNew)
+        {
+            isNew = false;
+            if (entries != null)
+            {
+                for (int attempts = 0; attempts < _maxProbing; attempts++)
+                {
+                    int index = entries.Set(hashcode, keyCheck, keyFactory, value, attempts, out isNew);
+                    if (index != -1)
+                    {
+                        return index;
+                    }
+                }
+            }
+            return -1;
+        }
+
         private int SetExtracted(TKey key, TValue value, FixedSizeHashBucket<TKey, TValue> entries, out bool isNew)
         {
             isNew = false;
@@ -1160,6 +1220,7 @@ namespace Theraot.Collections.ThreadSafe
             }
             return false;
         }
+
         private bool TryGetValueExtracted(TKey key, FixedSizeHashBucket<TKey, TValue> entries, out TValue value)
         {
             value = default(TValue);
