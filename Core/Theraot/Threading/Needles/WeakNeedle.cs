@@ -226,9 +226,8 @@ namespace Theraot.Threading.Needles
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
         protected void SetTargetError(Exception error)
         {
-            var suspention = SuspendDisposal();
             var target = new ExceptionStructNeedle<T>(error);
-            if (ReferenceEquals(suspention, null))
+            if (_status == -1 || !ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
             {
                 ReleaseExtracted();
                 _handle = CreateHandle(target, _trackResurrection);
@@ -240,7 +239,7 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                using (suspention)
+                try
                 {
                     var oldHandle = _handle;
                     if (oldHandle.IsAllocated)
@@ -268,15 +267,18 @@ namespace Theraot.Threading.Needles
                         }
                     }
                 }
+                finally
+                {
+                    System.Threading.Interlocked.Decrement(ref _status);
+                }
             }
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
         protected void SetTargetValue(T value)
         {
-            var suspention = SuspendDisposal(); //TODO avoid creating the suspention object
             var target = new StructNeedle<T>(value);
-            if (ReferenceEquals(suspention, null))
+            if (_status == -1 || !ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
             {
                 ReleaseExtracted();
                 _handle = CreateHandle(target, _trackResurrection);
@@ -288,7 +290,7 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                using (suspention)
+                try
                 {
                     var oldHandle = _handle;
                     if (oldHandle.IsAllocated)
@@ -316,6 +318,10 @@ namespace Theraot.Threading.Needles
                             //Empty
                         }
                     }
+                }
+                finally
+                {
+                    System.Threading.Interlocked.Decrement(ref _status);
                 }
             }
         }

@@ -2,7 +2,7 @@
 
 namespace Theraot.Threading.Needles
 {
-    public partial class WeakNeedle<T> : IDisposable
+    public partial class WeakNeedle<T>
     {
         private int _status;
 
@@ -159,25 +159,6 @@ namespace Theraot.Threading.Needles
             if (IsDisposed)
             {
                 throw new ObjectDisposedException(exceptionMessegeWhenDisposed);
-            }
-        }
-
-        protected IDisposable SuspendDisposal()
-        {
-            if (_status == -1)
-            {
-                return null;
-            }
-            else
-            {
-                if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
-                {
-                    return DisposableAkin.Create(() => System.Threading.Interlocked.Decrement(ref _status));
-                }
-                else
-                {
-                    return null;
-                }
             }
         }
 

@@ -157,25 +157,6 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        protected IDisposable SuspendDisposal()
-        {
-            if (_status == -1)
-            {
-                return null;
-            }
-            else
-            {
-                if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
-                {
-                    return DisposableAkin.Create(() => System.Threading.Interlocked.Decrement(ref _status));
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
-
         protected bool TakeDisposalExecution()
         {
             if (_status == -1)
