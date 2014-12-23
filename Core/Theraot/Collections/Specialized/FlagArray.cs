@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
 using Theraot.Threading;
 

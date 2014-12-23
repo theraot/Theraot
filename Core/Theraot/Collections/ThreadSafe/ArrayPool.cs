@@ -3,12 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using Theraot.Collections;
-using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
+using Theraot.Threading;
 using Theraot.Threading.Needles;
 
-namespace Theraot.Threading
+namespace Theraot.Collections.ThreadSafe
 {
     internal static class ArrayPool<T>
     {

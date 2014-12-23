@@ -424,7 +424,7 @@
     </Compile>
     <Compile Include="Theraot\Core\TypeHelper.cs" />
     <Compile Include="Theraot\Core\TypeHelper.extra.cs" />
-    <Compile Include="Theraot\Threading\ArrayPool.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\ArrayPool.cs" />
     <Compile Include="Theraot\Threading\CriticalDisposable.cs" />
     <Compile Include="Theraot\Threading\CriticalDisposable.disposable.cs" />
     <Compile Include="Theraot\Threading\Disposable.cs">
