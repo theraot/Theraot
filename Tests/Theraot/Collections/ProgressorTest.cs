@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading;
 using Theraot.Collections;
 
 namespace Tests.Theraot.Collections
@@ -161,6 +162,32 @@ namespace Tests.Theraot.Collections
         }
 
         [Test]
+        public void PrefaceProgressor()
+        {
+            var preface = new[] { 0, 1, 2, 3, 4, 5 };
+            var source = new Progressor<int>(new[] { 6, 7, 8, 9 });
+            var progresor = new Progressor<int>(preface, source);
+            int indexA = 0;
+            int indexB = 0;
+            progresor.SubscribeAction
+            (
+                value =>
+                {
+                    Assert.AreEqual(value, indexB);
+                    indexB++;
+                }
+            );
+            int item;
+            while (progresor.TryTake(out item))
+            {
+                Assert.AreEqual(item, indexA);
+                indexA++;
+            }
+            Assert.AreEqual(indexA, 10);
+            Assert.AreEqual(indexA, indexB);
+        }
+
+        [Test]
         public void ProgressorProgressor()
         {
             var source = new Progressor<int>(new[] { 0, 1, 2, 3, 4, 5 });
@@ -183,6 +210,40 @@ namespace Tests.Theraot.Collections
             }
             Assert.AreEqual(indexA, 6);
             Assert.AreEqual(indexA, indexB);
+        }
+
+        [Test]
+        public void ThreadedUse()
+        {
+            var source = new Progressor<int>(new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }).AsEnumerable();
+            var handle = new ManualResetEvent(false);
+            int[] count = { 0, 0, 0 };
+            var work = new WaitCallback
+                (
+                    _ =>
+                    {
+                        Interlocked.Increment(ref count[0]);
+                        handle.WaitOne();
+                        foreach (var item in source)
+                        {
+                            Interlocked.Increment(ref count[2]);
+                        }
+                        Interlocked.Increment(ref count[1]);
+                    }
+                );
+            ThreadPool.QueueUserWorkItem(work);
+            ThreadPool.QueueUserWorkItem(work);
+            while (Thread.VolatileRead(ref count[0]) != 2)
+            {
+                Thread.Sleep(0);
+            }
+            handle.Set();
+            while (Thread.VolatileRead(ref count[1]) != 2)
+            {
+                Thread.Sleep(0);
+            }
+            Assert.AreEqual(10, Thread.VolatileRead(ref count[2]));
+            handle.Close();
         }
 
         [Test]

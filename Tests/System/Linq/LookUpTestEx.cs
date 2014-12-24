@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Theraot.Collections;
 
 namespace MonoTests.System.Linq
 {
@@ -13,8 +14,11 @@ namespace MonoTests.System.Linq
         public void ToLookupIsImmediate()
         {
             var _src = new IterateAndCount(10);
-            _src.ToLookup(i => i > 5, null);
-            _src.ToLookup(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            var a = _src.ToLookup(i => i > 5, null);
+            var b = _src.ToLookup(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            Assert.AreEqual(_src.Total, 20);
+            a.Consume();
+            b.Consume();
             Assert.AreEqual(_src.Total, 20);
         }
 

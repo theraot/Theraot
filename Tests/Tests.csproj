@@ -88,6 +88,10 @@
     <Compile Include="System\Linq\Expressions\ExpressionTest_RightShift.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTest_Subtract.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTest_SubtractChecked.cs" />
+    <Compile Include="Theraot\Collections\ProgressiveLookupTestEx.cs" />
+    <Compile Include="Theraot\Collections\ProgressiveLookupTest.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="throwback.cs">
       <DependentUpon>throwback.tt</DependentUpon>
       <AutoGen>True</AutoGen>

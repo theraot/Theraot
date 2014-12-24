@@ -16,6 +16,8 @@ namespace Theraot.Collections
 
         public Progressor(Progressor<T> wrapped)
         {
+            Check.NotNullArgument(wrapped, "wrapped");
+
             int control = 0;
 
             Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0;
@@ -54,6 +56,63 @@ namespace Theraot.Collections
             };
         }
 
+        public Progressor(IEnumerable<T> preface, Progressor<T> wrapped)
+        {
+            Check.NotNullArgument(wrapped, "wrapped");
+            var enumerator = Check.CheckArgument(Check.NotNullArgument(preface, "preface").GetEnumerator(), arg => arg != null, "preface.GetEnumerator()");
+
+            int control = 0;
+
+            Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0;
+            var buffer = new QueueBucket<T>();
+            wrapped.SubscribeAction
+            (
+                item =>
+                {
+                    if (newFilter(item))
+                    {
+                        buffer.Add(item);
+                    }
+                }
+            );
+            _proxy = new ProxyObservable<T>();
+
+            _tryTake = (out T value) =>
+            {
+                if (enumerator.MoveNext())
+                {
+                    value = enumerator.Current;
+                    _proxy.OnNext(value);
+                    return true;
+                }
+                else
+                {
+                    enumerator.Dispose();
+                    _tryTake = (out T _value) =>
+                    {
+                        try
+                        {
+                            Thread.VolatileWrite(ref control, 1);
+                            if (buffer.TryTake(out _value) || wrapped.TryTake(out _value))
+                            {
+                                _proxy.OnNext(_value);
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        }
+                        finally
+                        {
+                            Thread.VolatileWrite(ref control, 0);
+                        }
+                    };
+                    return _tryTake(out value);
+                }
+            };
+        }
+
         public Progressor(IEnumerable<T> wrapped)
         {
             var enumerator = Check.CheckArgument(Check.NotNullArgument(wrapped, "wrapped").GetEnumerator(), arg => arg != null, "wrapped.GetEnumerator()");
@@ -70,6 +129,11 @@ namespace Theraot.Collections
                 {
                     enumerator.Dispose();
                     value = default(T);
+                    _tryTake = (out T _value) =>
+                    {
+                        _value = default(T);
+                        return false;
+                    };
                     return false;
                 }
             };

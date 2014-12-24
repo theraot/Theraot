@@ -291,9 +291,7 @@
     <Compile Include="Theraot\Collections\IDropPoint.cs" />
     <Compile Include="Theraot\Collections\IExtendedCollection.cs" />
     <Compile Include="Theraot\Collections\IExtendedDictionary.cs" />
-    <Compile Include="Theraot\Collections\IExtendedGrouping.cs" />
     <Compile Include="Theraot\Collections\IExtendedList.cs" />
-    <Compile Include="Theraot\Collections\IExtendedLookup.cs" />
     <Compile Include="Theraot\Collections\IExtendedReadOnlyCollection.cs" />
     <Compile Include="Theraot\Collections\IExtendedReadOnlyDictionary.cs" />
     <Compile Include="Theraot\Collections\IExtendedReadOnlyList.cs" />
