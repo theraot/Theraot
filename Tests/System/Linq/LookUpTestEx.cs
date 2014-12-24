@@ -3,29 +3,26 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Theraot.Core;
 
 namespace MonoTests.System.Linq
 {
     [TestFixture]
-    public class EnumerableAsQueryableTestEx
+    public class LookUpTestEx
     {
         [Test]
-        public void GroupByIsDefered()
+        public void ToLookupIsImmediate()
         {
             var _src = new IterateAndCount(10);
-            _src.GroupBy(i => i > 5, null);
-            _src.GroupBy(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
-            _src.GroupBy(i => i > 5, (key, group) => StringHelper.Concat(group.ToArray()), null);
-            _src.GroupBy(i => i > 5, j => j + 1, (key, group) => StringHelper.Concat(group.ToArray()), null);
-            Assert.AreEqual(_src.Total, 0);
+            _src.ToLookup(i => i > 5, null);
+            _src.ToLookup(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            Assert.AreEqual(_src.Total, 20);
         }
 
         [Test]
-        public void GroupByOverloadA()
+        public void ToLookupOverloadA()
         {
-            var _src = new [] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = _src.GroupBy(i => i > 5, null);
+            var _src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var r = _src.ToLookup(i => i > 5, null);
             var _r = r.ToArray();
             Assert.AreEqual(_r.Length, 2);
             int index = 0;
@@ -47,10 +44,10 @@ namespace MonoTests.System.Linq
         }
 
         [Test]
-        public void GroupByOverloadAEx()
+        public void ToLookupOverloadAEx()
         {
-            var _src = new [] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = _src.GroupBy(i => i > 5, null);
+            var _src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var r = _src.ToLookup(i => i > 5, null);
             var _r = r.ToArray();
             Assert.AreEqual(_r.Length, 2);
             bool first = true;
@@ -63,10 +60,10 @@ namespace MonoTests.System.Linq
         }
 
         [Test]
-        public void GroupByOverloadB()
+        public void ToLookupOverloadB()
         {
-            var _src = new [] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = _src.GroupBy(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            var _src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var r = _src.ToLookup(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
             var _r = r.ToArray();
             Assert.AreEqual(_r.Length, 2);
             int index = 0;
@@ -88,10 +85,10 @@ namespace MonoTests.System.Linq
         }
 
         [Test]
-        public void GroupByOverloadBEx()
+        public void ToLookupOverloadBEx()
         {
-            var _src = new [] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = _src.GroupBy(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
+            var _src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+            var r = _src.ToLookup(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
             var _r = r.ToArray();
             Assert.AreEqual(_r.Length, 2);
             bool first = true;
@@ -101,39 +98,6 @@ namespace MonoTests.System.Linq
                 Assert.AreEqual(g.Count(), 5);
                 first = false;
             }
-        }
-
-        [Test]
-        public void GroupByOverloadC()
-        {
-            var _src = new [] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = _src.GroupBy(i => i > 5, (key, group) => StringHelper.Concat(group.ToArray()), null);
-            var _r = r.ToArray();
-            Assert.AreEqual(_r.Length, 2);
-            Assert.AreEqual(_r[0], "12345");
-            Assert.AreEqual(_r[1], "678910");
-        }
-
-        [Test]
-        public void GroupByOverloadD()
-        {
-            var _src = new [] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = _src.GroupBy(i => i > 5, j => j + 1, (key, group) => StringHelper.Concat(group.ToArray()), null);
-            var _r = r.ToArray();
-            Assert.AreEqual(_r.Length, 2);
-            Assert.AreEqual(_r[0], "23456");
-            Assert.AreEqual(_r[1], "7891011");
-        }
-
-        [Test]
-        public void GroupByOverloadDEx()
-        {
-            var _src = new [] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-            var r = _src.GroupBy(i => i > 5, FuncHelper.GetIdentityFunc<int>(), (key, group) => StringHelper.Concat(group.ToArray()), null);
-            var _r = r.ToArray();
-            Assert.AreEqual(_r.Length, 2);
-            Assert.AreEqual(_r[0], "12345");
-            Assert.AreEqual(_r[1], "678910");
         }
 
         public class IterateAndCount : IEnumerable<int>
