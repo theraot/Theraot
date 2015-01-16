@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using Theraot.Threading;
 
 namespace Theraot.Collections.ThreadSafe
 {
@@ -32,7 +31,7 @@ namespace Theraot.Collections.ThreadSafe
 
         ~Bucket()
         {
-            if (!GCMonitor.FinalizingForUnload)
+            if (!AppDomain.CurrentDomain.IsFinalizingForUnload())
             {
                 RecycleExtracted();
             }
