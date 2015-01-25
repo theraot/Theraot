@@ -227,7 +227,8 @@ namespace Tests.Theraot.Threading
         [Test]
         public void CannotReentryReadToWriteWhenThereAreMoreReaders()
         {
-            var w = new ManualResetEvent(false);
+            var w1 = new ManualResetEvent(false);
+            var w2 = new ManualResetEvent(false);
             var x = new ReadWriteLock(true); // This code results in a dead lock in a not reentrant ReadWriteLock
             var ok = true;
             var a = new Thread
@@ -236,11 +237,13 @@ namespace Tests.Theraot.Threading
                 {
                     using (x.EnterRead())
                     {
-                        w.WaitOne();
+                        w2.Set();
+                        w1.WaitOne();
                     }
                 }
             );
             a.Start();
+            w2.WaitOne();
             using (x.EnterRead())
             {
                 Assert.IsFalse(x.IsCurrentThreadWriter);
@@ -260,7 +263,7 @@ namespace Tests.Theraot.Threading
                     }
                 }
             }
-            w.Set();
+            w1.Set();
             a.Join();
             using (x.EnterRead())
             {
@@ -919,7 +922,7 @@ namespace Tests.Theraot.Threading
                     Assert.IsTrue(x.IsCurrentThreadWriter);
                     b.Start();
                     w.Set();
-                    Thread.Sleep(10);
+                    b.Join();
                 }
                 else
                 {
@@ -933,7 +936,6 @@ namespace Tests.Theraot.Threading
                     engagementB.Dispose();
                 }
             }
-            b.Join();
             Assert.IsTrue(ok);
             Assert.AreEqual(2, doneThread);
         }
@@ -1040,8 +1042,10 @@ namespace Tests.Theraot.Threading
             {
                 threads[index].Start();
             }
-            Thread.Sleep(10);
-            Assert.AreEqual(5, enterCount);
+            do
+            {
+                Thread.Sleep(10);
+            } while (enterCount < 5);
             w.Set();
             for (int index = 0; index < 5; index++)
             {
