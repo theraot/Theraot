@@ -50,14 +50,16 @@ namespace Theraot.Threading
         }
 
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "By Design")]
-        public sealed class VersionToken : IComparable<VersionToken>, ICloneable, ICloneable<VersionToken>
+        public struct VersionToken : IComparable<VersionToken>
         {
-            private readonly VersionProvider _provider;
             private long _number;
+            private VersionProvider _provider;
             private Target _target;
 
             internal VersionToken(VersionProvider provider)
             {
+                _number = 0;
+                _target = null;
                 _provider = provider;
             }
 
@@ -68,66 +70,22 @@ namespace Theraot.Threading
                 _number = number;
             }
 
-            public VersionToken Clone()
-            {
-                var result = new VersionToken(_provider, _target, _number);
-                if (result.CompareTo(this) > 0)
-                {
-                    var wait = new SpinWait();
-                    do
-                    {
-                        result._number = _number;
-                        result._target = _target;
-                        wait.SpinOnce();
-                    } while (result.CompareTo(this) > 0);
-                }
-                return result;
-            }
-
             public int CompareTo(VersionToken other)
             {
-                if (ReferenceEquals(other, null))
+                if (ReferenceEquals(_target, other._target))
+                {
+                    return _number.CompareTo(other._number);
+                }
+                if (ReferenceEquals(_target, null))
+                {
+                    return -1;
+                }
+                if (ReferenceEquals(other._target, null))
                 {
                     return 1;
                 }
-                else
-                {
-                    if (ReferenceEquals(_target, other._target))
-                    {
-                        return _number.CompareTo(other._number);
-                    }
-                    else
-                    {
-                        if (ReferenceEquals(_target, null))
-                        {
-                            return -1;
-                        }
-                        else
-                        {
-                            if (ReferenceEquals(other._target, null))
-                            {
-                                return 1;
-                            }
-                            else
-                            {
-                                var check = _target.CompareToExtracted(other._target);
-                                if (check == 0)
-                                {
-                                    return _number.CompareTo(other._number);
-                                }
-                                else
-                                {
-                                    return check;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            object ICloneable.Clone()
-            {
-                return Clone();
+                var check = _target.CompareToExtracted(other._target);
+                return check == 0 ? _number.CompareTo(other._number) : check;
             }
 
             public void Reset()
@@ -136,81 +94,32 @@ namespace Theraot.Threading
                 _number = 0;
             }
 
-            public void Update(Action callback)
+            public bool SetTo(VersionToken other)
             {
-                if (callback == null)
-                {
-                    throw new ArgumentNullException("callback");
-                }
-                else
-                {
-                    var newTarget = _provider._target;
-                    if
-                    (
-                        !ReferenceEquals(Interlocked.Exchange(ref _target, newTarget), newTarget)
-                        || Interlocked.Exchange(ref _number, newTarget.Number) != newTarget.Number
-                    )
-                    {
-                        callback();
-                    }
-                }
+                return
+                    !ReferenceEquals(Interlocked.Exchange(ref _provider, other._provider), other._provider)
+                    | !ReferenceEquals(Interlocked.Exchange(ref _target, other._target), other._target)
+                    | Interlocked.Exchange(ref _number, other._number) != other._number;
             }
 
-            public void Update()
+            public bool Update()
             {
+                if (_provider == null)
+                {
+                    throw new InvalidOperationException("This VersionToken doesn't have a VersionProvider associated.");
+                }
                 var newTarget = _provider._target;
-                Interlocked.Exchange(ref _target, newTarget);
-                Interlocked.Exchange(ref _number, newTarget.Number);
+                var newNumber = newTarget.Number;
+                return !ReferenceEquals(Interlocked.Exchange(ref _target, newTarget), newTarget) | Interlocked.Exchange(ref _number, newNumber) != newNumber;
             }
-
-            public void UpdateTo(VersionToken other, Action callback)
+            public bool UpdateTo(VersionToken other)
             {
-                if (callback == null)
-                {
-                    throw new ArgumentNullException("callback");
-                }
-                else
-                {
-                    var newTarget = other._target;
-                    bool updated = !ReferenceEquals(Interlocked.Exchange(ref _target, newTarget), newTarget) || Interlocked.Exchange(ref _number, other._number) != other._number;
-                    if (CompareTo(other) > 0)
-                    {
-                        var wait = new SpinWait();
-                        do
-                        {
-                            if (!ReferenceEquals(Interlocked.Exchange(ref _target, newTarget), newTarget))
-                            {
-                                updated = true;
-                            }
-                            if (Interlocked.Exchange(ref _number, other._number) != other._number)
-                            {
-                                updated = true;
-                            }
-                            wait.SpinOnce();
-                        } while (CompareTo(other) > 0);
-                    }
-                    if (updated)
-                    {
-                        callback();
-                    }
-                }
-            }
-
-            public void UpdateTo(VersionToken other)
-            {
-                var newTarget = _provider._target;
-                Interlocked.Exchange(ref _target, newTarget);
-                Interlocked.Exchange(ref _number, newTarget.Number);
-                if (CompareTo(other) > 0)
-                {
-                    var wait = new SpinWait();
-                    do
-                    {
-                        Interlocked.Exchange(ref _target, newTarget);
-                        Interlocked.Exchange(ref _number, other._number);
-                        wait.SpinOnce();
-                    } while (CompareTo(other) > 0);
-                }
+                return CompareTo(other) < 0 &&
+                       (
+                           !ReferenceEquals(Interlocked.Exchange(ref _provider, other._provider), other._provider)
+                           | !ReferenceEquals(Interlocked.Exchange(ref _target, other._target), other._target)
+                           | Interlocked.Exchange(ref _number, other._number) != other._number
+                        );
             }
         }
 
@@ -238,10 +147,7 @@ namespace Theraot.Threading
                 {
                     return 1;
                 }
-                else
-                {
-                    return CompareToExtracted(other);
-                }
+                return CompareToExtracted(other);
             }
 
             internal int CompareToExtracted(Target other)
@@ -256,11 +162,8 @@ namespace Theraot.Threading
                     number = 0;
                     return false;
                 }
-                else
-                {
-                    number = Interlocked.Increment(ref _number);
-                    return true;
-                }
+                number = Interlocked.Increment(ref _number);
+                return true;
             }
         }
     }
