@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using Theraot.Collections.ThreadSafe;
@@ -280,26 +281,45 @@ namespace Tests.Theraot
         [Test]
         public void TransactionalDataStructure()
         {
+            var info = new CircularBucket<string>(32);
             var bucket = new NeedleBucket<int, Transact.Needle<int>>(index => index, 5);
-            var handle = new ManualResetEvent(false);
             var didA = false;
             var didB = false;
-            int[] count = { 0, 0 };
+            ManualResetEvent[] handles =
+            {
+                new ManualResetEvent(false) /*work a - entered*/,
+                new ManualResetEvent(false) /*work b - entered*/,
+                new ManualResetEvent(false) /*allow task*/,
+                new ManualResetEvent(false) /*work a - finished*/,
+                new ManualResetEvent(false) /*work b - finished*/,
+            };
             ThreadPool.QueueUserWorkItem
             (
                 _ =>
                 {
+                    info.Add("Work A - start");
                     using (var transact = new Transact())
                     {
-                        Interlocked.Increment(ref count[0]);
-                        handle.WaitOne();
+                        info.Add("Work A - enter");
+                        handles[0].Set();
+                        info.Add("Work A - reported, waiting");
+                        handles[2].WaitOne();
+                        info.Add("Work A - wait done");
                         // foreach will not trigger the creation of items
+                        var got = new int[5];
+                        var set = new int[5];
                         for (var index = 0; index < 5; index++)
                         {
-                            bucket.GetNeedle(index).Value++;
+                            got[index] = bucket.GetNeedle(index).Value;
+                            set[index] = got[index] + 1;
+                            bucket.GetNeedle(index).Value = set[index];
                         }
+                        info.Add(string.Format("Work A - Got: [{0}, {1}, {2}, {3}, {4}] - Set: [{5}, {6}, {7}, {8}, {9}]", got[0], got[1], got[2], got[3], got[4], set[0], set[1], set[2], set[3], set[4]));
+                        info.Add("Work A - before commit");
                         didA = transact.Commit();
-                        Interlocked.Increment(ref count[1]);
+                        info.Add("Work A - after commit: " + didA.ToString());
+                        handles[3].Set();
+                        info.Add("Work A - after signal");
                     }
                 }
             );
@@ -307,30 +327,43 @@ namespace Tests.Theraot
             (
                 _ =>
                 {
+                    info.Add("Work B - start");
                     using (var transact = new Transact())
                     {
-                        Interlocked.Increment(ref count[0]);
-                        handle.WaitOne();
+                        info.Add("Work B - enter");
+                        handles[1].Set();
+                        info.Add("Work B - reported, waiting");
+                        handles[2].WaitOne();
+                        info.Add("Work B - wait done");
                         // foreach will not trigger the creation of items
+                        var got = new int[5];
+                        var set = new int[5];
                         for (var index = 0; index < 5; index++)
                         {
-                            bucket.GetNeedle(index).Value *= 2;
+                            got[index] = bucket.GetNeedle(index).Value;
+                            set[index] = got[index] * 2;
+                            bucket.GetNeedle(index).Value = set[index];
                         }
+                        info.Add(string.Format("Work A - Got: [{0}, {1}, {2}, {3}, {4}] - Set: [{5}, {6}, {7}, {8}, {9}]", got[0], got[1], got[2], got[3], got[4], set[0], set[1], set[2], set[3], set[4]));
+                        info.Add("Work B - before commit");
                         didB = transact.Commit();
-                        Interlocked.Increment(ref count[1]);
+                        info.Add("Work B - after commit: " + didB.ToString());
+                        handles[4].Set();
+                        info.Add("Work B - after signal");
                     }
                 }
             );
-            while (Thread.VolatileRead(ref count[0]) != 2)
-            {
-                Thread.Sleep(0);
-            }
-            handle.Set();
-            while (Thread.VolatileRead(ref count[1]) != 2)
-            {
-                Thread.Sleep(0);
-            }
-            handle.Close();
+            info.Add("--- Main - waiting A to report");
+            handles[0].WaitOne();
+            info.Add("--- Main - waiting B to report");
+            handles[1].WaitOne();
+            info.Add("--- Main - signal");
+            handles[2].Set();
+            info.Add("--- Main - waiting A to signal");
+            handles[3].WaitOne();
+            info.Add("--- Main - waiting B to signal");
+            handles[4].WaitOne();
+            info.Add("--- DONE");
             var result = bucket;
             // These are more likely in debug mode
             // (+1)
@@ -343,8 +376,8 @@ namespace Tests.Theraot
             // (*2)
             if (result.SequenceEqual(new[] { 0, 2, 4, 6, 8 }))
             {
-                Assert.IsTrue(didB);
                 Assert.IsFalse(didA);
+                Assert.IsTrue(didB);
                 return;
             }
             // This are more likely with optimization enabled
@@ -362,6 +395,13 @@ namespace Tests.Theraot
                 Assert.IsTrue(didB);
                 return;
             }
+            //---
+            if (result.SequenceEqual(new[] { 0, 1, 2, 3, 4 }))
+            {
+                Assert.IsFalse(didA);
+                Assert.IsFalse(didB);
+                return;
+            }
             var found = result.ToArray();
             //TODO
             //T_T - This is what was found: [0, 2, 4, 6, 4]
@@ -371,7 +411,26 @@ namespace Tests.Theraot
             //T_T - This is what was found: [0, 2, 4, 3, 4]
             //T_T - This is what was found: [0, 2, 2, 3, 4]
             //T_T - This is what was found: [0, 2, 2, 3, 4]
+            //T_T - This is what was found: [0, 1, 4, 6, 8]
+            //T_T - This is what was found: [0, 1, 2, 3, 4]
+            Trace.WriteLine(" --- REPORT --- ");
+            foreach (var msg in info)
+            {
+                Trace.WriteLine(msg);
+            }
             Assert.Fail("T_T - This is what was found: [{0}, {1}, {2}, {3}, {4}]", found[0], found[1], found[2], found[3], found[4]);
+        }
+
+        [Test]
+        public void TransactionalDataStructureLoop()
+        {
+            // This test is meant to run until it fails, otherwise it should run indefinitely
+            // Assert.Ignore();
+            while (true)
+            {
+                TransactionalDataStructure();
+                Thread.Sleep(0);
+            }
         }
 
         private static void ThrowException()
