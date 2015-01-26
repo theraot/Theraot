@@ -26,6 +26,7 @@ namespace Theraot.Threading
         private volatile bool _work;
         private int _workingDedicatedThreadCount;
         private int _workingTotalThreadCount;
+        private int _workingWaitingThreadCount;
 
         public WorkContext()
             : this(INT_InitialWorkCapacityHint, Environment.ProcessorCount, null, true)
@@ -256,22 +257,20 @@ namespace Theraot.Threading
             try
             {
                 _work = false;
-                while (Thread.VolatileRead(ref _dedidatedThreadCount) > 0)
+                var tmp = Interlocked.Exchange(ref _event, null);
+                while (Thread.VolatileRead(ref _workingWaitingThreadCount) > 0)
                 {
-                    _event.Set();
+                    tmp.Set();
                 }
-                _event.Close();
-                _event = null;
             }
             finally
             {
                 try
                 {
-                    //Empty
+                    // Empty
                 }
                 finally
                 {
-                    _work = false;
                     _threads = null;
                 }
             }
@@ -300,11 +299,13 @@ namespace Theraot.Threading
                             {
                                 Interlocked.Decrement(ref _workingDedicatedThreadCount);
                                 Interlocked.Decrement(ref _workingTotalThreadCount);
-                                _event.WaitOne();
+                                Interlocked.Increment(ref _workingWaitingThreadCount);
                                 count = 0;
+                                _event.WaitOne();
                             }
                             finally
                             {
+                                Interlocked.Decrement(ref _workingWaitingThreadCount);
                                 Interlocked.Increment(ref _workingTotalThreadCount);
                                 Interlocked.Increment(ref _workingDedicatedThreadCount);
                             }
@@ -323,6 +324,14 @@ namespace Theraot.Threading
                 }
             }
             catch (ThreadAbortException)
+            {
+                // Nothing to do
+            }
+            catch (ObjectDisposedException)
+            {
+                // Nothing to do
+            }
+            catch (NullReferenceException)
             {
                 // Nothing to do
             }
