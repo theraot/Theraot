@@ -9,7 +9,7 @@ namespace Theraot.Threading
     {
         private readonly LockContext<T> _context;
         private readonly int _id;
-        private readonly VersionProvider.VersionToken _versionToken;
+        private VersionProvider.VersionToken _versionToken;
         private T _target;
 
         internal LockSlot(LockContext<T> context, int id, VersionProvider.VersionToken versionToken)
@@ -25,7 +25,7 @@ namespace Theraot.Threading
             else
             {
                 _context = context;
-                _versionToken = versionToken.Clone();
+                _versionToken = versionToken;
                 _id = id;
             }
         }
@@ -61,10 +61,7 @@ namespace Theraot.Threading
             {
                 return 1;
             }
-            else
-            {
-                return _versionToken.CompareTo(other._versionToken);
-            }
+            return _versionToken.CompareTo(other._versionToken);
         }
 
         public void Free()
@@ -78,9 +75,9 @@ namespace Theraot.Threading
             needle.Uncapture(_id);
         }
 
-        internal void Unfree()
+        internal void Unfree(VersionProvider.VersionToken versionToken)
         {
-            _versionToken.Update();
+            _versionToken = versionToken;
         }
     }
 }

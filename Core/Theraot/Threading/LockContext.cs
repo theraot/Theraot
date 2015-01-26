@@ -61,41 +61,33 @@ namespace Theraot.Threading
         internal bool Read(FlagArray flags, out T value)
         {
             LockSlot<T> bestSlot = null;
+            value = default(T);
             foreach (var flag in flags.Flags)
             {
                 LockSlot<T> testSlot;
-                if (_slots.TryGet(flag, out testSlot))
+                if (!_slots.TryGet(flag, out testSlot))
                 {
-                    if (ReferenceEquals(bestSlot, null))
-                    {
-                        bestSlot = testSlot;
-                    }
-                    else
-                    {
-                        if (bestSlot.CompareTo(testSlot) > 0)
-                        {
-                            bestSlot = testSlot;
-                        }
-                    }
+                    continue;
+                }
+                if (ReferenceEquals(bestSlot, null) || bestSlot.CompareTo(testSlot) < 0)
+                {
+                    bestSlot = SwitchSlot(out value, testSlot);
                 }
             }
-            if (ReferenceEquals(bestSlot, null))
-            {
-                value = default(T);
-                return false;
-            }
-            else
-            {
-                value = bestSlot.Value;
-                return true;
-            }
+            return !ReferenceEquals(bestSlot, null);
+        }
+
+        private static LockSlot<T> SwitchSlot(out T value, LockSlot<T> testSlot)
+        {
+            value = testSlot.Value;
+            return testSlot;
         }
 
         private bool TryClaimFreeSlot(out LockSlot<T> slot)
         {
             if (_freeSlots.TryTake(out slot))
             {
-                slot.Unfree();
+                slot.Unfree(_version.AdvanceNewToken());
                 return true;
             }
             else

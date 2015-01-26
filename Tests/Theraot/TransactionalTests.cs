@@ -48,15 +48,9 @@ namespace Tests.Theraot
                     Interlocked.Increment(ref count[1]);
                 }
             );
-            while (Thread.VolatileRead(ref count[0]) != 2)
-            {
-                Thread.Sleep(0);
-            }
+            global::Theraot.Threading.ThreadingHelper.SpinWaitUntil(ref count[0], 2);
             handle.Set();
-            while (Thread.VolatileRead(ref count[1]) != 2)
-            {
-                Thread.Sleep(0);
-            }
+            global::Theraot.Threading.ThreadingHelper.SpinWaitUntil(ref count[1], 2);
             // Both
             Assert.AreEqual(7, needleA.Value);
             Assert.AreEqual(10, needleB.Value);
@@ -404,34 +398,12 @@ namespace Tests.Theraot
                 return;
             }
             var found = result.ToArray();
-            //TODO
-            //T_T - This is what was found: [0, 2, 4, 6, 4]
-            //T_T - This is what was found: [0, 2, 4, 3, 4]
-            //T_T - This is what was found: [1, 2, 3, 4, 4]
-            //T_T - This is what was found: [1, 1, 2, 6, 8]
-            //T_T - This is what was found: [0, 2, 4, 3, 4]
-            //T_T - This is what was found: [0, 2, 2, 3, 4]
-            //T_T - This is what was found: [0, 2, 2, 3, 4]
-            //T_T - This is what was found: [0, 1, 4, 6, 8]
-            //T_T - This is what was found: [0, 1, 2, 3, 4]
             Trace.WriteLine(" --- REPORT --- ");
             foreach (var msg in info)
             {
                 Trace.WriteLine(msg);
             }
             Assert.Fail("T_T - This is what was found: [{0}, {1}, {2}, {3}, {4}]", found[0], found[1], found[2], found[3], found[4]);
-        }
-
-        [Test]
-        public void TransactionalDataStructureLoop()
-        {
-            // This test is meant to run until it fails, otherwise it should run indefinitely
-            // Assert.Ignore();
-            while (true)
-            {
-                TransactionalDataStructure();
-                Thread.Sleep(0);
-            }
         }
 
         private static void ThrowException()
