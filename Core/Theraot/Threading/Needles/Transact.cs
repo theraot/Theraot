@@ -14,14 +14,14 @@ namespace Theraot.Threading.Needles
         private static Transact _currentTransaction;
 
         private readonly Transact _parentTransaction;
-        private readonly WeakHashBucket<IResource, object, WeakNeedle<IResource>> _readLog;
-        private readonly WeakHashBucket<IResource, object, WeakNeedle<IResource>> _writeLog;
+        private readonly HashBucket<IResource, object> _readLog;
+        private readonly HashBucket<IResource, object> _writeLog;
         private LockSlot<Thread> _lockSlot;
 
         public Transact()
         {
-            _writeLog = new WeakHashBucket<IResource, object, WeakNeedle<IResource>>();
-            _readLog = new WeakHashBucket<IResource, object, WeakNeedle<IResource>>();
+            _writeLog = new HashBucket<IResource, object>();
+            _readLog = new HashBucket<IResource, object>();
             _parentTransaction = _currentTransaction;
             _currentTransaction = this;
         }
@@ -196,8 +196,6 @@ namespace Theraot.Threading.Needles
             Uncapture();
             if (disposing)
             {
-                _readLog.AutoRemoveDeadItems = false;
-                _writeLog.AutoRemoveDeadItems = false;
                 _currentTransaction = _currentTransaction._parentTransaction;
             }
         }
