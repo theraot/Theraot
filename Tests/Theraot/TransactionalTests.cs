@@ -283,15 +283,13 @@ namespace Tests.Theraot
         {
             var info = new CircularBucket<string>(32);
             var bucket = new NeedleBucket<int, Transact.Needle<int>>(index => index, 5);
-            var didA = false;
-            var didB = false;
+            bool didA = false;
+            bool didB;
             ManualResetEvent[] handles =
             {
                 new ManualResetEvent(false) /*work a - entered*/,
                 new ManualResetEvent(false) /*work b - entered*/,
-                new ManualResetEvent(false) /*allow task*/,
-                new ManualResetEvent(false) /*work a - finished*/,
-                new ManualResetEvent(false) /*work b - finished*/,
+                new ManualResetEvent(false) /*done*/,
             };
             ThreadPool.QueueUserWorkItem
             (
@@ -303,8 +301,8 @@ namespace Tests.Theraot
                         info.Add("Work A - enter");
                         handles[0].Set();
                         info.Add("Work A - reported, waiting");
-                        handles[2].WaitOne();
-                        info.Add("Work A - wait done");
+                        handles[1].WaitOne();
+                        info.Add("Work A - going");
                         // foreach will not trigger the creation of items
                         var got = new int[5];
                         var set = new int[5];
@@ -315,55 +313,58 @@ namespace Tests.Theraot
                             bucket.GetNeedle(index).Value = set[index];
                         }
                         info.Add(string.Format("Work A - Got: [{0}, {1}, {2}, {3}, {4}] - Set: [{5}, {6}, {7}, {8}, {9}]", got[0], got[1], got[2], got[3], got[4], set[0], set[1], set[2], set[3], set[4]));
+                        if (!bucket.SequenceEqual(set))
+                        {
+                            info.Add("Work A - ??");
+                        }
                         info.Add("Work A - before commit");
                         didA = transact.Commit();
-                        info.Add("Work A - after commit: " + didA.ToString());
-                        handles[3].Set();
-                        info.Add("Work A - after signal");
-                    }
-                }
-            );
-            ThreadPool.QueueUserWorkItem
-            (
-                _ =>
-                {
-                    info.Add("Work B - start");
-                    using (var transact = new Transact())
-                    {
-                        info.Add("Work B - enter");
-                        handles[1].Set();
-                        info.Add("Work B - reported, waiting");
-                        handles[2].WaitOne();
-                        info.Add("Work B - wait done");
-                        // foreach will not trigger the creation of items
-                        var got = new int[5];
-                        var set = new int[5];
-                        for (var index = 0; index < 5; index++)
+                        info.Add("Work A - after commit: " + didA);
+                        if (didA != bucket.SequenceEqual(set))
                         {
-                            got[index] = bucket.GetNeedle(index).Value;
-                            set[index] = got[index] * 2;
-                            bucket.GetNeedle(index).Value = set[index];
+                            info.Add("Work A - ???");
                         }
-                        info.Add(string.Format("Work A - Got: [{0}, {1}, {2}, {3}, {4}] - Set: [{5}, {6}, {7}, {8}, {9}]", got[0], got[1], got[2], got[3], got[4], set[0], set[1], set[2], set[3], set[4]));
-                        info.Add("Work B - before commit");
-                        didB = transact.Commit();
-                        info.Add("Work B - after commit: " + didB.ToString());
-                        handles[4].Set();
-                        info.Add("Work B - after signal");
+                        info.Add("Work A - report");
+                        handles[2].Set();
+                        info.Add("Work A - done");
                     }
                 }
             );
-            info.Add("--- Main - waiting A to report");
-            handles[0].WaitOne();
-            info.Add("--- Main - waiting B to report");
-            handles[1].WaitOne();
-            info.Add("--- Main - signal");
-            handles[2].Set();
-            info.Add("--- Main - waiting A to signal");
-            handles[3].WaitOne();
-            info.Add("--- Main - waiting B to signal");
-            handles[4].WaitOne();
-            info.Add("--- DONE");
+            {
+                info.Add("Work B - start");
+                using (var transact = new Transact())
+                {
+                    info.Add("Work B - waiting A to enter");
+                    handles[0].WaitOne();
+                    info.Add("Work B - telling Work A to go");
+                    handles[1].Set();
+                    info.Add("Work B - going");
+                    // foreach will not trigger the creation of items
+                    var got = new int[5];
+                    var set = new int[5];
+                    for (var index = 0; index < 5; index++)
+                    {
+                        got[index] = bucket.GetNeedle(index).Value;
+                        set[index] = got[index] * 2;
+                        bucket.GetNeedle(index).Value = set[index];
+                    }
+                    info.Add(string.Format("Work A - Got: [{0}, {1}, {2}, {3}, {4}] - Set: [{5}, {6}, {7}, {8}, {9}]", got[0], got[1], got[2], got[3], got[4], set[0], set[1], set[2], set[3], set[4]));
+                    if (!bucket.SequenceEqual(set))
+                    {
+                        info.Add("Work B - ??");
+                    }
+                    info.Add("Work B - before commit");
+                    didB = transact.Commit();
+                    info.Add("Work B - after commit: " + didB);
+                    if (didB != bucket.SequenceEqual(set))
+                    {
+                        info.Add("Work B - ???");
+                    }
+                    info.Add("Work B - waiting report");
+                    handles[2].WaitOne();
+                    info.Add("Work B - done");
+                }
+            }
             var result = bucket;
             // These are more likely in debug mode
             // (+1)
