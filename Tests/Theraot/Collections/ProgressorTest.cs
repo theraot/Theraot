@@ -31,7 +31,7 @@ namespace Tests.Theraot.Collections
                 Assert.AreEqual(item, indexA.ToString(CultureInfo.InvariantCulture));
                 indexA++;
             }
-            Assert.AreEqual(indexA, 6);
+            Assert.AreEqual(6, indexA);
             Assert.AreEqual(indexA, indexB);
         }
 
@@ -56,7 +56,7 @@ namespace Tests.Theraot.Collections
                 Assert.AreEqual(item, indexA.ToString(CultureInfo.InvariantCulture));
                 indexA++;
             }
-            Assert.AreEqual(indexA, 6);
+            Assert.AreEqual(6, indexA);
             Assert.AreEqual(indexA, indexB);
         }
 
@@ -81,7 +81,7 @@ namespace Tests.Theraot.Collections
                 Assert.AreEqual(item, indexA);
                 indexA++;
             }
-            Assert.AreEqual(indexA, 6);
+            Assert.AreEqual(6, indexA);
             Assert.AreEqual(indexA, indexB);
         }
 
@@ -106,7 +106,7 @@ namespace Tests.Theraot.Collections
                 Assert.AreEqual(item, indexA);
                 indexA++;
             }
-            Assert.AreEqual(indexA, 6);
+            Assert.AreEqual(6, indexA);
             Assert.AreEqual(indexA, indexB);
         }
 
@@ -131,7 +131,7 @@ namespace Tests.Theraot.Collections
                 Assert.AreEqual(item, indexA);
                 indexA++;
             }
-            Assert.AreEqual(indexA, 6);
+            Assert.AreEqual(6, indexA);
             Assert.AreEqual(indexA, indexB);
         }
 
@@ -157,7 +157,7 @@ namespace Tests.Theraot.Collections
                 Assert.AreEqual(item, indexA);
                 indexA++;
             }
-            Assert.AreEqual(indexA, 6);
+            Assert.AreEqual(6, indexA);
             Assert.AreEqual(indexA, indexB);
         }
 
@@ -183,7 +183,7 @@ namespace Tests.Theraot.Collections
                 Assert.AreEqual(item, indexA);
                 indexA++;
             }
-            Assert.AreEqual(indexA, 10);
+            Assert.AreEqual(10, indexA);
             Assert.AreEqual(indexA, indexB);
         }
 
@@ -208,14 +208,14 @@ namespace Tests.Theraot.Collections
                 Assert.AreEqual(item, indexA);
                 indexA++;
             }
-            Assert.AreEqual(indexA, 6);
+            Assert.AreEqual(6, indexA);
             Assert.AreEqual(indexA, indexB);
         }
 
         [Test]
         public void ThreadedUse()
         {
-            var source = new Progressor<int>(new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }).AsEnumerable();
+            var source = new Progressor<int>(new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }).AsEnumerable();
             var handle = new ManualResetEvent(false);
             int[] count = { 0, 0, 0 };
             var work = new WaitCallback
@@ -226,6 +226,7 @@ namespace Tests.Theraot.Collections
                         handle.WaitOne();
                         foreach (var item in source)
                         {
+                            GC.KeepAlive(item);
                             Interlocked.Increment(ref count[2]);
                         }
                         Interlocked.Increment(ref count[1]);
@@ -243,6 +244,111 @@ namespace Tests.Theraot.Collections
                 Thread.Sleep(0);
             }
             Assert.AreEqual(10, Thread.VolatileRead(ref count[2]));
+            handle.Close();
+        }
+
+        [Test]
+        public void ThreadedUseArray()
+        {
+            var source = new Progressor<int>(new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }).AsEnumerable();
+            var handle = new ManualResetEvent(false);
+            int[] count = { 0, 0, 0 };
+            var work = new WaitCallback
+                (
+                    _ =>
+                    {
+                        Interlocked.Increment(ref count[0]);
+                        handle.WaitOne();
+                        foreach (var item in source)
+                        {
+                            GC.KeepAlive(item);
+                            Interlocked.Increment(ref count[2]);
+                        }
+                        Interlocked.Increment(ref count[1]);
+                    }
+                );
+            ThreadPool.QueueUserWorkItem(work);
+            ThreadPool.QueueUserWorkItem(work);
+            while (Thread.VolatileRead(ref count[0]) != 2)
+            {
+                Thread.Sleep(0);
+            }
+            handle.Set();
+            while (Thread.VolatileRead(ref count[1]) != 2)
+            {
+                Thread.Sleep(0);
+            }
+            Assert.AreEqual(10, Thread.VolatileRead(ref count[2]));
+            handle.Close();
+        }
+
+        [Test]
+        public void ThreadedUseWithArrayPreface()
+        {
+            var source = new Progressor<int>(new[] { 7, 7, 7, 7, 7 }, new Progressor<int>(new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 })).AsEnumerable();
+            var handle = new ManualResetEvent(false);
+            int[] count = { 0, 0, 0 };
+            var work = new WaitCallback
+                (
+                    _ =>
+                    {
+                        Interlocked.Increment(ref count[0]);
+                        handle.WaitOne();
+                        foreach (var item in source)
+                        {
+                            GC.KeepAlive(item);
+                            Interlocked.Increment(ref count[2]);
+                        }
+                        Interlocked.Increment(ref count[1]);
+                    }
+                );
+            ThreadPool.QueueUserWorkItem(work);
+            ThreadPool.QueueUserWorkItem(work);
+            while (Thread.VolatileRead(ref count[0]) != 2)
+            {
+                Thread.Sleep(0);
+            }
+            handle.Set();
+            while (Thread.VolatileRead(ref count[1]) != 2)
+            {
+                Thread.Sleep(0);
+            }
+            Assert.AreEqual(15, Thread.VolatileRead(ref count[2]));
+            handle.Close();
+        }
+
+        [Test]
+        public void ThreadedUseWithPreface()
+        {
+            var source = new Progressor<int>( new List<int> {7, 7, 7, 7, 7}, new Progressor<int>(new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 })).AsEnumerable();
+            var handle = new ManualResetEvent(false);
+            int[] count = { 0, 0, 0 };
+            var work = new WaitCallback
+                (
+                    _ =>
+                    {
+                        Interlocked.Increment(ref count[0]);
+                        handle.WaitOne();
+                        foreach (var item in source)
+                        {
+                            GC.KeepAlive(item);
+                            Interlocked.Increment(ref count[2]);
+                        }
+                        Interlocked.Increment(ref count[1]);
+                    }
+                );
+            ThreadPool.QueueUserWorkItem(work);
+            ThreadPool.QueueUserWorkItem(work);
+            while (Thread.VolatileRead(ref count[0]) != 2)
+            {
+                Thread.Sleep(0);
+            }
+            handle.Set();
+            while (Thread.VolatileRead(ref count[1]) != 2)
+            {
+                Thread.Sleep(0);
+            }
+            Assert.AreEqual(15, Thread.VolatileRead(ref count[2]));
             handle.Close();
         }
 
@@ -288,7 +394,7 @@ namespace Tests.Theraot.Collections
                 Assert.AreEqual(item, indexA);
                 indexA++;
             }
-            Assert.AreEqual(indexA, 6);
+            Assert.AreEqual(6, indexA);
             Assert.AreEqual(indexA, indexB);
         }
     }

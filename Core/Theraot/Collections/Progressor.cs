@@ -36,9 +36,9 @@ namespace Theraot.Collections
 
             _tryTake = (out T value) =>
             {
+                Interlocked.Increment(ref control);
                 try
                 {
-                    Thread.VolatileWrite(ref control, 1);
                     if (buffer.TryTake(out value) || wrapped.TryTake(out value))
                     {
                         _proxy.OnNext(value);
@@ -51,7 +51,7 @@ namespace Theraot.Collections
                 }
                 finally
                 {
-                    Thread.VolatileWrite(ref control, 0);
+                    Interlocked.Decrement(ref control);
                 }
             };
         }
@@ -105,9 +105,9 @@ namespace Theraot.Collections
                 {
                     _tryTake = (out T _value) =>
                     {
+                        Interlocked.Increment(ref control);
                         try
                         {
-                            Thread.VolatileWrite(ref control, 1);
                             if (buffer.TryTake(out _value) || wrapped.TryTake(out _value))
                             {
                                 _proxy.OnNext(_value);
@@ -120,7 +120,109 @@ namespace Theraot.Collections
                         }
                         finally
                         {
-                            Thread.VolatileWrite(ref control, 0);
+                            Interlocked.Decrement(ref control);
+                        }
+                    };
+                    Thread.VolatileWrite(ref guard, 3);
+                }
+                else
+                {
+                    ThreadingHelper.SpinWaitUntil(ref guard, 3);
+                }
+                return _tryTake(out value);
+            };
+        }
+
+        public Progressor(T[] wrapped)
+        {
+            Check.NotNullArgument(wrapped, "wrapped");
+
+            int guard = 0;
+            int index = -1;
+
+            _proxy = new ProxyObservable<T>();
+            _tryTake = (out T value) =>
+            {
+                value = default(T);
+                if (Thread.VolatileRead(ref guard) == 0)
+                {
+                    var currentIndex = Interlocked.Increment(ref index);
+                    if (currentIndex < wrapped.Length)
+                    {
+                        value = wrapped[currentIndex];
+                        _proxy.OnNext(value);
+                        return true;
+                    }
+                    Interlocked.CompareExchange(ref guard, 1, 0);
+                }
+                if (Interlocked.CompareExchange(ref guard, 2, 1) == 1)
+                {
+                    _tryTake = (out T _value) =>
+                    {
+                        _value = default(T);
+                        return false;
+                    };
+                }
+                return false;
+            };
+        }
+
+        public Progressor(T[] preface, Progressor<T> wrapped)
+        {
+            Check.NotNullArgument(wrapped, "wrapped");
+            Check.NotNullArgument(preface, "preface");
+
+            int control = 0;
+            int guard = 0;
+            int index = -1;
+
+            Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0;
+            var buffer = new QueueBucket<T>();
+            wrapped.SubscribeAction
+            (
+                item =>
+                {
+                    if (newFilter(item))
+                    {
+                        buffer.Add(item);
+                    }
+                }
+            );
+            _proxy = new ProxyObservable<T>();
+
+            _tryTake = (out T value) =>
+            {
+                if (Thread.VolatileRead(ref guard) == 0)
+                {
+                    var currentIndex = Interlocked.Increment(ref index);
+                    if (currentIndex < preface.Length)
+                    {
+                        value = preface[currentIndex];
+                        _proxy.OnNext(value);
+                        return true;
+                    }
+                    Interlocked.CompareExchange(ref guard, 1, 0);
+                }
+                if (Interlocked.CompareExchange(ref guard, 2, 1) == 1)
+                {
+                    _tryTake = (out T _value) =>
+                    {
+                        Interlocked.Increment(ref control);
+                        try
+                        {
+                            if (buffer.TryTake(out _value) || wrapped.TryTake(out _value))
+                            {
+                                _proxy.OnNext(_value);
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        }
+                        finally
+                        {
+                            Interlocked.Decrement(ref control);
                         }
                     };
                     Thread.VolatileWrite(ref guard, 3);
@@ -253,7 +355,7 @@ namespace Theraot.Collections
             (
                 (out T value) =>
                 {
-                    Thread.VolatileWrite(ref control, 1);
+                    Interlocked.Increment(ref control);
                     try
                     {
                         TInput item;
@@ -273,7 +375,7 @@ namespace Theraot.Collections
                     }
                     finally
                     {
-                        Thread.VolatileWrite(ref control, 0);
+                        Interlocked.Decrement(ref control);
                     }
                 },
                 proxy
@@ -331,7 +433,7 @@ namespace Theraot.Collections
                     }
                     finally
                     {
-                        Thread.VolatileWrite(ref control, 0);
+                        Interlocked.Decrement(ref control);
                     }
                 },
                 proxy
@@ -364,7 +466,7 @@ namespace Theraot.Collections
             (
                 (out T value) =>
                 {
-                    Thread.VolatileWrite(ref control, 1);
+                    Interlocked.Increment(ref control);
                     try
                     {
                         TInput item;
@@ -392,7 +494,7 @@ namespace Theraot.Collections
                     }
                     finally
                     {
-                        Thread.VolatileWrite(ref control, 0);
+                        Interlocked.Decrement(ref control);
                     }
                 },
                 proxy
@@ -423,9 +525,9 @@ namespace Theraot.Collections
             (
                 (out T value) =>
                 {
+                    Interlocked.Increment(ref control);
                     try
                     {
-                        Thread.VolatileWrite(ref control, 0);
                     again:
                         foreach (var item in buffer.Where(item => !item.Value))
                         {
@@ -455,7 +557,7 @@ namespace Theraot.Collections
                     }
                     finally
                     {
-                        Thread.VolatileWrite(ref control, 1);
+                        Interlocked.Decrement(ref control);
                     }
                 },
                 proxy
