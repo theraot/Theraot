@@ -34,39 +34,54 @@ namespace Theraot.Threading
         {
             get
             {
-                var local = _workQueue.Value.Value;
-                return local.Item2.IsTaken;
+                var workQueue = _workQueue.Value;
+                if (workQueue != null)
+                {
+                    var local = workQueue.Value;
+                    return local.Item2.IsTaken;
+                }
+                return false;
             }
         }
 
         public IPromise Execute(Action action)
         {
-            var local = _workQueue.Value.Value;
-            var result = AddExecution(action, local);
-            IDisposable engagement;
-            if (local.Item2.Enter(out engagement))
+            var workQueue = _workQueue.Value;
+            if (workQueue != null)
             {
-                using (engagement)
+                var local = workQueue.Value;
+                var result = AddExecution(action, local);
+                IDisposable engagement;
+                if (local.Item2.Enter(out engagement))
                 {
-                    ExecutePending(local);
+                    using (engagement)
+                    {
+                        ExecutePending(local);
+                    }
                 }
+                return result;
             }
-            return result;
+            return null;
         }
 
         public IPromise<T> Execute<T>(Func<T> action)
         {
-            var local = _workQueue.Value.Value;
-            var result = AddExecution(action, local);
-            IDisposable engagement;
-            if (local.Item2.Enter(out engagement))
+            var workQueue = _workQueue.Value;
+            if (workQueue != null)
             {
-                using (engagement)
+                var local = workQueue.Value;
+                var result = AddExecution(action, local);
+                IDisposable engagement;
+                if (local.Item2.Enter(out engagement))
                 {
-                    ExecutePending(local);
+                    using (engagement)
+                    {
+                        ExecutePending(local);
+                    }
                 }
+                return result;
             }
-            return result;
+            return null;
         }
 
         private static IPromise AddExecution(Action action, Tuple<Queue<Action>, Guard> local)
