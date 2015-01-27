@@ -62,6 +62,7 @@ namespace Theraot.Collections
             var enumerator = Check.CheckArgument(Check.NotNullArgument(preface, "preface").GetEnumerator(), arg => arg != null, "preface.GetEnumerator()");
 
             int control = 0;
+            int guard = 0;
 
             Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0;
             var buffer = new QueueBucket<T>();
@@ -79,15 +80,29 @@ namespace Theraot.Collections
 
             _tryTake = (out T value) =>
             {
-                if (enumerator.MoveNext())
+                value = default(T);
+                if (Thread.VolatileRead(ref guard) == 0)
                 {
-                    value = enumerator.Current;
-                    _proxy.OnNext(value);
-                    return true;
-                }
-                else
-                {
+                    bool result;
+                    // We need a lock, there is no way around it. IEnumerator is just awful. Use another overload if possible.
+                    lock (enumerator)
+                    {
+                        result = enumerator.MoveNext();
+                        if (result)
+                        {
+                            value = enumerator.Current;
+                        }
+                    }
+                    if (result)
+                    {
+                        _proxy.OnNext(value);
+                        return true;
+                    }
                     enumerator.Dispose();
+                    Interlocked.CompareExchange(ref guard, 1, 0);
+                }
+                if (Interlocked.CompareExchange(ref guard, 2, 1) == 1)
+                {
                     _tryTake = (out T _value) =>
                     {
                         try
@@ -108,34 +123,55 @@ namespace Theraot.Collections
                             Thread.VolatileWrite(ref control, 0);
                         }
                     };
-                    return _tryTake(out value);
+                    Thread.VolatileWrite(ref guard, 3);
                 }
+                else
+                {
+                    ThreadingHelper.SpinWaitUntil(ref guard, 3);
+                }
+                return _tryTake(out value);
             };
         }
 
         public Progressor(IEnumerable<T> wrapped)
         {
             var enumerator = Check.CheckArgument(Check.NotNullArgument(wrapped, "wrapped").GetEnumerator(), arg => arg != null, "wrapped.GetEnumerator()");
+
+            int guard = 0;
+
             _proxy = new ProxyObservable<T>();
             _tryTake = (out T value) =>
             {
-                if (enumerator.MoveNext())
+                value = default(T);
+                if (Thread.VolatileRead(ref guard) == 0)
                 {
-                    value = enumerator.Current;
-                    _proxy.OnNext(value);
-                    return true;
-                }
-                else
-                {
+                    bool result;
+                    // We need a lock, there is no way around it. IEnumerator is just awful. Use another overload if possible.
+                    lock (enumerator)
+                    {
+                        result = enumerator.MoveNext();
+                        if (result)
+                        {
+                            value = enumerator.Current;
+                        }
+                    }
+                    if (result)
+                    {
+                        _proxy.OnNext(value);
+                        return true;
+                    }
                     enumerator.Dispose();
-                    value = default(T);
+                    Interlocked.CompareExchange(ref guard, 1, 0);
+                }
+                if (Interlocked.CompareExchange(ref guard, 2, 1) == 1)
+                {
                     _tryTake = (out T _value) =>
                     {
                         _value = default(T);
                         return false;
                     };
-                    return false;
                 }
+                return false;
             };
         }
 
