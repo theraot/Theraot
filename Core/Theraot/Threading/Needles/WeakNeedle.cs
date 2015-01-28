@@ -381,7 +381,7 @@ namespace Theraot.Threading.Needles
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
-        private GCHandle CreateHandle(object target, bool trackResurrection)
+        private static GCHandle CreateHandle(object target, bool trackResurrection)
         {
             return GCHandle.Alloc(target, trackResurrection ? GCHandleType.WeakTrackResurrection : GCHandleType.Weak);
         }

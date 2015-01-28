@@ -16,6 +16,7 @@ namespace Theraot.Core
         public static void Enter(object obj, ref bool taken)
         {
             Monitor.Enter(obj);
+            GC.KeepAlive(taken);
             Thread.MemoryBarrier();
             taken = true;
         }
@@ -40,6 +41,7 @@ namespace Theraot.Core
 
         public static void TryEnter(object obj, ref bool taken)
         {
+            GC.KeepAlive(taken);
             taken = Monitor.TryEnter(obj);
         }
 
@@ -50,6 +52,7 @@ namespace Theraot.Core
 
         public static void TryEnter(object obj, int millisecondsTimeout, ref bool taken)
         {
+            GC.KeepAlive(taken);
             taken = Monitor.TryEnter(obj, millisecondsTimeout);
         }
 
@@ -60,6 +63,7 @@ namespace Theraot.Core
 
         public static void TryEnter(object obj, TimeSpan timeout, ref bool taken)
         {
+            GC.KeepAlive(taken);
             taken = Monitor.TryEnter(obj, timeout);
         }
 
@@ -99,6 +103,7 @@ namespace Theraot.Core
 
         public static void TryEnter(object obj, int millisecondsTimeout, ref bool taken, CancellationToken cancellationToken)
         {
+            GC.KeepAlive(taken);
             taken = TryEnter(obj, millisecondsTimeout, cancellationToken);
         }
 
@@ -130,6 +135,7 @@ namespace Theraot.Core
 
         public static void TryEnter(object obj, TimeSpan timeout, ref bool taken, CancellationToken cancellationToken)
         {
+            GC.KeepAlive(taken);
             taken = TryEnter(obj, timeout, cancellationToken);
         }
     }

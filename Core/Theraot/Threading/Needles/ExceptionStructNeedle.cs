@@ -77,7 +77,7 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                return obj is Exception && (obj as Exception).Equals(_exception);
+                return obj is Exception && obj.Equals(_exception);
             }
         }
 

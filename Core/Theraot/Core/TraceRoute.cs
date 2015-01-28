@@ -32,18 +32,10 @@ namespace Theraot.Core
                     var ping = new Ping();
                     ping.PingCompleted += (sender, e) =>
                     {
-                        bool done;
                         var address = e.Reply.Address;
                         var status = e.Reply.Status;
                     back:
-                        if (callback.Invoke(destination, new TracertNode(address, status, e.Reply.Options.Ttl)))
-                        {
-                            done = address.Equals(destination);
-                        }
-                        else
-                        {
-                            done = true;
-                        }
+                        var done = !callback.Invoke(destination, new TracertNode(address, status, e.Reply.Options.Ttl)) || address.Equals(destination);
                         if (done)
                         {
                             try

@@ -98,6 +98,7 @@ namespace Theraot.Threading.Needles
             }
             else
             {
+                // Keep the "is" operator
                 if (obj is T)
                 {
                     return EqualityComparer<T>.Default.Equals(_target, (T)obj);
