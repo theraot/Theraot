@@ -99,33 +99,31 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            else
+            if (count == 0)
             {
-                var collection = source as ICollection<TSource>;
-                if (collection == null)
+                return true;
+            }
+            var collection = source as ICollection<TSource>;
+            if (collection == null)
+            {
+                int result = 0;
+                using (var item = source.GetEnumerator())
                 {
-                    int result = 0;
-                    using (var item = source.GetEnumerator())
+                    while (item.MoveNext())
                     {
-                        while (item.MoveNext())
+                        checked
                         {
-                            checked
-                            {
-                                result++;
-                            }
-                            if (result == count)
-                            {
-                                return true;
-                            }
+                            result++;
+                        }
+                        if (result == count)
+                        {
+                            return true;
                         }
                     }
-                    return false;
                 }
-                else
-                {
-                    return collection.Count > count;
-                }
+                return false;
             }
+            return collection.Count >= count;
         }
 
         public static IEnumerable<T> SkipItems<T>(this IEnumerable<T> target, int skipCount)

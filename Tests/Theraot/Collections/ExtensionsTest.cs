@@ -14,10 +14,10 @@ namespace Tests.Theraot.Collections
         {
             var collection = new List<int>();
             // Adds and returns the number of added items
-            Assert.AreEqual(4, Extensions.AddRange(collection, new [] {0, 1, 2, 3}));
+            Assert.AreEqual(4, Extensions.AddRange(collection, new[] { 0, 1, 2, 3 }));
             Assert.AreEqual(4, collection.Count);
             // Adds and allows to iterate over the items as they are added
-            Assert.IsTrue(collection.AddRangeEnumerable(new[] {10, 20, 30}).SequenceEqual(new[] {10, 20, 30}));
+            Assert.IsTrue(collection.AddRangeEnumerable(new[] { 10, 20, 30 }).SequenceEqual(new[] { 10, 20, 30 }));
             var count = collection.Count;
             Assert.AreEqual(7, count);
             foreach (var item in collection.AddRangeEnumerable(new[] { 100, 200, 300 }))
@@ -26,7 +26,7 @@ namespace Tests.Theraot.Collections
                 count++;
                 Assert.AreEqual(count, collection.Count);
             }
-            Assert.IsTrue(collection.SequenceEqual(new[] { 0, 1, 2, 3, 10, 20, 30, 100, 200, 300}));
+            Assert.IsTrue(collection.SequenceEqual(new[] { 0, 1, 2, 3, 10, 20, 30, 100, 200, 300 }));
         }
 
         [Test]
@@ -35,7 +35,7 @@ namespace Tests.Theraot.Collections
             var check = false;
             var index = 0;
             var array = new List<int> { 0, 1, 2, 3 };
-            
+
             // Does something after the iteration is over
             foreach (var item in array.After(() => check = true))
             {
@@ -46,7 +46,7 @@ namespace Tests.Theraot.Collections
             Assert.IsTrue(check);
 
             check = false;
-            foreach (var item in (new int[] {}).After(() => check = true))
+            foreach (var item in (new int[] { }).After(() => check = true))
             {
                 GC.KeepAlive(item);
                 // There should be no items
@@ -83,7 +83,7 @@ namespace Tests.Theraot.Collections
             Assert.AreEqual(4, index);
 
             index = 0;
-            foreach (var item in (new int[] {}).AfterCounted(count => index = count))
+            foreach (var item in (new int[] { }).AfterCounted(count => index = count))
             {
                 GC.KeepAlive(item);
                 // There should be no items
@@ -129,7 +129,7 @@ namespace Tests.Theraot.Collections
         {
             var left = new[] { 0, 1, 2, 3 };
             var right = new[] { 0, 1, 2, 3, 4 };
-            var all = new[] { 0, 1, 2, 3, 0, 1, 2, 3, 4};
+            var all = new[] { 0, 1, 2, 3, 0, 1, 2, 3, 4 };
             Assert.IsTrue(left.Append(4).SequenceEqual(right));
             Assert.IsTrue(left.Append(right).SequenceEqual(all));
         }
@@ -270,6 +270,36 @@ namespace Tests.Theraot.Collections
             }
         }
 
+        [Test]
+        public void HasAtLeast()
+        {
+            var emptyCollection = new int []{};
+            Assert.IsTrue(emptyCollection.HasAtLeast(0));
+            Assert.IsFalse(emptyCollection.HasAtLeast(1));
+            var unaryCollection = new[] { 0 };
+            Assert.IsTrue(unaryCollection.HasAtLeast(0));
+            Assert.IsTrue(unaryCollection.HasAtLeast(1));
+            Assert.IsFalse(unaryCollection.HasAtLeast(2));
+            var arrayCollection = new [] {0, 1, 2, 3};
+            Assert.IsTrue(arrayCollection.HasAtLeast(0));
+            Assert.IsTrue(arrayCollection.HasAtLeast(1));
+            Assert.IsTrue(arrayCollection.HasAtLeast(2));
+            Assert.IsTrue(arrayCollection.HasAtLeast(3));
+            Assert.IsTrue(arrayCollection.HasAtLeast(4));
+            Assert.IsFalse(arrayCollection.HasAtLeast(5));
+
+            Assert.IsTrue(Enumerable.Empty<int>().HasAtLeast(0));
+            Assert.IsFalse(Enumerable.Empty<int>().HasAtLeast(1));
+            Assert.IsTrue(Enumerable.Range(0, 1).HasAtLeast(0));
+            Assert.IsTrue(Enumerable.Range(0, 1).HasAtLeast(1));
+            Assert.IsFalse(Enumerable.Range(0, 1).HasAtLeast(2));
+            Assert.IsTrue(Enumerable.Range(0, 4).HasAtLeast(0));
+            Assert.IsTrue(Enumerable.Range(0, 4).HasAtLeast(1));
+            Assert.IsTrue(Enumerable.Range(0, 4).HasAtLeast(2));
+            Assert.IsTrue(Enumerable.Range(0, 4).HasAtLeast(3));
+            Assert.IsTrue(Enumerable.Range(0, 4).HasAtLeast(4));
+            Assert.IsFalse(Enumerable.Range(0, 4).HasAtLeast(5));
+        }
         [Test]
         public void Prepend()
         {
