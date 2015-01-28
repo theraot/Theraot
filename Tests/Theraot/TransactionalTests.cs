@@ -283,7 +283,7 @@ namespace Tests.Theraot
             {
                 new ManualResetEvent(false) /*work a - entered*/,
                 new ManualResetEvent(false) /*work b - entered*/,
-                new ManualResetEvent(false) /*done*/,
+                new ManualResetEvent(false) /*done*/
             };
             ThreadPool.QueueUserWorkItem
             (

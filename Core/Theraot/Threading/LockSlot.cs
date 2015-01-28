@@ -14,11 +14,7 @@ namespace Theraot.Threading
 
         internal LockSlot(LockContext<T> context, int id, VersionProvider.VersionToken versionToken)
         {
-            if (ReferenceEquals(versionToken, null))
-            {
-                throw new ArgumentNullException("versionToken");
-            }
-            else if (ReferenceEquals(context, null))
+            if (ReferenceEquals(context, null))
             {
                 throw new ArgumentNullException("context");
             }

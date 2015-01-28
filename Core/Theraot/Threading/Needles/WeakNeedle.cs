@@ -82,9 +82,10 @@ namespace Theraot.Threading.Needles
                     {
                         return false;
                     }
-                    if (target is INeedle<T>)
+                    var needle = target as INeedle<T>;
+                    if (needle != null)
                     {
-                        return (target as INeedle<T>).IsAlive;
+                        return needle.IsAlive;
                     }
                 }
                 return false;
@@ -139,9 +140,10 @@ namespace Theraot.Threading.Needles
                     {
                         return null;
                     }
-                    if (target is INeedle<T>)
+                    var needle = target as INeedle<T>;
+                    if (needle != null)
                     {
-                        return (target as INeedle<T>).Value;
+                        return needle.Value;
                     }
                 }
                 return null;

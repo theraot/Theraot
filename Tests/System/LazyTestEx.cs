@@ -59,7 +59,7 @@ namespace MonoTests.System
         [Test]
         public void ConstructorWithNull()
         {
-            Assert.Throws(typeof(ArgumentNullException), () => new Lazy<int>(null));
+            Assert.Throws(typeof(ArgumentNullException), () => GC.KeepAlive(new Lazy<int>(null)));
         }
 
         [Test]
@@ -160,7 +160,7 @@ namespace MonoTests.System
 
         private class DefectiveCtorClass
         {
-            private static int count = 0;
+            private static int count;
 
             public DefectiveCtorClass()
             {

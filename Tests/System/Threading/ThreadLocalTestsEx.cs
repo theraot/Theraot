@@ -135,7 +135,7 @@ namespace MonoTests.System.Threading
             thread.Join();
         }
 
-        private void TestException(bool tracking)
+        private static void TestException(bool tracking)
         {
             int callTime = 0;
             using

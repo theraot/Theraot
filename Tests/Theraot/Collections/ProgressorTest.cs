@@ -139,7 +139,7 @@ namespace Tests.Theraot.Collections
         public void ObservableProgressor()
         {
             var source = new Progressor<int>(new[] { 0, 1, 2, 3, 4, 5 });
-            var progresor = new Progressor<int>((source as IObservable<int>));
+            var progresor = new Progressor<int>(((IObservable<int>) source));
             source.AsEnumerable().Consume();
             int indexA = 0;
             int indexB = 0;

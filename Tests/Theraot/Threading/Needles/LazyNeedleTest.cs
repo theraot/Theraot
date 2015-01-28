@@ -53,7 +53,7 @@ namespace Tests.Theraot.Threading.Needles
         [Test]
         public void ConstructorWithNull()
         {
-            Assert.Throws(typeof(ArgumentNullException), () => new LazyNeedle<int>(null));
+            Assert.Throws(typeof(ArgumentNullException), () => GC.KeepAlive(new LazyNeedle<int>(null)));
         }
 
         [Test]
