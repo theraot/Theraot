@@ -87,7 +87,7 @@ namespace Theraot.Collections
             }
         }
 
-        public static IEnumerable<T> AfterLast<T>(this IEnumerable<T> target, Action action)
+        public static IEnumerable<T> AfterAny<T>(this IEnumerable<T> target, Action action)
         {
             Check.NotNullArgument(target, "target");
             if (action == null)
@@ -100,7 +100,7 @@ namespace Theraot.Collections
             }
         }
 
-        public static IEnumerable<T> AfterLast<T>(this IEnumerable<T> target, Action<T> action)
+        public static IEnumerable<T> AfterAny<T>(this IEnumerable<T> target, Action<T> action)
         {
             Check.NotNullArgument(target, "target");
             if (action == null)
@@ -204,7 +204,7 @@ namespace Theraot.Collections
             }
         }
 
-        public static IEnumerable<T> BeforeFirst<T>(this IEnumerable<T> target, Action action)
+        public static IEnumerable<T> BeforeAny<T>(this IEnumerable<T> target, Action action)
         {
             Check.NotNullArgument(target, "target");
             if (action == null)
@@ -217,7 +217,7 @@ namespace Theraot.Collections
             }
         }
 
-        public static IEnumerable<T> BeforeFirst<T>(this IEnumerable<T> target, Action<T> action)
+        public static IEnumerable<T> BeforeAny<T>(this IEnumerable<T> target, Action<T> action)
         {
             Check.NotNullArgument(target, "target");
             if (action == null)

@@ -32,7 +32,6 @@ namespace Tests.Theraot.Collections
         [Test]
         public void After()
         {
-            // TODO: naming AfterLast
             var check = false;
             var index = 0;
             var array = new List<int> { 0, 1, 2, 3 };
@@ -57,7 +56,7 @@ namespace Tests.Theraot.Collections
 
             index = 0;
             check = false;
-            foreach (var item in array.AfterLast(() => check = true))
+            foreach (var item in array.AfterAny(() => check = true))
             {
                 Assert.AreEqual(index, item);
                 index++;
@@ -66,7 +65,7 @@ namespace Tests.Theraot.Collections
             Assert.IsTrue(check);
 
             check = false;
-            foreach (var item in (new int[] { }).AfterLast(() => check = true))
+            foreach (var item in (new int[] { }).AfterAny(() => check = true))
             {
                 GC.KeepAlive(item);
                 // There should be no items
@@ -138,7 +137,6 @@ namespace Tests.Theraot.Collections
         [Test]
         public void Before()
         {
-            // TODO: naming BeforeFirst
             var check = false;
             var index = 0;
             var array = new List<int> { 0, 1, 2, 3 };
@@ -162,7 +160,7 @@ namespace Tests.Theraot.Collections
             Assert.IsTrue(check);
 
             index = 0;
-            foreach (var item in array.BeforeFirst(() => check = true))
+            foreach (var item in array.BeforeAny(() => check = true))
             {
                 Assert.AreEqual(index, item);
                 index++;
@@ -171,7 +169,7 @@ namespace Tests.Theraot.Collections
             Assert.IsTrue(check);
 
             check = false;
-            foreach (var item in (new int[] { }).BeforeFirst(() => check = true))
+            foreach (var item in (new int[] { }).BeforeAny(() => check = true))
             {
                 GC.KeepAlive(item);
                 // There should be no items
