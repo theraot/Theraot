@@ -331,7 +331,6 @@
     <Compile Include="Theraot\Collections\Specialized\EnumerationSet.cs" />
     <Compile Include="Theraot\Collections\Specialized\ExtendedEnumerable.cs" />
     <Compile Include="Theraot\Collections\Specialized\ExtendedEnumerableBase.cs" />
-    <Compile Include="Theraot\Collections\Specialized\ExtendedFilteredEnumerable.cs" />
     <Compile Include="Theraot\Collections\Specialized\FlagArray.cs" />
     <Compile Include="Theraot\Collections\Specialized\NeedleConversionEqualityComparer.cs" />
     <Compile Include="Theraot\Collections\Specialized\NullAwareDictionary.cs" />

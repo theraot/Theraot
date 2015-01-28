@@ -18,38 +18,20 @@ namespace Theraot.Collections
             return new ExtendedEnumerable<T>(target, AsUnaryEnumerable(append));
         }
 
-        public static IEnumerable<T> Append<T>(this IEnumerable<T> target, IEnumerable<T> append, Predicate<T> match)
-        {
-            return new ExtendedFilteredEnumerable<T>(target, append, match);
-        }
-
-        public static IEnumerable<T> Append<T>(this IEnumerable<T> target, T append, Predicate<T> match)
-        {
-            return new ExtendedFilteredEnumerable<T>(target, AsUnaryEnumerable(append), match);
-        }
-
         public static IEnumerable<T> Cycle<T>(this IEnumerable<T> source)
         {
             if (source == null)
             {
                 throw new ArgumentNullException("source");
             }
-            else
+            while (true)
             {
-                while (true)
+                foreach (var item in source)
                 {
-                    foreach (var item in source)
-                    {
-                        yield return item;
-                    }
+                    yield return item;
                 }
-                // Infinite Loop - This method creates an endless IEnumerable<T>
             }
-        }
-
-        public static IEnumerable<T> Filter<T>(this IEnumerable<T> target, Predicate<T> match)
-        {
-            return new ExtendedFilteredEnumerable<T>(target, null, match);
+            // Infinite Loop - This method creates an endless IEnumerable<T>
         }
 
         public static IEnumerable<T> Prepend<T>(this IEnumerable<T> target, IEnumerable<T> prepend)
@@ -60,16 +42,6 @@ namespace Theraot.Collections
         public static IEnumerable<T> Prepend<T>(this IEnumerable<T> target, T prepend)
         {
             return new ExtendedEnumerable<T>(AsUnaryEnumerable(prepend), target);
-        }
-
-        public static IEnumerable<T> Prepend<T>(this IEnumerable<T> target, IEnumerable<T> prepend, Predicate<T> match)
-        {
-            return new ExtendedFilteredEnumerable<T>(prepend, target, match);
-        }
-
-        public static IEnumerable<T> Prepend<T>(this IEnumerable<T> target, T prepend, Predicate<T> match)
-        {
-            return new ExtendedFilteredEnumerable<T>(AsUnaryEnumerable(prepend), target, match);
         }
     }
 }

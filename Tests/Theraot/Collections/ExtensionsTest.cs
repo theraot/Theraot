@@ -133,9 +133,6 @@ namespace Tests.Theraot.Collections
             var all = new[] { 0, 1, 2, 3, 0, 1, 2, 3, 4};
             Assert.IsTrue(left.Append(4).SequenceEqual(right));
             Assert.IsTrue(left.Append(right).SequenceEqual(all));
-            // TODO: not very intuitive
-            Assert.IsTrue(left.Append(right, item => item % 2 == 0).SequenceEqual(new [] {0, 2, 0, 2, 4}));
-            Assert.IsTrue(left.Append(4, item => item % 2 == 0).SequenceEqual(new[] { 0, 2, 4 }));
         }
 
         [Test]
@@ -283,9 +280,6 @@ namespace Tests.Theraot.Collections
             var all = new[] { 4, 0, 1, 2, 3, 0, 1, 2, 3 };
             Assert.IsTrue(left.Prepend(4).SequenceEqual(right));
             Assert.IsTrue(left.Prepend(right).SequenceEqual(all));
-            // TODO: not very intuitive
-            Assert.IsTrue(left.Prepend(right, item => item % 2 == 0).SequenceEqual(new[] { 4, 0, 2, 0, 2 }));
-            Assert.IsTrue(left.Prepend(4, item => item % 2 == 0).SequenceEqual(new[] { 4, 0, 2 }));
         }
     }
 }
