@@ -43,29 +43,24 @@ namespace Theraot.Core
 
         public static IEnumerable<string> GetFilesAndFoldersRecursive(string folder, string pattern)
         {
-            return GetFiles(folder, pattern).Concat
+            var enumerable = GraphHelper.ExploreBreadthFirstTree
                 (
-                    GraphHelper.ExploreBreadthFirstTree
-                        (
-                            folder,
-                            GetFolders,
-                            current => current.AsUnaryEnumerable().Concat(GetFiles(current, pattern))
-                        ).SelectMany(input => input)
+                    folder,
+                    GetFolders,
+                    current => current.AsUnaryEnumerable().Concat(GetFiles(current, pattern))
                 );
+            return GetFiles(folder, pattern).Concat(enumerable.Flatten());
         }
 
         public static IEnumerable<string> GetFilesRecursive(string folder, string pattern)
         {
-            return
-                GetFiles(folder, pattern).Concat
-                    (
-                        GraphHelper.ExploreBreadthFirstTree
-                            (
-                                folder,
-                                GetFolders,
-                                current => GetFiles(current, pattern)
-                            ).SelectMany(input => input)
-                    );
+            var enumerable = GraphHelper.ExploreBreadthFirstTree
+                (
+                    folder,
+                    GetFolders,
+                    current => GetFiles(current, pattern)
+                );
+            return GetFiles(folder, pattern).Concat(enumerable.Flatten());
         }
 
         public static IEnumerable<string> GetFolders(string folder)

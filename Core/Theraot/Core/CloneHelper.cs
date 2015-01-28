@@ -53,6 +53,7 @@ namespace Theraot.Core
             public T Clone(T target)
             {
                 // Only called with ICloneable target
+                // No need to check for null - let it throw
                 return (T)(target as ICloneable).Clone();
             }
         }
@@ -77,6 +78,7 @@ namespace Theraot.Core
             public T Clone(T target)
             {
                 // Only called with ICloneable<T> target
+                // No need to check for null - let it throw
                 return (target as ICloneable<T>).Clone();
             }
         }

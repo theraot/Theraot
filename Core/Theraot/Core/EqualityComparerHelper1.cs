@@ -32,7 +32,7 @@ namespace Theraot.Core
             else if (type.IsGenericImplementationOf(out tmp, typeof(INeedle<>)))
             {
                 var types = tmp.GetGenericArguments();
-                var conversionType = typeof(NeedleConversionEqualityComparer<,>).MakeGenericType(new[] { tmp, types[0] });
+                var conversionType = typeof(NeedleConversionEqualityComparer<,>).MakeGenericType(tmp, types[0]);
                 _default = (IEqualityComparer<T>)conversionType.Create
                            (
                                GetPropertyDelegated

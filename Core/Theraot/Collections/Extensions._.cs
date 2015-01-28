@@ -905,6 +905,11 @@ namespace Theraot.Collections
             return result;
         }
 
+        public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> source)
+        {
+            return FlattenExtracted(Check.NotNullArgument(source, "source"));
+        }
+
         public static void For<TItem>(this IEnumerable<TItem> collection, Action<int, TItem> action)
         {
             var _action = Check.NotNullArgument(action, "action");
@@ -1590,12 +1595,12 @@ namespace Theraot.Collections
 
         public static int SymmetricExceptWith<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other)
         {
-            return collection.AddRange(Extensions.Where(other.Distinct(), input => !collection.Remove(input)));
+            return collection.AddRange(Where(other.Distinct(), input => !collection.Remove(input)));
         }
 
         public static IEnumerable<TItem> SymmetricExceptWithEnumerable<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other)
         {
-            return collection.AddRangeEnumerable(Extensions.Where(other.Distinct(), input => !collection.Remove(input)));
+            return collection.AddRangeEnumerable(Where(other.Distinct(), input => !collection.Remove(input)));
         }
 
         public static TItem[] ToArray<TItem>(this ICollection<TItem> collection)
@@ -1889,6 +1894,16 @@ namespace Theraot.Collections
             }
         }
 
+        private static IEnumerable<T> FlattenExtracted<T>(IEnumerable<IEnumerable<T>> source)
+        {
+            foreach (var key in source)
+            {
+                foreach (var item in key)
+                {
+                    yield return item;
+                }
+            }
+        }
         private static bool IsSubsetOf<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> other, bool proper)
         {
             var _this = AsDistinctCollection(collection);
