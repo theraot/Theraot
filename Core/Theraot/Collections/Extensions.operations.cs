@@ -93,12 +93,6 @@ namespace Theraot.Collections
                    );
         }
 
-        public static IEnumerable<T> ExceptWhere<T>(this IEnumerable<T> source, Predicate<T> predicate)
-        {
-            var _predicate = Check.NotNullArgument(predicate, "predicate");
-            return Where(Check.NotNullArgument(source, "source"), item => !_predicate.Invoke(item));
-        }
-
         public static bool HasAtLeast<TSource>(this IEnumerable<TSource> source, int count)
         {
             if (source == null)
