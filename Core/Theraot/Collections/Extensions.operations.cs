@@ -149,19 +149,6 @@ namespace Theraot.Collections
             return StepItemsExtracted(Check.NotNullArgument(target, "target"), stepCount);
         }
 
-        public static IEnumerable<T> StepItems<T>(this IEnumerable<T> target, Predicate<T> predicateCount, int stepCount)
-        {
-            var _target = Check.NotNullArgument(target, "target");
-            if (predicateCount == null)
-            {
-                return StepItemsExtracted(_target, stepCount);
-            }
-            else
-            {
-                return StepItemsExtracted(_target, predicateCount, stepCount);
-            }
-        }
-
         public static IEnumerable<T> TakeItems<T>(this IEnumerable<T> target, int takeCount)
         {
             return TakeItemsExtracted(Check.NotNullArgument(target, "target"), takeCount);
@@ -231,27 +218,7 @@ namespace Theraot.Collections
                 }
             }
         }
-
-        private static IEnumerable<T> StepItemsExtracted<T>(this IEnumerable<T> target, Predicate<T> predicateCount, int stepCount)
-        {
-            int count = 0;
-            foreach (var item in target)
-            {
-                if (count % stepCount == 0)
-                {
-                    if (predicateCount(item))
-                    {
-                        count++;
-                    }
-                }
-                else
-                {
-                    yield return item;
-                    count++;
-                }
-            }
-        }
-
+        
         private static IEnumerable<T> TakeItemsExtracted<T>(IEnumerable<T> target, int takeCount)
         {
             int count = 0;

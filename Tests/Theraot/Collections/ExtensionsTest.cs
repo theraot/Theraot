@@ -273,14 +273,14 @@ namespace Tests.Theraot.Collections
         [Test]
         public void HasAtLeast()
         {
-            var emptyCollection = new int []{};
+            var emptyCollection = new int[] { };
             Assert.IsTrue(emptyCollection.HasAtLeast(0));
             Assert.IsFalse(emptyCollection.HasAtLeast(1));
             var unaryCollection = new[] { 0 };
             Assert.IsTrue(unaryCollection.HasAtLeast(0));
             Assert.IsTrue(unaryCollection.HasAtLeast(1));
             Assert.IsFalse(unaryCollection.HasAtLeast(2));
-            var arrayCollection = new [] {0, 1, 2, 3};
+            var arrayCollection = new[] { 0, 1, 2, 3 };
             Assert.IsTrue(arrayCollection.HasAtLeast(0));
             Assert.IsTrue(arrayCollection.HasAtLeast(1));
             Assert.IsTrue(arrayCollection.HasAtLeast(2));
@@ -300,6 +300,7 @@ namespace Tests.Theraot.Collections
             Assert.IsTrue(Enumerable.Range(0, 4).HasAtLeast(4));
             Assert.IsFalse(Enumerable.Range(0, 4).HasAtLeast(5));
         }
+
         [Test]
         public void Prepend()
         {
@@ -308,6 +309,22 @@ namespace Tests.Theraot.Collections
             var all = new[] { 4, 0, 1, 2, 3, 0, 1, 2, 3 };
             Assert.IsTrue(left.Prepend(4).SequenceEqual(right));
             Assert.IsTrue(left.Prepend(right).SequenceEqual(all));
+        }
+
+        [Test]
+        public void SkipTakeStep()
+        {
+            var array = new[] {0, 1, 2, 3, 4, 5, 6, 7, 8};
+            // Skips 2 items
+            Assert.IsTrue(array.SkipItems(2).SequenceEqual(new[] { 2, 3, 4, 5, 6, 7, 8 }));
+            // Skips until 2 items greater than 3 has been skipped
+            Assert.IsTrue(array.SkipItems(item => item > 3, 2).SequenceEqual(new[] { 6, 7, 8 }));
+            // Skips indexes multiples of 2 (Step over each 2 items - first item always skipped)
+            Assert.IsTrue(array.StepItems(2).SequenceEqual(new[] { 1, 3, 5, 7 }));
+            // Takes 2 items
+            Assert.IsTrue(array.TakeItems(2).SequenceEqual(new[] { 0, 1 }));
+            // Takes items until 2 items greater than 3 has been taken
+            Assert.IsTrue(array.TakeItems(item => item > 3, 2).SequenceEqual(new[] { 0, 1, 2, 3, 4, 5 }));
         }
     }
 }
