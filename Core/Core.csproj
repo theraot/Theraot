@@ -406,7 +406,7 @@
     <Compile Include="Theraot\Core\StreamExtensions.cs" />
     <Compile Include="Theraot\Core\StringBuilderExtensions.cs" />
     <Compile Include="Theraot\Core\StringHelper.cs" />
-    <Compile Include="Theraot\Core\ThreadEqualityComparer.cs" />
+    <Compile Include="Theraot\Core\ReferenceEqualityComparer.cs" />
     <Compile Include="Theraot\Core\TraceRoute.cs" />
     <Compile Include="Theraot\Core\TracertNode.cs" />
     <Compile Include="Theraot\Core\TupleEqualityComparer.cs">
