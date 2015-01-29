@@ -196,7 +196,7 @@ namespace Theraot.Threading
             return string.Format(System.Globalization.CultureInfo.InvariantCulture, "[ThreadLocal: IsValueCreated={0}, Value={1}]", IsValueCreated, Value);
         }
 
-        public bool TryGet(out T target)
+        public bool TryGetValue(out T target)
         {
             var bundle = Thread.GetData(_slot);
             var container = bundle as INeedle<T>;

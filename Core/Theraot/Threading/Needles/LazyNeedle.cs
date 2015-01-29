@@ -146,7 +146,7 @@ namespace Theraot.Threading.Needles
             ThreadingHelper.VolatileWrite(ref _valueFactory, null);
         }
 
-        public bool TryGet(out T target)
+        public bool TryGetValue(out T target)
         {
             var result = IsCompleted;
             target = base.Value;

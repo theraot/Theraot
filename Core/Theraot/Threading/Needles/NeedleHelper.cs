@@ -115,7 +115,7 @@ namespace Theraot.Threading.Needles
                 var cacheNeedle = needle as ICacheNeedle<T>;
                 if (cacheNeedle != null)
                 {
-                    return cacheNeedle.TryGet(out target);
+                    return cacheNeedle.TryGetValue(out target);
                 }
                 else
                 {

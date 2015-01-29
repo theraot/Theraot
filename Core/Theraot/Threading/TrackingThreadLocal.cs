@@ -37,6 +37,62 @@ namespace Theraot.Threading
             _slots = new HashBucket<Thread, INeedle<T>>(capacity, INT_MaxProbingHint);
         }
 
+        public bool IsValueCreated
+        {
+            get
+            {
+                if (Thread.VolatileRead(ref _disposing) == 1)
+                {
+                    throw new ObjectDisposedException(GetType().FullName);
+                }
+                else
+                {
+                    INeedle<T> needle;
+                    if (_slots.TryGetValue(Thread.CurrentThread, out needle))
+                    {
+                        return needle is ReadOnlyStructNeedle<T>;
+                    }
+                    return false;
+                }
+            }
+        }
+
+        public T Value
+        {
+            get
+            {
+                return GetValue(Thread.CurrentThread);
+            }
+            set
+            {
+                SetValue(Thread.CurrentThread, value);
+            }
+        }
+
+        public IList<T> Values
+        {
+            get
+            {
+                return _slots.GetPairs().ConvertFiltered(input => input.Value.Value, input => input.Value is ReadOnlyStructNeedle<T>);
+            }
+        }
+
+        Exception IPromise.Error
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        bool IReadOnlyNeedle<T>.IsAlive
+        {
+            get
+            {
+                return IsValueCreated;
+            }
+        }
+
         bool IExpected.IsCanceled
         {
             get
@@ -61,106 +117,6 @@ namespace Theraot.Threading
             }
         }
 
-        Exception IPromise.Error
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        bool IReadOnlyNeedle<T>.IsAlive
-        {
-            get
-            {
-                return IsValueCreated;
-            }
-        }
-
-        public bool IsValueCreated
-        {
-            get
-            {
-                if (Thread.VolatileRead(ref _disposing) == 1)
-                {
-                    throw new ObjectDisposedException(GetType().FullName);
-                }
-                else
-                {
-                    INeedle<T> needle;
-                    if (_slots.TryGetValue(Thread.CurrentThread, out needle))
-                    {
-                        return needle is ReadOnlyStructNeedle<T>;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
-        }
-
-        public T Value
-        {
-            get
-            {
-                if (Thread.VolatileRead(ref _disposing) == 1)
-                {
-                    throw new ObjectDisposedException(GetType().FullName);
-                }
-                else
-                {
-                    INeedle<T> needle;
-                    if (_slots.TryGetValue(Thread.CurrentThread, out needle))
-                    {
-                        return needle.Value;
-                    }
-                    else
-                    {
-                        try
-                        {
-                            _slots.Set(Thread.CurrentThread, ThreadLocalHelper<T>.RecursionGuardNeedle);
-                            T result = _valueFactory.Invoke();
-                            _slots.Set(Thread.CurrentThread, new ReadOnlyStructNeedle<T>(result));
-                            return result;
-                        }
-                        catch (Exception exception)
-                        {
-                            if (!ReferenceEquals(exception, ThreadLocalHelper.RecursionGuardException))
-                            {
-                                _slots.Set(Thread.CurrentThread, new ExceptionStructNeedle<T>(exception));
-                            }
-                            throw;
-                        }
-                    }
-                }
-            }
-            set
-            {
-                if (Thread.VolatileRead(ref _disposing) == 1)
-                {
-                    throw new ObjectDisposedException(GetType().FullName);
-                }
-                else
-                {
-                    _slots.Set(Thread.CurrentThread, new ReadOnlyStructNeedle<T>(value));
-                }
-            }
-        }
-
-        public IList<T> Values
-        {
-            get
-            {
-                return _slots.GetPairs().ConvertFiltered(input => input.Value.Value, input => input.Value is ReadOnlyStructNeedle<T>);
-            }
-        }
-
-        public void Clear()
-        {
-            _slots.Clear();
-        }
-
         [global::System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {
@@ -173,41 +129,7 @@ namespace Theraot.Threading
 
         public void Free()
         {
-            if (Thread.VolatileRead(ref _disposing) == 1)
-            {
-                throw new ObjectDisposedException(GetType().FullName);
-            }
-            else
-            {
-                _slots.Remove(Thread.CurrentThread);
-            }
-        }
-
-        void IObserver<T>.OnCompleted()
-        {
-            GC.KeepAlive(Value);
-        }
-
-        void IObserver<T>.OnError(Exception error)
-        {
-            if (Thread.VolatileRead(ref _disposing) == 1)
-            {
-                throw new ObjectDisposedException(GetType().FullName);
-            }
-            else
-            {
-                _slots.Set(Thread.CurrentThread, new ExceptionStructNeedle<T>(error));
-            }
-        }
-
-        void IObserver<T>.OnNext(T value)
-        {
-            Value = value;
-        }
-
-        void IPromise.Wait()
-        {
-            GC.KeepAlive(Value);
+            Free(Thread.CurrentThread);
         }
 
         public override string ToString()
@@ -215,19 +137,98 @@ namespace Theraot.Threading
             return string.Format(System.Globalization.CultureInfo.InvariantCulture, "[ThreadLocal: IsValueCreated={0}, Value={1}]", IsValueCreated, Value);
         }
 
-        public bool TryGet(out T target)
+        public bool TryGetValue(Thread thread, out T target)
         {
+            if (Thread.VolatileRead(ref _disposing) == 1)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
             INeedle<T> tmp;
-            if (_slots.TryGetValue(Thread.CurrentThread, out tmp))
+            if (_slots.TryGetValue(thread, out tmp))
             {
                 target = tmp.Value;
                 return true;
             }
-            else
+            target = default(T);
+            return false;
+        }
+
+        public bool TryGetValue(out T target)
+        {
+            return TryGetValue(Thread.CurrentThread, out target);
+        }
+
+        private void Free(Thread thread)
+        {
+            if (Thread.VolatileRead(ref _disposing) == 1)
             {
-                target = default(T);
-                return false;
+                throw new ObjectDisposedException(GetType().FullName);
             }
+            _slots.Remove(thread);
+        }
+
+        private T GetValue(Thread thread)
+        {
+            if (Thread.VolatileRead(ref _disposing) == 1)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
+            INeedle<T> needle;
+            if (_slots.TryGetValue(thread, out needle))
+            {
+                return needle.Value;
+            }
+            try
+            {
+                _slots.Set(thread, ThreadLocalHelper<T>.RecursionGuardNeedle);
+                T result = _valueFactory.Invoke();
+                _slots.Set(thread, new ReadOnlyStructNeedle<T>(result));
+                return result;
+            }
+            catch (Exception exception)
+            {
+                if (!ReferenceEquals(exception, ThreadLocalHelper.RecursionGuardException))
+                {
+                    _slots.Set(thread, new ExceptionStructNeedle<T>(exception));
+                }
+                throw;
+            }
+        }
+        void IObserver<T>.OnCompleted()
+        {
+            // Empty
+        }
+
+        void IObserver<T>.OnError(Exception error)
+        {
+            SetError(Thread.CurrentThread, error);
+        }
+
+        void IObserver<T>.OnNext(T value)
+        {
+            Value = value;
+        }
+
+        private void SetError(Thread thread, Exception error)
+        {
+            if (Thread.VolatileRead(ref _disposing) == 1)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
+            _slots.Set(thread, new ExceptionStructNeedle<T>(error));
+        }
+
+        private void SetValue(Thread thread, T value)
+        {
+            if (Thread.VolatileRead(ref _disposing) == 1)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
+            _slots.Set(thread, new ReadOnlyStructNeedle<T>(value));
+        }
+        void IPromise.Wait()
+        {
+            GC.KeepAlive(Value);
         }
     }
 }

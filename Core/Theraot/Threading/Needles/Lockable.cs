@@ -46,7 +46,7 @@ namespace Theraot.Threading.Needles
         public void Uncapture()
         {
             LockSlot<Thread> slot;
-            if (_context.Slot.Value.TryGet(out slot))
+            if (_context.Slot.Value.TryGetValue(out slot))
             {
                 slot.Uncapture(_lock);
             }

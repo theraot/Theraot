@@ -159,9 +159,9 @@ namespace Theraot.Threading.Needles
             return string.Format("{{Promise: {0}}}", _promised);
         }
 
-        public bool TryGet(out T target)
+        public bool TryGetValue(out T target)
         {
-            return _promised.TryGet(out target);
+            return _promised.TryGetValue(out target);
         }
 
         public void Wait()
@@ -383,7 +383,7 @@ namespace Theraot.Threading.Needles
                 }
             }
 
-            public bool TryGet(out T target)
+            public bool TryGetValue(out T target)
             {
                 var result = IsCompleted;
                 target = _target;
