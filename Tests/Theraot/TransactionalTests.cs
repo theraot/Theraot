@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using Theraot.Collections.ThreadSafe;
+using Theraot.Core;
 using Theraot.Threading.Needles;
 
 namespace Tests.Theraot
@@ -11,6 +12,13 @@ namespace Tests.Theraot
     [TestFixture]
     public class TransactionalTests
     {
+        [Test]
+        public void AbsentTransaction()
+        {
+            var needle = new Transact.Needle<int>(5);
+            Assert.AreEqual(5, needle.Value);
+        }
+
         [Test]
         public void NoRaceCondition()
         {
@@ -406,9 +414,40 @@ namespace Tests.Theraot
             Assert.Fail("T_T - This is what was found: [{0}, {1}, {2}, {3}, {4}]", found[0], found[1], found[2], found[3], found[4]);
         }
 
+        [Test]
+        public void UsingClonable()
+        {
+            var needle = new Transact.Needle<ClonableClass>(new ClonableClass(7));
+            using (var transact = new Transact())
+            {
+                needle.Value.Value = 9;
+                transact.Commit();
+            }
+            Assert.AreEqual(9, needle.Value.Value);
+        }
+
         private static void ThrowException()
         {
             throw new InvalidOperationException("Oh no!");
+        }
+
+        class ClonableClass : ICloneable<ClonableClass>
+        {
+            public ClonableClass(int value)
+            {
+                Value = value;
+            }
+
+            public int Value { get; set; }
+            public ClonableClass Clone()
+            {
+                return new ClonableClass(Value);
+            }
+
+            object ICloneable.Clone()
+            {
+                return Clone();
+            }
         }
     }
 }

@@ -69,7 +69,7 @@ namespace Theraot.Threading.Needles
                 get
                 {
                     var transaction = CurrentTransaction;
-                    return RetrieveValue(transaction);
+                    return RetrieveClone(transaction);
                 }
                 set
                 {
@@ -170,8 +170,37 @@ namespace Theraot.Threading.Needles
                     {
                         return (T)value;
                     }
-                    var clone = _cloner.Clone(RetrieveValue(transaction._parentTransaction));
-                    transaction._readLog.CharyAdd(this, clone);
+                    var original = RetrieveValue(transaction._parentTransaction);
+                    transaction._readLog.CharyAdd(this, original);
+                    return original;
+                }
+            }
+
+            private T RetrieveClone(Transact transaction)
+            {
+                if (ReferenceEquals(transaction, null))
+                {
+                    var value = base.Value;
+                    return value;
+                }
+                else
+                {
+                    object value;
+                    if (transaction._writeLog.TryGetValue(this, out value))
+                    {
+                        return (T)value;
+                    }
+                    if (transaction._readLog.TryGetValue(this, out value))
+                    {
+                        return (T)value;
+                    }
+                    var original = RetrieveValue(transaction._parentTransaction);
+                    var clone = _cloner.Clone(original);
+                    if (!_comparer.Equals(clone, original))
+                    {
+                        transaction._writeLog.Set(this, clone);
+                    }
+                    transaction._readLog.CharyAdd(this, original);
                     return clone;
                 }
             }
