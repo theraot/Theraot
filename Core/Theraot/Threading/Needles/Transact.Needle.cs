@@ -11,10 +11,13 @@ namespace Theraot.Threading.Needles
     {
         public sealed partial class Needle<T> : Needles.Needle<T>, IResource
         {
+            private static readonly RuntimeUniqueIdProdiver _idProvider = new RuntimeUniqueIdProdiver();
+
             // TODO: Free must be under the transaction
             private readonly ICloner<T> _cloner;
             private readonly IEqualityComparer<T> _comparer;
             private readonly NeedleLock<Thread> _needleLock;
+            private readonly RuntimeUniqueIdProdiver.UniqueId _id;
 
             public Needle(T value)
                 : base(value)
@@ -26,6 +29,7 @@ namespace Theraot.Threading.Needles
                 }
                 _comparer = EqualityComparer<T>.Default;
                 _needleLock = new NeedleLock<Thread>(Context);
+                _id = _idProvider.GetNextId();
             }
 
             public Needle(T value, ICloner<T> cloner)
@@ -38,6 +42,7 @@ namespace Theraot.Threading.Needles
                 _cloner = cloner;
                 _comparer = EqualityComparer<T>.Default;
                 _needleLock = new NeedleLock<Thread>(Context);
+                _id = _idProvider.GetNextId();
             }
 
             public Needle(T value, IEqualityComparer<T> comparer)
@@ -50,6 +55,7 @@ namespace Theraot.Threading.Needles
                 }
                 _comparer = comparer ?? EqualityComparer<T>.Default;
                 _needleLock = new NeedleLock<Thread>(Context);
+                _id = _idProvider.GetNextId();
             }
 
             public Needle(T value, ICloner<T> cloner, IEqualityComparer<T> comparer)
@@ -62,6 +68,7 @@ namespace Theraot.Threading.Needles
                 _cloner = cloner;
                 _comparer = comparer ?? EqualityComparer<T>.Default;
                 _needleLock = new NeedleLock<Thread>(Context);
+                _id = _idProvider.GetNextId();
             }
 
             public override T Value
@@ -215,6 +222,16 @@ namespace Theraot.Threading.Needles
                 {
                     transaction._writeLog.Set(this, value);
                 }
+            }
+
+            public override bool Equals(object obj)
+            {
+                return base.Equals(obj);
+            }
+
+            public override int GetHashCode()
+            {
+                return _id.GetHashCode();
             }
         }
     }

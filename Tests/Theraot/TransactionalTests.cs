@@ -279,7 +279,7 @@ namespace Tests.Theraot
                 Assert.AreEqual(5, needleB.Value);
             }
             // We did rollback
-            Assert.AreEqual(11, needleA.Value);
+            Assert.AreEqual(5, needleA.Value);
             Assert.AreEqual(5, needleB.Value);
 
             using (var transact = new Transact())
@@ -295,6 +295,8 @@ namespace Tests.Theraot
                 needleA.Value = 11;
                 Assert.AreEqual(11, needleA.Value);
                 Assert.AreEqual(5, needleB.Value);
+
+                transact.Commit();
             }
 
             // We did rollback and commit again
