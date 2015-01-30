@@ -53,6 +53,11 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        public static Needle<T> CreateNeedle<T>(T value)
+        {
+            return new Needle<T>(value);
+        }
+
         public bool Commit()
         {
             if (ReferenceEquals(_currentTransaction, this))

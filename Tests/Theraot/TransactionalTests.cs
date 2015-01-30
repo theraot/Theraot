@@ -15,7 +15,7 @@ namespace Tests.Theraot
         [Test]
         public void AbsentTransaction()
         {
-            var needle = new Transact.Needle<int>(5);
+            var needle = Transact.CreateNeedle(5);
             Assert.AreEqual(5, needle.Value);
         }
 
@@ -24,8 +24,8 @@ namespace Tests.Theraot
         {
             var handle = new ManualResetEvent(false);
             int[] count = { 0, 0 };
-            var needleA = new Transact.Needle<int>(5);
-            var needleB = new Transact.Needle<int>(5);
+            var needleA = Transact.CreateNeedle(5);
+            var needleB = Transact.CreateNeedle(5);
             Assert.AreEqual(needleA.Value, 5);
             Assert.AreEqual(needleB.Value, 5);
             ThreadPool.QueueUserWorkItem
@@ -69,7 +69,7 @@ namespace Tests.Theraot
         public void NotCommitedTransaction()
         {
             var transact = new Transact();
-            var needle = new Transact.Needle<int>(5);
+            var needle = Transact.CreateNeedle(5);
             using (transact)
             {
                 needle.Value = 7;
@@ -82,7 +82,7 @@ namespace Tests.Theraot
         {
             var handle = new ManualResetEvent(false);
             int[] count = { 0, 0 };
-            var needle = new Transact.Needle<int>(5);
+            var needle = Transact.CreateNeedle(5);
             Assert.AreEqual(needle.Value, 5);
             ThreadPool.QueueUserWorkItem
             (
@@ -138,7 +138,7 @@ namespace Tests.Theraot
         {
             var handle = new ManualResetEvent(false);
             int[] count = { 0, 0 };
-            var needle = new Transact.Needle<int>(5);
+            var needle = Transact.CreateNeedle(5);
             var winner = 0;
             Assert.AreEqual(needle.Value, 5);
             ThreadPool.QueueUserWorkItem
@@ -194,7 +194,7 @@ namespace Tests.Theraot
         {
             var handle = new ManualResetEvent(false);
             int[] count = { 0, 0 };
-            var needle = new Transact.Needle<int>(5);
+            var needle = Transact.CreateNeedle(5);
             Assert.AreEqual(needle.Value, 5);
             ThreadPool.QueueUserWorkItem
             (
@@ -242,8 +242,8 @@ namespace Tests.Theraot
         [Test]
         public void Rollback()
         {
-            var needleA = new Transact.Needle<int>(5);
-            var needleB = new Transact.Needle<int>(5);
+            var needleA = Transact.CreateNeedle(5);
+            var needleB = Transact.CreateNeedle(5);
             try
             {
                 using (var transact = new Transact())
@@ -307,7 +307,7 @@ namespace Tests.Theraot
         [Test]
         public void SimpleTest()
         {
-            var needle = new Transact.Needle<int>(1);
+            var needle = Transact.CreateNeedle(1);
             var autoResetEvent = new AutoResetEvent(false);
             new Thread(() =>
             {
@@ -326,7 +326,7 @@ namespace Tests.Theraot
         public void SimpleTransaction()
         {
             var transact = new Transact();
-            var needle = new Transact.Needle<int>(5);
+            var needle = Transact.CreateNeedle(5);
             using (transact)
             {
                 needle.Value = 7;
@@ -472,7 +472,7 @@ namespace Tests.Theraot
         [Test]
         public void UsingClonable()
         {
-            var needle = new Transact.Needle<ClonableClass>(new ClonableClass(7));
+            var needle = Transact.CreateNeedle(new ClonableClass(7));
             using (var transact = new Transact())
             {
                 needle.Value.Value = 9;
