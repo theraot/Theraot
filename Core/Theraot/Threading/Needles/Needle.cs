@@ -68,7 +68,6 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                Thread.MemoryBarrier();
                 return _target.Value;
             }
             set

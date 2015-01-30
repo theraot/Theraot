@@ -1,6 +1,7 @@
 #if FAT
 
 using System;
+using System.Threading;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
@@ -38,11 +39,13 @@ namespace Theraot.Threading
         {
             get
             {
+                Thread.MemoryBarrier();
                 return _target;
             }
             set
             {
                 _target = value;
+                Thread.MemoryBarrier();
             }
         }
 

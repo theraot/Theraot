@@ -60,9 +60,9 @@ namespace Theraot.Threading
                 T value;
                 if (_context.Read(_capture, out value))
                 {
+                    Thread.MemoryBarrier();
                     _target = value;
                 }
-                Thread.MemoryBarrier();
                 return _target;
             }
             set
