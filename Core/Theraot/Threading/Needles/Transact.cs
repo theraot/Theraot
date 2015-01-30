@@ -14,9 +14,9 @@ namespace Theraot.Threading.Needles
         [ThreadStatic]
         private static Transact _currentTransaction;
 
-        private readonly Thread _thread;
         private readonly Transact _parentTransaction;
         private readonly HashBucket<IResource, object> _readLog;
+        private readonly Thread _thread;
         private readonly HashBucket<IResource, object> _writeLog;
         private LockSlot<Thread> _lockSlot;
 
@@ -139,15 +139,21 @@ namespace Theraot.Threading.Needles
                         }
                     }
                 }
-                else
-                {
-                    //the resources has been modified by another thread
-                    return false;
-                }
+                //the resources has been modified by another thread
+                return false;
+            }
+            throw new InvalidOperationException("Cannot commit a non-current transaction.");
+        }
+
+        public void Rollback()
+        {
+            if (ReferenceEquals(Thread.CurrentThread, _thread))
+            {
+                Rollback(false);
             }
             else
             {
-                throw new InvalidOperationException("Cannot commit a non-current transaction.");
+                throw new InvalidOperationException("Unable to rollback a transaction that belongs to another thread.");
             }
         }
 
@@ -174,19 +180,6 @@ namespace Theraot.Threading.Needles
             }
             return true;
         }
-
-        public void Rollback()
-        {
-            if (ReferenceEquals(Thread.CurrentThread, _thread))
-            {
-                Rollback(false);
-            }
-            else
-            {
-                throw new InvalidOperationException("Unable to rollback a transaction that belongs to another thread.");
-            }
-        }
-
         private void Rollback(bool disposing)
         {
             do
