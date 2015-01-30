@@ -11,8 +11,6 @@ namespace Theraot.Threading.Needles
     {
         public sealed partial class Needle<T> : Needles.Needle<T>, IResource
         {
-            private static readonly RuntimeUniqueIdProdiver _idProvider = new RuntimeUniqueIdProdiver();
-
             // TODO: Free must be under the transaction
             private readonly ICloner<T> _cloner;
             private readonly IEqualityComparer<T> _comparer;

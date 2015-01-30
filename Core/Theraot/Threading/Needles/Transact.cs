@@ -9,6 +9,7 @@ namespace Theraot.Threading.Needles
     public sealed partial class Transact
     {
         private static readonly LockContext<Thread> _context = new LockContext<Thread>(512);
+        private static readonly RuntimeUniqueIdProdiver _idProvider = new RuntimeUniqueIdProdiver();
 
         [ThreadStatic]
         private static Transact _currentTransaction;
