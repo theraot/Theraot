@@ -13,6 +13,7 @@ namespace Theraot.Threading.Needles
         {
             // TODO: Free must be under the transaction
             private readonly ICloner<T> _cloner;
+            private readonly IEqualityComparer<T> _comparer;
             private readonly NeedleLock<Thread> _needleLock;
 
             public Needle(T value)
@@ -23,6 +24,7 @@ namespace Theraot.Threading.Needles
                 {
                     throw new InvalidOperationException(string.Format("Unable to get a cloner for {0}", typeof(T)));
                 }
+                _comparer = EqualityComparer<T>.Default;
                 _needleLock = new NeedleLock<Thread>(Context);
             }
 
@@ -33,8 +35,33 @@ namespace Theraot.Threading.Needles
                 {
                     throw new ArgumentNullException("cloner");
                 }
-                _needleLock = new NeedleLock<Thread>(Context);
                 _cloner = cloner;
+                _comparer = EqualityComparer<T>.Default;
+                _needleLock = new NeedleLock<Thread>(Context);
+            }
+
+            public Needle(T value, IEqualityComparer<T> comparer)
+                : base(value)
+            {
+                _cloner = CloneHelper<T>.GetCloner();
+                if (ReferenceEquals(_cloner, null))
+                {
+                    throw new InvalidOperationException(string.Format("Unable to get a cloner for {0}", typeof(T)));
+                }
+                _comparer = comparer ?? EqualityComparer<T>.Default;
+                _needleLock = new NeedleLock<Thread>(Context);
+            }
+
+            public Needle(T value, ICloner<T> cloner, IEqualityComparer<T> comparer)
+                : base(value)
+            {
+                if (ReferenceEquals(cloner, null))
+                {
+                    throw new ArgumentNullException("cloner");
+                }
+                _cloner = cloner;
+                _comparer = comparer ?? EqualityComparer<T>.Default;
+                _needleLock = new NeedleLock<Thread>(Context);
             }
 
             public override T Value
@@ -80,8 +107,9 @@ namespace Theraot.Threading.Needles
                 object value;
                 if (transaction._readLog.TryGetValue(this, out value))
                 {
-                    var check = base.Value;
-                    return EqualityComparer<T>.Default.Equals(check, (T)value);
+                    var original = RetrieveValue(transaction._parentTransaction);
+                    var found = (T)value;
+                    return _comparer.Equals(original, found);
                 }
                 return false;
             }
