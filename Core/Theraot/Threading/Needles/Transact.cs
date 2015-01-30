@@ -13,6 +13,7 @@ namespace Theraot.Threading.Needles
         [ThreadStatic]
         private static Transact _currentTransaction;
 
+        private readonly Thread _thread;
         private readonly Transact _parentTransaction;
         private readonly HashBucket<IResource, object> _readLog;
         private readonly HashBucket<IResource, object> _writeLog;
@@ -24,6 +25,7 @@ namespace Theraot.Threading.Needles
             _readLog = new HashBucket<IResource, object>();
             _parentTransaction = _currentTransaction;
             _currentTransaction = this;
+            _thread = Thread.CurrentThread;
         }
 
         public static Transact CurrentTransaction
@@ -170,6 +172,18 @@ namespace Theraot.Threading.Needles
                 }
             }
             return true;
+        }
+
+        public void Rollback()
+        {
+            if (ReferenceEquals(Thread.CurrentThread, _thread))
+            {
+                Rollback(false);
+            }
+            else
+            {
+                throw new InvalidOperationException("Unable to rollback a transaction that belongs to another thread.");
+            }
         }
 
         private void Rollback(bool disposing)

@@ -242,12 +242,11 @@ namespace Tests.Theraot
         [Test]
         public void Rollback()
         {
-            var transact = new Transact();
             var needleA = new Transact.Needle<int>(5);
             var needleB = new Transact.Needle<int>(5);
             try
             {
-                using (transact)
+                using (var transact = new Transact())
                 {
                     const int movement = 2;
                     needleA.Value += movement;
@@ -263,8 +262,44 @@ namespace Tests.Theraot
                 GC.KeepAlive(exception);
             }
             // We did not commit
-            Assert.AreEqual(needleA.Value, 5);
-            Assert.AreEqual(needleB.Value, 5);
+            Assert.AreEqual(5, needleA.Value);
+            Assert.AreEqual(5, needleB.Value);
+
+            //---
+
+            using (var transact = new Transact())
+            {
+                needleA.Value = 9;
+                Assert.AreEqual(9, needleA.Value);
+                Assert.AreEqual(5, needleB.Value);
+
+                transact.Rollback();
+
+                Assert.AreEqual(5, needleA.Value);
+                Assert.AreEqual(5, needleB.Value);
+            }
+            // We did rollback
+            Assert.AreEqual(11, needleA.Value);
+            Assert.AreEqual(5, needleB.Value);
+
+            using (var transact = new Transact())
+            {
+                needleA.Value = 9;
+                Assert.AreEqual(9, needleA.Value);
+                Assert.AreEqual(5, needleB.Value);
+
+                transact.Rollback();
+
+                Assert.AreEqual(5, needleA.Value);
+                Assert.AreEqual(5, needleB.Value);
+                needleA.Value = 11;
+                Assert.AreEqual(11, needleA.Value);
+                Assert.AreEqual(5, needleB.Value);
+            }
+
+            // We did rollback and commit again
+            Assert.AreEqual(11, needleA.Value);
+            Assert.AreEqual(5, needleB.Value);
         }
 
         [Test]
@@ -421,6 +456,7 @@ namespace Tests.Theraot
             using (var transact = new Transact())
             {
                 needle.Value.Value = 9;
+                Assert.AreEqual(9, needle.Value.Value);
                 transact.Commit();
             }
             Assert.AreEqual(9, needle.Value.Value);
