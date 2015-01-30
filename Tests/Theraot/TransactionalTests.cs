@@ -305,6 +305,24 @@ namespace Tests.Theraot
         }
 
         [Test]
+        public void SimpleTest()
+        {
+            var needle = new Transact.Needle<int>(1);
+            var autoResetEvent = new AutoResetEvent(false);
+            new Thread(() =>
+            {
+                using (var transaction = new Transact())
+                {
+                    needle.Value = 2;
+                    transaction.Commit();
+                    autoResetEvent.Set();
+                }
+            }).Start();
+            autoResetEvent.WaitOne();
+            Assert.AreEqual(2, needle.Value);
+        }
+
+        [Test]
         public void SimpleTransaction()
         {
             var transact = new Transact();
