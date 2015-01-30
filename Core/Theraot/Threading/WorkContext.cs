@@ -236,6 +236,10 @@ namespace Theraot.Threading
 
         private void ActivateDedicatedThreads()
         {
+            if (GCMonitor.FinalizingForUnload)
+            {
+                return;
+            }
             var threadIndex = Interlocked.Increment(ref _dedidatedThreadCount) - 1;
             if (threadIndex < _dedidatedThreadMax)
             {

@@ -20,6 +20,123 @@ namespace Tests.Theraot
         }
 
         [Test]
+        public void MultipleCommit()
+        {
+            var needle = Transact.CreateNeedle(1);
+            var autoResetEvent = new AutoResetEvent(false);
+            new Thread(() =>
+            {
+                using (var transaction = new Transact())
+                {
+                    needle.Value = 2;
+
+                    transaction.Commit();
+
+                    needle.Value = 3;
+
+                    transaction.Commit();
+
+                    needle.Value = 5;
+
+                    transaction.Rollback();
+
+                    autoResetEvent.Set();
+                }
+            }).Start();
+            autoResetEvent.WaitOne();
+            Assert.AreEqual(3, needle.Value);
+        }
+
+        [Test]
+        public void NestedTransaction()
+        {
+            var needleA = Transact.CreateNeedle(5);
+            var needleB = Transact.CreateNeedle(1);
+            var thread = new Thread(() =>
+            {
+                using (var transaction = new Transact())
+                {
+                    needleB.Value = 2;
+
+                    using (var transact = new Transact())
+                    {
+                        needleA.Value = 9;
+                        Assert.AreEqual(9, needleA.Value);
+                        Assert.AreEqual(2, needleB.Value);
+
+                        transact.Commit();
+                    }
+
+                    Assert.AreEqual(9, needleA.Value);
+                    Assert.AreEqual(2, needleB.Value);
+
+                    transaction.Rollback();
+
+                    Assert.AreEqual(5, needleA.Value);
+                    Assert.AreEqual(1, needleB.Value);
+                }
+            });
+            thread.Start();
+            thread.Join();
+
+            Assert.AreEqual(5, needleA.Value);
+            Assert.AreEqual(1, needleB.Value);
+        }
+
+        [Test]
+        public void NestedTransactionAndRollback()
+        {
+            var needleA = Transact.CreateNeedle(5);
+            var needleB = Transact.CreateNeedle(1);
+            var thread = new Thread(() =>
+            {
+                using (var transaction = new Transact())
+                {
+                    needleB.Value = 2;
+
+                    transaction.Commit();
+
+                    using (var transact = new Transact())
+                    {
+                        needleA.Value = 9;
+                        Assert.AreEqual(9, needleA.Value);
+                        Assert.AreEqual(2, needleB.Value);
+
+                        transact.Commit();
+                    }
+
+                    Assert.AreEqual(9, needleA.Value);
+                    Assert.AreEqual(2, needleB.Value);
+
+                    transaction.Rollback();
+
+                    Assert.AreEqual(5, needleA.Value);
+                    Assert.AreEqual(2, needleB.Value);
+
+                    using (new Transact())
+                    {
+                        needleA.Value = 13;
+                        Assert.AreEqual(13, needleA.Value);
+                        Assert.AreEqual(2, needleB.Value);
+
+                        transaction.Rollback();
+
+                        Assert.AreEqual(5, needleA.Value);
+                        Assert.AreEqual(2, needleB.Value);
+                    }
+
+                    needleA.Value = 15;
+                    transaction.Commit();
+                }
+            });
+            thread.Start();
+            thread.Join();
+
+            Assert.AreEqual(15, needleA.Value);
+            Assert.AreEqual(2, needleB.Value);
+        }
+
+        [Test]
         public void NoRaceCondition()
         {
             var handle = new ManualResetEvent(false);

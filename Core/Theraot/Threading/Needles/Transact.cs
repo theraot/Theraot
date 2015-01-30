@@ -185,31 +185,24 @@ namespace Theraot.Threading.Needles
             }
             return true;
         }
+
         private void Rollback(bool disposing)
         {
-            do
+            for (var currentTransaction = _currentTransaction; currentTransaction != null && currentTransaction != this; currentTransaction = currentTransaction._parentTransaction)
             {
-                Transact currentTransaction = _currentTransaction;
-                if (ReferenceEquals(currentTransaction, this))
+                if (disposing)
                 {
-                    break;
+                    currentTransaction.Dispose();
                 }
                 else
                 {
-                    if (disposing)
-                    {
-                        currentTransaction.Dispose();
-                    }
-                    else
-                    {
-                        currentTransaction.Rollback(false);
-                    }
+                    currentTransaction.Uncapture();
                 }
-            } while (true);
+            }
             Uncapture();
             if (disposing)
             {
-                _currentTransaction = _currentTransaction._parentTransaction;
+                _currentTransaction = _parentTransaction;
             }
         }
 
