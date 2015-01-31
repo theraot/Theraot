@@ -26,6 +26,11 @@ namespace Theraot.Threading.Needles
             _pins = new List<Pin>();
         }
 
+        ~LockableSlot()
+        {
+            Dispose();
+        }
+
         internal LockSlot<Thread> LockSlot
         {
             get
@@ -39,17 +44,23 @@ namespace Theraot.Threading.Needles
             var lockslot = Interlocked.Exchange(ref _lockSlot, null);
             if (lockslot != null)
             {
-                _context.Slot = _parent;
-                Thread.MemoryBarrier();
-                foreach (var pin in _pins)
+                var context = Interlocked.Exchange(ref _context, null);
+                if (context != null)
                 {
-                    pin.Release(lockslot);
+                    context.Slot = _parent;
                 }
-                _pins.Clear();
+                var pins = Interlocked.Exchange(ref _pins, null);
+                if (pins != null)
+                {
+                    foreach (var pin in pins)
+                    {
+                        pin.Release(lockslot);
+                    }
+                    pins.Clear();
+                }
                 lockslot.Free();
+                Thread.MemoryBarrier();
                 _parent = null;
-                _context = null;
-                _pins = null;
             }
         }
 
