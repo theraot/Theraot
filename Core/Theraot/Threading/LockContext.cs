@@ -52,9 +52,27 @@ namespace Theraot.Threading
             _freeSlots.Add(slot);
         }
 
-        internal bool Read(FlagArray flags, out T value)
+        internal bool Read(int flag, out T value)
+        {
+            if (flag == -1)
+            {
+                value = default(T);
+                return false;
+            }
+            LockSlot<T> slot;
+            if (_slots.TryGet(flag, out slot))
+            {
+                value = slot.Value;
+                return true;
+            }
+            value = default(T);
+            return false;
+        }
+
+        internal bool Read(FlagArray flags, out T value, out int @lock)
         {
             LockSlot<T> bestSlot = null;
+            @lock = -1;
             value = default(T);
             foreach (var flag in flags.Flags)
             {
@@ -66,6 +84,7 @@ namespace Theraot.Threading
                 if (ReferenceEquals(bestSlot, null) || bestSlot.CompareTo(testSlot) < 0)
                 {
                     bestSlot = SwitchSlot(out value, testSlot);
+                    @lock = flag;
                 }
             }
             return !ReferenceEquals(bestSlot, null);

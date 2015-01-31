@@ -56,7 +56,7 @@ namespace Theraot.Threading.Needles
             {
                 if (_context.HasSlot)
                 {
-                    ThreadingHelper.SpinWaitUntil(() => _pin.CheckCapture());
+                    Wait();
                     base.Value = value;
                     Thread.MemoryBarrier();
                 }
@@ -64,6 +64,14 @@ namespace Theraot.Threading.Needles
                 {
                     throw new InvalidOperationException("The current thread has not entered the LockableContext of this LockableNeedle.");
                 }
+            }
+        }
+
+        private void Wait()
+        {
+            if (!_pin.CheckCapture())
+            {
+                ThreadingHelper.SpinWaitUntil(() => _pin.CheckCapture());
             }
         }
 
@@ -103,7 +111,7 @@ namespace Theraot.Threading.Needles
         {
             if (_context.HasSlot)
             {
-                ThreadingHelper.SpinWaitUntil(() => _pin.CheckCapture());
+                Wait();
                 if (EqualityComparer<T>.Default.Equals(base.Value, expectedValue))
                 {
                     base.Value = newValue;
@@ -119,7 +127,7 @@ namespace Theraot.Threading.Needles
         {
             if (_context.HasSlot)
             {
-                ThreadingHelper.SpinWaitUntil(() => _pin.CheckCapture());
+                Wait();
                 if (comparer.Equals(base.Value, expectedValue))
                 {
                     base.Value = newValue;
@@ -135,7 +143,7 @@ namespace Theraot.Threading.Needles
         {
             if (_context.HasSlot)
             {
-                ThreadingHelper.SpinWaitUntil(() => _pin.CheckCapture());
+                Wait();
                 var result = updateValueFactory(base.Value);
                 base.Value = result;
                 Thread.MemoryBarrier();
@@ -143,6 +151,7 @@ namespace Theraot.Threading.Needles
             }
             throw new InvalidOperationException("The current thread has not entered the LockableContext of this LockableNeedle.");
         }
+
         [global::System.Diagnostics.DebuggerNonUserCode]
         private void Dispose(bool disposeManagedResources)
         {
