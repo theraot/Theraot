@@ -1,5 +1,6 @@
 ﻿#if FAT
 
+using System;
 using System.Threading;
 
 namespace Theraot.Threading.Needles
@@ -7,21 +8,37 @@ namespace Theraot.Threading.Needles
     public sealed class LockableContext
     {
         internal readonly LockContext<Thread> Context;
-        internal readonly StructNeedle<TrackingThreadLocal<LockSlot<Thread>>> Slot;
+        private readonly StructNeedle<TrackingThreadLocal<LockableSlot>> _slots;
 
         public LockableContext(int capacity)
         {
             Context = new LockContext<Thread>(capacity);
-            Slot = new TrackingThreadLocal<LockSlot<Thread>>
-                (
-                    () =>
-                    {
-                        LockSlot<Thread> _lockSlot = null;
-                        ThreadingHelper.SpinWaitUntil(() => Context.ClaimSlot(out _lockSlot));
-                        _lockSlot.Value = Thread.CurrentThread;
-                        return _lockSlot;
-                    }
-                );
+            _slots.Value = new TrackingThreadLocal<LockableSlot>();
+        }
+
+        internal bool HasSlot
+        {
+            get
+            {
+                return ((IThreadLocal<LockableSlot>)_slots.Value).ValueForDebugDisplay != null;
+            }
+        }
+
+        internal LockableSlot Slot
+        {
+            get
+            {
+                return _slots.Value.Value;
+            }
+            set
+            {
+                _slots.Value.Value = value;
+            }
+        }
+
+        public IDisposable Enter()
+        {
+            return new LockableSlot(this);
         }
     }
 }

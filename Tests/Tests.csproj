@@ -94,6 +94,7 @@
     <Compile Include="Theraot\Collections\ProgressiveLookupTest.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Theraot\Threading\Needles\LockableNeedleTest.cs" />
     <Compile Include="throwback.cs">
       <DependentUpon>throwback.tt</DependentUpon>
       <AutoGen>True</AutoGen>

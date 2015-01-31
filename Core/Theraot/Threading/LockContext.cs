@@ -8,7 +8,7 @@ using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
 {
-    internal class LockContext<T>
+    public class LockContext<T>
     {
         private readonly int _capacity;
         private readonly QueueBucket<LockSlot<T>> _freeSlots;
@@ -31,26 +31,20 @@ namespace Theraot.Threading
             }
         }
 
-        public bool ClaimSlot(out LockSlot<T> slot)
+        internal bool ClaimSlot(out LockSlot<T> slot)
         {
             if (TryClaimFreeSlot(out slot))
             {
                 return true;
             }
-            else
+            if (_slots.Count < _slots.Capacity)
             {
-                if (_slots.Count < _slots.Capacity)
-                {
-                    int index = Interlocked.Increment(ref _index) & (_capacity - 1);
-                    slot = _slots.Get(index);
-                    return true;
-                }
-                else
-                {
-                    slot = null;
-                    return false;
-                }
+                int index = Interlocked.Increment(ref _index) & (_capacity - 1);
+                slot = _slots.Get(index);
+                return true;
             }
+            slot = null;
+            return false;
         }
 
         internal void Free(LockSlot<T> slot)
@@ -90,10 +84,7 @@ namespace Theraot.Threading
                 slot.Unfree(_version.AdvanceNewToken());
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
     }
 }

@@ -6,33 +6,21 @@ using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
 {
-    internal sealed class LockSlot<T> : IComparable<LockSlot<T>>, INeedle<T>
+    public sealed class LockSlot<T> : IComparable<LockSlot<T>>, INeedle<T>
     {
         private readonly LockContext<T> _context;
         private readonly int _id;
-        private VersionProvider.VersionToken _versionToken;
         private T _target;
-
+        private VersionProvider.VersionToken _versionToken;
         internal LockSlot(LockContext<T> context, int id, VersionProvider.VersionToken versionToken)
         {
             if (ReferenceEquals(context, null))
             {
                 throw new ArgumentNullException("context");
             }
-            else
-            {
-                _context = context;
-                _versionToken = versionToken;
-                _id = id;
-            }
-        }
-
-        bool IReadOnlyNeedle<T>.IsAlive
-        {
-            get
-            {
-                return !ReferenceEquals(_target, null);
-            }
+            _context = context;
+            _versionToken = versionToken;
+            _id = id;
         }
 
         public T Value
@@ -49,9 +37,12 @@ namespace Theraot.Threading
             }
         }
 
-        public void Capture(NeedleLock<T> needle)
+        bool IReadOnlyNeedle<T>.IsAlive
         {
-            needle.Capture(_id);
+            get
+            {
+                return !ReferenceEquals(_target, null);
+            }
         }
 
         public int CompareTo(LockSlot<T> other)
@@ -69,7 +60,12 @@ namespace Theraot.Threading
             _context.Free(this);
         }
 
-        public void Uncapture(NeedleLock<T> needle)
+        internal void Capture(NeedleLock<T> needle)
+        {
+            needle.Capture(_id);
+        }
+
+        internal void Uncapture(NeedleLock<T> needle)
         {
             needle.Uncapture(_id);
         }
