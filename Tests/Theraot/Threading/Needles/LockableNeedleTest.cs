@@ -58,7 +58,7 @@ namespace Tests.Theraot.Threading.Needles
                             needle.Value = found + 2;
                             info.Add("First thread set: " + needle.Value);
                             info.Add("First thread set count to: " + Interlocked.Increment(ref count[0]));
-                            info.Add("First thread done");
+                            info.Add("First thread done.");
                         }
                         catch (Exception exc)
                         {
@@ -66,6 +66,7 @@ namespace Tests.Theraot.Threading.Needles
                             throw;
                         }
                     }
+                    info.Add("First thread left.");
                 }),
                 new Thread(() =>
                 {
@@ -81,7 +82,7 @@ namespace Tests.Theraot.Threading.Needles
                             needle.Value = found + 3;
                             info.Add("Second thread set: " + needle.Value);
                             info.Add("Second thread set count to: " + Interlocked.Increment(ref count[0]));
-                            info.Add("Second thread done");
+                            info.Add("Second thread done.");
                         }
                         catch (Exception exc)
                         {
@@ -89,6 +90,7 @@ namespace Tests.Theraot.Threading.Needles
                             throw;
                         }
                     }
+                    info.Add("Second thread left.");
                 })
             };
 
@@ -136,7 +138,7 @@ namespace Tests.Theraot.Threading.Needles
                             needle.Update(value => value + 2);
                             info.Add("First thread set: " + needle.Value);
                             info.Add("First thread set count to: " + Interlocked.Increment(ref count[0]));
-                            info.Add("First thread done");
+                            info.Add("First thread done.");
                         }
                         catch (Exception exc)
                         {
@@ -144,6 +146,7 @@ namespace Tests.Theraot.Threading.Needles
                             throw;
                         }
                     }
+                    info.Add("First thread left.");
                 }),
                 new Thread(() =>
                 {
@@ -155,11 +158,11 @@ namespace Tests.Theraot.Threading.Needles
                             info.Add("Second thread did capture.");
                             needle.Capture();
                             var found = needle.Value;
-                            info.Add("First thread found: " + found + " will increment by 3");
+                            info.Add("Second thread found: " + found + " will increment by 3");
                             needle.Update(value => value + 3);
                             info.Add("Second thread set: " + needle.Value);
                             info.Add("Second thread set count to: " + Interlocked.Increment(ref count[0]));
-                            info.Add("Second thread done");
+                            info.Add("Second thread done.");
                         }
                         catch (Exception exc)
                         {
@@ -167,6 +170,7 @@ namespace Tests.Theraot.Threading.Needles
                             throw;
                         }
                     }
+                    info.Add("Second thread left.");
                 })
             };
 
