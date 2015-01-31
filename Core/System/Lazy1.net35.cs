@@ -12,6 +12,7 @@ namespace System
     public class Lazy<T>
     {
         private int _isValueCreated;
+        private T _target;
         private Func<T> _valueFactory;
 
         public Lazy()
@@ -118,6 +119,13 @@ namespace System
             }
         }
 
+        internal T ValueForDebugDisplay
+        {
+            get
+            {
+                return _target;
+            }
+        }
         private T CachingFullMode(Func<T> valueFactory, ManualResetEvent waitHandle, ref Thread thread)
         {
             if (Interlocked.CompareExchange(ref _isValueCreated, 1, 0) == 0)
@@ -125,7 +133,8 @@ namespace System
                 try
                 {
                     thread = Thread.CurrentThread;
-                    T _target = valueFactory.Invoke();
+                    GC.KeepAlive(thread);
+                    _target = valueFactory.Invoke();
                     _valueFactory = FuncHelper.GetReturnFunc(_target);
                     return _target;
                 }
@@ -164,12 +173,9 @@ namespace System
                         {
                             throw new InvalidOperationException();
                         }
-                        else
-                        {
-                            threads.Add(currentThread);
-                        }
+                        threads.Add(currentThread);
                     }
-                    T _target = valueFactory();
+                    _target = valueFactory();
                     _valueFactory = FuncHelper.GetReturnFunc(_target);
                     Thread.VolatileWrite(ref _isValueCreated, 1);
                     return _target;
@@ -201,7 +207,8 @@ namespace System
                 try
                 {
                     thread = Thread.CurrentThread;
-                    var _target = valueFactory.Invoke();
+                    GC.KeepAlive(thread);
+                    _target = valueFactory.Invoke();
                     _valueFactory = FuncHelper.GetReturnFunc(_target);
                     Thread.VolatileWrite(ref _isValueCreated, 1);
                     return _target;
@@ -256,7 +263,7 @@ namespace System
                             threads.Add(currentThread);
                         }
                     }
-                    T _target = valueFactory();
+                    _target = valueFactory();
                     _valueFactory = FuncHelper.GetReturnFunc(_target);
                     Thread.VolatileWrite(ref _isValueCreated, 1);
                     return _target;
@@ -282,7 +289,7 @@ namespace System
 
         private T PublicationOnlyMode(Func<T> valueFactory)
         {
-            var _target = valueFactory();
+            _target = valueFactory();
             if (Interlocked.CompareExchange(ref _isValueCreated, 1, 0) == 0)
             {
                 _valueFactory = FuncHelper.GetReturnFunc(_target);
