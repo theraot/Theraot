@@ -31,6 +31,39 @@ namespace Tests.Theraot.Threading.Needles
         }
 
         [Test]
+        public void Nested()
+        {
+            var context = new LockableContext(16);
+            var needle = new LockableNeedle<int>(5, context);
+
+            Assert.AreEqual(5, needle.Value);
+            Assert.Throws<InvalidOperationException>(() => needle.Value = 7);
+
+            using (context.Enter())
+            {
+                needle.Capture();
+                Assert.IsTrue(needle.Check());
+                Assert.DoesNotThrow(() => needle.Value = 7);
+                Assert.AreEqual(7, needle.Value);
+                using (context.Enter())
+                {
+                    // You can recapture
+                    needle.Capture();
+                    Assert.IsTrue(needle.Check());
+                    Assert.DoesNotThrow(() => needle.Value = 9);
+                    Assert.AreEqual(9, needle.Value);
+                }
+                using (context.Enter())
+                {
+                    // There is no need to recapture
+                    Assert.IsTrue(needle.Check());
+                    Assert.DoesNotThrow(() => needle.Value = 11);
+                    Assert.AreEqual(11, needle.Value);
+                }
+            }
+        }
+
+        [Test]
         public void TwoThreadsSet()
         {
             var context = new LockableContext(16);
