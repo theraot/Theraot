@@ -26,7 +26,6 @@ namespace Theraot.Threading
         private volatile bool _work;
         private int _workingDedicatedThreadCount;
         private int _workingTotalThreadCount;
-        private int _workingWaitingThreadCount;
 
         public WorkContext()
             : this(INT_InitialWorkCapacityHint, Environment.ProcessorCount, null, true)
@@ -261,11 +260,7 @@ namespace Theraot.Threading
             try
             {
                 _work = false;
-                var tmp = Interlocked.Exchange(ref _event, null);
-                while (Thread.VolatileRead(ref _workingWaitingThreadCount) > 0)
-                {
-                    tmp.Set();
-                }
+                _event = null;
             }
             finally
             {
@@ -303,13 +298,11 @@ namespace Theraot.Threading
                             {
                                 Interlocked.Decrement(ref _workingDedicatedThreadCount);
                                 Interlocked.Decrement(ref _workingTotalThreadCount);
-                                Interlocked.Increment(ref _workingWaitingThreadCount);
                                 count = 0;
                                 _event.WaitOne();
                             }
                             finally
                             {
-                                Interlocked.Decrement(ref _workingWaitingThreadCount);
                                 Interlocked.Increment(ref _workingTotalThreadCount);
                                 Interlocked.Increment(ref _workingDedicatedThreadCount);
                             }
