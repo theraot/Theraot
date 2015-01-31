@@ -127,8 +127,8 @@ namespace Theraot.Collections.ThreadSafe
             }
             else
             {
-                // TryGet is null resistant
-                _previous.TryGet(out previous);
+                // TryGetValue is null resistant
+                _previous.TryGetValue(out previous);
                 // This is a needle that is no longer referenced, we donate it
                 NeedleReservoir<T, TNeedle>.DonateNeedle(_previous);
                 return false;
@@ -164,13 +164,13 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
             }
-            // Using TryGet first just avoid wasting a needle
+            // Using TryGetValue first just avoid wasting a needle
             TNeedle _previous;
             if (_entries.TryGetExtracted(index, out _previous))
             {
                 // Null resistant
                 T previous;
-                _previous.TryGet(out previous);
+                _previous.TryGetValue(out previous);
                 return previous;
                 // We don't donate because we didn't remove
             }
@@ -202,7 +202,7 @@ namespace Theraot.Collections.ThreadSafe
             foreach (var needle in _entries)
             {
                 T item;
-                if (needle.TryGet(out item))
+                if (needle.TryGetValue(out item))
                 {
                     yield return item;
                 }
@@ -311,8 +311,8 @@ namespace Theraot.Collections.ThreadSafe
             }
             else
             {
-                // TryGet is null resistant
-                _previous.TryGet(out previous);
+                // TryGetValue is null resistant
+                _previous.TryGetValue(out previous);
                 // Donate it
                 NeedleReservoir<T, TNeedle>.DonateNeedle(_previous);
                 return false;
@@ -385,8 +385,8 @@ namespace Theraot.Collections.ThreadSafe
             TNeedle _previous;
             if (_entries.RemoveAt(index, out _previous))
             {
-                // TryGet is null resistant
-                _previous.TryGet(out previous);
+                // TryGetValue is null resistant
+                _previous.TryGetValue(out previous);
                 // Donate it
                 NeedleReservoir<T, TNeedle>.DonateNeedle(_previous);
                 return true;
@@ -458,7 +458,7 @@ namespace Theraot.Collections.ThreadSafe
             if (_entries.TryGet(index, out _previous))
             {
                 // Null resistant
-                _previous.TryGet(out value);
+                _previous.TryGetValue(out value);
                 // We don't donate because we didn't remove
                 return true;
             }

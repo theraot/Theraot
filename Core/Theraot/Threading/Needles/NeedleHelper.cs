@@ -103,7 +103,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public static bool TryGet<T>(this IReadOnlyNeedle<T> needle, out T target)
+        public static bool TryGetValue<T>(this IReadOnlyNeedle<T> needle, out T target)
         {
             if (needle == null)
             {
