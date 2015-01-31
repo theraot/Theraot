@@ -16,6 +16,11 @@ namespace Theraot.Threading
             set;
         }
 
+        T ValueForDebugDisplay
+        {
+            get;
+        }
+
         IList<T> Values
         {
             get;

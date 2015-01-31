@@ -30,46 +30,6 @@ namespace Theraot.Threading
             _slot = Thread.AllocateDataSlot();
         }
 
-        bool IExpected.IsCanceled
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        bool IExpected.IsCompleted
-        {
-            get
-            {
-                return IsValueCreated;
-            }
-        }
-
-        bool IExpected.IsFaulted
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        Exception IPromise.Error
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        bool IReadOnlyNeedle<T>.IsAlive
-        {
-            get
-            {
-                return IsValueCreated;
-            }
-        }
-
         public bool IsValueCreated
         {
             get
@@ -82,14 +42,6 @@ namespace Theraot.Threading
                 {
                     return Thread.GetData(_slot) is ReadOnlyStructNeedle<T>;
                 }
-            }
-        }
-
-        System.Collections.Generic.IList<T> IThreadLocal<T>.Values
-        {
-            get
-            {
-                throw new InvalidOperationException();
             }
         }
 
@@ -142,6 +94,66 @@ namespace Theraot.Threading
             }
         }
 
+        Exception IPromise.Error
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        bool IReadOnlyNeedle<T>.IsAlive
+        {
+            get
+            {
+                return IsValueCreated;
+            }
+        }
+
+        bool IExpected.IsCanceled
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        bool IExpected.IsCompleted
+        {
+            get
+            {
+                return IsValueCreated;
+            }
+        }
+
+        bool IExpected.IsFaulted
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        T IThreadLocal<T>.ValueForDebugDisplay
+        {
+            get
+            {
+                T target;
+                if (TryGetValue(out target))
+                {
+                    return target;
+                }
+                return default(T);
+            }
+        }
+
+        System.Collections.Generic.IList<T> IThreadLocal<T>.Values
+        {
+            get
+            {
+                throw new InvalidOperationException();
+            }
+        }
         [global::System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {
@@ -161,6 +173,27 @@ namespace Theraot.Threading
             else
             {
                 Thread.SetData(_slot, null);
+            }
+        }
+
+        public override string ToString()
+        {
+            return string.Format(System.Globalization.CultureInfo.InvariantCulture, "[ThreadLocal: IsValueCreated={0}, Value={1}]", IsValueCreated, Value);
+        }
+
+        public bool TryGetValue(out T target)
+        {
+            var bundle = Thread.GetData(_slot);
+            var container = bundle as INeedle<T>;
+            if (container == null)
+            {
+                target = default(T);
+                return false;
+            }
+            else
+            {
+                target = container.Value;
+                return true;
             }
         }
 
@@ -189,27 +222,6 @@ namespace Theraot.Threading
         void IPromise.Wait()
         {
             GC.KeepAlive(Value);
-        }
-
-        public override string ToString()
-        {
-            return string.Format(System.Globalization.CultureInfo.InvariantCulture, "[ThreadLocal: IsValueCreated={0}, Value={1}]", IsValueCreated, Value);
-        }
-
-        public bool TryGetValue(out T target)
-        {
-            var bundle = Thread.GetData(_slot);
-            var container = bundle as INeedle<T>;
-            if (container == null)
-            {
-                target = default(T);
-                return false;
-            }
-            else
-            {
-                target = container.Value;
-                return true;
-            }
         }
     }
 }

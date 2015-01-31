@@ -117,6 +117,19 @@ namespace Theraot.Threading
             }
         }
 
+        T IThreadLocal<T>.ValueForDebugDisplay
+        {
+            get
+            {
+                T target;
+                if (TryGetValue(Thread.CurrentThread, out target))
+                {
+                    return target;
+                }
+                return default(T);
+            }
+        }
+
         [global::System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {
@@ -136,7 +149,6 @@ namespace Theraot.Threading
         {
             return string.Format(System.Globalization.CultureInfo.InvariantCulture, "[ThreadLocal: IsValueCreated={0}, Value={1}]", IsValueCreated, Value);
         }
-
         public bool TryGetValue(Thread thread, out T target)
         {
             if (Thread.VolatileRead(ref _disposing) == 1)

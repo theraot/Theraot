@@ -109,6 +109,14 @@ namespace System.Threading
             }
         }
 
+        internal T ValueForDebugDisplay
+        {
+            get
+            {
+                return _wrapped.ValueForDebugDisplay;
+            }
+        }
+
         [global::System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {
