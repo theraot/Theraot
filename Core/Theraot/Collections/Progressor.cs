@@ -21,7 +21,7 @@ namespace Theraot.Collections
             int control = 0;
 
             Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0;
-            var buffer = new QueueBucket<T>();
+            var buffer = new SafeQueue<T>();
             wrapped.SubscribeAction
             (
                 item =>
@@ -65,7 +65,7 @@ namespace Theraot.Collections
             int guard = 0;
 
             Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0;
-            var buffer = new QueueBucket<T>();
+            var buffer = new SafeQueue<T>();
             wrapped.SubscribeAction
             (
                 item =>
@@ -177,7 +177,7 @@ namespace Theraot.Collections
             int index = -1;
 
             Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0;
-            var buffer = new QueueBucket<T>();
+            var buffer = new SafeQueue<T>();
             wrapped.SubscribeAction
             (
                 item =>
@@ -297,7 +297,7 @@ namespace Theraot.Collections
 
         public Progressor(IObservable<T> wrapped)
         {
-            var buffer = new QueueBucket<T>();
+            var buffer = new SafeQueue<T>();
             wrapped.SubscribeAction(buffer.Add);
             _proxy = new ProxyObservable<T>();
 
@@ -338,7 +338,7 @@ namespace Theraot.Collections
             int control = 0;
 
             Predicate<TInput> newFilter = item => Thread.VolatileRead(ref control) == 0;
-            var buffer = new QueueBucket<T>();
+            var buffer = new SafeQueue<T>();
             wrapped.SubscribeAction
             (
                 item =>
@@ -390,7 +390,7 @@ namespace Theraot.Collections
             int control = 0;
 
             Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0 && filter(item);
-            var buffer = new QueueBucket<T>();
+            var buffer = new SafeQueue<T>();
             wrapped.SubscribeAction
             (
                 item =>
@@ -449,7 +449,7 @@ namespace Theraot.Collections
             int control = 0;
 
             Predicate<TInput> newFilter = item => Thread.VolatileRead(ref control) == 0 && filter(item);
-            var buffer = new QueueBucket<T>();
+            var buffer = new SafeQueue<T>();
             wrapped.SubscribeAction
             (
                 item =>

@@ -10,15 +10,13 @@ namespace Theraot.Threading
 {
     public sealed class WorkContext : IDisposable
     {
-        private const int INT_InitialWorkCapacityHint = 128;
-
-        private static readonly WorkContext _defaultContext = new WorkContext(INT_InitialWorkCapacityHint, Environment.ProcessorCount, "Default Context", false);
+        private static readonly WorkContext _defaultContext = new WorkContext(Environment.ProcessorCount, "Default Context", false);
 
         private static int _lastId;
         private readonly int _dedidatedThreadMax;
         private readonly bool _disposable;
         private readonly int _id;
-        private readonly QueueBucket<Work> _works;
+        private readonly SafeQueue<Work> _works;
         private int _dedidatedThreadCount;
         private AutoResetEvent _event;
         private NeedleBucket<Thread, LazyNeedle<Thread>> _threads;
@@ -28,42 +26,30 @@ namespace Theraot.Threading
         private int _workingTotalThreadCount;
 
         public WorkContext()
-            : this(INT_InitialWorkCapacityHint, Environment.ProcessorCount, null, true)
+            : this(Environment.ProcessorCount, null, true)
         {
             //Empty
         }
 
-        public WorkContext(int initialWorkCapacity)
-            : this(initialWorkCapacity, Environment.ProcessorCount, null, true)
-        {
-            //Empty
-        }
-
-        public WorkContext(int initialWorkCapacity, int dedicatedThreads)
-            : this(initialWorkCapacity, dedicatedThreads, null, true)
+        public WorkContext(int dedicatedThreads)
+            : this(dedicatedThreads, null, true)
         {
             //Empty
         }
 
         public WorkContext(string name)
-            : this(INT_InitialWorkCapacityHint, Environment.ProcessorCount, Check.NotNullArgument(name, "name"), true)
+            : this(Environment.ProcessorCount, Check.NotNullArgument(name, "name"), true)
         {
             //Empty
         }
 
-        public WorkContext(string name, int initialWorkCapacity)
-            : this(initialWorkCapacity, Environment.ProcessorCount, Check.NotNullArgument(name, "name"), true)
+        public WorkContext(string name, int dedicatedThreads)
+            : this(dedicatedThreads, Check.NotNullArgument(name, "name"), true)
         {
             //Empty
         }
 
-        public WorkContext(string name, int initialWorkCapacity, int dedicatedThreads)
-            : this(initialWorkCapacity, dedicatedThreads, Check.NotNullArgument(name, "name"), true)
-        {
-            //Empty
-        }
-
-        private WorkContext(int initialWorkCapacity, int dedicatedThreads, string name, bool disposable)
+        private WorkContext(int dedicatedThreads, string name, bool disposable)
         {
             if (dedicatedThreads < 0)
             {
@@ -72,7 +58,7 @@ namespace Theraot.Threading
             else
             {
                 _dedidatedThreadMax = dedicatedThreads;
-                _works = new QueueBucket<Work>(initialWorkCapacity);
+                _works = new SafeQueue<Work>();
                 Converter<int, Thread> valueFactory = null;
                 if (StringHelper.IsNullOrWhiteSpace(name))
                 {
@@ -217,10 +203,6 @@ namespace Theraot.Threading
         {
             if (_work)
             {
-                if (_works.Count == _works.Capacity)
-                {
-                    ActivateDedicatedThreads();
-                }
                 _works.Add(work);
                 if (_threads.Capacity == 0)
                 {

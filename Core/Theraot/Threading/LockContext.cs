@@ -11,7 +11,7 @@ namespace Theraot.Threading
     public class LockContext<T>
     {
         private readonly int _capacity;
-        private readonly QueueBucket<LockSlot<T>> _freeSlots;
+        private readonly FixedSizeQueue<LockSlot<T>> _freeSlots;
         private readonly NeedleBucket<LockSlot<T>, LazyNeedle<LockSlot<T>>> _slots;
         private readonly VersionProvider _version = new VersionProvider();
         private int _index;
@@ -20,7 +20,7 @@ namespace Theraot.Threading
         {
             _capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
             _slots = new NeedleBucket<LockSlot<T>, LazyNeedle<LockSlot<T>>>(index => new LockSlot<T>(this, index, _version.AdvanceNewToken()), _capacity);
-            _freeSlots = new QueueBucket<LockSlot<T>>(_capacity);
+            _freeSlots = new FixedSizeQueue<LockSlot<T>>(_capacity);
         }
 
         internal int Capacity
