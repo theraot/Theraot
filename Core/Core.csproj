@@ -337,6 +337,7 @@
     <Compile Include="Theraot\Collections\Specialized\NullAwareDictionary.extended.cs" />
     <Compile Include="Theraot\Collections\Specialized\OrderedCollection.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\ArrayReservoir.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\Branch.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\Bucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\BucketHelper.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\BucketStatus.cs" />
@@ -345,6 +346,7 @@
     <Compile Include="Theraot\Collections\ThreadSafe\FixedSizeQueue.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\FixedSizeSetBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\HashBucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\Mapper.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\NeedleBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\NeedleReservoir.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\Pool.cs" />
