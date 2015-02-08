@@ -82,13 +82,11 @@ This are some parts worth of mention:
       - `NullAwareDictionary<TKey, TValue>`: A dictionary that can store a null key.
     - `ThreadSafe`
       - `Bucket<T>`: A fixed-size wait-free collection.
-      - `FixedSizeHashBucket<TKey, TValue>`: A fixed-size wait-free hash based dictionary.
-      - `FixedSizeQueueBucket<T>`: A fixed-size wait-free queue.
-      - `FixedSizeSetBucket<T>`: A fixed-size wait-free set.
-      - `HashBucket<TKey, TValue>`: A lock-free hash based dictionary.
-      - `LazyBucket<T>`: A fixed-size wait-free lazy initialized collection.
-      - `QueueBucket<T>`: A lock-free queue.
-      - `SetBucket<T>`: A lock-free set.
+      - `FixedSizeQueue<T>`: A fixed-size wait-free queue.
+      - `SafeDictionary<TKey, TValue>`: A wait-free hash based dictionary.
+      - `SafeSet<T>`: A wait-free hash based set.
+      - `SafeQueuet<T>`: A wait-free queue.
+      - `NeedleBucket<T, TNeedle>`: A fixed-size wait-free collection of a given Needle type.
       - `WeakDelegateSet`: A lock-free set of weak references to delegates.
       - `WeakEvent<TEventArgs>`: A weak event implementation.
       - `WeakSetBucket<T, TNeedle>`: A lock-free set of weak references.
