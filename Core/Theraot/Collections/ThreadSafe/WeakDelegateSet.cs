@@ -109,7 +109,8 @@ namespace Theraot.Collections.ThreadSafe
         public bool Add(MethodInfo method, object target)
         {
             Check.NotNullArgument(method, "method");
-            Wrapped.Add(new WeakDelegateNeedle(method, target));
+            Wrapped.TryAdd(new WeakDelegateNeedle(method, target)); //Since it is a new object, it should not fail
+            // TODO: make this method return void
             return true;
         }
 

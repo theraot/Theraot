@@ -14,7 +14,7 @@ namespace Theraot.Collections.ThreadSafe
         where TNeedle : WeakNeedle<T>
     {
         private readonly IEqualityComparer<T> _comparer;
-        private readonly SetBucket<TNeedle> _wrapped;
+        private readonly SafeSet<TNeedle> _wrapped;
 
         private StructNeedle<WeakNeedle<EventHandler>> _eventHandler;
 
@@ -98,7 +98,7 @@ namespace Theraot.Collections.ThreadSafe
                 _comparer = comparer;
                 needleComparer = new NeedleConversionEqualityComparer<TNeedle, T>(_comparer);
             }
-            _wrapped = new SetBucket<TNeedle>(needleComparer);
+            _wrapped = new SafeSet<TNeedle>(needleComparer);
             if (autoRemoveDeadItems)
             {
                 RegisterForAutoRemoveDeadItemsExtracted();
@@ -165,7 +165,7 @@ namespace Theraot.Collections.ThreadSafe
                 _comparer = comparer;
                 needleComparer = new NeedleConversionEqualityComparer<TNeedle, T>(_comparer);
             }
-            _wrapped = new SetBucket<TNeedle>(capacity, needleComparer);
+            _wrapped = new SafeSet<TNeedle>(capacity, needleComparer);
             if (autoRemoveDeadItems)
             {
                 RegisterForAutoRemoveDeadItemsExtracted();
@@ -250,7 +250,7 @@ namespace Theraot.Collections.ThreadSafe
                 _comparer = comparer;
                 needleComparer = new NeedleConversionEqualityComparer<TNeedle, T>(_comparer);
             }
-            _wrapped = new SetBucket<TNeedle>(needleComparer, maxProbing);
+            _wrapped = new SafeSet<TNeedle>(needleComparer, maxProbing);
             if (autoRemoveDeadItems)
             {
                 RegisterForAutoRemoveDeadItemsExtracted();
@@ -317,7 +317,7 @@ namespace Theraot.Collections.ThreadSafe
                 _comparer = comparer;
                 needleComparer = new NeedleConversionEqualityComparer<TNeedle, T>(_comparer);
             }
-            _wrapped = new SetBucket<TNeedle>(capacity, needleComparer, maxProbing);
+            _wrapped = new SafeSet<TNeedle>(capacity, needleComparer, maxProbing);
             if (autoRemoveDeadItems)
             {
                 RegisterForAutoRemoveDeadItemsExtracted();
@@ -369,7 +369,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        protected SetBucket<TNeedle> Wrapped
+        protected SafeSet<TNeedle> Wrapped
         {
             get
             {
@@ -380,7 +380,7 @@ namespace Theraot.Collections.ThreadSafe
         public bool Add(T item)
         {
             TNeedle needle = NeedleHelper.CreateNeedle<T, TNeedle>(item);
-            if (_wrapped.Add(needle))
+            if (_wrapped.TryAdd(needle))
             {
                 return true;
             }
@@ -458,7 +458,7 @@ namespace Theraot.Collections.ThreadSafe
         void ICollection<T>.Add(T item)
         {
             TNeedle needle = NeedleHelper.CreateNeedle<T, TNeedle>(item);
-            if (!_wrapped.Add(needle))
+            if (!_wrapped.TryAdd(needle))
             {
                 needle.Dispose();
             }
@@ -534,14 +534,6 @@ namespace Theraot.Collections.ThreadSafe
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
-        }
-
-        public bool TryGet(int index, out T item)
-        {
-            TNeedle needle;
-            var result = _wrapped.TryGet(index, out needle);
-            item = needle.Value;
-            return needle.IsAlive && result;
         }
 
         public void UnionWith(IEnumerable<T> other)
