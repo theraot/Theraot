@@ -55,7 +55,7 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Adds the specified item.
+        /// Adds the specified item. May overwrite an existing item.
         /// </summary>
         /// <param name="item">The item.</param>
         /// <returns>Returns the position where the item was added.</returns>
@@ -63,7 +63,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             var index = Interlocked.Increment(ref _index) & (_capacity - 1);
             bool isNew;
-            _entries.Set(index, item, out isNew);
+            _entries.SetInternal(index, item, out isNew);
             return index;
         }
 
@@ -91,9 +91,38 @@ namespace Theraot.Collections.ThreadSafe
             return _entries.RemoveAt(index);
         }
 
+        /// <summary>
+        /// Removes the item at the specified index.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="previous">The previous item in the specified index.</param>
+        /// <returns>
+        ///   <c>true</c> if the item was removed; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        public bool RemoveAt(int index, out T previous)
+        {
+            return _entries.RemoveAt(index, out previous);
+        }
+
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        /// <summary>
+        /// Adds the specified item. Will not overwrite existing items.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <returns>Returns the position where the item was added, -1 otherwise.</returns>
+        public int TryAdd(T item)
+        {
+            var index = Interlocked.Increment(ref _index) & (_capacity - 1);
+            if (_entries.InsertInternal(index, item))
+            {
+                return index;
+            }
+            return -1;
         }
 
         /// <summary>
