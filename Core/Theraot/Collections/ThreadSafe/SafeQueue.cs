@@ -41,19 +41,18 @@ namespace Theraot.Collections.ThreadSafe
         /// Attempts to Adds the specified item at the front.
         /// </summary>
         /// <param name="item">The item.</param>
-        /// <returns>
-        ///   <c>true</c> if the item was added; otherwise, <c>false</c>.
-        /// </returns>
-        public bool Add(T item)
+        /// <exception cref="InvalidOperationException">The queue is full. The capacity of the queue is 2^32 - consider a queue of queues.</exception>
+        /// <remarks>This method throws when the queue is full (2^32 items) if that's a problem, consider using TryAdd.</remarks>
+        public void Add(T item)
         {
             Interlocked.Increment(ref _preCount);
             var index = Interlocked.Increment(ref _indexEnqueue) - 1;
             if (_entries.Insert(index, item))
             {
-                return true;
+                return;
             }
             Interlocked.Decrement(ref _preCount);
-            return false;
+            throw new InvalidOperationException("The queue is full.");
         }
 
         /// <summary>
@@ -80,6 +79,25 @@ namespace Theraot.Collections.ThreadSafe
                 return item;
             }
             throw new InvalidOperationException("Empty");
+        }
+
+        /// <summary>
+        /// Attempts to Adds the specified item at the front.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        /// <returns>
+        ///   <c>true</c> if the item was added; otherwise, <c>false</c>.
+        /// </returns>
+        public bool TryAdd(T item)
+        {
+            Interlocked.Increment(ref _preCount);
+            var index = Interlocked.Increment(ref _indexEnqueue) - 1;
+            if (_entries.Insert(index, item))
+            {
+                return true;
+            }
+            Interlocked.Decrement(ref _preCount);
+            return false;
         }
 
         /// <summary>
