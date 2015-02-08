@@ -16,7 +16,7 @@ namespace Theraot.Collections.ThreadSafe
         where TNeedle : WeakNeedle<TKey>
     {
         private readonly IEqualityComparer<TKey> _comparer;
-        private readonly HashBucket<TNeedle, TValue> _wrapped;
+        private readonly SafeDictionary<TNeedle, TValue> _wrapped;
 
         private StructNeedle<WeakNeedle<EventHandler>> _eventHandler;
 
@@ -100,7 +100,7 @@ namespace Theraot.Collections.ThreadSafe
                 _comparer = comparer;
                 needleComparer = new NeedleConversionEqualityComparer<TNeedle, TKey>(_comparer);
             }
-            _wrapped = new HashBucket<TNeedle, TValue>(needleComparer);
+            _wrapped = new SafeDictionary<TNeedle, TValue>(needleComparer);
             if (autoRemoveDeadItems)
             {
                 RegisterForAutoRemoveDeadItemsExtracted();
@@ -167,7 +167,7 @@ namespace Theraot.Collections.ThreadSafe
                 _comparer = comparer;
                 needleComparer = new NeedleConversionEqualityComparer<TNeedle, TKey>(_comparer);
             }
-            _wrapped = new HashBucket<TNeedle, TValue>(capacity, needleComparer);
+            _wrapped = new SafeDictionary<TNeedle, TValue>(capacity, needleComparer);
             if (autoRemoveDeadItems)
             {
                 RegisterForAutoRemoveDeadItemsExtracted();
@@ -252,7 +252,7 @@ namespace Theraot.Collections.ThreadSafe
                 _comparer = comparer;
                 needleComparer = new NeedleConversionEqualityComparer<TNeedle, TKey>(_comparer);
             }
-            _wrapped = new HashBucket<TNeedle, TValue>(needleComparer, maxProbing);
+            _wrapped = new SafeDictionary<TNeedle, TValue>(needleComparer, maxProbing);
             if (autoRemoveDeadItems)
             {
                 RegisterForAutoRemoveDeadItemsExtracted();
@@ -319,7 +319,7 @@ namespace Theraot.Collections.ThreadSafe
                 _comparer = comparer;
                 needleComparer = new NeedleConversionEqualityComparer<TNeedle, TKey>(_comparer);
             }
-            _wrapped = new HashBucket<TNeedle, TValue>(capacity, needleComparer, maxProbing);
+            _wrapped = new SafeDictionary<TNeedle, TValue>(capacity, needleComparer, maxProbing);
             if (autoRemoveDeadItems)
             {
                 RegisterForAutoRemoveDeadItemsExtracted();
@@ -362,7 +362,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        protected HashBucket<TNeedle, TValue> Wrapped
+        protected SafeDictionary<TNeedle, TValue> Wrapped
         {
             get
             {
@@ -409,7 +409,8 @@ namespace Theraot.Collections.ThreadSafe
         public KeyValuePair<TKey, TValue> CharyAdd(TKey key, TValue value)
         {
             var needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
-            var result = _wrapped.CharyAdd(needle, value);
+            KeyValuePair<TNeedle, TValue> result;
+            _wrapped.TryAdd(needle, value, out result);
             if (ReferenceEquals(result.Key, null))
             {
                 return new KeyValuePair<TKey, TValue>(null, result.Value);
@@ -516,17 +517,8 @@ namespace Theraot.Collections.ThreadSafe
         public void Set(TKey key, TValue value)
         {
             var needle = new TNeedle[1];
-            _wrapped.Set
-            (
-                GetHashCode(key),
-                _key => !_key.IsAlive || Equals(key, _key.Value),
-                () =>
-                {
-                    needle[0] = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
-                    return needle[0];
-                },
-                value
-            );
+            // TODO: upgrade to AddOrUpdate if possible
+            _wrapped.Set(needle[0], value);
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
@@ -552,22 +544,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             return _wrapped.TryGetValue(GetHashCode(key), _key => Equals(key, _key.Value), out value);
         }
-
-        public bool TryGet(int index, out TKey key, out TValue value)
-        {
-            TNeedle needle;
-            var result = _wrapped.TryGet(index, out needle, out value);
-            key = needle.Value;
-            if (needle.IsAlive)
-            {
-                return result;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
+        
         public bool TryGetValue(TKey key, out TValue value)
         {
             return _wrapped.TryGetValue(GetHashCode(key), _key => Equals(key, _key.Value), out value);

@@ -507,15 +507,15 @@ namespace Theraot.Collections
 
             int control = 0;
 
-            var buffer = new HashBucket<T, bool>();
-            Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0 && !buffer.ContainsKey(item);
+            var buffer = new SafeDictionary<T, bool>();
+            Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0;
             wrapped.SubscribeAction
             (
                 item =>
                 {
                     if (newFilter(item))
                     {
-                        buffer.Add(item, false);
+                        buffer.TryAdd(item, false);
                     }
                 }
             );

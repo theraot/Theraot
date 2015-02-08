@@ -15,7 +15,7 @@ namespace Theraot.Threading
         private const int INT_MaxProcessorCount = 32;
 
         private int _disposing;
-        private HashBucket<Thread, INeedle<T>> _slots;
+        private SafeDictionary<Thread, INeedle<T>> _slots;
         private Func<T> _valueFactory;
 
         public TrackingThreadLocal()
@@ -34,7 +34,7 @@ namespace Theraot.Threading
             int capacity = Environment.ProcessorCount < INT_MaxProcessorCount
                 ? Environment.ProcessorCount * 2
                 : INT_MaxProcessorCount * 2;
-            _slots = new HashBucket<Thread, INeedle<T>>(capacity, INT_MaxProbingHint);
+            _slots = new SafeDictionary<Thread, INeedle<T>>(capacity, INT_MaxProbingHint);
         }
 
         public bool IsValueCreated
@@ -185,6 +185,7 @@ namespace Theraot.Threading
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
+            // TODO: upgrade to GetOrAdd if possible
             INeedle<T> needle;
             if (_slots.TryGetValue(thread, out needle))
             {

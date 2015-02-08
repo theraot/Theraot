@@ -39,7 +39,7 @@ namespace System.Threading
         internal static readonly CancellationTokenSource NoneSource = new CancellationTokenSource();
         private static readonly TimerCallback _timerCallback;
         private readonly ManualResetEvent _handle;
-        private HashBucket<CancellationTokenRegistration, Action> _callbacks;
+        private SafeDictionary<CancellationTokenRegistration, Action> _callbacks;
         private bool _canceled;
         private int _currentId = int.MinValue;
         private bool _disposed;
@@ -58,7 +58,7 @@ namespace System.Threading
 
         public CancellationTokenSource()
         {
-            _callbacks = new HashBucket<CancellationTokenRegistration, Action>();
+            _callbacks = new SafeDictionary<CancellationTokenRegistration, Action>();
             _handle = new ManualResetEvent(false);
         }
 

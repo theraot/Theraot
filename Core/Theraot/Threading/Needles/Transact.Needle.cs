@@ -173,7 +173,7 @@ namespace Theraot.Threading.Needles
                     {
                         transaction._writeLog.Set(this, clone);
                     }
-                    transaction._readLog.CharyAdd(this, original);
+                    transaction._readLog.TryAdd(this, original);
                     return clone;
                 }
             }
@@ -197,7 +197,7 @@ namespace Theraot.Threading.Needles
                         return (T)value;
                     }
                     var original = RetrieveValue(transaction._parentTransaction);
-                    transaction._readLog.CharyAdd(this, original);
+                    transaction._readLog.TryAdd(this, original);
                     return original;
                 }
             }

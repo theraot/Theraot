@@ -15,15 +15,15 @@ namespace Theraot.Threading.Needles
         private static Transact _currentTransaction;
 
         private readonly Transact _parentTransaction;
-        private readonly HashBucket<IResource, object> _readLog;
+        private readonly SafeDictionary<IResource, object> _readLog;
         private readonly Thread _thread;
-        private readonly HashBucket<IResource, object> _writeLog;
+        private readonly SafeDictionary<IResource, object> _writeLog;
         private LockSlot<Thread> _lockSlot;
 
         public Transact()
         {
-            _writeLog = new HashBucket<IResource, object>();
-            _readLog = new HashBucket<IResource, object>();
+            _writeLog = new SafeDictionary<IResource, object>();
+            _readLog = new SafeDictionary<IResource, object>();
             _parentTransaction = _currentTransaction;
             _currentTransaction = this;
             _thread = Thread.CurrentThread;
