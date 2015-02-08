@@ -347,6 +347,8 @@
     <Compile Include="Theraot\Collections\ThreadSafe\HashBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\NeedleBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\NeedleReservoir.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\Pool.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\PoolHelper.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\QueueBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\SetBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\WeakCancellableEvent.cs" />
@@ -421,7 +423,6 @@
     </Compile>
     <Compile Include="Theraot\Core\TypeHelper.cs" />
     <Compile Include="Theraot\Core\TypeHelper.extra.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\ArrayPool.cs" />
     <Compile Include="Theraot\Threading\CriticalDisposable.cs" />
     <Compile Include="Theraot\Threading\CriticalDisposable.disposable.cs" />
     <Compile Include="Theraot\Threading\Disposable.cs">
