@@ -179,12 +179,13 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="System.ArgumentException">the key is already present</exception>
         public void AddNew(TKey key, TValue value)
         {
+            var neo = new KeyValuePair<TKey, TValue>(key, value);
             var hashcode = _keyComparer.GetHashCode(key);
             for (var attempts = 0; ; attempts++)
             {
                 ExtendProbingIfNeeded(attempts);
                 KeyValuePair<TKey, TValue> found;
-                if (_mapper.Insert(hashcode + attempts, new KeyValuePair<TKey, TValue>(key, value), out found))
+                if (_mapper.Insert(hashcode + attempts, neo, out found))
                 {
                     return;
                 }
@@ -200,7 +201,15 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public void Clear()
         {
-            _mapper = new Mapper<KeyValuePair<TKey, TValue>>();
+            Interlocked.Exchange(ref _mapper, _mapper = new Mapper<KeyValuePair<TKey, TValue>>());
+        }
+
+        /// <summary>
+        /// Removes all the elements.
+        /// </summary>
+        public IEnumerable<KeyValuePair<TKey, TValue>> ClearEnumerable()
+        {
+            return Interlocked.Exchange(ref _mapper, _mapper = new Mapper<KeyValuePair<TKey, TValue>>());
         }
 
         /// <summary>
@@ -438,6 +447,7 @@ namespace Theraot.Collections.ThreadSafe
         public void Set(TKey key, TValue value)
         {
             var hashcode = _keyComparer.GetHashCode(key);
+            var neo = new KeyValuePair<TKey, TValue>(key, value);
             for (var attempts = 0; ; attempts++)
             {
                 ExtendProbingIfNeeded(attempts);
@@ -448,13 +458,15 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         // Since this class will never relocate a key, we can just set at this position
                         bool isNew;
-                        _mapper.Set(hashcode + attempts, new KeyValuePair<TKey, TValue>(key, value), out isNew);
+                        _mapper.Set(hashcode + attempts, neo, out isNew);
+                        // Done
+                        return;
                     }
                 }
                 else
                 {
                     // This is an empty slot to store this value...
-                    if (_mapper.Insert(hashcode + attempts, new KeyValuePair<TKey, TValue>(key, value)))
+                    if (_mapper.Insert(hashcode + attempts, neo))
                     {
                         // Done
                         return;
@@ -474,15 +486,44 @@ namespace Theraot.Collections.ThreadSafe
         public bool TryAdd(TKey key, TValue value)
         {
             var hashcode = _keyComparer.GetHashCode(key);
+            var neo = new KeyValuePair<TKey, TValue>(key, value);
             for (var attempts = 0; ; attempts++)
             {
                 ExtendProbingIfNeeded(attempts);
                 KeyValuePair<TKey, TValue> found;
-                if (_mapper.Insert(hashcode + attempts, new KeyValuePair<TKey, TValue>(key, value), out found))
+                if (_mapper.Insert(hashcode + attempts, neo, out found))
                 {
                     return true;
                 }
                 if (_keyComparer.Equals(found.Key, key))
+                {
+                    return false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Attempts to add the specified key and associated value. The value is added if the key is not found.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="stored">The stored pair independently of success.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified key and associated value were added; otherwise, <c>false</c>.
+        /// </returns>
+        public bool TryAdd(TKey key, TValue value, out KeyValuePair<TKey, TValue> stored)
+        {
+            var hashcode = _keyComparer.GetHashCode(key);
+            var neo = new KeyValuePair<TKey, TValue>(key, value);
+            for (var attempts = 0; ; attempts++)
+            {
+                ExtendProbingIfNeeded(attempts);
+                if (_mapper.Insert(hashcode + attempts, neo, out stored))
+                {
+                    stored = neo;
+                    return true;
+                }
+                if (_keyComparer.Equals(stored.Key, key))
                 {
                     return false;
                 }
