@@ -352,6 +352,9 @@
     <Compile Include="Theraot\Collections\ThreadSafe\Pool.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\PoolHelper.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\QueueBucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\SafeDictionary.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\SafeQueue.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\SafeSet.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\SetBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\WeakCancellableEvent.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\WeakDelegateSet.cs" />
