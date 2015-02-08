@@ -135,22 +135,6 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Gets the items contained in this object.
-        /// </summary>
-        public IList<T> GetValues()
-        {
-            return _entriesNew.GetValues();
-        }
-
-        /// <summary>
-        /// Gets the values contained in this object.
-        /// </summary>
-        public IList<TOutput> GetValues<TOutput>(Converter<T, TOutput> converter)
-        {
-            return _entriesNew.GetValues(converter);
-        }
-
-        /// <summary>
         /// Returns the next item to be taken from the back without removing it.
         /// </summary>
         /// <exception cref="System.InvalidOperationException">No more items to be taken.</exception>

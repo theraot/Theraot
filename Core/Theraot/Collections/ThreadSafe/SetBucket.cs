@@ -280,22 +280,6 @@ namespace Theraot.Collections.ThreadSafe
             return _entriesNew.GetEnumerable().GetEnumerator();
         }
 
-        /// <summary>
-        /// Gets the items and associated values contained in this object.
-        /// </summary>
-        public IList<T> GetValues()
-        {
-            return _entriesNew.GetValues();
-        }
-
-        /// <summary>
-        /// Gets the values contained in this object.
-        /// </summary>
-        public IList<TOutput> GetValues<TOutput>(Converter<T, TOutput> converter)
-        {
-            return _entriesNew.GetValues(converter);
-        }
-
         void ICollection<T>.Add(T item)
         {
             Add(item);

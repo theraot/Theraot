@@ -118,7 +118,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             int index = Index(key, offset);
             KeyValuePair<TKey, TValue> entry;
-            if (_entries.TryGetExtracted(index, out entry))
+            if (_entries.TryGetInternal(index, out entry))
             {
                 if (_keyComparer.Equals(entry.Key, key))
                 {
@@ -147,7 +147,7 @@ namespace Theraot.Collections.ThreadSafe
             for (int index = 0; index < _capacity; index++)
             {
                 KeyValuePair<TKey, TValue> entry;
-                if (_entries.TryGetExtracted(index, out entry))
+                if (_entries.TryGetInternal(index, out entry))
                 {
                     yield return entry.Key;
                 }
@@ -162,19 +162,11 @@ namespace Theraot.Collections.ThreadSafe
             for (int index = 0; index < _capacity; index++)
             {
                 KeyValuePair<TKey, TValue> entry;
-                if (_entries.TryGetExtracted(index, out entry))
+                if (_entries.TryGetInternal(index, out entry))
                 {
                     yield return entry;
                 }
             }
-        }
-
-        /// <summary>
-        /// Gets the values contained in this object.
-        /// </summary>
-        public IList<KeyValuePair<TKey, TValue>> GetPairs()
-        {
-            return _entries.GetValues();
         }
 
         /// <summary>
@@ -185,7 +177,7 @@ namespace Theraot.Collections.ThreadSafe
             for (int index = 0; index < _capacity; index++)
             {
                 KeyValuePair<TKey, TValue> entry;
-                if (_entries.TryGetExtracted(index, out entry))
+                if (_entries.TryGetInternal(index, out entry))
                 {
                     yield return entry.Value;
                 }
@@ -233,7 +225,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             int index = Index(key, offset);
             KeyValuePair<TKey, TValue> entry;
-            if (_entries.TryGetExtracted(index, out entry))
+            if (_entries.TryGetInternal(index, out entry))
             {
                 if (_keyComparer.Equals(entry.Key, key))
                 {
@@ -270,7 +262,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             int index = Index(key, offset);
             KeyValuePair<TKey, TValue> entry;
-            if (_entries.TryGetExtracted(index, out entry))
+            if (_entries.TryGetInternal(index, out entry))
             {
                 if (_keyComparer.Equals(entry.Key, key))
                 {
@@ -297,7 +289,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             int index = IndexByHashCode(hashcode, offset);
             KeyValuePair<TKey, TValue> entry;
-            if (_entries.TryGetExtracted(index, out entry))
+            if (_entries.TryGetInternal(index, out entry))
             {
                 if (keyCheck.Invoke(entry.Key))
                 {
@@ -324,7 +316,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             int index = Index(key, offset);
             KeyValuePair<TKey, TValue> oldEntry;
-            isNew = !_entries.TryGetExtracted(index, out oldEntry);
+            isNew = !_entries.TryGetInternal(index, out oldEntry);
             if (isNew || _keyComparer.Equals(key, oldEntry.Key))
             {
                 _entries.Set(index, new KeyValuePair<TKey, TValue>(key, value), out isNew);
@@ -362,7 +354,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             int index = IndexByHashCode(hashcode, offset);
             KeyValuePair<TKey, TValue> oldEntry;
-            isNew = !_entries.TryGetExtracted(index, out oldEntry);
+            isNew = !_entries.TryGetInternal(index, out oldEntry);
             if (isNew || keyCheck.Invoke(oldEntry.Key))
             {
                 _entries.Set(index, new KeyValuePair<TKey, TValue>(keyFactory.Invoke(), value), out isNew);
@@ -499,7 +491,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             int index = IndexByHashCode(hashcode, offset);
             KeyValuePair<TKey, TValue> entry;
-            if (_entries.TryGetExtracted(index, out entry))
+            if (_entries.TryGetInternal(index, out entry))
             {
                 if (keyCheck.Invoke(entry.Key))
                 {
@@ -522,7 +514,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             int index = Index(key, offset);
             KeyValuePair<TKey, TValue> entry;
-            if (_entries.TryGetExtracted(index, out entry))
+            if (_entries.TryGetInternal(index, out entry))
             {
                 if (_keyComparer.Equals(entry.Key, key))
                 {

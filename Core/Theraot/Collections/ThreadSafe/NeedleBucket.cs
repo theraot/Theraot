@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Collections.ThreadSafe
@@ -104,7 +105,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="System.ArgumentException">array;The array can not contain the number of elements.</exception>
         public void CopyTo(T[] array, int arrayIndex)
         {
-            GetValues().CopyTo(array, arrayIndex);
+            _entries.ToArray().CopyTo(array, arrayIndex);
         }
 
         /// <summary>
@@ -166,7 +167,7 @@ namespace Theraot.Collections.ThreadSafe
             }
             // Using TryGetValue first just avoid wasting a needle
             TNeedle _previous;
-            if (_entries.TryGetExtracted(index, out _previous))
+            if (_entries.TryGetInternal(index, out _previous))
             {
                 // Null resistant
                 T previous;
@@ -177,7 +178,7 @@ namespace Theraot.Collections.ThreadSafe
             else
             {
                 var newNeedle = _needleFactory(index);
-                if (_entries.InsertExtracted(index, newNeedle, out _previous))
+                if (_entries.InsertInternal(index, newNeedle, out _previous))
                 {
                     return newNeedle.Value;
                 }
@@ -230,40 +231,6 @@ namespace Theraot.Collections.ThreadSafe
                 NeedleReservoir<T, TNeedle>.DonateNeedle(newNeedle);
                 return _previous;
             }
-        }
-
-        /// <summary>
-        /// Gets the values contained in this object.
-        /// </summary>
-        public IList<TNeedle> GetNeedles()
-        {
-            return _entries.GetValues();
-        }
-
-        /// <summary>
-        /// Gets the values contained in this object.
-        /// </summary>
-        public IList<TOutput> GetNeedles<TOutput>(Converter<TNeedle, TOutput> converter)
-        {
-            return _entries.GetValues(converter.Invoke);
-        }
-
-        /// <summary>
-        /// Gets the values contained in this object.
-        /// </summary>
-        public IList<T> GetValues()
-        {
-            // Allowing this to trigger the Values
-            return _entries.GetValues(input => input.Value);
-        }
-
-        /// <summary>
-        /// Gets the values contained in this object.
-        /// </summary>
-        public IList<TOutput> GetValues<TOutput>(Converter<T, TOutput> converter)
-        {
-            // Allowing this to trigger the Values
-            return _entries.GetValues(input => converter.Invoke(input.Value));
         }
 
         /// <summary>

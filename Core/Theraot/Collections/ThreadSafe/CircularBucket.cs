@@ -79,22 +79,6 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Gets the values contained in this object.
-        /// </summary>
-        public IList<T> GetValues()
-        {
-            return _entries.GetValues();
-        }
-
-        /// <summary>
-        /// Gets the values contained in this object.
-        /// </summary>
-        public IList<TOutput> GetValues<TOutput>(Converter<T, TOutput> converter)
-        {
-            return _entries.GetValues(converter);
-        }
-
-        /// <summary>
         /// Removes the item at the specified index.
         /// </summary>
         /// <param name="index">The index.</param>

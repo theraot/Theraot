@@ -319,14 +319,6 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Gets the keys and associated values contained in this object.
-        /// </summary>
-        public IList<KeyValuePair<TKey, TValue>> GetPairs()
-        {
-            return _entriesNew.GetPairs();
-        }
-
-        /// <summary>
         /// Removes the specified key.
         /// </summary>
         /// <param name="key">The key.</param>

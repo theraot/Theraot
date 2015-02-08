@@ -114,7 +114,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             int index = Index(item, offset);
             T entry;
-            if (_entries.TryGetExtracted(index, out entry))
+            if (_entries.TryGetInternal(index, out entry))
             {
                 if (_comparer.Equals(entry, item))
                 {
@@ -139,7 +139,7 @@ namespace Theraot.Collections.ThreadSafe
             for (int index = 0; index < _capacity; index++)
             {
                 T entry;
-                if (_entries.TryGetExtracted(index, out entry))
+                if (_entries.TryGetInternal(index, out entry))
                 {
                     yield return entry;
                 }
@@ -155,22 +155,6 @@ namespace Theraot.Collections.ThreadSafe
         public IEnumerator<T> GetEnumerator()
         {
             return GetEnumerable().GetEnumerator();
-        }
-
-        /// <summary>
-        /// Gets the values contained in this object.
-        /// </summary>
-        public IList<T> GetValues()
-        {
-            return _entries.GetValues();
-        }
-
-        /// <summary>
-        /// Gets the values contained in this object.
-        /// </summary>
-        public IList<TOutput> GetValues<TOutput>(Converter<T, TOutput> converter)
-        {
-            return _entries.GetValues(converter);
         }
 
         /// <summary>
@@ -205,7 +189,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             int index = Index(item, offset);
             T entry;
-            if (_entries.TryGetExtracted(index, out entry))
+            if (_entries.TryGetInternal(index, out entry))
             {
                 if (_comparer.Equals(entry, item))
                 {
@@ -255,7 +239,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             int index = Index(item, offset);
             T entry;
-            if (_entries.TryGetExtracted(index, out entry))
+            if (_entries.TryGetInternal(index, out entry))
             {
                 if (_comparer.Equals(entry, item))
                 {
@@ -306,7 +290,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             int index = Index(item, offset);
             T oldEntry;
-            isNew = !_entries.TryGetExtracted(index, out oldEntry);
+            isNew = !_entries.TryGetInternal(index, out oldEntry);
             if (isNew || _comparer.Equals(item, oldEntry))
             {
                 _entries.Set(index, item, out isNew);
