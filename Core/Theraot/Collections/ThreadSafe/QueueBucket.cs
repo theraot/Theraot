@@ -17,8 +17,8 @@ namespace Theraot.Collections.ThreadSafe
         private int _copyingThreads;
         private int _copySourcePosition;
         private int _count;
-        private FixedSizeQueueBucket<T> _entriesNew;
-        private FixedSizeQueueBucket<T> _entriesOld;
+        private FixedSizeQueue<T> _entriesNew;
+        private FixedSizeQueue<T> _entriesOld;
         private volatile int _revision;
         private int _status;
         private int _workingThreads;
@@ -39,7 +39,7 @@ namespace Theraot.Collections.ThreadSafe
         public QueueBucket(int initialCapacity)
         {
             _entriesOld = null;
-            _entriesNew = new FixedSizeQueueBucket<T>(initialCapacity);
+            _entriesNew = new FixedSizeQueue<T>(initialCapacity);
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace Theraot.Collections.ThreadSafe
         public void Clear()
         {
             ThreadingHelper.VolatileWrite(ref _entriesOld, null);
-            ThreadingHelper.VolatileWrite(ref _entriesNew, new FixedSizeQueueBucket<T>(INT_DefaultCapacity));
+            ThreadingHelper.VolatileWrite(ref _entriesNew, new FixedSizeQueue<T>(INT_DefaultCapacity));
             Thread.VolatileWrite(ref _status, (int)BucketStatus.Free);
             Thread.VolatileWrite(ref _count, 0);
             _revision++;
@@ -306,7 +306,7 @@ namespace Theraot.Collections.ThreadSafe
                                 Thread.CurrentThread.Priority = ThreadPriority.Highest;
                                 Thread.VolatileWrite(ref _copySourcePosition, -1);
                                 var newCapacity = _entriesNew.Capacity * 2;
-                                _entriesOld = Interlocked.Exchange(ref _entriesNew, new FixedSizeQueueBucket<T>(newCapacity));
+                                _entriesOld = Interlocked.Exchange(ref _entriesNew, new FixedSizeQueue<T>(newCapacity));
                                 oldStatus = Interlocked.CompareExchange(ref _status, (int)BucketStatus.Copy, (int)BucketStatus.Waiting);
                             }
                             finally

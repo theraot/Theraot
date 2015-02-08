@@ -342,7 +342,7 @@
     <Compile Include="Theraot\Collections\ThreadSafe\BucketStatus.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\CircularBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\FixedSizeHashBucket.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\FixedSizeQueueBucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\FixedSizeQueue.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\FixedSizeSetBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\HashBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\NeedleBucket.cs" />
