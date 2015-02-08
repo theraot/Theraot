@@ -102,14 +102,6 @@ namespace Theraot.Collections.ThreadSafe
             _probing = initialProbing;
         }
 
-        public int Count
-        {
-            get
-            {
-                return _mapper.Count;
-            }
-        }
-
         public IEqualityComparer<T> Comparer
         {
             get
@@ -118,6 +110,13 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        public int Count
+        {
+            get
+            {
+                return _mapper.Count;
+            }
+        }
         /// <summary>
         /// Adds the specified value.
         /// </summary>
@@ -147,6 +146,14 @@ namespace Theraot.Collections.ThreadSafe
         public void Clear()
         {
             _mapper = new Mapper<T>();
+        }
+
+        /// <summary>
+        /// Removes all the elements.
+        /// </summary>
+        public IEnumerable<T> ClearEnumerable()
+        {
+            return Interlocked.Exchange(ref _mapper, _mapper = new Mapper<T>());
         }
 
         /// <summary>
@@ -341,7 +348,6 @@ namespace Theraot.Collections.ThreadSafe
                 }
             }
         }
-
         /// <summary>
         /// Returns the values where the predicate is satisfied.
         /// </summary>
