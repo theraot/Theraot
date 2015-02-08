@@ -7,7 +7,7 @@ namespace Theraot.Collections
     [Serializable]
     public sealed class ProxyObservable<T> : IObservable<T>, IObserver<T>, IProxyObservable<T>
     {
-        // Here we use SetBucket because it will allow iterating while it is being modified
+        // Here we use SafeSet because it will allow iterating while it is being modified
         private readonly SafeSet<IObserver<T>> _observers;
 
         public ProxyObservable()
