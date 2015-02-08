@@ -25,7 +25,7 @@ namespace Theraot.Collections.Specialized
             else
             {
                 _length = prototype._length;
-                _entries = ArrayPool<int>.GetArray(GetLength(_length));
+                _entries = ArrayReservoir<int>.GetArray(GetLength(_length));
                 prototype._entries.CopyTo(_entries, 0);
                 _asReadOnly = new ExtendedReadOnlyCollection<bool>(this);
             }
@@ -40,7 +40,7 @@ namespace Theraot.Collections.Specialized
             else
             {
                 _length = length;
-                _entries = ArrayPool<int>.GetArray(GetLength(_length));
+                _entries = ArrayReservoir<int>.GetArray(GetLength(_length));
                 _asReadOnly = new ExtendedReadOnlyCollection<bool>(this);
             }
         }
@@ -291,7 +291,7 @@ namespace Theraot.Collections.Specialized
 
         private void RecycleExtracted()
         {
-            ArrayPool<int>.DonateArray(_entries);
+            ArrayReservoir<int>.DonateArray(_entries);
             _entries = null;
         }
 
