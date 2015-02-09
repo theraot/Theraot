@@ -157,32 +157,29 @@ namespace Theraot.Threading.Needles
             ThreadingHelper.VolatileWrite(ref _valueFactory, null);
         }
 
-        public bool TryGetValue(out T target)
+        public override bool TryGetValue(out T target)
         {
-            var result = IsCompleted;
-            target = base.Value;
-            return result;
+            target = default(T);
+            return IsCompleted && base.TryGetValue(out target);
         }
+
         public void Wait()
         {
             if (_initializerThread == Thread.CurrentThread)
             {
                 throw new InvalidOperationException();
             }
-            else
+            var handle = _waitHandle.Value;
+            if (handle != null)
             {
-                var handle = _waitHandle.Value;
-                if (handle != null)
+                try
                 {
-                    try
-                    {
-                        handle.Wait();
-                    }
-                    catch (ObjectDisposedException exception)
-                    {
-                        // Came late to the party, initialization was done
-                        GC.KeepAlive(exception);
-                    }
+                    handle.Wait();
+                }
+                catch (ObjectDisposedException exception)
+                {
+                    // Came late to the party, initialization was done
+                    GC.KeepAlive(exception);
                 }
             }
         }
@@ -213,28 +210,22 @@ namespace Theraot.Threading.Needles
                 {
                     throw new InvalidOperationException();
                 }
-                else
+                var handle = _waitHandle.Value;
+                if (handle != null)
                 {
-                    var handle = _waitHandle.Value;
-                    if (handle != null)
+                    try
                     {
-                        try
+                        _waitHandle.Value.Wait();
+                        if (ThreadingHelper.VolatileRead(ref _valueFactory) != null)
                         {
-                            _waitHandle.Value.Wait();
-                            if (ThreadingHelper.VolatileRead(ref _valueFactory) != null)
-                            {
-                                goto back;
-                            }
-                            else
-                            {
-                                ReleaseWaitHandle();
-                            }
+                            goto back;
                         }
-                        catch (ObjectDisposedException exception)
-                        {
-                            // Came late to the party, initialization is done
-                            GC.KeepAlive(exception);
-                        }
+                        ReleaseWaitHandle();
+                    }
+                    catch (ObjectDisposedException exception)
+                    {
+                        // Came late to the party, initialization is done
+                        GC.KeepAlive(exception);
                     }
                 }
             }

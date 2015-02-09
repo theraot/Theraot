@@ -226,7 +226,7 @@ namespace Theraot.Threading.Needles
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
-        public bool TryGetValue(out T value)
+        public virtual bool TryGetValue(out T value)
         {
             value = null;
             if (_handle.IsAllocated)
