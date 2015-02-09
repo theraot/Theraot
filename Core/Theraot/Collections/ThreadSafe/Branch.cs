@@ -358,9 +358,9 @@ namespace Theraot.Collections.ThreadSafe
 
         private bool PrivateRemoveAt(uint index, out object previous)
         {
+            var subindex = GetSubindex(index);
             try
             {
-                var subindex = GetSubindex(index);
                 previous = Interlocked.Exchange(ref _entries[subindex], null);
                 if (previous == null)
                 {
@@ -377,8 +377,8 @@ namespace Theraot.Collections.ThreadSafe
             {
                 // Eating null reference, the branch has been removed
                 previous = null;
+                return false;
             }
-            return false;
         }
 
         private void PrivateSet(uint index, object item, out bool isNew)
@@ -399,9 +399,9 @@ namespace Theraot.Collections.ThreadSafe
 
         private bool PrivateTryGet(uint index, out object previous)
         {
+            var subindex = GetSubindex(index);
             try
             {
-                var subindex = GetSubindex(index);
                 previous = Interlocked.CompareExchange(ref _entries[subindex], null, null);
                 if (previous == null)
                 {
@@ -417,15 +417,15 @@ namespace Theraot.Collections.ThreadSafe
             {
                 // Eating null reference, the branch has been removed
                 previous = null;
+                return false;
             }
-            return false;
         }
 
         private bool PrivateTryGetBranch(uint index, out object previous)
         {
+            var subindex = GetSubindex(index);
             try
             {
-                var subindex = GetSubindex(index);
                 previous = Interlocked.CompareExchange(ref _entries[subindex], null, null);
                 if (previous == null)
                 {
@@ -437,16 +437,17 @@ namespace Theraot.Collections.ThreadSafe
             {
                 // Eating null reference, the branch has been removed
                 previous = null;
+                return false;
             }
-            return false;
         }
 
         private bool PrivateTryGetCheckRemoveAt(uint index, Predicate<object> check, out object previous)
         {
+            object found;
+            var subindex = GetSubindex(index);
             try
             {
-                var subindex = GetSubindex(index);
-                var found = Interlocked.CompareExchange(ref _entries[subindex], null, null);
+                found = Interlocked.CompareExchange(ref _entries[subindex], null, null);
                 if (found == null)
                 {
                     previous = null;
@@ -456,8 +457,18 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     found = null;
                 }
-                // -- Found
-                if (check(found))
+            }
+            catch (NullReferenceException)
+            {
+                // Eating null reference, the branch has been removed
+                previous = null;
+                return false;
+            }
+            // -- Found
+            bool checkResult = check(found);
+            try
+            {
+                if (checkResult)
                 {
                     // -- Passed
                     previous = Interlocked.Exchange(ref _entries[subindex], null);
@@ -479,8 +490,8 @@ namespace Theraot.Collections.ThreadSafe
             {
                 // Eating null reference, the branch has been removed
                 previous = null;
+                return false;
             }
-            return false;
         }
 
         private bool PrivateTryGetCheckSet(uint index, object item, Predicate<object> check, out bool isNew)
@@ -506,7 +517,16 @@ namespace Theraot.Collections.ThreadSafe
                 found = null;
             }
             // -- Found
-            if (check(found))
+            bool checkResult;
+            try
+            {
+                checkResult = check(found);
+            }
+            finally
+            {
+                Interlocked.Decrement(ref _useCount); // We did not add after all
+            }
+            if (checkResult)
             {
                 // -- Passed
                 // This works under the presumption that check will result true to whatever value may have replaced found...
@@ -523,7 +543,6 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 return true;
             }
-            Interlocked.Decrement(ref _useCount); // We did not add after all
             return false;
         }
 

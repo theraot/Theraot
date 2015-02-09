@@ -12,7 +12,6 @@ namespace Theraot.Threading
     public sealed class TrackingThreadLocal<T> : IDisposable, IThreadLocal<T>, IPromise<T>, ICacheNeedle<T>, IObserver<T>
     {
         private const int INT_MaxProbingHint = 4;
-        private const int INT_MaxProcessorCount = 32;
 
         private int _disposing;
         private SafeDictionary<Thread, INeedle<T>> _slots;
@@ -31,10 +30,7 @@ namespace Theraot.Threading
                 throw new ArgumentNullException("valueFactory");
             }
             _valueFactory = valueFactory;
-            int capacity = Environment.ProcessorCount < INT_MaxProcessorCount
-                ? Environment.ProcessorCount * 2
-                : INT_MaxProcessorCount * 2;
-            _slots = new SafeDictionary<Thread, INeedle<T>>(capacity, INT_MaxProbingHint);
+            _slots = new SafeDictionary<Thread, INeedle<T>>(INT_MaxProbingHint);
         }
 
         bool IExpected.IsCanceled
