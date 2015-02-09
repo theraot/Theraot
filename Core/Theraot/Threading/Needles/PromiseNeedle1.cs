@@ -133,10 +133,7 @@ namespace Theraot.Threading.Needles
             {
                 return EqualsExtracted(this, _obj);
             }
-            else
-            {
-                return _promised.IsCompleted && _promised.Value.Equals(obj);
-            }
+            return _promised.IsCompleted && _promised.Value.Equals(obj);
         }
 
         public bool Equals(PromiseNeedle<T> other)
@@ -175,10 +172,7 @@ namespace Theraot.Threading.Needles
             {
                 return ReferenceEquals(right, null);
             }
-            else
-            {
-                return left.Equals(right);
-            }
+            return left.Equals(right);
         }
 
         private static bool NotEqualsExtracted(PromiseNeedle<T> left, PromiseNeedle<T> right)
@@ -187,10 +181,7 @@ namespace Theraot.Threading.Needles
             {
                 return !ReferenceEquals(right, null);
             }
-            else
-            {
-                return !left.Equals(right);
-            }
+            return !left.Equals(right);
         }
 
         [Serializable]
@@ -198,40 +189,32 @@ namespace Theraot.Threading.Needles
         {
             private readonly int _hashCode;
             private Exception _error;
-            private int _isCompleted;
             private T _target;
-            private StructNeedle<ManualResetEvent> _waitHandle;
+            private StructNeedle<ManualResetEventSlim> _waitHandle;
 
             public Promised()
             {
-                _waitHandle = new ManualResetEvent(false);
                 _hashCode = base.GetHashCode();
+                _waitHandle = new StructNeedle<ManualResetEventSlim>(new ManualResetEventSlim(false));
             }
 
             public Promised(T target)
             {
                 _target = target;
                 _hashCode = ReferenceEquals(target, null) ? base.GetHashCode() : target.GetHashCode();
-                Thread.VolatileWrite(ref _isCompleted, 1);
-                _waitHandle = new ManualResetEvent(true);
+                _waitHandle = null;
             }
 
             public Promised(Exception error)
             {
                 _error = error;
                 _hashCode = error.GetHashCode();
-                Thread.VolatileWrite(ref _isCompleted, 1);
-                _waitHandle = new ManualResetEvent(true);
+                _waitHandle = null;
             }
 
             ~Promised()
             {
-                var waitHandle = _waitHandle.Value;
-                if (!ReferenceEquals(waitHandle, null))
-                {
-                    waitHandle.Close();
-                }
-                _waitHandle.Value = null;
+                ReleaseWaitHandle();
             }
 
             public Exception Error
@@ -263,7 +246,7 @@ namespace Theraot.Threading.Needles
             {
                 get
                 {
-                    return Thread.VolatileRead(ref _isCompleted) == 1;
+                    return !_waitHandle.IsAlive;
                 }
             }
 
@@ -284,10 +267,7 @@ namespace Theraot.Threading.Needles
                     {
                         return _target;
                     }
-                    else
-                    {
-                        throw _error;
-                    }
+                    throw _error;
                 }
                 set
                 {
@@ -305,20 +285,11 @@ namespace Theraot.Threading.Needles
                         {
                             return ReferenceEquals(other._error, null);
                         }
-                        else
-                        {
-                            return !ReferenceEquals(other._error, null) && _target.Equals(other._target);
-                        }
+                        return !ReferenceEquals(other._error, null) && _target.Equals(other._target);
                     }
-                    else
-                    {
-                        return false;
-                    }
+                    return false;
                 }
-                else
-                {
-                    return !other.IsCompleted;
-                }
+                return !other.IsCompleted;
             }
 
             public override bool Equals(object obj)
@@ -329,8 +300,14 @@ namespace Theraot.Threading.Needles
 
             public void Free()
             {
-                Thread.VolatileWrite(ref _isCompleted, 0);
-                _waitHandle.Value.Reset();
+                if (_waitHandle.IsAlive)
+                {
+                    _waitHandle.Value.Reset();
+                }
+                else
+                {
+                    _waitHandle.Value = new ManualResetEventSlim(false);
+                }
                 _target = default(T);
                 _error = null;
             }
@@ -344,24 +321,21 @@ namespace Theraot.Threading.Needles
             {
                 _target = default(T);
                 _error = null;
-                Thread.VolatileWrite(ref _isCompleted, 1);
-                _waitHandle.Value.Set();
+                ReleaseWaitHandle();
             }
 
             public void OnError(Exception error)
             {
                 _target = default(T);
                 _error = error;
-                Thread.VolatileWrite(ref _isCompleted, 1);
-                _waitHandle.Value.Set();
+                ReleaseWaitHandle();
             }
 
             public void OnNext(T value)
             {
                 _target = value;
                 _error = null;
-                Thread.VolatileWrite(ref _isCompleted, 1);
-                _waitHandle.Value.Set();
+                ReleaseWaitHandle();
             }
 
             public override string ToString()
@@ -372,15 +346,9 @@ namespace Theraot.Threading.Needles
                     {
                         return _target.ToString();
                     }
-                    else
-                    {
-                        return _error.ToString();
-                    }
+                    return _error.ToString();
                 }
-                else
-                {
-                    return "[Not Created]";
-                }
+                return "[Not Created]";
             }
 
             public bool TryGetValue(out T target)
@@ -392,8 +360,30 @@ namespace Theraot.Threading.Needles
 
             public void Wait()
             {
-                // TODO: allow early disposal of _waitHandle - see LazyNeedle
-                _waitHandle.Value.WaitOne();
+                var handle = _waitHandle.Value;
+                if (handle != null)
+                {
+                    try
+                    {
+                        handle.Wait();
+                    }
+                    catch (ObjectDisposedException exception)
+                    {
+                        // Came late to the party, initialization was done
+                        GC.KeepAlive(exception);
+                    }
+                }
+            }
+
+            private void ReleaseWaitHandle()
+            {
+                var waitHandle = _waitHandle.Value;
+                if (!ReferenceEquals(waitHandle, null))
+                {
+                    waitHandle.Set();
+                    waitHandle.Dispose();
+                }
+                _waitHandle.Value = null;
             }
         }
     }
