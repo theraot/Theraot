@@ -226,6 +226,31 @@ namespace Theraot.Threading.Needles
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
+        public bool TryGetValue(out T value)
+        {
+            value = null;
+            if (_handle.IsAllocated)
+            {
+                object target;
+                try
+                {
+                    target = _handle.Target; //Throws InvalidOperationException
+                }
+                catch (InvalidOperationException)
+                {
+                    return false;
+                }
+                var needle = target as INeedle<T>;
+                if (needle != null)
+                {
+                    value = needle.Value;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
         protected void SetTargetError(Exception error)
         {
             var target = new ExceptionStructNeedle<T>(error);
@@ -328,6 +353,12 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
+        private static GCHandle CreateHandle(object target, bool trackResurrection)
+        {
+            return GCHandle.Alloc(target, trackResurrection ? GCHandleType.WeakTrackResurrection : GCHandleType.Weak);
+        }
+
         private static bool EqualsExtracted(WeakNeedle<T> left, WeakNeedle<T> right)
         {
             if (ReferenceEquals(left, null))
@@ -378,12 +409,6 @@ namespace Theraot.Threading.Needles
             {
                 return right.IsAlive;
             }
-        }
-
-        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
-        private static GCHandle CreateHandle(object target, bool trackResurrection)
-        {
-            return GCHandle.Alloc(target, trackResurrection ? GCHandleType.WeakTrackResurrection : GCHandleType.Weak);
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
