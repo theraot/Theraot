@@ -9,16 +9,16 @@ namespace Theraot.Collections.ThreadSafe
     public class WeakEvent<TEventArgs>
         where TEventArgs : EventArgs
     {
-        private readonly WeakDelegateSet _eventHandlers;
+        private readonly WeakDelegateCollection _eventHandlers;
 
         public WeakEvent()
         {
-            _eventHandlers = new WeakDelegateSet(true, true);
+            _eventHandlers = new WeakDelegateCollection(true, true);
         }
 
         public WeakEvent(bool reentryGuard)
         {
-            _eventHandlers = new WeakDelegateSet(true, reentryGuard);
+            _eventHandlers = new WeakDelegateCollection(true, reentryGuard);
         }
 
         public int Count
@@ -29,7 +29,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        protected WeakDelegateSet EventHandlers
+        protected WeakDelegateCollection EventHandlers
         {
             get
             {

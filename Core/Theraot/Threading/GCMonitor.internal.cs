@@ -8,7 +8,7 @@ namespace Theraot.Threading
     {
         private static class Internal
         {
-            private static readonly WeakDelegateSet _collectedEventHandlers;
+            private static readonly WeakDelegateCollection _collectedEventHandlers;
 #if FAT
             private static readonly Work _work;
 #endif
@@ -18,10 +18,10 @@ namespace Theraot.Threading
 #if FAT
                 _work = WorkContext.DefaultContext.AddWork(RaiseCollected);
 #endif
-                _collectedEventHandlers = new WeakDelegateSet(INT_CapacityHint, false, false, INT_MaxProbingHint);
+                _collectedEventHandlers = new WeakDelegateCollection(false, false, INT_MaxProbingHint);
             }
 
-            public static WeakDelegateSet CollectedEventHandlers
+            public static WeakDelegateCollection CollectedEventHandlers
             {
                 get
                 {

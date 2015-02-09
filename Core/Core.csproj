@@ -352,10 +352,10 @@
     <Compile Include="Theraot\Collections\ThreadSafe\SafeQueue.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\SafeSet.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\WeakCancellableEvent.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\WeakDelegateSet.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\WeakDelegateCollection.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\WeakEvent.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\WeakHashBucket.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\WeakSetBucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\WeakDictionary.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\WeakCollection.cs" />
     <Compile Include="Theraot\Collections\TryTake.cs" />
     <Compile Include="Theraot\Core\ActionHelper.cs">
       <DependentUpon>ActionHelper.tt</DependentUpon>
