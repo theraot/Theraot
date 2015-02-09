@@ -19,10 +19,7 @@ namespace Theraot.Collections.Specialized
             {
                 return default(T);
             }
-            else
-            {
-                return needle.Value;
-            }
+            return needle.Value;
         }
     }
 }
