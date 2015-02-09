@@ -194,6 +194,11 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         public bool TryGet(int index, out T value)
         {
             value = default(T);
@@ -228,9 +233,27 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        internal bool TryGetCheckRemoveAt(int index, Predicate<object> check, out T previous)
         {
-            return GetEnumerator();
+            object _previous;
+            if (_root.TryGetCheckRemoveAt(unchecked((uint)index), check, out _previous))
+            {
+                previous = (T)_previous;
+                Interlocked.Decrement(ref _count);
+                return true;
+            }
+            previous = default(T);
+            return false;
+        }
+
+        internal bool TryGetCheckSet(int index, T item, Predicate<object> check, out bool isNew)
+        {
+            var result = _root.TryGetCheckSet(unchecked((uint)index), item, check, out isNew);
+            if (isNew)
+            {
+                Interlocked.Increment(ref _count);
+            }
+            return result;
         }
     }
 }

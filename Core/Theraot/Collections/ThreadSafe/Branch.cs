@@ -186,6 +186,33 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        internal bool TryGetCheckRemoveAt(uint index, Predicate<object> check, out object previous)
+        {
+            previous = null;
+            // Get the target branch  - can be null
+            var branch = MapReadonly(index);
+            // Check if we got a branch
+            if (branch == null)
+            {
+                // We didn't get a branch, meaning that what we look for is not there
+                return false;
+            }
+            // ---
+            return branch.PrivateTryGetCheckRemoveAt(index, check, out previous);
+        }
+
+        internal bool TryGetCheckSet(uint index, object item, Predicate<object> check, out bool isNew)
+        {
+            // Get the target branches
+            int resultCount;
+            var branches = Map(index, out resultCount);
+            // ---
+            var branch = branches[resultCount - 1];
+            var result = branch.PrivateTryGetCheckSet(index, item, check, out isNew);
+            Leave(branches, resultCount);
+            return result;
+        }
+
         private static void Leave(Branch[] branches, int resultCount)
         {
             for (int index = 0; index < resultCount; index++)
@@ -411,6 +438,92 @@ namespace Theraot.Collections.ThreadSafe
                 // Eating null reference, the branch has been removed
                 previous = null;
             }
+            return false;
+        }
+
+        private bool PrivateTryGetCheckRemoveAt(uint index, Predicate<object> check, out object previous)
+        {
+            try
+            {
+                var subindex = GetSubindex(index);
+                var found = Interlocked.CompareExchange(ref _entries[subindex], null, null);
+                if (found == null)
+                {
+                    previous = null;
+                    return false;
+                }
+                if (found == BucketHelper.Null)
+                {
+                    found = null;
+                }
+                // -- Found
+                if (check(found))
+                {
+                    // -- Passed
+                    previous = Interlocked.Exchange(ref _entries[subindex], null);
+                    if (previous == null)
+                    {
+                        return false;
+                    }
+                    if (previous == BucketHelper.Null)
+                    {
+                        previous = null;
+                    }
+                    Interlocked.Decrement(ref _useCount);
+                    return true;
+                }
+                previous = null;
+                return false;
+            }
+            catch (NullReferenceException)
+            {
+                // Eating null reference, the branch has been removed
+                previous = null;
+            }
+            return false;
+        }
+
+        private bool PrivateTryGetCheckSet(uint index, object item, Predicate<object> check, out bool isNew)
+        {
+            Interlocked.Increment(ref _useCount); // We are most likely to add - overstatimate count
+            isNew = false;
+            var subindex = GetSubindex(index);
+            var found = Interlocked.CompareExchange(ref _entries[subindex], null, null);
+            if (found == null)
+            {
+                // -- Not found TryAdd
+                var previous = Interlocked.CompareExchange(ref _entries[subindex], item ?? BucketHelper.Null, null);
+                if (previous == null)
+                {
+                    isNew = true;
+                    return true;
+                }
+                Interlocked.Decrement(ref _useCount); // We did not add after all
+                return false;
+            }
+            if (found == BucketHelper.Null)
+            {
+                found = null;
+            }
+            // -- Found
+            if (check(found))
+            {
+                // -- Passed
+                // This works under the presumption that check will result true to whatever value may have replaced found...
+                // That's why we don't use CompareExchange, but simply Exchange instead
+                // And also that's why this method is internal, we cannot guarantee the presumption outside internal code.
+                var previous = Interlocked.Exchange(ref _entries[subindex], item ?? BucketHelper.Null);
+                if (previous == null)
+                {
+                    isNew = true;
+                }
+                else
+                {
+                    Interlocked.Decrement(ref _useCount); // We did not add after all
+                }
+                return true;
+            }
+            Interlocked.Decrement(ref _useCount); // We did not add after all
             return false;
         }
 
