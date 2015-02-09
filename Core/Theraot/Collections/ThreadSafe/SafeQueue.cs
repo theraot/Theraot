@@ -123,7 +123,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             item = default(T);
             int index = Interlocked.Add(ref _indexEnqueue, 0);
-            return (index > 0 && _entries.TryGet(index, out item));
+            return index > 0 && _entries.TryGet(index, out item);
         }
 
         /// <summary>

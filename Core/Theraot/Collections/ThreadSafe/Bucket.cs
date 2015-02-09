@@ -288,6 +288,11 @@ namespace Theraot.Collections.ThreadSafe
             SetInternal(index, item, out isNew);
         }
 
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         /// <summary>
         /// Tries to retrieve the item at the specified index.
         /// </summary>
@@ -388,11 +393,6 @@ namespace Theraot.Collections.ThreadSafe
         private void ExchangePrivate(int index, object item, out object previous)
         {
             previous = Interlocked.Exchange(ref _entries[index], item ?? BucketHelper.Null);
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         private bool InsertPrivate(int index, object item, out object previous)

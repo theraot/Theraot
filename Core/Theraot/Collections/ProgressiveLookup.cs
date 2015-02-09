@@ -14,21 +14,21 @@ namespace Theraot.Collections
     public class ProgressiveLookup<TKey, TItem> : ILookup<TKey, TItem>
     {
         private readonly IDictionary<TKey, IGrouping<TKey, TItem>> _cache;
-        private readonly IEqualityComparer<TKey> _keyComparer;
         private readonly IEqualityComparer<TItem> _itemComparer;
-        private readonly Progressor<IGrouping<TKey, TItem>> _progressor;
+        private readonly IEqualityComparer<TKey> _keyComparer;
         private readonly ProgressiveSet<TKey> _keysReadonly;
+        private readonly Progressor<IGrouping<TKey, TItem>> _progressor;
 
         public ProgressiveLookup(IEnumerable<IGrouping<TKey, TItem>> wrapped)
             : this(wrapped, new NullAwareDictionary<TKey, IGrouping<TKey, TItem>>(), null, null)
         {
-            
+            // Empty
         }
 
         public ProgressiveLookup(IEnumerable<IGrouping<TKey, TItem>> wrapped, IEqualityComparer<TKey> keyComparer)
             : this(wrapped, new NullAwareDictionary<TKey, IGrouping<TKey, TItem>>(keyComparer), keyComparer, null)
         {
-
+            // Empty
         }
 
         protected ProgressiveLookup(IEnumerable<IGrouping<TKey, TItem>> wrapped, IDictionary<TKey, IGrouping<TKey, TItem>> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TItem> itemComparer)
@@ -135,12 +135,11 @@ namespace Theraot.Collections
         {
             return new ProgressiveLookup<TKey, TItem>(source.GroupBy(keySelector, keyComparer), keyComparer);
         }
-        
+
         public static ProgressiveLookup<TKey, TItem> Create<TSource>(IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TItem> elementSelector, IEqualityComparer<TKey> keyComparer)
         {
             return new ProgressiveLookup<TKey, TItem>(source.GroupBy(keySelector, elementSelector, keyComparer), keyComparer);
         }
-
 
         public static ProgressiveLookup<TKey, TItem> Create(IEnumerable<KeyValuePair<TKey, TItem>> source)
         {

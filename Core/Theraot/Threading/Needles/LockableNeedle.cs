@@ -67,14 +67,6 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        private void Wait()
-        {
-            if (!_pin.CheckCapture())
-            {
-                ThreadingHelper.SpinWaitUntil(() => _pin.CheckCapture());
-            }
-        }
-
         public void Capture()
         {
             var slot = _context.Slot;
@@ -171,6 +163,14 @@ namespace Theraot.Threading.Needles
                 return false;
             }
             return ThreadingHelper.SpinWaitSetUnless(ref _status, -1, 0, -1);
+        }
+
+        private void Wait()
+        {
+            if (!_pin.CheckCapture())
+            {
+                ThreadingHelper.SpinWaitUntil(() => _pin.CheckCapture());
+            }
         }
     }
 }

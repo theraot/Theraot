@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-
 using Theraot.Core;
 
 namespace Theraot.Threading.Needles

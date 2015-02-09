@@ -159,6 +159,7 @@ namespace Theraot.Threading
 
         public void Dispose()
         {
+            // TODO: dispose _event (note: refactor this class to use Pool if possible)
             if (_disposable)
             {
                 DisposeExtracted();

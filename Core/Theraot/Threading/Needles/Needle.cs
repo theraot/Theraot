@@ -1,4 +1,4 @@
-#if FAT 
+#if FAT
 
 using System;
 using System.Threading;
@@ -23,8 +23,8 @@ namespace Theraot.Threading.Needles
         {
             if (ReferenceEquals(target, null))
             {
-                _hashCode = base.GetHashCode();
                 _target = null;
+                _hashCode = base.GetHashCode();
             }
             else
             {
@@ -41,10 +41,7 @@ namespace Theraot.Threading.Needles
                 {
                     return ((ExceptionStructNeedle<T>)_target).Error;
                 }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
         }
 
@@ -64,6 +61,7 @@ namespace Theraot.Threading.Needles
                 return _target is ExceptionStructNeedle<T>;
             }
         }
+
         public virtual T Value
         {
             get
@@ -103,10 +101,7 @@ namespace Theraot.Threading.Needles
             {
                 return EqualsExtracted(this, _obj);
             }
-            else
-            {
-                return _target.Equals(obj);
-            }
+            return _target.Equals(obj);
         }
 
         public bool Equals(Needle<T> other)
@@ -131,10 +126,7 @@ namespace Theraot.Threading.Needles
             {
                 return target.ToString();
             }
-            else
-            {
-                return "<Dead Needle>";
-            }
+            return "<Dead Needle>";
         }
 
         protected void SetTargetError(Exception error)
@@ -155,23 +147,18 @@ namespace Theraot.Threading.Needles
                 Thread.MemoryBarrier();
             }
         }
+
         private static bool EqualsExtracted(Needle<T> left, Needle<T> right)
         {
             if (ReferenceEquals(left, null))
             {
                 return ReferenceEquals(right, null);
             }
-            else
+            if (ReferenceEquals(right, null))
             {
-                if (ReferenceEquals(right, null))
-                {
-                    return false;
-                }
-                else
-                {
-                    return left._target.Equals(right._target);
-                }
+                return false;
             }
+            return left._target.Equals(right._target);
         }
 
         private static bool NotEqualsExtracted(Needle<T> left, Needle<T> right)
@@ -180,17 +167,11 @@ namespace Theraot.Threading.Needles
             {
                 return !ReferenceEquals(right, null);
             }
-            else
+            if (ReferenceEquals(right, null))
             {
-                if (ReferenceEquals(right, null))
-                {
-                    return true;
-                }
-                else
-                {
-                    return !left._target.Equals(right._target);
-                }
+                return true;
             }
+            return !left._target.Equals(right._target);
         }
     }
 }

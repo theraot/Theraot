@@ -134,6 +134,11 @@ namespace Theraot.Threading.Needles
                 return false;
             }
 
+            void IResource.Release()
+            {
+                OnDispose();
+            }
+
             private void OnDispose()
             {
                 var transaction = CurrentTransaction;
@@ -143,11 +148,6 @@ namespace Theraot.Threading.Needles
                     transaction._readLog.Remove(this);
                     transaction._writeLog.Remove(this);
                 }
-            }
-
-            void IResource.Release()
-            {
-                OnDispose();
             }
             private T RetrieveClone(Transact transaction)
             {

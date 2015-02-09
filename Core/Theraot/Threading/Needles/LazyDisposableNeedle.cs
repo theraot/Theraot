@@ -28,8 +28,7 @@ namespace Theraot.Threading.Needles
             base.Initialize(() => UnDispose());
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", Justification = "False Positive")]
-        public void Reinitialze()
+        public void Reinitialize()
         {
             OnDispose();
             Initialize();

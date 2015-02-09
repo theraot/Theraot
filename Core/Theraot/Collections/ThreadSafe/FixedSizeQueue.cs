@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Theraot.Core;
 
@@ -54,43 +53,6 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Gets the index where the next item removed with TryDequeue will be taken from.
-        /// </summary>
-        /// <remarks>IndexDequeue increases each time a new item is removed with TryDequeue.</remarks>
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "Dequeue")]
-        public int IndexDequeue
-        {
-            get
-            {
-                return Thread.VolatileRead(ref _indexDequeue) & (_capacity - 1);
-            }
-
-            //HACK
-            internal set
-            {
-                _indexDequeue = value & (_capacity - 1);
-            }
-        }
-
-        /// <summary>
-        /// Gets the index where the last item added with Enqueue was placed.
-        /// </summary>
-        /// <remarks>IndexEnqueue increases each time a new item is added with Enqueue.</remarks>
-        public int IndexEnqueue
-        {
-            get
-            {
-                return Thread.VolatileRead(ref _indexEnqueue) & (_capacity - 1);
-            }
-
-            //HACK
-            internal set
-            {
-                _indexEnqueue = value & (_capacity - 1);
-            }
-        }
-
-        /// <summary>
         /// Attempts to Adds the specified item at the front.
         /// </summary>
         /// <param name="item">The item.</param>
@@ -105,7 +67,7 @@ namespace Theraot.Collections.ThreadSafe
                 if (preCount <= _capacity)
                 {
                     var index = (Interlocked.Increment(ref _indexEnqueue) - 1) & (_capacity - 1);
-                    if (_entries.Insert(index, item))
+                    if (_entries.InsertInternal(index, item))
                     {
                         return true;
                     }
@@ -138,19 +100,11 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return item;
             }
-            else
-            {
-                throw new System.InvalidOperationException("Empty");
-            }
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
+            throw new InvalidOperationException("Empty");
         }
 
         /// <summary>
-        /// Tries the retrieve the item at an specified index.
+        /// Attempts to retrieve the item at an specified index.
         /// </summary>
         /// <param name="index">The index.</param>
         /// <param name="item">The item.</param>
@@ -163,6 +117,16 @@ namespace Theraot.Collections.ThreadSafe
         public bool TryGet(int index, out T item)
         {
             return _entries.TryGet(index, out item);
+        }
+
+        /// <summary>
+        /// Attempts to retrieve the next item to be taken from the back without removing it.
+        /// </summary>
+        public bool TryPeek(out T item)
+        {
+            item = default(T);
+            int index = Interlocked.Add(ref _indexEnqueue, 0);
+            return index < _capacity && index > 0 && _entries.TryGet(index, out item);
         }
 
         /// <summary>
@@ -191,14 +155,9 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
-        //HACK
-        internal void Set(int index, T item, out bool isNew)
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            _entries.Set(index, item, out isNew);
-            if (isNew)
-            {
-                Interlocked.Increment(ref _preCount);
-            }
+            return GetEnumerator();
         }
     }
 }

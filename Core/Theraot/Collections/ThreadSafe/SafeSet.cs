@@ -20,6 +20,7 @@ namespace Theraot.Collections.ThreadSafe
         private readonly IEqualityComparer<T> _comparer;
         private Mapper<T> _mapper;
         private int _probing;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SafeSet{T}" /> class.
         /// </summary>
@@ -117,6 +118,7 @@ namespace Theraot.Collections.ThreadSafe
                 return _mapper.Count;
             }
         }
+
         /// <summary>
         /// Adds the specified value.
         /// </summary>
@@ -125,7 +127,8 @@ namespace Theraot.Collections.ThreadSafe
         public void AddNew(T value)
         {
             var hashcode = _comparer.GetHashCode(value);
-            for (var attempts = 0; ; attempts++)
+            var attempts = 0;
+            while (true)
             {
                 ExtendProbingIfNeeded(attempts);
                 T found;
@@ -137,6 +140,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     throw new ArgumentException("the value is already present");
                 }
+                attempts++;
             }
         }
 
@@ -215,6 +219,11 @@ namespace Theraot.Collections.ThreadSafe
                 result.Add(pair);
             }
             return result;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         /// <summary>
@@ -334,7 +343,8 @@ namespace Theraot.Collections.ThreadSafe
         public bool TryAdd(T value)
         {
             var hashcode = _comparer.GetHashCode(value);
-            for (var attempts = 0; ; attempts++)
+            var attempts = 0;
+            while (true)
             {
                 ExtendProbingIfNeeded(attempts);
                 T found;
@@ -346,8 +356,10 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     return false;
                 }
+                attempts++;
             }
         }
+
         /// <summary>
         /// Returns the values where the predicate is satisfied.
         /// </summary>
@@ -370,11 +382,6 @@ namespace Theraot.Collections.ThreadSafe
             {
                 Interlocked.Add(ref _probing, diff);
             }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

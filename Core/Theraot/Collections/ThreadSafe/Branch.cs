@@ -139,6 +139,11 @@ namespace Theraot.Collections.ThreadSafe
             // So we say the operation was a success regardless
         }
 
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         public bool TryGet(uint index, out object value)
         {
             value = null;
@@ -156,6 +161,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public IEnumerable<object> Where(Predicate<object> predicate)
         {
+            // Do not convert to foreach - foreach will stop working if the collection is modified, this should not
             for (var index = 0; index < _entries.Length; index++)
             {
                 var child = _entries[index];
@@ -189,17 +195,13 @@ namespace Theraot.Collections.ThreadSafe
             }
             ArrayReservoir<Branch>.DonateArray(branches);
         }
+
         private static void Recycle(Branch branch)
         {
             branch._entries = null;
             branch._buffer = null;
             branch._useCount = 0;
             branch._parent = null;
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         private int GetSubindex(uint index)

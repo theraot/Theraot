@@ -37,62 +37,6 @@ namespace Theraot.Threading
             _slots = new SafeDictionary<Thread, INeedle<T>>(capacity, INT_MaxProbingHint);
         }
 
-        public bool IsValueCreated
-        {
-            get
-            {
-                if (Thread.VolatileRead(ref _disposing) == 1)
-                {
-                    throw new ObjectDisposedException(GetType().FullName);
-                }
-                else
-                {
-                    INeedle<T> needle;
-                    if (_slots.TryGetValue(Thread.CurrentThread, out needle))
-                    {
-                        return needle is ReadOnlyStructNeedle<T>;
-                    }
-                    return false;
-                }
-            }
-        }
-
-        public T Value
-        {
-            get
-            {
-                return GetValue(Thread.CurrentThread);
-            }
-            set
-            {
-                SetValue(Thread.CurrentThread, value);
-            }
-        }
-
-        public IList<T> Values
-        {
-            get
-            {
-                return _slots.ConvertFiltered(input => input.Value.Value, input => input.Value is ReadOnlyStructNeedle<T>);
-            }
-        }
-
-        Exception IPromise.Error
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        bool IReadOnlyNeedle<T>.IsAlive
-        {
-            get
-            {
-                return IsValueCreated;
-            }
-        }
-
         bool IExpected.IsCanceled
         {
             get
@@ -117,6 +61,42 @@ namespace Theraot.Threading
             }
         }
 
+        Exception IPromise.Error
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        bool IReadOnlyNeedle<T>.IsAlive
+        {
+            get
+            {
+                return IsValueCreated;
+            }
+        }
+
+        public bool IsValueCreated
+        {
+            get
+            {
+                if (Thread.VolatileRead(ref _disposing) == 1)
+                {
+                    throw new ObjectDisposedException(GetType().FullName);
+                }
+                else
+                {
+                    INeedle<T> needle;
+                    if (_slots.TryGetValue(Thread.CurrentThread, out needle))
+                    {
+                        return needle is ReadOnlyStructNeedle<T>;
+                    }
+                    return false;
+                }
+            }
+        }
+
         T IThreadLocal<T>.ValueForDebugDisplay
         {
             get
@@ -127,6 +107,26 @@ namespace Theraot.Threading
                     return target;
                 }
                 return default(T);
+            }
+        }
+
+        public T Value
+        {
+            get
+            {
+                return GetValue(Thread.CurrentThread);
+            }
+            set
+            {
+                SetValue(Thread.CurrentThread, value);
+            }
+        }
+
+        public IList<T> Values
+        {
+            get
+            {
+                return _slots.ConvertFiltered(input => input.Value.Value, input => input.Value is ReadOnlyStructNeedle<T>);
             }
         }
 
@@ -143,6 +143,26 @@ namespace Theraot.Threading
         public void Free()
         {
             Free(Thread.CurrentThread);
+        }
+
+        void IObserver<T>.OnCompleted()
+        {
+            // Empty
+        }
+
+        void IObserver<T>.OnError(Exception error)
+        {
+            SetError(Thread.CurrentThread, error);
+        }
+
+        void IObserver<T>.OnNext(T value)
+        {
+            Value = value;
+        }
+
+        void IPromise.Wait()
+        {
+            GC.KeepAlive(Value);
         }
 
         public override string ToString()
@@ -207,20 +227,6 @@ namespace Theraot.Threading
                 throw;
             }
         }
-        void IObserver<T>.OnCompleted()
-        {
-            // Empty
-        }
-
-        void IObserver<T>.OnError(Exception error)
-        {
-            SetError(Thread.CurrentThread, error);
-        }
-
-        void IObserver<T>.OnNext(T value)
-        {
-            Value = value;
-        }
 
         private void SetError(Thread thread, Exception error)
         {
@@ -238,10 +244,6 @@ namespace Theraot.Threading
                 throw new ObjectDisposedException(GetType().FullName);
             }
             _slots.Set(thread, new ReadOnlyStructNeedle<T>(value));
-        }
-        void IPromise.Wait()
-        {
-            GC.KeepAlive(Value);
         }
     }
 }
