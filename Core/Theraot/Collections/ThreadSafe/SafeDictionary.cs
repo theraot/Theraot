@@ -152,49 +152,6 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Adds the specified key and associated value.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="keyOverwriteCheck">The key predicate to approve overwriting.</param>
-        /// <param name="value">The value.</param>
-        /// <exception cref="System.ArgumentException">An item with the same key has already been added</exception>
-        public void AddNew(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
-        {
-            if (keyOverwriteCheck == null)
-            {
-                throw new ArgumentNullException("keyOverwriteCheck");
-            }
-            var hashCode = _keyComparer.GetHashCode(key);
-            var neo = new KeyValuePair<TKey, TValue>(key, value);
-            var attempts = 0;
-            while (true)
-            {
-                ExtendProbingIfNeeded(attempts);
-                Predicate<object> check = found =>
-                {
-                    var _found = (KeyValuePair<TKey, TValue>)found;
-                    if (_keyComparer.Equals(_found.Key, key))
-                    {
-                        // This is the item that has been stored with the key
-                        // Throw to abort overwrite
-                        throw new ArgumentException("An item with the same key has already been added");
-                    }
-                    // This is not the key, overwrite?
-                    return keyOverwriteCheck(_found.Key);
-                };
-                // No try-catch - let the exception go.
-                bool isNew;
-                // TryGetCheckSet will add if no item is found, otherwise it calls check
-                if (_mapper.TryGetCheckSet(hashCode + attempts, neo, check, out isNew))
-                {
-                    // It added a new item
-                    return;
-                }
-                attempts++;
-            }
-        }
-
-        /// <summary>
         /// Removes all the elements.
         /// </summary>
         public void Clear()
@@ -335,51 +292,6 @@ namespace Theraot.Collections.ThreadSafe
                     }
                     // This is not the key, keep looking
                     return false;
-                };
-                try
-                {
-                    bool isNew;
-                    // TryGetCheckSet will add if no item is found, otherwise it calls check
-                    if (_mapper.TryGetCheckSet(hashCode + attempts, neo, check, out isNew))
-                    {
-                        // It added a new item
-                        return value;
-                    }
-                }
-                catch (ArgumentException)
-                {
-                    // An item with the same key has already been added
-                    // Return it
-                    return value;
-                }
-                attempts++;
-            }
-        }
-
-        public TValue GetOrAdd(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
-        {
-            if (keyOverwriteCheck == null)
-            {
-                throw new ArgumentNullException("keyOverwriteCheck");
-            }
-            var hashCode = _keyComparer.GetHashCode(key);
-            var neo = new KeyValuePair<TKey, TValue>(key, value);
-            var attempts = 0;
-            while (true)
-            {
-                ExtendProbingIfNeeded(attempts);
-                Predicate<object> check = found =>
-                {
-                    var _found = (KeyValuePair<TKey, TValue>)found;
-                    if (_keyComparer.Equals(_found.Key, key))
-                    {
-                        // This is the item that has been stored with the key
-                        value = _found.Value;
-                        // Throw to abort overwrite
-                        throw new ArgumentException("An item with the same key has already been added");
-                    }
-                    // This is not the key, overwrite?
-                    return keyOverwriteCheck(_found.Key);
                 };
                 try
                 {
@@ -729,146 +641,6 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Sets the value associated with the specified key.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="keyOverwriteCheck">The key predicate to approve overwriting.</param>
-        /// <param name="value">The value.</param>
-        public void Set(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
-        {
-            if (keyOverwriteCheck == null)
-            {
-                throw new ArgumentNullException("keyOverwriteCheck");
-            }
-            var hashCode = _keyComparer.GetHashCode(key);
-            var neo = new KeyValuePair<TKey, TValue>(key, value);
-            var attempts = 0;
-            while (true)
-            {
-                ExtendProbingIfNeeded(attempts);
-                bool isNew;
-                Predicate<object> check = found =>
-                {
-                    var _found = (KeyValuePair<TKey, TValue>)found;
-                    return _keyComparer.GetHashCode(_found.Key) == hashCode || keyOverwriteCheck(_found.Key);
-                };
-                if (_mapper.TryGetCheckSet(hashCode + attempts, neo, check, out isNew))
-                {
-                    return;
-                }
-                attempts++;
-            }
-        }
-
-        /// <summary>
-        /// Attempts to add the specified key and associated value. The value is added if the key is not found.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="keyOverwriteCheck">The key predicate to approve overwriting.</param>
-        /// <param name="value">The value.</param>
-        /// <returns>
-        ///   <c>true</c> if the specified key and associated value were added; otherwise, <c>false</c>.
-        /// </returns>
-        public bool TryAdd(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
-        {
-            if (keyOverwriteCheck == null)
-            {
-                throw new ArgumentNullException("keyOverwriteCheck");
-            }
-            var hashCode = _keyComparer.GetHashCode(key);
-            var neo = new KeyValuePair<TKey, TValue>(key, value);
-            var attempts = 0;
-            while (true)
-            {
-                ExtendProbingIfNeeded(attempts);
-                Predicate<object> check = found =>
-                {
-                    var _found = (KeyValuePair<TKey, TValue>)found;
-                    if (_keyComparer.Equals(_found.Key, key))
-                    {
-                        // This is the item that has been stored with the key
-                        // Throw to abort overwrite
-                        throw new ArgumentException("An item with the same key has already been added");
-                    }
-                    // This is not the key, overwrite?
-                    return keyOverwriteCheck(_found.Key);
-                };
-                try
-                {
-                    bool isNew;
-                    // TryGetCheckSet will add if no item is found, otherwise it calls check
-                    if (_mapper.TryGetCheckSet(hashCode + attempts, neo, check, out isNew))
-                    {
-                        // It added a new item
-                        return true;
-                    }
-                }
-                catch (ArgumentException)
-                {
-                    // An item with the same key has already been added
-                    return false;
-                }
-                attempts++;
-            }
-        }
-
-        /// <summary>
-        /// Attempts to add the specified key and associated value. The value is added if the key is not found.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="keyOverwriteCheck">The key predicate to approve overwriting.</param>
-        /// <param name="value">The value.</param>
-        /// <param name="stored">The stored pair independently of success.</param>
-        /// <returns>
-        ///   <c>true</c> if the specified key and associated value were added; otherwise, <c>false</c>.
-        /// </returns>
-        public bool TryAdd(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value, out KeyValuePair<TKey, TValue> stored)
-        {
-            if (keyOverwriteCheck == null)
-            {
-                throw new ArgumentNullException("keyOverwriteCheck");
-            }
-            var hashCode = _keyComparer.GetHashCode(key);
-            var neo = new KeyValuePair<TKey, TValue>(key, value);
-            var attempts = 0;
-            while (true)
-            {
-                KeyValuePair<TKey, TValue> _found = neo;
-                ExtendProbingIfNeeded(attempts);
-                Predicate<object> check = found =>
-                {
-                    _found = (KeyValuePair<TKey, TValue>)found;
-                    if (_keyComparer.Equals(_found.Key, key))
-                    {
-                        // This is the item that has been stored with the key
-                        // Throw to abort overwrite
-                        throw new ArgumentException("An item with the same key has already been added");
-                    }
-                    // This is not the key, overwrite?
-                    return keyOverwriteCheck(_found.Key);
-                };
-                try
-                {
-                    bool isNew;
-                    // TryGetCheckSet will add if no item is found, otherwise it calls check
-                    if (_mapper.TryGetCheckSet(hashCode + attempts, neo, check, out isNew))
-                    {
-                        // It added a new item
-                        stored = neo;
-                        return true;
-                    }
-                }
-                catch (ArgumentException)
-                {
-                    // An item with the same key has already been added
-                    stored = _found;
-                    return false;
-                }
-                attempts++;
-            }
-        }
-
-        /// <summary>
         /// Attempts to add the specified key and associated value. The value is added if the key is not found.
         /// </summary>
         /// <param name="key">The key.</param>
@@ -1008,6 +780,233 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        /// <summary>
+        /// Adds the specified key and associated value.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="keyOverwriteCheck">The key predicate to approve overwriting.</param>
+        /// <param name="value">The value.</param>
+        /// <exception cref="System.ArgumentException">An item with the same key has already been added</exception>
+        internal void AddNew(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
+        {
+            if (keyOverwriteCheck == null)
+            {
+                throw new ArgumentNullException("keyOverwriteCheck");
+            }
+            var hashCode = _keyComparer.GetHashCode(key);
+            var neo = new KeyValuePair<TKey, TValue>(key, value);
+            var attempts = 0;
+            while (true)
+            {
+                ExtendProbingIfNeeded(attempts);
+                Predicate<object> check = found =>
+                {
+                    var _found = (KeyValuePair<TKey, TValue>)found;
+                    if (_keyComparer.Equals(_found.Key, key))
+                    {
+                        // This is the item that has been stored with the key
+                        // Throw to abort overwrite
+                        throw new ArgumentException("An item with the same key has already been added");
+                    }
+                    // This is not the key, overwrite?
+                    return keyOverwriteCheck(_found.Key);
+                };
+                // No try-catch - let the exception go.
+                bool isNew;
+                // TryGetCheckSet will add if no item is found, otherwise it calls check
+                if (_mapper.TryGetCheckSet(hashCode + attempts, neo, check, out isNew))
+                {
+                    // It added a new item
+                    return;
+                }
+                attempts++;
+            }
+        }
+
+        internal TValue GetOrAdd(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
+        {
+            if (keyOverwriteCheck == null)
+            {
+                throw new ArgumentNullException("keyOverwriteCheck");
+            }
+            var hashCode = _keyComparer.GetHashCode(key);
+            var neo = new KeyValuePair<TKey, TValue>(key, value);
+            var attempts = 0;
+            while (true)
+            {
+                ExtendProbingIfNeeded(attempts);
+                Predicate<object> check = found =>
+                {
+                    var _found = (KeyValuePair<TKey, TValue>)found;
+                    if (_keyComparer.Equals(_found.Key, key))
+                    {
+                        // This is the item that has been stored with the key
+                        value = _found.Value;
+                        // Throw to abort overwrite
+                        throw new ArgumentException("An item with the same key has already been added");
+                    }
+                    // This is not the key, overwrite?
+                    return keyOverwriteCheck(_found.Key);
+                };
+                try
+                {
+                    bool isNew;
+                    // TryGetCheckSet will add if no item is found, otherwise it calls check
+                    if (_mapper.TryGetCheckSet(hashCode + attempts, neo, check, out isNew))
+                    {
+                        // It added a new item
+                        return value;
+                    }
+                }
+                catch (ArgumentException)
+                {
+                    // An item with the same key has already been added
+                    // Return it
+                    return value;
+                }
+                attempts++;
+            }
+        }
+
+        /// <summary>
+        /// Sets the value associated with the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="keyOverwriteCheck">The key predicate to approve overwriting.</param>
+        /// <param name="value">The value.</param>
+        internal void Set(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
+        {
+            if (keyOverwriteCheck == null)
+            {
+                throw new ArgumentNullException("keyOverwriteCheck");
+            }
+            var hashCode = _keyComparer.GetHashCode(key);
+            var neo = new KeyValuePair<TKey, TValue>(key, value);
+            var attempts = 0;
+            while (true)
+            {
+                ExtendProbingIfNeeded(attempts);
+                bool isNew;
+                Predicate<object> check = found =>
+                {
+                    var _found = (KeyValuePair<TKey, TValue>)found;
+                    return _keyComparer.Equals(_found.Key, key) || keyOverwriteCheck(_found.Key);
+                };
+                if (_mapper.TryGetCheckSet(hashCode + attempts, neo, check, out isNew))
+                {
+                    return;
+                }
+                attempts++;
+            }
+        }
+
+        /// <summary>
+        /// Attempts to add the specified key and associated value. The value is added if the key is not found.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="keyOverwriteCheck">The key predicate to approve overwriting.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified key and associated value were added; otherwise, <c>false</c>.
+        /// </returns>
+        internal bool TryAdd(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
+        {
+            if (keyOverwriteCheck == null)
+            {
+                throw new ArgumentNullException("keyOverwriteCheck");
+            }
+            var hashCode = _keyComparer.GetHashCode(key);
+            var neo = new KeyValuePair<TKey, TValue>(key, value);
+            var attempts = 0;
+            while (true)
+            {
+                ExtendProbingIfNeeded(attempts);
+                Predicate<object> check = found =>
+                {
+                    var _found = (KeyValuePair<TKey, TValue>)found;
+                    if (_keyComparer.Equals(_found.Key, key))
+                    {
+                        // This is the item that has been stored with the key
+                        // Throw to abort overwrite
+                        throw new ArgumentException("An item with the same key has already been added");
+                    }
+                    // This is not the key, overwrite?
+                    return keyOverwriteCheck(_found.Key);
+                };
+                try
+                {
+                    bool isNew;
+                    // TryGetCheckSet will add if no item is found, otherwise it calls check
+                    if (_mapper.TryGetCheckSet(hashCode + attempts, neo, check, out isNew))
+                    {
+                        // It added a new item
+                        return true;
+                    }
+                }
+                catch (ArgumentException)
+                {
+                    // An item with the same key has already been added
+                    return false;
+                }
+                attempts++;
+            }
+        }
+
+        /// <summary>
+        /// Attempts to add the specified key and associated value. The value is added if the key is not found.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="keyOverwriteCheck">The key predicate to approve overwriting.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="stored">The stored pair independently of success.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified key and associated value were added; otherwise, <c>false</c>.
+        /// </returns>
+        internal bool TryAdd(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value, out KeyValuePair<TKey, TValue> stored)
+        {
+            if (keyOverwriteCheck == null)
+            {
+                throw new ArgumentNullException("keyOverwriteCheck");
+            }
+            var hashCode = _keyComparer.GetHashCode(key);
+            var neo = new KeyValuePair<TKey, TValue>(key, value);
+            var attempts = 0;
+            while (true)
+            {
+                KeyValuePair<TKey, TValue> _found = neo;
+                ExtendProbingIfNeeded(attempts);
+                Predicate<object> check = found =>
+                {
+                    _found = (KeyValuePair<TKey, TValue>)found;
+                    if (_keyComparer.Equals(_found.Key, key))
+                    {
+                        // This is the item that has been stored with the key
+                        // Throw to abort overwrite
+                        throw new ArgumentException("An item with the same key has already been added");
+                    }
+                    // This is not the key, overwrite?
+                    return keyOverwriteCheck(_found.Key);
+                };
+                try
+                {
+                    bool isNew;
+                    // TryGetCheckSet will add if no item is found, otherwise it calls check
+                    if (_mapper.TryGetCheckSet(hashCode + attempts, neo, check, out isNew))
+                    {
+                        // It added a new item
+                        stored = neo;
+                        return true;
+                    }
+                }
+                catch (ArgumentException)
+                {
+                    // An item with the same key has already been added
+                    stored = _found;
+                    return false;
+                }
+                attempts++;
+            }
+        }
         private void ExtendProbingIfNeeded(int attempts)
         {
             var diff = attempts - _probing;
