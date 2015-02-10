@@ -112,6 +112,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
         bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
         {
             get
@@ -354,6 +355,7 @@ namespace Theraot.Collections.ThreadSafe
             return result;
         }
 
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Use AddNew")]
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
         {
             AddNew(item.Key, item.Value);
@@ -397,6 +399,7 @@ namespace Theraot.Collections.ThreadSafe
                 );
         }
 
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Use AddNew")]
         void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
         {
             AddNew(key, value);
@@ -460,7 +463,7 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Removes a key by hashcode and a key predicate.
+        /// Removes a key by hash code and a key predicate.
         /// </summary>
         /// <param name="hashCode">The hash code to look for.</param>
         /// <param name="keyCheck">The key predicate.</param>
@@ -837,6 +840,10 @@ namespace Theraot.Collections.ThreadSafe
             return result;
         }
 
+        protected bool Contains(KeyValuePair<TKey, TValue> item)
+        {
+            return ((ICollection<KeyValuePair<TKey, TValue>>)this).Contains(item);
+        }
         private void GarbageCollected(object sender, EventArgs e)
         {
             RemoveDeadItems();

@@ -15,10 +15,8 @@ namespace Theraot.Collections.ThreadSafe
     {
         private readonly IEqualityComparer<T> _comparer;
         private readonly SafeDictionary<int, TNeedle> _wrapped;
-        private int _maxIndex;
-
         private StructNeedle<WeakNeedle<EventHandler>> _eventHandler;
-
+        private int _maxIndex;
         public WeakCollection()
             : this(null, true)
         {
@@ -39,6 +37,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public WeakCollection(IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
         {
+            _maxIndex = -1;
             _comparer = comparer ?? EqualityComparerHelper<T>.Default;
             _wrapped = new SafeDictionary<int, TNeedle>();
             if (autoRemoveDeadItems)
@@ -65,6 +64,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public WeakCollection(IEqualityComparer<T> comparer, bool autoRemoveDeadItems, int initialProbing)
         {
+            _maxIndex = -1;
             _comparer = comparer ?? EqualityComparerHelper<T>.Default;
             _wrapped = new SafeDictionary<int, TNeedle>(initialProbing);
             if (autoRemoveDeadItems)
@@ -124,12 +124,10 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        protected SafeDictionary<int, TNeedle> Wrapped
+        public void Add(T item)
         {
-            get
-            {
-                return _wrapped;
-            }
+            var needle = NeedleHelper.CreateNeedle<T, TNeedle>(item);
+            _wrapped.Set(Interlocked.Increment(ref _maxIndex), needle);
         }
 
         public void Clear()
@@ -143,9 +141,21 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool Contains(T item)
         {
-            foreach (var _item in this)
+            foreach (var input in this)
             {
-                if (_comparer.Equals(_item, item))
+                if (_comparer.Equals(input, item))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public bool Contains(Predicate<T> itemCheck)
+        {
+            foreach (var input in this)
+            {
+                if (itemCheck(input))
                 {
                     return true;
                 }
@@ -175,20 +185,14 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public void Add(T item)
-        {
-            var needle = NeedleHelper.CreateNeedle<T, TNeedle>(item);
-            _wrapped.Set(Interlocked.Increment(ref _maxIndex) - 1, needle);
-        }
-
         public bool Remove(T item)
         {
             Predicate<TNeedle> check = input =>
             {
-                T _value;
-                if (input.TryGetValue(out _value))
+                T value;
+                if (input.TryGetValue(out value))
                 {
-                    return _comparer.Equals(item, _value);
+                    return _comparer.Equals(item, value);
                 }
                 return false;
             };
@@ -205,23 +209,82 @@ namespace Theraot.Collections.ThreadSafe
             return _wrapped.RemoveWhere(input => !input.Value.IsAlive);
         }
 
-        public int RemoveWhere(Predicate<T> valueCheck)
+        public int RemoveWhere(Predicate<T> itemCheck)
         {
             Predicate<TNeedle> check = input =>
             {
-                T _value;
-                if (input.TryGetValue(out _value))
+                T value;
+                if (input.TryGetValue(out value))
                 {
-                    return valueCheck(_value);
+                    return itemCheck(value);
                 }
                 return false;
             };
             return _wrapped.RemoveWhereValue(check);
         }
 
+        public IEnumerable<T> RemoveWhereEnumerable(Predicate<T> itemCheck)
+        {
+            Predicate<TNeedle> check = input =>
+            {
+                T value;
+                if (input.TryGetValue(out value))
+                {
+                    return itemCheck(value);
+                }
+                return false;
+            };
+            foreach (var removed in _wrapped.RemoveWhereValueEnumerable(check))
+            {
+                T value;
+                if (removed.TryGetValue(out value))
+                {
+                    yield return value;
+                }
+                removed.Dispose();
+            }
+        }
+
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        protected void Add(TNeedle needle)
+        {
+            _wrapped.Set(Interlocked.Increment(ref _maxIndex), needle);
+        }
+
+        protected bool Contains(Predicate<TNeedle> needleCheck)
+        {
+            foreach (var pair in _wrapped)
+            {
+                if (needleCheck(pair.Value))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        protected IEnumerable<TNeedle> GetNeedleEnumerable()
+        {
+            foreach (var pair in _wrapped)
+            {
+                yield return pair.Value;
+            }
+        }
+
+        protected IEnumerable<T> RemoveWhereEnumerable(Predicate<TNeedle> needleCheck)
+        {
+            foreach (var removed in _wrapped.RemoveWhereValueEnumerable(needleCheck))
+            {
+                T value;
+                if (removed.TryGetValue(out value))
+                {
+                    yield return value;
+                }
+                removed.Dispose();
+            }
         }
 
         private void GarbageCollected(object sender, EventArgs e)

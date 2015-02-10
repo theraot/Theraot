@@ -54,19 +54,13 @@ namespace Theraot.Collections.ThreadSafe
         public void Add(MethodInfo method, object target)
         {
             Check.NotNullArgument(method, "method");
-            Wrapped.AddNew(new WeakDelegateNeedle(method, target)); //Since it is a new object, it should not fail
+            Add(new WeakDelegateNeedle(method, target)); //Since it is a new object, it should not fail
         }
 
         public bool Contains(MethodInfo method, object target)
         {
             Check.NotNullArgument(method, "method");
-            return Wrapped.Exists(_item => _item.Equals(method, target));
-        }
-
-        public int CountItems(MethodInfo method, object target)
-        {
-            Check.NotNullArgument(method, "method");
-            return Wrapped.CountItemsWhere(_item => _item.Equals(method, target));
+            return Contains(item => item.Equals(method, target));
         }
 
         public void Invoke(params object[] args)
@@ -77,9 +71,9 @@ namespace Theraot.Collections.ThreadSafe
         public bool Remove(MethodInfo method, object target)
         {
             Check.NotNullArgument(method, "method");
-            foreach (var item in Wrapped.RemoveWhereEnumerable(_item => _item.Equals(method, target)))
+            foreach (var item in RemoveWhereEnumerable(_item => _item.Equals(method, target)))
             {
-                item.Dispose();
+                GC.KeepAlive(item);
                 return true;
             }
             return false;
@@ -87,7 +81,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private void InvokeExtracted(object[] args)
         {
-            foreach (var handler in Wrapped)
+            foreach (var handler in GetNeedleEnumerable())
             {
                 try
                 {
