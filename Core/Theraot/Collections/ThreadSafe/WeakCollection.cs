@@ -51,19 +51,19 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public WeakCollection(IEqualityComparer<T> comparer, int maxProbing)
-            : this(comparer, true, maxProbing)
+        public WeakCollection(IEqualityComparer<T> comparer, int initialProbing)
+            : this(comparer, true, initialProbing)
         {
             //Empty
         }
 
-        public WeakCollection(bool autoRemoveDeadItems, int maxProbing)
-            : this(null, autoRemoveDeadItems, maxProbing)
+        public WeakCollection(bool autoRemoveDeadItems, int initialProbing)
+            : this(null, autoRemoveDeadItems, initialProbing)
         {
             //Empty
         }
 
-        public WeakCollection(IEqualityComparer<T> comparer, bool autoRemoveDeadItems, int maxProbing)
+        public WeakCollection(IEqualityComparer<T> comparer, bool autoRemoveDeadItems, int initialProbing)
         {
             var defaultComparer = EqualityComparerHelper<T>.Default;
             IEqualityComparer<TNeedle> needleComparer;
@@ -77,7 +77,7 @@ namespace Theraot.Collections.ThreadSafe
                 _comparer = comparer;
                 needleComparer = new NeedleConversionEqualityComparer<TNeedle, T>(_comparer);
             }
-            _wrapped = new SafeSet<TNeedle>(needleComparer, maxProbing);
+            _wrapped = new SafeSet<TNeedle>(needleComparer, initialProbing);
             if (autoRemoveDeadItems)
             {
                 RegisterForAutoRemoveDeadItemsExtracted();
@@ -88,8 +88,8 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public WeakCollection(int maxProbing)
-            : this(null, true, maxProbing)
+        public WeakCollection(int initialProbing)
+            : this(null, true, initialProbing)
         {
             //Empty
         }
@@ -145,8 +145,8 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool Add(T item)
         {
-            TNeedle needle = NeedleHelper.CreateNeedle<T, TNeedle>(item);
-            if (_wrapped.TryAdd(needle))
+            var needle = NeedleHelper.CreateNeedle<T, TNeedle>(item);
+            if (_wrapped.TryAdd(needle, input => !input.IsAlive))
             {
                 return true;
             }
