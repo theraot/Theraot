@@ -9,6 +9,13 @@ namespace Theraot.Collections.ThreadSafe
         private readonly FixedSizeQueue<T> _entries;
         private readonly Action<T> _recycler;
 
+        public Pool(int capacity)
+        {
+            _id = PoolHelper.GetId();
+            _entries = new FixedSizeQueue<T>(capacity);
+            _recycler = GC.KeepAlive;
+        }
+
         public Pool(int capacity, Action<T> recycler)
         {
             if (recycler == null)
