@@ -1,7 +1,7 @@
 ﻿﻿using System;
 using System.Collections.Generic;
-using Theraot.Collections.Specialized;
-using Theraot.Core;
+﻿using System.Threading;
+﻿using Theraot.Core;
 using Theraot.Threading;
 using Theraot.Threading.Needles;
 
@@ -14,7 +14,8 @@ namespace Theraot.Collections.ThreadSafe
         where TNeedle : WeakNeedle<T>
     {
         private readonly IEqualityComparer<T> _comparer;
-        private readonly SafeSet<TNeedle> _wrapped;
+        private readonly SafeDictionary<int, TNeedle> _wrapped;
+        private int _maxIndex;
 
         private StructNeedle<WeakNeedle<EventHandler>> _eventHandler;
 
@@ -39,8 +40,7 @@ namespace Theraot.Collections.ThreadSafe
         public WeakCollection(IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
         {
             _comparer = comparer ?? EqualityComparerHelper<T>.Default;
-            IEqualityComparer<TNeedle> needleComparer = new NeedleConversionEqualityComparer<TNeedle, T>(_comparer);
-            _wrapped = new SafeSet<TNeedle>(needleComparer);
+            _wrapped = new SafeDictionary<int, TNeedle>();
             if (autoRemoveDeadItems)
             {
                 RegisterForAutoRemoveDeadItemsExtracted();
@@ -65,19 +65,8 @@ namespace Theraot.Collections.ThreadSafe
 
         public WeakCollection(IEqualityComparer<T> comparer, bool autoRemoveDeadItems, int initialProbing)
         {
-            var defaultComparer = EqualityComparerHelper<T>.Default;
-            IEqualityComparer<TNeedle> needleComparer;
-            if (ReferenceEquals(comparer, null) || ReferenceEquals(comparer, defaultComparer))
-            {
-                _comparer = defaultComparer;
-                needleComparer = EqualityComparerHelper<TNeedle>.Default;
-            }
-            else
-            {
-                _comparer = comparer;
-                needleComparer = new NeedleConversionEqualityComparer<TNeedle, T>(_comparer);
-            }
-            _wrapped = new SafeSet<TNeedle>(needleComparer, initialProbing);
+            _comparer = comparer ?? EqualityComparerHelper<T>.Default;
+            _wrapped = new SafeDictionary<int, TNeedle>(initialProbing);
             if (autoRemoveDeadItems)
             {
                 RegisterForAutoRemoveDeadItemsExtracted();
@@ -135,7 +124,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        protected SafeSet<TNeedle> Wrapped
+        protected SafeDictionary<int, TNeedle> Wrapped
         {
             get
             {
@@ -143,36 +132,12 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public bool Add(T item)
-        {
-            var needle = NeedleHelper.CreateNeedle<T, TNeedle>(item);
-            if (_wrapped.TryAdd(needle, input => !input.IsAlive))
-            {
-                return true;
-            }
-            needle.Dispose();
-            return false;
-        }
-
-        public int AddRange(IEnumerable<T> items)
-        {
-            int count = 0;
-            foreach (var item in Check.NotNullArgument(items, "items"))
-            {
-                if (Add(item))
-                {
-                    count++;
-                }
-            }
-            return count;
-        }
-
         public void Clear()
         {
             var displaced = _wrapped.ClearEnumerable();
             foreach (var item in displaced)
             {
-                item.Dispose();
+                item.Value.Dispose();
             }
         }
 
@@ -198,58 +163,36 @@ namespace Theraot.Collections.ThreadSafe
             return _comparer.Equals(x, y);
         }
 
-        public void ExceptWith(IEnumerable<T> other)
-        {
-            Extensions.ExceptWith(this, other);
-        }
-
         public IEnumerator<T> GetEnumerator()
         {
-            return _wrapped.ConvertProgressiveFiltered(input => input.Value, input => input.IsAlive).GetEnumerator();
-        }
-
-        void ICollection<T>.Add(T item)
-        {
-            TNeedle needle = NeedleHelper.CreateNeedle<T, TNeedle>(item);
-            if (!_wrapped.TryAdd(needle))
+            foreach (var pair in _wrapped)
             {
-                needle.Dispose();
+                T result;
+                if (pair.Value.TryGetValue(out result))
+                {
+                    yield return result;
+                }
             }
         }
 
-        public void IntersectWith(IEnumerable<T> other)
+        public void Add(T item)
         {
-            Extensions.IntersectWith(this, other);
-        }
-
-        public bool IsProperSubsetOf(IEnumerable<T> other)
-        {
-            return Extensions.IsProperSubsetOf(this, other);
-        }
-
-        public bool IsProperSupersetOf(IEnumerable<T> other)
-        {
-            return Extensions.IsProperSupersetOf(this, other);
-        }
-
-        public bool IsSubsetOf(IEnumerable<T> other)
-        {
-            return Extensions.IsSubsetOf(this, other);
-        }
-
-        public bool IsSupersetOf(IEnumerable<T> other)
-        {
-            return Extensions.IsSupersetOf(this, other);
-        }
-
-        public bool Overlaps(IEnumerable<T> other)
-        {
-            return Extensions.Overlaps(this, other);
+            var needle = NeedleHelper.CreateNeedle<T, TNeedle>(item);
+            _wrapped.Set(Interlocked.Increment(ref _maxIndex) - 1, needle);
         }
 
         public bool Remove(T item)
         {
-            foreach (var removed in _wrapped.RemoveWhereEnumerable(value => _comparer.Equals(item, value.Value)))
+            Predicate<TNeedle> check = input =>
+            {
+                T _value;
+                if (input.TryGetValue(out _value))
+                {
+                    return _comparer.Equals(item, _value);
+                }
+                return false;
+            };
+            foreach (var removed in _wrapped.RemoveWhereValueEnumerable(check))
             {
                 removed.Dispose();
                 return true;
@@ -259,12 +202,21 @@ namespace Theraot.Collections.ThreadSafe
 
         public int RemoveDeadItems()
         {
-            return _wrapped.RemoveWhere(input => !input.IsAlive);
+            return _wrapped.RemoveWhere(input => !input.Value.IsAlive);
         }
 
-        public int RemoveWhere(Predicate<T> predicate)
+        public int RemoveWhere(Predicate<T> valueCheck)
         {
-            return _wrapped.RemoveWhere(input => input.IsAlive && predicate(input.Value));
+            Predicate<TNeedle> check = input =>
+            {
+                T _value;
+                if (input.TryGetValue(out _value))
+                {
+                    return valueCheck(_value);
+                }
+                return false;
+            };
+            return _wrapped.RemoveWhereValue(check);
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
