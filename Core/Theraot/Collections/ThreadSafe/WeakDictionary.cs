@@ -4,7 +4,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Theraot.Collections.Specialized;
-using Theraot.Core;
 using Theraot.Threading;
 using Theraot.Threading.Needles;
 
@@ -41,7 +40,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public WeakDictionary(IEqualityComparer<TKey> comparer, bool autoRemoveDeadItems)
         {
-            _keyComparer = comparer ?? EqualityComparerHelper<TKey>.Default;
+            _keyComparer = comparer ?? EqualityComparer<TKey>.Default;
             var needleComparer = new NeedleConversionEqualityComparer<TNeedle, TKey>(_keyComparer);
             _wrapped = new SafeDictionary<TNeedle, TValue>(needleComparer);
             if (autoRemoveDeadItems)
@@ -68,7 +67,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public WeakDictionary(IEqualityComparer<TKey> comparer, bool autoRemoveDeadItems, int initialProbing)
         {
-            _keyComparer = comparer ?? EqualityComparerHelper<TKey>.Default;
+            _keyComparer = comparer ?? EqualityComparer<TKey>.Default;
             var needleComparer = new NeedleConversionEqualityComparer<TNeedle, TKey>(_keyComparer);
             _wrapped = new SafeDictionary<TNeedle, TValue>(needleComparer, initialProbing);
             if (autoRemoveDeadItems)
