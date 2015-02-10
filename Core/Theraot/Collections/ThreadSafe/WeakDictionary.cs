@@ -41,9 +41,8 @@ namespace Theraot.Collections.ThreadSafe
 
         public WeakDictionary(IEqualityComparer<TKey> comparer, bool autoRemoveDeadItems)
         {
-            var defaultComparer = EqualityComparerHelper<TKey>.Default;
-            _keyComparer = comparer ?? defaultComparer;
-            IEqualityComparer<TNeedle> needleComparer = new NeedleConversionEqualityComparer<TNeedle, TKey>(_keyComparer);
+            _keyComparer = comparer ?? EqualityComparerHelper<TKey>.Default;
+            var needleComparer = new NeedleConversionEqualityComparer<TNeedle, TKey>(_keyComparer);
             _wrapped = new SafeDictionary<TNeedle, TValue>(needleComparer);
             if (autoRemoveDeadItems)
             {
@@ -69,9 +68,8 @@ namespace Theraot.Collections.ThreadSafe
 
         public WeakDictionary(IEqualityComparer<TKey> comparer, bool autoRemoveDeadItems, int initialProbing)
         {
-            var defaultComparer = EqualityComparerHelper<TKey>.Default;
-            _keyComparer = comparer ?? defaultComparer;
-            IEqualityComparer<TNeedle> needleComparer = new NeedleConversionEqualityComparer<TNeedle, TKey>(_keyComparer);
+            _keyComparer = comparer ?? EqualityComparerHelper<TKey>.Default;
+            var needleComparer = new NeedleConversionEqualityComparer<TNeedle, TKey>(_keyComparer);
             _wrapped = new SafeDictionary<TNeedle, TValue>(needleComparer, initialProbing);
             if (autoRemoveDeadItems)
             {
@@ -228,7 +226,19 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool ContainsKey(TKey key)
         {
-            return _wrapped.ContainsKey(_keyComparer.GetHashCode(key), tmp => _keyComparer.Equals(tmp.Value, key));
+            return _wrapped.ContainsKey
+                (
+                    _keyComparer.GetHashCode(key),
+                    input =>
+                    {
+                        TKey _key;
+                        if (input.TryGetValue(out _key))
+                        {
+                            return _keyComparer.Equals(_key, key);
+                        }
+                        return false;
+                    }
+                );
         }
 
         /// <summary>
@@ -241,7 +251,19 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool ContainsKey(int hashCode, Predicate<TKey> keyCheck)
         {
-            return _wrapped.ContainsKey(hashCode, tmp => keyCheck(tmp.Value));
+            return _wrapped.ContainsKey
+                (
+                    hashCode,
+                    input =>
+                    {
+                        TKey _key;
+                        if (input.TryGetValue(out _key))
+                        {
+                            return keyCheck(_key);
+                        }
+                        return false;
+                    }
+                );
         }
 
         /// <summary>
@@ -255,7 +277,20 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool ContainsKey(int hashCode, Predicate<TKey> keyCheck, Predicate<TValue> valueCheck)
         {
-            return _wrapped.ContainsKey(hashCode, tmp => keyCheck(tmp.Value), valueCheck);
+            return _wrapped.ContainsKey
+                (
+                    hashCode,
+                    input =>
+                    {
+                        TKey _key;
+                        if (input.TryGetValue(out _key))
+                        {
+                            return keyCheck(_key);
+                        }
+                        return false;
+                    },
+                    valueCheck
+                );
         }
 
         /// <summary>
@@ -268,7 +303,19 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="System.ArgumentException">array;The array can not contain the number of elements.</exception>
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
-            Extensions.CopyTo(this, array, arrayIndex);
+            if (array == null)
+            {
+                throw new ArgumentNullException("array");
+            }
+            if (arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
+            }
+            if (_wrapped.Count > array.Length - arrayIndex)
+            {
+                throw new ArgumentException("The array can not contain the number of elements.", "array");
+            }
+            GetPairs().CopyTo(array, arrayIndex);
         }
 
         /// <summary>
@@ -279,11 +326,14 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            return _wrapped.ConvertProgressiveFiltered
-                (
-                    input => new KeyValuePair<TKey, TValue>(input.Key.Value, input.Value),
-                    input => input.Key.IsAlive
-                ).GetEnumerator();
+            foreach (var pair in _wrapped)
+            {
+                TKey _key;
+                if (pair.Key.TryGetValue(out _key))
+                {
+                    yield return new KeyValuePair<TKey, TValue>(_key, pair.Value);
+                }
+            }
         }
 
         public TValue GetOrAdd(TKey key, TValue value)
@@ -315,8 +365,16 @@ namespace Theraot.Collections.ThreadSafe
             return _wrapped.ContainsKey
                 (
                     _keyComparer.GetHashCode(item.Key),
-                    tmp => _keyComparer.Equals(tmp.Value, item.Key),
-                    tmp => EqualityComparer<TValue>.Default.Equals(tmp, item.Value)
+                    input =>
+                    {
+                        TKey _key;
+                        if (input.TryGetValue(out _key))
+                        {
+                            return _keyComparer.Equals(_key, item.Key);
+                        }
+                        return false;
+                    },
+                    input => EqualityComparer<TValue>.Default.Equals(input, item.Value)
                 );
         }
 
@@ -326,8 +384,16 @@ namespace Theraot.Collections.ThreadSafe
             return _wrapped.Remove
                 (
                     _keyComparer.GetHashCode(item.Key),
-                    key => _keyComparer.Equals(item.Key, key.Value),
-                    value => EqualityComparer<TValue>.Default.Equals(item.Value, value),
+                    input =>
+                    {
+                        TKey _key;
+                        if (input.TryGetValue(out _key))
+                        {
+                            return _keyComparer.Equals(_key, item.Key);
+                        }
+                        return false;
+                    },
+                    input => EqualityComparer<TValue>.Default.Equals(input, item.Value),
                     out found
                 );
         }
@@ -352,7 +418,20 @@ namespace Theraot.Collections.ThreadSafe
         public bool Remove(TKey key)
         {
             TValue value;
-            return _wrapped.Remove(_keyComparer.GetHashCode(key), _key => Equals(key, _key.Value), out value);
+            return _wrapped.Remove
+                (
+                    _keyComparer.GetHashCode(key),
+                    input =>
+                    {
+                        TKey _key;
+                        if (input.TryGetValue(out _key))
+                        {
+                            return _keyComparer.Equals(_key, key);
+                        }
+                        return false;
+                    },
+                    out value
+                );
         }
 
         /// <summary>
@@ -365,7 +444,20 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool Remove(TKey key, out TValue value)
         {
-            return _wrapped.Remove(_keyComparer.GetHashCode(key), _key => Equals(key, _key.Value), out value);
+            return _wrapped.Remove
+                (
+                    _keyComparer.GetHashCode(key),
+                    input =>
+                    {
+                        TKey _key;
+                        if (input.TryGetValue(out _key))
+                        {
+                            return _keyComparer.Equals(_key, key);
+                        }
+                        return false;
+                    },
+                    out value
+                );
         }
 
         /// <summary>
@@ -379,7 +471,20 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool Remove(int hashCode, Predicate<TKey> keyCheck, out TValue value)
         {
-            return _wrapped.Remove(hashCode, _key => keyCheck(_key.Value), out value);
+            return _wrapped.Remove
+                (
+                    hashCode,
+                    input =>
+                    {
+                        TKey _key;
+                        if (input.TryGetValue(out _key))
+                        {
+                            return keyCheck.Invoke(_key);
+                        }
+                        return false;
+                    },
+                    out value
+                );
         }
 
         /// <summary>
@@ -394,7 +499,21 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool Remove(int hashCode, Predicate<TKey> keyCheck, Predicate<TValue> valueCheck, out TValue value)
         {
-            return _wrapped.Remove(hashCode, _key => keyCheck(_key.Value), valueCheck, out value);
+            return _wrapped.Remove
+                (
+                    hashCode,
+                    input =>
+                    {
+                        TKey _key;
+                        if (input.TryGetValue(out _key))
+                        {
+                            return keyCheck.Invoke(_key);
+                        }
+                        return false;
+                    },
+                    valueCheck,
+                    out value
+                );
         }
 
         public int RemoveDeadItems()
@@ -416,11 +535,12 @@ namespace Theraot.Collections.ThreadSafe
         {
             return _wrapped.RemoveWhereKey
                 (
-                    key =>
+                    input =>
                     {
-                        if (key.IsAlive)
+                        TKey _key;
+                        if (input.TryGetValue(out _key))
                         {
-                            return keyCheck.Invoke(key.Value);
+                            return keyCheck.Invoke(_key);
                         }
                         return false;
                     }
@@ -441,15 +561,46 @@ namespace Theraot.Collections.ThreadSafe
         {
             return _wrapped.RemoveWhereKeyEnumerable
                 (
-                    key =>
+                    input =>
                     {
-                        if (key.IsAlive)
+                        TKey _key;
+                        if (input.TryGetValue(out _key))
                         {
-                            return keyCheck.Invoke(key.Value);
+                            return keyCheck.Invoke(_key);
                         }
                         return false;
                     }
                 );
+        }
+
+        /// <summary>
+        /// Removes the keys and associated values where the value satisfies the predicate.
+        /// </summary>
+        /// <param name="valueCheck">The predicate.</param>
+        /// <returns>
+        /// The number or removed pairs of keys and associated values.
+        /// </returns>
+        /// <remarks>
+        /// It is not guaranteed that all the pairs of keys and associated values that satisfies the predicate will be removed.
+        /// </remarks>
+        public int RemoveWhereValue(Predicate<TValue> valueCheck)
+        {
+            return _wrapped.RemoveWhereValue(valueCheck);
+        }
+
+        /// <summary>
+        /// Removes the keys and associated values where the value satisfies the predicate.
+        /// </summary>
+        /// <param name="valueCheck">The predicate.</param>
+        /// <returns>
+        /// An <see cref="IEnumerable{TValue}" /> that allows to iterate over the values of the removed pairs.
+        /// </returns>
+        /// <remarks>
+        /// It is not guaranteed that all the pairs of keys and associated values that satisfies the predicate will be removed.
+        /// </remarks>
+        public IEnumerable<TValue> RemoveWhereValueEnumerable(Predicate<TValue> valueCheck)
+        {
+            return _wrapped.RemoveWhereValueEnumerable(valueCheck);
         }
 
         /// <summary>
