@@ -3,111 +3,50 @@
 using System;
 using System.Threading;
 using Theraot.Collections.ThreadSafe;
-using Theraot.Core;
-using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
 {
     public sealed class WorkContext : IDisposable
     {
-        private static readonly WorkContext _defaultContext = new WorkContext(Environment.ProcessorCount, "Default Context", false);
+        private static readonly WorkContext _defaultContext = new WorkContext(Environment.ProcessorCount, false);
 
         private static int _lastId;
+
         private readonly int _dedidatedThreadMax;
         private readonly bool _disposable;
         private readonly int _id;
         private readonly SafeQueue<Work> _works;
+
         private int _dedidatedThreadCount;
-        private AutoResetEvent _event;
-        private NeedleBucket<Thread, LazyNeedle<Thread>> _threads;
+        private Pool<WorkThread> _threads;
         private int _waitRequest;
         private volatile bool _work;
-        private int _workingDedicatedThreadCount;
         private int _workingTotalThreadCount;
 
         public WorkContext()
-            : this(Environment.ProcessorCount, null, true)
+            : this(Environment.ProcessorCount, true)
         {
             //Empty
         }
 
         public WorkContext(int dedicatedThreads)
-            : this(dedicatedThreads, null, true)
+            : this(dedicatedThreads, true)
         {
             //Empty
         }
 
-        public WorkContext(string name)
-            : this(Environment.ProcessorCount, Check.NotNullArgument(name, "name"), true)
-        {
-            //Empty
-        }
-
-        public WorkContext(string name, int dedicatedThreads)
-            : this(dedicatedThreads, Check.NotNullArgument(name, "name"), true)
-        {
-            //Empty
-        }
-
-        private WorkContext(int dedicatedThreads, string name, bool disposable)
+        private WorkContext(int dedicatedThreads, bool disposable)
         {
             if (dedicatedThreads < 0)
             {
                 throw new ArgumentOutOfRangeException("dedicatedThreads", "dedicatedThreads < 0");
             }
-            else
-            {
-                _dedidatedThreadMax = dedicatedThreads;
-                _works = new SafeQueue<Work>();
-                Converter<int, Thread> valueFactory = null;
-                if (StringHelper.IsNullOrWhiteSpace(name))
-                {
-                    if (_dedidatedThreadMax == 1)
-                    {
-                        valueFactory = input => new Thread(DoWorks)
-                        {
-                            Name = string.Format("Dedicated Thread on Work.Context {0}", _id),
-                            IsBackground = true
-                        };
-                    }
-                    else if (_dedidatedThreadMax > 1)
-                    {
-                        valueFactory = input => new Thread(DoWorks)
-                        {
-                            Name = string.Format("Dedicated Thread {0} on Work.Context {1}", input, _id),
-                            IsBackground = true
-                        };
-                    }
-                }
-                else
-                {
-                    if (_dedidatedThreadMax == 1)
-                    {
-                        valueFactory = input => new Thread(DoWorks)
-                        {
-                            Name = string.Format("Dedicated Thread on {0}", name),
-                            IsBackground = true
-                        };
-                    }
-                    else if (_dedidatedThreadMax > 1)
-                    {
-                        valueFactory = input => new Thread(DoWorks)
-                        {
-                            Name = string.Format("Dedicated Thread {0} on {1}", input, name),
-                            IsBackground = true
-                        };
-                    }
-                }
-                _threads = new NeedleBucket<Thread, LazyNeedle<Thread>>
-                    (
-                        valueFactory,
-                        dedicatedThreads
-                    );
-                _id = Interlocked.Increment(ref _lastId) - 1;
-                _event = new AutoResetEvent(false);
-                _work = true;
-                _disposable = disposable;
-            }
+            _dedidatedThreadMax = dedicatedThreads;
+            _works = new SafeQueue<Work>();
+            _threads = new Pool<WorkThread>(dedicatedThreads);
+            _id = Interlocked.Increment(ref _lastId) - 1;
+            _work = true;
+            _disposable = disposable;
         }
 
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
@@ -119,15 +58,7 @@ namespace Theraot.Threading
             }
             finally
             {
-                try
-                {
-                    DisposeExtracted();
-                }
-                catch (Exception exception)
-                {
-                    // Pokemon - fields may be partially collected.
-                    GC.KeepAlive(exception);
-                }
+                DisposeExtracted();
             }
         }
 
@@ -159,7 +90,6 @@ namespace Theraot.Threading
 
         public void Dispose()
         {
-            // TODO: dispose _event (note: refactor this class to use Pool if possible)
             if (_disposable)
             {
                 DisposeExtracted();
@@ -171,12 +101,12 @@ namespace Theraot.Threading
         {
             if (_work)
             {
+                if (Thread.VolatileRead(ref _waitRequest) == 1)
+                {
+                    ThreadingHelper.SpinWaitUntil(ref _waitRequest, 0);
+                }
                 try
                 {
-                    if (Thread.VolatileRead(ref _waitRequest) == 1)
-                    {
-                        ThreadingHelper.SpinWaitUntil(ref _waitRequest, 0);
-                    }
                     Interlocked.Increment(ref _workingTotalThreadCount);
                     Work item;
                     if (_works.TryTake(out item))
@@ -205,128 +135,36 @@ namespace Theraot.Threading
             if (_work)
             {
                 _works.Add(work);
-                if (_threads.Capacity == 0)
+                WorkThread thread;
+                if (_threads.TryGet(out thread))
                 {
-                    ThreadPool.QueueUserWorkItem(_ => DoOneWork());
+                    thread.Go();
                 }
                 else
                 {
-                    ActivateDedicatedThreads();
-                }
-            }
-        }
-
-        private void ActivateDedicatedThreads()
-        {
-            if (GCMonitor.FinalizingForUnload)
-            {
-                return;
-            }
-            var threadIndex = Interlocked.Increment(ref _dedidatedThreadCount) - 1;
-            if (threadIndex < _dedidatedThreadMax)
-            {
-                Thread thread = _threads.Get(threadIndex);
-                thread.Start();
-            }
-            else
-            {
-                Thread.VolatileWrite(ref _dedidatedThreadCount, _dedidatedThreadMax);
-                if (Thread.VolatileRead(ref _workingDedicatedThreadCount) < _threads.Count)
-                {
-                    _event.Set();
+                    if (Interlocked.Increment(ref _dedidatedThreadCount) < _dedidatedThreadMax)
+                    {
+                        (new WorkThread(this)).Go();
+                    }
+                    else
+                    {
+                        Interlocked.Decrement(ref _dedidatedThreadCount);
+                    }
                 }
             }
         }
 
         private void DisposeExtracted()
         {
-            try
+            _work = false;
+            var threads = Interlocked.Exchange(ref _threads, null);
+            if (threads != null)
             {
-                _work = false;
-                _event = null;
-            }
-            finally
-            {
-                try
+                WorkThread thread;
+                while (_threads.TryGet(out thread))
                 {
-                    // Empty
+                    thread.Go();
                 }
-                finally
-                {
-                    _threads = null;
-                }
-            }
-        }
-
-        private void DoWorks()
-        {
-            int count = 0;
-        loopback:
-            try
-            {
-                Interlocked.Increment(ref _workingTotalThreadCount);
-                Interlocked.Increment(ref _workingDedicatedThreadCount);
-                while (_work && !GCMonitor.FinalizingForUnload)
-                {
-                    Work item;
-                    if (_works.TryTake(out item))
-                    {
-                        Execute(item);
-                    }
-                    else if (_works.Count == 0)
-                    {
-                        if (count == ThreadingHelper.INT_SleepCountHint)
-                        {
-                            try
-                            {
-                                Interlocked.Decrement(ref _workingDedicatedThreadCount);
-                                Interlocked.Decrement(ref _workingTotalThreadCount);
-                                count = 0;
-                                _event.WaitOne();
-                            }
-                            finally
-                            {
-                                Interlocked.Increment(ref _workingTotalThreadCount);
-                                Interlocked.Increment(ref _workingDedicatedThreadCount);
-                            }
-                        }
-                        else
-                        {
-                            ThreadingHelper.SpinOnce(ref count);
-                        }
-                    }
-                    if (Thread.VolatileRead(ref _waitRequest) == 1)
-                    {
-                        Interlocked.Decrement(ref _workingTotalThreadCount);
-                        ThreadingHelper.SpinWaitUntil(ref _waitRequest, 0);
-                        Interlocked.Increment(ref _workingTotalThreadCount);
-                    }
-                }
-            }
-            catch (ThreadAbortException)
-            {
-                // Nothing to do
-            }
-            catch (ObjectDisposedException)
-            {
-                // Nothing to do
-            }
-            catch (NullReferenceException)
-            {
-                // Nothing to do
-            }
-            catch
-            {
-                // Pokemon
-                if (_work && !GCMonitor.FinalizingForUnload)
-                {
-                    goto loopback;
-                }
-            }
-            finally
-            {
-                Interlocked.Decrement(ref _workingDedicatedThreadCount);
-                Interlocked.Decrement(ref _workingTotalThreadCount);
             }
         }
 
@@ -342,6 +180,98 @@ namespace Theraot.Threading
             else
             {
                 item.Execute();
+            }
+        }
+
+        private sealed class WorkThread
+        {
+            private readonly WorkContext _context;
+            private readonly object _locker;
+            private readonly Thread _thread;
+            private int _working;
+
+            public WorkThread(WorkContext context)
+            {
+                _context = context;
+                _thread = new Thread(Run)
+                {
+                    IsBackground = true,
+                    Name = "Dedicated Thread on Context " + context.Id
+                };
+                _locker = new object();
+            }
+
+            public void Go()
+            {
+                if (Interlocked.CompareExchange(ref _working, 1, 0) == 0)
+                {
+                    if (!_thread.IsAlive)
+                    {
+                        _thread.Start();
+                    }
+                }
+                else
+                {
+                    lock (_locker)
+                    {
+                        Monitor.Pulse(_locker);
+                    }
+                }
+            }
+
+            private void Run()
+            {
+            loopback:
+                try
+                {
+                    Interlocked.Increment(ref _context._workingTotalThreadCount);
+                    while (_context._work && !GCMonitor.FinalizingForUnload)
+                    {
+                        Work item;
+                        if (_context._works.TryTake(out item))
+                        {
+                            _context.Execute(item);
+                        }
+                        else if (_context._works.Count == 0 || Thread.VolatileRead(ref _context._waitRequest) == 1)
+                        {
+                            Interlocked.Decrement(ref _context._workingTotalThreadCount);
+                            var threads = _context._threads;
+                            if (_context._work && !GCMonitor.FinalizingForUnload && threads != null)
+                            {
+                                lock (_locker)
+                                {
+                                    threads.Donate(this);
+                                    Monitor.Wait(_locker);
+                                }
+                                Interlocked.Increment(ref _context._workingTotalThreadCount);
+                            }
+                        }
+                    }
+                }
+                catch (ThreadAbortException)
+                {
+                    // Nothing to do
+                }
+                catch (ObjectDisposedException)
+                {
+                    // Nothing to do
+                }
+                catch (NullReferenceException)
+                {
+                    // Nothing to do
+                }
+                catch
+                {
+                    // Pokemon
+                    if (_context._work && !GCMonitor.FinalizingForUnload)
+                    {
+                        goto loopback;
+                    }
+                }
+                finally
+                {
+                    Interlocked.Decrement(ref _context._workingTotalThreadCount);
+                }
             }
         }
     }
