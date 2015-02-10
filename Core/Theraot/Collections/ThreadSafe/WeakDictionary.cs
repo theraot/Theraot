@@ -195,40 +195,6 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Adds the specified key and associated value.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="keyOverwriteCheck">The key predicate to approve overwriting.</param>
-        /// <param name="value">The value.</param>
-        /// <exception cref="System.ArgumentException">An item with the same key has already been added</exception>
-        public void AddNew(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
-        {
-            var needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
-            try
-            {
-                _wrapped.AddNew
-                    (
-                        needle,
-                        input =>
-                        {
-                            TKey _key;
-                            if (input.TryGetValue(out _key))
-                            {
-                                return keyOverwriteCheck(_key);
-                            }
-                            return true;
-                        },
-                        value
-                    );
-            }
-            catch (ArgumentException)
-            {
-                needle.Dispose();
-                throw;
-            }
-        }
-
-        /// <summary>
         /// Removes all the elements.
         /// </summary>
         public void Clear()
@@ -324,25 +290,6 @@ namespace Theraot.Collections.ThreadSafe
         {
             var needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
             return _wrapped.GetOrAdd(needle, input => !input.IsAlive, value);
-        }
-
-        public TValue GetOrAdd(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
-        {
-            var needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
-            return _wrapped.GetOrAdd
-                (
-                    needle,
-                    input =>
-                    {
-                        TKey _key;
-                        if (input.TryGetValue(out _key))
-                        {
-                            return keyOverwriteCheck(_key);
-                        }
-                        return true;
-                    },
-                    value
-                );
         }
 
         /// <summary>
@@ -520,79 +467,6 @@ namespace Theraot.Collections.ThreadSafe
         /// Attempts to add the specified key and associated value. The value is added if the key is not found.
         /// </summary>
         /// <param name="key">The key.</param>
-        /// <param name="keyOverwriteCheck">The key predicate to approve overwriting.</param>
-        /// <param name="value">The value.</param>
-        /// <returns>
-        ///   <c>true</c> if the specified key and associated value were added; otherwise, <c>false</c>.
-        /// </returns>
-        public bool TryAdd(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
-        {
-            var needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
-            if
-                (
-                    _wrapped.TryAdd
-                    (
-                        needle,
-                        input =>
-                        {
-                            TKey _key;
-                            if (input.TryGetValue(out _key))
-                            {
-                                return keyOverwriteCheck(_key);
-                            }
-                            return true;
-                        },
-                        value
-                    )
-                )
-            {
-                return true;
-            }
-            needle.Dispose();
-            return false;
-        }
-
-        /// <summary>
-        /// Attempts to add the specified key and associated value. The value is added if the key is not found.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="keyOverwriteCheck">The key predicate to approve overwriting.</param>
-        /// <param name="value">The value.</param>
-        /// <param name="stored">The stored pair independently of success.</param>
-        /// <returns>
-        ///   <c>true</c> if the specified key and associated value were added; otherwise, <c>false</c>.
-        /// </returns>
-        public bool TryAdd(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value, out KeyValuePair<TKey, TValue> stored)
-        {
-            var needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
-            KeyValuePair<TNeedle, TValue> _stored;
-            var result = _wrapped.TryAdd
-                (
-                    needle,
-                    input =>
-                    {
-                        TKey _key;
-                        if (input.TryGetValue(out _key))
-                        {
-                            return keyOverwriteCheck(_key);
-                        }
-                        return true;
-                    },
-                    value,
-                    out _stored
-                );
-            if (!result)
-            {
-                needle.Dispose();
-            }
-            stored = new KeyValuePair<TKey, TValue>(_stored.Key.Value, _stored.Value);
-            return result;
-        }
-
-        /// <summary>
-        /// Attempts to add the specified key and associated value. The value is added if the key is not found.
-        /// </summary>
-        /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <returns>
         ///   <c>true</c> if the specified key and associated value were added; otherwise, <c>false</c>.
@@ -685,6 +559,132 @@ namespace Theraot.Collections.ThreadSafe
             {
                 yield return value;
             }
+        }
+
+        /// <summary>
+        /// Adds the specified key and associated value.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="keyOverwriteCheck">The key predicate to approve overwriting.</param>
+        /// <param name="value">The value.</param>
+        /// <exception cref="System.ArgumentException">An item with the same key has already been added</exception>
+        internal void AddNew(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
+        {
+            var needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
+            try
+            {
+                _wrapped.AddNew
+                    (
+                        needle,
+                        input =>
+                        {
+                            TKey _key;
+                            if (input.TryGetValue(out _key))
+                            {
+                                return keyOverwriteCheck(_key);
+                            }
+                            return true;
+                        },
+                        value
+                    );
+            }
+            catch (ArgumentException)
+            {
+                needle.Dispose();
+                throw;
+            }
+        }
+
+        internal TValue GetOrAdd(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
+        {
+            var needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
+            return _wrapped.GetOrAdd
+                (
+                    needle,
+                    input =>
+                    {
+                        TKey _key;
+                        if (input.TryGetValue(out _key))
+                        {
+                            return keyOverwriteCheck(_key);
+                        }
+                        return true;
+                    },
+                    value
+                );
+        }
+
+        /// <summary>
+        /// Attempts to add the specified key and associated value. The value is added if the key is not found.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="keyOverwriteCheck">The key predicate to approve overwriting.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified key and associated value were added; otherwise, <c>false</c>.
+        /// </returns>
+        internal bool TryAdd(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
+        {
+            var needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
+            if
+                (
+                    _wrapped.TryAdd
+                    (
+                        needle,
+                        input =>
+                        {
+                            TKey _key;
+                            if (input.TryGetValue(out _key))
+                            {
+                                return keyOverwriteCheck(_key);
+                            }
+                            return true;
+                        },
+                        value
+                    )
+                )
+            {
+                return true;
+            }
+            needle.Dispose();
+            return false;
+        }
+
+        /// <summary>
+        /// Attempts to add the specified key and associated value. The value is added if the key is not found.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="keyOverwriteCheck">The key predicate to approve overwriting.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="stored">The stored pair independently of success.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified key and associated value were added; otherwise, <c>false</c>.
+        /// </returns>
+        internal bool TryAdd(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value, out KeyValuePair<TKey, TValue> stored)
+        {
+            var needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
+            KeyValuePair<TNeedle, TValue> _stored;
+            var result = _wrapped.TryAdd
+                (
+                    needle,
+                    input =>
+                    {
+                        TKey _key;
+                        if (input.TryGetValue(out _key))
+                        {
+                            return keyOverwriteCheck(_key);
+                        }
+                        return true;
+                    },
+                    value,
+                    out _stored
+                );
+            if (!result)
+            {
+                needle.Dispose();
+            }
+            stored = new KeyValuePair<TKey, TValue>(_stored.Key.Value, _stored.Value);
+            return result;
         }
 
         private void GarbageCollected(object sender, EventArgs e)
