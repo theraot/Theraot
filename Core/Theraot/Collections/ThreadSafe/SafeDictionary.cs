@@ -619,6 +619,60 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
+        /// Removes the keys and associated values where the value satisfies the predicate.
+        /// </summary>
+        /// <param name="valueCheck">The predicate.</param>
+        /// <returns>
+        /// The number or removed pairs of keys and associated values.
+        /// </returns>
+        /// <remarks>
+        /// It is not guaranteed that all the pairs of keys and associated values that satisfies the predicate will be removed.
+        /// </remarks>
+        public int RemoveWhereValue(Predicate<TValue> valueCheck)
+        {
+            if (valueCheck == null)
+            {
+                throw new ArgumentNullException("valueCheck");
+            }
+            var matches = _mapper.Where(pair => valueCheck(pair.Value));
+            var count = 0;
+            foreach (var pair in matches)
+            {
+                if (Remove(pair.Key))
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        /// <summary>
+        /// Removes the keys and associated values where the value satisfies the predicate.
+        /// </summary>
+        /// <param name="valueCheck">The predicate.</param>
+        /// <returns>
+        /// An <see cref="IEnumerable{TValue}" /> that allows to iterate over the values of the removed pairs.
+        /// </returns>
+        /// <remarks>
+        /// It is not guaranteed that all the pairs of keys and associated values that satisfies the predicate will be removed.
+        /// </remarks>
+        public IEnumerable<TValue> RemoveWhereValueEnumerable(Predicate<TValue> valueCheck)
+        {
+            if (valueCheck == null)
+            {
+                throw new ArgumentNullException("valueCheck");
+            }
+            var matches = _mapper.Where(pair => valueCheck(pair.Value));
+            foreach (var pair in matches)
+            {
+                if (Remove(pair.Key))
+                {
+                    yield return pair.Value;
+                }
+            }
+        }
+
+        /// <summary>
         /// Sets the value associated with the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
