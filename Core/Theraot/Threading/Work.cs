@@ -30,13 +30,10 @@ namespace Theraot.Threading
             {
                 throw new ArgumentNullException("context");
             }
-            else
-            {
-                _context = context;
-                _action = action ?? ActionHelper.GetNoopAction();
-                _exclusive = exclusive;
-                _waitHandle = new ManualResetEventSlim(false);
-            }
+            _context = context;
+            _action = action ?? ActionHelper.GetNoopAction();
+            _exclusive = exclusive;
+            _waitHandle = new ManualResetEventSlim(false);
         }
 
         ~Work()
@@ -102,11 +99,6 @@ namespace Theraot.Threading
             return _context.AddWork(_action, _exclusive);
         }
 
-        object ICloneable.Clone()
-        {
-            return Clone();
-        }
-
         public bool Start()
         {
             var check = Interlocked.Exchange(ref _status, INT_StatusRunning);
@@ -116,10 +108,17 @@ namespace Theraot.Threading
                 _context.ScheduleWork(this);
                 return true;
             }
-            else
+            return false;
+        }
+
+        public bool StartAndWait()
+        {
+            if (Start())
             {
-                return false;
+                Wait();
+                return true;
             }
+            return false;
         }
 
         public void Wait()
@@ -147,6 +146,11 @@ namespace Theraot.Threading
                 _waitHandle.Value.Set();
                 Interlocked.Exchange(ref _current, oldCurrent);
             }
+        }
+
+        object ICloneable.Clone()
+        {
+            return Clone();
         }
     }
 
