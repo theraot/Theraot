@@ -62,78 +62,53 @@ namespace Theraot.Threading.Needles
         {
             if (ReferenceEquals(_currentTransaction, this))
             {
-                if (CheckValue())
+                bool rollback = true;
+                try
                 {
+                    if (!CheckValue())
+                    {
+                        //the resources has been modified by another thread
+                        return false;
+                    }
                     try
                     {
                         ThreadingHelper.SpinWaitUntil(() => _context.ClaimSlot(out _lockSlot));
                         _lockSlot.Value = Thread.CurrentThread;
-                        if (_writeLog.Count > 0)
-                        {
-                            foreach (var resource1 in _writeLog)
-                            {
-                                resource1.Key.Capture();
-                            }
-                            foreach (var resource2 in _readLog)
-                            {
-                                resource2.Key.Capture();
-                            }
-                            bool rollback = true;
-                            bool written = false;
-                            try
-                            {
-                                if (CheckCapture())
-                                {
-                                    if (CheckValue())
-                                    {
-                                        foreach (var resource in _writeLog)
-                                        {
-                                            if (resource.Key.Commit())
-                                            {
-                                                written = true;
-                                            }
-                                            else
-                                            {
-                                                //unexpected
-                                                return false;
-                                            }
-                                        }
-                                        rollback = false;
-                                        return true;
-                                    }
-                                    else
-                                    {
-                                        //the resources has been modified by another thread
-                                        return false;
-                                    }
-                                }
-                                else
-                                {
-                                    //the resources has been claimed by another thread
-                                    return false;
-                                }
-                            }
-                            finally
-                            {
-                                if (rollback)
-                                {
-                                    if (written)
-                                    {
-                                        //TODO
-                                    }
-                                    Rollback(false);
-                                }
-                                else
-                                {
-                                    Uncapture();
-                                }
-                            }
-                        }
-                        else
+                        if (!Capture())
                         {
                             //Nothing to commit
                             return true;
                         }
+                        if (!CheckCapture())
+                        {
+                            //the resources has been claimed by another thread
+                            return false;
+                        }
+                        if (!CheckValue())
+                        {
+                            //the resources has been modified by another thread
+                            return false;
+                        }
+                        var written = false;
+                        foreach (var resource in _writeLog)
+                        {
+                            if (resource.Key.Commit())
+                            {
+                                written = true;
+                            }
+                            else
+                            {
+                                //unexpected
+                                if (written)
+                                {
+                                    // TODO - the transaction was partially written, this should not be possible.
+                                    System.Diagnostics.Debug.Fail("unexpected - partially commited transaction");
+                                }
+                                return false;
+                            }
+                        }
+                        rollback = false;
+                        return true;
                     }
                     finally
                     {
@@ -144,8 +119,17 @@ namespace Theraot.Threading.Needles
                         }
                     }
                 }
-                //the resources has been modified by another thread
-                return false;
+                finally
+                {
+                    if (rollback)
+                    {
+                        Rollback(false);
+                    }
+                    else
+                    {
+                        Uncapture();
+                    }
+                }
             }
             throw new InvalidOperationException("Cannot commit a non-current transaction.");
         }
@@ -160,6 +144,24 @@ namespace Theraot.Threading.Needles
             {
                 throw new InvalidOperationException("Unable to rollback a transaction that belongs to another thread.");
             }
+        }
+
+        private bool Capture()
+        {
+            bool result = false;
+            foreach (var resource1 in _writeLog)
+            {
+                resource1.Key.Capture();
+                result = true;
+            }
+            if (result)
+            {
+                foreach (var resource2 in _readLog)
+                {
+                    resource2.Key.Capture();
+                }
+            }
+            return result;
         }
 
         private bool CheckCapture()
