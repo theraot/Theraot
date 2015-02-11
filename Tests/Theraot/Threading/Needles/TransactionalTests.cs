@@ -7,7 +7,7 @@ using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
 using Theraot.Threading.Needles;
 
-namespace Tests.Theraot
+namespace Tests.Theraot.Threading.Needles
 {
     [TestFixture]
     public class TransactionalTests
