@@ -99,7 +99,7 @@ namespace Tests.Theraot.Threading.Needles
             Assert.AreEqual(hashcode, a.GetHashCode());
             //Initial value
             var b = new LazyNeedle<int>(5);
-            hashcode = 5.GetHashCode();
+            hashcode = b.GetHashCode();
             b.Value = 5;
             Assert.AreEqual(hashcode, b.GetHashCode());
             b.Value = 6;
