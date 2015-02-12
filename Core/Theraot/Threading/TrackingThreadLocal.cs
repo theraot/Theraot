@@ -201,27 +201,23 @@ namespace Theraot.Threading
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
-            // TODO: upgrade to GetOrAdd if possible
             INeedle<T> needle;
-            if (_slots.TryGetValue(thread, out needle))
+            if (_slots.TryGetOrAdd(thread, ThreadLocalHelper<T>.RecursionGuardNeedle, out needle))
             {
-                return needle.Value;
-            }
-            try
-            {
-                _slots.Set(thread, ThreadLocalHelper<T>.RecursionGuardNeedle);
-                T result = _valueFactory.Invoke();
-                _slots.Set(thread, new ReadOnlyStructNeedle<T>(result));
-                return result;
-            }
-            catch (Exception exception)
-            {
-                if (!ReferenceEquals(exception, ThreadLocalHelper.RecursionGuardException))
+                try
                 {
-                    _slots.Set(thread, new ExceptionStructNeedle<T>(exception));
+                    needle = new ReadOnlyStructNeedle<T>(_valueFactory.Invoke());
                 }
-                throw;
+                catch (Exception exception)
+                {
+                    if (!ReferenceEquals(exception, ThreadLocalHelper.RecursionGuardException))
+                    {
+                        needle = new ExceptionStructNeedle<T>(exception);
+                    }
+                }
+                _slots.Set(thread, needle);
             }
+            return needle.Value;
         }
 
         private void SetError(Thread thread, Exception error)
