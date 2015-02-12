@@ -85,7 +85,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             get
             {
-                // TODO
+                // TODO - create DictionaryCollection
                 throw new NotImplementedException();
             }
         }
@@ -94,7 +94,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             get
             {
-                // TODO
+                // TODO - create ValueCollection
                 throw new NotImplementedException();
             }
         }

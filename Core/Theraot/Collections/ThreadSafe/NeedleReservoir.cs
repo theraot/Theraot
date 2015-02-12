@@ -7,7 +7,7 @@ namespace Theraot.Collections.ThreadSafe
     {
         internal static void DonateNeedle(TNeedle donation)
         {
-            // TODO
+            // TODO - allow Needle recycling (fix the hash codes of needles first)
         }
 
         internal static TNeedle GetNeedle(T value)
