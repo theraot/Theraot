@@ -142,9 +142,10 @@ namespace Theraot.Threading
                 }
                 else
                 {
-                    if (Interlocked.Increment(ref _dedidatedThreadCount) < _dedidatedThreadMax)
+                    var threadNumber = Interlocked.Increment(ref _dedidatedThreadCount);
+                    if (threadNumber <= _dedidatedThreadMax)
                     {
-                        (new WorkThread(this)).Go();
+                        (new WorkThread(this, "Dedicated Thread #" + threadNumber + " on Context " + _id)).Go();
                     }
                     else
                     {
@@ -190,13 +191,13 @@ namespace Theraot.Threading
             private readonly Thread _thread;
             private int _working;
 
-            public WorkThread(WorkContext context)
+            public WorkThread(WorkContext context, string name)
             {
                 _context = context;
                 _thread = new Thread(Run)
                 {
                     IsBackground = true,
-                    Name = "Dedicated Thread on Context " + context.Id
+                    Name = name
                 };
                 _locker = new object();
             }
