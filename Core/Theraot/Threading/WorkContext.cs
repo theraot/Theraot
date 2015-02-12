@@ -252,14 +252,6 @@ namespace Theraot.Threading
                 {
                     // Nothing to do
                 }
-                catch (ObjectDisposedException)
-                {
-                    // Nothing to do
-                }
-                catch (NullReferenceException)
-                {
-                    // Nothing to do
-                }
                 catch
                 {
                     // Pokemon
