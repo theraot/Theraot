@@ -73,14 +73,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
-        {
-            get
-            {
-                return false;
-            }
-        }
-
         public IEqualityComparer<TKey> KeyComparer
         {
             get
@@ -107,6 +99,13 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
+        {
+            get
+            {
+                return false;
+            }
+        }
         public TValue this[TKey key]
         {
             get
@@ -324,75 +323,6 @@ namespace Theraot.Collections.ThreadSafe
                 result.Add(pair);
             }
             return result;
-        }
-
-        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
-        {
-            AddNew(item.Key, item.Value);
-        }
-
-        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
-        {
-            int hashCode = _keyComparer.GetHashCode(item.Key);
-            for (var attempts = 0; attempts < _probing; attempts++)
-            {
-                KeyValuePair<TKey, TValue> found;
-                if (_mapper.TryGet(hashCode + attempts, out found))
-                {
-                    if (_keyComparer.Equals(found.Key, item.Key))
-                    {
-                        if (EqualityComparer<TValue>.Default.Equals(found.Value, item.Value))
-                        {
-                            return true;
-                        }
-                        return false;
-                    }
-                }
-            }
-            return false;
-        }
-
-        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
-        {
-            int hashCode = _keyComparer.GetHashCode(item.Key);
-            for (var attempts = 0; attempts < _probing; attempts++)
-            {
-                var done = false;
-                KeyValuePair<TKey, TValue> previous;
-                var result = _mapper.TryGetCheckRemoveAt
-                    (
-                        hashCode + attempts,
-                        found =>
-                        {
-                            var _found = (KeyValuePair<TKey, TValue>)found;
-                            if (_keyComparer.Equals(_found.Key, item.Key))
-                            {
-                                done = true;
-                                if (EqualityComparer<TValue>.Default.Equals(_found.Value, item.Value))
-                                {
-                                    return true;
-                                }
-                            }
-                            return false;
-                        },
-                        out previous
-                    );
-                if (done)
-                {
-                    return result;
-                }
-            }
-            return false;
-        }
-
-        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
-        {
-            AddNew(key, value);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         /// <summary>
@@ -753,6 +683,48 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        public bool TryGetOrAdd(TKey key, TValue value, out TValue stored)
+        {
+            var hashCode = _keyComparer.GetHashCode(key);
+            var neo = new KeyValuePair<TKey, TValue>(key, value);
+            var attempts = 0;
+            while (true)
+            {
+                ExtendProbingIfNeeded(attempts);
+                Predicate<object> check = found =>
+                {
+                    var _found = (KeyValuePair<TKey, TValue>)found;
+                    if (_keyComparer.Equals(_found.Key, key))
+                    {
+                        // This is the item that has been stored with the key
+                        value = _found.Value;
+                        // Throw to abort overwrite
+                        throw new ArgumentException("An item with the same key has already been added");
+                    }
+                    // This is not the key, keep looking
+                    return false;
+                };
+                try
+                {
+                    bool isNew;
+                    // TryGetCheckSet will add if no item is found, otherwise it calls check
+                    if (_mapper.TryGetCheckSet(hashCode + attempts, neo, check, out isNew))
+                    {
+                        // It added a new item
+                        stored = value;
+                        return true;
+                    }
+                }
+                catch (ArgumentException)
+                {
+                    // An item with the same key has already been added
+                    // Return it
+                    stored = value;
+                    return false;
+                }
+                attempts++;
+            }
+        }
         /// <summary>
         /// Tries to retrieve the value associated with the specified key.
         /// </summary>
@@ -1061,6 +1033,38 @@ namespace Theraot.Collections.ThreadSafe
                 attempts++;
             }
         }
+
+        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
+        {
+            AddNew(item.Key, item.Value);
+        }
+
+        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
+        {
+            AddNew(key, value);
+        }
+
+        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
+        {
+            int hashCode = _keyComparer.GetHashCode(item.Key);
+            for (var attempts = 0; attempts < _probing; attempts++)
+            {
+                KeyValuePair<TKey, TValue> found;
+                if (_mapper.TryGet(hashCode + attempts, out found))
+                {
+                    if (_keyComparer.Equals(found.Key, item.Key))
+                    {
+                        if (EqualityComparer<TValue>.Default.Equals(found.Value, item.Value))
+                        {
+                            return true;
+                        }
+                        return false;
+                    }
+                }
+            }
+            return false;
+        }
+
         private void ExtendProbingIfNeeded(int attempts)
         {
             var diff = attempts - _probing;
@@ -1068,6 +1072,44 @@ namespace Theraot.Collections.ThreadSafe
             {
                 Interlocked.Add(ref _probing, diff);
             }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
+        {
+            int hashCode = _keyComparer.GetHashCode(item.Key);
+            for (var attempts = 0; attempts < _probing; attempts++)
+            {
+                var done = false;
+                KeyValuePair<TKey, TValue> previous;
+                var result = _mapper.TryGetCheckRemoveAt
+                    (
+                        hashCode + attempts,
+                        found =>
+                        {
+                            var _found = (KeyValuePair<TKey, TValue>)found;
+                            if (_keyComparer.Equals(_found.Key, item.Key))
+                            {
+                                done = true;
+                                if (EqualityComparer<TValue>.Default.Equals(_found.Value, item.Value))
+                                {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        },
+                        out previous
+                    );
+                if (done)
+                {
+                    return result;
+                }
+            }
+            return false;
         }
     }
 }
