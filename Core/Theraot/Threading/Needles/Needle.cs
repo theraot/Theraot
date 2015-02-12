@@ -16,20 +16,19 @@ namespace Theraot.Threading.Needles
         public Needle()
         {
             _target = null;
-            _hashCode = base.GetHashCode();
+            _hashCode = NeedleHelper.GetNextHashCode();
         }
 
         public Needle(T target)
         {
+            _hashCode = NeedleHelper.GetNextHashCode();
             if (ReferenceEquals(target, null))
             {
                 _target = null;
-                _hashCode = base.GetHashCode();
             }
             else
             {
                 _target = new StructNeedle<T>(target);
-                _hashCode = target.GetHashCode();
             }
         }
 

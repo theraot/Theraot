@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Threading;
 using Theraot.Core;
 
 namespace Theraot.Threading.Needles
@@ -7,6 +8,8 @@ namespace Theraot.Threading.Needles
     [global::System.Diagnostics.DebuggerNonUserCode]
     public static class NeedleHelper
     {
+        private static int _hashCode;
+
         public static bool CanCreateDeferredNeedle<T, TNeedle>()
             where TNeedle : INeedle<T>
         {
@@ -122,6 +125,11 @@ namespace Theraot.Threading.Needles
                     return needle.IsAlive;
                 }
             }
+        }
+
+        internal static int GetNextHashCode()
+        {
+            return Interlocked.Increment(ref _hashCode) - 1;
         }
 
         private static class DeferredNeedleCreator<T, TNeedle>

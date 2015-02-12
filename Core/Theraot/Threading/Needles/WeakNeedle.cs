@@ -25,7 +25,7 @@ namespace Theraot.Threading.Needles
         public WeakNeedle(bool trackResurrection)
         {
             _trackResurrection = trackResurrection;
-            _hashCode = GetHashCode();
+            _hashCode = NeedleHelper.GetNextHashCode();
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
@@ -40,7 +40,7 @@ namespace Theraot.Threading.Needles
         {
             _trackResurrection = trackResurrection;
             SetTargetValue(target);
-            _hashCode = IsAlive ? target.GetHashCode() : GetHashCode();
+            _hashCode = NeedleHelper.GetNextHashCode();
         }
 
         public Exception Error

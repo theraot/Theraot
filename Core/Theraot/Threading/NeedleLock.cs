@@ -24,7 +24,7 @@ namespace Theraot.Threading
                 throw new ArgumentNullException("context");
             }
             _context = context;
-            _hashCode = GetHashCode();
+            _hashCode = NeedleHelper.GetNextHashCode();
             _capture = new FlagArray(_context.Capacity);
         }
 
@@ -36,7 +36,7 @@ namespace Theraot.Threading
             }
             _context = context;
             _target = target;
-            _hashCode = ReferenceEquals(target, null) ? GetHashCode() : target.GetHashCode();
+            _hashCode = NeedleHelper.GetNextHashCode();
             _capture = new FlagArray(_context.Capacity);
         }
 
