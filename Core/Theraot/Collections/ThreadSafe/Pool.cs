@@ -29,7 +29,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal void Donate(T entry)
         {
-            if (!ReferenceEquals(entry, null) && !AppDomain.CurrentDomain.IsFinalizingForUnload() && PoolHelper.Enter(_id))
+            if (!ReferenceEquals(entry, null) && PoolHelper.Enter(_id))
             {
                 try
                 {
