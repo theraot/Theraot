@@ -10,20 +10,17 @@ namespace Theraot.Collections.ThreadSafe
     [Serializable]
     public sealed class SafeQueue<T> : IEnumerable<T>
     {
-        private readonly Mapper<T> _entries;
-        private int _indexDequeue;
-        private int _indexEnqueue;
-        private int _preCount;
+        private int _count;
+        private Node _root;
+        private Node _tail;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FixedSizeQueue{T}" /> class.
+        /// Initializes a new instance of the <see cref="SafeQueue{T}" /> class.
         /// </summary>
         public SafeQueue()
         {
-            _preCount = 0;
-            _indexEnqueue = 0;
-            _indexDequeue = 0;
-            _entries = new Mapper<T>();
+            _root = new Node();
+            _tail = _root;
         }
 
         /// <summary>
@@ -33,7 +30,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             get
             {
-                return _entries.Count;
+                return _count;
             }
         }
 
@@ -41,18 +38,27 @@ namespace Theraot.Collections.ThreadSafe
         /// Attempts to Adds the specified item at the front.
         /// </summary>
         /// <param name="item">The item.</param>
-        /// <exception cref="InvalidOperationException">The queue is full. The capacity of the queue is 2^32 - consider a queue of queues.</exception>
-        /// <remarks>This method throws when the queue is full (2^32 items) if that's a problem, consider using TryAdd.</remarks>
         public void Add(T item)
         {
-            Interlocked.Increment(ref _preCount);
-            var index = Interlocked.Increment(ref _indexEnqueue) - 1;
-            if (_entries.Insert(index, item))
+            loop:
+            if (_tail.Queue.Add(item))
             {
-                return;
+                Interlocked.Increment(ref _count);
             }
-            Interlocked.Decrement(ref _preCount);
-            throw new InvalidOperationException("The queue is full.");
+            else
+            {
+                var neo = new Node();
+                var found = Interlocked.CompareExchange(ref _tail.Next, neo, null);
+                if (found == null)
+                {
+                    _tail = neo;
+                }
+                else
+                {
+                    _tail = found;
+                }
+                goto loop;
+            }
         }
 
         /// <summary>
@@ -63,57 +69,15 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            return _entries.GetEnumerator();
-        }
-
-        /// <summary>
-        /// Returns the next item to be taken from the back without removing it.
-        /// </summary>
-        /// <exception cref="System.InvalidOperationException">No more items to be taken.</exception>
-        public T Peek()
-        {
-            T item;
-            int index = Interlocked.Add(ref _indexEnqueue, 0);
-            if (index > 0 && _entries.TryGet(index, out item))
+            var root = _root;
+            do
             {
-                return item;
-            }
-            throw new InvalidOperationException("Empty");
-        }
-
-        /// <summary>
-        /// Attempts to Adds the specified item at the front.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <returns>
-        ///   <c>true</c> if the item was added; otherwise, <c>false</c>.
-        /// </returns>
-        public bool TryAdd(T item)
-        {
-            Interlocked.Increment(ref _preCount);
-            var index = Interlocked.Increment(ref _indexEnqueue) - 1;
-            if (_entries.Insert(index, item))
-            {
-                return true;
-            }
-            Interlocked.Decrement(ref _preCount);
-            return false;
-        }
-
-        /// <summary>
-        /// Attempts to retrieve the item at an specified index.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <param name="item">The item.</param>
-        /// <returns>
-        ///   <c>true</c> if the value was retrieved; otherwise, <c>false</c>.
-        /// </returns>
-        /// <remarks>
-        /// Although items are ordered, they are not guaranteed to start at index 0.
-        /// </remarks>
-        public bool TryGet(int index, out T item)
-        {
-            return _entries.TryGet(index, out item);
+                foreach (var item in root.Queue)
+                {
+                    yield return item;
+                }
+                root = root.Next;
+            } while (root != null);
         }
 
         /// <summary>
@@ -121,9 +85,26 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public bool TryPeek(out T item)
         {
+            var root = _root;
+            while (true)
+            {
+                if (_root.Queue.TryPeek(out item))
+                {
+                    Interlocked.Decrement(ref _count);
+                    return true;
+                }
+                if (root.Next != null)
+                {
+                    var found = Interlocked.CompareExchange(ref _root, root.Next, root);
+                    root = found == root ? root.Next : found;
+                }
+                else
+                {
+                    break;
+                }
+            }
             item = default(T);
-            int index = Interlocked.Add(ref _indexEnqueue, 0);
-            return index > 0 && _entries.TryGet(index, out item);
+            return false;
         }
 
         /// <summary>
@@ -135,18 +116,23 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool TryTake(out T item)
         {
-            if (_entries.Count > 0)
+            var root = _root;
+            while (true)
             {
-                var preCount = Interlocked.Decrement(ref _preCount);
-                if (preCount >= 0)
+                if (_root.Queue.TryTake(out item))
                 {
-                    var index = Interlocked.Increment(ref _indexDequeue) - 1;
-                    if (_entries.RemoveAt(index, out item))
-                    {
-                        return true;
-                    }
+                    Interlocked.Decrement(ref _count);
+                    return true;
                 }
-                Interlocked.Increment(ref _preCount);
+                if (root.Next != null)
+                {
+                    var found = Interlocked.CompareExchange(ref _root, root.Next, root);
+                    root = found == root ? root.Next : found;
+                }
+                else
+                {
+                    break;
+                }
             }
             item = default(T);
             return false;
@@ -155,6 +141,17 @@ namespace Theraot.Collections.ThreadSafe
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        private class Node
+        {
+            internal readonly FixedSizeQueue<T> Queue;
+            internal Node Next;
+
+            public Node()
+            {
+                Queue = new FixedSizeQueue<T>(64);
+            }
         }
     }
 }
