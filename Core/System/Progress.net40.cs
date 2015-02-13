@@ -4,14 +4,25 @@ namespace System
 {
     public class Progress<T> : IProgress<T>
     {
-        private readonly SendOrPostCallback _callback;
-        private readonly SynchronizationContext _context;
-        private readonly Action<T> _handler;
+        private readonly Action<T> _post;
 
         public Progress()
         {
-            _context = SynchronizationContext.Current;
-            //TODO handle the case where SynchronizationContext.Current is null
+            var context = SynchronizationContext.Current;
+            if (context == null)
+            {
+                _post = value =>
+                {
+                    ThreadPool.QueueUserWorkItem(Callback, value);
+                };
+            }
+            else
+            {
+                _post = value =>
+                {
+                    context.Post(Callback, value);
+                };
+            }
         }
 
         public Progress(Action<T> handler)
@@ -21,11 +32,7 @@ namespace System
             {
                 throw new ArgumentNullException("handler");
             }
-            else
-            {
-                _handler = handler;
-                _callback = Callback;
-            }
+            ProgressChanged += (sender, args) => handler(args);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly", Justification = "Microsoft's Design")]
@@ -38,19 +45,15 @@ namespace System
 
         protected virtual void OnReport(T value)
         {
-            if (_callback != null || ProgressChanged != null)
+            if (ProgressChanged != null)
             {
-                _context.Post(_callback, value); //TODO: Context may be null
+                _post(value);
             }
         }
 
         private void Callback(object value)
         {
             var _value = (T)value;
-            if (_handler != null)
-            {
-                _handler.Invoke(_value);
-            }
             var _ProgressChanged = ProgressChanged;
             if (_ProgressChanged != null)
             {
