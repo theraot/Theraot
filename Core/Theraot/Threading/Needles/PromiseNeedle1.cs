@@ -146,11 +146,6 @@ namespace Theraot.Threading.Needles
             return _promised.GetHashCode();
         }
 
-        void INeedle<T>.Free()
-        {
-            throw new NotSupportedException();
-        }
-
         public override string ToString()
         {
             return string.Format("{{Promise: {0}}}", _promised);

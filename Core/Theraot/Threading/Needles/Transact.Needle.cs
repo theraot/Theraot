@@ -204,7 +204,7 @@ namespace Theraot.Threading.Needles
 
             private void StoreValue(Transact transaction, T value)
             {
-                if (ReferenceEquals(transaction, null))
+                if (!IsAlive || ReferenceEquals(transaction, null))
                 {
                     base.Value = value;
                 }

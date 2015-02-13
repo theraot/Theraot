@@ -112,7 +112,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        protected INeedle<ManualResetEventSlim> WaitHandle
+        protected IRecyclableNeedle<ManualResetEventSlim> WaitHandle
         {
             get
             {

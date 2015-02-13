@@ -82,27 +82,30 @@ namespace Theraot.Threading.Needles
             return NestedReadOnlyNeedleCreator<T, TNeedle>.Create(target);
         }
 
-        public static bool Retrieve<T, TNeedle>(this TNeedle needle, out T value)
-            where TNeedle : INeedle<T>
+        public static bool Retrieve<T, TNeedle>(this TNeedle needle, out T target)
+            where TNeedle : IRecyclableNeedle<T>
         {
-            if (!ReferenceEquals(needle, null))
+            if (needle == null)
             {
-                value = needle.Value;
-                if (needle.IsAlive)
-                {
-                    needle.Free();
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                target = default(T);
+                return false;
+            }
+            bool done;
+            var cacheNeedle = needle as ICacheNeedle<T>;
+            if (cacheNeedle == null)
+            {
+                target = needle.Value;
+                done = needle.IsAlive;
             }
             else
             {
-                value = default(T);
-                return false;
+                done = cacheNeedle.TryGetValue(out target);
             }
+            if (done)
+            {
+                needle.Free();
+            }
+            return done;
         }
 
         public static bool TryGetValue<T>(this IReadOnlyNeedle<T> needle, out T target)
@@ -112,19 +115,13 @@ namespace Theraot.Threading.Needles
                 target = default(T);
                 return false;
             }
-            else
+            var cacheNeedle = needle as ICacheNeedle<T>;
+            if (cacheNeedle != null)
             {
-                var cacheNeedle = needle as ICacheNeedle<T>;
-                if (cacheNeedle != null)
-                {
-                    return cacheNeedle.TryGetValue(out target);
-                }
-                else
-                {
-                    target = needle.Value;
-                    return needle.IsAlive;
-                }
+                return cacheNeedle.TryGetValue(out target);
             }
+            target = needle.Value;
+            return needle.IsAlive;
         }
 
         internal static int GetNextHashCode()

@@ -114,7 +114,7 @@ namespace Theraot.Threading.Needles
                     {
                         if (!ReferenceEquals(_lockSlot, null))
                         {
-                            _lockSlot.Free();
+                            _lockSlot.Release();
                             _lockSlot = null;
                         }
                     }

@@ -33,46 +33,6 @@ namespace Theraot.Threading
             _slots = new SafeDictionary<Thread, INeedle<T>>(INT_MaxProbingHint);
         }
 
-        bool IExpected.IsCanceled
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        bool IExpected.IsCompleted
-        {
-            get
-            {
-                return IsValueCreated;
-            }
-        }
-
-        bool IExpected.IsFaulted
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        Exception IPromise.Error
-        {
-            get
-            {
-                return null;
-            }
-        }
-
-        bool IReadOnlyNeedle<T>.IsAlive
-        {
-            get
-            {
-                return IsValueCreated;
-            }
-        }
-
         public bool IsValueCreated
         {
             get
@@ -81,28 +41,12 @@ namespace Theraot.Threading
                 {
                     throw new ObjectDisposedException(GetType().FullName);
                 }
-                else
+                INeedle<T> needle;
+                if (_slots.TryGetValue(Thread.CurrentThread, out needle))
                 {
-                    INeedle<T> needle;
-                    if (_slots.TryGetValue(Thread.CurrentThread, out needle))
-                    {
-                        return needle is ReadOnlyStructNeedle<T>;
-                    }
-                    return false;
+                    return needle is ReadOnlyStructNeedle<T>;
                 }
-            }
-        }
-
-        T IThreadLocal<T>.ValueForDebugDisplay
-        {
-            get
-            {
-                T target;
-                if (TryGetValue(Thread.CurrentThread, out target))
-                {
-                    return target;
-                }
-                return default(T);
+                return false;
             }
         }
 
@@ -126,6 +70,57 @@ namespace Theraot.Threading
             }
         }
 
+        Exception IPromise.Error
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        bool IReadOnlyNeedle<T>.IsAlive
+        {
+            get
+            {
+                return IsValueCreated;
+            }
+        }
+
+        bool IExpected.IsCanceled
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        bool IExpected.IsCompleted
+        {
+            get
+            {
+                return IsValueCreated;
+            }
+        }
+
+        bool IExpected.IsFaulted
+        {
+            get
+            {
+                return false;
+            }
+        }
+        T IThreadLocal<T>.ValueForDebugDisplay
+        {
+            get
+            {
+                T target;
+                if (TryGetValue(Thread.CurrentThread, out target))
+                {
+                    return target;
+                }
+                return default(T);
+            }
+        }
         [global::System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {
@@ -136,35 +131,16 @@ namespace Theraot.Threading
             }
         }
 
-        public void Free()
+        public void EraseValue()
         {
-            Free(Thread.CurrentThread);
-        }
-
-        void IObserver<T>.OnCompleted()
-        {
-            // Empty
-        }
-
-        void IObserver<T>.OnError(Exception error)
-        {
-            SetError(Thread.CurrentThread, error);
-        }
-
-        void IObserver<T>.OnNext(T value)
-        {
-            Value = value;
-        }
-
-        void IPromise.Wait()
-        {
-            GC.KeepAlive(Value);
+            EraseValue(Thread.CurrentThread);
         }
 
         public override string ToString()
         {
             return string.Format(System.Globalization.CultureInfo.InvariantCulture, "[ThreadLocal: IsValueCreated={0}, Value={1}]", IsValueCreated, Value);
         }
+
         public bool TryGetValue(Thread thread, out T target)
         {
             if (Thread.VolatileRead(ref _disposing) == 1)
@@ -186,7 +162,7 @@ namespace Theraot.Threading
             return TryGetValue(Thread.CurrentThread, out target);
         }
 
-        private void Free(Thread thread)
+        private void EraseValue(Thread thread)
         {
             if (Thread.VolatileRead(ref _disposing) == 1)
             {
@@ -220,6 +196,21 @@ namespace Theraot.Threading
             return needle.Value;
         }
 
+        void IObserver<T>.OnCompleted()
+        {
+            // Empty
+        }
+
+        void IObserver<T>.OnError(Exception error)
+        {
+            SetError(Thread.CurrentThread, error);
+        }
+
+        void IObserver<T>.OnNext(T value)
+        {
+            Value = value;
+        }
+
         private void SetError(Thread thread, Exception error)
         {
             if (Thread.VolatileRead(ref _disposing) == 1)
@@ -236,6 +227,11 @@ namespace Theraot.Threading
                 throw new ObjectDisposedException(GetType().FullName);
             }
             _slots.Set(thread, new ReadOnlyStructNeedle<T>(value));
+        }
+
+        void IPromise.Wait()
+        {
+            GC.KeepAlive(Value);
         }
     }
 }

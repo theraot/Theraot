@@ -8,10 +8,10 @@ namespace Theraot.Threading.Needles
 {
     [Serializable]
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public class Needle<T> : INeedle<T>, IEquatable<Needle<T>>
+    public class Needle<T> : INeedle<T>, IEquatable<Needle<T>>, IRecyclableNeedle<T>
     {
         private readonly int _hashCode;
-        private INeedle<T> _target;
+        private INeedle<T> _target; // Can be null
 
         public Needle()
         {
@@ -65,6 +65,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
+                // Let it throw NullReferenceException
                 return _target.Value;
             }
             set
@@ -105,6 +106,11 @@ namespace Theraot.Threading.Needles
 
         public bool Equals(Needle<T> other)
         {
+            var target = _target;
+            if (ReferenceEquals(target, null))
+            {
+                return ReferenceEquals(other._target, null);
+            }
             return EqualsExtracted(this, other);
         }
 
@@ -157,6 +163,14 @@ namespace Theraot.Threading.Needles
             {
                 return false;
             }
+            if (ReferenceEquals(left._target, null))
+            {
+                return ReferenceEquals(right._target, null);
+            }
+            if (ReferenceEquals(right._target, null))
+            {
+                return false;
+            }
             return left._target.Equals(right._target);
         }
 
@@ -167,6 +181,14 @@ namespace Theraot.Threading.Needles
                 return !ReferenceEquals(right, null);
             }
             if (ReferenceEquals(right, null))
+            {
+                return true;
+            }
+            if (ReferenceEquals(left._target, null))
+            {
+                return !ReferenceEquals(right._target, null);
+            }
+            if (ReferenceEquals(right._target, null))
             {
                 return true;
             }

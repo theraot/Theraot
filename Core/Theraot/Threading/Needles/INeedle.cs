@@ -7,7 +7,5 @@
             get;
             set;
         }
-
-        void Free();
     }
 }

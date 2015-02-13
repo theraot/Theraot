@@ -55,7 +55,7 @@ namespace Theraot.Threading
             return _versionToken.CompareTo(other._versionToken);
         }
 
-        public void Free()
+        public void Release()
         {
             _target = default(T);
             _context.Free(this);

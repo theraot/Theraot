@@ -6,7 +6,7 @@ namespace Theraot.Threading.Needles
 {
     [Serializable]
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public struct StructNeedle<T> : INeedle<T>, IEquatable<StructNeedle<T>>
+    public struct StructNeedle<T> : INeedle<T>, IEquatable<StructNeedle<T>>, IRecyclableNeedle<T>
     {
         private T _target;
 
@@ -95,7 +95,7 @@ namespace Theraot.Threading.Needles
             return base.GetHashCode();
         }
 
-        void INeedle<T>.Free()
+        void IRecyclableNeedle<T>.Free()
         {
             _target = default(T);
         }

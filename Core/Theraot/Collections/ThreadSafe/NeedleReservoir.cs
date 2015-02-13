@@ -3,16 +3,37 @@
 namespace Theraot.Collections.ThreadSafe
 {
     internal static class NeedleReservoir<T, TNeedle>
-        where TNeedle : INeedle<T>
+        where TNeedle : class, IRecyclableNeedle<T>
     {
+        private static readonly Pool<TNeedle> _pool;
+
+        static NeedleReservoir()
+        {
+            _pool = new Pool<TNeedle>(64, Recycle);
+        }
+
+        private static void Recycle(TNeedle obj)
+        {
+            obj.Free();
+        }
+
         internal static void DonateNeedle(TNeedle donation)
         {
-            // TODO - allow Needle recycling (fix the hash codes of needles first)
+            _pool.Donate(donation);
         }
 
         internal static TNeedle GetNeedle(T value)
         {
-            return NeedleHelper.CreateNeedle<T, TNeedle>(value);
+            TNeedle result;
+            if (_pool.TryGet(out result))
+            {
+                result.Value = value;
+            }
+            else
+            {
+                result = NeedleHelper.CreateNeedle<T, TNeedle>(value);
+            }
+            return result;
         }
     }
 }

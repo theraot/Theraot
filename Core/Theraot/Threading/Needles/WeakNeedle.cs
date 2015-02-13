@@ -8,7 +8,7 @@ using Theraot.Core;
 namespace Theraot.Threading.Needles
 {
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public partial class WeakNeedle<T> : INeedle<T>, IEquatable<WeakNeedle<T>>
+    public partial class WeakNeedle<T> : INeedle<T>, IEquatable<WeakNeedle<T>>, IRecyclableNeedle<T>
         where T : class
     {
         private readonly int _hashCode;

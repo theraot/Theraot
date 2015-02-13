@@ -18,7 +18,7 @@ namespace Theraot.Collections.ThreadSafe
     /// </remarks>
     [Serializable]
     public sealed class NeedleBucket<T, TNeedle> : IEnumerable<T>
-        where TNeedle : INeedle<T>
+        where TNeedle : class, IRecyclableNeedle<T>
     {
         private readonly Bucket<TNeedle> _entries;
         private readonly Converter<int, TNeedle> _needleFactory;
@@ -34,18 +34,12 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("valueFactory");
             }
-            else
+            if (!NeedleHelper.CanCreateNeedle<T, TNeedle>())
             {
-                if (!NeedleHelper.CanCreateNeedle<T, TNeedle>())
-                {
-                    throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
-                }
-                else
-                {
-                    _needleFactory = index => NeedleReservoir<T, TNeedle>.GetNeedle(valueFactory(index));
-                    _entries = new Bucket<TNeedle>(capacity);
-                }
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
             }
+            _needleFactory = index => NeedleReservoir<T, TNeedle>.GetNeedle(valueFactory(index));
+            _entries = new Bucket<TNeedle>(capacity);
         }
 
         /// <summary>
@@ -59,18 +53,12 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("valueFactory");
             }
-            else
+            if (!NeedleHelper.CanCreateNeedle<T, TNeedle>())
             {
-                if (!NeedleHelper.CanCreateNeedle<T, TNeedle>())
-                {
-                    throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
-                }
-                else
-                {
-                    _needleFactory = index => NeedleReservoir<T, TNeedle>.GetNeedle(valueFactory());
-                    _entries = new Bucket<TNeedle>(capacity);
-                }
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
             }
+            _needleFactory = index => NeedleReservoir<T, TNeedle>.GetNeedle(valueFactory());
+            _entries = new Bucket<TNeedle>(capacity);
         }
 
         /// <summary>
@@ -126,14 +114,11 @@ namespace Theraot.Collections.ThreadSafe
                 previous = default(T);
                 return true;
             }
-            else
-            {
-                // TryGetValue is null resistant
-                _previous.TryGetValue(out previous);
-                // This is a needle that is no longer referenced, we donate it
-                NeedleReservoir<T, TNeedle>.DonateNeedle(_previous);
-                return false;
-            }
+            // TryGetValue is null resistant
+            _previous.TryGetValue(out previous);
+            // This is a needle that is no longer referenced, we donate it
+            NeedleReservoir<T, TNeedle>.DonateNeedle(_previous);
+            return false;
         }
 
         /// <summary>
@@ -175,21 +160,15 @@ namespace Theraot.Collections.ThreadSafe
                 return previous;
                 // We don't donate because we didn't remove
             }
-            else
+            var newNeedle = _needleFactory(index);
+            if (_entries.InsertInternal(index, newNeedle, out _previous))
             {
-                var newNeedle = _needleFactory(index);
-                if (_entries.InsertInternal(index, newNeedle, out _previous))
-                {
-                    return newNeedle.Value;
-                }
-                else
-                {
-                    // we just failed to insert, meaning that we created a usless needle
-                    // donate it
-                    NeedleReservoir<T, TNeedle>.DonateNeedle(newNeedle);
-                    return _previous.Value;
-                }
+                return newNeedle.Value;
             }
+            // we just failed to insert, meaning that we created a usless needle
+            // donate it
+            NeedleReservoir<T, TNeedle>.DonateNeedle(newNeedle);
+            return _previous.Value;
         }
 
         /// <summary>
@@ -224,13 +203,10 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return newNeedle;
             }
-            else
-            {
-                // we just failed to insert, meaning that we created a usless needle
-                // donate it
-                NeedleReservoir<T, TNeedle>.DonateNeedle(newNeedle);
-                return _previous;
-            }
+            // we just failed to insert, meaning that we created a usless needle
+            // donate it
+            NeedleReservoir<T, TNeedle>.DonateNeedle(newNeedle);
+            return _previous;
         }
 
         /// <summary>
@@ -276,14 +252,11 @@ namespace Theraot.Collections.ThreadSafe
                 previous = default(T);
                 return true;
             }
-            else
-            {
-                // TryGetValue is null resistant
-                _previous.TryGetValue(out previous);
-                // Donate it
-                NeedleReservoir<T, TNeedle>.DonateNeedle(_previous);
-                return false;
-            }
+            // TryGetValue is null resistant
+            _previous.TryGetValue(out previous);
+            // Donate it
+            NeedleReservoir<T, TNeedle>.DonateNeedle(_previous);
+            return false;
         }
 
         /// <summary>
@@ -358,11 +331,8 @@ namespace Theraot.Collections.ThreadSafe
                 NeedleReservoir<T, TNeedle>.DonateNeedle(_previous);
                 return true;
             }
-            else
-            {
-                previous = default(T);
-                return false;
-            }
+            previous = default(T);
+            return false;
         }
 
         /// <summary>
@@ -429,11 +399,8 @@ namespace Theraot.Collections.ThreadSafe
                 // We don't donate because we didn't remove
                 return true;
             }
-            else
-            {
-                value = default(T);
-                return false;
-            }
+            value = default(T);
+            return false;
         }
 
         /// <summary>

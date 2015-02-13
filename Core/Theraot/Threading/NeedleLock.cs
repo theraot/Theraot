@@ -97,7 +97,7 @@ namespace Theraot.Threading
             return EqualsExtracted(this, other);
         }
 
-        public void Free()
+        public void Release()
         {
             if (ThreadingHelper.VolatileRead(ref _capture).Flags.IsEmpty())
             {

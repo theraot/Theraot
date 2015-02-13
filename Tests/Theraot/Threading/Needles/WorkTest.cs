@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using MonoTests;
 using Theraot.Collections;
@@ -193,6 +194,8 @@ namespace Tests.Theraot.Threading.Needles
                 Thread.Sleep(0);
             }
             // One, the other, or both
+            Trace.WriteLine("Winner: " + winner);
+            Trace.WriteLine("Value: " + needle.Value);
             Assert.IsTrue((winner == 1 && needle.Value == 7) || (winner == 2 && needle.Value == 10) || (needle.Value == 12));
             handle.Close();
         }

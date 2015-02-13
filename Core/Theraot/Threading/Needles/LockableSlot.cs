@@ -58,7 +58,7 @@ namespace Theraot.Threading.Needles
                     }
                     pins.Clear();
                 }
-                lockslot.Free();
+                lockslot.Release();
                 Thread.MemoryBarrier();
                 _parent = null;
             }

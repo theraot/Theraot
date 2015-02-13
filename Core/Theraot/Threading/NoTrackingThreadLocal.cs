@@ -164,16 +164,13 @@ namespace Theraot.Threading
             }
         }
 
-        public void Free()
+        public void EraseValue()
         {
             if (Thread.VolatileRead(ref _disposing) == 1)
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
-            else
-            {
-                Thread.SetData(_slot, null);
-            }
+            Thread.SetData(_slot, null);
         }
 
         public override string ToString()

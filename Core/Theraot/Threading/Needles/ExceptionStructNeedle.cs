@@ -91,11 +91,6 @@ namespace Theraot.Threading.Needles
             return base.GetHashCode();
         }
 
-        void INeedle<T>.Free()
-        {
-            throw new NotSupportedException();
-        }
-
         public override string ToString()
         {
             if (IsAlive)

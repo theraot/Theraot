@@ -74,7 +74,7 @@ namespace Theraot.Threading
             {
                 slot.Uncapture(_lock);
             }
-            _lock.Free();
+            _lock.Release();
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
@@ -84,7 +84,7 @@ namespace Theraot.Threading
             {
                 if (disposeManagedResources)
                 {
-                    _lock.Free();
+                    _lock.Release();
                 }
             }
         }

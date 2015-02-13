@@ -458,6 +458,7 @@
     <Compile Include="Theraot\Threading\Needles\INeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\IPromise.cs" />
     <Compile Include="Theraot\Threading\Needles\IReadOnlyNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\IRecyclableNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\LazyDisposableNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\LazyDisposableNeedle.disposable.cs" />
     <Compile Include="Theraot\Threading\Needles\LazyNeedle.cs" />
