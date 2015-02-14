@@ -617,6 +617,18 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
+        /// Sets the value associated with the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="isNew">if set to <c>true</c> the item value was set.</param>
+        public void Set(TKey key, TValue value, out bool isNew)
+        {
+            var needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
+            _wrapped.Set(needle, input => !input.IsAlive, value, out isNew);
+        }
+
+        /// <summary>
         /// Attempts to add the specified key and associated value. The value is added if the key is not found.
         /// </summary>
         /// <param name="key">The key.</param>

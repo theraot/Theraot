@@ -625,6 +625,28 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
+        /// Sets the value associated with the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="isNew">if set to <c>true</c> the item value was set.</param>
+        public void Set(TKey key, TValue value, out bool isNew)
+        {
+            var hashCode = _keyComparer.GetHashCode(key);
+            var neo = new KeyValuePair<TKey, TValue>(key, value);
+            var attempts = 0;
+            while (true)
+            {
+                ExtendProbingIfNeeded(attempts);
+                if (_mapper.TryGetCheckSet(hashCode + attempts, neo, found => _keyComparer.Equals(((KeyValuePair<TKey, TValue>)found).Key, key), out isNew))
+                {
+                    return;
+                }
+                attempts++;
+            }
+        }
+
+        /// <summary>
         /// Attempts to add the specified key and associated value. The value is added if the key is not found.
         /// </summary>
         /// <param name="key">The key.</param>
@@ -913,6 +935,38 @@ namespace Theraot.Collections.ThreadSafe
             {
                 ExtendProbingIfNeeded(attempts);
                 bool isNew;
+                Predicate<object> check = found =>
+                {
+                    var _found = (KeyValuePair<TKey, TValue>)found;
+                    return _keyComparer.Equals(_found.Key, key) || keyOverwriteCheck(_found.Key);
+                };
+                if (_mapper.TryGetCheckSet(hashCode + attempts, neo, check, out isNew))
+                {
+                    return;
+                }
+                attempts++;
+            }
+        }
+
+        /// <summary>
+        /// Sets the value associated with the specified key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="keyOverwriteCheck">The key predicate to approve overwriting.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="isNew">if set to <c>true</c> the item value was set.</param>
+        internal void Set(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value, out bool isNew)
+        {
+            if (keyOverwriteCheck == null)
+            {
+                throw new ArgumentNullException("keyOverwriteCheck");
+            }
+            var hashCode = _keyComparer.GetHashCode(key);
+            var neo = new KeyValuePair<TKey, TValue>(key, value);
+            var attempts = 0;
+            while (true)
+            {
+                ExtendProbingIfNeeded(attempts);
                 Predicate<object> check = found =>
                 {
                     var _found = (KeyValuePair<TKey, TValue>)found;
