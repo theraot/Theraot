@@ -62,7 +62,8 @@ namespace Theraot.Threading.Needles
         {
             if (ReferenceEquals(_currentTransaction, this))
             {
-                bool rollback = true;
+                bool rollback = false;
+                Thread.MemoryBarrier();
                 try
                 {
                     if (!CheckValue())
@@ -79,6 +80,8 @@ namespace Theraot.Threading.Needles
                             //Nothing to commit
                             return true;
                         }
+                        rollback = true;
+                        Thread.MemoryBarrier();
                         if (!CheckCapture())
                         {
                             //the resources has been claimed by another thread
@@ -124,10 +127,6 @@ namespace Theraot.Threading.Needles
                     if (rollback)
                     {
                         Rollback(false);
-                    }
-                    else
-                    {
-                        Uncapture();
                     }
                 }
             }

@@ -114,7 +114,7 @@ namespace Theraot.Threading.Needles
             return EqualsExtracted(this, other);
         }
 
-        public void Free()
+        public virtual void Free()
         {
             _target = null;
         }

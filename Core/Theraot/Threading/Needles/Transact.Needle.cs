@@ -2,6 +2,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
 
 namespace Theraot.Threading.Needles
@@ -86,6 +88,19 @@ namespace Theraot.Threading.Needles
                 return base.Equals(obj);
             }
 
+            public override void Free()
+            {
+                Thread.MemoryBarrier();
+                if (NeedleReservoir<T,Needle<T>>.Recycling)
+                {
+                    base.Free();
+                }
+                else
+                {
+                    Value = default(T);
+                }
+            }
+
             public override int GetHashCode()
             {
                 return _id.GetHashCode();
@@ -134,11 +149,6 @@ namespace Theraot.Threading.Needles
                 return false;
             }
 
-            void IResource.Release()
-            {
-                OnDispose();
-            }
-
             private void OnDispose()
             {
                 var transaction = CurrentTransaction;
@@ -149,6 +159,13 @@ namespace Theraot.Threading.Needles
                     transaction._writeLog.Remove(this);
                 }
             }
+
+            void IResource.Release()
+            {
+                // Release is only called on a thread that did capture the Needle
+                OnDispose();
+            }
+
             private T RetrieveClone(Transact transaction)
             {
                 if (ReferenceEquals(transaction, null))
@@ -173,7 +190,9 @@ namespace Theraot.Threading.Needles
                     {
                         transaction._writeLog.Set(this, clone);
                     }
+
                     transaction._readLog.TryAdd(this, original);
+
                     return clone;
                 }
             }
@@ -197,7 +216,9 @@ namespace Theraot.Threading.Needles
                         return (T)value;
                     }
                     var original = RetrieveValue(transaction._parentTransaction);
+
                     transaction._readLog.TryAdd(this, original);
+
                     return original;
                 }
             }

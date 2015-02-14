@@ -20,6 +20,40 @@ namespace Tests.Theraot.Threading.Needles
         }
 
         [Test]
+        public void FreeTest()
+        {
+            var needle = Transact.CreateNeedle(1);
+            var autoResetEvent = new AutoResetEvent(false);
+
+            // This one does not commit
+            new Thread(() =>
+            {
+                using (var transaction = new Transact())
+                {
+                    needle.Free();
+                    autoResetEvent.Set();
+                }
+            }).Start();
+
+            autoResetEvent.WaitOne();
+            Assert.AreEqual(1, needle.Value);
+
+            // This one commits
+            new Thread(() =>
+            {
+                using (var transaction = new Transact())
+                {
+                    needle.Free();
+                    transaction.Commit();
+                    autoResetEvent.Set();
+                }
+            }).Start();
+
+            autoResetEvent.WaitOne();
+            Assert.AreEqual(0, needle.Value);
+        }
+
+        [Test]
         public void MultipleCommit()
         {
             var needle = Transact.CreateNeedle(1);
@@ -426,6 +460,21 @@ namespace Tests.Theraot.Threading.Needles
         {
             var needle = Transact.CreateNeedle(1);
             var autoResetEvent = new AutoResetEvent(false);
+
+            // This one does not commit
+            new Thread(() =>
+            {
+                using (var transaction = new Transact())
+                {
+                    needle.Value = 2;
+                    autoResetEvent.Set();
+                }
+            }).Start();
+
+            autoResetEvent.WaitOne();
+            Assert.AreEqual(1, needle.Value);
+
+            // This one commits
             new Thread(() =>
             {
                 using (var transaction = new Transact())
@@ -435,6 +484,7 @@ namespace Tests.Theraot.Threading.Needles
                     autoResetEvent.Set();
                 }
             }).Start();
+
             autoResetEvent.WaitOne();
             Assert.AreEqual(2, needle.Value);
         }
