@@ -255,5 +255,15 @@ namespace Theraot.Collections.ThreadSafe
             }
             return result;
         }
+
+        internal bool TryGetCheckSet(int index, Func<T> itemFactory, Predicate<object> check, out bool isNew)
+        {
+            var result = _root.TryGetCheckSet(unchecked((uint)index), () => itemFactory, check, out isNew);
+            if (isNew)
+            {
+                Interlocked.Increment(ref _count);
+            }
+            return result;
+        }
     }
 }

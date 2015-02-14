@@ -213,6 +213,18 @@ namespace Theraot.Collections.ThreadSafe
             return result;
         }
 
+        internal bool TryGetCheckSet(uint index, Func<object> itemFactory, Predicate<object> check, out bool isNew)
+        {
+            // Get the target branches
+            int resultCount;
+            var branches = Map(index, out resultCount);
+            // ---
+            var branch = branches[resultCount - 1];
+            var result = branch.PrivateTryGetCheckSet(index, itemFactory, check, out isNew);
+            Leave(branches, resultCount);
+            return result;
+        }
+
         private static void Leave(Branch[] branches, int resultCount)
         {
             for (int index = 0; index < resultCount; index++)
@@ -533,6 +545,58 @@ namespace Theraot.Collections.ThreadSafe
                 // That's why we don't use CompareExchange, but simply Exchange instead
                 // And also that's why this method is internal, we cannot guarantee the presumption outside internal code.
                 var previous = Interlocked.Exchange(ref _entries[subindex], item ?? BucketHelper.Null);
+                if (previous == null)
+                {
+                    isNew = true;
+                }
+                else
+                {
+                    Interlocked.Decrement(ref _useCount); // We did not add after all
+                }
+                return true;
+            }
+            return false;
+        }
+
+        private bool PrivateTryGetCheckSet(uint index, Func<object> itemFactory, Predicate<object> check, out bool isNew)
+        {
+            Interlocked.Increment(ref _useCount); // We are most likely to add - overstatimate count
+            isNew = false;
+            var subindex = GetSubindex(index);
+            var found = Interlocked.CompareExchange(ref _entries[subindex], null, null);
+            if (found == null)
+            {
+                // -- Not found TryAdd
+                var previous = Interlocked.CompareExchange(ref _entries[subindex], itemFactory() ?? BucketHelper.Null, null);
+                if (previous == null)
+                {
+                    isNew = true;
+                    return true;
+                }
+                Interlocked.Decrement(ref _useCount); // We did not add after all
+                return false;
+            }
+            if (found == BucketHelper.Null)
+            {
+                found = null;
+            }
+            // -- Found
+            bool checkResult;
+            try
+            {
+                checkResult = check(found);
+            }
+            finally
+            {
+                Interlocked.Decrement(ref _useCount); // We did not add after all
+            }
+            if (checkResult)
+            {
+                // -- Passed
+                // This works under the presumption that check will result true to whatever value may have replaced found...
+                // That's why we don't use CompareExchange, but simply Exchange instead
+                // And also that's why this method is internal, we cannot guarantee the presumption outside internal code.
+                var previous = Interlocked.Exchange(ref _entries[subindex], itemFactory() ?? BucketHelper.Null);
                 if (previous == null)
                 {
                     isNew = true;

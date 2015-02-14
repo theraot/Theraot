@@ -194,6 +194,18 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        public TValue AddOrUpdate(TKey key, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory)
+        {
+            // TODO AddOrUpdate
+            throw new NotImplementedException();
+        }
+
+        public TValue AddOrUpdate(TKey key, TValue addValue, Func<TKey, TValue, TValue> updateValueFactory)
+        {
+            // TODO AddOrUpdate
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Removes all the elements.
         /// </summary>
@@ -342,6 +354,12 @@ namespace Theraot.Collections.ThreadSafe
         {
             var needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
             return _wrapped.GetOrAdd(needle, input => !input.IsAlive, value);
+        }
+
+        public TValue GetOrAdd(TKey key, Func<TValue> valueFactory)
+        {
+            var needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
+            return _wrapped.GetOrAdd(needle, input => !input.IsAlive, valueFactory);
         }
 
         /// <summary>
@@ -726,6 +744,25 @@ namespace Theraot.Collections.ThreadSafe
                 );
         }
 
+        internal TValue GetOrAdd(TKey key, Predicate<TKey> keyOverwriteCheck, Func<TValue> valueFactory)
+        {
+            var needle = NeedleHelper.CreateNeedle<TKey, TNeedle>(key);
+            return _wrapped.GetOrAdd
+                (
+                    needle,
+                    input =>
+                    {
+                        TKey _key;
+                        if (input.TryGetValue(out _key))
+                        {
+                            return keyOverwriteCheck(_key);
+                        }
+                        return true;
+                    },
+                    valueFactory
+                );
+        }
+
         /// <summary>
         /// Attempts to add the specified key and associated value. The value is added if the key is not found.
         /// </summary>
@@ -799,15 +836,15 @@ namespace Theraot.Collections.ThreadSafe
             return result;
         }
 
+        protected bool Contains(KeyValuePair<TKey, TValue> item)
+        {
+            return ((ICollection<KeyValuePair<TKey, TValue>>)this).Contains(item);
+        }
+
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Use AddNew")]
         void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
         {
             AddNew(key, value);
-        }
-
-        protected bool Contains(KeyValuePair<TKey, TValue> item)
-        {
-            return ((ICollection<KeyValuePair<TKey, TValue>>)this).Contains(item);
         }
 
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Use AddNew")]
