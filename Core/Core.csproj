@@ -343,6 +343,7 @@
     <Compile Include="Theraot\Collections\ThreadSafe\BucketStatus.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\CircularBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\FixedSizeQueue.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\KeyCollection.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\Mapper.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\NeedleBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\NeedleReservoir.cs" />

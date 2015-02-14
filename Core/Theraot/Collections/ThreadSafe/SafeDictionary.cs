@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using Theraot.Collections.Specialized;
 
 namespace Theraot.Collections.ThreadSafe
 {
@@ -20,7 +21,9 @@ namespace Theraot.Collections.ThreadSafe
 
         private const int INT_DefaultProbing = 1;
 
+        private readonly KeyCollection<TKey, TValue> _keyCollection;
         private readonly IEqualityComparer<TKey> _keyComparer;
+        private readonly ValueCollection<TKey, TValue> _valueCollection;
         private Mapper<KeyValuePair<TKey, TValue>> _mapper;
         private int _probing;
 
@@ -63,6 +66,8 @@ namespace Theraot.Collections.ThreadSafe
             _keyComparer = comparer ?? EqualityComparer<TKey>.Default;
             _mapper = new Mapper<KeyValuePair<TKey, TValue>>();
             _probing = initialProbing;
+            _keyCollection = new KeyCollection<TKey, TValue>(this);
+            _valueCollection = new ValueCollection<TKey, TValue>(this);
         }
 
         public int Count
@@ -85,8 +90,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             get
             {
-                // TODO - create DictionaryCollection
-                throw new NotImplementedException();
+                return _keyCollection;
             }
         }
 
@@ -94,8 +98,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             get
             {
-                // TODO - create ValueCollection
-                throw new NotImplementedException();
+                return _valueCollection;
             }
         }
 

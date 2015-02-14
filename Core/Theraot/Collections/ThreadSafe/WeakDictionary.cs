@@ -15,9 +15,10 @@ namespace Theraot.Collections.ThreadSafe
         where TKey : class
         where TNeedle : WeakNeedle<TKey>
     {
+        private readonly KeyCollection<TKey, TValue> _keyCollection;
         private readonly IEqualityComparer<TKey> _keyComparer;
+        private readonly ValueCollection<TKey, TValue> _valueCollection;
         private readonly SafeDictionary<TNeedle, TValue> _wrapped;
-
         private StructNeedle<WeakNeedle<EventHandler>> _eventHandler;
 
         public WeakDictionary()
@@ -51,6 +52,8 @@ namespace Theraot.Collections.ThreadSafe
             {
                 GC.SuppressFinalize(this);
             }
+            _keyCollection = new KeyCollection<TKey, TValue>(this);
+            _valueCollection = new ValueCollection<TKey, TValue>(this);
         }
 
         public WeakDictionary(IEqualityComparer<TKey> comparer, int initialProbing)
@@ -78,6 +81,8 @@ namespace Theraot.Collections.ThreadSafe
             {
                 GC.SuppressFinalize(this);
             }
+            _keyCollection = new KeyCollection<TKey, TValue>(this);
+            _valueCollection = new ValueCollection<TKey, TValue>(this);
         }
 
         ~WeakDictionary()
@@ -112,15 +117,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
-        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
-        {
-            get
-            {
-                return false;
-            }
-        }
-
         public IEqualityComparer<TKey> KeyComparer
         {
             get
@@ -133,8 +129,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             get
             {
-                // TODO
-                throw new NotImplementedException();
+                return _keyCollection;
             }
         }
 
@@ -142,8 +137,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             get
             {
-                // TODO
-                throw new NotImplementedException();
+                return _valueCollection;
             }
         }
 
@@ -155,6 +149,14 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
+        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
+        {
+            get
+            {
+                return false;
+            }
+        }
         public TValue this[TKey key]
         {
             get
@@ -353,61 +355,6 @@ namespace Theraot.Collections.ThreadSafe
                 result.Add(new KeyValuePair<TKey, TValue>(pair.Key.Value, pair.Value));
             }
             return result;
-        }
-
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Use AddNew")]
-        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
-        {
-            AddNew(item.Key, item.Value);
-        }
-
-        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
-        {
-            return _wrapped.ContainsKey
-                (
-                    _keyComparer.GetHashCode(item.Key),
-                    input =>
-                    {
-                        TKey _key;
-                        if (input.TryGetValue(out _key))
-                        {
-                            return _keyComparer.Equals(_key, item.Key);
-                        }
-                        return false;
-                    },
-                    input => EqualityComparer<TValue>.Default.Equals(input, item.Value)
-                );
-        }
-
-        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
-        {
-            TValue found;
-            return _wrapped.Remove
-                (
-                    _keyComparer.GetHashCode(item.Key),
-                    input =>
-                    {
-                        TKey _key;
-                        if (input.TryGetValue(out _key))
-                        {
-                            return _keyComparer.Equals(_key, item.Key);
-                        }
-                        return false;
-                    },
-                    input => EqualityComparer<TValue>.Default.Equals(input, item.Value),
-                    out found
-                );
-        }
-
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Use AddNew")]
-        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
-        {
-            AddNew(key, value);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         /// <summary>
@@ -852,13 +799,49 @@ namespace Theraot.Collections.ThreadSafe
             return result;
         }
 
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Use AddNew")]
+        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
+        {
+            AddNew(key, value);
+        }
+
         protected bool Contains(KeyValuePair<TKey, TValue> item)
         {
             return ((ICollection<KeyValuePair<TKey, TValue>>)this).Contains(item);
         }
+
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Use AddNew")]
+        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
+        {
+            AddNew(item.Key, item.Value);
+        }
+
+        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
+        {
+            return _wrapped.ContainsKey
+                (
+                    _keyComparer.GetHashCode(item.Key),
+                    input =>
+                    {
+                        TKey _key;
+                        if (input.TryGetValue(out _key))
+                        {
+                            return _keyComparer.Equals(_key, item.Key);
+                        }
+                        return false;
+                    },
+                    input => EqualityComparer<TValue>.Default.Equals(input, item.Value)
+                );
+        }
+
         private void GarbageCollected(object sender, EventArgs e)
         {
             RemoveDeadItems();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         private void RegisterForAutoRemoveDeadItems()
@@ -893,6 +876,25 @@ namespace Theraot.Collections.ThreadSafe
             return result;
         }
 
+        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
+        {
+            TValue found;
+            return _wrapped.Remove
+                (
+                    _keyComparer.GetHashCode(item.Key),
+                    input =>
+                    {
+                        TKey _key;
+                        if (input.TryGetValue(out _key))
+                        {
+                            return _keyComparer.Equals(_key, item.Key);
+                        }
+                        return false;
+                    },
+                    input => EqualityComparer<TValue>.Default.Equals(input, item.Value),
+                    out found
+                );
+        }
         private void UnRegisterForAutoRemoveDeadItems()
         {
             if (UnRegisterForAutoRemoveDeadItemsExtracted())
