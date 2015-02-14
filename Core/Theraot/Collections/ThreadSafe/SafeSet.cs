@@ -10,10 +10,8 @@ namespace Theraot.Collections.ThreadSafe
     /// </summary>
     /// <typeparam name="T">The type of the value.</typeparam>
     [Serializable]
-    public class SafeSet<T> : IEnumerable<T>
+    public class SafeSet<T> : IEnumerable<T>, ISet<T>
     {
-        // TODO: Implement ISet<T>
-
         private const int INT_DefaultProbing = 1;
 
         private readonly IEqualityComparer<T> _comparer;
@@ -74,6 +72,31 @@ namespace Theraot.Collections.ThreadSafe
             get
             {
                 return _mapper.Count;
+            }
+        }
+
+        public bool IsReadOnly
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public bool Add(T item)
+        {
+            var hashCode = _comparer.GetHashCode(item);
+            var attempts = 0;
+            while (true)
+            {
+                ExtendProbingIfNeeded(attempts);
+                T found;
+                if (_mapper.Insert(hashCode + attempts, item, out found))
+                {
+                    return true;
+                }
+                if (_comparer.Equals(found, item))
+                {
+                    return false;
+                }
+                attempts++;
             }
         }
 
@@ -183,6 +206,11 @@ namespace Theraot.Collections.ThreadSafe
             _mapper.CopyTo(array, arrayIndex);
         }
 
+        public void ExceptWith(IEnumerable<T> other)
+        {
+            Extensions.ExceptWith(this, other);
+        }
+
         /// <summary>
         /// Returns an <see cref="System.Collections.Generic.IEnumerator{T}" /> that allows to iterate through the collection.
         /// </summary>
@@ -207,9 +235,34 @@ namespace Theraot.Collections.ThreadSafe
             return result;
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        public void IntersectWith(IEnumerable<T> other)
         {
-            return GetEnumerator();
+            Extensions.IntersectWith(this, other);
+        }
+
+        public bool IsProperSubsetOf(IEnumerable<T> other)
+        {
+            return Extensions.IsProperSubsetOf(this, other);
+        }
+
+        public bool IsProperSupersetOf(IEnumerable<T> other)
+        {
+            return Extensions.IsProperSupersetOf(this, other);
+        }
+
+        public bool IsSubsetOf(IEnumerable<T> other)
+        {
+            return Extensions.IsSubsetOf(this, other);
+        }
+
+        public bool IsSupersetOf(IEnumerable<T> other)
+        {
+            return Extensions.IsSupersetOf(this, other);
+        }
+
+        public bool Overlaps(IEnumerable<T> other)
+        {
+            return Extensions.Overlaps(this, other);
         }
 
         /// <summary>
@@ -383,31 +436,14 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        /// <summary>
-        /// Attempts to add the specified value.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>
-        ///   <c>true</c> if the specified value was added; otherwise, <c>false</c>.
-        /// </returns>
-        public bool TryAdd(T value)
+        public bool SetEquals(IEnumerable<T> other)
         {
-            var hashCode = _comparer.GetHashCode(value);
-            var attempts = 0;
-            while (true)
-            {
-                ExtendProbingIfNeeded(attempts);
-                T found;
-                if (_mapper.Insert(hashCode + attempts, value, out found))
-                {
-                    return true;
-                }
-                if (_comparer.Equals(found, value))
-                {
-                    return false;
-                }
-                attempts++;
-            }
+            return Extensions.SetEquals(this, other);
+        }
+
+        public void SymmetricExceptWith(IEnumerable<T> other)
+        {
+            Extensions.SymmetricExceptWith(this, other);
         }
 
         /// <summary>
@@ -439,6 +475,11 @@ namespace Theraot.Collections.ThreadSafe
                 }
             }
             return false;
+        }
+
+        public void UnionWith(IEnumerable<T> other)
+        {
+            Extensions.UnionWith(this, other);
         }
 
         /// <summary>
@@ -510,6 +551,10 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        void ICollection<T>.Add(T item)
+        {
+            AddNew(item);
+        }
         private void ExtendProbingIfNeeded(int attempts)
         {
             var diff = attempts - _probing;
@@ -517,6 +562,11 @@ namespace Theraot.Collections.ThreadSafe
             {
                 Interlocked.Add(ref _probing, diff);
             }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }
