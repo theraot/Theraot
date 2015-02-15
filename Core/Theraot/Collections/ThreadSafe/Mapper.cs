@@ -206,9 +206,9 @@ namespace Theraot.Collections.ThreadSafe
             if (_root.TryGet(unchecked((uint)index), out valueObject))
             {
                 value = (T)valueObject;
-                return true;
+                return true; // true means value was found
             }
-            return false;
+            return false; // false means value was not found
         }
 
         /// <summary>
@@ -240,10 +240,10 @@ namespace Theraot.Collections.ThreadSafe
             {
                 previous = (T)_previous;
                 Interlocked.Decrement(ref _count);
-                return true;
+                return true; // true means value was found and removed
             }
             previous = default(T);
-            return false;
+            return false; // false means value was either not found or not removed
         }
 
         internal bool TryGetCheckSet(int index, T item, Predicate<object> check, out bool isNew)
@@ -253,7 +253,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 Interlocked.Increment(ref _count);
             }
-            return result;
+            return result; // true means value was set
         }
 
         internal bool TryGetCheckSet(int index, Func<T> itemFactory, Predicate<object> check, out bool isNew)
@@ -263,7 +263,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 Interlocked.Increment(ref _count);
             }
-            return result;
+            return result; // true means value was set
         }
     }
 }

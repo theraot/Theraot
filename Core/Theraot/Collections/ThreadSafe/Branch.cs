@@ -153,10 +153,10 @@ namespace Theraot.Collections.ThreadSafe
             if (branch == null)
             {
                 // We didn't get a branch, meaning that what we look for is not there
-                return false;
+                return false; // false means value was not found
             }
             // ---
-            return branch.PrivateTryGet(index, out value);
+            return branch.PrivateTryGet(index, out value); // true means value was found
         }
 
         public IEnumerable<object> Where(Predicate<object> predicate)
@@ -195,10 +195,10 @@ namespace Theraot.Collections.ThreadSafe
             if (branch == null)
             {
                 // We didn't get a branch, meaning that what we look for is not there
-                return false;
+                return false; // false means value was not found
             }
             // ---
-            return branch.PrivateTryGetCheckRemoveAt(index, check, out previous);
+            return branch.PrivateTryGetCheckRemoveAt(index, check, out previous); // true means value was found and removed
         }
 
         internal bool TryGetCheckSet(uint index, object item, Predicate<object> check, out bool isNew)
@@ -208,7 +208,7 @@ namespace Theraot.Collections.ThreadSafe
             var branches = Map(index, out resultCount);
             // ---
             var branch = branches[resultCount - 1];
-            var result = branch.PrivateTryGetCheckSet(index, item, check, out isNew);
+            var result = branch.PrivateTryGetCheckSet(index, item, check, out isNew); // true means value was set
             Leave(branches, resultCount);
             return result;
         }
@@ -220,7 +220,7 @@ namespace Theraot.Collections.ThreadSafe
             var branches = Map(index, out resultCount);
             // ---
             var branch = branches[resultCount - 1];
-            var result = branch.PrivateTryGetCheckSet(index, itemFactory, check, out isNew);
+            var result = branch.PrivateTryGetCheckSet(index, itemFactory, check, out isNew); // true means value was set
             Leave(branches, resultCount);
             return result;
         }
@@ -417,19 +417,19 @@ namespace Theraot.Collections.ThreadSafe
                 previous = Interlocked.CompareExchange(ref _entries[subindex], null, null);
                 if (previous == null)
                 {
-                    return false;
+                    return false; // false means no value found
                 }
                 if (previous == BucketHelper.Null)
                 {
                     previous = null;
                 }
-                return true;
+                return true; // true means value found
             }
             catch (NullReferenceException)
             {
                 // Eating null reference, the branch has been removed
                 previous = null;
-                return false;
+                return false; // false means no value found
             }
         }
 
@@ -441,15 +441,15 @@ namespace Theraot.Collections.ThreadSafe
                 previous = Interlocked.CompareExchange(ref _entries[subindex], null, null);
                 if (previous == null)
                 {
-                    return false;
+                    return false; // false means no value found
                 }
-                return true;
+                return true; // true means no value found
             }
             catch (NullReferenceException)
             {
                 // Eating null reference, the branch has been removed
                 previous = null;
-                return false;
+                return false; // false means no value found
             }
         }
 
@@ -463,7 +463,7 @@ namespace Theraot.Collections.ThreadSafe
                 if (found == null)
                 {
                     previous = null;
-                    return false;
+                    return false; // false means no value found
                 }
                 if (found == BucketHelper.Null)
                 {
@@ -474,7 +474,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 // Eating null reference, the branch has been removed
                 previous = null;
-                return false;
+                return false; // false means no value found
             }
             // -- Found
             bool checkResult = check(found);
@@ -486,14 +486,14 @@ namespace Theraot.Collections.ThreadSafe
                     previous = Interlocked.Exchange(ref _entries[subindex], null);
                     if (previous == null)
                     {
-                        return false;
+                        return false; // false means value was found but not removed
                     }
                     if (previous == BucketHelper.Null)
                     {
                         previous = null;
                     }
                     Interlocked.Decrement(ref _useCount);
-                    return true;
+                    return true; // true means value was found and removed
                 }
                 previous = null;
                 return false;
@@ -502,7 +502,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 // Eating null reference, the branch has been removed
                 previous = null;
-                return false;
+                return false; // false means value was either not found or not removed
             }
         }
 
@@ -519,10 +519,10 @@ namespace Theraot.Collections.ThreadSafe
                 if (previous == null)
                 {
                     isNew = true;
-                    return true;
+                    return true; // true means value was set
                 }
                 Interlocked.Decrement(ref _useCount); // We did not add after all
-                return false;
+                return false; // false means value was not set
             }
             if (found == BucketHelper.Null)
             {
@@ -553,9 +553,9 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     Interlocked.Decrement(ref _useCount); // We did not add after all
                 }
-                return true;
+                return true; // true means value was set
             }
-            return false;
+            return false; // false means value was not set
         }
 
         private bool PrivateTryGetCheckSet(uint index, Func<object> itemFactory, Predicate<object> check, out bool isNew)
@@ -571,10 +571,10 @@ namespace Theraot.Collections.ThreadSafe
                 if (previous == null)
                 {
                     isNew = true;
-                    return true;
+                    return true; // true means value was set
                 }
                 Interlocked.Decrement(ref _useCount); // We did not add after all
-                return false;
+                return false; // false means value was not set
             }
             if (found == BucketHelper.Null)
             {
@@ -605,9 +605,9 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     Interlocked.Decrement(ref _useCount); // We did not add after all
                 }
-                return true;
+                return true; // true means value was set
             }
-            return false;
+            return false; // false means value was not set
         }
 
         private void Shrink()
