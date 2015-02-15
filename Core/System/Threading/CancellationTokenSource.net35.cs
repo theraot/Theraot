@@ -40,19 +40,23 @@ namespace System.Threading
         private static readonly TimerCallback _timerCallback;
         private readonly ManualResetEvent _handle;
         private SafeDictionary<CancellationTokenRegistration, Action> _callbacks;
-        private bool _canceled;
+        private int _cancelRequested;
         private int _currentId = int.MinValue;
-        private bool _disposed;
+        private int _disposeRequested;
         private CancellationTokenRegistration[] _linkedTokens;
         private Timer _timer;
 
         static CancellationTokenSource()
         {
-            CanceledSource._canceled = true;
+            CanceledSource._cancelRequested = 1;
             _timerCallback = token =>
             {
                 var cancellationTokenSource = (CancellationTokenSource)token;
-                cancellationTokenSource.Cancel();
+                var callbacks = cancellationTokenSource._callbacks;
+                if (callbacks != null)
+                {
+                    cancellationTokenSource.CancelExtracted(false, callbacks);
+                }
             };
         }
 
@@ -85,7 +89,7 @@ namespace System.Threading
         {
             get
             {
-                return _canceled;
+                return _cancelRequested == 1;
             }
         }
 
@@ -150,54 +154,8 @@ namespace System.Threading
         // If parameter is true we throw exception as soon as they appear otherwise we aggregate them
         public void Cancel(bool throwOnFirstException)
         {
-            CheckDisposed();
-            if (!_canceled)
-            {
-                Thread.MemoryBarrier();
-                _canceled = true;
-                _handle.Set();
-                UnregisterLinkedTokens();
-                List<Exception> exceptions = null;
-                try
-                {
-                    int id = _currentId;
-                    do
-                    {
-                        Action callback;
-                        if (_callbacks.Remove(new CancellationTokenRegistration(id, this), out callback) &&
-                            callback != null)
-                        {
-                            if (throwOnFirstException)
-                            {
-                                callback();
-                            }
-                            else
-                            {
-                                try
-                                {
-                                    callback();
-                                }
-                                catch (Exception exception)
-                                {
-                                    if (object.ReferenceEquals(exceptions, null))
-                                    {
-                                        exceptions = new List<Exception>();
-                                    }
-                                    exceptions.Add(exception);
-                                }
-                            }
-                        }
-                    } while (id-- != int.MinValue);
-                }
-                finally
-                {
-                    _callbacks.Clear();
-                }
-                if (exceptions != null)
-                {
-                    throw new AggregateException(exceptions);
-                }
-            }
+            var callbacks = CheckDisposedGetCallbacks();
+            CancelExtracted(throwOnFirstException, callbacks);
         }
 
         public void CancelAfter(TimeSpan delay)
@@ -211,20 +169,17 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException("millisecondsDelay");
             }
-            else
+            CheckDisposed();
+            if (Thread.VolatileRead(ref _cancelRequested) == 0 && millisecondsDelay != Timeout.Infinite)
             {
-                CheckDisposed();
-                if (!_canceled && millisecondsDelay != Timeout.Infinite)
+                if (_timer == null)
                 {
-                    if (object.ReferenceEquals(_timer, null))
+                    // Have to be careful not to create secondary background timer
+                    var newTimer = new Timer(_timerCallback, this, Timeout.Infinite, Timeout.Infinite);
+                    var oldTimer = Interlocked.CompareExchange(ref _timer, newTimer, null);
+                    if (!ReferenceEquals(oldTimer, null))
                     {
-                        // Have to be careful not to create secondary background timer
-                        var newTimer = new Timer(_timerCallback, this, Timeout.Infinite, Timeout.Infinite);
-                        var oldTimer = Interlocked.CompareExchange(ref _timer, newTimer, null);
-                        if (!ReferenceEquals(oldTimer, null))
-                        {
-                            newTimer.Dispose();
-                        }
+                        newTimer.Dispose();
                     }
                     _timer.Change(millisecondsDelay, Timeout.Infinite);
                 }
@@ -238,28 +193,38 @@ namespace System.Threading
 
         internal void CheckDisposed()
         {
-            if (_disposed)
+            if (Thread.VolatileRead(ref _disposeRequested) == 1)
             {
                 throw new ObjectDisposedException(GetType().Name);
             }
         }
 
+        internal SafeDictionary<CancellationTokenRegistration, Action> CheckDisposedGetCallbacks()
+        {
+            var result = _callbacks;
+            if (result == null || Thread.VolatileRead(ref _disposeRequested) == 1)
+            {
+                throw new ObjectDisposedException(GetType().Name);
+            }
+            return result;
+        }
+
         internal CancellationTokenRegistration Register(Action callback, bool useSynchronizationContext)
         {
-            CheckDisposed();
+            var callbacks = CheckDisposedGetCallbacks();
             var tokenReg = new CancellationTokenRegistration(Interlocked.Increment(ref _currentId), this);
             /* If the source is already canceled we execute the callback immediately
              * if not, we try to add it to the queue and if it is currently being processed
              * we try to execute it back ourselves to be sure the callback is ran
              */
-            if (_canceled)
+            if (Thread.VolatileRead(ref _cancelRequested) == 1)
             {
                 callback();
             }
             else
             {
-                _callbacks.TryAdd(tokenReg, callback);
-                if (_canceled && _callbacks.Remove(tokenReg, out callback))
+                callbacks.TryAdd(tokenReg, callback);
+                if (Thread.VolatileRead(ref _cancelRequested) == 1 && callbacks.Remove(tokenReg, out callback))
                 {
                     callback();
                 }
@@ -270,10 +235,10 @@ namespace System.Threading
         internal bool RemoveCallback(CancellationTokenRegistration reg)
         {
             // Ignore call if the source has been disposed
-            if (!_disposed)
+            if (Thread.VolatileRead(ref _disposeRequested) == 0)
             {
                 var callbacks = _callbacks;
-                if (!object.ReferenceEquals(callbacks, null))
+                if (callbacks != null)
                 {
                     Action dummy;
                     return callbacks.Remove(reg, out dummy);
@@ -284,21 +249,19 @@ namespace System.Threading
 
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing && !_disposed)
+            if (disposing && Interlocked.CompareExchange(ref _disposeRequested, 1, 0) == 0)
             {
-                Thread.MemoryBarrier();
-                _disposed = true;
-                if (!_canceled)
+                if (Thread.VolatileRead(ref _cancelRequested) == 0)
                 {
-                    Thread.MemoryBarrier();
                     UnregisterLinkedTokens();
                     _callbacks = null;
                 }
-                if (!object.ReferenceEquals(_timer, null))
+                /*var timer = Interlocked.Exchange(ref _timer, null);
+                if (timer != null)
                 {
-                    _timer.Dispose();
+                    timer.Dispose();
                     _timer = null;
-                }
+                }*/
                 _handle.Close();
             }
         }
@@ -312,6 +275,54 @@ namespace System.Threading
             catch (OverflowException)
             {
                 throw new ArgumentOutOfRangeException("delay");
+            }
+        }
+
+        private void CancelExtracted(bool throwOnFirstException, SafeDictionary<CancellationTokenRegistration, Action> callbacks)
+        {
+            if (Interlocked.CompareExchange(ref _cancelRequested, 1, 0) == 0)
+            {
+                _handle.Set();
+                UnregisterLinkedTokens();
+                List<Exception> exceptions = null;
+                try
+                {
+                    int id = _currentId;
+                    do
+                    {
+                        Action callback;
+                        if (callbacks.Remove(new CancellationTokenRegistration(id, this), out callback) && callback != null)
+                        {
+                            if (throwOnFirstException)
+                            {
+                                callback();
+                            }
+                            else
+                            {
+                                try
+                                {
+                                    callback();
+                                }
+                                catch (Exception exception)
+                                {
+                                    if (ReferenceEquals(exceptions, null))
+                                    {
+                                        exceptions = new List<Exception>();
+                                    }
+                                    exceptions.Add(exception);
+                                }
+                            }
+                        }
+                    } while (id-- != int.MinValue);
+                }
+                finally
+                {
+                    callbacks.Clear();
+                }
+                if (exceptions != null)
+                {
+                    throw new AggregateException(exceptions);
+                }
             }
         }
 
@@ -330,7 +341,7 @@ namespace System.Threading
         private void UnregisterLinkedTokens()
         {
             var registrations = Interlocked.Exchange(ref _linkedTokens, null);
-            if (!object.ReferenceEquals(registrations, null))
+            if (!ReferenceEquals(registrations, null))
             {
                 foreach (var linked in registrations)
                 {
