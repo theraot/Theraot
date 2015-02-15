@@ -27,7 +27,7 @@ namespace Theraot.Collections.ThreadSafe
             _recycler = recycler;
         }
 
-        internal void Donate(T entry)
+        internal bool Donate(T entry)
         {
             if (!ReferenceEquals(entry, null) && PoolHelper.Enter(_id))
             {
@@ -35,12 +35,14 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     _recycler(entry);
                     _entries.Add(entry);
+                    return true;
                 }
                 finally
                 {
                     PoolHelper.Leave(_id);
                 }
             }
+            return false;
         }
 
         internal bool TryGet(out T result)

@@ -38,7 +38,14 @@ namespace Theraot.Collections.ThreadSafe
 
         internal static void DonateNeedle(TNeedle donation)
         {
-            _pool.Donate(donation);
+            if (!_pool.Donate(donation))
+            {
+                var disposable = donation as IDisposable;
+                if (disposable != null)
+                {
+                    disposable.Dispose();
+                }
+            }
         }
 
         internal static TNeedle GetNeedle(T value)
