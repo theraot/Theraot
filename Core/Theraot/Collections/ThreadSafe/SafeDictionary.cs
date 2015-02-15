@@ -802,6 +802,7 @@ namespace Theraot.Collections.ThreadSafe
                 attempts++;
             }
         }
+
         /// <summary>
         /// Tries to retrieve the value associated with the specified key.
         /// </summary>
@@ -971,7 +972,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        internal TValue GetOrAdd(TKey key, Predicate<TKey> keyOverwriteCheck, Func<TValue> valueFactory)
+        internal TValue GetOrAdd(TKey key, Predicate<TKey> keyOverwriteCheck, Func<TKey, TValue> valueFactory)
         {
             if (keyOverwriteCheck == null)
             {
@@ -1000,7 +1001,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     bool isNew;
                     // TryGetCheckSet will add if no item is found, otherwise it calls check
-                    if (_mapper.TryGetCheckSet(hashCode + attempts, () => new KeyValuePair<TKey, TValue>(key, value = valueFactory()), check, out isNew))
+                    if (_mapper.TryGetCheckSet(hashCode + attempts, () => new KeyValuePair<TKey, TValue>(key, value = valueFactory(key)), check, out isNew))
                     {
                         // It added a new item
                         return value;
