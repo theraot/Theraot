@@ -162,7 +162,7 @@ namespace Theraot.Threading
             if (threads != null)
             {
                 WorkThread thread;
-                while (_threads.TryGet(out thread))
+                while (threads.TryGet(out thread))
                 {
                     thread.Go();
                 }
