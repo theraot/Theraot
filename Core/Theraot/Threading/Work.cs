@@ -129,6 +129,29 @@ namespace Theraot.Threading
             }
         }
 
+        public bool Wait(int milliseconds)
+        {
+            if (milliseconds < -1)
+            {
+                throw new ArgumentOutOfRangeException("milliseconds");
+            }
+            if (milliseconds == -1)
+            {
+                Wait();
+                return true;
+            }
+            var start = ThreadingHelper.TicksNow();
+            while (Thread.VolatileRead(ref _status) != INT_StatusCompleted)
+            {
+                _context.DoOneWork();
+                if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         internal void Execute()
         {
             var oldCurrent = Interlocked.Exchange(ref _current, this);
