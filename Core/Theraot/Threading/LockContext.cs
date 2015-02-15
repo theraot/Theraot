@@ -69,11 +69,11 @@ namespace Theraot.Threading
             return false;
         }
 
-        internal bool Read(FlagArray flags, out T value, out int @lock)
+        internal bool Read(FlagArray flags, out T value, ref int @lock)
         {
             LockSlot<T> bestSlot = null;
-            @lock = -1;
             value = default(T);
+            var resultLock = -1;
             foreach (var flag in flags.Flags)
             {
                 LockSlot<T> testSlot;
@@ -84,10 +84,18 @@ namespace Theraot.Threading
                 if (ReferenceEquals(bestSlot, null) || bestSlot.CompareTo(testSlot) < 0)
                 {
                     bestSlot = SwitchSlot(out value, testSlot);
-                    @lock = flag;
+                    resultLock = flag;
                 }
             }
-            return !ReferenceEquals(bestSlot, null);
+            if (Interlocked.CompareExchange(ref @lock, resultLock, -1) != -1)
+            {
+                return Read(@lock, out value);
+            }
+            if (bestSlot == null)
+            {
+                return false;
+            }
+            return true;
         }
 
         private static LockSlot<T> SwitchSlot(out T value, LockSlot<T> testSlot)

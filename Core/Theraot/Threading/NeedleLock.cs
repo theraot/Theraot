@@ -26,6 +26,7 @@ namespace Theraot.Threading
             _context = context;
             _hashCode = NeedleHelper.GetNextHashCode();
             _capture = new FlagArray(_context.Capacity);
+            _lock = -1;
         }
 
         internal NeedleLock(LockContext<T> context, T target)
@@ -38,6 +39,7 @@ namespace Theraot.Threading
             _target = target;
             _hashCode = NeedleHelper.GetNextHashCode();
             _capture = new FlagArray(_context.Capacity);
+            _lock = -1;
         }
 
         bool IReadOnlyNeedle<T>.IsAlive
@@ -53,7 +55,7 @@ namespace Theraot.Threading
             get
             {
                 T value;
-                if (_context.Read(_lock, out value) || _context.Read(_capture, out value, out _lock))
+                if (_context.Read(_lock, out value) || _context.Read(_capture, out value, ref _lock))
                 {
                     Thread.MemoryBarrier();
                     _target = value;
@@ -120,6 +122,7 @@ namespace Theraot.Threading
             if (ThreadingHelper.VolatileRead(ref _capture).Flags.IsEmpty())
             {
                 _target = default(T);
+                NotifyValueChanged();
             }
         }
 
@@ -152,16 +155,6 @@ namespace Theraot.Threading
             }
             _capture[id] = false;
             NotifyValueChanged();
-        }
-
-        internal bool Lock(int id)
-        {
-            return Interlocked.CompareExchange(ref _lock, id, 0) == 0;
-        }
-
-        internal bool Unlock(int id)
-        {
-            return Interlocked.CompareExchange(ref _lock, 0, id) == id;
         }
 
         private static bool EqualsExtracted(NeedleLock<T> left, NeedleLock<T> right)
