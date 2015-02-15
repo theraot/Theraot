@@ -194,11 +194,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         public bool TryGet(int index, out T value)
         {
             value = default(T);
@@ -264,6 +259,11 @@ namespace Theraot.Collections.ThreadSafe
                 Interlocked.Increment(ref _count);
             }
             return result; // true means value was set
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }
