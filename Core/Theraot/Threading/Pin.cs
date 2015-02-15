@@ -8,7 +8,6 @@ namespace Theraot.Threading
     internal sealed class Pin
     {
         private readonly NeedleLock<Thread> _lock;
-
         private int _status;
 
         internal Pin(LockContext<Thread> context)
@@ -55,6 +54,14 @@ namespace Theraot.Threading
             finally
             {
                 GC.SuppressFinalize(this);
+            }
+        }
+
+        public void WaitCapture()
+        {
+            while (!CheckCapture())
+            {
+                _lock.WaitValueChange();
             }
         }
 

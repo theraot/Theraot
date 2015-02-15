@@ -2,7 +2,7 @@
 
 using System;
 using System.Threading;
-﻿using Theraot.Collections;
+using Theraot.Collections;
 using Theraot.Collections.Specialized;
 using Theraot.Core;
 using Theraot.Threading.Needles;
@@ -57,6 +57,7 @@ namespace Theraot.Threading
                 {
                     Thread.MemoryBarrier();
                     _target = value;
+                    NotifyValueChanged();
                 }
                 return _target;
             }
@@ -64,6 +65,23 @@ namespace Theraot.Threading
             {
                 _target = value;
                 Thread.MemoryBarrier();
+                NotifyValueChanged();
+            }
+        }
+
+        public void WaitValueChange()
+        {
+            lock (_capture)
+            {
+                Monitor.Wait(_capture);
+            }
+        }
+
+        private void NotifyValueChanged()
+        {
+            lock (_capture)
+            {
+                Monitor.Pulse(_capture);
             }
         }
 
@@ -123,6 +141,7 @@ namespace Theraot.Threading
         internal void Capture(int id)
         {
             _capture[id] = true;
+            NotifyValueChanged();
         }
 
         internal void Uncapture(int id)
@@ -132,6 +151,7 @@ namespace Theraot.Threading
                 _lock = -1;
             }
             _capture[id] = false;
+            NotifyValueChanged();
         }
 
         internal bool Lock(int id)

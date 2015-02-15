@@ -81,6 +81,12 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        public void CaptureAndWait()
+        {
+            Capture();
+            Wait();
+        }
+
         public bool Check()
         {
             return _pin.CheckCapture();
@@ -167,10 +173,7 @@ namespace Theraot.Threading.Needles
 
         private void Wait()
         {
-            if (!_pin.CheckCapture())
-            {
-                ThreadingHelper.SpinWaitUntil(() => _pin.CheckCapture());
-            }
+            _pin.WaitCapture();
         }
     }
 }
