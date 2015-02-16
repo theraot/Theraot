@@ -1,20 +1,27 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Theraot.Collections.Specialized
 {
-    public sealed class KeyCollection<TKey, TValue> : ICollection<TKey>, ICollection, IReadOnlyCollection<TKey>
+    public sealed class ConvertedValueCollection<TKey, TInput, TValue> : ICollection<TValue>, ICollection, IReadOnlyCollection<TValue>
     {
-        private readonly IDictionary<TKey, TValue> _wrapped;
+        private readonly IDictionary<TKey, TInput> _wrapped;
+        private readonly Converter<TInput, TValue> _converter;
 
-        internal KeyCollection(IDictionary<TKey, TValue> wrapped)
+        internal ConvertedValueCollection(IDictionary<TKey, TInput> wrapped, Converter<TInput, TValue> converter)
         {
             if (wrapped == null)
             {
                 throw new ArgumentNullException("wrapped");
             }
+            if (converter == null)
+            {
+                throw new ArgumentNullException("converter");
+            }
             _wrapped = wrapped;
+            _converter = converter;
         }
 
         public int Count
@@ -41,7 +48,7 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        bool ICollection<TKey>.IsReadOnly
+        bool ICollection<TValue>.IsReadOnly
         {
             get
             {
@@ -49,15 +56,15 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        public void CopyTo(TKey[] array, int arrayIndex)
+        public void CopyTo(TValue[] array, int arrayIndex)
         {
             Extensions.CanCopyTo(_wrapped.Count, array, arrayIndex);
-            _wrapped.ConvertProgressive(pair => pair.Key).CopyTo(array, arrayIndex);
+            _wrapped.ConvertProgressive(pair => _converter(pair.Value)).CopyTo(array, arrayIndex);
         }
 
-        public IEnumerator<TKey> GetEnumerator()
+        public IEnumerator<TValue> GetEnumerator()
         {
-            return _wrapped.ConvertProgressive(pair => pair.Key).GetEnumerator();
+            return _wrapped.ConvertProgressive(pair => _converter(pair.Value)).GetEnumerator();
         }
 
         void ICollection.CopyTo(Array array, int index)
@@ -65,22 +72,22 @@ namespace Theraot.Collections.Specialized
             ((ICollection)_wrapped).CopyTo(array, index);
         }
 
-        void ICollection<TKey>.Add(TKey item)
+        void ICollection<TValue>.Add(TValue item)
         {
             throw new NotSupportedException();
         }
 
-        void ICollection<TKey>.Clear()
+        void ICollection<TValue>.Clear()
         {
             throw new NotSupportedException();
         }
 
-        bool ICollection<TKey>.Contains(TKey item)
+        bool ICollection<TValue>.Contains(TValue item)
         {
-            return _wrapped.ContainsKey(item);
+            return _wrapped.Where(pair => EqualityComparer<TValue>.Default.Equals(item, _converter(pair.Value))).HasAtLeast(1);
         }
 
-        bool ICollection<TKey>.Remove(TKey item)
+        bool ICollection<TValue>.Remove(TValue item)
         {
             throw new NotSupportedException();
         }

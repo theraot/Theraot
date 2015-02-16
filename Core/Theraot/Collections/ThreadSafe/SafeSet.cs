@@ -13,7 +13,6 @@ namespace Theraot.Collections.ThreadSafe
     public class SafeSet<T> : IEnumerable<T>, ISet<T>
     {
         private const int INT_DefaultProbing = 1;
-
         private readonly IEqualityComparer<T> _comparer;
         private Mapper<T> _mapper;
         private int _probing;
@@ -75,9 +74,12 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public bool IsReadOnly
+        bool ICollection<T>.IsReadOnly
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                return false;
+            }
         }
 
         public bool Add(T item)
@@ -555,6 +557,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             AddNew(item);
         }
+
         private void ExtendProbingIfNeeded(int attempts)
         {
             var diff = attempts - _probing;

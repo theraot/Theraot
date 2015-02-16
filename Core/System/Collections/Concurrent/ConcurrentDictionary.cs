@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Threading.Needles;
 
@@ -10,7 +11,9 @@ namespace System.Collections.Concurrent
         private const int INT_DefaultCapacity = 31;
         private const int INT_DefaultConcurrency = 4;
         private readonly LockableContext _context;
-        private readonly HashBucket<TKey, LockableNeedle<TValue>> _wrapped;
+        private readonly Pool<LockableNeedle<TValue>> _pool;
+        private readonly ConvertedValueCollection<TKey, LockableNeedle<TValue>, TValue> _valueCollection;
+        private readonly SafeDictionary<TKey, LockableNeedle<TValue>> _wrapped;
 
         public ConcurrentDictionary()
             : this(INT_DefaultConcurrency, INT_DefaultCapacity, EqualityComparer<TKey>.Default)
@@ -75,7 +78,9 @@ namespace System.Collections.Concurrent
                 throw new ArgumentOutOfRangeException("capacity", "capacity < 0");
             }
             _context = new LockableContext(concurrencyLevel);
-            _wrapped = new HashBucket<TKey, LockableNeedle<TValue>>();
+            _wrapped = new SafeDictionary<TKey, LockableNeedle<TValue>>();
+            _valueCollection = new ConvertedValueCollection<TKey, LockableNeedle<TValue>, TValue>(_wrapped, input => input.Value);
+            _pool = new Pool<LockableNeedle<TValue>>(64, Recycle);
         }
 
         public int Count
@@ -102,7 +107,7 @@ namespace System.Collections.Concurrent
         {
             get
             {
-                throw new NotImplementedException();
+                return _wrapped.Keys;
             }
         }
 
@@ -110,7 +115,7 @@ namespace System.Collections.Concurrent
         {
             get
             {
-                throw new NotImplementedException();
+                return _valueCollection;
             }
         }
 
@@ -137,6 +142,7 @@ namespace System.Collections.Concurrent
                 return false;
             }
         }
+
         bool ICollection.IsSynchronized
         {
             get
@@ -147,7 +153,10 @@ namespace System.Collections.Concurrent
 
         ICollection IDictionary.Keys
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                return (ICollection)_wrapped.Keys;
+            }
         }
 
         object ICollection.SyncRoot
@@ -160,40 +169,72 @@ namespace System.Collections.Concurrent
 
         ICollection IDictionary.Values
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                return _valueCollection;
+            }
         }
 
         public TValue this[TKey key]
         {
             get
             {
-                throw new NotImplementedException();
+                return _wrapped[key].Value;
             }
             set
             {
-                throw new NotImplementedException();
+                using (_context.Enter())
+                {
+                    LockableNeedle<TValue> created = null;
+                    var stored = _wrapped.GetOrAdd(key, input => created = GetNeedle(value));
+                    if (stored != created)
+                    {
+                        // created but not added
+                        _pool.Donate(created);
+                    }
+                    stored.CaptureAndWait();
+                    stored.Value = value;
+                }
             }
         }
 
         object IDictionary.this[object key]
         {
-            get { throw new NotImplementedException(); }
-            set { throw new NotImplementedException(); }
-        }
-
-        public void Add(KeyValuePair<TKey, TValue> item)
-        {
-            throw new NotImplementedException();
+            get
+            {
+                if (key == null)
+                {
+                    throw new NullReferenceException("key");
+                }
+                // keep the is operator
+                if (key is TKey)
+                {
+                    return _wrapped[(TKey)key].Value;
+                }
+                return null;
+            }
+            set
+            {
+                // keep the is operator
+                if (key is TKey && value is TValue)
+                {
+                    this[(TKey)key] = (TValue)value;
+                }
+                throw new ArgumentException();
+            }
         }
 
         public void Add(TKey key, TValue value)
         {
-            throw new NotImplementedException();
-        }
-
-        public void Add(object key, object value)
-        {
-            throw new NotImplementedException();
+            using (_context.Enter())
+            {
+                LockableNeedle<TValue> created = GetNeedle(value);
+                if (!_wrapped.TryAdd(key, created))
+                {
+                    _pool.Donate(created);
+                    throw new ArgumentException("An item with the same key has already been added");
+                }
+            }
         }
 
         public TValue AddOrUpdate(TKey key, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory)
@@ -208,12 +249,20 @@ namespace System.Collections.Concurrent
 
         public void Clear()
         {
-            throw new NotImplementedException();
+            using (_context.Enter())
+            {
+                AcquireAllLocks();
+                _wrapped.Clear();
+            }
         }
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            throw new NotImplementedException();
+            using (_context.Enter())
+            {
+
+            }
+            return false;
         }
 
         public bool Contains(object key)
@@ -265,6 +314,7 @@ namespace System.Collections.Concurrent
         {
             throw new NotImplementedException();
         }
+
         public KeyValuePair<TKey, TValue>[] ToArray()
         {
             throw new NotImplementedException();
@@ -294,8 +344,18 @@ namespace System.Collections.Concurrent
         {
             foreach (var resource in _wrapped)
             {
-                resource.Value.Capture();
+                resource.Value.CaptureAndWait();
             }
+        }
+
+        void IDictionary.Add(object key, object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
+        {
+            throw new NotImplementedException();
         }
 
         private void AddRange(IEnumerable<KeyValuePair<TKey, TValue>> collection)
@@ -312,6 +372,25 @@ namespace System.Collections.Concurrent
         IEnumerator IEnumerable.GetEnumerator()
         {
             throw new NotImplementedException();
+        }
+
+        private LockableNeedle<TValue> GetNeedle(TValue value)
+        {
+            LockableNeedle<TValue> result;
+            if (_pool.TryGet(out result))
+            {
+                result.Value = value;
+            }
+            else
+            {
+                result = new LockableNeedle<TValue>(value, _context);
+            }
+            return result;
+        }
+
+        private void Recycle(LockableNeedle<TValue> obj)
+        {
+            obj.Free();
         }
     }
 }

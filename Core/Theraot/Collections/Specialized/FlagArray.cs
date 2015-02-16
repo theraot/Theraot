@@ -1,6 +1,4 @@
-﻿#if FAT
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using Theraot.Collections.ThreadSafe;
@@ -10,7 +8,7 @@ using Theraot.Threading;
 namespace Theraot.Collections.Specialized
 {
     [Serializable]
-    public sealed class FlagArray : ICollection<bool>, IExtendedCollection<bool>, IEnumerable<bool>, ICloneable<FlagArray>, IList<bool>
+    public sealed partial class FlagArray : ICollection<bool>, IEnumerable<bool>, IList<bool>, ICloneable
     {
         private readonly IReadOnlyCollection<bool> _asReadOnly;
         private readonly int _length;
@@ -109,14 +107,6 @@ namespace Theraot.Collections.Specialized
             get
             {
                 return false;
-            }
-        }
-
-        IReadOnlyCollection<bool> IExtendedCollection<bool>.AsReadOnly
-        {
-            get
-            {
-                return _asReadOnly;
             }
         }
 
@@ -245,11 +235,6 @@ namespace Theraot.Collections.Specialized
             throw new NotSupportedException();
         }
 
-        bool IExtendedCollection<bool>.Remove(bool item, IEqualityComparer<bool> comparer)
-        {
-            throw new NotSupportedException();
-        }
-
         void IList<bool>.Insert(int index, bool item)
         {
             throw new NotSupportedException();
@@ -321,6 +306,25 @@ namespace Theraot.Collections.Specialized
             }
         }
     }
-}
 
+    public sealed partial class FlagArray : ICollection<bool>, IEnumerable<bool>, IList<bool>
+#if FAT
+        , IExtendedCollection<bool>, ICloneable<FlagArray>
 #endif
+    {
+#if FAT
+        IReadOnlyCollection<bool> IExtendedCollection<bool>.AsReadOnly
+        {
+            get
+            {
+                return _asReadOnly;
+            }
+        }
+
+        bool IExtendedCollection<bool>.Remove(bool item, IEqualityComparer<bool> comparer)
+        {
+            throw new NotSupportedException();
+        }
+#endif
+    }
+}

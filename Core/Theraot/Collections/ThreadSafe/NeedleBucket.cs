@@ -1,5 +1,3 @@
-#if FAT
-
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -418,5 +416,3 @@ namespace Theraot.Collections.ThreadSafe
         }
     }
 }
-
-#endif

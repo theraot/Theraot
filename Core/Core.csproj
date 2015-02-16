@@ -320,6 +320,7 @@
     <Compile Include="Theraot\Collections\Specialized\ConditionalExtendedEnumerable.cs" />
     <Compile Include="Theraot\Collections\Specialized\ConversionComparer.cs" />
     <Compile Include="Theraot\Collections\Specialized\ConversionEqualityComparer.cs" />
+    <Compile Include="Theraot\Collections\Specialized\ConvertedValueCollection.cs" />
     <Compile Include="Theraot\Collections\Specialized\CustomComparer.cs" />
     <Compile Include="Theraot\Collections\Specialized\CustomEqualityComparer.cs" />
     <Compile Include="Theraot\Collections\Specialized\DelegatedCollection.cs" />
@@ -343,7 +344,7 @@
     <Compile Include="Theraot\Collections\ThreadSafe\BucketStatus.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\CircularBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\FixedSizeQueue.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\KeyCollection.cs" />
+    <Compile Include="Theraot\Collections\Specialized\KeyCollection.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\Mapper.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\NeedleBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\NeedleReservoir.cs" />
@@ -352,6 +353,7 @@
     <Compile Include="Theraot\Collections\ThreadSafe\SafeDictionary.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\SafeQueue.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\SafeSet.cs" />
+    <Compile Include="Theraot\Collections\Specialized\ValueCollection.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\WeakCancellableEvent.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\WeakDelegateCollection.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\WeakEvent.cs" />
@@ -468,7 +470,6 @@
     <Compile Include="Theraot\Threading\Needles\Needle.cs" />
     <Compile Include="Theraot\Threading\Needles\NeedleHelper.cs" />
     <Compile Include="Theraot\Threading\Needles\NotNull.cs" />
-    <Compile Include="Theraot\Threading\Pin.cs" />
     <Compile Include="Theraot\Threading\Needles\PromiseNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\PromiseNeedle1.cs" />
     <Compile Include="Theraot\Threading\Needles\ReadOnlyDisposableNeedle.cs" />
