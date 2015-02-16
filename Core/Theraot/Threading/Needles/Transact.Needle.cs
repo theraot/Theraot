@@ -15,7 +15,7 @@ namespace Theraot.Threading.Needles
             private readonly ICloner<T> _cloner;
             private readonly IEqualityComparer<T> _comparer;
             private readonly RuntimeUniqueIdProdiver.UniqueId _id;
-            private readonly Pin _pin;
+            private readonly NeedleLock<Thread> _needleLock;
 
             public Needle(T value)
                 : base(value)
@@ -26,7 +26,7 @@ namespace Theraot.Threading.Needles
                     throw new InvalidOperationException(string.Format("Unable to get a cloner for {0}", typeof(T)));
                 }
                 _comparer = EqualityComparer<T>.Default;
-                _pin = new Pin(Context);
+                _needleLock = new NeedleLock<Thread>(Context);
                 _id = _idProvider.GetNextId();
             }
 
@@ -39,7 +39,7 @@ namespace Theraot.Threading.Needles
                 }
                 _cloner = cloner;
                 _comparer = EqualityComparer<T>.Default;
-                _pin = new Pin(Context);
+                _needleLock = new NeedleLock<Thread>(Context);
                 _id = _idProvider.GetNextId();
             }
 
@@ -52,7 +52,7 @@ namespace Theraot.Threading.Needles
                     throw new InvalidOperationException(string.Format("Unable to get a cloner for {0}", typeof(T)));
                 }
                 _comparer = comparer ?? EqualityComparer<T>.Default;
-                _pin = new Pin(Context);
+                _needleLock = new NeedleLock<Thread>(Context);
                 _id = _idProvider.GetNextId();
             }
 
@@ -65,7 +65,7 @@ namespace Theraot.Threading.Needles
                 }
                 _cloner = cloner;
                 _comparer = comparer ?? EqualityComparer<T>.Default;
-                _pin = new Pin(Context);
+                _needleLock = new NeedleLock<Thread>(Context);
                 _id = _idProvider.GetNextId();
             }
 
@@ -91,7 +91,7 @@ namespace Theraot.Threading.Needles
             public override void Free()
             {
                 Thread.MemoryBarrier();
-                if (NeedleReservoir<T,Needle<T>>.Recycling)
+                if (NeedleReservoir<T, Needle<T>>.Recycling)
                 {
                     base.Free();
                 }
@@ -109,16 +109,24 @@ namespace Theraot.Threading.Needles
             bool IResource.Capture()
             {
                 var transaction = CurrentTransaction;
-                if (ReferenceEquals(transaction, null))
+                if (transaction == null)
                 {
                     return false;
                 }
-                return _pin.Capture(transaction._lockSlot);
+                var lockSlot = transaction._lockSlot;
+                if (lockSlot == null)
+                {
+                    return false;
+                }
+                _needleLock.Capture(lockSlot);
+                return true;
             }
 
             bool IResource.CheckCapture()
             {
-                return _pin.CheckCapture();
+                var thread = Thread.CurrentThread;
+                var check = _needleLock.Value;
+                return check == thread;
             }
 
             bool IResource.CheckValue()
@@ -137,7 +145,7 @@ namespace Theraot.Threading.Needles
             bool IResource.Commit()
             {
                 var transaction = CurrentTransaction;
-                if (_pin.CheckCapture())
+                if (_needleLock.Value == Thread.CurrentThread)
                 {
                     object value;
                     if (transaction._writeLog.TryGetValue(this, out value))
@@ -152,9 +160,13 @@ namespace Theraot.Threading.Needles
             private void OnDispose()
             {
                 var transaction = CurrentTransaction;
-                if (!ReferenceEquals(transaction, null))
+                if (transaction != null)
                 {
-                    _pin.Release(transaction._lockSlot);
+                    if (transaction._lockSlot != null)
+                    {
+                        _needleLock.Uncapture(transaction._lockSlot);
+                    }
+                    _needleLock.Release();
                     transaction._readLog.Remove(this);
                     transaction._writeLog.Remove(this);
                 }

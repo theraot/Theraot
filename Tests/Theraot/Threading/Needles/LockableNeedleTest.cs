@@ -21,8 +21,6 @@ namespace Tests.Theraot.Threading.Needles
 
             using (context.Enter())
             {
-                needle.Capture();
-                Assert.IsTrue(needle.Check());
                 Assert.DoesNotThrow(() => needle.Value = 7);
                 Assert.AreEqual(7, needle.Value);
             }
@@ -41,22 +39,17 @@ namespace Tests.Theraot.Threading.Needles
 
             using (context.Enter())
             {
-                needle.Capture();
-                Assert.IsTrue(needle.Check());
                 Assert.DoesNotThrow(() => needle.Value = 7);
                 Assert.AreEqual(7, needle.Value);
                 using (context.Enter())
                 {
                     // You can recapture
-                    needle.Capture();
-                    Assert.IsTrue(needle.Check());
                     Assert.DoesNotThrow(() => needle.Value = 9);
                     Assert.AreEqual(9, needle.Value);
                 }
                 using (context.Enter())
                 {
                     // There is no need to recapture
-                    Assert.IsTrue(needle.Check());
                     Assert.DoesNotThrow(() => needle.Value = 11);
                     Assert.AreEqual(11, needle.Value);
                 }
@@ -84,8 +77,6 @@ namespace Tests.Theraot.Threading.Needles
                         try
                         {
                             info.Add("First thread did enter.");
-                            needle.Capture();
-                            info.Add("First thread did capture.");
                             var found = needle.Value;
                             info.Add("First thread found: " + found + " will set: " + (found + 2));
                             needle.Value = found + 2;
@@ -108,8 +99,6 @@ namespace Tests.Theraot.Threading.Needles
                         try
                         {
                             info.Add("Second thread did enter.");
-                            info.Add("Second thread did capture.");
-                            needle.Capture();
                             var found = needle.Value;
                             info.Add("Second thread found: " + found + " will set: " + (found + 3));
                             needle.Value = found + 3;
@@ -164,8 +153,6 @@ namespace Tests.Theraot.Threading.Needles
                         try
                         {
                             info.Add("First thread did enter.");
-                            needle.Capture();
-                            info.Add("First thread did capture.");
                             var found = needle.Value;
                             info.Add("First thread found: " + found + " will increment by 2");
                             needle.Update(value => value + 2);
@@ -188,8 +175,6 @@ namespace Tests.Theraot.Threading.Needles
                         try
                         {
                             info.Add("Second thread did enter.");
-                            info.Add("Second thread did capture.");
-                            needle.Capture();
                             var found = needle.Value;
                             info.Add("Second thread found: " + found + " will increment by 3");
                             needle.Update(value => value + 3);

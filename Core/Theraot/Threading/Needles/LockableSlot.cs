@@ -10,8 +10,8 @@ namespace Theraot.Threading.Needles
     {
         private LockableContext _context;
         private LockSlot<Thread> _lockSlot;
+        private List<NeedleLock<Thread>> _needleLocks;
         private LockableSlot _parent;
-        private List<Pin> _pins;
 
         internal LockableSlot(LockableContext context)
         {
@@ -23,7 +23,7 @@ namespace Theraot.Threading.Needles
             ThreadingHelper.SpinWaitUntil(() => _context.Context.ClaimSlot(out lockSlot));
             lockSlot.Value = Thread.CurrentThread;
             _lockSlot = lockSlot;
-            _pins = new List<Pin>();
+            _needleLocks = new List<NeedleLock<Thread>>();
         }
 
         ~LockableSlot()
@@ -49,24 +49,25 @@ namespace Theraot.Threading.Needles
                 {
                     context.Slot = _parent;
                 }
-                var pins = Interlocked.Exchange(ref _pins, null);
-                if (pins != null)
+                var needleLocks = Interlocked.Exchange(ref _needleLocks, null);
+                if (needleLocks != null)
                 {
-                    foreach (var pin in pins)
+                    foreach (var needleLock in needleLocks)
                     {
-                        pin.Release(lockslot);
+                        needleLock.Uncapture(lockslot);
+                        needleLock.Release();
                     }
-                    pins.Clear();
+                    needleLocks.Clear();
                 }
-                lockslot.Release();
+                lockslot.Close();
                 Thread.MemoryBarrier();
                 _parent = null;
             }
         }
 
-        internal void Add(Pin pin)
+        internal void Add(NeedleLock<Thread> pin)
         {
-            _pins.Add(pin);
+            _needleLocks.Add(pin);
         }
     }
 }

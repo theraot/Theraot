@@ -9,12 +9,12 @@ using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
 {
-    internal sealed class NeedleLock<T> : INeedle<T>
+    internal sealed class NeedleLock<T> : IReadOnlyNeedle<T>
     {
         private readonly LockContext<T> _context;
         private readonly int _hashCode;
         private FlagArray _capture;
-        private int _lock;
+        private int _owner;
         private T _target;
 
         internal NeedleLock(LockContext<T> context)
@@ -26,7 +26,7 @@ namespace Theraot.Threading
             _context = context;
             _hashCode = NeedleHelper.GetNextHashCode();
             _capture = new FlagArray(_context.Capacity);
-            _lock = -1;
+            _owner = -1;
         }
 
         internal NeedleLock(LockContext<T> context, T target)
@@ -39,7 +39,7 @@ namespace Theraot.Threading
             _target = target;
             _hashCode = NeedleHelper.GetNextHashCode();
             _capture = new FlagArray(_context.Capacity);
-            _lock = -1;
+            _owner = -1;
         }
 
         bool IReadOnlyNeedle<T>.IsAlive
@@ -54,36 +54,13 @@ namespace Theraot.Threading
         {
             get
             {
-                T value;
-                if (_context.Read(_lock, out value) || _context.Read(_capture, out value, ref _lock))
+                LockSlot<T> slot;
+                if (_context.Read(_capture, ref _owner, out slot))
                 {
-                    Thread.MemoryBarrier();
-                    _target = value;
-                    NotifyValueChanged();
+                    _target = slot.Value;
                 }
-                return _target;
-            }
-            set
-            {
-                _target = value;
                 Thread.MemoryBarrier();
-                NotifyValueChanged();
-            }
-        }
-
-        public void WaitValueChange()
-        {
-            lock (_capture)
-            {
-                Monitor.Wait(_capture);
-            }
-        }
-
-        private void NotifyValueChanged()
-        {
-            lock (_capture)
-            {
-                Monitor.Pulse(_capture);
+                return _target;
             }
         }
 
@@ -107,6 +84,7 @@ namespace Theraot.Threading
             var _obj = obj as NeedleLock<T>;
             if (ReferenceEquals(null, _obj))
             {
+                Thread.MemoryBarrier();
                 return _target.Equals(obj);
             }
             return EqualsExtracted(this, _obj);
@@ -117,12 +95,12 @@ namespace Theraot.Threading
             return EqualsExtracted(this, other);
         }
 
-        public void Release()
+        internal void Release()
         {
             if (ThreadingHelper.VolatileRead(ref _capture).Flags.IsEmpty())
             {
                 _target = default(T);
-                NotifyValueChanged();
+                Thread.MemoryBarrier();
             }
         }
 
@@ -141,20 +119,15 @@ namespace Theraot.Threading
             return "<Dead Needle>";
         }
 
-        internal void Capture(int id)
+        internal void Capture(LockSlot<T> slot)
         {
-            _capture[id] = true;
-            NotifyValueChanged();
+            _capture[slot.Id] = true;
         }
 
-        internal void Uncapture(int id)
+        internal void Uncapture(LockSlot<T> slot)
         {
-            if (_lock == id)
-            {
-                _lock = -1;
-            }
-            _capture[id] = false;
-            NotifyValueChanged();
+            Interlocked.CompareExchange(ref _owner, -1, slot.Id);
+            _capture[slot.Id] = false;
         }
 
         private static bool EqualsExtracted(NeedleLock<T> left, NeedleLock<T> right)
@@ -163,6 +136,7 @@ namespace Theraot.Threading
             {
                 return ReferenceEquals(right, null);
             }
+            Thread.MemoryBarrier();
             return left._target.Equals(right._target);
         }
 
@@ -176,6 +150,7 @@ namespace Theraot.Threading
                 }
                 return true;
             }
+            Thread.MemoryBarrier();
             return !left._target.Equals(right._target);
         }
     }

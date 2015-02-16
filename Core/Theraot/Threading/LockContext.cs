@@ -11,16 +11,24 @@ namespace Theraot.Threading
     public class LockContext<T>
     {
         private readonly int _capacity;
-        private readonly FixedSizeQueue<LockSlot<T>> _freeSlots;
+        private readonly FixedSizeQueue<LockSlot<T>> _closedSlots;
         private readonly NeedleBucket<LockSlot<T>, LazyNeedle<LockSlot<T>>> _slots;
         private readonly VersionProvider _version = new VersionProvider();
         private int _index;
-
         public LockContext(int capacity)
         {
             _capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
-            _slots = new NeedleBucket<LockSlot<T>, LazyNeedle<LockSlot<T>>>(index => new LockSlot<T>(this, index, _version.AdvanceNewToken()), _capacity);
-            _freeSlots = new FixedSizeQueue<LockSlot<T>>(_capacity);
+            _slots = new NeedleBucket<LockSlot<T>, LazyNeedle<LockSlot<T>>>
+                (
+                    index => new LockSlot<T>
+                    (
+                        this,
+                        index,
+                        _version.AdvanceNewToken()
+                    ),
+                    _capacity
+                );
+            _closedSlots = new FixedSizeQueue<LockSlot<T>>(_capacity);
         }
 
         internal int Capacity
@@ -47,32 +55,17 @@ namespace Theraot.Threading
             return false;
         }
 
-        internal void Free(LockSlot<T> slot)
+        internal void Close(LockSlot<T> slot)
         {
-            _freeSlots.Add(slot);
+            _closedSlots.Add(slot);
         }
 
-        internal bool Read(int flag, out T value)
+        internal bool Read(FlagArray flags, ref int owner, out LockSlot<T> slot)
         {
-            if (flag == -1)
+            if (Read(ref owner, out slot))
             {
-                value = default(T);
-                return false;
-            }
-            LockSlot<T> slot;
-            if (_slots.TryGet(flag, out slot))
-            {
-                value = slot.Value;
                 return true;
             }
-            value = default(T);
-            return false;
-        }
-
-        internal bool Read(FlagArray flags, out T value, ref int @lock)
-        {
-            LockSlot<T> bestSlot = null;
-            value = default(T);
             var resultLock = -1;
             foreach (var flag in flags.Flags)
             {
@@ -81,34 +74,45 @@ namespace Theraot.Threading
                 {
                     continue;
                 }
-                if (ReferenceEquals(bestSlot, null) || bestSlot.CompareTo(testSlot) < 0)
+                if (ReferenceEquals(slot, null) || slot.CompareTo(testSlot) < 0)
                 {
-                    bestSlot = SwitchSlot(out value, testSlot);
+                    slot = testSlot;
                     resultLock = flag;
                 }
             }
-            if (Interlocked.CompareExchange(ref @lock, resultLock, -1) != -1)
+            if (Interlocked.CompareExchange(ref owner, resultLock, -1) != -1)
             {
-                return Read(@lock, out value);
+                return Read(ref owner, out slot);
             }
-            if (bestSlot == null)
+            if (slot == null)
             {
                 return false;
             }
             return true;
         }
 
-        private static LockSlot<T> SwitchSlot(out T value, LockSlot<T> testSlot)
+        private bool Read(ref int owner, out LockSlot<T> slot)
         {
-            value = testSlot.Value;
-            return testSlot;
+            slot = null;
+            var got = owner;
+            if (got == -1)
+            {
+                return false;
+            }
+            LockSlot<T> found;
+            if (_slots.TryGet(got, out found) && found.IsOpen)
+            {
+                slot = found;
+                return true;
+            }
+            Interlocked.CompareExchange(ref owner, -1, got);
+            return false;
         }
-
         private bool TryClaimFreeSlot(out LockSlot<T> slot)
         {
-            if (_freeSlots.TryTake(out slot))
+            if (_closedSlots.TryTake(out slot))
             {
-                slot.Unfree(_version.AdvanceNewToken());
+                slot.Open(_version.AdvanceNewToken());
                 return true;
             }
             return false;

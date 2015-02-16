@@ -6,11 +6,10 @@ using System.Threading;
 
 namespace Theraot.Threading.Needles
 {
-    public sealed class LockableNeedle<T> : Needle<T>, IDisposable
+    public sealed class LockableNeedle<T> : Needle<T>
     {
         private readonly LockableContext _context;
-        private readonly Pin _pin;
-        private int _status;
+        private readonly NeedleLock<Thread> _needleLock;
 
         public LockableNeedle(T value, LockableContext context)
             : base(value)
@@ -20,29 +19,7 @@ namespace Theraot.Threading.Needles
                 throw new NullReferenceException("context");
             }
             _context = context;
-            _pin = new Pin(_context.Context);
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCode]
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
-        ~LockableNeedle()
-        {
-            try
-            {
-                // Empty
-            }
-            finally
-            {
-                try
-                {
-                    Dispose(false);
-                }
-                catch (Exception exception)
-                {
-                    // Pokemon - fields may be partially collected.
-                    GC.KeepAlive(exception);
-                }
-            }
+            _needleLock = new NeedleLock<Thread>(_context.Context);
         }
 
         public override T Value
@@ -56,7 +33,7 @@ namespace Theraot.Threading.Needles
             {
                 if (_context.HasSlot)
                 {
-                    Wait();
+                    CaptureAndWait();
                     base.Value = value;
                     Thread.MemoryBarrier();
                 }
@@ -67,49 +44,20 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public void Capture()
-        {
-            var slot = _context.Slot;
-            var lockslot = slot.LockSlot;
-            if (_pin.Capture(lockslot))
-            {
-                slot.Add(_pin);
-            }
-            else
-            {
-                throw new InvalidOperationException("The current thread has not entered the LockableContext of this LockableNeedle.");
-            }
-        }
-
         public void CaptureAndWait()
         {
             Capture();
-            Wait();
-        }
-
-        public bool Check()
-        {
-            return _pin.CheckCapture();
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCode]
-        public void Dispose()
-        {
-            try
-            {
-                Dispose(true);
-            }
-            finally
-            {
-                GC.SuppressFinalize(this);
-            }
+            var thread = Thread.CurrentThread;
+            // The reason while I cannot make an smarter wait function:
+            // If another thread changed _needleLock.Value after the check but before the starting to wait, the wait will not finish.
+            ThreadingHelper.SpinWaitUntil(() => _needleLock.Value == thread);
         }
 
         public bool TryUpdate(T newValue, T expectedValue)
         {
             if (_context.HasSlot)
             {
-                Wait();
+                CaptureAndWait();
                 if (EqualityComparer<T>.Default.Equals(base.Value, expectedValue))
                 {
                     base.Value = newValue;
@@ -125,7 +73,7 @@ namespace Theraot.Threading.Needles
         {
             if (_context.HasSlot)
             {
-                Wait();
+                CaptureAndWait();
                 if (comparer.Equals(base.Value, expectedValue))
                 {
                     base.Value = newValue;
@@ -141,7 +89,7 @@ namespace Theraot.Threading.Needles
         {
             if (_context.HasSlot)
             {
-                Wait();
+                CaptureAndWait();
                 var result = updateValueFactory(base.Value);
                 base.Value = result;
                 Thread.MemoryBarrier();
@@ -150,30 +98,16 @@ namespace Theraot.Threading.Needles
             throw new InvalidOperationException("The current thread has not entered the LockableContext of this LockableNeedle.");
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
-        private void Dispose(bool disposeManagedResources)
+        private void Capture()
         {
-            if (TakeDisposalExecution())
+            var slot = _context.Slot;
+            var lockslot = slot.LockSlot;
+            if (ReferenceEquals(lockslot, null))
             {
-                if (disposeManagedResources)
-                {
-                    _pin.Dispose();
-                }
+                throw new InvalidOperationException("The current thread has not entered the LockableContext of this LockableNeedle.");
             }
-        }
-
-        private bool TakeDisposalExecution()
-        {
-            if (_status == -1)
-            {
-                return false;
-            }
-            return ThreadingHelper.SpinWaitSetUnless(ref _status, -1, 0, -1);
-        }
-
-        private void Wait()
-        {
-            _pin.WaitCapture();
+            _needleLock.Capture(lockslot);
+            slot.Add(_needleLock);
         }
     }
 }

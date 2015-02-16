@@ -8,11 +8,11 @@ namespace Theraot.Threading
 {
     public sealed class LockSlot<T> : IComparable<LockSlot<T>>, INeedle<T>
     {
+        internal readonly int Id;
         private readonly LockContext<T> _context;
-        private readonly int _id;
+        private int _free;
         private T _target;
         private VersionProvider.VersionToken _versionToken;
-
         internal LockSlot(LockContext<T> context, int id, VersionProvider.VersionToken versionToken)
         {
             if (ReferenceEquals(context, null))
@@ -21,7 +21,7 @@ namespace Theraot.Threading
             }
             _context = context;
             _versionToken = versionToken;
-            _id = id;
+            Id = id;
         }
 
         public T Value
@@ -38,11 +38,28 @@ namespace Theraot.Threading
             }
         }
 
+        internal bool IsOpen
+        {
+            get
+            {
+                return Thread.VolatileRead(ref _free) == 0;
+            }
+        }
+
         bool IReadOnlyNeedle<T>.IsAlive
         {
             get
             {
                 return !ReferenceEquals(_target, null);
+            }
+        }
+
+        public void Close()
+        {
+            if (Interlocked.CompareExchange(ref _free, 1, 0) == 0)
+            {
+                _target = default(T);
+                _context.Close(this);
             }
         }
 
@@ -55,25 +72,12 @@ namespace Theraot.Threading
             return _versionToken.CompareTo(other._versionToken);
         }
 
-        public void Release()
+        internal void Open(VersionProvider.VersionToken versionToken)
         {
-            _target = default(T);
-            _context.Free(this);
-        }
-
-        internal void Capture(NeedleLock<T> needle)
-        {
-            needle.Capture(_id);
-        }
-
-        internal void Uncapture(NeedleLock<T> needle)
-        {
-            needle.Uncapture(_id);
-        }
-
-        internal void Unfree(VersionProvider.VersionToken versionToken)
-        {
-            _versionToken = versionToken;
+            if (Interlocked.CompareExchange(ref _free, 0, 1) == 1)
+            {
+                _versionToken = versionToken;
+            }
         }
     }
 }

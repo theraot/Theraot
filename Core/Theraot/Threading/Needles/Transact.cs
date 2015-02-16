@@ -62,7 +62,6 @@ namespace Theraot.Threading.Needles
         {
             if (ReferenceEquals(_currentTransaction, this))
             {
-                bool rollback = false;
                 Thread.MemoryBarrier();
                 try
                 {
@@ -80,7 +79,6 @@ namespace Theraot.Threading.Needles
                             //Nothing to commit
                             return true;
                         }
-                        rollback = true;
                         Thread.MemoryBarrier();
                         if (!CheckCapture())
                         {
@@ -110,24 +108,20 @@ namespace Theraot.Threading.Needles
                                 return false;
                             }
                         }
-                        rollback = false;
                         return true;
                     }
                     finally
                     {
                         if (!ReferenceEquals(_lockSlot, null))
                         {
-                            _lockSlot.Release();
+                            _lockSlot.Close();
                             _lockSlot = null;
                         }
                     }
                 }
                 finally
                 {
-                    if (rollback)
-                    {
-                        Rollback(false);
-                    }
+                    Release(false);
                 }
             }
             throw new InvalidOperationException("Cannot commit a non-current transaction.");
@@ -137,7 +131,7 @@ namespace Theraot.Threading.Needles
         {
             if (ReferenceEquals(Thread.CurrentThread, _thread))
             {
-                Rollback(false);
+                Release(false);
             }
             else
             {
@@ -187,11 +181,11 @@ namespace Theraot.Threading.Needles
             return true;
         }
 
-        private void Rollback(bool disposing)
+        private void Release(bool dispose)
         {
             for (var currentTransaction = _currentTransaction; currentTransaction != null && currentTransaction != this; currentTransaction = currentTransaction._parentTransaction)
             {
-                if (disposing)
+                if (dispose)
                 {
                     currentTransaction.Dispose();
                 }
@@ -201,7 +195,7 @@ namespace Theraot.Threading.Needles
                 }
             }
             Uncapture();
-            if (disposing)
+            if (dispose)
             {
                 _currentTransaction = _parentTransaction;
             }
