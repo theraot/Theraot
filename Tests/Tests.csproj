@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="System\Collections\Concurrent\ConcurrentDictionaryTests.cs" />
     <Compile Include="System\Linq\LookupTestEx.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTest.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTest_Add.cs" />
