@@ -135,21 +135,17 @@ namespace Theraot.Threading
             if (_work)
             {
                 _works.Add(work);
-                WorkThread thread;
-                if (_threads.TryGet(out thread))
+                while (_works.Count > 0)
                 {
-                    thread.Go();
-                }
-                else
-                {
-                    var threadNumber = Interlocked.Increment(ref _dedidatedThreadCount);
-                    if (threadNumber <= _dedidatedThreadMax)
+                    WorkThread thread;
+                    // Sometimes a thread goes to wait just after we try to awake a thread
+                    // When there that happens and there is no room to create a new thread...
+                    // It may happen that no thread takes the work.
+                    // That's why we loop until we can wake up or create a thread, or all work is done.
+                    if (_threads.TryGet(out thread) || NewDedicatedThread(out thread))
                     {
-                        (new WorkThread(this, "Dedicated Thread #" + threadNumber + " on Context " + _id)).Go();
-                    }
-                    else
-                    {
-                        Interlocked.Decrement(ref _dedidatedThreadCount);
+                        thread.Go();
+                        break;
                     }
                 }
             }
@@ -182,6 +178,19 @@ namespace Theraot.Threading
             {
                 item.Execute();
             }
+        }
+
+        private bool NewDedicatedThread(out WorkThread thread)
+        {
+            var threadNumber = Interlocked.Increment(ref _dedidatedThreadCount);
+            if (threadNumber <= _dedidatedThreadMax)
+            {
+                thread = new WorkThread(this, "Dedicated Thread #" + threadNumber + " on Context " + _id);
+                return true;
+            }
+            Interlocked.Decrement(ref _dedidatedThreadCount);
+            thread = null;
+            return false;
         }
 
         private sealed class WorkThread
@@ -235,6 +244,11 @@ namespace Theraot.Threading
                         }
                         else if (_context._works.Count == 0 || Thread.VolatileRead(ref _context._waitRequest) == 1)
                         {
+                            // Sometimes a work is added just after we check there is no work
+                            // If that happens and the wake up call will come before this threads goes to wait...
+                            // Then this thread will go to wait anyway, regardless of the new work.
+                            // That's why it is necesary to make sure a thread is started for this to work correctly.
+                            // This could be solve by spinning instead, but it is convenient to be able to put the thread to wait.
                             Interlocked.Decrement(ref _context._workingTotalThreadCount);
                             var threads = _context._threads;
                             if (_context._work && !GCMonitor.FinalizingForUnload && threads != null)
