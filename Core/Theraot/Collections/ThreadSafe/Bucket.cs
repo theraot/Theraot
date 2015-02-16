@@ -403,8 +403,11 @@ namespace Theraot.Collections.ThreadSafe
 
         private void RecyclePrivate()
         {
-            ArrayReservoir<object>.DonateArray(_entries);
-            _entries = null;
+            if (!AppDomain.CurrentDomain.IsFinalizingForUnload())
+            {
+                ArrayReservoir<object>.DonateArray(_entries);
+                _entries = null;
+            }
         }
 
         private bool RemoveAtPrivate(int index, out object previous)
