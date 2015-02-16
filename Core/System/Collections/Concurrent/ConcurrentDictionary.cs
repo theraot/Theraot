@@ -103,22 +103,6 @@ namespace System.Collections.Concurrent
             }
         }
 
-        public ICollection<TKey> Keys
-        {
-            get
-            {
-                return _wrapped.Keys;
-            }
-        }
-
-        public ICollection<TValue> Values
-        {
-            get
-            {
-                return _valueCollection;
-            }
-        }
-
         bool IDictionary.IsFixedSize
         {
             get
@@ -151,6 +135,14 @@ namespace System.Collections.Concurrent
             }
         }
 
+        ICollection<TKey> IDictionary<TKey, TValue>.Keys
+        {
+            get
+            {
+                return _wrapped.Keys;
+            }
+        }
+
         ICollection IDictionary.Keys
         {
             get
@@ -164,6 +156,14 @@ namespace System.Collections.Concurrent
             get
             {
                 return this;
+            }
+        }
+
+        ICollection<TValue> IDictionary<TKey, TValue>.Values
+        {
+            get
+            {
+                return _valueCollection;
             }
         }
 
@@ -192,7 +192,6 @@ namespace System.Collections.Concurrent
                         // created but not added
                         _pool.Donate(created);
                     }
-                    stored.CaptureAndWait();
                     stored.Value = value;
                 }
             }
@@ -224,27 +223,40 @@ namespace System.Collections.Concurrent
             }
         }
 
-        public void Add(TKey key, TValue value)
-        {
-            using (_context.Enter())
-            {
-                LockableNeedle<TValue> created = GetNeedle(value);
-                if (!_wrapped.TryAdd(key, created))
-                {
-                    _pool.Donate(created);
-                    throw new ArgumentException("An item with the same key has already been added");
-                }
-            }
-        }
-
         public TValue AddOrUpdate(TKey key, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory)
         {
-            throw new NotImplementedException();
+            // TODO: SafeDictionary implementation is pending
+            using (_context.Enter())
+            {
+                return _wrapped.AddOrUpdate
+                    (
+                        key,
+                        input => GetNeedle(addValueFactory(input)),
+                        (inputKey, inputValue) =>
+                        {
+                            inputValue.Value = updateValueFactory(inputKey, inputValue.Value);
+                            return inputValue;
+                        }
+                    ).Value;
+            }
         }
 
         public TValue AddOrUpdate(TKey key, TValue addValue, Func<TKey, TValue, TValue> updateValueFactory)
         {
-            throw new NotImplementedException();
+            // TODO: SafeDictionary implementation is pending
+            using (_context.Enter())
+            {
+                return _wrapped.AddOrUpdate
+                    (
+                        key,
+                        input => GetNeedle(addValue),
+                        (inputKey, inputValue) =>
+                        {
+                            inputValue.Value = updateValueFactory(inputKey, inputValue.Value);
+                            return inputValue;
+                        }
+                    ).Value;
+            }
         }
 
         public void Clear()
@@ -258,11 +270,7 @@ namespace System.Collections.Concurrent
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            using (_context.Enter())
-            {
-
-            }
-            return false;
+            throw new NotImplementedException();
         }
 
         public bool Contains(object key)
@@ -272,15 +280,16 @@ namespace System.Collections.Concurrent
 
         public bool ContainsKey(TKey key)
         {
-            throw new NotImplementedException();
+            // No existing value is set, so no locking, right?
+            return _wrapped.ContainsKey(key);
         }
 
-        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+        public void CopyTo(Array array, int index)
         {
             throw new NotImplementedException();
         }
 
-        public void CopyTo(Array array, int index)
+        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
             throw new NotImplementedException();
         }
@@ -292,24 +301,20 @@ namespace System.Collections.Concurrent
 
         public TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)
         {
-            throw new NotImplementedException();
+            // No existing value is set, so no locking, right?
+            return _wrapped.GetOrAdd(key, input => GetNeedle(valueFactory(input))).Value;
         }
 
         public TValue GetOrAdd(TKey key, TValue value)
         {
-            throw new NotImplementedException();
+            // No existing value is set, so no locking, right?
+            return _wrapped.GetOrAdd(key, input => GetNeedle(value)).Value;
         }
 
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
             throw new NotImplementedException();
         }
-
-        public bool Remove(TKey key)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Remove(object key)
         {
             throw new NotImplementedException();
@@ -317,12 +322,22 @@ namespace System.Collections.Concurrent
 
         public KeyValuePair<TKey, TValue>[] ToArray()
         {
-            throw new NotImplementedException();
+            using (_context.Enter())
+            {
+                AcquireAllLocks();
+                var result = new List<KeyValuePair<TKey, TValue>>(_wrapped.Count);
+                foreach (var pair in _wrapped)
+                {
+                    result.Add(new KeyValuePair<TKey, TValue>(pair.Key, pair.Value.Value));
+                }
+                return result.ToArray();
+            }
         }
 
         public bool TryAdd(TKey key, TValue value)
         {
-            throw new NotImplementedException();
+            // No existing value is set, so no locking, right?
+            return _wrapped.TryAdd(key, GetNeedle(value));
         }
 
         public bool TryGetValue(TKey key, out TValue value)
@@ -337,6 +352,7 @@ namespace System.Collections.Concurrent
 
         public bool TryUpdate(TKey key, TValue newValue, TValue comparisonValue)
         {
+            // TODO: Add TryUpdate to SafeDictionary and WeakDictionary
             throw new NotImplementedException();
         }
 
@@ -345,6 +361,19 @@ namespace System.Collections.Concurrent
             foreach (var resource in _wrapped)
             {
                 resource.Value.CaptureAndWait();
+            }
+        }
+
+        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
+        {
+            using (_context.Enter())
+            {
+                LockableNeedle<TValue> created = GetNeedle(value);
+                if (!_wrapped.TryAdd(key, created))
+                {
+                    _pool.Donate(created);
+                    throw new ArgumentException("An item with the same key has already been added");
+                }
             }
         }
 
@@ -391,6 +420,15 @@ namespace System.Collections.Concurrent
         private void Recycle(LockableNeedle<TValue> obj)
         {
             obj.Free();
+        }
+
+        bool IDictionary<TKey, TValue>.Remove(TKey key)
+        {
+            using (_context.Enter())
+            {
+                // TODO: How locking should work here?
+                return _wrapped.Remove(key);
+            }
         }
     }
 }
