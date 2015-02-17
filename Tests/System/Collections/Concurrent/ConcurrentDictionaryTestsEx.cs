@@ -33,5 +33,12 @@ namespace MonoTests.System.Collections.Concurrent
             Assert.Throws<ArgumentNullException>(() => GC.KeepAlive(((ICollection<KeyValuePair<string, string>>)dict).Contains(new KeyValuePair<string, string>(null, null))));
             Assert.IsFalse(((IDictionary)dict).Contains(8));
         }
+
+        [Test]
+        public void NullOnNonExistingKey()
+        {
+            var dict = new ConcurrentDictionary<long, string>();
+            Assert.Throws<KeyNotFoundException>(() => GC.KeepAlive(dict[1234L]));
+        }
     }
 }

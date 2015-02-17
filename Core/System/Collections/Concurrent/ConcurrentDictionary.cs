@@ -219,7 +219,11 @@ namespace System.Collections.Concurrent
                 // keep the is operator
                 if (key is TKey)
                 {
-                    return _wrapped[(TKey)key].Value;
+                    LockableNeedle<TValue> result;
+                    if (_wrapped.TryGetValue((TKey) key, out result))
+                    {
+                        return result.Value;
+                    }
                 }
                 return null;
             }
