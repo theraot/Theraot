@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading;
 using NUnit.Framework;
 
 namespace MonoTests.System.Collections.Concurrent
@@ -10,6 +9,50 @@ namespace MonoTests.System.Collections.Concurrent
     [TestFixture]
     public class ConcurrentDictionaryTestsEx
     {
+        [Test]
+        public void EditWhileIterating()
+        {
+            var d = new ConcurrentDictionary<string, string>();
+            Assert.IsTrue(d.TryAdd("0", "1"));
+            Assert.IsTrue(d.TryAdd("a", "b"));
+            int expectedCount = 2;
+            Assert.AreEqual(expectedCount, d.Count);
+            string a = null;
+            var foundCount = 0;
+            // MSDN says: "it does not represent a moment-in-time snapshot of the dictionary."
+            // And also "The contents exposed through the enumerator may contain modifications made to the dictionary after GetEnumerator was called."
+            foreach (var item in d)
+            {
+                foundCount++;
+                Assert.AreEqual(expectedCount, d.Count);
+                var didRemove = d.TryRemove("a", out a);
+                if (foundCount == 1)
+                {
+                    Assert.IsTrue(didRemove);
+                    expectedCount--;
+                }
+                else
+                {
+                    Assert.IsFalse(didRemove);
+                }
+                Assert.AreEqual(expectedCount, d.Count);
+                var didAdd = d.TryAdd("c", "d");
+                if (foundCount == 1)
+                {
+                    Assert.IsTrue(didAdd);
+                    expectedCount++;
+                }
+                else
+                {
+                    Assert.IsFalse(didAdd);
+                }
+                Assert.AreEqual(expectedCount, d.Count);
+            }
+            Assert.IsNull(a);
+            Assert.AreEqual(2, foundCount);
+            Assert.AreEqual(2, d.Count);
+        }
+
         [Test]
         public void InitWithConflictingData()
         {
