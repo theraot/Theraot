@@ -1369,7 +1369,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private void ExtendProbingIfNeeded(int attempts)
         {
-            var diff = attempts - _probing;
+            var diff = 1 + attempts - _probing;
             if (diff > 0)
             {
                 Interlocked.Add(ref _probing, diff);
