@@ -236,6 +236,28 @@ namespace Theraot.Collections.ThreadSafe
             return false; // false means value was not found
         }
 
+        public bool TryGetOrInsert(int index, T item, out T stored)
+        {
+            // This method should be encapsulated in a public one.
+            object _stored;
+            var result = _root.TryGetOrInsert(unchecked((uint)index), item, out _stored);
+            if (result)
+            {
+                Interlocked.Increment(ref _count);
+            }
+            stored = (T)_stored;
+            return result; // true means value was set
+        }
+
+        public bool TryGetOrInsert(int index, Func<T> itemFactory, out T stored)
+        {
+            if (itemFactory == null)
+            {
+                throw new ArgumentNullException("itemFactory");
+            }
+            return InternalTryGetOrInsert(index, itemFactory, out stored);
+        }
+
         public bool TryUpdate(int index, T item, Predicate<T> check)
         {
             // This should never add an item
@@ -309,8 +331,22 @@ namespace Theraot.Collections.ThreadSafe
             return result;
         }
 
+        internal bool InternalTryGetOrInsert(int index, Func<T> itemFactory, out T stored)
+        {
+            // This method should be encapsulated in a public one.
+            object _stored;
+            var result = _root.TryGetOrInsert(unchecked((uint)index), () => itemFactory(), out _stored);
+            if (result)
+            {
+                Interlocked.Increment(ref _count);
+            }
+            stored = (T)_stored;
+            return result; // true means value was set
+        }
+
         internal IEnumerable<T> InternalWhere(Predicate<T> predicate)
         {
+            // This method should be encapsulated in a public one.
             foreach (var value in _root.Where(value => predicate((T)value)))
             {
                 yield return (T)value;
@@ -343,7 +379,6 @@ namespace Theraot.Collections.ThreadSafe
             }
             return result; // true means value was set
         }
-
         internal bool TryGetCheckSet(int index, Func<T> itemFactory, Predicate<object> check, out bool isNew)
         {
             // NOTICE this method has no null check

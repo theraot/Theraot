@@ -72,7 +72,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             foreach (var child in _entries)
             {
-                if (!ReferenceEquals(child, null))
+                if (child != null)
                 {
                     var items = child as Branch;
                     if (items != null)
@@ -84,7 +84,14 @@ namespace Theraot.Collections.ThreadSafe
                     }
                     else
                     {
-                        yield return child;
+                        if (child == BucketHelper.Null)
+                        {
+                            yield return null;
+                        }
+                        else
+                        {
+                            yield return child;
+                        }
                     }
                 }
             }
@@ -244,6 +251,30 @@ namespace Theraot.Collections.ThreadSafe
             // ---
             var branch = branches[resultCount - 1];
             var result = branch.PrivateTryGetCheckSet(index, itemFactory, check, out isNew); // true means value was set
+            Leave(branches, resultCount);
+            return result;
+        }
+
+        internal bool TryGetOrInsert(uint index, object item, out object stored)
+        {
+            // Get the target branches
+            int resultCount;
+            var branches = Map(index, out resultCount);
+            // ---
+            var branch = branches[resultCount - 1];
+            var result = branch.PrivateTryGetOrInsert(index, item, out stored); // true means value was set
+            Leave(branches, resultCount);
+            return result;
+        }
+
+        internal bool TryGetOrInsert(uint index, Func<object> itemFactory, out object stored)
+        {
+            // Get the target branches
+            int resultCount;
+            var branches = Map(index, out resultCount);
+            // ---
+            var branch = branches[resultCount - 1];
+            var result = branch.PrivateTryGetOrInsert(index, itemFactory, out stored); // true means value was set
             Leave(branches, resultCount);
             return result;
         }
@@ -716,6 +747,46 @@ namespace Theraot.Collections.ThreadSafe
             }
             return false; // false means value was not set
         }
+
+        private bool PrivateTryGetOrInsert(uint index, object item, out object stored)
+        {
+            Interlocked.Increment(ref _useCount); // We are most likely to add - overstatimate count
+            var subindex = GetSubindex(index);
+            var previous = Interlocked.CompareExchange(ref _entries[subindex], item ?? BucketHelper.Null, null);
+            if (previous == null)
+            {
+                stored = item;
+                return true;
+            }
+            if (previous == BucketHelper.Null)
+            {
+                previous = null;
+            }
+            stored = previous;
+            Interlocked.Decrement(ref _useCount); // We did not add after all
+            return false;
+        }
+
+        private bool PrivateTryGetOrInsert(uint index, Func<object> itemFactory, out object stored)
+        {
+            Interlocked.Increment(ref _useCount); // We are most likely to add - overstatimate count
+            var subindex = GetSubindex(index);
+            var result = itemFactory();
+            var previous = Interlocked.CompareExchange(ref _entries[subindex], result ?? BucketHelper.Null, null);
+            if (previous == null)
+            {
+                stored = result;
+                return true;
+            }
+            if (previous == BucketHelper.Null)
+            {
+                previous = null;
+            }
+            stored = previous;
+            Interlocked.Decrement(ref _useCount); // We did not add after all
+            return false;
+        }
+
 
         private bool PrivateTryUpdate(uint index, object item, Predicate<object> check)
         {

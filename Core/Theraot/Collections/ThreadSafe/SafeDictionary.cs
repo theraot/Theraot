@@ -235,6 +235,85 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        public TValue AddOrUpdate(TKey key, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory, out bool added)
+        {
+            if (ReferenceEquals(addValueFactory, null))
+            {
+                throw new ArgumentNullException("addValueFactory");
+            }
+            if (ReferenceEquals(updateValueFactory, null))
+            {
+                throw new ArgumentNullException("updateValueFactory");
+            }
+            var hashCode = _keyComparer.GetHashCode(key);
+            var attempts = 0;
+            while (true)
+            {
+                ExtendProbingIfNeeded(attempts);
+                KeyValuePair<TKey, TValue> stored;
+                var result = _mapper.InternalInsertOrUpdate
+                    (
+                        hashCode + attempts,
+                        () => new KeyValuePair<TKey, TValue>(key, addValueFactory(key)),
+                        found =>
+                        {
+                            var _found = (KeyValuePair<TKey, TValue>)found;
+                            return new KeyValuePair<TKey, TValue>(key, updateValueFactory(_found.Key, _found.Value));
+                        },
+                        found =>
+                        {
+                            var _found = (KeyValuePair<TKey, TValue>)found;
+                            return _keyComparer.Equals(key, _found.Key);
+                        },
+                        out stored,
+                        out added
+                    );
+                if (result)
+                {
+                    return stored.Value;
+                }
+                attempts++;
+            }
+        }
+
+        public TValue AddOrUpdate(TKey key, TValue addValue, Func<TKey, TValue, TValue> updateValueFactory, out bool added)
+        {
+            if (ReferenceEquals(updateValueFactory, null))
+            {
+                throw new ArgumentNullException("updateValueFactory");
+            }
+            var hashCode = _keyComparer.GetHashCode(key);
+            var attempts = 0;
+            var neo = new KeyValuePair<TKey, TValue>(key, addValue);
+            while (true)
+            {
+                ExtendProbingIfNeeded(attempts);
+                KeyValuePair<TKey, TValue> stored;
+                var result = _mapper.InternalInsertOrUpdate
+                    (
+                        hashCode + attempts,
+                        neo,
+                        found =>
+                        {
+                            var _found = (KeyValuePair<TKey, TValue>)found;
+                            return new KeyValuePair<TKey, TValue>(key, updateValueFactory(_found.Key, _found.Value));
+                        },
+                        found =>
+                        {
+                            var _found = (KeyValuePair<TKey, TValue>)found;
+                            return _keyComparer.Equals(key, _found.Key);
+                        },
+                        out stored,
+                        out added
+                    );
+                if (result)
+                {
+                    return stored.Value;
+                }
+                attempts++;
+            }
+        }
+
         /// <summary>
         /// Removes all the elements.
         /// </summary>
@@ -370,36 +449,22 @@ namespace Theraot.Collections.ThreadSafe
             var attempts = 0;
             while (true)
             {
-                TValue value = default(TValue);
                 ExtendProbingIfNeeded(attempts);
-                Predicate<object> check = found =>
+                KeyValuePair<TKey, TValue> stored;
+                if (
+                    _mapper.InternalTryGetOrInsert
+                        (
+                            hashCode + attempts,
+                            () => new KeyValuePair<TKey, TValue>(key, valueFactory(key)),
+                            out stored
+                        )
+                    )
                 {
-                    var _found = (KeyValuePair<TKey, TValue>)found;
-                    if (_keyComparer.Equals(_found.Key, key))
-                    {
-                        // This is the item that has been stored with the key
-                        value = _found.Value;
-                        // Throw to abort overwrite
-                        throw new ArgumentException("An item with the same key has already been added");
-                    }
-                    // This is not the key, keep looking
-                    return false;
-                };
-                try
-                {
-                    bool isNew;
-                    // TryGetCheckSet will add if no item is found, otherwise it calls check
-                    if (_mapper.TryGetCheckSet(hashCode + attempts, () => new KeyValuePair<TKey, TValue>(key, value = valueFactory(key)), check, out isNew))
-                    {
-                        // It added a new item
-                        return value;
-                    }
+                    return stored.Value;
                 }
-                catch (ArgumentException)
+                if (_keyComparer.Equals(stored.Key, key))
                 {
-                    // An item with the same key has already been added
-                    // Return it
-                    return value;
+                    return stored.Value;
                 }
                 attempts++;
             }
@@ -413,34 +478,21 @@ namespace Theraot.Collections.ThreadSafe
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
-                Predicate<object> check = found =>
+                KeyValuePair<TKey, TValue> stored;
+                if (
+                    _mapper.TryGetOrInsert
+                        (
+                            hashCode + attempts,
+                            neo,
+                            out stored
+                        )
+                    )
                 {
-                    var _found = (KeyValuePair<TKey, TValue>)found;
-                    if (_keyComparer.Equals(_found.Key, key))
-                    {
-                        // This is the item that has been stored with the key
-                        value = _found.Value;
-                        // Throw to abort overwrite
-                        throw new ArgumentException("An item with the same key has already been added");
-                    }
-                    // This is not the key, keep looking
-                    return false;
-                };
-                try
-                {
-                    bool isNew;
-                    // TryGetCheckSet will add if no item is found, otherwise it calls check
-                    if (_mapper.TryGetCheckSet(hashCode + attempts, neo, check, out isNew))
-                    {
-                        // It added a new item
-                        return value;
-                    }
+                    return stored.Value;
                 }
-                catch (ArgumentException)
+                if (_keyComparer.Equals(stored.Key, key))
                 {
-                    // An item with the same key has already been added
-                    // Return it
-                    return value;
+                    return stored.Value;
                 }
                 attempts++;
             }
@@ -851,35 +903,22 @@ namespace Theraot.Collections.ThreadSafe
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
-                Predicate<object> check = found =>
+                KeyValuePair<TKey, TValue> _stored;
+                if (
+                    _mapper.TryGetOrInsert
+                        (
+                            hashCode + attempts,
+                            neo,
+                            out _stored
+                        )
+                    )
                 {
-                    var _found = (KeyValuePair<TKey, TValue>)found;
-                    if (_keyComparer.Equals(_found.Key, key))
-                    {
-                        // This is the item that has been stored with the key
-                        value = _found.Value;
-                        // Throw to abort overwrite
-                        throw new ArgumentException("An item with the same key has already been added");
-                    }
-                    // This is not the key, keep looking
-                    return false;
-                };
-                try
-                {
-                    bool isNew;
-                    // TryGetCheckSet will add if no item is found, otherwise it calls check
-                    if (_mapper.TryGetCheckSet(hashCode + attempts, neo, check, out isNew))
-                    {
-                        // It added a new item
-                        stored = value;
-                        return true;
-                    }
+                    stored = _stored.Value;
+                    return true;
                 }
-                catch (ArgumentException)
+                if (_keyComparer.Equals(_stored.Key, key))
                 {
-                    // An item with the same key has already been added
-                    // Return it
-                    stored = value;
+                    stored = _stored.Value;
                     return false;
                 }
                 attempts++;
@@ -888,45 +927,27 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool TryGetOrAdd(TKey key, Func<TKey, TValue> valueFactory, out TValue stored)
         {
-            if (ReferenceEquals(valueFactory, null))
-            {
-                throw new ArgumentNullException("valueFactory");
-            }
             var hashCode = _keyComparer.GetHashCode(key);
             var attempts = 0;
             while (true)
             {
-                TValue value = default(TValue);
                 ExtendProbingIfNeeded(attempts);
-                Predicate<object> check = found =>
+                KeyValuePair<TKey, TValue> _stored;
+                if (
+                    _mapper.InternalTryGetOrInsert
+                        (
+                            hashCode + attempts,
+                            () => new KeyValuePair<TKey, TValue>(key, valueFactory(key)),
+                            out _stored
+                        )
+                    )
                 {
-                    var _found = (KeyValuePair<TKey, TValue>)found;
-                    if (_keyComparer.Equals(_found.Key, key))
-                    {
-                        // This is the item that has been stored with the key
-                        value = _found.Value;
-                        // Throw to abort overwrite
-                        throw new ArgumentException("An item with the same key has already been added");
-                    }
-                    // This is not the key, keep looking
-                    return false;
-                };
-                try
-                {
-                    bool isNew;
-                    // TryGetCheckSet will add if no item is found, otherwise it calls check
-                    if (_mapper.TryGetCheckSet(hashCode + attempts, () => new KeyValuePair<TKey, TValue>(key, value = valueFactory(key)), check, out isNew))
-                    {
-                        // It added a new item
-                        stored = value;
-                        return true;
-                    }
+                    stored = _stored.Value;
+                    return true;
                 }
-                catch (ArgumentException)
+                if (_keyComparer.Equals(_stored.Key, key))
                 {
-                    // An item with the same key has already been added
-                    // Return it
-                    stored = value;
+                    stored = _stored.Value;
                     return false;
                 }
                 attempts++;
@@ -1040,7 +1061,6 @@ namespace Theraot.Collections.ThreadSafe
             }
             return false;
         }
-
 
         /// <summary>
         /// Returns the values where the key satisfies the predicate.
@@ -1394,7 +1414,7 @@ namespace Theraot.Collections.ThreadSafe
                 attempts++;
             }
         }
-        
+
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
         {
             AddNew(item.Key, item.Value);
