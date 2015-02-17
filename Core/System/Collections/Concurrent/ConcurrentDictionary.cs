@@ -179,10 +179,21 @@ namespace System.Collections.Concurrent
         {
             get
             {
+                // key can be null
+                if (ReferenceEquals(key, null))
+                {
+                    // ConcurrentDictionary hates null
+                    throw new ArgumentNullException("key");
+                }
                 return _wrapped[key].Value;
             }
             set
             {
+                if (ReferenceEquals(key, null))
+                {
+                    // ConcurrentDictionary hates null
+                    throw new ArgumentNullException("key");
+                }
                 using (_context.Enter())
                 {
                     LockableNeedle<TValue> created = null;
@@ -203,7 +214,7 @@ namespace System.Collections.Concurrent
             {
                 if (key == null)
                 {
-                    throw new NullReferenceException("key");
+                    throw new ArgumentNullException("key");
                 }
                 // keep the is operator
                 if (key is TKey)
@@ -214,6 +225,11 @@ namespace System.Collections.Concurrent
             }
             set
             {
+                if (ReferenceEquals(key, null))
+                {
+                    // ConcurrentDictionary hates null
+                    throw new ArgumentNullException("key");
+                }
                 // keep the is operator
                 if (key is TKey && value is TValue)
                 {
