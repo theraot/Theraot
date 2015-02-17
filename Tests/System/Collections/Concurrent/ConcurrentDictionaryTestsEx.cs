@@ -25,13 +25,21 @@ namespace MonoTests.System.Collections.Concurrent
         }
 
         [Test]
-        public void UnexpectedContans()
+        public void UnexpectedContains()
         {
             var dict = new ConcurrentDictionary<string, string>();
             Assert.Throws<ArgumentNullException>(() => GC.KeepAlive(dict.ContainsKey(null)));
             Assert.Throws<ArgumentNullException>(() => GC.KeepAlive(((IDictionary)dict).Contains(null)));
             Assert.Throws<ArgumentNullException>(() => GC.KeepAlive(((ICollection<KeyValuePair<string, string>>)dict).Contains(new KeyValuePair<string, string>(null, null))));
             Assert.IsFalse(((IDictionary)dict).Contains(8));
+        }
+
+        [Test]
+        public void UnexpectedAddAndRemove()
+        {
+            var dict = new ConcurrentDictionary<string, string>();
+            Assert.Throws<ArgumentNullException>(() => ((ICollection<KeyValuePair<string, string>>)dict).Add(new KeyValuePair<string, string>(null, null)));
+            Assert.Throws<ArgumentNullException>(() => GC.KeepAlive(((ICollection<KeyValuePair<string, string>>)dict).Remove(new KeyValuePair<string, string>(null, null))));
         }
 
         [Test]

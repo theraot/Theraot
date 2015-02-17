@@ -146,42 +146,32 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool InsertOrUpdate(int index, Func<T> itemFactory, Func<T, T> itemUpdateFactory, Predicate<T> check, out T stored, out bool isNew)
         {
-            object storedObject;
-            var result = _root.InsertOrUpdate
-                (
-                    unchecked((uint)index),
-                    () => itemFactory(),
-                    input => itemUpdateFactory((T)input),
-                    input => check((T)input),
-                    out storedObject,
-                    out isNew
-                );
-            if (isNew)
+            if (ReferenceEquals(itemFactory, null))
             {
-                Interlocked.Increment(ref _count);
+                throw new ArgumentNullException("itemFactory");
             }
-            stored = (T)storedObject;
-            return result;
+            if (ReferenceEquals(itemUpdateFactory, null))
+            {
+                throw new ArgumentNullException("itemUpdateFactory");
+            }
+            if (ReferenceEquals(check, null))
+            {
+                throw new ArgumentNullException("check");
+            }
+            return InternalInsertOrUpdate(index, () => itemFactory(), input => itemUpdateFactory((T)input), input => check((T)input), out stored, out isNew);
         }
 
         public bool InsertOrUpdate(int index, T item, Func<T, T> itemUpdateFactory, Predicate<T> check, out T stored, out bool isNew)
         {
-            object storedObject;
-            var result = _root.InsertOrUpdate
-                (
-                    unchecked((uint) index),
-                    item,
-                    input => itemUpdateFactory((T) input),
-                    input => check((T)input),
-                    out storedObject,
-                    out isNew
-                );
-            if (isNew)
+            if (ReferenceEquals(itemUpdateFactory, null))
             {
-                Interlocked.Increment(ref _count);
+                throw new ArgumentNullException("itemUpdateFactory");
             }
-            stored = (T)storedObject;
-            return result;
+            if (ReferenceEquals(check, null))
+            {
+                throw new ArgumentNullException("check");
+            }
+            return InternalInsertOrUpdate(index, item, input => itemUpdateFactory((T)input), input => check((T)input), out stored, out isNew);
         }
 
         /// <summary>
@@ -274,6 +264,53 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("predicate");
             }
+            return InternalWhere(predicate);
+        }
+
+        internal bool InternalInsertOrUpdate(int index, Func<object> itemFactory, Func<object, object> itemUpdateFactory, Predicate<object> check, out T stored, out bool isNew)
+        {
+            // NOTICE this method has no null check
+            object storedObject;
+            var result = _root.InsertOrUpdate
+                (
+                    unchecked((uint)index),
+                    itemFactory,
+                    itemUpdateFactory,
+                    check,
+                    out storedObject,
+                    out isNew
+                );
+            if (isNew)
+            {
+                Interlocked.Increment(ref _count);
+            }
+            stored = (T)storedObject;
+            return result;
+        }
+
+        internal bool InternalInsertOrUpdate(int index, T item, Func<object, object> itemUpdateFactory, Predicate<object> check, out T stored, out bool isNew)
+        {
+            // NOTICE this method has no null check
+            object storedObject;
+            var result = _root.InsertOrUpdate
+                (
+                    unchecked((uint)index),
+                    item,
+                    itemUpdateFactory,
+                    check,
+                    out storedObject,
+                    out isNew
+                );
+            if (isNew)
+            {
+                Interlocked.Increment(ref _count);
+            }
+            stored = (T)storedObject;
+            return result;
+        }
+
+        internal IEnumerable<T> InternalWhere(Predicate<T> predicate)
+        {
             foreach (var value in _root.Where(value => predicate((T)value)))
             {
                 yield return (T)value;
@@ -282,6 +319,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool TryGetCheckRemoveAt(int index, Predicate<object> check, out T previous)
         {
+            // NOTICE this method has no null check
             // Keep this method internal
             object _previous;
             if (_root.TryGetCheckRemoveAt(unchecked((uint)index), check, out _previous))
@@ -296,6 +334,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool TryGetCheckSet(int index, T item, Predicate<object> check, out bool isNew)
         {
+            // NOTICE this method has no null check
             // Keep this method internal
             var result = _root.TryGetCheckSet(unchecked((uint)index), item, check, out isNew);
             if (isNew)
@@ -307,6 +346,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool TryGetCheckSet(int index, Func<T> itemFactory, Predicate<object> check, out bool isNew)
         {
+            // NOTICE this method has no null check
             // Keep this method internal
             var result = _root.TryGetCheckSet(unchecked((uint)index), () => itemFactory(), check, out isNew);
             if (isNew)
@@ -315,6 +355,7 @@ namespace Theraot.Collections.ThreadSafe
             }
             return result; // true means value was set
         }
+
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();

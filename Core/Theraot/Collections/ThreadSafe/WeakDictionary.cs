@@ -198,12 +198,24 @@ namespace Theraot.Collections.ThreadSafe
 
         public TValue AddOrUpdate(TKey key, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory)
         {
+            if (ReferenceEquals(addValueFactory, null))
+            {
+                throw new ArgumentNullException("addValueFactory");
+            }
+            if (ReferenceEquals(updateValueFactory, null))
+            {
+                throw new ArgumentNullException("updateValueFactory");
+            }
             // TODO AddOrUpdate
             throw new NotImplementedException();
         }
 
         public TValue AddOrUpdate(TKey key, TValue addValue, Func<TKey, TValue, TValue> updateValueFactory)
         {
+            if (ReferenceEquals(updateValueFactory, null))
+            {
+                throw new ArgumentNullException("updateValueFactory");
+            }
             // TODO AddOrUpdate
             throw new NotImplementedException();
         }
@@ -267,6 +279,10 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool ContainsKey(int hashCode, Predicate<TKey> keyCheck)
         {
+            if (ReferenceEquals(keyCheck, null))
+            {
+                throw new ArgumentNullException("keyCheck");
+            }
             return _wrapped.ContainsKey
                 (
                     hashCode,
@@ -293,6 +309,14 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool ContainsKey(int hashCode, Predicate<TKey> keyCheck, Predicate<TValue> valueCheck)
         {
+            if (ReferenceEquals(keyCheck, null))
+            {
+                throw new ArgumentNullException("keyCheck");
+            }
+            if (ReferenceEquals(valueCheck, null))
+            {
+                throw new ArgumentNullException("valueCheck");
+            }
             return _wrapped.ContainsKey
                 (
                     hashCode,
@@ -365,6 +389,10 @@ namespace Theraot.Collections.ThreadSafe
 
         public TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)
         {
+            if (ReferenceEquals(valueFactory, null))
+            {
+                throw new ArgumentNullException("valueFactory");
+            }
             TNeedle needle = NeedleReservoir<TKey, TNeedle>.GetNeedle(key);
             TValue result;
             if (!_wrapped.TryGetOrAdd(needle, input => !input.IsAlive, input => valueFactory(input.Value), out result))
@@ -450,6 +478,10 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool Remove(int hashCode, Predicate<TKey> keyCheck, out TValue value)
         {
+            if (ReferenceEquals(keyCheck, null))
+            {
+                throw new ArgumentNullException("keyCheck");
+            }
             return _wrapped.Remove
                 (
                     hashCode,
@@ -478,6 +510,14 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool Remove(int hashCode, Predicate<TKey> keyCheck, Predicate<TValue> valueCheck, out TValue value)
         {
+            if (ReferenceEquals(keyCheck, null))
+            {
+                throw new ArgumentNullException("keyCheck");
+            }
+            if (ReferenceEquals(valueCheck, null))
+            {
+                throw new ArgumentNullException("valueCheck");
+            }
             return _wrapped.Remove
                 (
                     hashCode,
@@ -512,6 +552,10 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public int RemoveWhereKey(Predicate<TKey> keyCheck)
         {
+            if (ReferenceEquals(keyCheck, null))
+            {
+                throw new ArgumentNullException("keyCheck");
+            }
             return _wrapped.RemoveWhereKey
                 (
                     input =>
@@ -538,6 +582,10 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public IEnumerable<TValue> RemoveWhereKeyEnumerable(Predicate<TKey> keyCheck)
         {
+            if (ReferenceEquals(keyCheck, null))
+            {
+                throw new ArgumentNullException("keyCheck");
+            }
             return _wrapped.RemoveWhereKeyEnumerable
                 (
                     input =>
@@ -564,6 +612,10 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public int RemoveWhereValue(Predicate<TValue> valueCheck)
         {
+            if (ReferenceEquals(valueCheck, null))
+            {
+                throw new ArgumentNullException("valueCheck");
+            }
             return _wrapped.RemoveWhereValue(valueCheck);
         }
 
@@ -579,6 +631,10 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public IEnumerable<TValue> RemoveWhereValueEnumerable(Predicate<TValue> valueCheck)
         {
+            if (ReferenceEquals(valueCheck, null))
+            {
+                throw new ArgumentNullException("valueCheck");
+            }
             return _wrapped.RemoveWhereValueEnumerable(valueCheck);
         }
 
@@ -648,6 +704,10 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool TryGetOrAdd(TKey key, Func<TKey, TValue> valueFactory, out TValue stored)
         {
+            if (ReferenceEquals(valueFactory, null))
+            {
+                throw new ArgumentNullException("valueFactory");
+            }
             var needle = NeedleReservoir<TKey, TNeedle>.GetNeedle(key);
             if (_wrapped.TryGetOrAdd(needle, input => !input.IsAlive, input => valueFactory(input.Value), out stored))
             {
@@ -692,6 +752,10 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool TryGetValue(int hashCode, Predicate<TKey> keyCheck, out TValue value)
         {
+            if (ReferenceEquals(keyCheck, null))
+            {
+                throw new ArgumentNullException("keyCheck");
+            }
             return _wrapped.TryGetValue(hashCode, input => keyCheck(input.Value), out value);
         }
 
@@ -718,6 +782,10 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public IEnumerable<TValue> Where(Predicate<TKey> keyCheck)
         {
+            if (ReferenceEquals(keyCheck, null))
+            {
+                throw new ArgumentNullException("keyCheck");
+            }
             var matches = _wrapped.Where
                 (
                     input =>
@@ -745,6 +813,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="System.ArgumentException">An item with the same key has already been added</exception>
         internal void AddNew(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
         {
+            // NOTICE this method has no null check
             var needle = NeedleReservoir<TKey, TNeedle>.GetNeedle(key);
             try
             {
@@ -772,6 +841,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal TValue GetOrAdd(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
         {
+            // NOTICE this method has no null check
             var needle = NeedleReservoir<TKey, TNeedle>.GetNeedle(key);
             TValue stored;
             if (
@@ -805,6 +875,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <param name="value">The value.</param>
         internal void Set(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
         {
+            // NOTICE this method has no null check
             var needle = NeedleReservoir<TKey, TNeedle>.GetNeedle(key);
             _wrapped.Set
                 (
@@ -830,6 +901,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <param name="isNew">if set to <c>true</c> the item value was set.</param>
         internal void Set(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value, out bool isNew)
         {
+            // NOTICE this method has no null check
             var needle = NeedleReservoir<TKey, TNeedle>.GetNeedle(key);
             _wrapped.Set
                 (
@@ -857,6 +929,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         internal bool TryAdd(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
         {
+            // NOTICE this method has no null check
             var needle = NeedleReservoir<TKey, TNeedle>.GetNeedle(key);
             if
                 (
@@ -894,6 +967,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         internal bool TryAdd(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value, out KeyValuePair<TKey, TValue> stored)
         {
+            // NOTICE this method has no null check
             var needle = NeedleReservoir<TKey, TNeedle>.GetNeedle(key);
             KeyValuePair<TNeedle, TValue> _stored;
             var result = _wrapped.TryAdd
@@ -921,6 +995,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool TryGetOrAdd(TKey key, Predicate<TKey> keyOverwriteCheck, Func<TKey, TValue> valueFactory, out TValue stored)
         {
+            // NOTICE this method has no null check
             var needle = NeedleReservoir<TKey, TNeedle>.GetNeedle(key);
             if
                 (
@@ -949,6 +1024,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool TryGetOrAdd(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value, out TValue stored)
         {
+            // NOTICE this method has no null check
             var needle = NeedleReservoir<TKey, TNeedle>.GetNeedle(key);
             if
                 (

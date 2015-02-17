@@ -251,6 +251,14 @@ namespace System.Collections.Concurrent
                 // ConcurrentDictionary hates null
                 throw new ArgumentNullException("key");
             }
+            if (ReferenceEquals(addValueFactory, null))
+            {
+                throw new ArgumentNullException("addValueFactory");
+            }
+            if (ReferenceEquals(updateValueFactory, null))
+            {
+                throw new ArgumentNullException("updateValueFactory");
+            }
             using (_context.Enter())
             {
                 return _wrapped.AddOrUpdate
@@ -272,6 +280,10 @@ namespace System.Collections.Concurrent
             {
                 // ConcurrentDictionary hates null
                 throw new ArgumentNullException("key");
+            }
+            if (ReferenceEquals(updateValueFactory, null))
+            {
+                throw new ArgumentNullException("updateValueFactory");
             }
             using (_context.Enter())
             {
@@ -326,18 +338,27 @@ namespace System.Collections.Concurrent
         public TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)
         {
             // No existing value is set, so no locking, right?
+            if (ReferenceEquals(key, null))
+            {
+                // ConcurrentDictionary hates null
+                throw new ArgumentNullException("key");
+            }
+            if (ReferenceEquals(valueFactory, null))
+            {
+                throw new ArgumentNullException("valueFactory");
+            }
             return _wrapped.GetOrAdd(key, input => GetNeedle(valueFactory(input))).Value;
         }
 
         public TValue GetOrAdd(TKey key, TValue value)
         {
             // No existing value is set, so no locking, right?
+            if (ReferenceEquals(key, null))
+            {
+                // ConcurrentDictionary hates null
+                throw new ArgumentNullException("key");
+            }
             return _wrapped.GetOrAdd(key, input => GetNeedle(value)).Value;
-        }
-
-        public bool Remove(KeyValuePair<TKey, TValue> item)
-        {
-            throw new NotImplementedException();
         }
 
         public void Remove(object key)
@@ -362,6 +383,11 @@ namespace System.Collections.Concurrent
         public bool TryAdd(TKey key, TValue value)
         {
             // No existing value is set, so no locking, right?
+            if (ReferenceEquals(key, null))
+            {
+                // ConcurrentDictionary hates null
+                throw new ArgumentNullException("key");
+            }
             var created = GetNeedle(value);
             if (!_wrapped.TryAdd(key, created))
             {
@@ -373,6 +399,11 @@ namespace System.Collections.Concurrent
 
         public bool TryGetValue(TKey key, out TValue value)
         {
+            if (ReferenceEquals(key, null))
+            {
+                // ConcurrentDictionary hates null
+                throw new ArgumentNullException("key");
+            }
             LockableNeedle<TValue> found;
             var result = _wrapped.TryGetValue(key, out found);
             if (result)
@@ -386,11 +417,21 @@ namespace System.Collections.Concurrent
 
         public bool TryRemove(TKey key, out TValue value)
         {
+            if (ReferenceEquals(key, null))
+            {
+                // ConcurrentDictionary hates null
+                throw new ArgumentNullException("key");
+            }
             throw new NotImplementedException();
         }
 
         public bool TryUpdate(TKey key, TValue newValue, TValue comparisonValue)
         {
+            if (ReferenceEquals(key, null))
+            {
+                // ConcurrentDictionary hates null
+                throw new ArgumentNullException("key");
+            }
             return _wrapped.TryUpdate
                 (
                     key,
@@ -409,6 +450,11 @@ namespace System.Collections.Concurrent
 
         void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
         {
+            if (ReferenceEquals(key, null))
+            {
+                // ConcurrentDictionary hates null
+                throw new ArgumentNullException("key");
+            }
             using (_context.Enter())
             {
                 LockableNeedle<TValue> created = GetNeedle(value);
@@ -427,6 +473,13 @@ namespace System.Collections.Concurrent
 
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
         {
+            if (ReferenceEquals(item.Key, null))
+            {
+                // ConcurrentDictionary hates null
+                // While technically item is not null and item.Key is not an argument...
+                // This is what happens when you do the call on Microsoft's implementation
+                throw new ArgumentNullException("key");
+            }
             var created = GetNeedle(item.Value);
             if (!_wrapped.TryAdd(item.Key, created))
             {
@@ -512,8 +565,25 @@ namespace System.Collections.Concurrent
             obj.Free();
         }
 
+        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
+        {
+            if (ReferenceEquals(item.Key, null))
+            {
+                // ConcurrentDictionary hates null
+                // While technically item is not null and item.Key is not an argument...
+                // This is what happens when you do the call on Microsoft's implementation
+                throw new ArgumentNullException("key");
+            }
+            throw new NotImplementedException();
+        }
+
         bool IDictionary<TKey, TValue>.Remove(TKey key)
         {
+            if (ReferenceEquals(key, null))
+            {
+                // ConcurrentDictionary hates null
+                throw new ArgumentNullException("key");
+            }
             using (_context.Enter())
             {
                 // TODO: How locking should work here?

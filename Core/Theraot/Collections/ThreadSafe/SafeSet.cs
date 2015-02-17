@@ -400,7 +400,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("check");
             }
-            var matches = _mapper.Where(check);
+            var matches = _mapper.InternalWhere(check);
             var count = 0;
             foreach (var value in matches)
             {
@@ -428,7 +428,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("check");
             }
-            var matches = _mapper.Where(check);
+            var matches = _mapper.InternalWhere(check);
             foreach (var value in matches)
             {
                 if (Remove(value))
@@ -500,7 +500,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("check");
             }
-            return _mapper.Where(check);
+            return _mapper.InternalWhere(check);
         }
 
         /// <summary>
