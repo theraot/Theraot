@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Theraot.Collections;
 using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Threading.Needles;
@@ -320,19 +321,12 @@ namespace System.Collections.Concurrent
             return _wrapped.ContainsKey(key);
         }
 
-        public void CopyTo(Array array, int index)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
-        {
-            throw new NotImplementedException();
-        }
-
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            throw new NotImplementedException();
+            foreach (var pair in _wrapped)
+            {
+                yield return new KeyValuePair<TKey, TValue>(pair.Key, pair.Value.Value);
+            }
         }
 
         public TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)
@@ -534,6 +528,62 @@ namespace System.Collections.Concurrent
                 }
             }
             return false;
+        }
+
+        void ICollection<KeyValuePair<TKey, TValue>>.CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+        {
+            // TODO: How locking should work here?
+            Extensions.CanCopyTo(_wrapped.Count, array, arrayIndex);
+            Extensions.CopyTo(this, array, arrayIndex);
+        }
+
+        void ICollection.CopyTo(Array array, int index)
+        {
+            // TODO: How locking should work here?
+            // WORST API EVER - I shouldn't be supporting this
+            // I'm checking size before checking type - I have no plans to fix that
+            Extensions.CanCopyTo(_wrapped.Count, array, index);
+            try
+            {
+                var pairs = array as KeyValuePair<TKey, TValue>[]; // most decent alternative
+                if (pairs != null)
+                {
+                    var _array = pairs;
+                    foreach (var pair in _wrapped)
+                    {
+                        _array[index] = new KeyValuePair<TKey, TValue>(pair.Key, pair.Value.Value);
+                        index++;
+                    }
+                    return;
+                }
+                var objects = array as object[];
+                if (objects != null)
+                {
+                    var _array = objects;
+                    foreach (var pair in _wrapped)
+                    {
+                        _array[index] = new KeyValuePair<TKey, TValue>(pair.Key, pair.Value.Value);
+                        index++;
+                    }
+                    return;
+                }
+                var entries = array as DictionaryEntry[]; // that thing exists, I was totally unaware, I may as well use it.
+                if (entries != null)
+                {
+                    var _array = entries;
+                    foreach (var pair in _wrapped)
+                    {
+                        _array[index] = new DictionaryEntry {Key = pair.Key, Value = pair.Value.Value};
+                        index++;
+                    }
+                    return;
+                }
+                throw new ArgumentException("Not supported array type"); // A.K.A ScrewYouException
+            }
+            catch (IndexOutOfRangeException exception)
+            {
+                throw new ArgumentException("array", exception.Message);
+            }
         }
 
         IDictionaryEnumerator IDictionary.GetEnumerator()
