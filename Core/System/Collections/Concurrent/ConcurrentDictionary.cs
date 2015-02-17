@@ -353,7 +353,13 @@ namespace System.Collections.Concurrent
         public bool TryAdd(TKey key, TValue value)
         {
             // No existing value is set, so no locking, right?
-            return _wrapped.TryAdd(key, GetNeedle(value));
+            var created = GetNeedle(value);
+            if (!_wrapped.TryAdd(key, created))
+            {
+                _pool.Donate(created);
+                return false;
+            }
+            return true;
         }
 
         public bool TryGetValue(TKey key, out TValue value)
@@ -412,7 +418,12 @@ namespace System.Collections.Concurrent
 
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
         {
-            throw new NotImplementedException();
+            var created = GetNeedle(item.Value);
+            if (!_wrapped.TryAdd(item.Key, created))
+            {
+                _pool.Donate(created);
+                throw new ArgumentException("An item with the same key has already been added");
+            }
         }
 
         private void AddRange(IEnumerable<KeyValuePair<TKey, TValue>> collection)
