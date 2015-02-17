@@ -358,7 +358,15 @@ namespace System.Collections.Concurrent
 
         public bool TryGetValue(TKey key, out TValue value)
         {
-            throw new NotImplementedException();
+            LockableNeedle<TValue> found;
+            var result = _wrapped.TryGetValue(key, out found);
+            if (result)
+            {
+                value = found.Value;
+                return true;
+            }
+            value = default(TValue);
+            return false;
         }
 
         public bool TryRemove(TKey key, out TValue value)
