@@ -185,7 +185,8 @@ namespace System.Collections.Concurrent
                     // ConcurrentDictionary hates null
                     throw new ArgumentNullException("key");
                 }
-                return _wrapped[key].Value;
+                var needle = _wrapped[key];
+                return needle.Value;
             }
             set
             {
@@ -245,7 +246,11 @@ namespace System.Collections.Concurrent
 
         public TValue AddOrUpdate(TKey key, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory)
         {
-            // TODO: SafeDictionary implementation is pending
+            if (ReferenceEquals(key, null))
+            {
+                // ConcurrentDictionary hates null
+                throw new ArgumentNullException("key");
+            }
             using (_context.Enter())
             {
                 return _wrapped.AddOrUpdate
@@ -263,7 +268,11 @@ namespace System.Collections.Concurrent
 
         public TValue AddOrUpdate(TKey key, TValue addValue, Func<TKey, TValue, TValue> updateValueFactory)
         {
-            // TODO: SafeDictionary implementation is pending
+            if (ReferenceEquals(key, null))
+            {
+                // ConcurrentDictionary hates null
+                throw new ArgumentNullException("key");
+            }
             using (_context.Enter())
             {
                 return _wrapped.AddOrUpdate

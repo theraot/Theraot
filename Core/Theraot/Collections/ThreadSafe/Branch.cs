@@ -104,6 +104,34 @@ namespace Theraot.Collections.ThreadSafe
             // if this returns false, something was inserted first... so we get the previous item
         }
 
+        public bool InsertOrUpdate(uint index, object item, Func<object, object> itemUpdateFactory, Predicate<object> check, out object previous, out bool isNew)
+        {
+            // Get the target branches
+            int resultCount;
+            var branches = Map(index, out resultCount);
+            // ---
+            var branch = branches[resultCount - 1];
+            var result = branch.PrivateInsertOrUpdate(index, item, itemUpdateFactory, check, out previous, out isNew);
+            Leave(branches, resultCount);
+            return result;
+            // if this returns true, the new item was inserted, so there was no previous item
+            // if this returns false, something was inserted first... so we get the previous item
+        }
+
+        public bool InsertOrUpdate(uint index, Func<object> itemFactory, Func<object, object> itemUpdateFactory, Predicate<object> check, out object stored, out bool isNew)
+        {
+            // Get the target branches
+            int resultCount;
+            var branches = Map(index, out resultCount);
+            // ---
+            var branch = branches[resultCount - 1];
+            var result = branch.PrivateInsertOrUpdate(index, itemFactory, itemUpdateFactory, check, out stored, out isNew);
+            Leave(branches, resultCount);
+            return result;
+            // if this returns true, the new item was inserted, so there was no previous item
+            // if this returns false, something was inserted first... so we get the previous item
+        }
+
         public bool RemoveAt(uint index, out object previous)
         {
             previous = null;
@@ -216,6 +244,18 @@ namespace Theraot.Collections.ThreadSafe
             // ---
             var branch = branches[resultCount - 1];
             var result = branch.PrivateTryGetCheckSet(index, itemFactory, check, out isNew); // true means value was set
+            Leave(branches, resultCount);
+            return result;
+        }
+
+        internal bool TryUpdate(uint index, object item, object comparisonItem)
+        {
+            // Get the target branches
+            int resultCount;
+            var branches = Map(index, out resultCount);
+            // ---
+            var branch = branches[resultCount - 1];
+            var result = branch.PrivateTryUpdate(index, item, comparisonItem); // true means value was set
             Leave(branches, resultCount);
             return result;
         }
@@ -378,6 +418,61 @@ namespace Theraot.Collections.ThreadSafe
             }
             Interlocked.Decrement(ref _useCount); // We did not add after all
             return false;
+        }
+
+        private bool PrivateInsertOrUpdate(uint index, object item, Func<object, object> itemUpdateFactory, Predicate<object> check, out object stored, out bool isNew)
+        {
+            object previous;
+            // NOTICE this method is a while loop, it may starve
+            while (!PrivateInsert(index, item, out previous))
+            {
+                isNew = false;
+                if (check(previous))
+                {
+                    object result = itemUpdateFactory(previous);
+                    if (PrivateTryUpdate(index, result, previous))
+                    {
+                        stored = result;
+                        return true;
+                    }
+                }
+                else
+                {
+                    stored = previous;
+                    return false;
+                }
+            }
+            isNew = true;
+            stored = item;
+            return true;
+        }
+
+        private bool PrivateInsertOrUpdate(uint index, Func<object> itemFactory, Func<object, object> itemUpdateFactory, Predicate<object> check, out object stored, out bool isNew)
+        {
+            var addResult = itemFactory();
+            object previous;
+            // NOTICE this method is a while loop, it may starve
+            while (!PrivateInsert(index, addResult, out previous))
+            {
+                isNew = false;
+                if (check(previous))
+                {
+                    object result = itemUpdateFactory(previous);
+                    if (PrivateTryUpdate(index, result, previous))
+                    {
+                        stored = result;
+                        return true;
+                    }
+                }
+                else
+                {
+                    stored = previous;
+                    return false; // returns false only when check returns false
+                }
+            }
+            isNew = true;
+            stored = addResult;
+            return true;
         }
 
         private bool PrivateRemoveAt(uint index, out object previous)
@@ -641,7 +736,18 @@ namespace Theraot.Collections.ThreadSafe
                     return true; // true means value was found and set
                 }
             }
-            return false; // false means abort
+            return false; // false means value was found and not set
+        }
+
+        private bool PrivateTryUpdate(uint index, object item, object comparisonItem)
+        {
+            var subindex = GetSubindex(index);
+            var previous = Interlocked.CompareExchange(ref _entries[subindex], item ?? BucketHelper.Null, comparisonItem);
+            if (previous == comparisonItem)
+            {
+                return true; // true means value was found and set
+            }
+            return false;
         }
 
         private void Shrink()

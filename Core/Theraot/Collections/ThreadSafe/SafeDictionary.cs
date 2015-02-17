@@ -156,14 +156,55 @@ namespace Theraot.Collections.ThreadSafe
 
         public TValue AddOrUpdate(TKey key, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory)
         {
-            // TODO AddOrUpdate
-            throw new NotImplementedException();
+            var hashCode = _keyComparer.GetHashCode(key);
+            var attempts = 0;
+            while (true)
+            {
+                ExtendProbingIfNeeded(attempts);
+                KeyValuePair<TKey, TValue> stored;
+                bool isNew;
+                var result = _mapper.InsertOrUpdate
+                    (
+                        hashCode + attempts,
+                        () => new KeyValuePair<TKey, TValue>(key, addValueFactory(key)),
+                        input => new KeyValuePair<TKey, TValue>(key, updateValueFactory(input.Key, input.Value)),
+                        input => _keyComparer.Equals(key, input.Key),
+                        out stored,
+                        out isNew
+                    );
+                if (result)
+                {
+                    return stored.Value;
+                }
+                attempts++;
+            }
         }
 
         public TValue AddOrUpdate(TKey key, TValue addValue, Func<TKey, TValue, TValue> updateValueFactory)
         {
-            // TODO AddOrUpdate
-            throw new NotImplementedException();
+            var hashCode = _keyComparer.GetHashCode(key);
+            var attempts = 0;
+            var neo = new KeyValuePair<TKey, TValue>(key, addValue);
+            while (true)
+            {
+                ExtendProbingIfNeeded(attempts);
+                KeyValuePair<TKey, TValue> stored;
+                bool isNew;
+                var result = _mapper.InsertOrUpdate
+                    (
+                        hashCode + attempts,
+                        neo,
+                        input => new KeyValuePair<TKey, TValue>(key, updateValueFactory(input.Key, input.Value)),
+                        input => _keyComparer.Equals(key, input.Key),
+                        out stored,
+                        out isNew
+                    );
+                if (result)
+                {
+                    return stored.Value;
+                }
+                attempts++;
+            }
         }
 
         /// <summary>
@@ -914,11 +955,10 @@ namespace Theraot.Collections.ThreadSafe
             {
                 bool keyMatch = false;
                 ExtendProbingIfNeeded(attempts);
-                Predicate<object> check = found =>
+                Predicate<KeyValuePair<TKey, TValue>> check = found =>
                 {
-                    var _found = (KeyValuePair<TKey, TValue>) found;
-                    keyMatch = _keyComparer.Equals(_found.Key, key);
-                    return keyMatch && _valueComparer.Equals(_found.Value, comparisonValue);
+                    keyMatch = _keyComparer.Equals(found.Key, key);
+                    return keyMatch && _valueComparer.Equals(found.Value, comparisonValue);
                 };
                 if (_mapper.TryUpdate(hashCode + attempts, neo, check))
                 {
@@ -940,11 +980,10 @@ namespace Theraot.Collections.ThreadSafe
             {
                 bool keyMatch = false;
                 ExtendProbingIfNeeded(attempts);
-                Predicate<object> check = found =>
+                Predicate<KeyValuePair<TKey, TValue>> check = found =>
                 {
-                    var _found = (KeyValuePair<TKey, TValue>)found;
-                    keyMatch = _keyComparer.Equals(_found.Key, key);
-                    return keyMatch && valueCheck(_found.Value);
+                    keyMatch = _keyComparer.Equals(found.Key, key);
+                    return keyMatch && valueCheck(found.Value);
                 };
                 if (_mapper.TryUpdate(hashCode + attempts, neo, check))
                 {

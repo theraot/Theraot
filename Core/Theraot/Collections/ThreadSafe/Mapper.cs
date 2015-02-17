@@ -144,6 +144,46 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
+        public bool InsertOrUpdate(int index, Func<T> itemFactory, Func<T, T> itemUpdateFactory, Predicate<T> check, out T stored, out bool isNew)
+        {
+            object storedObject;
+            var result = _root.InsertOrUpdate
+                (
+                    unchecked((uint)index),
+                    () => itemFactory(),
+                    input => itemUpdateFactory((T)input),
+                    input => check((T)input),
+                    out storedObject,
+                    out isNew
+                );
+            if (isNew)
+            {
+                Interlocked.Increment(ref _count);
+            }
+            stored = (T)storedObject;
+            return result;
+        }
+
+        public bool InsertOrUpdate(int index, T item, Func<T, T> itemUpdateFactory, Predicate<T> check, out T stored, out bool isNew)
+        {
+            object storedObject;
+            var result = _root.InsertOrUpdate
+                (
+                    unchecked((uint) index),
+                    item,
+                    input => itemUpdateFactory((T) input),
+                    input => check((T)input),
+                    out storedObject,
+                    out isNew
+                );
+            if (isNew)
+            {
+                Interlocked.Increment(ref _count);
+            }
+            stored = (T)storedObject;
+            return result;
+        }
+
         /// <summary>
         /// Removes the item at the specified index.
         /// </summary>
@@ -206,6 +246,18 @@ namespace Theraot.Collections.ThreadSafe
             return false; // false means value was not found
         }
 
+        public bool TryUpdate(int index, T item, Predicate<T> check)
+        {
+            // This should never add an item
+            return _root.TryUpdate(unchecked((uint)index), item, input => check((T)input)); // true means value was set
+        }
+
+        public bool TryUpdate(int index, T item, T comparisonItem)
+        {
+            // This should never add an item
+            return _root.TryUpdate(unchecked((uint)index), item, comparisonItem); // true means value was set
+        }
+
         /// <summary>
         /// Returns the values where the predicate is satisfied.
         /// </summary>
@@ -230,6 +282,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool TryGetCheckRemoveAt(int index, Predicate<object> check, out T previous)
         {
+            // Keep this method internal
             object _previous;
             if (_root.TryGetCheckRemoveAt(unchecked((uint)index), check, out _previous))
             {
@@ -243,6 +296,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool TryGetCheckSet(int index, T item, Predicate<object> check, out bool isNew)
         {
+            // Keep this method internal
             var result = _root.TryGetCheckSet(unchecked((uint)index), item, check, out isNew);
             if (isNew)
             {
@@ -253,6 +307,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool TryGetCheckSet(int index, Func<T> itemFactory, Predicate<object> check, out bool isNew)
         {
+            // Keep this method internal
             var result = _root.TryGetCheckSet(unchecked((uint)index), () => itemFactory(), check, out isNew);
             if (isNew)
             {
@@ -260,13 +315,6 @@ namespace Theraot.Collections.ThreadSafe
             }
             return result; // true means value was set
         }
-
-        internal bool TryUpdate(int index, T item, Predicate<object> check)
-        {
-            // This should never add an item
-            return _root.TryUpdate(unchecked((uint)index), item, check); // true means value was set
-        }
-
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
