@@ -487,6 +487,34 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
+        /// Removes a key by hash code, key predicate and value predicate.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="valueCheck">The value predicate.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified key was removed; otherwise, <c>false</c>.
+        /// </returns>
+        public bool Remove(TKey key, Predicate<TValue> valueCheck, out TValue value)
+        {
+            return _wrapped.Remove
+                (
+                    _keyComparer.GetHashCode(key),
+                    input =>
+                    {
+                        TKey _key;
+                        if (input.TryGetValue(out _key))
+                        {
+                            return _keyComparer.Equals(_key, key);
+                        }
+                        return false;
+                    },
+                    valueCheck,
+                    out value
+                );
+        }
+
+        /// <summary>
         /// Removes the specified key.
         /// </summary>
         /// <param name="key">The key.</param>

@@ -635,6 +635,55 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         /// Removes a key by hash code, key predicate and value predicate.
         /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="valueCheck">The value predicate.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified key was removed; otherwise, <c>false</c>.
+        /// </returns>
+        public bool Remove(TKey key, Predicate<TValue> valueCheck, out TValue value)
+        {
+            if (valueCheck == null)
+            {
+                throw new ArgumentNullException("valueCheck");
+            }
+            value = default(TValue);
+            var hashCode = _keyComparer.GetHashCode(key);
+            for (var attempts = 0; attempts < _probing; attempts++)
+            {
+                var done = false;
+                KeyValuePair<TKey, TValue> previous;
+                var result = _mapper.TryGetCheckRemoveAt
+                    (
+                        hashCode + attempts,
+                        found =>
+                        {
+                            var _found = (KeyValuePair<TKey, TValue>)found;
+                            if (_keyComparer.Equals(_found.Key, key))
+                            {
+                                done = true;
+                                if (valueCheck(_found.Value))
+                                {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        },
+                        out previous
+                    );
+                if (done)
+                {
+                    value = previous.Value;
+                    return result;
+                }
+            }
+            return false;
+        }
+
+
+        /// <summary>
+        /// Removes a key by hash code, key predicate and value predicate.
+        /// </summary>
         /// <param name="hashCode">The hash code to look for.</param>
         /// <param name="keyCheck">The key predicate.</param>
         /// <param name="valueCheck">The value predicate.</param>

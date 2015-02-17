@@ -447,7 +447,15 @@ namespace System.Collections.Concurrent
                 // ConcurrentDictionary hates null
                 throw new ArgumentNullException("key");
             }
-            throw new NotImplementedException();
+            LockableNeedle<TValue> found;
+            var result = _wrapped.Remove(key, out found);
+            if (result)
+            {
+                value = found.Value;
+                return true;
+            }
+            value = default(TValue);
+            return false;
         }
 
         public bool TryUpdate(TKey key, TValue newValue, TValue comparisonValue)
@@ -496,7 +504,22 @@ namespace System.Collections.Concurrent
 
         void IDictionary.Add(object key, object value)
         {
-            throw new NotImplementedException();
+            if (ReferenceEquals(key, null))
+            {
+                // ConcurrentDictionary hates null
+                throw new ArgumentNullException("key");
+            }
+            // keep the is operator
+            if (key is TKey && value is TValue)
+            {
+                LockableNeedle<TValue> created = GetNeedle((TValue)value);
+                if (!_wrapped.TryAdd((TKey) key, created))
+                {
+                    _pool.Donate(created);
+                    throw new ArgumentException("An item with the same key has already been added");
+                }
+            }
+            throw new ArgumentException();
         }
 
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
@@ -633,7 +656,7 @@ namespace System.Collections.Concurrent
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
+            return GetEnumerator();
         }
 
         private LockableNeedle<TValue> GetNeedle(TValue value)
@@ -657,7 +680,17 @@ namespace System.Collections.Concurrent
 
         void IDictionary.Remove(object key)
         {
-            throw new NotImplementedException();
+            if (ReferenceEquals(key, null))
+            {
+                // ConcurrentDictionary hates null
+                throw new ArgumentNullException("key");
+            }
+            if (key is TKey)
+            {
+                // TODO: How locking should work here?
+                LockableNeedle<TValue> found;
+                _wrapped.Remove((TKey)key, out found);
+            }
         }
 
         bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
@@ -669,7 +702,8 @@ namespace System.Collections.Concurrent
                 // This is what happens when you do the call on Microsoft's implementation
                 throw new ArgumentNullException("key");
             }
-            throw new NotImplementedException();
+            LockableNeedle<TValue> found;
+            return _wrapped.Remove(item.Key, input => EqualityComparer<TValue>.Default.Equals(item.Value, item.Value), out found);
         }
 
         bool IDictionary<TKey, TValue>.Remove(TKey key)
