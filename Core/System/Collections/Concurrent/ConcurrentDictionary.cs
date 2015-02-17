@@ -428,8 +428,15 @@ namespace System.Collections.Concurrent
 
         private void AddRange(IEnumerable<KeyValuePair<TKey, TValue>> collection)
         {
-            GC.KeepAlive(collection);
-            throw new NotImplementedException();
+            foreach (var pair in collection)
+            {
+                var created = GetNeedle(pair.Value);
+                if (!_wrapped.TryAdd(pair.Key, created))
+                {
+                    _pool.Donate(created);
+                    throw new ArgumentException("The source contains duplicate keys.");
+                }
+            }
         }
 
         bool IDictionary.Contains(object key)

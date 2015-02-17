@@ -40,5 +40,14 @@ namespace MonoTests.System.Collections.Concurrent
             var dict = new ConcurrentDictionary<long, string>();
             Assert.Throws<KeyNotFoundException>(() => GC.KeepAlive(dict[1234L]));
         }
+
+        [Test]
+        public void InitWithConflictingData()
+        {
+            var data = new List<KeyValuePair<int, int>>();
+            data.Add(new KeyValuePair<int, int>(0, 0));
+            data.Add(new KeyValuePair<int, int>(0, 1));
+            Assert.Throws<ArgumentException>(()=> new ConcurrentDictionary<int, int>(data));
+        }
     }
 }
