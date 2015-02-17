@@ -368,8 +368,12 @@ namespace System.Collections.Concurrent
 
         public bool TryUpdate(TKey key, TValue newValue, TValue comparisonValue)
         {
-            // TODO: Add TryUpdate to SafeDictionary and WeakDictionary
-            throw new NotImplementedException();
+            return _wrapped.TryUpdate
+                (
+                    key,
+                    GetNeedle(newValue),
+                    input => EqualityComparer<TValue>.Default.Equals(input.Value, comparisonValue)
+                );
         }
 
         private void AcquireAllLocks()

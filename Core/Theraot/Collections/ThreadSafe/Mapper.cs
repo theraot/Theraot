@@ -261,6 +261,12 @@ namespace Theraot.Collections.ThreadSafe
             return result; // true means value was set
         }
 
+        internal bool TryUpdate(int index, T item, Predicate<object> check)
+        {
+            // This should never add an item
+            return _root.TryUpdate(unchecked((uint)index), item, check); // true means value was set
+        }
+
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();

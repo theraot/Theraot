@@ -139,11 +139,6 @@ namespace Theraot.Collections.ThreadSafe
             // So we say the operation was a success regardless
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         public bool TryGet(uint index, out object value)
         {
             value = null;
@@ -225,6 +220,18 @@ namespace Theraot.Collections.ThreadSafe
             return result;
         }
 
+        internal bool TryUpdate(uint index, object item, Predicate<object> check)
+        {
+            // Get the target branches
+            int resultCount;
+            var branches = Map(index, out resultCount);
+            // ---
+            var branch = branches[resultCount - 1];
+            var result = branch.PrivateTryUpdate(index, item, check); // true means value was set
+            Leave(branches, resultCount);
+            return result;
+        }
+
         private static void Leave(Branch[] branches, int resultCount)
         {
             for (int index = 0; index < resultCount; index++)
@@ -241,6 +248,11 @@ namespace Theraot.Collections.ThreadSafe
             branch._buffer = null;
             branch._useCount = 0;
             branch._parent = null;
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         private int GetSubindex(uint index)
@@ -608,6 +620,28 @@ namespace Theraot.Collections.ThreadSafe
                 return true; // true means value was set
             }
             return false; // false means value was not set
+        }
+
+        private bool PrivateTryUpdate(uint index, object item, Predicate<object> check)
+        {
+            var subindex = GetSubindex(index);
+            var found = Interlocked.CompareExchange(ref _entries[subindex], null, null);
+            if (found == null)
+            {
+                // -- Not found
+                return false; // false means value was not found
+            }
+            // -- Found
+            if (check(found == BucketHelper.Null ? null : found))
+            {
+                // -- Passed
+                var previous = Interlocked.CompareExchange(ref _entries[subindex], item ?? BucketHelper.Null, found);
+                if (previous == found)
+                {
+                    return true; // true means value was found and set
+                }
+            }
+            return false; // false means abort
         }
 
         private void Shrink()

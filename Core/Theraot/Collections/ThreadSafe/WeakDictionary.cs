@@ -9,6 +9,7 @@ using Theraot.Threading.Needles;
 
 namespace Theraot.Collections.ThreadSafe
 {
+    // TODO: this is actually a Weak Key dictionary useful to extend objects, there could also be Weak Value dictionaries useful for caches, and fully weak dictionary useful for the combination.
     [global::System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
     public class WeakDictionary<TKey, TValue, TNeedle> : IDictionary<TKey, TValue>
@@ -157,6 +158,7 @@ namespace Theraot.Collections.ThreadSafe
                 return false;
             }
         }
+
         public TValue this[TKey key]
         {
             get
@@ -691,6 +693,17 @@ namespace Theraot.Collections.ThreadSafe
         public bool TryGetValue(int hashCode, Predicate<TKey> keyCheck, out TValue value)
         {
             return _wrapped.TryGetValue(hashCode, input => keyCheck(input.Value), out value);
+        }
+
+        public bool TryUpdate(TKey key, TValue newValue, TValue comparisonValue, bool replaceDeadNeedles)
+        {
+            var needle = NeedleReservoir<TKey, TNeedle>.GetNeedle(key);
+            if (_wrapped.TryUpdate(needle, newValue, comparisonValue))
+            {
+                return true;
+            }
+            NeedleReservoir<TKey, TNeedle>.DonateNeedle(needle);
+            return false;
         }
 
         /// <summary>

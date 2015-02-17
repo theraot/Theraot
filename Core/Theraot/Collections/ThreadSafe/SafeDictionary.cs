@@ -22,6 +22,7 @@ namespace Theraot.Collections.ThreadSafe
         private readonly KeyCollection<TKey, TValue> _keyCollection;
         private readonly IEqualityComparer<TKey> _keyComparer;
         private readonly ValueCollection<TKey, TValue> _valueCollection;
+        private readonly IEqualityComparer<TValue> _valueComparer;
         private Mapper<KeyValuePair<TKey, TValue>> _mapper;
         private int _probing;
 
@@ -62,6 +63,7 @@ namespace Theraot.Collections.ThreadSafe
         public SafeDictionary(IEqualityComparer<TKey> comparer, int initialProbing)
         {
             _keyComparer = comparer ?? EqualityComparer<TKey>.Default;
+            _valueComparer = EqualityComparer<TValue>.Default;
             _mapper = new Mapper<KeyValuePair<TKey, TValue>>();
             _probing = initialProbing;
             _keyCollection = new KeyCollection<TKey, TValue>(this);
@@ -802,7 +804,7 @@ namespace Theraot.Collections.ThreadSafe
                 attempts++;
             }
         }
-        
+
         public bool TryGetOrAdd(TKey key, Func<TKey, TValue> valueFactory, out TValue stored)
         {
             var hashCode = _keyComparer.GetHashCode(key);
@@ -845,7 +847,7 @@ namespace Theraot.Collections.ThreadSafe
                 attempts++;
             }
         }
-        
+
         /// <summary>
         /// Tries to retrieve the value associated with the specified key.
         /// </summary>
@@ -903,6 +905,59 @@ namespace Theraot.Collections.ThreadSafe
             }
             return false;
         }
+
+        public bool TryUpdate(TKey key, TValue newValue, TValue comparisonValue)
+        {
+            var hashCode = _keyComparer.GetHashCode(key);
+            var neo = new KeyValuePair<TKey, TValue>(key, newValue);
+            for (var attempts = 0; attempts < _probing; attempts++)
+            {
+                bool keyMatch = false;
+                ExtendProbingIfNeeded(attempts);
+                Predicate<object> check = found =>
+                {
+                    var _found = (KeyValuePair<TKey, TValue>) found;
+                    keyMatch = _keyComparer.Equals(_found.Key, key);
+                    return keyMatch && _valueComparer.Equals(_found.Value, comparisonValue);
+                };
+                if (_mapper.TryUpdate(hashCode + attempts, neo, check))
+                {
+                    return true;
+                }
+                if (keyMatch)
+                {
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        public bool TryUpdate(TKey key, TValue newValue, Predicate<TValue> valueCheck)
+        {
+            var hashCode = _keyComparer.GetHashCode(key);
+            var neo = new KeyValuePair<TKey, TValue>(key, newValue);
+            for (var attempts = 0; attempts < _probing; attempts++)
+            {
+                bool keyMatch = false;
+                ExtendProbingIfNeeded(attempts);
+                Predicate<object> check = found =>
+                {
+                    var _found = (KeyValuePair<TKey, TValue>)found;
+                    keyMatch = _keyComparer.Equals(_found.Key, key);
+                    return keyMatch && valueCheck(_found.Value);
+                };
+                if (_mapper.TryUpdate(hashCode + attempts, neo, check))
+                {
+                    return true;
+                }
+                if (keyMatch)
+                {
+                    return false;
+                }
+            }
+            return false;
+        }
+
 
         /// <summary>
         /// Returns the values where the key satisfies the predicate.
@@ -1301,7 +1356,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     if (_keyComparer.Equals(found.Key, item.Key))
                     {
-                        if (EqualityComparer<TValue>.Default.Equals(found.Value, item.Value))
+                        if (_valueComparer.Equals(found.Value, item.Value))
                         {
                             return true;
                         }
@@ -1342,7 +1397,7 @@ namespace Theraot.Collections.ThreadSafe
                             if (_keyComparer.Equals(_found.Key, item.Key))
                             {
                                 done = true;
-                                if (EqualityComparer<TValue>.Default.Equals(_found.Value, item.Value))
+                                if (_valueComparer.Equals(_found.Value, item.Value))
                                 {
                                     return true;
                                 }
