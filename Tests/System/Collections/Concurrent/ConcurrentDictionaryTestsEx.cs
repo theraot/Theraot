@@ -11,6 +11,22 @@ namespace MonoTests.System.Collections.Concurrent
     public class ConcurrentDictionaryTestsEx
     {
         [Test]
+        public void InitWithConflictingData()
+        {
+            var data = new List<KeyValuePair<int, int>>();
+            data.Add(new KeyValuePair<int, int>(0, 0));
+            data.Add(new KeyValuePair<int, int>(0, 1));
+            Assert.Throws<ArgumentException>(() => new ConcurrentDictionary<int, int>(data));
+        }
+
+        [Test]
+        public void NullOnNonExistingKey()
+        {
+            var dict = new ConcurrentDictionary<long, string>();
+            Assert.Throws<KeyNotFoundException>(() => GC.KeepAlive(dict[1234L]));
+        }
+
+        [Test]
         public void PairCollide()
         {
             var firstPair = new KeyValuePair<string, string>("key", "validValue");
@@ -25,15 +41,18 @@ namespace MonoTests.System.Collections.Concurrent
         }
 
         [Test]
-        public void UnexpectedContains()
+        public void SimpleTest()
         {
-            var dict = new ConcurrentDictionary<string, string>();
-            Assert.Throws<ArgumentNullException>(() => GC.KeepAlive(dict.ContainsKey(null)));
-            Assert.Throws<ArgumentNullException>(() => GC.KeepAlive(((IDictionary)dict).Contains(null)));
-            Assert.Throws<ArgumentNullException>(() => GC.KeepAlive(((ICollection<KeyValuePair<string, string>>)dict).Contains(new KeyValuePair<string, string>(null, null))));
-            Assert.IsFalse(((IDictionary)dict).Contains(8));
+            ConcurrentDictionary<string, int> map;
+            map = new ConcurrentDictionary<string, int>();
+            Assert.AreEqual(0, map.Count);
+            map.TryAdd("foo", 1);
+            Assert.AreEqual(1, map.Count);
+            map.TryAdd("bar", 2);
+            Assert.AreEqual(2, map.Count);
+            map["foobar"] = 3;
+            Assert.AreEqual(3, map.Count);
         }
-
         [Test]
         public void UnexpectedAddAndRemove()
         {
@@ -43,19 +62,13 @@ namespace MonoTests.System.Collections.Concurrent
         }
 
         [Test]
-        public void NullOnNonExistingKey()
+        public void UnexpectedContains()
         {
-            var dict = new ConcurrentDictionary<long, string>();
-            Assert.Throws<KeyNotFoundException>(() => GC.KeepAlive(dict[1234L]));
-        }
-
-        [Test]
-        public void InitWithConflictingData()
-        {
-            var data = new List<KeyValuePair<int, int>>();
-            data.Add(new KeyValuePair<int, int>(0, 0));
-            data.Add(new KeyValuePair<int, int>(0, 1));
-            Assert.Throws<ArgumentException>(()=> new ConcurrentDictionary<int, int>(data));
+            var dict = new ConcurrentDictionary<string, string>();
+            Assert.Throws<ArgumentNullException>(() => GC.KeepAlive(dict.ContainsKey(null)));
+            Assert.Throws<ArgumentNullException>(() => GC.KeepAlive(((IDictionary)dict).Contains(null)));
+            Assert.Throws<ArgumentNullException>(() => GC.KeepAlive(((ICollection<KeyValuePair<string, string>>)dict).Contains(new KeyValuePair<string, string>(null, null))));
+            Assert.IsFalse(((IDictionary)dict).Contains(8));
         }
     }
 }
