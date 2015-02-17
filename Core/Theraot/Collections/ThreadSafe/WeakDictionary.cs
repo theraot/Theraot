@@ -770,6 +770,17 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
+        public bool TryUpdate(TKey key, TValue newValue, Predicate<TValue> valueCheck, bool replaceDeadNeedles)
+        {
+            var needle = NeedleReservoir<TKey, TNeedle>.GetNeedle(key);
+            if (_wrapped.TryUpdate(needle, newValue, valueCheck))
+            {
+                return true;
+            }
+            NeedleReservoir<TKey, TNeedle>.DonateNeedle(needle);
+            return false;
+        }
+
         /// <summary>
         /// Returns the values where the key satisfies the predicate.
         /// </summary>
