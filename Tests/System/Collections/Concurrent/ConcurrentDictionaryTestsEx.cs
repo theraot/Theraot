@@ -23,5 +23,15 @@ namespace MonoTests.System.Collections.Concurrent
             Assert.IsTrue(dict.Contains(firstPair));
             Assert.IsFalse(dict.Contains(secondPair));
         }
+
+        [Test]
+        public void UnexpectedContans()
+        {
+            var dict = new ConcurrentDictionary<string, string>();
+            Assert.Throws<ArgumentNullException>(() => GC.KeepAlive(dict.ContainsKey(null)));
+            Assert.Throws<ArgumentNullException>(() => GC.KeepAlive(((IDictionary)dict).Contains(null)));
+            Assert.Throws<ArgumentNullException>(() => GC.KeepAlive(((ICollection<KeyValuePair<string, string>>)dict).Contains(new KeyValuePair<string, string>(null, null))));
+            Assert.IsFalse(((IDictionary)dict).Contains(8));
+        }
     }
 }

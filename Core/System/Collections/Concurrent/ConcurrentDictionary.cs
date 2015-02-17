@@ -284,18 +284,13 @@ namespace System.Collections.Concurrent
             }
         }
 
-        public bool Contains(KeyValuePair<TKey, TValue> item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Contains(object key)
-        {
-            throw new NotImplementedException();
-        }
-
         public bool ContainsKey(TKey key)
         {
+            if (ReferenceEquals(key, null))
+            {
+                // ConcurrentDictionary hates null
+                throw new ArgumentNullException("key");
+            }
             // No existing value is set, so no locking, right?
             return _wrapped.ContainsKey(key);
         }
@@ -331,6 +326,7 @@ namespace System.Collections.Concurrent
         {
             throw new NotImplementedException();
         }
+
         public void Remove(object key)
         {
             throw new NotImplementedException();
@@ -430,6 +426,41 @@ namespace System.Collections.Concurrent
         {
             GC.KeepAlive(collection);
             throw new NotImplementedException();
+        }
+
+        bool IDictionary.Contains(object key)
+        {
+            if (ReferenceEquals(key, null))
+            {
+                // ConcurrentDictionary hates null
+                throw new ArgumentNullException("key");
+            }
+            // keep the is operator
+            if (key is TKey)
+            {
+                return ContainsKey((TKey)key);
+            }
+            return false;
+        }
+
+        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
+        {
+            if (ReferenceEquals(item.Key, null))
+            {
+                // ConcurrentDictionary hates null
+                // While technically item is not null and item.Key is not an argument...
+                // This is what happens when you do the call on Microsoft's implementation
+                throw new ArgumentNullException("key");
+            }
+            LockableNeedle<TValue> found;
+            if (_wrapped.TryGetValue(item.Key, out found))
+            {
+                if (EqualityComparer<TValue>.Default.Equals(found.Value, item.Value))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         IDictionaryEnumerator IDictionary.GetEnumerator()
