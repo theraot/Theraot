@@ -88,6 +88,7 @@ namespace System.Collections.Concurrent
         {
             get
             {
+                // This should be an snaptshot operation
                 using (_context.Enter())
                 {
                     AcquireAllLocks();
@@ -319,6 +320,7 @@ namespace System.Collections.Concurrent
 
         public void Clear()
         {
+            // This should be an snaptshot operation
             using (_context.Enter())
             {
                 AcquireAllLocks();
@@ -339,6 +341,7 @@ namespace System.Collections.Concurrent
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
+            // This method is not locking
             foreach (var pair in _wrapped)
             {
                 yield return new KeyValuePair<TKey, TValue>(pair.Key, pair.Value.Value);
@@ -391,6 +394,7 @@ namespace System.Collections.Concurrent
 
         public KeyValuePair<TKey, TValue>[] ToArray()
         {
+            // This should be an snaptshot operation
             using (_context.Enter())
             {
                 AcquireAllLocks();
@@ -595,57 +599,66 @@ namespace System.Collections.Concurrent
 
         void ICollection<KeyValuePair<TKey, TValue>>.CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
-            // TODO: How locking should work here?
-            Extensions.CanCopyTo(_wrapped.Count, array, arrayIndex);
-            this.CopyTo(array, arrayIndex);
+            // This should be an snaptshot operation
+            using (_context.Enter())
+            {
+                AcquireAllLocks();
+                Extensions.CanCopyTo(_wrapped.Count, array, arrayIndex);
+                this.CopyTo(array, arrayIndex);
+            }
         }
 
         void ICollection.CopyTo(Array array, int index)
         {
-            // TODO: How locking should work here?
-            // WORST API EVER - I shouldn't be supporting this
-            // I'm checking size before checking type - I have no plans to fix that
-            Extensions.CanCopyTo(_wrapped.Count, array, index);
-            try
+            // This should be an snaptshot operation
+            using (_context.Enter())
             {
-                var pairs = array as KeyValuePair<TKey, TValue>[]; // most decent alternative
-                if (pairs != null)
+                AcquireAllLocks();
+                // WORST API EVER - I shouldn't be supporting this
+                // I'm checking size before checking type - I have no plans to fix that
+                Extensions.CanCopyTo(_wrapped.Count, array, index);
+                try
                 {
-                    var _array = pairs;
-                    foreach (var pair in _wrapped)
+                    var pairs = array as KeyValuePair<TKey, TValue>[]; // most decent alternative
+                    if (pairs != null)
                     {
-                        _array[index] = new KeyValuePair<TKey, TValue>(pair.Key, pair.Value.Value);
-                        index++;
+                        var _array = pairs;
+                        foreach (var pair in _wrapped)
+                        {
+                            _array[index] = new KeyValuePair<TKey, TValue>(pair.Key, pair.Value.Value);
+                            index++;
+                        }
+                        return;
                     }
-                    return;
+                    var objects = array as object[];
+                    if (objects != null)
+                    {
+                        var _array = objects;
+                        foreach (var pair in _wrapped)
+                        {
+                            _array[index] = new KeyValuePair<TKey, TValue>(pair.Key, pair.Value.Value);
+                            index++;
+                        }
+                        return;
+                    }
+                    var entries = array as DictionaryEntry[];
+                        // that thing exists, I was totally unaware, I may as well use it.
+                    if (entries != null)
+                    {
+                        var _array = entries;
+                        foreach (var pair in _wrapped)
+                        {
+                            _array[index] = new DictionaryEntry {Key = pair.Key, Value = pair.Value.Value};
+                            index++;
+                        }
+                        return;
+                    }
+                    throw new ArgumentException("Not supported array type"); // A.K.A ScrewYouException
                 }
-                var objects = array as object[];
-                if (objects != null)
+                catch (IndexOutOfRangeException exception)
                 {
-                    var _array = objects;
-                    foreach (var pair in _wrapped)
-                    {
-                        _array[index] = new KeyValuePair<TKey, TValue>(pair.Key, pair.Value.Value);
-                        index++;
-                    }
-                    return;
+                    throw new ArgumentException("array", exception.Message);
                 }
-                var entries = array as DictionaryEntry[]; // that thing exists, I was totally unaware, I may as well use it.
-                if (entries != null)
-                {
-                    var _array = entries;
-                    foreach (var pair in _wrapped)
-                    {
-                        _array[index] = new DictionaryEntry { Key = pair.Key, Value = pair.Value.Value };
-                        index++;
-                    }
-                    return;
-                }
-                throw new ArgumentException("Not supported array type"); // A.K.A ScrewYouException
-            }
-            catch (IndexOutOfRangeException exception)
-            {
-                throw new ArgumentException("array", exception.Message);
             }
         }
 
@@ -687,7 +700,6 @@ namespace System.Collections.Concurrent
             }
             if (key is TKey)
             {
-                // TODO: How locking should work here?
                 LockableNeedle<TValue> found;
                 _wrapped.Remove((TKey)key, out found);
             }
@@ -715,7 +727,6 @@ namespace System.Collections.Concurrent
             }
             using (_context.Enter())
             {
-                // TODO: How locking should work here?
                 return _wrapped.Remove(key);
             }
         }
