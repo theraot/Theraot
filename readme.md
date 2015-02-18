@@ -32,7 +32,8 @@ Theraot's Libraries...
   - can be built for .NET 2.0, 3.0, 3.5, 4.0 and 4.5 with the help of conditional compilation to keep only the required code for the particular version.
   - includes lock-free and wait-free structures developed in `HashBucket` (another project of mine).
   - includes (among others) the following types to be used in old versions of .NET back to .NET 2.0:
-    - `System.Collections.Concurrent`: Work in progress
+    - `System.Collections.Concurrent.ConcurrentDictionary<TKey, TValue>`: Done
+    - `System.Collections.Concurrent...`: Pending
     - `System.Collections.Generic.HashSet<T>`: Done [See Note 1]
     - `System.Collections.Generic.SortedSet<T>`: Done
     - `System.Collections.Linq`: Up to .NET 3.5
@@ -126,25 +127,6 @@ Note 4: Do not rely on the `IsDisposed` property as it may change any moment if 
 Note 5: The `SpinWait` methods in `ThreadingHelper` provides alternatives to `System.Threading.SpinWait`.
 
 ---
-**"FAT" Features**
-
-Some code in this libraries has been developed for past or future features but is not currently used as part of the backports, so they are only provided in "FAT" builds.
-
-This are some parts worth of mention:
-
-  - `Theraot.Collections`
-    - `ThreadSafe`
-      - `CircularBucket`: A fixed-size wait-free circular collection.
-      - `WeakHashBucket`: A lock-free hash based dictionary of weak references.
-  - `Theraot.Core`
-    - `ICloneable<T>` & `ICloner<T>` & `CloneHelper`: Generalization of `ICloneable` as generic.
-    - `TraceRoute` & `TraceNode`: A Network Traceroute implementation
-  - `Theraot.Threading`
-    - `CritialDisposible`: A variant of `Disposible` that inherits from `CritialFinalizerObject`. [See Note 1]
-
-Note 1: In theory you shouldn't need the `CriticalDisposable`, if you need it, chances are something else is wrong.
-
----
 **Needles**
 
 A needle is concept similar to "handle", "pointer", and "reference". A needle is an object that can be used to access a value.
@@ -159,9 +141,58 @@ This lazy initializable needles are `IPromise<T>` which represents needle that w
   - `PromiseNeedle<T>` is a needle that is initialized on demand by the process that created the object.
   - `FutureNeedle<T>` is a needle that is initialized on a asynchronous operation.
 
-Finally, `Transact` and `Transact.Needle<T>` are used to create memory transaction.
+Finally, `Transact` and `Transact.Needle<T>` are used to create memory transaction [See below].
 
 Other needles include: `NotNull<T>` and `WeakDelegateNeedle<T>`.
+
+---
+**Lockable Needles**
+
+`LockableNeedle<T>` is only included in "FAT" builds. It provides functionality halfway between a `ReadWriteLock` and a transaction.
+
+To modify a `LockableNeedle<T>` it is required to enter the `LockableContext` that was used to create the `LockableNeedle<T>`. Any other thread attempting to modify the `LockableNeedle<T>` will wait until the current thread leaves the `LockableNeedle<T>`.
+
+There is no restriction to read `LockableNeedle<T>`, it will be an atomic operation if `T` is an atomic type (all classes and any primitive types with size not greater than that of IntPrt).
+
+---
+**Transactions**
+
+Transactions are only included in "FAT" builds. Using them is easy, here is a simple example:
+
+    var needle = Transact.CreateNeedle(1);
+
+    using (var transaction = new Transact())
+    {
+        needle.Value = 2;
+        transaction.Commit();
+    }
+
+Nesting transactions are also supported, refer to the tests for complex use cases.
+
+They only work on `Transact.Needle`, disposing the Transact releases all changes done using it, which is equivalent to a rollback to the las time `Commit` was called.
+
+If the value of any of the used `Transact.Needle` has changed by third party after it was readed under a transaction and before calling `Commit` then the call will fail (returns false).
+
+The system requires a way to clone any type used in the `Transact.Needle`. The default clone behavior is as follows:
+
+- value types are supported by default.
+- if `IClonalbe` or `IClonable<T>` (added in FAT builds) are available they are used.
+- if none of these are available the system will use serialization instead.
+
+Otherwise provide an `ICloner<T>` (added in FAT builds), if one is provided it takes preference over default clone behavior. To get an `ICloner<T>` with the default behavior call `CloneHelper<T>.GetCloner()`.
+
+It is also possible to explicitly call `Rollback` which will release all changes up to the last call to Commit. Multiple transactions over different needles can happen simultaneously without locking or waiting.
+
+The system supports up to 512 threads attempting to Commit simultaneously per AppDomain, any extra thread calling `Commit` will wait. When multiple threads are trying to Commit on the same needles, it is guaranteed that at least one will succeed.
+
+---
+**Works**
+
+Works are only included in "FAT" builds, and are a prototype for Task.
+
+Currently Works require a `WorkContext` that serves as thread pool. A default `WorkContext` is provided with as many dedotated threads as `Environment.ProcessorCount`.
+
+It is possible to wait a `Work` to complete, while doing so, the waiting thread donates it's time to execute pending works.
 
 ---
 Notes
@@ -180,7 +211,7 @@ There are a few things that are beyond the scope of my work:
   - I cannot modify `HashSet<T>` on .NET 3.5 to allow casting to `ISet<T>`
   - In the type `IGrouping<TKey, TElement>` `TKey` is covariant from .NET 4.0 onward, I cannot make it covariant in .NET 3.5.
 
-This features are not planned to be added or improved:
+These features are not planned to be added or improved:
 
   - `Environment.SpecialFolder`
   - `Environment.Is64BitProcess`
@@ -198,13 +229,13 @@ The following are the notable methods that has been added to existing types:
   - `Stopwatch.Restart` was added in .NET 4.0, use `StopwatchExtensions.Restart` instead.
   - `StringBuilder.Clear` was added in .NET 4.0, use `StringBuilderExtensions.Clear` instead.
 
-Note: the class `ReadOnlyCollection` exists since .NET 2.0, it takes a `IList<T>` instead of `ICollection<T>` and does not implement `IReadOnlyCollection<T>` which was added in .NET 4.5 - the class `ExtendedReadOnlyColletion<T>` aliviates this problems.
+Note: the class `ReadOnlyCollection` exists since .NET 2.0, it takes a `IList<T>` instead of `ICollection<T>` and does not implement `IReadOnlyCollection<T>` which was added in .NET 4.5 - the class `ExtendedReadOnlyColletion<T>` aliviates these problems.
 
 Others:
 
   - The class `ReaderWriterLockSlim` was added in .NET 3.5, if `ReaderWriterLock` is not good enough:
-    - Try using `Theraot.Threading.ReadWriteLock`.
-    - Otherwise use of memory transaction via `Theraot.Threading.Needles.Transact`.
+    - Try using `Theraot.Threading.ReadWriteLock`, refer to tests for examples.
+    - Otherwise use of memory transaction via `Theraot.Threading.Needles.Transact` [See Above].
   - The classes added in .NET 4.5 that require `EventHandler<T>` without the generic constraint may get backported using `Theraot.Core.NewEventHandler<T>`. Avoid using `EventHandler<T>` explicitly in those cases.
   - The classes added in .NET 4.0 or .NET 4.5 that require `OperationCanceledException.CancellationToken` et al. may get backported using `Theraot.Core.NewOperationCanceledException`. Avoid creating this exceptions yourself.
   - The class `TimeZoneInfo` was added in .NET 3.5... pending.

@@ -2,7 +2,6 @@
 using Theraot.Collections;
 using Theraot.Collections.Specialized;
 using Theraot.Collections.ThreadSafe;
-using Theraot.Threading.Needles;
 
 namespace System.Collections.Concurrent
 {
@@ -484,7 +483,7 @@ namespace System.Collections.Concurrent
                     var _array = entries;
                     foreach (var pair in _wrapped)
                     {
-                        _array[index] = new DictionaryEntry {Key = pair.Key, Value = pair.Value};
+                        _array[index] = new DictionaryEntry(pair.Key, pair.Value);
                         index++;
                     }
                     return;
@@ -499,7 +498,7 @@ namespace System.Collections.Concurrent
 
         IDictionaryEnumerator IDictionary.GetEnumerator()
         {
-            throw new NotImplementedException();
+            return new DictionaryEnumerator(this);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -542,6 +541,71 @@ namespace System.Collections.Concurrent
                 throw new ArgumentNullException("key");
             }
             return _wrapped.Remove(key);
+        }
+
+        private sealed class DictionaryEnumerator : IDictionaryEnumerator
+        {
+            private IEnumerator<KeyValuePair<TKey, TValue>> _wrapped;
+
+            internal DictionaryEnumerator(ConcurrentDictionary<TKey, TValue> wrapped)
+            {
+                _wrapped = wrapped.GetEnumerator();
+            }
+
+            public object Current
+            {
+                get
+                {
+                    return Entry;
+                }
+            }
+
+            public DictionaryEntry Entry
+            {
+                get
+                {
+                    var current = _wrapped.Current;
+                    return new DictionaryEntry(current.Key, current.Value);
+                }
+            }
+
+            public object Key
+            {
+                get
+                {
+                    var current = _wrapped.Current;
+                    return current.Key;
+                }
+            }
+
+            public object Value
+            {
+                get
+                {
+                    var current = _wrapped.Current;
+                    return current.Value;
+                }
+            }
+
+            public bool MoveNext()
+            {
+                if (_wrapped.MoveNext())
+                {
+                    return true;
+                }
+                // The DictionaryEnumerator of ConcurrentDictionary is not IDisposable...
+                // Which means this method takes the responsability of disposing
+                _wrapped.Dispose();
+                return false;
+            }
+
+            public void Reset()
+            {
+                // This is two levels deep of you should not be using this.
+                // You should not be using DictionaryEnumerator
+                // And you should not be calling Reset
+                throw new NotSupportedException();
+            }
         }
     }
 }
