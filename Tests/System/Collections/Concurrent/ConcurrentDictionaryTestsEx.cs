@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
 using NUnit.Framework;
 
 namespace MonoTests.System.Collections.Concurrent
@@ -52,6 +53,88 @@ namespace MonoTests.System.Collections.Concurrent
             Assert.AreEqual(2, foundCount);
             Assert.AreEqual(2, d.Count);
         }
+
+        [Test]
+        public void EditWhileIteratingThreaded()
+        {
+            var d = new ConcurrentDictionary<string, string>();
+            Assert.IsTrue(d.TryAdd("0", "1"));
+            Assert.IsTrue(d.TryAdd("a", "b"));
+            int[] expectedCount = { 2 };
+            Assert.AreEqual(expectedCount[0], d.Count);
+            string a = null;
+            var foundCount = 0;
+
+            ThreadStart remover = () =>
+            {
+                bool didRemove = d.TryRemove("a", out a);
+                if (didRemove)
+                {
+                    Assert.IsTrue(didRemove);
+                    expectedCount[0]--;
+                }
+                else
+                {
+                    Assert.IsFalse(didRemove);
+                }
+            };
+
+            ThreadStart adder = () =>
+            {
+                var didAdd = d.TryAdd("c", "d");
+                if (didAdd)
+                {
+                    Assert.IsTrue(didAdd);
+                    expectedCount[0]++;
+                }
+                else
+                {
+                    Assert.IsFalse(didAdd);
+                }
+            };
+
+            // MSDN says: "it does not represent a moment-in-time snapshot of the dictionary."
+            // And also "The contents exposed through the enumerator may contain modifications made to the dictionary after GetEnumerator was called."
+            foreach (var item in d)
+            {
+                foundCount++;
+                var old = expectedCount[0];
+                Assert.AreEqual(expectedCount[0], d.Count);
+                {
+                    var t = new Thread(remover);
+                    t.Start();
+                    t.Join();
+                }
+                if (foundCount == 1)
+                {
+                    Assert.AreNotEqual(old, expectedCount[0]);
+                }
+                else
+                {
+                    Assert.AreEqual(old, expectedCount[0]);
+                }
+                Assert.AreEqual(expectedCount[0], d.Count);
+                old = expectedCount[0];
+                {
+                    var t = new Thread(adder);
+                    t.Start();
+                    t.Join();
+                }
+                if (foundCount == 1)
+                {
+                    Assert.AreNotEqual(old, expectedCount[0]);
+                }
+                else
+                {
+                    Assert.AreEqual(old, expectedCount[0]);
+                }
+                Assert.AreEqual(expectedCount[0], d.Count);
+            }
+            Assert.IsNull(a);
+            Assert.AreEqual(2, foundCount);
+            Assert.AreEqual(2, d.Count);
+        }
+
 
         [Test]
         public void InitWithConflictingData()
