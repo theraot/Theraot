@@ -11,10 +11,8 @@ namespace System.Collections.Concurrent
     {
         private const int INT_DefaultCapacity = 31;
         private const int INT_DefaultConcurrency = 4;
-        private readonly LockableContext _context;
-        private readonly Pool<LockableNeedle<TValue>> _pool;
-        private readonly ConvertedValueCollection<TKey, LockableNeedle<TValue>, TValue> _valueCollection;
-        private readonly SafeDictionary<TKey, LockableNeedle<TValue>> _wrapped;
+        private readonly ValueCollection<TKey, TValue> _valueCollection;
+        private readonly SafeDictionary<TKey, TValue> _wrapped;
 
         public ConcurrentDictionary()
             : this(INT_DefaultConcurrency, INT_DefaultCapacity, EqualityComparer<TKey>.Default)
@@ -78,10 +76,8 @@ namespace System.Collections.Concurrent
             {
                 throw new ArgumentOutOfRangeException("capacity", "capacity < 0");
             }
-            _context = new LockableContext(concurrencyLevel);
-            _wrapped = new SafeDictionary<TKey, LockableNeedle<TValue>>();
-            _valueCollection = new ConvertedValueCollection<TKey, LockableNeedle<TValue>, TValue>(_wrapped, input => input.Value);
-            _pool = new Pool<LockableNeedle<TValue>>(64, Recycle);
+            _wrapped = new SafeDictionary<TKey, TValue>();
+            _valueCollection = new ValueCollection<TKey, TValue>(_wrapped);
         }
 
         public int Count
@@ -89,11 +85,7 @@ namespace System.Collections.Concurrent
             get
             {
                 // This should be an snaptshot operation
-                using (_context.Enter())
-                {
-                    AcquireAllLocks();
-                    return _wrapped.Count;
-                }
+                return _wrapped.Count;
             }
         }
 
@@ -187,8 +179,7 @@ namespace System.Collections.Concurrent
                     // ConcurrentDictionary hates null
                     throw new ArgumentNullException("key");
                 }
-                var needle = _wrapped[key];
-                return needle.Value;
+                return _wrapped[key];
             }
             set
             {
@@ -197,17 +188,7 @@ namespace System.Collections.Concurrent
                     // ConcurrentDictionary hates null
                     throw new ArgumentNullException("key");
                 }
-                using (_context.Enter())
-                {
-                    LockableNeedle<TValue> created = GetNeedle(value);
-                    LockableNeedle<TValue> stored;
-                    if (!_wrapped.TryGetOrAdd(key, created, out stored))
-                    {
-                        // created but not added
-                        _pool.Donate(created);
-                    }
-                    stored.Value = value;
-                }
+                _wrapped.Set(key, value);
             }
         }
 
@@ -222,10 +203,10 @@ namespace System.Collections.Concurrent
                 // keep the is operator
                 if (key is TKey)
                 {
-                    LockableNeedle<TValue> result;
+                    TValue result;
                     if (_wrapped.TryGetValue((TKey) key, out result))
                     {
-                        return result.Value;
+                        return result;
                     }
                 }
                 return null;
@@ -253,35 +234,14 @@ namespace System.Collections.Concurrent
                 // ConcurrentDictionary hates null
                 throw new ArgumentNullException("key");
             }
-            if (ReferenceEquals(addValueFactory, null))
-            {
-                throw new ArgumentNullException("addValueFactory");
-            }
-            if (ReferenceEquals(updateValueFactory, null))
-            {
-                throw new ArgumentNullException("updateValueFactory");
-            }
-            using (_context.Enter())
-            {
-                bool added;
-                LockableNeedle<TValue> created = null;
-                var result = _wrapped.AddOrUpdate
-                    (
-                        key,
-                        input => created = GetNeedle(addValueFactory(input)),
-                        (inputKey, inputValue) =>
-                        {
-                            inputValue.Value = updateValueFactory(inputKey, inputValue.Value);
-                            return inputValue;
-                        },
-                        out added
-                    ).Value;
-                if (!added)
-                {
-                    _pool.Donate(created);
-                }
-                return result;
-            }
+            // addValueFactory and updateValueFactory are checked for null inside the call
+            var result = _wrapped.AddOrUpdate
+                (
+                    key,
+                    addValueFactory,
+                    updateValueFactory
+                );
+            return result;
         }
 
         public TValue AddOrUpdate(TKey key, TValue addValue, Func<TKey, TValue, TValue> updateValueFactory)
@@ -291,41 +251,20 @@ namespace System.Collections.Concurrent
                 // ConcurrentDictionary hates null
                 throw new ArgumentNullException("key");
             }
-            if (ReferenceEquals(updateValueFactory, null))
-            {
-                throw new ArgumentNullException("updateValueFactory");
-            }
-            using (_context.Enter())
-            {
-                bool added;
-                LockableNeedle<TValue> created = null;
-                var result = _wrapped.AddOrUpdate
-                    (
-                        key,
-                        input => created = GetNeedle(addValue),
-                        (inputKey, inputValue) =>
-                        {
-                            inputValue.Value = updateValueFactory(inputKey, inputValue.Value);
-                            return inputValue;
-                        },
-                        out added
-                    ).Value;
-                if (!added)
-                {
-                    _pool.Donate(created);
-                }
-                return result;
-            }
+            // updateValueFactory is checked for null inside the call
+            var result = _wrapped.AddOrUpdate
+                (
+                    key,
+                    addValue,
+                    updateValueFactory
+                );
+            return result;
         }
 
         public void Clear()
         {
             // This should be an snaptshot operation
-            using (_context.Enter())
-            {
-                AcquireAllLocks();
-                _wrapped.Clear();
-            }
+            _wrapped.Clear();
         }
 
         public bool ContainsKey(TKey key)
@@ -342,10 +281,7 @@ namespace System.Collections.Concurrent
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
             // This method is not locking
-            foreach (var pair in _wrapped)
-            {
-                yield return new KeyValuePair<TKey, TValue>(pair.Key, pair.Value.Value);
-            }
+            return _wrapped.GetEnumerator();
         }
 
         public TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)
@@ -356,20 +292,8 @@ namespace System.Collections.Concurrent
                 // ConcurrentDictionary hates null
                 throw new ArgumentNullException("key");
             }
-            if (ReferenceEquals(valueFactory, null))
-            {
-                throw new ArgumentNullException("valueFactory");
-            }
-            using (_context.Enter())
-            {
-                LockableNeedle<TValue> created = null;
-                LockableNeedle<TValue> result;
-                if (!_wrapped.TryGetOrAdd(key, input => created = GetNeedle(valueFactory(input)), out result))
-                {
-                    _pool.Donate(created);
-                }
-                return result.Value;
-            }
+            // valueFactory is checked for null inside the call
+            return _wrapped.GetOrAdd(key, valueFactory);
         }
 
         public TValue GetOrAdd(TKey key, TValue value)
@@ -380,31 +304,18 @@ namespace System.Collections.Concurrent
                 // ConcurrentDictionary hates null
                 throw new ArgumentNullException("key");
             }
-            using (_context.Enter())
-            {
-                LockableNeedle<TValue> created = null;
-                LockableNeedle<TValue> result;
-                if (!_wrapped.TryGetOrAdd(key, input => created = GetNeedle(value), out result))
-                {
-                    _pool.Donate(created);
-                }
-                return result.Value;
-            }
+            return _wrapped.GetOrAdd(key, value);
         }
 
         public KeyValuePair<TKey, TValue>[] ToArray()
         {
             // This should be an snaptshot operation
-            using (_context.Enter())
+            var result = new List<KeyValuePair<TKey, TValue>>(_wrapped.Count);
+            foreach (var pair in _wrapped)
             {
-                AcquireAllLocks();
-                var result = new List<KeyValuePair<TKey, TValue>>(_wrapped.Count);
-                foreach (var pair in _wrapped)
-                {
-                    result.Add(new KeyValuePair<TKey, TValue>(pair.Key, pair.Value.Value));
-                }
-                return result.ToArray();
+                result.Add(pair);
             }
+            return result.ToArray();
         }
 
         public bool TryAdd(TKey key, TValue value)
@@ -414,16 +325,7 @@ namespace System.Collections.Concurrent
                 // ConcurrentDictionary hates null
                 throw new ArgumentNullException("key");
             }
-            using (_context.Enter())
-            {
-                var created = GetNeedle(value);
-                if (!_wrapped.TryAdd(key, created))
-                {
-                    _pool.Donate(created);
-                    return false;
-                }
-                return true;
-            }
+            return _wrapped.TryAdd(key, value);
         }
 
         public bool TryGetValue(TKey key, out TValue value)
@@ -433,15 +335,7 @@ namespace System.Collections.Concurrent
                 // ConcurrentDictionary hates null
                 throw new ArgumentNullException("key");
             }
-            LockableNeedle<TValue> found;
-            var result = _wrapped.TryGetValue(key, out found);
-            if (result)
-            {
-                value = found.Value;
-                return true;
-            }
-            value = default(TValue);
-            return false;
+            return _wrapped.TryGetValue(key, out value);
         }
 
         public bool TryRemove(TKey key, out TValue value)
@@ -451,15 +345,7 @@ namespace System.Collections.Concurrent
                 // ConcurrentDictionary hates null
                 throw new ArgumentNullException("key");
             }
-            LockableNeedle<TValue> found;
-            var result = _wrapped.Remove(key, out found);
-            if (result)
-            {
-                value = found.Value;
-                return true;
-            }
-            value = default(TValue);
-            return false;
+            return _wrapped.Remove(key, out value);
         }
 
         public bool TryUpdate(TKey key, TValue newValue, TValue comparisonValue)
@@ -469,23 +355,7 @@ namespace System.Collections.Concurrent
                 // ConcurrentDictionary hates null
                 throw new ArgumentNullException("key");
             }
-            using (_context.Enter())
-            {
-                return _wrapped.TryUpdate
-                    (
-                        key,
-                        GetNeedle(newValue),
-                        input => EqualityComparer<TValue>.Default.Equals(input.Value, comparisonValue)
-                    );
-            }
-        }
-
-        private void AcquireAllLocks()
-        {
-            foreach (var resource in _wrapped)
-            {
-                resource.Value.CaptureAndWait();
-            }
+            return _wrapped.TryUpdate(key, newValue, comparisonValue);
         }
 
         void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
@@ -495,15 +365,7 @@ namespace System.Collections.Concurrent
                 // ConcurrentDictionary hates null
                 throw new ArgumentNullException("key");
             }
-            using (_context.Enter())
-            {
-                LockableNeedle<TValue> created = GetNeedle(value);
-                if (!_wrapped.TryAdd(key, created))
-                {
-                    _pool.Donate(created);
-                    throw new ArgumentException("An item with the same key has already been added");
-                }
-            }
+            _wrapped.AddNew(key, value);
         }
 
         void IDictionary.Add(object key, object value)
@@ -516,12 +378,7 @@ namespace System.Collections.Concurrent
             // keep the is operator
             if (key is TKey && value is TValue)
             {
-                LockableNeedle<TValue> created = GetNeedle((TValue)value);
-                if (!_wrapped.TryAdd((TKey) key, created))
-                {
-                    _pool.Donate(created);
-                    throw new ArgumentException("An item with the same key has already been added");
-                }
+                _wrapped.AddNew((TKey) key, (TValue) value);
             }
             throw new ArgumentException();
         }
@@ -535,29 +392,16 @@ namespace System.Collections.Concurrent
                 // This is what happens when you do the call on Microsoft's implementation
                 throw new ArgumentNullException("key");
             }
-            using (_context.Enter())
-            {
-                var created = GetNeedle(item.Value);
-                if (!_wrapped.TryAdd(item.Key, created))
-                {
-                    _pool.Donate(created);
-                    throw new ArgumentException("An item with the same key has already been added");
-                }
-            }
+            _wrapped.AddNew(item.Key, item.Value);
         }
 
         private void AddRange(IEnumerable<KeyValuePair<TKey, TValue>> collection)
         {
-            using (_context.Enter())
+            foreach (var pair in collection)
             {
-                foreach (var pair in collection)
+                if (!_wrapped.TryAdd(pair.Key, pair.Value))
                 {
-                    var created = GetNeedle(pair.Value);
-                    if (!_wrapped.TryAdd(pair.Key, created))
-                    {
-                        _pool.Donate(created);
-                        throw new ArgumentException("The source contains duplicate keys.");
-                    }
+                    throw new ArgumentException("The source contains duplicate keys.");
                 }
             }
         }
@@ -586,10 +430,10 @@ namespace System.Collections.Concurrent
                 // This is what happens when you do the call on Microsoft's implementation
                 throw new ArgumentNullException("key");
             }
-            LockableNeedle<TValue> found;
+            TValue found;
             if (_wrapped.TryGetValue(item.Key, out found))
             {
-                if (EqualityComparer<TValue>.Default.Equals(found.Value, item.Value))
+                if (EqualityComparer<TValue>.Default.Equals(found, item.Value))
                 {
                     return true;
                 }
@@ -600,65 +444,56 @@ namespace System.Collections.Concurrent
         void ICollection<KeyValuePair<TKey, TValue>>.CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
             // This should be an snaptshot operation
-            using (_context.Enter())
-            {
-                AcquireAllLocks();
-                Extensions.CanCopyTo(_wrapped.Count, array, arrayIndex);
-                this.CopyTo(array, arrayIndex);
-            }
+            Extensions.CanCopyTo(_wrapped.Count, array, arrayIndex);
+            this.CopyTo(array, arrayIndex);
         }
 
         void ICollection.CopyTo(Array array, int index)
         {
-            // This should be an snaptshot operation
-            using (_context.Enter())
+            // WORST API EVER - I shouldn't be supporting this
+            // I'm checking size before checking type - I have no plans to fix that
+            Extensions.CanCopyTo(_wrapped.Count, array, index);
+            try
             {
-                AcquireAllLocks();
-                // WORST API EVER - I shouldn't be supporting this
-                // I'm checking size before checking type - I have no plans to fix that
-                Extensions.CanCopyTo(_wrapped.Count, array, index);
-                try
+                var pairs = array as KeyValuePair<TKey, TValue>[]; // most decent alternative
+                if (pairs != null)
                 {
-                    var pairs = array as KeyValuePair<TKey, TValue>[]; // most decent alternative
-                    if (pairs != null)
+                    var _array = pairs;
+                    foreach (var pair in _wrapped)
                     {
-                        var _array = pairs;
-                        foreach (var pair in _wrapped)
-                        {
-                            _array[index] = new KeyValuePair<TKey, TValue>(pair.Key, pair.Value.Value);
-                            index++;
-                        }
-                        return;
+                        _array[index] = pair;
+                        index++;
                     }
-                    var objects = array as object[];
-                    if (objects != null)
-                    {
-                        var _array = objects;
-                        foreach (var pair in _wrapped)
-                        {
-                            _array[index] = new KeyValuePair<TKey, TValue>(pair.Key, pair.Value.Value);
-                            index++;
-                        }
-                        return;
-                    }
-                    var entries = array as DictionaryEntry[];
-                        // that thing exists, I was totally unaware, I may as well use it.
-                    if (entries != null)
-                    {
-                        var _array = entries;
-                        foreach (var pair in _wrapped)
-                        {
-                            _array[index] = new DictionaryEntry {Key = pair.Key, Value = pair.Value.Value};
-                            index++;
-                        }
-                        return;
-                    }
-                    throw new ArgumentException("Not supported array type"); // A.K.A ScrewYouException
+                    return;
                 }
-                catch (IndexOutOfRangeException exception)
+                var objects = array as object[];
+                if (objects != null)
                 {
-                    throw new ArgumentException("array", exception.Message);
+                    var _array = objects;
+                    foreach (var pair in _wrapped)
+                    {
+                        _array[index] = pair;
+                        index++;
+                    }
+                    return;
                 }
+                var entries = array as DictionaryEntry[];
+                    // that thing exists, I was totally unaware, I may as well use it.
+                if (entries != null)
+                {
+                    var _array = entries;
+                    foreach (var pair in _wrapped)
+                    {
+                        _array[index] = new DictionaryEntry {Key = pair.Key, Value = pair.Value};
+                        index++;
+                    }
+                    return;
+                }
+                throw new ArgumentException("Not supported array type"); // A.K.A ScrewYouException
+            }
+            catch (IndexOutOfRangeException exception)
+            {
+                throw new ArgumentException("array", exception.Message);
             }
         }
 
@@ -672,25 +507,6 @@ namespace System.Collections.Concurrent
             return GetEnumerator();
         }
 
-        private LockableNeedle<TValue> GetNeedle(TValue value)
-        {
-            LockableNeedle<TValue> result;
-            if (_pool.TryGet(out result))
-            {
-                result.Value = value;
-            }
-            else
-            {
-                result = new LockableNeedle<TValue>(value, _context);
-            }
-            return result;
-        }
-
-        private void Recycle(LockableNeedle<TValue> obj)
-        {
-            obj.Free();
-        }
-
         void IDictionary.Remove(object key)
         {
             if (ReferenceEquals(key, null))
@@ -698,10 +514,10 @@ namespace System.Collections.Concurrent
                 // ConcurrentDictionary hates null
                 throw new ArgumentNullException("key");
             }
+            // keep the is operator
             if (key is TKey)
             {
-                LockableNeedle<TValue> found;
-                _wrapped.Remove((TKey)key, out found);
+                _wrapped.Remove((TKey)key);
             }
         }
 
@@ -714,7 +530,7 @@ namespace System.Collections.Concurrent
                 // This is what happens when you do the call on Microsoft's implementation
                 throw new ArgumentNullException("key");
             }
-            LockableNeedle<TValue> found;
+            TValue found;
             return _wrapped.Remove(item.Key, input => EqualityComparer<TValue>.Default.Equals(item.Value, item.Value), out found);
         }
 
@@ -725,10 +541,7 @@ namespace System.Collections.Concurrent
                 // ConcurrentDictionary hates null
                 throw new ArgumentNullException("key");
             }
-            using (_context.Enter())
-            {
-                return _wrapped.Remove(key);
-            }
+            return _wrapped.Remove(key);
         }
     }
 }
