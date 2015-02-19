@@ -25,16 +25,6 @@ namespace Theraot.Threading
                 );
         }
 
-        ~SimpleReentryGuard()
-        {
-            var guards = _guards.Value;
-            if (!ReferenceEquals(guards, null))
-            {
-                guards.Dispose();
-            }
-            _guards.Value = null;
-        }
-
         /// <summary>
         /// Returns whatever or not the current thread did enter.
         /// </summary>
@@ -42,13 +32,8 @@ namespace Theraot.Threading
         {
             get
             {
-                var guards = _guards.Value;
-                if (guards != null)
-                {
-                    var local = guards.Value;
-                    return local.IsTaken;
-                }
-                return false;
+                var local = _guards.Value.Value;
+                return local.IsTaken;
             }
         }
 
@@ -59,15 +44,11 @@ namespace Theraot.Threading
         /// <returns>Returns a promise to finish the execution.</returns>
         public void Execute(Action operation)
         {
-            var guards = _guards.Value;
-            if (guards != null)
+            var local = _guards.Value.Value;
+            IDisposable engagement;
+            if (local.Enter(out engagement))
             {
-                var local = guards.Value;
-                IDisposable engagement;
-                if (local.Enter(out engagement))
-                {
-                    operation.Invoke();
-                }
+                operation.Invoke();
             }
         }
 
@@ -79,23 +60,17 @@ namespace Theraot.Threading
         /// <returns>Returns a promise to finish the execution.</returns>
         public T Execute<T>(Func<T> operation)
         {
-            var guards = _guards.Value;
-            if (guards != null)
+            var local = _guards.Value.Value;
+            T result = default(T);
+            IDisposable engagement;
+            if (local.Enter(out engagement))
             {
-                var local = guards.Value;
-                T result = default(T);
-                IDisposable engagement;
-                if (local.Enter(out engagement))
+                using (engagement)
                 {
-                    using (engagement)
-                    {
-                        result = operation();
-                    }
+                    result = operation();
                 }
-                return result;
             }
-            // This happens after finalization
-            return default(T);
+            return result;
         }
     }
 }

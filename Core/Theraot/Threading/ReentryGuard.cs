@@ -26,16 +26,6 @@ namespace Theraot.Threading
                 );
         }
 
-        ~ReentryGuard()
-        {
-            var workQueue = _workQueue.Value;
-            if (!ReferenceEquals(workQueue, null))
-            {
-                workQueue.Dispose();
-            }
-            _workQueue.Value = null;
-        }
-
         /// <summary>
         /// Returns whatever or not the current thread did enter.
         /// </summary>
@@ -43,13 +33,8 @@ namespace Theraot.Threading
         {
             get
             {
-                var workQueue = _workQueue.Value;
-                if (workQueue != null)
-                {
-                    var local = workQueue.Value;
-                    return local.Item2.IsTaken;
-                }
-                return false;
+                var local = _workQueue.Value.Value;
+                return local.Item2.IsTaken;
             }
         }
 
@@ -60,22 +45,17 @@ namespace Theraot.Threading
         /// <returns>Returns a promise to finish the execution.</returns>
         public IPromise Execute(Action operation)
         {
-            var workQueue = _workQueue.Value;
-            if (workQueue != null)
+            var local = _workQueue.Value.Value;
+            var result = AddExecution(operation, local);
+            IDisposable engagement;
+            if (local.Item2.Enter(out engagement))
             {
-                var local = workQueue.Value;
-                var result = AddExecution(operation, local);
-                IDisposable engagement;
-                if (local.Item2.Enter(out engagement))
+                using (engagement)
                 {
-                    using (engagement)
-                    {
-                        ExecutePending(local);
-                    }
+                    ExecutePending(local);
                 }
-                return result;
             }
-            return null;
+            return result;
         }
 
         /// <summary>
@@ -86,22 +66,17 @@ namespace Theraot.Threading
         /// <returns>Returns a promise to finish the execution.</returns>
         public IPromise<T> Execute<T>(Func<T> operation)
         {
-            var workQueue = _workQueue.Value;
-            if (workQueue != null)
+            var local = _workQueue.Value.Value;
+            var result = AddExecution(operation, local);
+            IDisposable engagement;
+            if (local.Item2.Enter(out engagement))
             {
-                var local = workQueue.Value;
-                var result = AddExecution(operation, local);
-                IDisposable engagement;
-                if (local.Item2.Enter(out engagement))
+                using (engagement)
                 {
-                    using (engagement)
-                    {
-                        ExecutePending(local);
-                    }
+                    ExecutePending(local);
                 }
-                return result;
             }
-            return null;
+            return result;
         }
 
         private static IPromise AddExecution(Action action, Tuple<Queue<Action>, Guard> local)
