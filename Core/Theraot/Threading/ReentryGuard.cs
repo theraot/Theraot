@@ -47,14 +47,7 @@ namespace Theraot.Threading
         {
             var local = _workQueue.Value.Value;
             var result = AddExecution(operation, local);
-            IDisposable engagement;
-            if (local.Item2.Enter(out engagement))
-            {
-                using (engagement)
-                {
-                    ExecutePending(local);
-                }
-            }
+            ExecutePending(local);
             return result;
         }
 
@@ -68,14 +61,7 @@ namespace Theraot.Threading
         {
             var local = _workQueue.Value.Value;
             var result = AddExecution(operation, local);
-            IDisposable engagement;
-            if (local.Item2.Enter(out engagement))
-            {
-                using (engagement)
-                {
-                    ExecutePending(local);
-                }
-            }
+            ExecutePending(local);
             return result;
         }
 
@@ -124,10 +110,23 @@ namespace Theraot.Threading
 
         private static void ExecutePending(Tuple<Queue<Action>, Guard> local)
         {
-            while (local.Item1.Count > 0)
+            var guard = local.Item2;
+            var queue = local.Item1;
+            while (queue.Count > 0)
             {
-                Action action = local.Item1.Dequeue();
-                action.Invoke();
+                IDisposable engagement;
+                if (guard.Enter(out engagement))
+                {
+                    using (engagement)
+                    {
+                        var action = queue.Dequeue();
+                        action.Invoke();
+                    }
+                }
+                else
+                {
+                    break;
+                }
             }
         }
     }
