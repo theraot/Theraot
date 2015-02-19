@@ -76,7 +76,7 @@ namespace System.Collections.ObjectModel
             base.RemoveItem(index);
             InvokePropertyChanged("Count");
             InvokePropertyChanged("Item[]");
-            InvokeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, index, item));
+            InvokeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
         }
 
         public void Move(int oldIndex, int newIndex)
