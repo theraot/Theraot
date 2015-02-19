@@ -104,7 +104,7 @@ namespace System.Collections.ObjectModel
             T oldItem = base[index];
             base.SetItem(index, item);
             InvokePropertyChanged("Item[]");
-            InvokeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, oldItem, item, index));
+            InvokeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, item, oldItem, index));
         }
 
         private void InvokeCollectionChanged(NotifyCollectionChangedEventArgs eventArgs)
