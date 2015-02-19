@@ -4,11 +4,17 @@ using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
 {
+    /// <summary>
+    /// Represents a context to execute operationg without reentry.
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCode]
     public sealed class ReentryGuard
     {
         private StructNeedle<NoTrackingThreadLocal<Tuple<Queue<Action>, Guard>>> _workQueue;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="ReentryGuard"/>.
+        /// </summary>
         public ReentryGuard()
         {
             _workQueue = new StructNeedle<NoTrackingThreadLocal<Tuple<Queue<Action>, Guard>>>
@@ -30,6 +36,9 @@ namespace Theraot.Threading
             _workQueue.Value = null;
         }
 
+        /// <summary>
+        /// Returns whatever or not the current thread did enter.
+        /// </summary>
         public bool IsTaken
         {
             get
@@ -44,13 +53,18 @@ namespace Theraot.Threading
             }
         }
 
-        public IPromise Execute(Action action)
+        /// <summary>
+        /// Executes an operation-
+        /// </summary>
+        /// <param name="operation">The operation to execute.</param>
+        /// <returns>Returns a promise to finish the execution.</returns>
+        public IPromise Execute(Action operation)
         {
             var workQueue = _workQueue.Value;
             if (workQueue != null)
             {
                 var local = workQueue.Value;
-                var result = AddExecution(action, local);
+                var result = AddExecution(operation, local);
                 IDisposable engagement;
                 if (local.Item2.Enter(out engagement))
                 {
@@ -64,13 +78,19 @@ namespace Theraot.Threading
             return null;
         }
 
-        public IPromise<T> Execute<T>(Func<T> action)
+        /// <summary>
+        /// Executes an operation-
+        /// </summary>
+        /// <typeparam name="T">The return value of the operation.</typeparam>
+        /// <param name="operation">The operation to execute.</param>
+        /// <returns>Returns a promise to finish the execution.</returns>
+        public IPromise<T> Execute<T>(Func<T> operation)
         {
             var workQueue = _workQueue.Value;
             if (workQueue != null)
             {
                 var local = workQueue.Value;
-                var result = AddExecution(action, local);
+                var result = AddExecution(operation, local);
                 IDisposable engagement;
                 if (local.Item2.Enter(out engagement))
                 {
