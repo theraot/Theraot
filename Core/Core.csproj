@@ -227,6 +227,7 @@
     <Compile Include="System\Collections\Concurrent\ConcurrentDictionary.net35.cs" />
     <Compile Include="System\Collections\Concurrent\IProducerConsumerCollection.net35.cs" />
     <Compile Include="System\Collections\Generic\SortedSet.net35.cs" />
+    <Compile Include="System\Collections\ObjectModel\ObservableCollection.net20.cs" />
     <Compile Include="System\Collections\ObjectModel\ReadOnlyDictionary.ValueCollection.net40.cs" />
     <Compile Include="System\Collections\ObjectModel\ReadOnlyDictionary.KeyCollection.net40.cs" />
     <Compile Include="System\Collections\ObjectModel\ReadOnlyDictionary.net40.cs" />
