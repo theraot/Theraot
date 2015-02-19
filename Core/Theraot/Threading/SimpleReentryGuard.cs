@@ -18,9 +18,9 @@ namespace Theraot.Threading
         {
             _guards = new StructNeedle<NoTrackingThreadLocal<Guard>>
                 (
-                new NoTrackingThreadLocal<Guard>
+                    new NoTrackingThreadLocal<Guard>
                     (
-                    () => new Guard()
+                        () => new Guard()
                     )
                 );
         }
@@ -48,7 +48,14 @@ namespace Theraot.Threading
             IDisposable engagement;
             if (local.Enter(out engagement))
             {
-                operation.Invoke();
+                using (engagement)
+                {
+                    operation.Invoke();
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("Reentry");
             }
         }
 
@@ -61,16 +68,15 @@ namespace Theraot.Threading
         public T Execute<T>(Func<T> operation)
         {
             var local = _guards.Value.Value;
-            T result = default(T);
             IDisposable engagement;
             if (local.Enter(out engagement))
             {
                 using (engagement)
                 {
-                    result = operation();
+                    return operation();
                 }
             }
-            return result;
+            throw new InvalidOperationException("Reentry");
         }
     }
 }
