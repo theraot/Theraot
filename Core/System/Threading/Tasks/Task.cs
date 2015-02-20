@@ -1,30 +1,29 @@
 #if FAT
 
-using System;
-using System.Threading;
 using Theraot.Core;
+using Theraot.Threading;
 using Theraot.Threading.Needles;
 
-namespace Theraot.Threading
+namespace System.Threading.Tasks
 {
-    public sealed partial class Work : ICloneable, IPromise, ICloneable<Work>
+    public sealed partial class Task : ICloneable, IPromise, ICloneable<Task>
     {
         private const int INT_StatusCompleted = 2;
         private const int INT_StatusNew = 0;
         private const int INT_StatusRunning = 1;
 
         [ThreadStatic]
-        private static Work _current;
+        private static Task _current;
 
         private readonly Action _action;
-        private readonly WorkContext _context;
+        private readonly TaskScheduler _context;
         private readonly bool _exclusive;
         private Exception _error;
         private int _status = INT_StatusNew;
 
         private StructNeedle<ManualResetEventSlim> _waitHandle;
 
-        internal Work(Action action, bool exclusive, WorkContext context)
+        internal Task(Action action, bool exclusive, TaskScheduler context)
         {
             if (ReferenceEquals(context, null))
             {
@@ -36,7 +35,7 @@ namespace Theraot.Threading
             _waitHandle = new ManualResetEventSlim(false);
         }
 
-        ~Work()
+        ~Task()
         {
             var waitHandle = _waitHandle.Value;
             if (!ReferenceEquals(waitHandle, null))
@@ -46,7 +45,7 @@ namespace Theraot.Threading
             _waitHandle.Value = null;
         }
 
-        public static Work Current
+        public static Task Current
         {
             get
             {
@@ -94,7 +93,7 @@ namespace Theraot.Threading
             }
         }
 
-        public Work Clone()
+        public Task Clone()
         {
             return _context.AddWork(_action, _exclusive);
         }
@@ -177,7 +176,7 @@ namespace Theraot.Threading
         }
     }
 
-    public sealed partial class Work
+    public sealed partial class Task
     {
 #if DEBUG || FAT
         private static int _lastId;

@@ -1,21 +1,20 @@
 #if FAT
 
-using System;
-using System.Threading;
 using Theraot.Collections.ThreadSafe;
+using Theraot.Threading;
 
-namespace Theraot.Threading
+namespace System.Threading.Tasks
 {
-    public sealed class WorkContext : IDisposable
+    public sealed class TaskScheduler : IDisposable
     {
-        private static readonly WorkContext _defaultContext = new WorkContext(Environment.ProcessorCount, false);
+        private static readonly TaskScheduler _defaultContext = new TaskScheduler(Environment.ProcessorCount, false);
 
         private static int _lastId;
 
         private readonly int _dedidatedThreadMax;
         private readonly bool _disposable;
         private readonly int _id;
-        private readonly SafeQueue<Work> _works;
+        private readonly SafeQueue<Task> _tasks;
 
         private int _dedidatedThreadCount;
         private Pool<WorkThread> _threads;
@@ -23,26 +22,26 @@ namespace Theraot.Threading
         private volatile bool _work;
         private int _workingTotalThreadCount;
 
-        public WorkContext()
+        public TaskScheduler()
             : this(Environment.ProcessorCount, true)
         {
             //Empty
         }
 
-        public WorkContext(int dedicatedThreads)
+        public TaskScheduler(int dedicatedThreads)
             : this(dedicatedThreads, true)
         {
             //Empty
         }
 
-        private WorkContext(int dedicatedThreads, bool disposable)
+        private TaskScheduler(int dedicatedThreads, bool disposable)
         {
             if (dedicatedThreads < 0)
             {
                 throw new ArgumentOutOfRangeException("dedicatedThreads", "dedicatedThreads < 0");
             }
             _dedidatedThreadMax = dedicatedThreads;
-            _works = new SafeQueue<Work>();
+            _tasks = new SafeQueue<Task>();
             _threads = new Pool<WorkThread>(dedicatedThreads);
             _id = Interlocked.Increment(ref _lastId) - 1;
             _work = true;
@@ -50,7 +49,7 @@ namespace Theraot.Threading
         }
 
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
-        ~WorkContext()
+        ~TaskScheduler()
         {
             try
             {
@@ -62,7 +61,7 @@ namespace Theraot.Threading
             }
         }
 
-        public static WorkContext DefaultContext
+        public static TaskScheduler DefaultContext
         {
             get
             {
@@ -78,14 +77,14 @@ namespace Theraot.Threading
             }
         }
 
-        public Work AddWork(Action action)
+        public Task AddWork(Action action)
         {
-            return GCMonitor.FinalizingForUnload ? null : new Work(action, false, this);
+            return GCMonitor.FinalizingForUnload ? null : new Task(action, false, this);
         }
 
-        public Work AddWork(Action action, bool exclusive)
+        public Task AddWork(Action action, bool exclusive)
         {
-            return GCMonitor.FinalizingForUnload ? null : new Work(action, exclusive, this);
+            return GCMonitor.FinalizingForUnload ? null : new Task(action, exclusive, this);
         }
 
         public void Dispose()
@@ -108,8 +107,8 @@ namespace Theraot.Threading
                 try
                 {
                     Interlocked.Increment(ref _workingTotalThreadCount);
-                    Work item;
-                    if (_works.TryTake(out item))
+                    Task item;
+                    if (_tasks.TryTake(out item))
                     {
                         Execute(item);
                     }
@@ -130,18 +129,18 @@ namespace Theraot.Threading
             }
         }
 
-        internal void ScheduleWork(Work work)
+        internal void ScheduleWork(Task task)
         {
             if (_work)
             {
-                _works.Add(work);
-                while (_works.Count > 0)
+                _tasks.Add(task);
+                while (_tasks.Count > 0)
                 {
                     WorkThread thread;
                     // Sometimes a thread goes to wait just after we try to awake a thread
                     // When there that happens and there is no room to create a new thread...
-                    // It may happen that no thread takes the work.
-                    // That's why we loop until we can wake up or create a thread, or all work is done.
+                    // It may happen that no thread takes the Task.
+                    // That's why we loop until we can wake up or create a thread, or all Task is done.
                     if (_threads.TryGet(out thread) || NewDedicatedThread(out thread))
                     {
                         thread.Go();
@@ -165,7 +164,7 @@ namespace Theraot.Threading
             }
         }
 
-        private void Execute(Work item)
+        private void Execute(Task item)
         {
             if (item.Exclusive)
             {
@@ -195,12 +194,12 @@ namespace Theraot.Threading
 
         private sealed class WorkThread
         {
-            private readonly WorkContext _context;
+            private readonly TaskScheduler _context;
             private readonly object _locker;
             private readonly Thread _thread;
             private int _working;
 
-            public WorkThread(WorkContext context, string name)
+            public WorkThread(TaskScheduler context, string name)
             {
                 _context = context;
                 _thread = new Thread(Run)
@@ -237,17 +236,17 @@ namespace Theraot.Threading
                     Interlocked.Increment(ref _context._workingTotalThreadCount);
                     while (_context._work && !GCMonitor.FinalizingForUnload)
                     {
-                        Work item;
-                        if (_context._works.TryTake(out item))
+                        Task item;
+                        if (_context._tasks.TryTake(out item))
                         {
                             _context.Execute(item);
                         }
-                        else if (_context._works.Count == 0 || Thread.VolatileRead(ref _context._waitRequest) == 1)
+                        else if (_context._tasks.Count == 0 || Thread.VolatileRead(ref _context._waitRequest) == 1)
                         {
-                            // Sometimes a work is added just after we check there is no work
+                            // Sometimes a Task is added just after we check there is no Task
                             // If that happens and the wake up call will come before this threads goes to wait...
-                            // Then this thread will go to wait anyway, regardless of the new work.
-                            // That's why it is necesary to make sure a thread is started for this to work correctly.
+                            // Then this thread will go to wait anyway, regardless of the new Task.
+                            // That's why it is necesary to make sure a thread is started for this to Task correctly.
                             // This could be solve by spinning instead, but it is convenient to be able to put the thread to wait.
                             Interlocked.Decrement(ref _context._workingTotalThreadCount);
                             var threads = _context._threads;
