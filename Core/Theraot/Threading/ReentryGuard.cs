@@ -116,13 +116,16 @@ namespace Theraot.Threading
             var queue = local.Item1;
             while (queue.Count > 0)
             {
-                IDisposable engagement;
-                if (guard.Enter(out engagement))
+                if (guard.TryEnter())
                 {
-                    using (engagement)
+                    try
                     {
                         var action = queue.Dequeue();
                         action.Invoke();
+                    }
+                    finally
+                    {
+                        guard.Dispose();
                     }
                 }
                 else
