@@ -12,24 +12,24 @@ namespace System.Collections.ObjectModel
     {
         // Using TrackingThreadLocal instead of NoTrackingThreadLocal or ThreadLocal to avoid not managed resources
         // This field is disposable and will not be disposed
-        private readonly TrackingThreadLocal<int> _entryCheck;
+        private readonly SimpleReentryGuard _guard;
 
         public ObservableCollection()
             : base(new List<T>())
         {
-            _entryCheck = new TrackingThreadLocal<int>();
+            _guard = new SimpleReentryGuard();
         }
 
         public ObservableCollection(IEnumerable<T> collection)
             : base(new List<T>(collection))
         {
-            _entryCheck = new TrackingThreadLocal<int>();
+            _guard = new SimpleReentryGuard();
         }
 
         public ObservableCollection(List<T> list)
             : base(new List<T>(list))
         {
-            _entryCheck = new TrackingThreadLocal<int>();
+            _guard = new SimpleReentryGuard();
         }
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
@@ -37,16 +37,13 @@ namespace System.Collections.ObjectModel
 
         protected IDisposable BlockReentrancy()
         {
-            return DisposableAkin.Create(() => _entryCheck.Value--);
+            _guard.Enter();
+            return _guard;
         }
 
         protected void CheckReentrancy()
         {
-            int value;
-            if (_entryCheck.TryGetValue(out value) && value > 0)
-            {
-                throw new InvalidOperationException("Reentry");
-            }
+            _guard.ThrowIfReentrant();
         }
 
         protected override void ClearItems()
@@ -112,14 +109,14 @@ namespace System.Collections.ObjectModel
             var collectionChanged = CollectionChanged;
             if (collectionChanged != null)
             {
+                _guard.Enter();
                 try
                 {
-                    _entryCheck.Value++;
                     collectionChanged.Invoke(this, eventArgs);
                 }
                 finally
                 {
-                    _entryCheck.Value--;
+                    _guard.Dispose();
                 }
             }
         }
@@ -128,14 +125,14 @@ namespace System.Collections.ObjectModel
             var propertyChanged = PropertyChanged;
             if (propertyChanged != null)
             {
+                _guard.Enter();
                 try
                 {
-                    _entryCheck.Value++;
                     propertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
                 }
                 finally
                 {
-                    _entryCheck.Value--;
+                    _guard.Dispose();
                 }
             }
         }

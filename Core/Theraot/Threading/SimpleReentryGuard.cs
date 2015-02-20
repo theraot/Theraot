@@ -40,11 +40,11 @@ namespace Theraot.Threading
 
         public bool Enter()
         {
-            if (_guards.Value.Value > 0)
+            var value = ++_guards.Value.Value;
+            if (value > 0)
             {
                 return false;
             }
-            _guards.Value.Value++;
             return true;
         }
 
