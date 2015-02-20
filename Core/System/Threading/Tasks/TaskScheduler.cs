@@ -7,7 +7,7 @@ namespace System.Threading.Tasks
 {
     public sealed class TaskScheduler : IDisposable
     {
-        private static readonly TaskScheduler _defaultContext = new TaskScheduler(Environment.ProcessorCount, false);
+        private static readonly TaskScheduler _default = new TaskScheduler(Environment.ProcessorCount, false);
 
         private static int _lastId;
 
@@ -61,11 +61,11 @@ namespace System.Threading.Tasks
             }
         }
 
-        public static TaskScheduler DefaultContext
+        public static TaskScheduler Default
         {
             get
             {
-                return _defaultContext;
+                return _default;
             }
         }
 
@@ -78,7 +78,7 @@ namespace System.Threading.Tasks
                 {
                     return currentTask.Context;
                 }
-                return DefaultContext;
+                return Default;
             }
         }
         public int Id
