@@ -69,6 +69,18 @@ namespace System.Threading.Tasks
             }
         }
 
+        public TaskScheduler Current
+        {
+            get
+            {
+                var currentTask = Task.Current;
+                if (currentTask != null)
+                {
+                    return currentTask.Context;
+                }
+                return DefaultContext;
+            }
+        }
         public int Id
         {
             get

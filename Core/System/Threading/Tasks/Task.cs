@@ -93,6 +93,14 @@ namespace System.Threading.Tasks
             }
         }
 
+        public TaskScheduler Context
+        {
+            get
+            {
+                return _context;
+            }
+        }
+
         public Task Clone()
         {
             return _context.AddWork(_action, _exclusive);
