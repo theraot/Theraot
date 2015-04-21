@@ -5,60 +5,17 @@ using Theraot.Threading;
 
 namespace System.Threading.Tasks
 {
-    public sealed class TaskScheduler : IDisposable
+    public abstract class TaskScheduler
     {
-        private static readonly TaskScheduler _default = new TaskScheduler(Environment.ProcessorCount, false);
+        private static readonly TaskScheduler _default = new DefaultTaskScheduler(Environment.ProcessorCount, false);
 
         private static int _lastId;
 
-        private readonly int _dedidatedThreadMax;
-        private readonly bool _disposable;
         private readonly int _id;
-        private readonly SafeQueue<Task> _tasks;
 
-        private int _dedidatedThreadCount;
-        private Pool<WorkThread> _threads;
-        private int _waitRequest;
-        private volatile bool _work;
-        private int _workingTotalThreadCount;
-
-        public TaskScheduler()
-            : this(Environment.ProcessorCount, true)
+        protected TaskScheduler()
         {
-            //Empty
-        }
-
-        public TaskScheduler(int dedicatedThreads)
-            : this(dedicatedThreads, true)
-        {
-            //Empty
-        }
-
-        private TaskScheduler(int dedicatedThreads, bool disposable)
-        {
-            if (dedicatedThreads < 0)
-            {
-                throw new ArgumentOutOfRangeException("dedicatedThreads", "dedicatedThreads < 0");
-            }
-            _dedidatedThreadMax = dedicatedThreads;
-            _tasks = new SafeQueue<Task>();
-            _threads = new Pool<WorkThread>(dedicatedThreads);
             _id = Interlocked.Increment(ref _lastId) - 1;
-            _work = true;
-            _disposable = disposable;
-        }
-
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
-        ~TaskScheduler()
-        {
-            try
-            {
-                //Empty
-            }
-            finally
-            {
-                DisposeExtracted();
-            }
         }
 
         public static TaskScheduler Default
@@ -89,6 +46,14 @@ namespace System.Threading.Tasks
             }
         }
 
+        public int MaximunConcurrencyLevel
+        {
+            get
+            {
+                return int.MaxValue;
+            }
+        }
+
         public Task AddWork(Action action)
         {
             return GCMonitor.FinalizingForUnload ? null : new Task(action, false, this);
@@ -97,6 +62,63 @@ namespace System.Threading.Tasks
         public Task AddWork(Action action, bool exclusive)
         {
             return GCMonitor.FinalizingForUnload ? null : new Task(action, exclusive, this);
+        }
+
+        protected internal abstract void ScheduleWork(Task task);
+    }
+
+    public sealed class DefaultTaskScheduler : TaskScheduler
+    {
+        private static int _lastId;
+
+        private readonly int _dedidatedThreadMax;
+        private readonly bool _disposable;
+        private readonly int _id;
+        private readonly SafeQueue<Task> _tasks;
+
+        private int _dedidatedThreadCount;
+        private Pool<WorkThread> _threads;
+        private int _waitRequest;
+        private volatile bool _work;
+        private int _workingTotalThreadCount;
+
+        public DefaultTaskScheduler()
+            : this(Environment.ProcessorCount, true)
+        {
+            //Empty
+        }
+
+        public DefaultTaskScheduler(int dedicatedThreads)
+            : this(dedicatedThreads, true)
+        {
+            //Empty
+        }
+
+        internal DefaultTaskScheduler(int dedicatedThreads, bool disposable)
+        {
+            if (dedicatedThreads < 0)
+            {
+                throw new ArgumentOutOfRangeException("dedicatedThreads", "dedicatedThreads < 0");
+            }
+            _dedidatedThreadMax = dedicatedThreads;
+            _tasks = new SafeQueue<Task>();
+            _threads = new Pool<WorkThread>(dedicatedThreads);
+            _id = Interlocked.Increment(ref _lastId) - 1;
+            _work = true;
+            _disposable = disposable;
+        }
+
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
+        ~DefaultTaskScheduler()
+        {
+            try
+            {
+                //Empty
+            }
+            finally
+            {
+                DisposeExtracted();
+            }
         }
 
         public void Dispose()
@@ -108,40 +130,7 @@ namespace System.Threading.Tasks
             }
         }
 
-        public void DoOneWork()
-        {
-            if (_work)
-            {
-                if (Thread.VolatileRead(ref _waitRequest) == 1)
-                {
-                    ThreadingHelper.SpinWaitUntil(ref _waitRequest, 0);
-                }
-                try
-                {
-                    Interlocked.Increment(ref _workingTotalThreadCount);
-                    Task item;
-                    if (_tasks.TryTake(out item))
-                    {
-                        Execute(item);
-                    }
-                }
-                catch (Exception exception)
-                {
-                    // Pokemon
-                    GC.KeepAlive(exception);
-                }
-                finally
-                {
-                    Interlocked.Decrement(ref _workingTotalThreadCount);
-                }
-            }
-            else
-            {
-                throw new ObjectDisposedException(GetType().ToString());
-            }
-        }
-
-        internal void ScheduleWork(Task task)
+        protected internal override void ScheduleWork(Task task)
         {
             if (_work)
             {
@@ -206,12 +195,12 @@ namespace System.Threading.Tasks
 
         private sealed class WorkThread
         {
-            private readonly TaskScheduler _context;
+            private readonly DefaultTaskScheduler _context;
             private readonly object _locker;
             private readonly Thread _thread;
             private int _working;
 
-            public WorkThread(TaskScheduler context, string name)
+            public WorkThread(DefaultTaskScheduler context, string name)
             {
                 _context = context;
                 _thread = new Thread(Run)

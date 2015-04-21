@@ -17,7 +17,7 @@ namespace Theraot.Threading
             static Internal()
             {
 #if FAT
-                _task = TaskScheduler.DefaultContext.AddWork(RaiseCollected);
+                _task = TaskScheduler.Default.AddWork(RaiseCollected);
 #endif
                 _collectedEventHandlers = new WeakDelegateCollection(false, false, INT_MaxProbingHint);
             }
