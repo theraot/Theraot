@@ -327,7 +327,6 @@ namespace MonoTests.System.Collections.ObjectModel
         [Test]
         public void ReentrantReuseObject()
         {
-            // TODO - fix test case
             ObservableCollectionTestHelper helper = new ObservableCollectionTestHelper();
 
             helper.DoubleEnterReentrant();
