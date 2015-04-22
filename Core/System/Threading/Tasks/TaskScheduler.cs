@@ -92,7 +92,20 @@ namespace System.Threading.Tasks
         }
         protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
         {
-            throw new NotImplementedException();
+            if (_work)
+            {
+                if (!taskWasPreviouslyQueued)
+                {
+                    //--- ?
+                }
+                var slot = new TimeSlot(this);
+                while (!task.IsCompleted)
+                {
+                    slot.ServeOnce();
+                }
+                return task.IsCompleted;
+            }
+            return false;
         }
 
         private void DisposeExtracted()
@@ -160,23 +173,44 @@ namespace System.Threading.Tasks
                 }
             }
 
-            public bool Serve()
+            public bool ServeAll()
             {
                 if (Interlocked.CompareExchange(ref _status, 1, 0) == 0)
                 {
                     lock (_locker)
                     {
+                        _scheduler._servSlots.Donate(this);
                         Monitor.Wait(_locker);
                     }
                     if (Interlocked.CompareExchange(ref _status, 3, 2) == 2)
                     {
-                        Run();
+                        RunAll();
                         Thread.VolatileWrite(ref _status, 0);
                         return true;
                     }
                 }
                 return false;
             }
+
+            public bool ServeOnce()
+            {
+                if (Interlocked.CompareExchange(ref _status, 1, 0) == 0)
+                {
+                    lock (_locker)
+                    {
+                        _scheduler._servSlots.Donate(this);
+                        Monitor.Wait(_locker);
+                    }
+                    if (Interlocked.CompareExchange(ref _status, 3, 2) == 2)
+                    {
+                        RunOnce();
+                        Thread.VolatileWrite(ref _status, 0);
+                        return true;
+                    }
+                }
+                return false;
+            }
+
             public void Use()
             {
                 if (Interlocked.CompareExchange(ref _status, 2, 1) == 1)
@@ -188,7 +222,16 @@ namespace System.Threading.Tasks
                 }
             }
 
-            private void Run()
+            private void RunAll()
+            {
+                Task item;
+                while (_scheduler._tasks.TryTake(out item))
+                {
+                    _scheduler.Execute(item);
+                }
+            }
+
+            private void RunOnce()
             {
                 Task item;
                 if (_scheduler._tasks.TryTake(out item))
@@ -224,7 +267,8 @@ namespace System.Threading.Tasks
                     Interlocked.Increment(ref _scheduler._workingTotalThreadCount);
                     while (_scheduler._work && !GCMonitor.FinalizingForUnload)
                     {
-                        if (!_slot.Serve() && (_scheduler._tasks.Count == 0 || Thread.VolatileRead(ref _scheduler._waitRequest) == 1))
+                        bool serve = _slot.ServeAll();
+                        if (!serve && (_scheduler._tasks.Count == 0 || Thread.VolatileRead(ref _scheduler._waitRequest) == 1))
                         {
                             // Sometimes a Task is added just after we check there is no Task
                             // If that happens and the wake up call will come before this threads goes to wait...
@@ -332,7 +376,7 @@ namespace System.Threading.Tasks
 
         internal void RunAndWait(Task task, bool taskWasPreviouslyQueued)
         {
-
+            TryExecuteTaskInline(task, taskWasPreviouslyQueued);
         }
 
         protected internal abstract void QueueTask(Task task);
