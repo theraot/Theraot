@@ -16,20 +16,20 @@ namespace System.Threading.Tasks
         private static Task _current;
 
         private readonly Action _action;
-        private readonly TaskScheduler _context;
         private readonly bool _exclusive;
+        private readonly TaskScheduler _scheduler;
         private Exception _error;
         private int _status = INT_StatusNew;
 
         private StructNeedle<ManualResetEventSlim> _waitHandle;
 
-        internal Task(Action action, bool exclusive, TaskScheduler context)
+        internal Task(Action action, bool exclusive, TaskScheduler scheduler)
         {
-            if (ReferenceEquals(context, null))
+            if (ReferenceEquals(scheduler, null))
             {
-                throw new ArgumentNullException("context");
+                throw new ArgumentNullException("scheduler");
             }
-            _context = context;
+            _scheduler = scheduler;
             _action = action ?? ActionHelper.GetNoopAction();
             _exclusive = exclusive;
             _waitHandle = new ManualResetEventSlim(false);
@@ -85,6 +85,14 @@ namespace System.Threading.Tasks
             }
         }
 
+        public TaskScheduler Scheduler
+        {
+            get
+            {
+                return _scheduler;
+            }
+        }
+
         internal bool Exclusive
         {
             get
@@ -92,18 +100,9 @@ namespace System.Threading.Tasks
                 return _exclusive;
             }
         }
-
-        public TaskScheduler Context
-        {
-            get
-            {
-                return _context;
-            }
-        }
-
         public Task Clone()
         {
-            return _context.AddWork(_action, _exclusive);
+            return _scheduler.AddWork(_action, _exclusive);
         }
 
         public bool Start()
@@ -112,7 +111,7 @@ namespace System.Threading.Tasks
             if (check != INT_StatusRunning && !GCMonitor.FinalizingForUnload)
             {
                 _error = null;
-                _context.ScheduleWork(this);
+                _scheduler.QueueTask(this);
                 return true;
             }
             return false;
@@ -130,10 +129,7 @@ namespace System.Threading.Tasks
 
         public void Wait()
         {
-            while (Thread.VolatileRead(ref _status) != INT_StatusCompleted)
-            {
-                _context.DoOneWork();
-            }
+            _scheduler.RunAndWait(this, Thread.VolatileRead(ref _status) == INT_StatusRunning);
         }
 
         public bool Wait(int milliseconds)
@@ -150,7 +146,7 @@ namespace System.Threading.Tasks
             var start = ThreadingHelper.TicksNow();
             while (Thread.VolatileRead(ref _status) != INT_StatusCompleted)
             {
-                _context.DoOneWork();
+                _scheduler.RunAndWait(this, Thread.VolatileRead(ref _status) == INT_StatusRunning);
                 if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) >= milliseconds)
                 {
                     return false;

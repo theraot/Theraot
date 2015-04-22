@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using MonoTests;
 using Theraot.Collections;
-using Theraot.Threading;
 using Theraot.Threading.Needles;
 
 namespace Tests.Theraot.Threading.Needles
@@ -22,7 +22,7 @@ namespace Tests.Theraot.Threading.Needles
                 {
                     for (int i = 0; i < ce.InitialCount; ++i)
                     {
-                        WorkContext.DefaultContext.AddWork(delegate{
+                        TaskScheduler.Default.AddWork(delegate{
                             ce.Signal();
                         }).Start();
                     }
@@ -43,7 +43,7 @@ namespace Tests.Theraot.Threading.Needles
                 CountdownEvent evt = new CountdownEvent(2);
                 CountdownEvent evtFinish = new CountdownEvent(2);
 
-                WorkContext.DefaultContext.AddWork(delegate
+                TaskScheduler.Default.AddWork(delegate
                 {
                     try
                     {
@@ -57,7 +57,7 @@ namespace Tests.Theraot.Threading.Needles
                     }
                     evtFinish.Signal();
                 }).Start();
-                WorkContext.DefaultContext.AddWork(delegate
+                TaskScheduler.Default.AddWork(delegate
                 {
                     try
                     {
@@ -93,12 +93,12 @@ namespace Tests.Theraot.Threading.Needles
                 var mre = new ManualResetEventSlim();
                 bool b = true;
 
-                WorkContext.DefaultContext.AddWork(delegate
+                TaskScheduler.Default.AddWork(delegate
                 {
                     mre.Set();
                 }).Start();
 
-                WorkContext.DefaultContext.AddWork(delegate
+                TaskScheduler.Default.AddWork(delegate
                 {
                     b &= mre.Wait(1000);
                 }).Start();
@@ -127,8 +127,8 @@ namespace Tests.Theraot.Threading.Needles
                         Interlocked.Increment(ref count[1]);
                     }
                 );
-            WorkContext.DefaultContext.AddWork(work).Start();
-            WorkContext.DefaultContext.AddWork(work).Start();
+            TaskScheduler.Default.AddWork(work).Start();
+            TaskScheduler.Default.AddWork(work).Start();
             while (Thread.VolatileRead(ref count[0]) != 2)
             {
                 Thread.Sleep(0);
@@ -150,7 +150,7 @@ namespace Tests.Theraot.Threading.Needles
             var needle = Transact.CreateNeedle(5);
             var winner = 0;
             Assert.AreEqual(needle.Value, 5);
-            WorkContext.DefaultContext.AddWork
+            TaskScheduler.Default.AddWork
             (
                 () =>
                 {
@@ -167,7 +167,7 @@ namespace Tests.Theraot.Threading.Needles
                     }
                 }
             ).Start();
-            WorkContext.DefaultContext.AddWork
+            TaskScheduler.Default.AddWork
             (
                 () =>
                 {

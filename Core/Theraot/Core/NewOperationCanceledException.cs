@@ -77,8 +77,8 @@ namespace Theraot.Core
             //Empty
         }
 
-        protected NewOperationCanceledException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
+        protected NewOperationCanceledException(SerializationInfo info, StreamingContext scheduler)
+            : base(info, scheduler)
         {
             //Empty
         }

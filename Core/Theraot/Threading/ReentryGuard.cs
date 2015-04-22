@@ -5,7 +5,7 @@ using Theraot.Threading.Needles;
 namespace Theraot.Threading
 {
     /// <summary>
-    /// Represents a context to execute operationg without reentry.
+    /// Represents a scheduler to execute operationg without reentry.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCode]
     public sealed class ReentryGuard

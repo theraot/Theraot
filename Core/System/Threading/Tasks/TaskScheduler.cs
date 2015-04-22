@@ -1,10 +1,270 @@
 #if FAT
 
+using System.Collections.Generic;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Threading;
 
 namespace System.Threading.Tasks
 {
+    public sealed class DefaultTaskScheduler : TaskScheduler
+    {
+        private static int _lastId;
+
+        private readonly int _dedidatedThreadMax;
+        private readonly bool _disposable;
+        private readonly int _id;
+        private readonly SafeQueue<Task> _tasks;
+
+        private int _dedidatedThreadCount;
+        private Pool<TimeSlot> _servSlots;
+        private int _waitRequest;
+        private volatile bool _work;
+        private int _workingTotalThreadCount;
+
+        public DefaultTaskScheduler()
+            : this(Environment.ProcessorCount, true)
+        {
+            //Empty
+        }
+
+        public DefaultTaskScheduler(int dedicatedThreads)
+            : this(dedicatedThreads, true)
+        {
+            //Empty
+        }
+
+        internal DefaultTaskScheduler(int dedicatedThreads, bool disposable)
+        {
+            if (dedicatedThreads < 0)
+            {
+                throw new ArgumentOutOfRangeException("dedicatedThreads", "dedicatedThreads < 0");
+            }
+            _dedidatedThreadMax = dedicatedThreads;
+            _tasks = new SafeQueue<Task>();
+            _servSlots = new Pool<TimeSlot>(dedicatedThreads * 2);
+            _id = Interlocked.Increment(ref _lastId) - 1;
+            _work = true;
+            _disposable = disposable;
+        }
+
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
+        ~DefaultTaskScheduler()
+        {
+            try
+            {
+                //Empty
+            }
+            finally
+            {
+                DisposeExtracted();
+            }
+        }
+
+        public void Dispose()
+        {
+            if (_disposable)
+            {
+                DisposeExtracted();
+                GC.SuppressFinalize(this);
+            }
+        }
+
+        protected internal override void QueueTask(Task task)
+        {
+            if (_work)
+            {
+                _tasks.Add(task);
+                while (_tasks.Count > 0)
+                {
+                    TimeSlot slot;
+                    if (_servSlots.TryGet(out slot) || NewDedicatedThread(out slot))
+                    {
+                        slot.Use();
+                        break;
+                    }
+                }
+            }
+        }
+
+        protected override IEnumerable<Task> GetScheduledTasks()
+        {
+            throw new NotImplementedException();
+        }
+        protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void DisposeExtracted()
+        {
+            _work = false;
+            var slots = Interlocked.Exchange(ref _servSlots, null);
+            if (slots != null)
+            {
+                TimeSlot slot;
+                while (slots.TryGet(out slot))
+                {
+                    slot.Reject();
+                }
+            }
+        }
+
+        private void Execute(Task item)
+        {
+            if (item.Exclusive)
+            {
+                Thread.VolatileWrite(ref _waitRequest, 1);
+                ThreadingHelper.SpinWaitUntil(ref _workingTotalThreadCount, 1);
+                item.Execute();
+                Thread.VolatileWrite(ref _waitRequest, 0);
+            }
+            else
+            {
+                item.Execute();
+            }
+        }
+
+        private bool NewDedicatedThread(out TimeSlot slot)
+        {
+            var threadNumber = Interlocked.Increment(ref _dedidatedThreadCount);
+            if (threadNumber <= _dedidatedThreadMax)
+            {
+                GC.KeepAlive(new WorkThread(this, "Dedicated Thread #" + threadNumber + " on scheduler " + _id, out slot));
+                return true;
+            }
+            Interlocked.Decrement(ref _dedidatedThreadCount);
+            slot = null;
+            return false;
+        }
+
+        private sealed class TimeSlot
+        {
+            private readonly object _locker;
+            private readonly DefaultTaskScheduler _scheduler;
+            private int _status;
+
+            public TimeSlot(DefaultTaskScheduler scheduler)
+            {
+                _scheduler = scheduler;
+                _locker = new object();
+            }
+
+            public void Reject()
+            {
+                if (Interlocked.CompareExchange(ref _status, 0, 1) == 1)
+                {
+                    lock (_locker)
+                    {
+                        Monitor.Pulse(_locker);
+                    }
+                }
+            }
+
+            public bool Serve()
+            {
+                if (Interlocked.CompareExchange(ref _status, 1, 0) == 0)
+                {
+                    lock (_locker)
+                    {
+                        Monitor.Wait(_locker);
+                    }
+                    if (Interlocked.CompareExchange(ref _status, 3, 2) == 2)
+                    {
+                        Run();
+                        Thread.VolatileWrite(ref _status, 0);
+                        return true;
+                    }
+                }
+                return false;
+            }
+            public void Use()
+            {
+                if (Interlocked.CompareExchange(ref _status, 2, 1) == 1)
+                {
+                    lock (_locker)
+                    {
+                        Monitor.Pulse(_locker);
+                    }
+                }
+            }
+
+            private void Run()
+            {
+                Task item;
+                if (_scheduler._tasks.TryTake(out item))
+                {
+                    _scheduler.Execute(item);
+                }
+            }
+        }
+
+        private sealed class WorkThread
+        {
+            private readonly object _locker;
+            private readonly DefaultTaskScheduler _scheduler;
+            private readonly TimeSlot _slot;
+
+            public WorkThread(DefaultTaskScheduler scheduler, string name, out TimeSlot slot)
+            {
+                _scheduler = scheduler;
+                _locker = new object();
+                _slot = slot = new TimeSlot(scheduler);
+                (new Thread(Run)
+                {
+                    IsBackground = true,
+                    Name = name
+                }).Start();
+            }
+
+            private void Run()
+            {
+                loopback:
+                try
+                {
+                    Interlocked.Increment(ref _scheduler._workingTotalThreadCount);
+                    while (_scheduler._work && !GCMonitor.FinalizingForUnload)
+                    {
+                        if (!_slot.Serve() && (_scheduler._tasks.Count == 0 || Thread.VolatileRead(ref _scheduler._waitRequest) == 1))
+                        {
+                            // Sometimes a Task is added just after we check there is no Task
+                            // If that happens and the wake up call will come before this threads goes to wait...
+                            // Then this thread will go to wait anyway, regardless of the new Task.
+                            // That's why it is necesary to make sure a thread is started for this to Task correctly.
+                            // This could be solve by spinning instead, but it is convenient to be able to put the thread to wait.
+                            Interlocked.Decrement(ref _scheduler._workingTotalThreadCount);
+                            var slots = _scheduler._servSlots;
+                            if (_scheduler._work && !GCMonitor.FinalizingForUnload && slots != null)
+                            {
+                                lock (_locker)
+                                {
+                                    slots.Donate(_slot);
+                                    Monitor.Wait(_locker);
+                                }
+                                Interlocked.Increment(ref _scheduler._workingTotalThreadCount);
+                            }
+                        }
+                    }
+                }
+                catch (ThreadAbortException)
+                {
+                    // Nothing to do
+                }
+                catch
+                {
+                    // Pokemon
+                    if (_scheduler._work && !GCMonitor.FinalizingForUnload)
+                    {
+                        goto loopback;
+                    }
+                }
+                finally
+                {
+                    Interlocked.Decrement(ref _scheduler._workingTotalThreadCount);
+                }
+            }
+        }
+    }
+
     public abstract class TaskScheduler
     {
         private static readonly TaskScheduler _default = new DefaultTaskScheduler(Environment.ProcessorCount, false);
@@ -33,11 +293,12 @@ namespace System.Threading.Tasks
                 var currentTask = Task.Current;
                 if (currentTask != null)
                 {
-                    return currentTask.Context;
+                    return currentTask.Scheduler;
                 }
                 return Default;
             }
         }
+
         public int Id
         {
             get
@@ -54,6 +315,11 @@ namespace System.Threading.Tasks
             }
         }
 
+        public static TaskScheduler FromCurrentSynchronizationContext()
+        {
+            throw new NotImplementedException();
+        }
+
         public Task AddWork(Action action)
         {
             return GCMonitor.FinalizingForUnload ? null : new Task(action, false, this);
@@ -64,223 +330,25 @@ namespace System.Threading.Tasks
             return GCMonitor.FinalizingForUnload ? null : new Task(action, exclusive, this);
         }
 
-        protected internal abstract void ScheduleWork(Task task);
-    }
-
-    public sealed class DefaultTaskScheduler : TaskScheduler
-    {
-        private static int _lastId;
-
-        private readonly int _dedidatedThreadMax;
-        private readonly bool _disposable;
-        private readonly int _id;
-        private readonly SafeQueue<Task> _tasks;
-
-        private int _dedidatedThreadCount;
-        private Pool<WorkThread> _threads;
-        private int _waitRequest;
-        private volatile bool _work;
-        private int _workingTotalThreadCount;
-
-        public DefaultTaskScheduler()
-            : this(Environment.ProcessorCount, true)
+        internal void RunAndWait(Task task, bool taskWasPreviouslyQueued)
         {
-            //Empty
+
         }
 
-        public DefaultTaskScheduler(int dedicatedThreads)
-            : this(dedicatedThreads, true)
+        protected internal abstract void QueueTask(Task task);
+
+        protected internal virtual bool TryDequeue(Task task)
         {
-            //Empty
+            throw new NotImplementedException();
         }
 
-        internal DefaultTaskScheduler(int dedicatedThreads, bool disposable)
+        protected abstract IEnumerable<Task> GetScheduledTasks();
+
+        protected bool TryExecuteTask(Task task)
         {
-            if (dedicatedThreads < 0)
-            {
-                throw new ArgumentOutOfRangeException("dedicatedThreads", "dedicatedThreads < 0");
-            }
-            _dedidatedThreadMax = dedicatedThreads;
-            _tasks = new SafeQueue<Task>();
-            _threads = new Pool<WorkThread>(dedicatedThreads);
-            _id = Interlocked.Increment(ref _lastId) - 1;
-            _work = true;
-            _disposable = disposable;
+            throw new NotImplementedException();
         }
-
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
-        ~DefaultTaskScheduler()
-        {
-            try
-            {
-                //Empty
-            }
-            finally
-            {
-                DisposeExtracted();
-            }
-        }
-
-        public void Dispose()
-        {
-            if (_disposable)
-            {
-                DisposeExtracted();
-                GC.SuppressFinalize(this);
-            }
-        }
-
-        protected internal override void ScheduleWork(Task task)
-        {
-            if (_work)
-            {
-                _tasks.Add(task);
-                while (_tasks.Count > 0)
-                {
-                    WorkThread thread;
-                    // Sometimes a thread goes to wait just after we try to awake a thread
-                    // When there that happens and there is no room to create a new thread...
-                    // It may happen that no thread takes the Task.
-                    // That's why we loop until we can wake up or create a thread, or all Task is done.
-                    if (_threads.TryGet(out thread) || NewDedicatedThread(out thread))
-                    {
-                        thread.Go();
-                        break;
-                    }
-                }
-            }
-        }
-
-        private void DisposeExtracted()
-        {
-            _work = false;
-            var threads = Interlocked.Exchange(ref _threads, null);
-            if (threads != null)
-            {
-                WorkThread thread;
-                while (threads.TryGet(out thread))
-                {
-                    thread.Go();
-                }
-            }
-        }
-
-        private void Execute(Task item)
-        {
-            if (item.Exclusive)
-            {
-                Thread.VolatileWrite(ref _waitRequest, 1);
-                ThreadingHelper.SpinWaitUntil(ref _workingTotalThreadCount, 1);
-                item.Execute();
-                Thread.VolatileWrite(ref _waitRequest, 0);
-            }
-            else
-            {
-                item.Execute();
-            }
-        }
-
-        private bool NewDedicatedThread(out WorkThread thread)
-        {
-            var threadNumber = Interlocked.Increment(ref _dedidatedThreadCount);
-            if (threadNumber <= _dedidatedThreadMax)
-            {
-                thread = new WorkThread(this, "Dedicated Thread #" + threadNumber + " on Context " + _id);
-                return true;
-            }
-            Interlocked.Decrement(ref _dedidatedThreadCount);
-            thread = null;
-            return false;
-        }
-
-        private sealed class WorkThread
-        {
-            private readonly DefaultTaskScheduler _context;
-            private readonly object _locker;
-            private readonly Thread _thread;
-            private int _working;
-
-            public WorkThread(DefaultTaskScheduler context, string name)
-            {
-                _context = context;
-                _thread = new Thread(Run)
-                {
-                    IsBackground = true,
-                    Name = name
-                };
-                _locker = new object();
-            }
-
-            public void Go()
-            {
-                if (Interlocked.CompareExchange(ref _working, 1, 0) == 0)
-                {
-                    if (!_thread.IsAlive)
-                    {
-                        _thread.Start();
-                    }
-                }
-                else
-                {
-                    lock (_locker)
-                    {
-                        Monitor.Pulse(_locker);
-                    }
-                }
-            }
-
-            private void Run()
-            {
-            loopback:
-                try
-                {
-                    Interlocked.Increment(ref _context._workingTotalThreadCount);
-                    while (_context._work && !GCMonitor.FinalizingForUnload)
-                    {
-                        Task item;
-                        if (_context._tasks.TryTake(out item))
-                        {
-                            _context.Execute(item);
-                        }
-                        else if (_context._tasks.Count == 0 || Thread.VolatileRead(ref _context._waitRequest) == 1)
-                        {
-                            // Sometimes a Task is added just after we check there is no Task
-                            // If that happens and the wake up call will come before this threads goes to wait...
-                            // Then this thread will go to wait anyway, regardless of the new Task.
-                            // That's why it is necesary to make sure a thread is started for this to Task correctly.
-                            // This could be solve by spinning instead, but it is convenient to be able to put the thread to wait.
-                            Interlocked.Decrement(ref _context._workingTotalThreadCount);
-                            var threads = _context._threads;
-                            if (_context._work && !GCMonitor.FinalizingForUnload && threads != null)
-                            {
-                                lock (_locker)
-                                {
-                                    threads.Donate(this);
-                                    Monitor.Wait(_locker);
-                                }
-                                Interlocked.Increment(ref _context._workingTotalThreadCount);
-                            }
-                        }
-                    }
-                }
-                catch (ThreadAbortException)
-                {
-                    // Nothing to do
-                }
-                catch
-                {
-                    // Pokemon
-                    if (_context._work && !GCMonitor.FinalizingForUnload)
-                    {
-                        goto loopback;
-                    }
-                }
-                finally
-                {
-                    Interlocked.Decrement(ref _context._workingTotalThreadCount);
-                }
-            }
-        }
+        protected abstract bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued);
     }
 }
 
