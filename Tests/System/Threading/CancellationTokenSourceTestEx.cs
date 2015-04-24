@@ -20,7 +20,6 @@ namespace MonoTests.System.Threading
         [Test]
         public void RegisterWhileCancelling()
         {
-            // TODO - fix test case
             var cts = new CancellationTokenSource();
             var mre = new ManualResetEvent(false);
             var mre2 = new ManualResetEvent(false);

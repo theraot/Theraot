@@ -77,9 +77,13 @@ namespace System.Threading.Tasks
                 while (_tasks.Count > 0)
                 {
                     TimeSlot slot;
-                    if (_servSlots.TryGet(out slot) || NewDedicatedThread(out slot))
+                    if (_servSlots.TryGet(out slot))
                     {
                         slot.Use();
+                        break;
+                    }
+                    if (NewDedicatedThread(task))
+                    {
                         break;
                     }
                 }
@@ -137,16 +141,15 @@ namespace System.Threading.Tasks
             }
         }
 
-        private bool NewDedicatedThread(out TimeSlot slot)
+        private bool NewDedicatedThread(Task firstTask)
         {
             var threadNumber = Interlocked.Increment(ref _dedidatedThreadCount);
             if (threadNumber <= _dedidatedThreadMax)
             {
-                GC.KeepAlive(new WorkThread(this, "Dedicated Thread #" + threadNumber + " on scheduler " + _id, out slot));
+                GC.KeepAlive(new WorkThread(this, "Dedicated Thread #" + threadNumber + " on scheduler " + _id, firstTask));
                 return true;
             }
             Interlocked.Decrement(ref _dedidatedThreadCount);
-            slot = null;
             return false;
         }
 
@@ -247,19 +250,19 @@ namespace System.Threading.Tasks
             private readonly DefaultTaskScheduler _scheduler;
             private readonly TimeSlot _slot;
 
-            public WorkThread(DefaultTaskScheduler scheduler, string name, out TimeSlot slot)
+            public WorkThread(DefaultTaskScheduler scheduler, string name, Task firstTask)
             {
                 _scheduler = scheduler;
                 _locker = new object();
-                _slot = slot = new TimeSlot(scheduler);
-                (new Thread(Run)
+                _slot = new TimeSlot(scheduler);
+                (new Thread(() => Run(firstTask))
                 {
                     IsBackground = true,
                     Name = name
                 }).Start();
             }
 
-            private void Run()
+            private void PrivateRun()
             {
                 loopback:
                 try
@@ -305,6 +308,12 @@ namespace System.Threading.Tasks
                 {
                     Interlocked.Decrement(ref _scheduler._workingTotalThreadCount);
                 }
+            }
+
+            private void Run(Task firstTask)
+            {
+                _scheduler.Execute(firstTask);
+                PrivateRun();
             }
         }
     }
