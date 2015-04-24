@@ -114,7 +114,6 @@ This are some parts worth of mention:
     - `ReentryGuard`: A helper class that allows to protect a code from reentry.
     - `SingleTimeExecution`: A thread-safe way to wrap code to be called only once.
     - `ThreadinHelper`: Provides unique ids for managed threads, generic `VolatileRead` and *Write, and conditional `SpinWait`. [See Note 5]
-    - `Work`: a task scheduler implementation, intended to be part of the backport of `System.Threading.Tasks`.
 
 Note 1: `EqualityComparerHelper<T>` creates equality comparers for delegates, tuples, and Needles [See "Needle" below] among others. This facilitates their use as keys in dictionaries.
 
@@ -184,15 +183,6 @@ Otherwise provide an `ICloner<T>` (added in FAT builds), if one is provided it t
 It is also possible to explicitly call `Rollback` which will release all changes up to the last call to Commit. Multiple transactions over different needles can happen simultaneously without locking or waiting.
 
 The system supports up to 512 threads attempting to Commit simultaneously per AppDomain, any extra thread calling `Commit` will wait. When multiple threads are trying to Commit on the same needles, it is guaranteed that at least one will succeed.
-
----
-**Works**
-
-Works are only included in "FAT" builds, and are a prototype for Task.
-
-Currently Works require a `WorkContext` that serves as thread pool. A default `WorkContext` is provided with as many dedotated threads as `Environment.ProcessorCount`.
-
-It is possible to wait a `Work` to complete, while doing so, the waiting thread donates it's time to execute pending works.
 
 ---
 Notes

@@ -1,42 +1,41 @@
 #if FAT
 
-using System;
-using System.Threading;
 using Theraot.Core;
+using Theraot.Threading;
 using Theraot.Threading.Needles;
 
-namespace Theraot.Threading
+namespace System.Threading.Tasks
 {
-    public sealed partial class Work : ICloneable, IPromise, ICloneable<Work>
+    public sealed partial class Task : ICloneable, IPromise, ICloneable<Task>
     {
         private const int INT_StatusCompleted = 2;
         private const int INT_StatusNew = 0;
         private const int INT_StatusRunning = 1;
 
         [ThreadStatic]
-        private static Work _current;
+        private static Task _current;
 
         private readonly Action _action;
-        private readonly WorkContext _context;
         private readonly bool _exclusive;
+        private readonly TaskScheduler _scheduler;
         private Exception _error;
         private int _status = INT_StatusNew;
 
         private StructNeedle<ManualResetEventSlim> _waitHandle;
 
-        internal Work(Action action, bool exclusive, WorkContext context)
+        internal Task(Action action, bool exclusive, TaskScheduler scheduler)
         {
-            if (ReferenceEquals(context, null))
+            if (ReferenceEquals(scheduler, null))
             {
-                throw new ArgumentNullException("context");
+                throw new ArgumentNullException("scheduler");
             }
-            _context = context;
+            _scheduler = scheduler;
             _action = action ?? ActionHelper.GetNoopAction();
             _exclusive = exclusive;
             _waitHandle = new ManualResetEventSlim(false);
         }
 
-        ~Work()
+        ~Task()
         {
             var waitHandle = _waitHandle.Value;
             if (!ReferenceEquals(waitHandle, null))
@@ -46,7 +45,7 @@ namespace Theraot.Threading
             _waitHandle.Value = null;
         }
 
-        public static Work Current
+        public static Task Current
         {
             get
             {
@@ -86,6 +85,14 @@ namespace Theraot.Threading
             }
         }
 
+        public TaskScheduler Scheduler
+        {
+            get
+            {
+                return _scheduler;
+            }
+        }
+
         internal bool Exclusive
         {
             get
@@ -93,10 +100,9 @@ namespace Theraot.Threading
                 return _exclusive;
             }
         }
-
-        public Work Clone()
+        public Task Clone()
         {
-            return _context.AddWork(_action, _exclusive);
+            return _scheduler.AddWork(_action, _exclusive);
         }
 
         public bool Start()
@@ -105,7 +111,7 @@ namespace Theraot.Threading
             if (check != INT_StatusRunning && !GCMonitor.FinalizingForUnload)
             {
                 _error = null;
-                _context.ScheduleWork(this);
+                _scheduler.QueueTask(this);
                 return true;
             }
             return false;
@@ -123,10 +129,7 @@ namespace Theraot.Threading
 
         public void Wait()
         {
-            while (Thread.VolatileRead(ref _status) != INT_StatusCompleted)
-            {
-                _context.DoOneWork();
-            }
+            _scheduler.RunAndWait(this, Thread.VolatileRead(ref _status) == INT_StatusRunning);
         }
 
         public bool Wait(int milliseconds)
@@ -143,7 +146,7 @@ namespace Theraot.Threading
             var start = ThreadingHelper.TicksNow();
             while (Thread.VolatileRead(ref _status) != INT_StatusCompleted)
             {
-                _context.DoOneWork();
+                _scheduler.RunAndWait(this, Thread.VolatileRead(ref _status) == INT_StatusRunning);
                 if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) >= milliseconds)
                 {
                     return false;
@@ -177,7 +180,7 @@ namespace Theraot.Threading
         }
     }
 
-    public sealed partial class Work
+    public sealed partial class Task
     {
 #if DEBUG || FAT
         private static int _lastId;
