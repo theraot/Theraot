@@ -7,22 +7,16 @@ namespace Theraot.Threading
     /// Represents a scheduler to execute operationg without reentry.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public sealed class SimpleReentryGuard
+    public sealed class SimpleReentryGuard : IDisposable
     {
-        private StructNeedle<NoTrackingThreadLocal<Guard>> _guards;
+        private StructNeedle<TrackingThreadLocal<int>> _guards;
 
         /// <summary>
         /// Creates a new instance of <see cref="SimpleReentryGuard"/>.
         /// </summary>
         public SimpleReentryGuard()
         {
-            _guards = new StructNeedle<NoTrackingThreadLocal<Guard>>
-                (
-                    new NoTrackingThreadLocal<Guard>
-                    (
-                        () => new Guard()
-                    )
-                );
+            _guards = new StructNeedle<TrackingThreadLocal<int>>(new TrackingThreadLocal<int>());
         }
 
         /// <summary>
@@ -32,9 +26,26 @@ namespace Theraot.Threading
         {
             get
             {
-                var local = _guards.Value.Value;
-                return local.IsTaken;
+                return _guards.Value.Value > 0;
             }
+        }
+
+        public void Dispose()
+        {
+            if (_guards.Value.Value > 0)
+            {
+                _guards.Value.Value--;
+            }
+        }
+
+        public bool Enter()
+        {
+            var value = ++_guards.Value.Value;
+            if (value > 0)
+            {
+                return false;
+            }
+            return true;
         }
 
         /// <summary>
@@ -44,18 +55,16 @@ namespace Theraot.Threading
         /// <returns>Returns a promise to finish the execution.</returns>
         public void Execute(Action operation)
         {
-            var local = _guards.Value.Value;
-            IDisposable engagement;
-            if (local.Enter(out engagement))
+            var local = _guards.Value;
+            ThrowIfReentrant();
+            try
             {
-                using (engagement)
-                {
-                    operation.Invoke();
-                }
+                local.Value++;
+                operation();
             }
-            else
+            finally
             {
-                throw new InvalidOperationException("Reentry");
+                local.Value--;
             }
         }
 
@@ -67,16 +76,35 @@ namespace Theraot.Threading
         /// <returns>Returns a promise to finish the execution.</returns>
         public T Execute<T>(Func<T> operation)
         {
-            var local = _guards.Value.Value;
-            IDisposable engagement;
-            if (local.Enter(out engagement))
+            var local = _guards.Value;
+            ThrowIfReentrant();
+            try
             {
-                using (engagement)
-                {
-                    return operation();
-                }
+                local.Value++;
+                return operation();
             }
-            throw new InvalidOperationException("Reentry");
+            finally
+            {
+                local.Value--;
+            }
+        }
+
+        public void ThrowIfReentrant()
+        {
+            if (_guards.Value.Value > 0)
+            {
+                throw new InvalidOperationException("Reentry");
+            }
+        }
+
+        public bool TryEnter()
+        {
+            if (_guards.Value.Value == 0)
+            {
+                _guards.Value.Value++;
+                return true;
+            }
+            return false;
         }
     }
 }

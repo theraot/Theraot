@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace Theraot.Threading
 {
-    public sealed class Guard
+    public sealed class Guard : IDisposable
     {
         private int _value;
 
@@ -15,24 +15,29 @@ namespace Theraot.Threading
             }
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", Justification = "By Design")]
-        public bool Enter(out IDisposable engagement)
+        public void Dispose()
+        {
+            int lastValue;
+            ThreadingHelper.SpinWaitRelativeExchangeUnlessNegative(ref _value, -1, out lastValue);
+        }
+
+        public bool Enter()
+        {
+            var result = Interlocked.Increment(ref _value);
+            if (result == 1)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public bool TryEnter()
         {
             if (Interlocked.CompareExchange(ref _value, 1, 0) == 0)
             {
-                engagement = DisposableAkin.Create(Release);
                 return true;
             }
-            else
-            {
-                engagement = null;
-                return false;
-            }
-        }
-
-        private void Release()
-        {
-            Thread.VolatileWrite(ref _value, 0);
+            return false;
         }
     }
 }
