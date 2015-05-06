@@ -25,6 +25,18 @@ namespace System.Threading.Tasks
 
         private StructNeedle<ManualResetEventSlim> _waitHandle;
 
+        public Task(Action action)
+        {
+            if (ReferenceEquals(action, null))
+            {
+                throw new ArgumentNullException("action");
+            }
+            _scheduler = TaskScheduler.Default;
+            _action = action;
+            _exclusive = false;
+            _waitHandle = new ManualResetEventSlim(false);
+        }
+
         internal Task(Action action, bool exclusive, TaskScheduler scheduler)
         {
             if (ReferenceEquals(scheduler, null))
@@ -52,6 +64,14 @@ namespace System.Threading.Tasks
             get
             {
                 return _current;
+            }
+        }
+
+        public static int CurrentId
+        {
+            get
+            {
+                return _current.Id;
             }
         }
 
