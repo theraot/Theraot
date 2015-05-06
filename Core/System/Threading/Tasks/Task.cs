@@ -6,7 +6,7 @@ using Theraot.Threading.Needles;
 
 namespace System.Threading.Tasks
 {
-    public sealed partial class Task : ICloneable, IPromise, ICloneable<Task>
+    public sealed class Task : ICloneable, IPromise, ICloneable<Task>
     {
         private const int INT_StatusCompleted = 2;
         private const int INT_StatusNew = 0;
@@ -15,8 +15,10 @@ namespace System.Threading.Tasks
         [ThreadStatic]
         private static Task _current;
 
+        private static int _lastId;
         private readonly Action _action;
         private readonly bool _exclusive;
+        private readonly int _id = Interlocked.Increment(ref _lastId) - 1;
         private readonly TaskScheduler _scheduler;
         private Exception _error;
         private int _status = INT_StatusNew;
@@ -58,6 +60,14 @@ namespace System.Threading.Tasks
             get
             {
                 return _error;
+            }
+        }
+
+        public int Id
+        {
+            get
+            {
+                return _id;
             }
         }
 
@@ -178,23 +188,6 @@ namespace System.Threading.Tasks
         {
             return Clone();
         }
-    }
-
-    public sealed partial class Task
-    {
-#if DEBUG || FAT
-        private static int _lastId;
-        private readonly int _id = Interlocked.Increment(ref _lastId) - 1;
-
-        public int Id
-        {
-            get
-            {
-                return _id;
-            }
-        }
-
-#endif
     }
 }
 
