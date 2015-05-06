@@ -6,7 +6,7 @@ using Theraot.Threading.Needles;
 
 namespace System.Threading.Tasks
 {
-    public sealed class Task : ICloneable, IPromise, ICloneable<Task>
+    public sealed class Task : IPromise
     {
         private const int INT_StatusCompleted = 2;
         private const int INT_StatusNew = 0;
@@ -130,10 +130,6 @@ namespace System.Threading.Tasks
                 return _exclusive;
             }
         }
-        public Task Clone()
-        {
-            return _scheduler.AddWork(_action, _exclusive);
-        }
 
         public bool Start()
         {
@@ -202,11 +198,6 @@ namespace System.Threading.Tasks
                 _waitHandle.Value.Set();
                 Interlocked.Exchange(ref _current, oldCurrent);
             }
-        }
-
-        object ICloneable.Clone()
-        {
-            return Clone();
         }
     }
 }
