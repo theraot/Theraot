@@ -8,10 +8,6 @@ namespace System.Threading.Tasks
 {
     public sealed class Task : IPromise
     {
-        private const int INT_StatusCompleted = 2;
-        private const int INT_StatusNew = 0;
-        private const int INT_StatusRunning = 1;
-
         [ThreadStatic]
         private static Task _current;
 
@@ -21,7 +17,7 @@ namespace System.Threading.Tasks
         private readonly int _id = Interlocked.Increment(ref _lastId) - 1;
         private readonly TaskScheduler _scheduler;
         private Exception _error;
-        private int _status = INT_StatusNew;
+        private int _status = (int)TaskStatus.Created;
 
         private StructNeedle<ManualResetEventSlim> _waitHandle;
 
@@ -95,7 +91,8 @@ namespace System.Threading.Tasks
         {
             get
             {
-                return false;
+                var status = Thread.VolatileRead(ref _status);
+                return status == (int)TaskStatus.Canceled;
             }
         }
 
@@ -103,7 +100,8 @@ namespace System.Threading.Tasks
         {
             get
             {
-                return Thread.VolatileRead(ref _status) == INT_StatusCompleted;
+                var status = Thread.VolatileRead(ref _status);
+                return status == (int)TaskStatus.RanToCompletion || status == (int)TaskStatus.Faulted || status == (int)TaskStatus.Canceled;
             }
         }
 
@@ -111,7 +109,8 @@ namespace System.Threading.Tasks
         {
             get
             {
-                return !ReferenceEquals(_error, null);
+                var status = Thread.VolatileRead(ref _status);
+                return status == (int)TaskStatus.Faulted;
             }
         }
 
@@ -138,7 +137,7 @@ namespace System.Threading.Tasks
                 // Silent fail
                 return;
             }
-            if (Interlocked.CompareExchange(ref _status, INT_StatusRunning, INT_StatusNew) != INT_StatusNew)
+            if (Interlocked.CompareExchange(ref _status, (int)TaskStatus.Running, (int)TaskStatus.Created) != (int)TaskStatus.Created)
             {
                 throw new InvalidOperationException();
             }
@@ -148,7 +147,10 @@ namespace System.Threading.Tasks
 
         public void Wait()
         {
-            _scheduler.RunAndWait(this, Thread.VolatileRead(ref _status) == INT_StatusRunning);
+            while (!IsCompleted)
+            {
+                _scheduler.RunAndWait(this, Thread.VolatileRead(ref _status) == (int) TaskStatus.Running);
+            }
         }
 
         public bool Wait(int milliseconds)
@@ -163,9 +165,9 @@ namespace System.Threading.Tasks
                 return true;
             }
             var start = ThreadingHelper.TicksNow();
-            while (Thread.VolatileRead(ref _status) != INT_StatusCompleted)
+            while (!IsCompleted)
             {
-                _scheduler.RunAndWait(this, Thread.VolatileRead(ref _status) == INT_StatusRunning);
+                _scheduler.RunAndWait(this, Thread.VolatileRead(ref _status) == (int)TaskStatus.Running);
                 if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) >= milliseconds)
                 {
                     return false;
@@ -187,7 +189,7 @@ namespace System.Threading.Tasks
             }
             finally
             {
-                Thread.VolatileWrite(ref _status, INT_StatusCompleted);
+                Thread.VolatileWrite(ref _status, (int)TaskStatus.RanToCompletion);
                 _waitHandle.Value.Set();
                 Interlocked.Exchange(ref _current, oldCurrent);
             }
@@ -202,8 +204,10 @@ namespace System.Threading.Tasks
             }
             if
                 (
-                    (Interlocked.CompareExchange(ref _status, INT_StatusRunning, INT_StatusNew) != INT_StatusNew)
-                    && (Interlocked.CompareExchange(ref _status, INT_StatusRunning, INT_StatusCompleted) != INT_StatusCompleted)
+                    (Interlocked.CompareExchange(ref _status, (int)TaskStatus.Running, (int)TaskStatus.Created) != (int)TaskStatus.Created)
+                    && (Interlocked.CompareExchange(ref _status, (int)TaskStatus.Running, (int)TaskStatus.Faulted) != (int)TaskStatus.Faulted)
+                    && (Interlocked.CompareExchange(ref _status, (int)TaskStatus.Running, (int)TaskStatus.Canceled) != (int)TaskStatus.Canceled)
+                    && (Interlocked.CompareExchange(ref _status, (int)TaskStatus.Running, (int)TaskStatus.RanToCompletion) != (int)TaskStatus.RanToCompletion)
                 )
             {
                 throw new InvalidOperationException();
