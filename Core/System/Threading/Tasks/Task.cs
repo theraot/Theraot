@@ -130,6 +130,15 @@ namespace System.Threading.Tasks
             }
         }
 
+        private bool IsScheduled
+        {
+            get
+            {
+                var status = Thread.VolatileRead(ref _status);
+                return status == (int)TaskStatus.WaitingToRun || status == (int)TaskStatus.Running || status == (int)TaskStatus.WaitingForChildrenToComplete;
+            }
+        }
+
         public void RunSynchronously()
         {
             Start();
@@ -155,12 +164,11 @@ namespace System.Threading.Tasks
                 // Silent fail
                 return;
             }
-            if (Interlocked.CompareExchange(ref _status, (int)TaskStatus.Running, (int)TaskStatus.Created) != (int)TaskStatus.Created)
+            if (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingToRun, (int)TaskStatus.Created) != (int)TaskStatus.Created)
             {
                 throw new InvalidOperationException();
             }
-            _exception = null;
-            _scheduler.QueueTask(this);
+            Schedule();
         }
 
         public void Start(TaskScheduler scheduler)
@@ -170,19 +178,19 @@ namespace System.Threading.Tasks
                 // Silent fail
                 return;
             }
-            if (Interlocked.CompareExchange(ref _status, (int)TaskStatus.Running, (int)TaskStatus.Created) != (int)TaskStatus.Created)
+            if (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingToRun, (int)TaskStatus.Created) != (int)TaskStatus.Created)
             {
                 throw new InvalidOperationException();
             }
-            _exception = null;
-            scheduler.QueueTask(this);
+            Schedule();
         }
 
         public void Wait()
         {
+            var scheduled = IsScheduled;
             while (!IsCompleted)
             {
-                _scheduler.RunAndWait(this, Thread.VolatileRead(ref _status) == (int) TaskStatus.Running);
+                _scheduler.RunAndWait(this, scheduled);
             }
         }
 
@@ -190,9 +198,10 @@ namespace System.Threading.Tasks
         {
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
+            var scheduled = IsScheduled;
             while (!IsCompleted)
             {
-                _scheduler.RunAndWait(this, Thread.VolatileRead(ref _status) == (int) TaskStatus.Running);
+                _scheduler.RunAndWait(this, scheduled);
                 if (!IsCompleted)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
@@ -213,9 +222,10 @@ namespace System.Threading.Tasks
                 return true;
             }
             var start = ThreadingHelper.TicksNow();
+            var scheduled = IsScheduled;
             while (!IsCompleted)
             {
-                _scheduler.RunAndWait(this, Thread.VolatileRead(ref _status) == (int)TaskStatus.Running);
+                _scheduler.RunAndWait(this, scheduled);
                 if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) >= milliseconds)
                 {
                     return false;
@@ -228,9 +238,10 @@ namespace System.Threading.Tasks
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
             var start = ThreadingHelper.TicksNow();
+            var scheduled = IsScheduled;
             while (!IsCompleted)
             {
-                _scheduler.RunAndWait(this, Thread.VolatileRead(ref _status) == (int)TaskStatus.Running);
+                _scheduler.RunAndWait(this, scheduled);
                 if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) >= milliseconds)
                 {
                     return false;
@@ -253,9 +264,10 @@ namespace System.Threading.Tasks
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             var start = ThreadingHelper.TicksNow();
+            var scheduled = IsScheduled;
             while (!IsCompleted)
             {
-                _scheduler.RunAndWait(this, Thread.VolatileRead(ref _status) == (int)TaskStatus.Running);
+                _scheduler.RunAndWait(this, scheduled);
                 if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) >= milliseconds)
                 {
                     return false;
@@ -297,14 +309,19 @@ namespace System.Threading.Tasks
             }
             if
                 (
-                    (Interlocked.CompareExchange(ref _status, (int)TaskStatus.Running, (int)TaskStatus.Created) != (int)TaskStatus.Created)
-                    && (Interlocked.CompareExchange(ref _status, (int)TaskStatus.Running, (int)TaskStatus.Faulted) != (int)TaskStatus.Faulted)
-                    && (Interlocked.CompareExchange(ref _status, (int)TaskStatus.Running, (int)TaskStatus.Canceled) != (int)TaskStatus.Canceled)
-                    && (Interlocked.CompareExchange(ref _status, (int)TaskStatus.Running, (int)TaskStatus.RanToCompletion) != (int)TaskStatus.RanToCompletion)
+                    (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingToRun, (int)TaskStatus.Created) != (int)TaskStatus.Created)
+                    && (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingToRun, (int)TaskStatus.Faulted) != (int)TaskStatus.Faulted)
+                    && (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingToRun, (int)TaskStatus.Canceled) != (int)TaskStatus.Canceled)
+                    && (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingToRun, (int)TaskStatus.RanToCompletion) != (int)TaskStatus.RanToCompletion)
                 )
             {
                 throw new InvalidOperationException();
             }
+            Schedule();
+        }
+
+        private void Schedule()
+        {
             _exception = null;
             _scheduler.QueueTask(this);
         }
