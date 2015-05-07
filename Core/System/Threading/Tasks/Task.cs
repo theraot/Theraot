@@ -186,6 +186,21 @@ namespace System.Threading.Tasks
             }
         }
 
+        public void Wait(CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            GC.KeepAlive(cancellationToken.WaitHandle);
+            while (!IsCompleted)
+            {
+                _scheduler.RunAndWait(this, Thread.VolatileRead(ref _status) == (int) TaskStatus.Running);
+                if (!IsCompleted)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    GC.KeepAlive(cancellationToken.WaitHandle);
+                }
+            }
+        }
+
         public bool Wait(int milliseconds)
         {
             if (milliseconds < -1)
@@ -204,6 +219,51 @@ namespace System.Threading.Tasks
                 if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) >= milliseconds)
                 {
                     return false;
+                }
+            }
+            return true;
+        }
+
+        public bool Wait(TimeSpan timeout)
+        {
+            var milliseconds = (long)timeout.TotalMilliseconds;
+            var start = ThreadingHelper.TicksNow();
+            while (!IsCompleted)
+            {
+                _scheduler.RunAndWait(this, Thread.VolatileRead(ref _status) == (int)TaskStatus.Running);
+                if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public bool Wait(int milliseconds, CancellationToken cancellationToken)
+        {
+            if (milliseconds < -1)
+            {
+                throw new ArgumentOutOfRangeException("milliseconds");
+            }
+            if (milliseconds == -1)
+            {
+                Wait(cancellationToken);
+                return true;
+            }
+            cancellationToken.ThrowIfCancellationRequested();
+            GC.KeepAlive(cancellationToken.WaitHandle);
+            var start = ThreadingHelper.TicksNow();
+            while (!IsCompleted)
+            {
+                _scheduler.RunAndWait(this, Thread.VolatileRead(ref _status) == (int)TaskStatus.Running);
+                if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) >= milliseconds)
+                {
+                    return false;
+                }
+                if (!IsCompleted)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    GC.KeepAlive(cancellationToken.WaitHandle);
                 }
             }
             return true;
