@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 
 namespace Theraot.Threading.Needles
 {
@@ -6,14 +7,14 @@ namespace Theraot.Threading.Needles
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ExceptionStructNeedle<T> : INeedle<T>, IEquatable<ExceptionStructNeedle<T>>
     {
-        private readonly Exception _exception;
+        private readonly AggregateException _exception;
 
         public ExceptionStructNeedle(Exception exception)
         {
-            _exception = exception;
+            _exception = new AggregateException (exception);
         }
 
-        public Exception Error
+        public AggregateException Exception
         {
             get
             {

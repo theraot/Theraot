@@ -25,10 +25,10 @@ namespace Tests.Theraot.Threading.Needles
             });
             Assert.Throws(typeof(InvalidOperationException), () => GC.KeepAlive(a.Value));
             Assert.IsTrue(a.IsFaulted);
-            Assert.IsTrue(a.Error is InvalidOperationException);
+            Assert.IsTrue(a.Exception.InnerException is InvalidOperationException);
             Assert.AreEqual(a.Value, 1);
             Assert.IsFalse(a.IsFaulted);
-            Assert.AreEqual(a.Error, null);
+            Assert.AreEqual(a.Exception, null);
 
             // Cache
             count[0] = 0;
@@ -43,11 +43,11 @@ namespace Tests.Theraot.Threading.Needles
             }, true);
             Assert.Throws(typeof(InvalidOperationException), () => GC.KeepAlive(a.Value));
             Assert.IsTrue(a.IsFaulted);
-            Assert.IsTrue(a.Error is InvalidOperationException);
+            Assert.IsTrue(a.Exception.InnerException is InvalidOperationException);
             // Did cache
             Assert.Throws(typeof(InvalidOperationException), () => GC.KeepAlive(a.Value));
             Assert.IsTrue(a.IsFaulted);
-            Assert.IsTrue(a.Error is InvalidOperationException);
+            Assert.IsTrue(a.Exception.InnerException is InvalidOperationException);
         }
 
         [Test]

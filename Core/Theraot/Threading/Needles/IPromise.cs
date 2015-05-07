@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 
 namespace Theraot.Threading.Needles
 {
@@ -19,7 +20,7 @@ namespace Theraot.Threading.Needles
             get;
         }
 
-        Exception Error { get; }
+        AggregateException Exception { get; }
         
         void Wait();
     }

@@ -104,11 +104,11 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        Exception IPromise.Error
+        AggregateException IPromise.Exception
         {
             get
             {
-                return Error;
+                return Exception;
             }
         }
 

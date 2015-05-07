@@ -43,7 +43,7 @@ namespace Theraot.Threading.Needles
             _hashCode = NeedleHelper.GetNextHashCode();
         }
 
-        public Exception Error
+        public AggregateException Exception
         {
             get
             {
@@ -60,7 +60,7 @@ namespace Theraot.Threading.Needles
                     }
                     if (target is ExceptionStructNeedle<T>)
                     {
-                        return ((ExceptionStructNeedle<T>)target).Error;
+                        return ((ExceptionStructNeedle<T>)target).Exception;
                     }
                 }
                 return null;

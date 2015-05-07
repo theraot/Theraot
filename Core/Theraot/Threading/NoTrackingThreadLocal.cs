@@ -94,7 +94,7 @@ namespace Theraot.Threading
             }
         }
 
-        Exception IPromise.Error
+        AggregateException IPromise.Exception
         {
             get
             {

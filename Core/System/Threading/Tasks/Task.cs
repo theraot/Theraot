@@ -16,7 +16,7 @@ namespace System.Threading.Tasks
         private readonly bool _exclusive;
         private readonly int _id = Interlocked.Increment(ref _lastId) - 1;
         private readonly TaskScheduler _scheduler;
-        private Exception _error;
+        private AggregateException _exception;
         private int _status = (int)TaskStatus.Created;
 
         private StructNeedle<ManualResetEventSlim> _waitHandle;
@@ -63,11 +63,11 @@ namespace System.Threading.Tasks
             }
         }
 
-        public Exception Error
+        public AggregateException Exception
         {
             get
             {
-                return _error;
+                return _exception;
             }
         }
 
@@ -159,7 +159,7 @@ namespace System.Threading.Tasks
             {
                 throw new InvalidOperationException();
             }
-            _error = null;
+            _exception = null;
             _scheduler.QueueTask(this);
         }
 
@@ -174,7 +174,7 @@ namespace System.Threading.Tasks
             {
                 throw new InvalidOperationException();
             }
-            _error = null;
+            _exception = null;
             scheduler.QueueTask(this);
         }
 
@@ -278,7 +278,7 @@ namespace System.Threading.Tasks
             }
             catch (Exception exception)
             {
-                _error = exception;
+                _exception = new AggregateException(exception);
             }
             finally
             {
@@ -305,7 +305,7 @@ namespace System.Threading.Tasks
             {
                 throw new InvalidOperationException();
             }
-            _error = null;
+            _exception = null;
             _scheduler.QueueTask(this);
         }
     }
