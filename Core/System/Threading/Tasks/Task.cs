@@ -55,14 +55,6 @@ namespace System.Threading.Tasks
             _waitHandle.Value = null;
         }
 
-        public static Task Current
-        {
-            get
-            {
-                return _current;
-            }
-        }
-
         public static int CurrentId
         {
             get
@@ -119,6 +111,14 @@ namespace System.Threading.Tasks
             get
             {
                 return _scheduler;
+            }
+        }
+
+        internal static Task Current
+        {
+            get
+            {
+                return _current;
             }
         }
 
