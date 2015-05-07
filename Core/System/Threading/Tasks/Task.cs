@@ -130,6 +130,24 @@ namespace System.Threading.Tasks
             }
         }
 
+        public void RunSynchronously()
+        {
+            Start();
+            while (!IsCompleted)
+            {
+                _scheduler.RunAndWait(this, true);
+            }
+        }
+
+        public void RunSynchronously(TaskScheduler scheduler)
+        {
+            Start(scheduler);
+            while (!IsCompleted)
+            {
+                _scheduler.RunAndWait(this, true);
+            }
+        }
+
         public void Start()
         {
             if (GCMonitor.FinalizingForUnload)
@@ -143,6 +161,21 @@ namespace System.Threading.Tasks
             }
             _error = null;
             _scheduler.QueueTask(this);
+        }
+
+        public void Start(TaskScheduler scheduler)
+        {
+            if (GCMonitor.FinalizingForUnload)
+            {
+                // Silent fail
+                return;
+            }
+            if (Interlocked.CompareExchange(ref _status, (int)TaskStatus.Running, (int)TaskStatus.Created) != (int)TaskStatus.Created)
+            {
+                throw new InvalidOperationException();
+            }
+            _error = null;
+            scheduler.QueueTask(this);
         }
 
         public void Wait()
