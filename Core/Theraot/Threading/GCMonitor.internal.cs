@@ -33,7 +33,7 @@ namespace Theraot.Threading
             public static void Invoke()
             {
 #if FAT
-                _task.Start();
+                _task.Restart();
 #else
                 ThreadPool.QueueUserWorkItem(_ => RaiseCollected());
 #endif

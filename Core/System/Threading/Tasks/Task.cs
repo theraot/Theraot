@@ -131,26 +131,19 @@ namespace System.Threading.Tasks
             }
         }
 
-        public bool Start()
+        public void Start()
         {
-            var check = Interlocked.Exchange(ref _status, INT_StatusRunning);
-            if (check != INT_StatusRunning && !GCMonitor.FinalizingForUnload)
+            if (GCMonitor.FinalizingForUnload)
             {
-                _error = null;
-                _scheduler.QueueTask(this);
-                return true;
+                // Silent fail
+                return;
             }
-            return false;
-        }
-
-        public bool StartAndWait()
-        {
-            if (Start())
+            if (Interlocked.CompareExchange(ref _status, INT_StatusRunning, INT_StatusNew) != INT_StatusNew)
             {
-                Wait();
-                return true;
+                throw new InvalidOperationException();
             }
-            return false;
+            _error = null;
+            _scheduler.QueueTask(this);
         }
 
         public void Wait()
@@ -198,6 +191,25 @@ namespace System.Threading.Tasks
                 _waitHandle.Value.Set();
                 Interlocked.Exchange(ref _current, oldCurrent);
             }
+        }
+
+        internal void Restart()
+        {
+            if (GCMonitor.FinalizingForUnload)
+            {
+                // Silent fail
+                return;
+            }
+            if
+                (
+                    (Interlocked.CompareExchange(ref _status, INT_StatusRunning, INT_StatusNew) != INT_StatusNew)
+                    && (Interlocked.CompareExchange(ref _status, INT_StatusRunning, INT_StatusCompleted) != INT_StatusCompleted)
+                )
+            {
+                throw new InvalidOperationException();
+            }
+            _error = null;
+            _scheduler.QueueTask(this);
         }
     }
 }
