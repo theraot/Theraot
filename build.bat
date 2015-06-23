@@ -15,15 +15,6 @@ echo.
 echo Starting.
 echo.
 
-for /f "tokens=*" %%a in (%1) do (
-
-   set write=%%a
-   if %%a==%findthis% set write=%replacewith%
-
-   echo !write! 
-   echo !write! >>%~n1.replaced%~x1
-)
-
 SET mypath=%~dp0
 echo Running build.cmd from %mypath:~0,-1%
 
