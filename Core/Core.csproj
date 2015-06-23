@@ -96,9 +96,9 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_NET20|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET20|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\Release_NET20\</OutputPath>
+    <OutputPath>bin\NET20\</OutputPath>
     <DefineConstants>NET20</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -106,9 +106,9 @@
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <LangVersion>default</LangVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_NET30|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET30|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\Release_NET30\</OutputPath>
+    <OutputPath>bin\NET30\</OutputPath>
     <DefineConstants>NET30</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -116,9 +116,9 @@
     <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
     <LangVersion>default</LangVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_NET35|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\Release_NET35\</OutputPath>
+    <OutputPath>bin\NET35\</OutputPath>
     <DefineConstants>NET35</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -126,9 +126,9 @@
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <LangVersion>default</LangVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_NET40|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\Release_NET40\</OutputPath>
+    <OutputPath>bin\NET40\</OutputPath>
     <DefineConstants>NET40</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -136,9 +136,9 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <LangVersion>default</LangVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_NET45|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET45|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\Release_NET45\</OutputPath>
+    <OutputPath>bin\NET45\</OutputPath>
     <DefineConstants>NET45</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -146,9 +146,9 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <LangVersion>default</LangVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_NET20_FAT|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET20_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\Release_NET20_FAT\</OutputPath>
+    <OutputPath>bin\NET20_FAT\</OutputPath>
     <DefineConstants>NET20;FAT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -156,9 +156,9 @@
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <LangVersion>default</LangVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_NET30_FAT|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET30_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\Release_NET30_FAT\</OutputPath>
+    <OutputPath>bin\NET30_FAT\</OutputPath>
     <DefineConstants>NET30;FAT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -166,9 +166,9 @@
     <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
     <LangVersion>default</LangVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_NET35_FAT|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\Release_NET35_FAT\</OutputPath>
+    <OutputPath>bin\NET35_FAT\</OutputPath>
     <DefineConstants>NET35;FAT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -176,9 +176,9 @@
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <LangVersion>default</LangVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_NET40_FAT|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\Release_NET40_FAT\</OutputPath>
+    <OutputPath>bin\NET40_FAT\</OutputPath>
     <DefineConstants>NET40;FAT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -186,9 +186,9 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <LangVersion>default</LangVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release_NET45_FAT|AnyCPU'">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET45_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\Release_NET45_FAT\</OutputPath>
+    <OutputPath>bin\NET45_FAT\</OutputPath>
     <DefineConstants>NET45;FAT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -629,6 +629,7 @@
     <Compile Include="System\Collections\Generic\IReadOnlyList.net40.cs" />
     <Compile Include="System\Tuple1.net35.cs" />
     <Compile Include="System\Tuple.net35.cs" />
+    <None Include="packages.config" />
     <None Include="Theraot\Collections\Extensions.interleave.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Extensions.interleave.cs</LastGenOutput>
