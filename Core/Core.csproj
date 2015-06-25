@@ -660,6 +660,7 @@
     <Compile Include="System\Diagnostics\Contracts\ContractFailureKind.net35.cs" />
     <Compile Include="System\Diagnostics\Contracts\ContractFailedEventArgs.net35.cs" />
     <Compile Include="System\Diagnostics\Contracts\PureAttribute.net35.cs" />
+    <Compile Include="System\Runtime\CompilerServices\ContractHelper.net40.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
