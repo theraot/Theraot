@@ -1,4 +1,4 @@
-// AtomicBoolean.cs
+// AtomicBooleanValue.cs
 //
 // Copyright (c) 2008 Jérémie "Garuma" Laval
 //
@@ -70,16 +70,6 @@ namespace System.Threading
             return _flag == obj._flag;
         }
 
-        public static bool operator == (AtomicBooleanValue left, AtomicBooleanValue right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(AtomicBooleanValue left, AtomicBooleanValue right)
-        {
-            return !left.Equals(right);
-        }
-
         public override bool Equals(object obj)
         {
             return obj is AtomicBooleanValue && Equals((AtomicBooleanValue)obj);
@@ -104,6 +94,16 @@ namespace System.Threading
         public bool TrySet()
         {
             return !Exchange(true);
+        }
+
+        public static bool operator ==(AtomicBooleanValue left, AtomicBooleanValue right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(AtomicBooleanValue left, AtomicBooleanValue right)
+        {
+            return !left.Equals(right);
         }
     }
 }

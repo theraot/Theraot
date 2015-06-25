@@ -70,16 +70,6 @@ namespace System.Threading
             return _flag == obj._flag;
         }
 
-        public static bool operator ==(AtomicBoolean left, AtomicBoolean right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(AtomicBoolean left, AtomicBoolean right)
-        {
-            return !left.Equals(right);
-        }
-
         public override bool Equals(object obj)
         {
             return obj is AtomicBoolean && Equals((AtomicBoolean)obj);
@@ -104,6 +94,16 @@ namespace System.Threading
         public bool TrySet()
         {
             return !Exchange(true);
+        }
+
+        public static bool operator ==(AtomicBoolean left, AtomicBoolean right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(AtomicBoolean left, AtomicBoolean right)
+        {
+            return !left.Equals(right);
         }
     }
 }
