@@ -110,6 +110,7 @@ namespace Theraot.Threading
             return result;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "By Design")]
         private static void ExecutePending(Tuple<Queue<Action>, Guard> local)
         {
             var guard = local.Item2;
