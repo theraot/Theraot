@@ -17,7 +17,7 @@ namespace Theraot.Core
             }
             else
             {
-                return ProgressiveLookup<string, Type>.Create (assembly.GetTypes(), type => type.Namespace);
+                return ProgressiveLookup<string, Type>.Create(assembly.GetTypes(), type => type.Namespace);
             }
         }
     }

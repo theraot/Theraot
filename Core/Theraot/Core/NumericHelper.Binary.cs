@@ -616,8 +616,8 @@ namespace Theraot.Core
             return (sizeof(long) * 8) - PopulationCount(value);
         }
 
-        //Gem from Hacker's Delight
-        //Returns the number of bits set in @value
+        // Gem from Hacker's Delight
+        // Returns the number of bits set in @value
         [CLSCompliantAttribute(false)]
         public static int PopulationCount(uint value)
         {
@@ -629,8 +629,8 @@ namespace Theraot.Core
             return (int)(value & 0x0000003F);
         }
 
-        //Based on code by Zilong Tan on Ulib released under MIT license
-        //Returns the number of bits set in @x
+        // Based on code by Zilong Tan on Ulib released under MIT license
+        // Returns the number of bits set in @x
         [CLSCompliantAttribute(false)]
         public static int PopulationCount(ulong value)
         {

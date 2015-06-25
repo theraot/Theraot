@@ -7,6 +7,7 @@ namespace Theraot.Collections.ThreadSafe
     /// <summary>
     /// Represent a fixed size thread-safe wait-free queue.
     /// </summary>
+    /// <typeparam name="T">The type of items stored in the queue.</typeparam>
     [Serializable]
     public sealed class SafeQueue<T> : IEnumerable<T>
     {
@@ -83,6 +84,10 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         /// Attempts to retrieve the next item to be taken from the back without removing it.
         /// </summary>
+        /// <param name="item">The item retrieved.</param>
+        /// <returns>
+        ///   <c>true</c> if an item was retrieved; otherwise, <c>false</c>.
+        /// </returns>
         public bool TryPeek(out T item)
         {
             var root = _root;
@@ -146,6 +151,7 @@ namespace Theraot.Collections.ThreadSafe
         private class Node
         {
             internal readonly FixedSizeQueue<T> Queue;
+            [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Not public code - optimization")]
             internal Node Next;
 
             public Node()

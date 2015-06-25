@@ -351,8 +351,7 @@ namespace Theraot.Collections
             );
             var proxy = new ProxyObservable<T>();
 
-            return new Progressor<T>
-            (
+            return new Progressor<T>(
                 (out T value) =>
                 {
                     Interlocked.Increment(ref control);
@@ -403,14 +402,13 @@ namespace Theraot.Collections
             );
             var proxy = new ProxyObservable<T>();
 
-            return new Progressor<T>
-            (
+            return new Progressor<T>(
                 (out T value) =>
                 {
                     Thread.VolatileWrite(ref control, 1);
                     try
                     {
-                    again:
+                        again:
                         if (buffer.TryTake(out value))
                         {
                             proxy.OnNext(value);
@@ -462,15 +460,14 @@ namespace Theraot.Collections
             );
             var proxy = new ProxyObservable<T>();
 
-            return new Progressor<T>
-            (
+            return new Progressor<T>(
                 (out T value) =>
                 {
                     Interlocked.Increment(ref control);
                     try
                     {
                         TInput item;
-                    again:
+                        again:
                         if (buffer.TryTake(out value))
                         {
                             proxy.OnNext(value);
@@ -521,14 +518,13 @@ namespace Theraot.Collections
             );
             var proxy = new ProxyObservable<T>();
 
-            return new Progressor<T>
-            (
+            return new Progressor<T>(
                 (out T value) =>
                 {
                     Interlocked.Increment(ref control);
                     try
                     {
-                    again:
+                        again:
                         foreach (var item in buffer.Where(item => !item.Value))
                         {
                             value = item.Key;

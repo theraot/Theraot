@@ -36,7 +36,7 @@ namespace Theraot.Core
 #else
         public static void CopyTo(Stream input, Stream output)
         {
-            //Added in .NET 4.0
+            // Added in .NET 4.0
             input.CopyTo(output);
         }
 #endif
@@ -70,7 +70,7 @@ namespace Theraot.Core
 #else
         public static void CopyTo(Stream input, Stream output, int bufferSize)
         {
-            //Added in .NET 4.0
+            // Added in .NET 4.0
             input.CopyTo(output, bufferSize);
         }
 #endif

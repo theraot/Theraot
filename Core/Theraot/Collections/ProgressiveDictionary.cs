@@ -38,26 +38,22 @@ namespace Theraot.Collections
 
         protected ProgressiveDictionary(Progressor<KeyValuePair<TKey, TValue>> wrapped, IDictionary<TKey, TValue> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
             : base
-            (
-                (out KeyValuePair<TKey, TValue> pair) =>
-                {
+            ((out KeyValuePair<TKey, TValue> pair) =>
+            {
                 again:
-                    if (wrapped.TryTake(out pair))
+                if (wrapped.TryTake(out pair))
+                {
+                    if (cache.ContainsKey(pair.Key))
                     {
-                        if (cache.ContainsKey(pair.Key))
-                        {
-                            goto again;
-                        }
-                        return true;
+                        goto again;
                     }
-                    else
-                    {
-                        return false;
-                    }
-                },
-                cache,
-                new KeyValuePairEqualityComparer<TKey, TValue>(keyComparer, valueComparer)
-            )
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }, cache, new KeyValuePairEqualityComparer<TKey, TValue>(keyComparer, valueComparer))
         {
             _cache = Check.NotNullArgument(cache, "cache");
             _keyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
@@ -67,30 +63,25 @@ namespace Theraot.Collections
         }
 
         private ProgressiveDictionary(IEnumerator<KeyValuePair<TKey, TValue>> enumerator, IDictionary<TKey, TValue> cache, KeyValuePairEqualityComparer<TKey, TValue> comparer)
-            : base
-            (
-                (out KeyValuePair<TKey, TValue> pair) =>
-                {
+            : base((out KeyValuePair<TKey, TValue> pair) =>
+            {
                 again:
-                    if (enumerator.MoveNext())
+                if (enumerator.MoveNext())
+                {
+                    pair = enumerator.Current;
+                    if (cache.ContainsKey(pair.Key))
                     {
-                        pair = enumerator.Current;
-                        if (cache.ContainsKey(pair.Key))
-                        {
-                            goto again;
-                        }
-                        return true;
+                        goto again;
                     }
-                    else
-                    {
-                        enumerator.Dispose();
-                        pair = default(KeyValuePair<TKey, TValue>);
-                        return false;
-                    }
-                },
-                cache,
-                comparer
-            )
+                    return true;
+                }
+                else
+                {
+                    enumerator.Dispose();
+                    pair = default(KeyValuePair<TKey, TValue>);
+                    return false;
+                }
+            }, cache, comparer)
         {
             //Empty
         }

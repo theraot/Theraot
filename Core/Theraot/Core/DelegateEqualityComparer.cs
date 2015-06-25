@@ -9,7 +9,7 @@ namespace Theraot.Core
 
         private DelegateEqualityComparer()
         {
-            //Empty
+            // Empty
         }
 
         public static DelegateEqualityComparer Default
@@ -27,7 +27,8 @@ namespace Theraot.Core
 
         public int GetHashCode(Delegate obj)
         {
-            if (ReferenceEquals(obj, null)) // obj can be null
+            // obj can be null
+            if (ReferenceEquals(obj, null))
             {
                 return 0;
             }

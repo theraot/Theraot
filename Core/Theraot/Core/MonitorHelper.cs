@@ -24,7 +24,7 @@ namespace Theraot.Core
         public static void Enter(object obj, CancellationToken cancellationToken)
         {
             int count = 0;
-        retry:
+            retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             if (!Monitor.TryEnter(obj))
@@ -80,7 +80,7 @@ namespace Theraot.Core
             }
             int count = 0;
             var start = ThreadingHelper.TicksNow();
-        retry:
+            retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             if (TryEnter(obj))
@@ -112,7 +112,7 @@ namespace Theraot.Core
             var milliseconds = (long)timeout.TotalMilliseconds;
             int count = 0;
             var start = ThreadingHelper.TicksNow();
-        retry:
+            retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             if (TryEnter(obj))

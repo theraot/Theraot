@@ -15,7 +15,7 @@ namespace Theraot.Collections
 
         public void OnCompleted()
         {
-            //Empty
+            // Empty
         }
 
         public void OnError(Exception error)

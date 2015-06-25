@@ -8,7 +8,7 @@ namespace Theraot.Core
 
         private ReferenceEqualityComparer()
         {
-            //Empty
+            // Empty
         }
 
         public static ReferenceEqualityComparer Default

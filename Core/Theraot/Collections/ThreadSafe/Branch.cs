@@ -216,6 +216,11 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         internal bool TryGetCheckRemoveAt(uint index, Predicate<object> check, out object previous)
         {
             previous = null;
@@ -319,11 +324,6 @@ namespace Theraot.Collections.ThreadSafe
             branch._buffer = null;
             branch._useCount = 0;
             branch._parent = null;
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         private int GetSubindex(uint index)
@@ -787,7 +787,6 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
-
         private bool PrivateTryUpdate(uint index, object item, Predicate<object> check)
         {
             var subindex = GetSubindex(index);
@@ -823,13 +822,11 @@ namespace Theraot.Collections.ThreadSafe
 
         private void Shrink()
         {
-            if
-                (
+            if (
                 _parent != null
                 && Interlocked.CompareExchange(ref _parent._buffer[_subindex], this, null) == null
                 && Interlocked.CompareExchange(ref _useCount, 0, 0) == 0
-                && Interlocked.CompareExchange(ref _parent._entries[_subindex], null, this) == this // Did --
-                )
+                && Interlocked.CompareExchange(ref _parent._entries[_subindex], null, this) == this)
             {
                 if (Interlocked.CompareExchange(ref _useCount, 0, 0) == 0)
                 {
@@ -838,7 +835,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         var parent = _parent;
                         _branchPool.Donate(this);
-                        Interlocked.Decrement(ref parent._useCount); // did not undo --
+                        Interlocked.Decrement(ref parent._useCount);
                         parent.Shrink();
                     }
                 }
@@ -849,7 +846,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         var parent = _parent;
                         _branchPool.Donate(this);
-                        Interlocked.Decrement(ref parent._useCount); // did not undo --
+                        Interlocked.Decrement(ref parent._useCount);
                     }
                 }
             }

@@ -60,7 +60,7 @@ namespace Theraot.Core
 #else
         public static bool HasFlag(Enum value, Enum flag)
         {
-            //Added in .NET 4.0
+            // Added in .NET 4.0
             return value.HasFlag(flag);
         }
 #endif

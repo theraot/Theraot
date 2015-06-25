@@ -1,7 +1,7 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
-﻿using System.Threading;
-﻿using Theraot.Core;
+using System.Threading;
+using Theraot.Core;
 using Theraot.Threading;
 using Theraot.Threading.Needles;
 
@@ -17,22 +17,23 @@ namespace Theraot.Collections.ThreadSafe
         private readonly SafeDictionary<int, TNeedle> _wrapped;
         private StructNeedle<WeakNeedle<EventHandler>> _eventHandler;
         private int _maxIndex;
+
         public WeakCollection()
             : this(null, true)
         {
-            //Empty
+            // Empty
         }
 
         public WeakCollection(IEqualityComparer<T> comparer)
             : this(comparer, true)
         {
-            //Empty
+            // Empty
         }
 
         public WeakCollection(bool autoRemoveDeadItems)
             : this(null, autoRemoveDeadItems)
         {
-            //Empty
+            // Empty
         }
 
         public WeakCollection(IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
@@ -53,13 +54,13 @@ namespace Theraot.Collections.ThreadSafe
         public WeakCollection(IEqualityComparer<T> comparer, int initialProbing)
             : this(comparer, true, initialProbing)
         {
-            //Empty
+            // Empty
         }
 
         public WeakCollection(bool autoRemoveDeadItems, int initialProbing)
             : this(null, autoRemoveDeadItems, initialProbing)
         {
-            //Empty
+            // Empty
         }
 
         public WeakCollection(IEqualityComparer<T> comparer, bool autoRemoveDeadItems, int initialProbing)
@@ -80,7 +81,7 @@ namespace Theraot.Collections.ThreadSafe
         public WeakCollection(int initialProbing)
             : this(null, true, initialProbing)
         {
-            //Empty
+            // Empty
         }
 
         ~WeakCollection()
@@ -266,6 +267,7 @@ namespace Theraot.Collections.ThreadSafe
             }
             return false;
         }
+
         protected IEnumerable<TNeedle> GetNeedleEnumerable()
         {
             foreach (var pair in _wrapped)

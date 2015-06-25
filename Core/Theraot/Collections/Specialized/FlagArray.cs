@@ -282,7 +282,7 @@ namespace Theraot.Collections.Specialized
 
         private void SetBit(int index, int mask)
         {
-        again:
+            again:
             int readed = Thread.VolatileRead(ref _entries[index]);
             if ((readed & mask) == 0)
             {
@@ -295,7 +295,7 @@ namespace Theraot.Collections.Specialized
 
         private void UnsetBit(int index, int mask)
         {
-        again:
+            again:
             int readed = Thread.VolatileRead(ref _entries[index]);
             if ((readed & mask) != 0)
             {
@@ -313,6 +313,7 @@ namespace Theraot.Collections.Specialized
 #endif
     {
 #if FAT
+
         IReadOnlyCollection<bool> IExtendedCollection<bool>.AsReadOnly
         {
             get
@@ -325,6 +326,7 @@ namespace Theraot.Collections.Specialized
         {
             throw new NotSupportedException();
         }
+
 #endif
     }
 }

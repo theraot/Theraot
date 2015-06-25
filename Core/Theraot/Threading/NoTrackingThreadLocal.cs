@@ -17,7 +17,7 @@ namespace Theraot.Threading
         public NoTrackingThreadLocal()
             : this(TypeHelper.GetCreateOrDefault<T>())
         {
-            //Empty
+            // Empty
         }
 
         public NoTrackingThreadLocal(Func<T> valueFactory)
@@ -154,6 +154,7 @@ namespace Theraot.Threading
                 throw new InvalidOperationException();
             }
         }
+
         [global::System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {

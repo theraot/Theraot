@@ -4,6 +4,8 @@ namespace Theraot.Threading.Needles
 {
     public interface IPromise
     {
+        Exception Error { get; }
+
         bool IsCanceled
         {
             get;
@@ -19,13 +21,11 @@ namespace Theraot.Threading.Needles
             get;
         }
 
-        Exception Error { get; }
-        
         void Wait();
     }
 
     public interface IPromise<out T> : IPromise, IReadOnlyNeedle<T>
     {
-        //Empty
+        // Empty
     }
 }

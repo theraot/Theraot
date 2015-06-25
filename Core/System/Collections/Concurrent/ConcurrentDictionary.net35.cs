@@ -205,7 +205,7 @@ namespace System.Collections.Concurrent
                 if (key is TKey)
                 {
                     TValue result;
-                    if (_wrapped.TryGetValue((TKey) key, out result))
+                    if (_wrapped.TryGetValue((TKey)key, out result))
                     {
                         return result;
                     }
@@ -237,11 +237,11 @@ namespace System.Collections.Concurrent
             }
             // addValueFactory and updateValueFactory are checked for null inside the call
             var result = _wrapped.AddOrUpdate
-                (
-                    key,
-                    addValueFactory,
-                    updateValueFactory
-                );
+                         (
+                             key,
+                             addValueFactory,
+                             updateValueFactory
+                         );
             return result;
         }
 
@@ -254,11 +254,11 @@ namespace System.Collections.Concurrent
             }
             // updateValueFactory is checked for null inside the call
             var result = _wrapped.AddOrUpdate
-                (
-                    key,
-                    addValue,
-                    updateValueFactory
-                );
+                         (
+                             key,
+                             addValue,
+                             updateValueFactory
+                         );
             return result;
         }
 
@@ -379,7 +379,7 @@ namespace System.Collections.Concurrent
             // keep the is operator
             if (key is TKey && value is TValue)
             {
-                _wrapped.AddNew((TKey) key, (TValue) value);
+                _wrapped.AddNew((TKey)key, (TValue)value);
             }
             throw new ArgumentException();
         }
@@ -479,7 +479,7 @@ namespace System.Collections.Concurrent
                     return;
                 }
                 var entries = array as DictionaryEntry[];
-                    // that thing exists, I was totally unaware, I may as well use it.
+                // that thing exists, I was totally unaware, I may as well use it.
                 if (entries != null)
                 {
                     var _array = entries;

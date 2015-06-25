@@ -109,6 +109,7 @@ namespace Theraot.Threading
                 var newNumber = newTarget.Number;
                 return !ReferenceEquals(Interlocked.Exchange(ref _target, newTarget), newTarget) | Interlocked.Exchange(ref _number, newNumber) != newNumber;
             }
+
             public bool UpdateTo(VersionToken other)
             {
                 return CompareTo(other) < 0 &&

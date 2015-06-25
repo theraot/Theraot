@@ -11,7 +11,6 @@ namespace System.Collections.ObjectModel
     [Serializable]
     public class ObservableCollection<T> : Collection<T>, INotifyCollectionChanged, INotifyPropertyChanged
     {
-
         // Using TrackingThreadLocal instead of NoTrackingThreadLocal or ThreadLocal to avoid not managed resources
         // This field is disposable and will not be disposed
         private readonly TrackingThreadLocal<int> _entryCheck;

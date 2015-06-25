@@ -20,7 +20,7 @@ namespace Theraot.Threading
         public TrackingThreadLocal()
             : this(TypeHelper.GetCreateOrDefault<T>())
         {
-            //Empty
+            // Empty
         }
 
         public TrackingThreadLocal(Func<T> valueFactory)
@@ -109,6 +109,7 @@ namespace Theraot.Threading
                 return false;
             }
         }
+
         T IThreadLocal<T>.ValueForDebugDisplay
         {
             get
@@ -121,6 +122,7 @@ namespace Theraot.Threading
                 return default(T);
             }
         }
+
         [global::System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {
@@ -162,6 +164,26 @@ namespace Theraot.Threading
             return TryGetValue(Thread.CurrentThread, out target);
         }
 
+        void IObserver<T>.OnCompleted()
+        {
+            // Empty
+        }
+
+        void IObserver<T>.OnError(Exception error)
+        {
+            SetError(Thread.CurrentThread, error);
+        }
+
+        void IObserver<T>.OnNext(T value)
+        {
+            Value = value;
+        }
+
+        void IPromise.Wait()
+        {
+            GC.KeepAlive(Value);
+        }
+
         private void EraseValue(Thread thread)
         {
             if (Thread.VolatileRead(ref _disposing) == 1)
@@ -196,21 +218,6 @@ namespace Theraot.Threading
             return needle.Value;
         }
 
-        void IObserver<T>.OnCompleted()
-        {
-            // Empty
-        }
-
-        void IObserver<T>.OnError(Exception error)
-        {
-            SetError(Thread.CurrentThread, error);
-        }
-
-        void IObserver<T>.OnNext(T value)
-        {
-            Value = value;
-        }
-
         private void SetError(Thread thread, Exception error)
         {
             if (Thread.VolatileRead(ref _disposing) == 1)
@@ -227,11 +234,6 @@ namespace Theraot.Threading
                 throw new ObjectDisposedException(GetType().FullName);
             }
             _slots.Set(thread, new ReadOnlyStructNeedle<T>(value));
-        }
-
-        void IPromise.Wait()
-        {
-            GC.KeepAlive(Value);
         }
     }
 }

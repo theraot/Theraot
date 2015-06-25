@@ -13,6 +13,7 @@ namespace Theraot.Threading
         private readonly NeedleBucket<LockSlot<T>, LazyNeedle<LockSlot<T>>> _slots;
         private readonly VersionProvider _version = new VersionProvider();
         private int _index;
+
         public LockContext(int capacity)
         {
             _capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
@@ -106,6 +107,7 @@ namespace Theraot.Threading
             Interlocked.CompareExchange(ref owner, -1, got);
             return false;
         }
+
         private bool TryClaimFreeSlot(out LockSlot<T> slot)
         {
             if (_closedSlots.TryTake(out slot))

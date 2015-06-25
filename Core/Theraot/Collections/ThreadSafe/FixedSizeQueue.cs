@@ -8,6 +8,7 @@ namespace Theraot.Collections.ThreadSafe
     /// <summary>
     /// Represent a fixed size thread-safe wait-free queue.
     /// </summary>
+    /// <typeparam name="T">The type of items stored in the queue.</typeparam>
     [Serializable]
     public sealed class FixedSizeQueue<T> : IEnumerable<T>
     {
@@ -91,6 +92,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         /// Returns the next item to be taken from the back without removing it.
         /// </summary>
+        /// <returns>The next item to be taken from the back.</returns>
         /// <exception cref="System.InvalidOperationException">No more items to be taken.</exception>
         public T Peek()
         {
@@ -122,6 +124,10 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         /// Attempts to retrieve the next item to be taken from the back without removing it.
         /// </summary>
+        /// <param name="item">The item retrieved.</param>
+        /// <returns>
+        ///   <c>true</c> if an item was retrieved; otherwise, <c>false</c>.
+        /// </returns>
         public bool TryPeek(out T item)
         {
             item = default(T);
