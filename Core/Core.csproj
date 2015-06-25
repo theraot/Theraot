@@ -28,8 +28,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>True</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>
-    </DefineConstants>
+    <DefineConstants>;NET20</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -237,6 +236,7 @@
     <Compile Include="System\Collections\Specialized\NotifyCollectionChangedEventHandler.net30.cs" />
     <Compile Include="System\Collections\StructuralComparisons.net35.cs" />
     <Compile Include="System\Diagnostics\Contracts\Contract.net35.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractExceptionNew.cs" />
     <Compile Include="System\Linq\Enumerable.join.net30.cs" />
     <Compile Include="System\Linq\Enumerable.groupjoin.net30.cs" />
     <Compile Include="System\Linq\Enumerable.groupby.net30.cs" />
@@ -717,7 +717,5 @@
     <None Include="OpenSourceKey.snk" />
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup>
-    <Folder Include="System\Diagnostics\Contracts\Internal\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

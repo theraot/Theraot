@@ -1,4 +1,4 @@
-#if NET20 || NET30 || NET35
+#if NET40
 
 // ==++==
 // 
@@ -14,7 +14,7 @@ namespace System.Diagnostics.Contracts
 {
     [Serializable]
     [SuppressMessage("Microsoft.Design", "CA1064:ExceptionsShouldBePublic")]
-    internal sealed class ContractException : Exception
+    internal sealed class ContractExceptionNew : Exception
     {
         readonly ContractFailureKind _Kind;
         readonly string _UserMessage;
@@ -57,13 +57,13 @@ namespace System.Diagnostics.Contracts
         }
 
         // Called by COM Interop, if we see COR_E_CODECONTRACTFAILED as an HRESULT.
-        // Really? Will COM Interop call this?
-        private ContractException()
+        // My guess is that if COM Interop is going to call something, it will not be this.
+        private ContractExceptionNew()
         {
             HResult = Runtime.CompilerServices.ContractHelper.COR_E_CODECONTRACTFAILED;
         }
 
-        public ContractException(ContractFailureKind kind, string failure, string userMessage, string condition, Exception innerException)
+        public ContractExceptionNew(ContractFailureKind kind, string failure, string userMessage, string condition, Exception innerException)
             : base(failure, innerException)
         {
             HResult = Runtime.CompilerServices.ContractHelper.COR_E_CODECONTRACTFAILED;
@@ -72,7 +72,7 @@ namespace System.Diagnostics.Contracts
             _Condition = condition;
         }
 
-        private ContractException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+        private ContractExceptionNew(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
             : base(info, context)
         {
             _Kind = (ContractFailureKind)info.GetInt32("Kind");

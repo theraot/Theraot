@@ -1,15 +1,15 @@
 #if NET20 || NET30 || NET35 || NET40
 
-using System.Diagnostics;
-using System.Security;
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
-
 // ==++==
 //
 //   Copyright (c) Microsoft Corporation.  All rights reserved.
 //
 // ==--==
+
+using System.Diagnostics;
+using System.Security;
+using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Contracts;
 using System.Security.Permissions;
 using System.Runtime.ConstrainedExecution;
 
@@ -154,7 +154,7 @@ namespace System.Runtime.CompilerServices
             string returnValue;
             string displayMessage = "contract failed.";  // Incomplete, but in case of OOM during resource lookup...
             ContractFailedEventArgs eventArgs = null;  // In case of OOM.
-            System.Runtime.CompilerServices.RuntimeHelpers.PrepareConstrainedRegions();
+            RuntimeHelpers.PrepareConstrainedRegions();
             try
             {
                 displayMessage = GetDisplayMessage(failureKind, userMessage, conditionText);
@@ -170,18 +170,22 @@ namespace System.Runtime.CompilerServices
                         }
                         catch (Exception e)
                         {
-                            eventArgs.thrownDuringHandler = e;
+                            // eventArgs.thrownDuringHandler = e;
                             eventArgs.SetUnwind();
                         }
                     }
                     if (eventArgs.Unwind)
                     {
                         // unwind
-                        if (innerException == null)
-                        {
-                            innerException = eventArgs.thrownDuringHandler;
-                        }
+                        // if (innerException == null)
+                        // {
+                        //     innerException = eventArgs.thrownDuringHandler;
+                        // }
+#if NET40
+                        throw new ContractExceptionNew(failureKind, displayMessage, userMessage, conditionText, innerException);
+#else
                         throw new ContractException(failureKind, displayMessage, userMessage, conditionText, innerException);
+#endif
                     }
                 }
             }
@@ -212,7 +216,11 @@ namespace System.Runtime.CompilerServices
         {
             if (!Environment.UserInteractive)
             {
+#if NET40
+                throw new ContractExceptionNew(kind, displayMessage, userMessage, conditionText, innerException);
+#else
                 throw new ContractException(kind, displayMessage, userMessage, conditionText, innerException);
+#endif
             }
             ContractHelperEx.Fail(displayMessage);
         }

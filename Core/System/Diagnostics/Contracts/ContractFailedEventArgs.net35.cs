@@ -17,7 +17,7 @@ namespace System.Diagnostics.Contracts
         private bool _handled;
         private bool _unwind;
 
-        internal Exception thrownDuringHandler;
+        // internal Exception thrownDuringHandler;
 
         public ContractFailedEventArgs(ContractFailureKind failureKind, String message, String condition, Exception originalException)
         {
