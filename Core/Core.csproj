@@ -250,6 +250,9 @@
     <Compile Include="System\Threading\CancellationTokenRegistration.net35.cs" />
     <Compile Include="System\Threading\CancellationTokenSource.net35.cs" />
     <Compile Include="System\Threading\CountdownEvent.net35.cs" />
+    <Compile Include="System\Threading\LockRecursionPolicy.net30.cs" />
+    <Compile Include="System\Threading\ReaderWriterLockSlim.helpers.cs" />
+    <Compile Include="System\Threading\ReaderWriterLockSlim.net35.cs" />
     <Compile Include="Theraot\Collections\ActionObserver.cs" />
     <Compile Include="Theraot\Collections\ConversionSet.cs" />
     <Compile Include="Theraot\Collections\ConvertedObserver.cs" />
@@ -362,6 +365,7 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
+    <Compile Include="Theraot\Core\AtomicBoolean.cs" />
     <Compile Include="Theraot\Core\CancellationTokenHelper.cs" />
     <Compile Include="Theraot\Core\Check.cs" />
     <Compile Include="Theraot\Core\CloneHelper.cs" />
@@ -652,6 +656,7 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ThreadingHelper.SpinWait.cs</LastGenOutput>
     </None>
+    <Compile Include="Theraot\Core\AtomicBooleanValue.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

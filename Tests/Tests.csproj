@@ -42,9 +42,6 @@
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="Theraot.Core">
-      <HintPath>..\Core\bin\Debug\Theraot.Core.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFrameworkVersion)'!='v2.0' And '$(TargetFrameworkVersion)'!='v3.0'">
     <Reference Include="System.Core" />
@@ -93,6 +90,7 @@
     <Compile Include="System\Linq\Expressions\ExpressionTest_Subtract.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTest_SubtractChecked.cs" />
     <Compile Include="System\Threading\CancellationTokenSourceTestEx.cs" />
+    <Compile Include="System\Threading\ReaderWriterLockSlimTest.cs" />
     <Compile Include="Theraot\Collections\ExtensionsTest.cs" />
     <Compile Include="Theraot\Collections\ProgressiveLookupTestEx.cs" />
     <Compile Include="Theraot\Collections\ProgressiveLookupTest.cs">
@@ -183,5 +181,10 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{B5078871-4299-49ED-B921-3B5EBE57336A}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

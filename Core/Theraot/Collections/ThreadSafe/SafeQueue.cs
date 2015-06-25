@@ -148,6 +148,7 @@ namespace Theraot.Collections.ThreadSafe
             return GetEnumerator();
         }
 
+        [Serializable]
         private class Node
         {
             internal readonly FixedSizeQueue<T> Queue;

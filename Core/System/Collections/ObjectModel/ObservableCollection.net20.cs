@@ -8,13 +8,12 @@ using Theraot.Threading;
 
 namespace System.Collections.ObjectModel
 {
-    [Serializable]
+    [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1001:TypesThatOwnDisposableFieldsShouldBeDisposable", Justification = "Should not dispose")]
     public class ObservableCollection<T> : Collection<T>, INotifyCollectionChanged, INotifyPropertyChanged
     {
         // Using TrackingThreadLocal instead of NoTrackingThreadLocal or ThreadLocal to avoid not managed resources
         // This field is disposable and will not be disposed
         private readonly TrackingThreadLocal<int> _entryCheck;
-
         private readonly ReentryBlockage _reentryBlockage;
 
         public ObservableCollection()
