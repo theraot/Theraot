@@ -8,7 +8,8 @@ namespace Theraot.Collections.ThreadSafe
     {
         [ThreadStatic]
         private static List<int> _guard;
-        private static int _id = int.MinValue;
+
+        static int _id = int.MinValue;
 
         public static int GetId()
         {

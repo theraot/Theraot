@@ -28,12 +28,18 @@ namespace System.Linq.Expressions
 
         public virtual ExpressionType NodeType
         {
-            get { return node_type; }
+            get
+            {
+                return node_type;
+            }
         }
 
         public virtual Type Type
         {
-            get { return type; }
+            get
+            {
+                return type;
+            }
         }
 
         public static MethodCallExpression ArrayIndex(Expression array, params Expression[] indexes)
@@ -158,8 +164,7 @@ namespace System.Linq.Expressions
             if (methodName == null)
                 throw new ArgumentNullException("methodName");
 
-            var method = TryGetMethod(instance.Type, methodName, AllInstance,
-                CollectTypes(arguments), typeArguments);
+            var method = TryGetMethod(instance.Type, methodName, AllInstance, CollectTypes(arguments), typeArguments);
 
             var args = CheckMethodArguments(method, arguments);
 
@@ -173,8 +178,7 @@ namespace System.Linq.Expressions
             if (methodName == null)
                 throw new ArgumentNullException("methodName");
 
-            var method = TryGetMethod(type, methodName, AllStatic,
-                CollectTypes(arguments), typeArguments);
+            var method = TryGetMethod(type, methodName, AllStatic, CollectTypes(arguments), typeArguments);
 
             var args = CheckMethodArguments(method, arguments);
 
@@ -646,9 +650,7 @@ namespace System.Linq.Expressions
             if (member == null)
                 throw new ArgumentNullException("member");
 
-            var type = member.OnFieldOrProperty(
-                field => field.FieldType,
-                prop => prop.PropertyType);
+            var type = member.OnFieldOrProperty(field => field.FieldType, prop => prop.PropertyType);
 
             return new MemberMemberBinding(member, CheckMemberBindings(type, bindings));
         }
@@ -1770,9 +1772,9 @@ namespace System.Linq.Expressions
                     type = method.ReturnType;
                 }
                 else if (left.Type.IsNullable()
-                  && right.Type.IsNullable()
-                  && left.Type.GetNotNullableType() == lp.ParameterType
-                  && right.Type.GetNotNullableType() == rp.ParameterType)
+                         && right.Type.IsNullable()
+                         && left.Type.GetNotNullableType() == lp.ParameterType
+                         && right.Type.GetNotNullableType() == rp.ParameterType)
                 {
                     is_lifted = true;
 
@@ -1874,10 +1876,10 @@ namespace System.Linq.Expressions
                     type = method.ReturnType;
                 }
                 else if (left.Type.IsNullable()
-                  && right.Type.IsNullable()
-                  && left.Type.GetNotNullableType() == lp.ParameterType
-                  && right.Type.GetNotNullableType() == rp.ParameterType
-                  && !method.ReturnType.IsNullable())
+                         && right.Type.IsNullable()
+                         && left.Type.GetNotNullableType() == lp.ParameterType
+                         && right.Type.GetNotNullableType() == rp.ParameterType
+                         && !method.ReturnType.IsNullable())
                 {
                     is_lifted = true;
                     type = method.ReturnType.MakeNullableType();
@@ -1909,8 +1911,8 @@ namespace System.Linq.Expressions
                     type = method.ReturnType;
                 }
                 else if (expression.Type.IsNullable()
-                  && expression.Type.GetNotNullableType() == parameter.ParameterType
-                  && !method.ReturnType.IsNullable())
+                         && expression.Type.GetNotNullableType() == parameter.ParameterType
+                         && !method.ReturnType.IsNullable())
                 {
                     is_lifted = true;
                     type = method.ReturnType.MakeNullableType();
@@ -1994,9 +1996,9 @@ namespace System.Linq.Expressions
                 return IsUnsigned(t.GetElementType());
 
             return t == typeof(ushort) ||
-                t == typeof(uint) ||
-                t == typeof(ulong) ||
-                t == typeof(byte);
+            t == typeof(uint) ||
+            t == typeof(ulong) ||
+            t == typeof(byte);
         }
 
         internal virtual void Emit(EmitContext ec)
@@ -2136,7 +2138,7 @@ namespace System.Linq.Expressions
 
         private static Type[] CollectTypes(IEnumerable<Expression> expressions)
         {
-            return (from arg in expressions select arg.Type).ToArray();
+            return expressions.Select(arg => arg.Type).ToArray();
         }
 
         private static IList<Expression> CreateArgumentList(IEnumerable<Expression> arguments)
@@ -2150,12 +2152,20 @@ namespace System.Linq.Expressions
         private static LambdaExpression CreateExpressionOf(Type type, Expression body, ReadOnlyCollection<ParameterExpression> parameters)
         {
             return (LambdaExpression)typeof(Expression<>).MakeGenericType(type).GetConstructor(
-                NonPublicInstance, null, new[] { typeof(Expression), typeof(ReadOnlyCollection<ParameterExpression>) }, null).Invoke(new object[] { body, parameters });
+                NonPublicInstance, null, new[]
+            {
+                typeof(Expression),
+                typeof(ReadOnlyCollection<ParameterExpression>)
+            }, null).Invoke(new object[]
+            {
+                body,
+                parameters
+            });
         }
 
         private static ReadOnlyCollection<ElementInit> CreateInitializers(MethodInfo add_method, ReadOnlyCollection<Expression> initializers)
         {
-            return (from init in initializers select Expression.ElementInit(add_method, init)).ToReadOnlyCollection();
+            return initializers.Select(init => Expression.ElementInit(add_method, init)).ToReadOnlyCollection();
         }
 
         private static MethodInfo GetAddMethod(Type type, Type arg)
@@ -2264,9 +2274,9 @@ namespace System.Linq.Expressions
         private static bool IsInt(Type t)
         {
             return t == typeof(byte) || t == typeof(sbyte) ||
-                t == typeof(short) || t == typeof(ushort) ||
-                t == typeof(int) || t == typeof(uint) ||
-                t == typeof(long) || t == typeof(ulong);
+            t == typeof(short) || t == typeof(ushort) ||
+            t == typeof(int) || t == typeof(uint) ||
+            t == typeof(long) || t == typeof(ulong);
         }
 
         private static bool IsIntOrBool(Type t)
@@ -2332,9 +2342,7 @@ namespace System.Linq.Expressions
 
         private static MethodInfo TryGetMethod(Type type, string methodName, BindingFlags flags, Type[] parameterTypes, Type[] argumentTypes)
         {
-            var methods = from meth in type.GetMethods(flags)
-                          where MethodMatch(meth, methodName, parameterTypes, argumentTypes)
-                          select meth;
+            var methods = type.GetMethods(flags).Where(meth => MethodMatch(meth, methodName, parameterTypes, argumentTypes));
 
             if (methods.Count() > 1)
                 throw new InvalidOperationException("Too many method candidates");

@@ -87,8 +87,8 @@ namespace System.Linq.Expressions
 
             private LambdaExpression lambda;
 
-            private Dictionary<ParameterExpression, LambdaExpression> parameter_to_lambda =
-                                        new Dictionary<ParameterExpression, LambdaExpression>();
+            private Dictionary<ParameterExpression, LambdaExpression> parameter_to_lambda = new Dictionary<ParameterExpression, LambdaExpression>();
+
             public Dictionary<LambdaExpression, List<ParameterExpression>> Process(LambdaExpression lambda)
             {
                 Visit(lambda);
@@ -136,6 +136,7 @@ namespace System.Linq.Expressions
             private CompilationContext context;
             private object[] locals;
             private ExecutionScope scope;
+
             public ParameterReplacer(CompilationContext context, ExecutionScope scope, object[] locals)
             {
                 this.context = context;
@@ -188,6 +189,7 @@ namespace System.Linq.Expressions
         private LambdaExpression lambda;
         private DynamicMethod method;
         private EmitContext parent;
+
         public EmitContext(CompilationContext context, EmitContext parent, LambdaExpression lambda)
         {
             this.context = context;
@@ -207,13 +209,20 @@ namespace System.Linq.Expressions
 
         public bool HasHoistedLocals
         {
-            get { return hoisted != null && hoisted.Count > 0; }
+            get
+            {
+                return hoisted != null && hoisted.Count > 0;
+            }
         }
 
         public LambdaExpression Lambda
         {
-            get { return lambda; }
+            get
+            {
+                return lambda;
+            }
         }
+
         public Delegate CreateDelegate(ExecutionScope scope)
         {
             return method.CreateDelegate(lambda.Type, scope);
@@ -513,6 +522,7 @@ namespace System.Linq.Expressions
 
             return types;
         }
+
         private static object CreateStrongBox(object value, Type type)
         {
             return Activator.CreateInstance(
@@ -547,10 +557,12 @@ namespace System.Linq.Expressions
                 Emit(arguments[i]);
             }
         }
+
         private void EmitCall(LocalBuilder local, string method_name)
         {
             EmitCall(local, local.LocalType.GetMethod(method_name, Type.EmptyTypes));
         }
+
         private void EmitCreateStrongBox(Type type)
         {
             ig.Emit(OpCodes.Newobj, type.MakeStrongBoxType().GetConstructor(new[] { type }));

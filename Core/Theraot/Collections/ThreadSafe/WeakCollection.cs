@@ -1,7 +1,7 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
-﻿using System.Threading;
-﻿using Theraot.Core;
+using System.Threading;
+using Theraot.Core;
 using Theraot.Threading;
 using Theraot.Threading.Needles;
 
@@ -17,6 +17,7 @@ namespace Theraot.Collections.ThreadSafe
         private readonly SafeDictionary<int, TNeedle> _wrapped;
         private StructNeedle<WeakNeedle<EventHandler>> _eventHandler;
         private int _maxIndex;
+
         public WeakCollection()
             : this(null, true)
         {
@@ -266,6 +267,7 @@ namespace Theraot.Collections.ThreadSafe
             }
             return false;
         }
+
         protected IEnumerable<TNeedle> GetNeedleEnumerable()
         {
             foreach (var pair in _wrapped)

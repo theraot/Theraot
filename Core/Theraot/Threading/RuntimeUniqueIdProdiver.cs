@@ -23,7 +23,7 @@ namespace Theraot.Threading
                 _id = id;
             }
 
-            public static implicit operator int(UniqueId x)
+            public static implicit operator int (UniqueId x)
             {
                 return x._id;
             }

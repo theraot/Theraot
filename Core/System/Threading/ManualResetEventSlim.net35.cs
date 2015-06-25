@@ -137,7 +137,7 @@ namespace System.Threading
                 if (!IsSet)
                 {
                     var start = ThreadingHelper.TicksNow();
-                retry:
+                    retry:
                     if (!IsSet)
                     {
                         if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < INT_LongTimeOutHint)
@@ -276,7 +276,7 @@ namespace System.Threading
             {
                 if (millisecondsTimeout > INT_LongTimeOutHint)
                 {
-                retry_longTimeout:
+                    retry_longTimeout:
                     if (IsSet)
                     {
                         return true;
@@ -306,7 +306,7 @@ namespace System.Threading
                 }
                 else
                 {
-                retry_shortTimeout:
+                    retry_shortTimeout:
                     if (IsSet)
                     {
                         return true;
@@ -335,7 +335,7 @@ namespace System.Threading
             }
             else
             {
-            retry:
+                retry:
                 if (IsSet)
                 {
                     return true;
@@ -377,7 +377,7 @@ namespace System.Threading
             var start = ThreadingHelper.TicksNow();
             if (!IsSet)
             {
-            retry:
+                retry:
                 if (!IsSet)
                 {
                     cancellationToken.ThrowIfCancellationRequested();

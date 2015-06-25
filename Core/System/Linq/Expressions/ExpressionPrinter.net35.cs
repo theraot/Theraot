@@ -9,12 +9,14 @@ namespace System.Linq.Expressions
     {
         private const string ListSeparator = ", ";
         private StringBuilder builder;
+
         private ExpressionPrinter(StringBuilder builder)
         {
             this.builder = builder;
         }
 
-        private ExpressionPrinter() : this(new StringBuilder())
+        private ExpressionPrinter()
+            : this(new StringBuilder())
         {
         }
 
@@ -401,6 +403,7 @@ namespace System.Linq.Expressions
         {
             builder.AppendFormat(str, objs);
         }
+
         private void PrintArrayIndex(BinaryExpression index)
         {
             Visit(index.Left);

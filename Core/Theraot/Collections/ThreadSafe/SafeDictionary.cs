@@ -177,7 +177,7 @@ namespace Theraot.Collections.ThreadSafe
                         () => new KeyValuePair<TKey, TValue>(key, addValueFactory(key)),
                         found =>
                         {
-                            var _found = (KeyValuePair<TKey, TValue>) found;
+                            var _found = (KeyValuePair<TKey, TValue>)found;
                             return new KeyValuePair<TKey, TValue>(key, updateValueFactory(_found.Key, _found.Value));
                         },
                         found =>

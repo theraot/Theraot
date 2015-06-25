@@ -32,7 +32,7 @@ namespace Theraot.Collections
         {
             var _check = Check.NotNullArgument(check, "check");
             var _dropPoint = Check.NotNullArgument(dropPoint, "dropPoint");
-        back:
+            back:
             if (_dropPoint.TryTake(out item))
             {
                 if (_check(item))
@@ -56,7 +56,7 @@ namespace Theraot.Collections
             var _dropPoint = Check.NotNullArgument(dropPoint, "dropPoint");
             var _trail = Check.NotNullArgument(trail, "trail");
             TItem item;
-        back:
+            back:
             if (_dropPoint.TryTake(out item))
             {
                 if (_check(item))

@@ -35,10 +35,12 @@ namespace System.Linq.Expressions
         {
             get { return constructor; }
         }
+
         public ReadOnlyCollection<MemberInfo> Members
         {
             get { return members; }
         }
+
         internal override void Emit(EmitContext ec)
         {
             var ig = ec.ig;

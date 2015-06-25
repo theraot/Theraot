@@ -60,10 +60,7 @@ namespace System.Collections
                             CheckRank(x, y, type_x, type_y);
                             var x_length_info = type_x.GetProperty("Length");
                             var y_length_info = type_y.GetProperty("Length");
-                            if
-                            (
-                                (int)x_length_info.GetValue(x, TypeHelper.EmptyObjects) != (int)y_length_info.GetValue(y, TypeHelper.EmptyObjects)
-                            )
+                            if ((int)x_length_info.GetValue(x, TypeHelper.EmptyObjects) != (int)y_length_info.GetValue(y, TypeHelper.EmptyObjects))
                             {
                                 return false;
                             }
@@ -129,17 +126,11 @@ namespace System.Collections
             {
                 var x_rank_info = type_x.GetProperty("Rank");
                 var y_rank_info = type_y.GetProperty("Rank");
-                if
-                    (
-                    (int)x_rank_info.GetValue(x, TypeHelper.EmptyObjects) != 1
-                    )
+                if ((int)x_rank_info.GetValue(x, TypeHelper.EmptyObjects) != 1)
                 {
                     throw new ArgumentException("Only one-dimensional arrays are supported", "x");
                 }
-                if
-                    (
-                    (int)y_rank_info.GetValue(y, TypeHelper.EmptyObjects) != 1
-                    )
+                if ((int)y_rank_info.GetValue(y, TypeHelper.EmptyObjects) != 1)
                 {
                     throw new ArgumentException("Only one-dimensional arrays are supported", "y");
                 }

@@ -38,7 +38,7 @@ namespace Theraot.Collections
             (
                 (out T value) =>
                 {
-                again:
+                    again:
                     if (wrapped.TryTake(out value))
                     {
                         if (cache.Contains(value))
@@ -64,7 +64,7 @@ namespace Theraot.Collections
             (
                 (out T value) =>
                 {
-                again:
+                    again:
                     if (enumerator.MoveNext())
                     {
                         value = enumerator.Current;

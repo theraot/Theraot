@@ -163,6 +163,7 @@ namespace Theraot.Collections.Specialized
                 return false;
             }
         }
+
         public TValue this[TKey key]
         {
             get
@@ -478,6 +479,7 @@ namespace Theraot.Collections.Specialized
         {
             return GetEnumerator();
         }
+
         private void InitializeNotNullable()
         {
             _hasNull = false;

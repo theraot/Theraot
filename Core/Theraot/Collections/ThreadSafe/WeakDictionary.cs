@@ -1028,6 +1028,7 @@ namespace Theraot.Collections.ThreadSafe
                     out isNew
                 );
         }
+
         /// <summary>
         /// Attempts to add the specified key and associated value. The value is added if the key is not found.
         /// </summary>

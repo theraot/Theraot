@@ -154,6 +154,7 @@ namespace Theraot.Threading
                 throw new InvalidOperationException();
             }
         }
+
         [global::System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {

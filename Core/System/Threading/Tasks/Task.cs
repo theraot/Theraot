@@ -100,6 +100,7 @@ namespace System.Threading.Tasks
                 return _exclusive;
             }
         }
+
         public Task Clone()
         {
             return _scheduler.AddWork(_action, _exclusive);

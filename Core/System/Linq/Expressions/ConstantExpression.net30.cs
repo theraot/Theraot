@@ -18,8 +18,12 @@ namespace System.Linq.Expressions
 
         public object Value
         {
-            get { return value; }
+            get
+            {
+                return value;
+            }
         }
+
         internal static bool IsNull(Expression e)
         {
             var c = e as ConstantExpression;
@@ -117,7 +121,16 @@ namespace System.Linq.Expressions
                         // power
                         ig.Emit(OpCodes.Ldc_I4, power);
 
-                        ig.Emit(OpCodes.Newobj, typeof(Decimal).GetConstructor(new Type[5] { ti, ti, ti, typeof(bool), typeof(byte) }));
+                        var types = new Type[5]
+                        {
+                            ti,
+                            ti,
+                            ti,
+                            typeof(bool),
+                            typeof(byte)
+                        };
+
+                        ig.Emit(OpCodes.Newobj, typeof(Decimal).GetConstructor(types));
                         return;
                     }
 
@@ -129,7 +142,14 @@ namespace System.Linq.Expressions
                         ig.Emit(OpCodes.Ldloca, local);
                         ig.Emit(OpCodes.Ldc_I8, date.Ticks);
                         ig.Emit(OpCodes.Ldc_I4, (int)date.Kind);
-                        ig.Emit(OpCodes.Call, typeof(DateTime).GetConstructor(new[] { typeof(long), typeof(DateTimeKind) }));
+
+                        var types = new[]
+                        {
+                            typeof(long),
+                            typeof(DateTimeKind)
+                        };
+
+                        ig.Emit(OpCodes.Call, typeof(DateTime).GetConstructor(types));
                         ig.Emit(OpCodes.Ldloc, local);
 
                         return;

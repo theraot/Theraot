@@ -131,7 +131,7 @@ namespace System.Threading
                 {
                     var start = ThreadingHelper.TicksNow();
                     var remaining = millisecondsTimeout;
-                retry:
+                    retry:
                     if (_event.Wait(remaining, cancellationToken))
                     {
                         var result = Thread.VolatileRead(ref _count) + 1;

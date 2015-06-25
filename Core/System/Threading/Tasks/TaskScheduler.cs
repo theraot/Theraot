@@ -94,6 +94,7 @@ namespace System.Threading.Tasks
         {
             throw new NotImplementedException();
         }
+
         protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
         {
             if (_work)
@@ -401,6 +402,7 @@ namespace System.Threading.Tasks
         {
             throw new NotImplementedException();
         }
+
         protected abstract bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued);
     }
 }
