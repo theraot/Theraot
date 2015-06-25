@@ -1,4 +1,4 @@
-﻿// AtomicBoolean.cs
+// AtomicBoolean.cs
 //
 // Copyright (c) 2008 Jérémie "Garuma" Laval
 //
@@ -24,7 +24,7 @@ using System.Runtime.CompilerServices;
 
 namespace System.Threading
 {
-    public class AtomicBoolean
+    public struct AtomicBooleanValue
     {
         private const int INT_Set = 1;
         private const int INT_UnSet = 0;
@@ -42,17 +42,17 @@ namespace System.Threading
             }
         }
 
-        public static explicit operator bool(AtomicBoolean rhs)
+        public static explicit operator bool(AtomicBooleanValue value)
         {
-            return rhs.Value;
+            return value.Value;
         }
 
-        public static AtomicBoolean FromValue(bool value)
+        public static AtomicBooleanValue FromValue(bool value)
         {
-            return new AtomicBoolean { Value = value };
+            return new AtomicBooleanValue { Value = value };
         }
 
-        public static implicit operator AtomicBoolean(bool value)
+        public static implicit operator AtomicBooleanValue(bool value)
         {
             return FromValue(value);
         }
@@ -65,14 +65,14 @@ namespace System.Threading
             return Interlocked.CompareExchange(ref _flag, newTemp, expectedTemp) == expectedTemp;
         }
 
-        public bool Equals(AtomicBoolean obj)
+        public bool Equals(AtomicBooleanValue obj)
         {
             return _flag == obj._flag;
         }
 
         public override bool Equals(object obj)
         {
-            return obj is AtomicBoolean && Equals((AtomicBoolean)obj);
+            return obj is AtomicBooleanValue && Equals((AtomicBooleanValue)obj);
         }
 
         public bool Exchange(bool newVal)
@@ -96,4 +96,5 @@ namespace System.Threading
             return !Exchange(true);
         }
     }
+    
 }

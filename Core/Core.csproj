@@ -656,6 +656,7 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ThreadingHelper.SpinWait.cs</LastGenOutput>
     </None>
+    <Compile Include="Theraot\Core\AtomicBooleanValue.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
