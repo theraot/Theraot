@@ -42,19 +42,29 @@ namespace System.Threading
             }
         }
 
+        public static implicit operator AtomicBoolean(bool value)
+        {
+            return FromValue(value);
+        }
+
         public static explicit operator bool(AtomicBoolean atomicBoolean)
         {
             return atomicBoolean.Value;
         }
 
+        public static bool operator ==(AtomicBoolean left, AtomicBoolean right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(AtomicBoolean left, AtomicBoolean right)
+        {
+            return !left.Equals(right);
+        }
+
         public static AtomicBoolean FromValue(bool value)
         {
             return new AtomicBoolean { Value = value };
-        }
-
-        public static implicit operator AtomicBoolean(bool value)
-        {
-            return FromValue(value);
         }
 
         public bool CompareAndExchange(bool expected, bool newVal)
@@ -94,16 +104,6 @@ namespace System.Threading
         public bool TrySet()
         {
             return !Exchange(true);
-        }
-
-        public static bool operator ==(AtomicBoolean left, AtomicBoolean right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(AtomicBoolean left, AtomicBoolean right)
-        {
-            return !left.Equals(right);
         }
     }
 }
