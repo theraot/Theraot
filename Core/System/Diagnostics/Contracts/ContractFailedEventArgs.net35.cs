@@ -88,7 +88,6 @@ namespace System.Diagnostics.Contracts
             _unwind = true;
         }
     }
-    
 }
 
 #endif

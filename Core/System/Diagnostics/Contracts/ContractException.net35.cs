@@ -60,16 +60,16 @@ namespace System.Diagnostics.Contracts
         // Called by COM Interop, if we see COR_E_CODECONTRACTFAILED as an HRESULT.
         private ContractException()
         {
-            HResult = System.Runtime.CompilerServices.ContractHelper.COR_E_CODECONTRACTFAILED;
+            HResult = Runtime.CompilerServices.ContractHelper.COR_E_CODECONTRACTFAILED;
         }
 
         public ContractException(ContractFailureKind kind, string failure, string userMessage, string condition, Exception innerException)
             : base(failure, innerException)
         {
-            HResult = System.Runtime.CompilerServices.ContractHelper.COR_E_CODECONTRACTFAILED;
-            this._Kind = kind;
-            this._UserMessage = userMessage;
-            this._Condition = condition;
+            HResult = Runtime.CompilerServices.ContractHelper.COR_E_CODECONTRACTFAILED;
+            _Kind = kind;
+            _UserMessage = userMessage;
+            _Condition = condition;
         }
 
         private ContractException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)

@@ -12,6 +12,7 @@
 // these from our reference assembly in a future version.
 
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.ConstrainedExecution;
 
 namespace System.Diagnostics.Contracts.Internal
 {
@@ -26,9 +27,7 @@ namespace System.Diagnostics.Contracts.Internal
         ///          Otherwise, returns the localized failure message</returns>
         [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
         [System.Diagnostics.DebuggerNonUserCode]
-        #if FEATURE_RELIABILITY_CONTRACTS
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-        #endif
         public static string RaiseContractFailedEvent(ContractFailureKind failureKind, String userMessage, String conditionText, Exception innerException)
         {
             return System.Runtime.CompilerServices.ContractHelper.RaiseContractFailedEvent(failureKind, userMessage, conditionText, innerException);
@@ -38,9 +37,7 @@ namespace System.Diagnostics.Contracts.Internal
         /// Rewriter calls this method to get the default failure behavior.
         /// </summary>
         [System.Diagnostics.DebuggerNonUserCode]
-        #if FEATURE_RELIABILITY_CONTRACTS
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-        #endif
         public static void TriggerFailure(ContractFailureKind kind, String displayMessage, String userMessage, String conditionText, Exception innerException)
         {
             System.Runtime.CompilerServices.ContractHelper.TriggerFailure(kind, displayMessage, userMessage, conditionText, innerException);

@@ -10,7 +10,6 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace System.Diagnostics.Contracts
 {
-
     public enum ContractFailureKind
     {
         Precondition,

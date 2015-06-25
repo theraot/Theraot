@@ -6,6 +6,8 @@
 // 
 // ==--==
 
+using System.Runtime.ConstrainedExecution;
+
 namespace System.Diagnostics.Contracts
 {
     public static class Contract
@@ -14,9 +16,7 @@ namespace System.Diagnostics.Contracts
         /// Marker to indicate the end of the contract section of a method.
         /// </summary>
         [Conditional("CONTRACTS_FULL")]
-        #if FEATURE_RELIABILITY_CONTRACTS
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-        #endif
         public static void EndContractBlock()
         {
             // Empty
