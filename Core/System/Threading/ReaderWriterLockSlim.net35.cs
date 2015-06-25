@@ -470,15 +470,30 @@ namespace System.Threading
 
         }
 
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "Microsoft's Design")]
         public void Dispose()
         {
+            Dispose(true);
+        }
+
+        private void Dispose(bool disposing)
+        {
             if (disposed)
+            {
                 return;
-
-            if (IsReadLockHeld || IsUpgradeableReadLockHeld || IsWriteLockHeld)
-                throw new SynchronizationLockException("The lock is being disposed while still being used");
-
-            disposed = true;
+            }
+            if (disposing)
+            {
+                
+                if (IsReadLockHeld || IsUpgradeableReadLockHeld || IsWriteLockHeld)
+                {
+                    throw new SynchronizationLockException("The lock is being disposed while still being used");
+                }
+                upgradableEvent.Dispose();
+                writerDoneEvent.Dispose();
+                readerDoneEvent.Dispose();
+                disposed = true;
+            }
         }
 
         public bool IsReadLockHeld

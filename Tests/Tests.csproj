@@ -183,7 +183,7 @@
   </ProjectExtensions>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">
-      <Project>{b5078871-4299-49ed-b921-3b5ebe57336a}</Project>
+      <Project>{B5078871-4299-49ED-B921-3B5EBE57336A}</Project>
       <Name>Core</Name>
     </ProjectReference>
   </ItemGroup>

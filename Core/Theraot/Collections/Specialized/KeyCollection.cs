@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace Theraot.Collections.Specialized
 {
+    [Serializable]
     public sealed class KeyCollection<TKey, TValue> : ICollection<TKey>, ICollection, IReadOnlyCollection<TKey>
     {
         private readonly IDictionary<TKey, TValue> _wrapped;
