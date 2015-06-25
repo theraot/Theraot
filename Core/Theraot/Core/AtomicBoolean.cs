@@ -42,9 +42,9 @@ namespace System.Threading
             }
         }
 
-        public static explicit operator bool(AtomicBoolean rhs)
+        public static explicit operator bool(AtomicBoolean atomicBoolean)
         {
-            return rhs.Value;
+            return atomicBoolean.Value;
         }
 
         public static AtomicBoolean FromValue(bool value)
@@ -68,6 +68,16 @@ namespace System.Threading
         public bool Equals(AtomicBoolean obj)
         {
             return _flag == obj._flag;
+        }
+
+        public static bool operator ==(AtomicBoolean left, AtomicBoolean right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(AtomicBoolean left, AtomicBoolean right)
+        {
+            return !left.Equals(right);
         }
 
         public override bool Equals(object obj)
