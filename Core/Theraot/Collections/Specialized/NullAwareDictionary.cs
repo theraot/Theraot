@@ -140,14 +140,6 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
-        {
-            get
-            {
-                return false;
-            }
-        }
-
         public ICollection<TKey> Keys
         {
             get
@@ -164,11 +156,20 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public TValue this[TKey key]
         {
             get
             {
-                if (ReferenceEquals(key, null)) // key can be null
+                // key can be null
+                if (ReferenceEquals(key, null))
                 {
                     if (_hasNull)
                     {
@@ -186,7 +187,8 @@ namespace Theraot.Collections.Specialized
             }
             set
             {
-                if (ReferenceEquals(key, null)) // key can be null
+                // key can be null
+                if (ReferenceEquals(key, null))
                 {
                     SetForNull(value);
                 }
@@ -199,7 +201,8 @@ namespace Theraot.Collections.Specialized
 
         public void Add(TKey key, TValue value)
         {
-            if (ReferenceEquals(key, null)) // key can be null
+            // key can be null
+            if (ReferenceEquals(key, null))
             {
                 if (_hasNull)
                 {
@@ -264,7 +267,8 @@ namespace Theraot.Collections.Specialized
 
         public bool ContainsKey(TKey key)
         {
-            if (ReferenceEquals(key, null)) // key can be null
+            // key can be null
+            if (ReferenceEquals(key, null))
             {
                 return _hasNull;
             }
@@ -301,11 +305,10 @@ namespace Theraot.Collections.Specialized
         {
             if (_hasNull)
             {
-                yield return new KeyValuePair<TKey, TValue>
-                             (
-                                 _typedNull,
-                                 _valueForNull[0]
-                             );
+                yield return new KeyValuePair<TKey, TValue>(
+                    _typedNull,
+                    _valueForNull[0]
+                );
             }
             foreach (var item in _dictionary)
             {
@@ -353,7 +356,8 @@ namespace Theraot.Collections.Specialized
 
         public bool Remove(TKey key)
         {
-            if (ReferenceEquals(key, null)) // key can be null
+            // key can be null
+            if (ReferenceEquals(key, null))
             {
                 if (_hasNull)
                 {
@@ -437,14 +441,10 @@ namespace Theraot.Collections.Specialized
             Extensions.SymmetricExceptWith(this, other);
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         public bool TryGetValue(TKey key, out TValue value)
         {
-            if (ReferenceEquals(key, null)) // key can be null
+            // key can be null
+            if (ReferenceEquals(key, null))
             {
                 if (_hasNull)
                 {
@@ -468,6 +468,11 @@ namespace Theraot.Collections.Specialized
             this.AddRange(Check.NotNullArgument(other, "other"));
         }
 
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         private void ClearForNull()
         {
             _hasNull = false;
@@ -489,12 +494,9 @@ namespace Theraot.Collections.Specialized
             _hasNull = false;
             _valueForNull = new[] { default(TValue) };
             _valueComparer = EqualityComparer<TValue>.Default;
-            _keys = new ExtendedReadOnlyCollection<TKey>
-            (
-                new EnumerationCollection<TKey>
-                (
-                    new ConditionalExtendedEnumerable<TKey>
-                    (
+            _keys = new ExtendedReadOnlyCollection<TKey>(
+                new EnumerationCollection<TKey>(
+                    new ConditionalExtendedEnumerable<TKey>(
                         new[] { _typedNull },
                         _dictionary.Keys,
                         () => _hasNull,
@@ -502,12 +504,9 @@ namespace Theraot.Collections.Specialized
                     )
                 )
             );
-            _values = new ExtendedReadOnlyCollection<TValue>
-            (
-                new EnumerationCollection<TValue>
-                (
-                    new ConditionalExtendedEnumerable<TValue>
-                    (
+            _values = new ExtendedReadOnlyCollection<TValue>(
+                new EnumerationCollection<TValue>(
+                    new ConditionalExtendedEnumerable<TValue>(
                         _valueForNull,
                         _dictionary.Values,
                         () => _hasNull,

@@ -11,6 +11,7 @@ namespace Theraot.Threading
         private int _free;
         private T _target;
         private VersionProvider.VersionToken _versionToken;
+
         internal LockSlot(LockContext<T> context, int id, VersionProvider.VersionToken versionToken)
         {
             if (ReferenceEquals(context, null))
@@ -36,19 +37,19 @@ namespace Theraot.Threading
             }
         }
 
-        internal bool IsOpen
-        {
-            get
-            {
-                return Thread.VolatileRead(ref _free) == 0;
-            }
-        }
-
         bool IReadOnlyNeedle<T>.IsAlive
         {
             get
             {
                 return !ReferenceEquals(_target, null);
+            }
+        }
+
+        internal bool IsOpen
+        {
+            get
+            {
+                return Thread.VolatileRead(ref _free) == 0;
             }
         }
 

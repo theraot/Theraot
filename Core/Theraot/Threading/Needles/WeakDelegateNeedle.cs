@@ -16,7 +16,7 @@ namespace Theraot.Threading.Needles
         public WeakDelegateNeedle(MethodInfo methodInfo, object target)
             : base(BuildDelegate(methodInfo, target))
         {
-            //Empty
+            // Empty
         }
 
         public MethodInfo Method
@@ -91,7 +91,7 @@ namespace Theraot.Threading.Needles
             var value = Value;
             if (IsAlive)
             {
-                value.DynamicInvoke(args); //Throws TargetInvocationException
+                value.DynamicInvoke(args); // Throws TargetInvocationException
                 return true;
             }
             else

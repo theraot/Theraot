@@ -126,6 +126,7 @@ namespace System
                 return _target;
             }
         }
+
         private T CachingFullMode(Func<T> valueFactory, ManualResetEvent waitHandle, ref Thread thread)
         {
             if (Interlocked.CompareExchange(ref _isValueCreated, 1, 0) == 0)
@@ -201,7 +202,7 @@ namespace System
 
         private T FullMode(Func<T> valueFactory, ManualResetEvent waitHandle, ref Thread thread, ref int preIsValueCreated)
         {
-        back:
+            back:
             if (Interlocked.CompareExchange(ref preIsValueCreated, 1, 0) == 0)
             {
                 try

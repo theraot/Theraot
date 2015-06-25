@@ -5,6 +5,11 @@ namespace Theraot.Threading.Needles
 {
     public interface IPromise
     {
+        AggregateException Exception
+        {
+            get;
+        }
+
         bool IsCanceled
         {
             get;
@@ -20,13 +25,11 @@ namespace Theraot.Threading.Needles
             get;
         }
 
-        AggregateException Exception { get; }
-        
         void Wait();
     }
 
     public interface IPromise<out T> : IPromise, IReadOnlyNeedle<T>
     {
-        //Empty
+        // Empty
     }
 }

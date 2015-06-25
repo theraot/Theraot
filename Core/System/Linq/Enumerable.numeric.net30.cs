@@ -781,13 +781,13 @@ namespace System.Linq
             var _selector = Check.NotNullArgument(selector, "selector");
             Func<TSource, int, TResult> __selector = (item, i) => _selector(item);
             return Max
-                   (
-                       Enumerable.SelectExtracted
-                       (
-                           _source,
-                           __selector
-                       )
-                   );
+            (
+                Enumerable.SelectExtracted
+                (
+                    _source,
+                    __selector
+                )
+            );
         }
 
         public static int Min(this IEnumerable<int> source)
@@ -1328,13 +1328,13 @@ namespace System.Linq
             var _selector = Check.NotNullArgument(selector, "selector");
             Func<TSource, int, TResult> __selector = (item, i) => _selector(item);
             return Min
-                   (
-                       Enumerable.SelectExtracted
-                       (
-                           _source,
-                           __selector
-                       )
-                   );
+            (
+                Enumerable.SelectExtracted
+                (
+                    _source,
+                    __selector
+                )
+            );
         }
 
         public static IEnumerable<int> Range(int start, int count)

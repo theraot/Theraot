@@ -54,7 +54,7 @@ namespace Theraot.Collections.ThreadSafe
         public void Add(MethodInfo method, object target)
         {
             Check.NotNullArgument(method, "method");
-            Add(new WeakDelegateNeedle(method, target)); //Since it is a new object, it should not fail
+            Add(new WeakDelegateNeedle(method, target)); // Since it is a new object, it should not fail
         }
 
         public bool Contains(MethodInfo method, object target)
@@ -89,7 +89,7 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 catch (NullReferenceException)
                 {
-                    //Empty
+                    // Empty
                 }
             }
         }

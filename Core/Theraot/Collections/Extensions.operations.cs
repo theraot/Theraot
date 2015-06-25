@@ -218,7 +218,7 @@ namespace Theraot.Collections
                 }
             }
         }
-        
+
         private static IEnumerable<T> TakeItemsExtracted<T>(IEnumerable<T> target, int takeCount)
         {
             int count = 0;

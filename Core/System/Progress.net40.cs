@@ -54,10 +54,10 @@ namespace System
         private void Callback(object value)
         {
             var _value = (T)value;
-            var _ProgressChanged = ProgressChanged;
-            if (_ProgressChanged != null)
+            var _progressChanged = ProgressChanged;
+            if (_progressChanged != null)
             {
-                _ProgressChanged.Invoke(this, _value);
+                _progressChanged.Invoke(this, _value);
             }
         }
     }

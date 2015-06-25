@@ -4,6 +4,8 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Diagnostics;
+using Theraot.Collections;
 
 namespace MonoTests.System.Threading
 {
@@ -30,30 +32,28 @@ namespace MonoTests.System.Threading
             {
                 throw new NotSupportedException("Results in stack overflow - blame Microsoft");
             }
-            Assert.Throws
-                (
-                    typeof(InvalidOperationException),
-                    () =>
+            Assert.Throws(
+                typeof(InvalidOperationException),
+                () =>
+                {
+                    ThreadLocal<int>[] threadLocal = { null };
+                    using (threadLocal[0] = new ThreadLocal<int>(() => threadLocal[0] != null ? threadLocal[0].Value + 1 : 0, false))
                     {
-                        ThreadLocal<int>[] threadLocal = { null };
-                        using (threadLocal[0] = new ThreadLocal<int>(() => threadLocal[0] != null ? threadLocal[0].Value + 1 : 0, false))
-                        {
-                            GC.KeepAlive(threadLocal[0].Value);
-                        }
+                        GC.KeepAlive(threadLocal[0].Value);
                     }
-                );
-            Assert.Throws
-                (
-                    typeof(InvalidOperationException),
-                    () =>
+                }
+            );
+            Assert.Throws(
+                typeof(InvalidOperationException),
+                () =>
+                {
+                    ThreadLocal<int>[] threadLocal = { null };
+                    using (threadLocal[0] = new ThreadLocal<int>(() => threadLocal[0] != null ? threadLocal[0].Value + 1 : 0, true))
                     {
-                        ThreadLocal<int>[] threadLocal = { null };
-                        using (threadLocal[0] = new ThreadLocal<int>(() => threadLocal[0] != null ? threadLocal[0].Value + 1 : 0, true))
-                        {
-                            GC.KeepAlive(threadLocal[0].Value);
-                        }
+                        GC.KeepAlive(threadLocal[0].Value);
                     }
-                );
+                }
+            );
         }
 
         [Test]
@@ -86,15 +86,11 @@ namespace MonoTests.System.Threading
         public void TestValuesWithExceptions()
         {
             var count = 0;
-            var threadLocal = new ThreadLocal<int>
-            (
-                () =>
-                {
-                    count++;
-                    throw new Exception("Burn!");
-                },
-                true
-            );
+            var threadLocal = new ThreadLocal<int>(() =>
+            {
+                count++;
+                throw new Exception("Burn!");
+            }, true);
             using (threadLocal)
             {
                 LaunchAndWaitThread(threadLocal);
@@ -130,7 +126,20 @@ namespace MonoTests.System.Threading
 
         private static void LaunchAndWaitThread(ThreadLocal<int> threadLocal)
         {
-            var thread = new Thread(() => GC.KeepAlive(threadLocal.Value));
+            
+            var thread = new Thread(() =>
+            {                
+                try
+                {
+                    GC.KeepAlive(threadLocal.Value);
+                }
+                catch (Exception exc)
+                {
+                    // Pokemon
+                    GC.KeepAlive(exc);
+                    return;
+                }
+            });
             thread.Start();
             thread.Join();
         }
@@ -138,18 +147,11 @@ namespace MonoTests.System.Threading
         private static void TestException(bool tracking)
         {
             int callTime = 0;
-            using
-            (
-                var threadLocal = new ThreadLocal<int>
-                (
-                    () =>
-                    {
-                        Interlocked.Increment(ref callTime);
-                        throw new ApplicationException("foo");
-                    },
-                    tracking
-                )
-            )
+            using (var threadLocal = new ThreadLocal<int>(() =>
+            {
+                Interlocked.Increment(ref callTime);
+                throw new ApplicationException("foo");
+            }, tracking))
             {
                 Exception exception = null;
 

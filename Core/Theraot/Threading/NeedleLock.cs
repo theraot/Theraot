@@ -93,15 +93,6 @@ namespace Theraot.Threading
             return EqualsExtracted(this, other);
         }
 
-        internal void Release()
-        {
-            if (ThreadingHelper.VolatileRead(ref _capture).Flags.IsEmpty())
-            {
-                _target = default(T);
-                Thread.MemoryBarrier();
-            }
-        }
-
         public override int GetHashCode()
         {
             return _hashCode;
@@ -115,6 +106,15 @@ namespace Theraot.Threading
                 return target.ToString();
             }
             return "<Dead Needle>";
+        }
+
+        internal void Release()
+        {
+            if (ThreadingHelper.VolatileRead(ref _capture).Flags.IsEmpty())
+            {
+                _target = default(T);
+                Thread.MemoryBarrier();
+            }
         }
 
         internal void Capture(LockSlot<T> slot)

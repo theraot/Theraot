@@ -19,7 +19,7 @@ namespace Theraot.Threading.Needles
         public WeakNeedle()
             : this(false)
         {
-            //Empty
+            // Empty
         }
 
         public WeakNeedle(bool trackResurrection)
@@ -32,7 +32,7 @@ namespace Theraot.Threading.Needles
         public WeakNeedle(T target)
             : this(target, false)
         {
-            //Empty
+            // Empty
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
@@ -52,7 +52,7 @@ namespace Theraot.Threading.Needles
                     object target;
                     try
                     {
-                        target = _handle.Target; //Throws InvalidOperationException
+                        target = _handle.Target; // Throws InvalidOperationException
                     }
                     catch (InvalidOperationException)
                     {
@@ -76,7 +76,7 @@ namespace Theraot.Threading.Needles
                     object target;
                     try
                     {
-                        target = _handle.Target; //Throws InvalidOperationException
+                        target = _handle.Target; // Throws InvalidOperationException
                     }
                     catch (InvalidOperationException)
                     {
@@ -101,7 +101,7 @@ namespace Theraot.Threading.Needles
                     object target;
                     try
                     {
-                        target = _handle.Target; //Throws InvalidOperationException
+                        target = _handle.Target; // Throws InvalidOperationException
                     }
                     catch (InvalidOperationException)
                     {
@@ -134,7 +134,7 @@ namespace Theraot.Threading.Needles
                     object target;
                     try
                     {
-                        target = _handle.Target; //Throws InvalidOperationException
+                        target = _handle.Target; // Throws InvalidOperationException
                     }
                     catch (InvalidOperationException)
                     {
@@ -234,7 +234,7 @@ namespace Theraot.Threading.Needles
                 object target;
                 try
                 {
-                    target = _handle.Target; //Throws InvalidOperationException
+                    target = _handle.Target; // Throws InvalidOperationException
                 }
                 catch (InvalidOperationException)
                 {
@@ -290,13 +290,13 @@ namespace Theraot.Threading.Needles
                         }
                         catch (InvalidOperationException)
                         {
-                            //Empty
+                            // Empty
                         }
                     }
                 }
                 finally
                 {
-                    System.Threading.Interlocked.Decrement(ref _status);
+                    Interlocked.Decrement(ref _status);
                 }
             }
         }
@@ -342,13 +342,13 @@ namespace Theraot.Threading.Needles
                         }
                         catch (InvalidOperationException)
                         {
-                            //Empty
+                            // Empty
                         }
                     }
                 }
                 finally
                 {
-                    System.Threading.Interlocked.Decrement(ref _status);
+                    Interlocked.Decrement(ref _status);
                 }
             }
         }
@@ -422,7 +422,7 @@ namespace Theraot.Threading.Needles
                 }
                 catch (InvalidOperationException)
                 {
-                    //Empty
+                    // Empty
                 }
             }
         }

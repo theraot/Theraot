@@ -17,13 +17,13 @@ namespace Theraot.Collections
         public ProgressiveCollection(IEnumerable<T> wrapped)
             : this(wrapped, new HashSet<T>(), null)
         {
-            //Empty
+            // Empty
         }
 
         public ProgressiveCollection(IEnumerable<T> wrapped, IEqualityComparer<T> comparer)
             : this(wrapped, new HashSet<T>(comparer), comparer)
         {
-            //Empty
+            // Empty
         }
 
         protected ProgressiveCollection(IEnumerable<T> wrapped, ICollection<T> cache, IEqualityComparer<T> comparer)
@@ -168,15 +168,15 @@ namespace Theraot.Collections
             throw new NotSupportedException();
         }
 
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
         bool ICollection<T>.Remove(T item)
         {
             throw new NotSupportedException();
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         protected virtual bool CacheContains(T item)
