@@ -661,6 +661,7 @@
     <Compile Include="System\Diagnostics\Contracts\ContractFailedEventArgs.net35.cs" />
     <Compile Include="System\Diagnostics\Contracts\PureAttribute.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\ContractHelper.net40.cs" />
+    <Compile Include="System\Diagnostics\Contracts\Internal\ContractHelper.net35.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -714,4 +715,7 @@
     <None Include="OpenSourceKey.snk" />
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="System\Diagnostics\Contracts\Internal\" />
+  </ItemGroup>
 </Project>
