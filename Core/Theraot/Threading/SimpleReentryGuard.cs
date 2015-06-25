@@ -4,7 +4,7 @@ using Theraot.Threading.Needles;
 namespace Theraot.Threading
 {
     /// <summary>
-    /// Represents a context to execute operationg without reentry.
+    /// Represents a context to execute operation without reentry.
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCode]
     public sealed class SimpleReentryGuard : IDisposable
@@ -12,7 +12,7 @@ namespace Theraot.Threading
         private StructNeedle<TrackingThreadLocal<int>> _guards;
 
         /// <summary>
-        /// Creates a new instance of <see cref="SimpleReentryGuard"/>.
+        /// Initializes a new instance of the <see cref="SimpleReentryGuard" /> class.
         /// </summary>
         public SimpleReentryGuard()
         {
@@ -20,7 +20,7 @@ namespace Theraot.Threading
         }
 
         /// <summary>
-        /// Returns whatever or not the current thread did enter.
+        /// Gets a value indicating whether or not the current thread did enter.
         /// </summary>
         public bool IsTaken
         {
@@ -52,7 +52,6 @@ namespace Theraot.Threading
         /// Executes an operation-
         /// </summary>
         /// <param name="operation">The operation to execute.</param>
-        /// <returns>Returns a promise to finish the execution.</returns>
         public void Execute(Action operation)
         {
             var local = _guards.Value;

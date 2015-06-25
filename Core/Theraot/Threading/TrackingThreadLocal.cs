@@ -20,7 +20,7 @@ namespace Theraot.Threading
         public TrackingThreadLocal()
             : this(TypeHelper.GetCreateOrDefault<T>())
         {
-            //Empty
+            // Empty
         }
 
         public TrackingThreadLocal(Func<T> valueFactory)
@@ -109,6 +109,7 @@ namespace Theraot.Threading
                 return false;
             }
         }
+
         T IThreadLocal<T>.ValueForDebugDisplay
         {
             get
@@ -121,6 +122,7 @@ namespace Theraot.Threading
                 return default(T);
             }
         }
+
         [global::System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {

@@ -12,25 +12,25 @@ namespace Theraot.Collections
         public ProgressiveSet(IEnumerable<T> wrapped)
             : this(wrapped, new ExtendedSet<T>(), null)
         {
-            //Empty
+            // Empty
         }
 
         public ProgressiveSet(IEnumerable<T> wrapped, IEqualityComparer<T> comparer)
             : this(wrapped, new ExtendedSet<T>(comparer), null)
         {
-            //Empty
+            // Empty
         }
 
         internal ProgressiveSet(Progressor<T> wrapped, IEqualityComparer<T> comparer)
             : this(wrapped, new ExtendedSet<T>(comparer), comparer)
         {
-            //Empty
+            // Empty
         }
 
         protected ProgressiveSet(IEnumerable<T> wrapped, ISet<T> cache, IEqualityComparer<T> comparer)
             : this(Check.NotNullArgument(wrapped, "wrapped").GetEnumerator(), cache, comparer)
         {
-            //Empty
+            // Empty
         }
 
         protected ProgressiveSet(Progressor<T> wrapped, ISet<T> cache, IEqualityComparer<T> comparer)
@@ -56,7 +56,7 @@ namespace Theraot.Collections
                 comparer
             )
         {
-            //Empty
+            // Empty
         }
 
         private ProgressiveSet(IEnumerator<T> enumerator, ISet<T> cache, IEqualityComparer<T> comparer)
@@ -85,7 +85,7 @@ namespace Theraot.Collections
                 comparer
             )
         {
-            //Empty
+            // Empty
         }
 
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns True")]
@@ -95,54 +95,6 @@ namespace Theraot.Collections
             {
                 return true;
             }
-        }
-
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
-        void ICollection<T>.Add(T item)
-        {
-            throw new NotSupportedException();
-        }
-
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
-        void ICollection<T>.Clear()
-        {
-            throw new NotSupportedException();
-        }
-
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
-        bool ICollection<T>.Remove(T item)
-        {
-            throw new NotSupportedException();
-        }
-
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
-        bool ISet<T>.Add(T item)
-        {
-            throw new NotSupportedException();
-        }
-
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
-        void ISet<T>.ExceptWith(IEnumerable<T> other)
-        {
-            throw new NotSupportedException();
-        }
-
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
-        void ISet<T>.IntersectWith(IEnumerable<T> other)
-        {
-            throw new NotSupportedException();
-        }
-
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
-        void ISet<T>.SymmetricExceptWith(IEnumerable<T> other)
-        {
-            throw new NotSupportedException();
-        }
-
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
-        void ISet<T>.UnionWith(IEnumerable<T> other)
-        {
-            throw new NotSupportedException();
         }
 
         public bool IsProperSubsetOf(IEnumerable<T> other)
@@ -175,9 +127,57 @@ namespace Theraot.Collections
             return Extensions.SetEquals(this, other);
         }
 
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
+        void ICollection<T>.Add(T item)
+        {
+            throw new NotSupportedException();
+        }
+
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
+        bool ISet<T>.Add(T item)
+        {
+            throw new NotSupportedException();
+        }
+
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
+        void ICollection<T>.Clear()
+        {
+            throw new NotSupportedException();
+        }
+
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
+        void ISet<T>.ExceptWith(IEnumerable<T> other)
+        {
+            throw new NotSupportedException();
+        }
+
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
+        void ISet<T>.IntersectWith(IEnumerable<T> other)
+        {
+            throw new NotSupportedException();
+        }
+
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
+        bool ICollection<T>.Remove(T item)
+        {
+            throw new NotSupportedException();
+        }
+
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
+        void ISet<T>.SymmetricExceptWith(IEnumerable<T> other)
+        {
+            throw new NotSupportedException();
+        }
+
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
+        void ISet<T>.UnionWith(IEnumerable<T> other)
+        {
+            throw new NotSupportedException();
         }
     }
 }

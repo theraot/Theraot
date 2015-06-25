@@ -19,7 +19,7 @@ namespace Theraot.Threading.Needles
         public CacheNeedle(Func<T> valueFactory)
             : this(valueFactory, false)
         {
-            //Empty
+            // Empty
         }
 
         public CacheNeedle(Func<T> valueFactory, bool trackResurrection)
@@ -32,7 +32,7 @@ namespace Theraot.Threading.Needles
         public CacheNeedle(Func<T> valueFactory, T target)
             : this(valueFactory, target, false)
         {
-            //Empty
+            // Empty
         }
 
         public CacheNeedle(Func<T> valueFactory, T target, bool trackResurrection)
@@ -86,32 +86,6 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
-        bool IPromise.IsCanceled
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
-        bool IPromise.IsFaulted
-        {
-            get
-            {
-                return IsFaulted;
-            }
-        }
-
-        Exception IPromise.Error
-        {
-            get
-            {
-                return Error;
-            }
-        }
-
         public bool IsCompleted
         {
             get
@@ -139,6 +113,32 @@ namespace Theraot.Threading.Needles
             get
             {
                 return _waitHandle;
+            }
+        }
+
+        Exception IPromise.Error
+        {
+            get
+            {
+                return Error;
+            }
+        }
+
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
+        bool IPromise.IsCanceled
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
+        bool IPromise.IsFaulted
+        {
+            get
+            {
+                return IsFaulted;
             }
         }
 

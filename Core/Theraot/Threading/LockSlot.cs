@@ -11,6 +11,7 @@ namespace Theraot.Threading
         private int _free;
         private T _target;
         private VersionProvider.VersionToken _versionToken;
+
         internal LockSlot(LockContext<T> context, int id, VersionProvider.VersionToken versionToken)
         {
             if (ReferenceEquals(context, null))

@@ -379,6 +379,7 @@ namespace Theraot.Collections.ThreadSafe
             }
             return result; // true means value was set
         }
+
         internal bool TryGetCheckSet(int index, Func<T> itemFactory, Predicate<object> check, out bool isNew)
         {
             // NOTICE this method has no null check

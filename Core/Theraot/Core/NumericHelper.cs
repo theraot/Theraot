@@ -174,8 +174,8 @@ namespace Theraot.Core
         [global::System.Diagnostics.DebuggerNonUserCode]
         public static int Sqrt(int number)
         {
-            //  Newton's  method  aproximation  for  positive  integers
-            //  if  (number  ==  0)  return  0;
+            // Newton's  method  aproximation  for  positive  integers
+            // if  (number  ==  0)  return  0;
             int _x = number >> 1;
             while (true)
             {

@@ -17,13 +17,13 @@ namespace Theraot.Collections
         public ProgressiveCollection(IEnumerable<T> wrapped)
             : this(wrapped, new HashSet<T>(), null)
         {
-            //Empty
+            // Empty
         }
 
         public ProgressiveCollection(IEnumerable<T> wrapped, IEqualityComparer<T> comparer)
             : this(wrapped, new HashSet<T>(comparer), comparer)
         {
-            //Empty
+            // Empty
         }
 
         protected ProgressiveCollection(IEnumerable<T> wrapped, ICollection<T> cache, IEqualityComparer<T> comparer)
@@ -67,15 +67,6 @@ namespace Theraot.Collections
             }
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns True")]
-        bool ICollection<T>.IsReadOnly
-        {
-            get
-            {
-                return true;
-            }
-        }
-
         protected IEqualityComparer<T> Comparer
         {
             get
@@ -89,6 +80,15 @@ namespace Theraot.Collections
             get
             {
                 return _progressor;
+            }
+        }
+
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns True")]
+        bool ICollection<T>.IsReadOnly
+        {
+            get
+            {
+                return true;
             }
         }
 
@@ -156,6 +156,11 @@ namespace Theraot.Collections
             }
         }
 
+        protected virtual bool CacheContains(T item)
+        {
+            return _cache.Contains(item, _comparer);
+        }
+
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
         void ICollection<T>.Add(T item)
         {
@@ -168,20 +173,15 @@ namespace Theraot.Collections
             throw new NotSupportedException();
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
-        bool ICollection<T>.Remove(T item)
-        {
-            throw new NotSupportedException();
-        }
-
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
-        protected virtual bool CacheContains(T item)
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
+        bool ICollection<T>.Remove(T item)
         {
-            return _cache.Contains(item, _comparer);
+            throw new NotSupportedException();
         }
     }
 }

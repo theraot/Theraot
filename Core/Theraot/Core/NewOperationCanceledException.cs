@@ -19,7 +19,7 @@ namespace Theraot.Core
     {
         public NewOperationCanceledException()
         {
-            //Empty
+            // Empty
         }
     }
 

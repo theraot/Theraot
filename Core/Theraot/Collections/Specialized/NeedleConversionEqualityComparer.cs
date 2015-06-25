@@ -10,7 +10,7 @@ namespace Theraot.Collections.Specialized
         public NeedleConversionEqualityComparer(IEqualityComparer<T> comparer)
             : base(comparer, Conversion)
         {
-            //Empty
+            // Empty
         }
 
         private static T Conversion(TNeedle needle)

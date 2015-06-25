@@ -787,7 +787,6 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
-
         private bool PrivateTryUpdate(uint index, object item, Predicate<object> check)
         {
             var subindex = GetSubindex(index);

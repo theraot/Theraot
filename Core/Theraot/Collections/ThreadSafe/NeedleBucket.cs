@@ -356,7 +356,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public void Set(int index, T item, out bool isNew)
         {
-            //This may have replaced something
+            // This may have replaced something
             _entries.Set(index, NeedleReservoir<T, TNeedle>.GetNeedle(item), out isNew);
         }
 
@@ -371,11 +371,6 @@ namespace Theraot.Collections.ThreadSafe
         {
             // This may allow null to enter
             _entries.Set(index, needle, out isNew);
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         /// <summary>
@@ -413,6 +408,11 @@ namespace Theraot.Collections.ThreadSafe
         public bool TryGetNeedle(int index, out TNeedle value)
         {
             return _entries.TryGet(index, out value);
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }

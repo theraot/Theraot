@@ -1518,8 +1518,8 @@ namespace Theraot.Collections
             {
                 throw new ArgumentOutOfRangeException("count", "Non-negative number is required.");
             }
-            int Count = _list.Count;
-            if (count > Count - index)
+            int listCount = _list.Count;
+            if (count > listCount - index)
             {
                 throw new ArgumentException("The list does not contain the number of elements.", "list");
             }
@@ -1562,8 +1562,8 @@ namespace Theraot.Collections
             }
             else
             {
-                int Count = list.Count;
-                if (count > Count - index)
+                int listCount = list.Count;
+                if (count > listCount - index)
                 {
                     throw new ArgumentException("The list does not contain the number of elements.", "list");
                 }
@@ -1582,8 +1582,8 @@ namespace Theraot.Collections
             {
                 throw new ArgumentOutOfRangeException("indexB", "Non-negative number is required.");
             }
-            int Count = list.Count;
-            if (indexA >= Count || indexB >= Count)
+            int listCount = list.Count;
+            if (indexA >= listCount || indexB >= listCount)
             {
                 throw new ArgumentException("The list does not contain the number of elements.", "list");
             }
@@ -1904,6 +1904,7 @@ namespace Theraot.Collections
                 }
             }
         }
+
         private static bool IsSubsetOf<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> other, bool proper)
         {
             var _this = AsDistinctCollection(collection);

@@ -325,6 +325,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         /// Removes all the elements.
         /// </summary>
+        /// <returns>Returns the removed pairs.</returns>
         public IEnumerable<KeyValuePair<TKey, TValue>> ClearEnumerable()
         {
             return Interlocked.Exchange(ref _mapper, _mapper = new Mapper<KeyValuePair<TKey, TValue>>());
@@ -679,7 +680,6 @@ namespace Theraot.Collections.ThreadSafe
             }
             return false;
         }
-
 
         /// <summary>
         /// Removes a key by hash code, key predicate and value predicate.

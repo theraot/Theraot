@@ -6,9 +6,10 @@ namespace Theraot.Collections.ThreadSafe
     internal static class NeedleReservoir<T, TNeedle>
         where TNeedle : class, IRecyclableNeedle<T>
     {
+        private static readonly Pool<TNeedle> _pool;
+
         [ThreadStatic]
         private static int _recycling;
-        private static readonly Pool<TNeedle> _pool;
 
         static NeedleReservoir()
         {
@@ -20,19 +21,6 @@ namespace Theraot.Collections.ThreadSafe
             get
             {
                 return _recycling != 0;
-            }
-        }
-
-        private static void Recycle(TNeedle obj)
-        {
-            try
-            {
-                _recycling++;
-                obj.Free();
-            }
-            finally
-            {
-                _recycling--;
             }
         }
 
@@ -60,6 +48,19 @@ namespace Theraot.Collections.ThreadSafe
                 result = NeedleHelper.CreateNeedle<T, TNeedle>(value);
             }
             return result;
+        }
+
+        private static void Recycle(TNeedle obj)
+        {
+            try
+            {
+                _recycling++;
+                obj.Free();
+            }
+            finally
+            {
+                _recycling--;
+            }
         }
     }
 }

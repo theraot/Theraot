@@ -38,7 +38,7 @@ namespace System.Linq
 
     internal interface IQueryableEnumerable<TElement> : IQueryableEnumerable, IOrderedQueryable<TElement>
     {
-        //Empty
+        // Empty
     }
 
     internal class QueryableEnumerable<TElement> : IQueryableEnumerable<TElement>, IQueryProvider

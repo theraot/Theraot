@@ -140,14 +140,6 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
-        {
-            get
-            {
-                return false;
-            }
-        }
-
         public ICollection<TKey> Keys
         {
             get
@@ -164,11 +156,19 @@ namespace Theraot.Collections.Specialized
             }
         }
 
+        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
+        {
+            get
+            {
+                return false;
+            }
+        }
         public TValue this[TKey key]
         {
             get
             {
-                if (ReferenceEquals(key, null)) // key can be null
+                // key can be null
+                if (ReferenceEquals(key, null))
                 {
                     if (_hasNull)
                     {
@@ -186,7 +186,8 @@ namespace Theraot.Collections.Specialized
             }
             set
             {
-                if (ReferenceEquals(key, null)) // key can be null
+                // key can be null
+                if (ReferenceEquals(key, null))
                 {
                     SetForNull(value);
                 }
@@ -199,7 +200,8 @@ namespace Theraot.Collections.Specialized
 
         public void Add(TKey key, TValue value)
         {
-            if (ReferenceEquals(key, null)) // key can be null
+            // key can be null
+            if (ReferenceEquals(key, null))
             {
                 if (_hasNull)
                 {
@@ -264,7 +266,8 @@ namespace Theraot.Collections.Specialized
 
         public bool ContainsKey(TKey key)
         {
-            if (ReferenceEquals(key, null)) // key can be null
+            // key can be null
+            if (ReferenceEquals(key, null))
             {
                 return _hasNull;
             }
@@ -353,7 +356,8 @@ namespace Theraot.Collections.Specialized
 
         public bool Remove(TKey key)
         {
-            if (ReferenceEquals(key, null)) // key can be null
+            // key can be null
+            if (ReferenceEquals(key, null))
             {
                 if (_hasNull)
                 {
@@ -437,14 +441,10 @@ namespace Theraot.Collections.Specialized
             Extensions.SymmetricExceptWith(this, other);
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         public bool TryGetValue(TKey key, out TValue value)
         {
-            if (ReferenceEquals(key, null)) // key can be null
+            // key can be null
+            if (ReferenceEquals(key, null))
             {
                 if (_hasNull)
                 {
@@ -474,6 +474,10 @@ namespace Theraot.Collections.Specialized
             _valueForNull = new[] { default(TValue) };
         }
 
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
         private void InitializeNotNullable()
         {
             _hasNull = false;

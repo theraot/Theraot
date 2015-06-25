@@ -138,6 +138,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         /// Removes all the elements.
         /// </summary>
+        /// <returns>Returns the removed pairs.</returns>
         public IEnumerable<T> ClearEnumerable()
         {
             return Interlocked.Exchange(ref _mapper, _mapper = new Mapper<T>());
