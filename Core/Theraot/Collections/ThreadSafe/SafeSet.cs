@@ -228,6 +228,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <summary>
         /// Gets the pairs contained in this object.
         /// </summary>
+        /// <returns>The pairs contained in this object</returns>
         public IList<T> GetValues()
         {
             var result = new List<T>(_mapper.Count);
@@ -284,18 +285,18 @@ namespace Theraot.Collections.ThreadSafe
                 T previous;
                 var result = _mapper.TryGetCheckRemoveAt
                     (
-                        hashCode + attempts,
-                        found =>
+                                 hashCode + attempts,
+                                 found =>
+                    {
+                        if (_comparer.Equals((T)found, value))
                         {
-                            if (_comparer.Equals((T)found, value))
-                            {
-                                done = true;
-                                return true;
-                            }
-                            return false;
-                        },
-                        out previous
-                    );
+                            done = true;
+                            return true;
+                        }
+                        return false;
+                    },
+                                 out previous
+                             );
                 if (done)
                 {
                     return result;
@@ -320,18 +321,18 @@ namespace Theraot.Collections.ThreadSafe
                 var done = false;
                 var result = _mapper.TryGetCheckRemoveAt
                     (
-                        hashCode + attempts,
-                        found =>
+                                 hashCode + attempts,
+                                 found =>
+                    {
+                        if (_comparer.Equals((T)found, value))
                         {
-                            if (_comparer.Equals((T)found, value))
-                            {
-                                done = true;
-                                return true;
-                            }
-                            return false;
-                        },
-                        out previous
-                    );
+                            done = true;
+                            return true;
+                        }
+                        return false;
+                    },
+                                 out previous
+                             );
                 if (done)
                 {
                     return result;
@@ -363,19 +364,19 @@ namespace Theraot.Collections.ThreadSafe
                 T previous;
                 var result = _mapper.TryGetCheckRemoveAt
                     (
-                        hashCode + attempts,
-                        found =>
+                                 hashCode + attempts,
+                                 found =>
+                    {
+                        var _found = (T)found;
+                        if (_comparer.GetHashCode(_found) == hashCode && check(_found))
                         {
-                            var _found = (T)found;
-                            if (_comparer.GetHashCode(_found) == hashCode && check(_found))
-                            {
-                                done = true;
-                                return true;
-                            }
-                            return false;
-                        },
-                        out previous
-                    );
+                            done = true;
+                            return true;
+                        }
+                        return false;
+                    },
+                                 out previous
+                             );
                 if (done)
                 {
                     value = previous;
@@ -504,6 +505,16 @@ namespace Theraot.Collections.ThreadSafe
             return _mapper.InternalWhere(check);
         }
 
+        void ICollection<T>.Add(T item)
+        {
+            AddNew(item);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         /// <summary>
         /// Attempts to add the specified value.
         /// </summary>
@@ -554,11 +565,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        void ICollection<T>.Add(T item)
-        {
-            AddNew(item);
-        }
-
         private void ExtendProbingIfNeeded(int attempts)
         {
             var diff = attempts - _probing;
@@ -566,11 +572,6 @@ namespace Theraot.Collections.ThreadSafe
             {
                 Interlocked.Add(ref _probing, diff);
             }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

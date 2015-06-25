@@ -108,14 +108,6 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        protected INeedle<ManualResetEventSlim> WaitHandle
-        {
-            get
-            {
-                return _waitHandle;
-            }
-        }
-
         Exception IPromise.Error
         {
             get
@@ -139,6 +131,14 @@ namespace Theraot.Threading.Needles
             get
             {
                 return IsFaulted;
+            }
+        }
+
+        protected INeedle<ManualResetEventSlim> WaitHandle
+        {
+            get
+            {
+                return _waitHandle;
             }
         }
 

@@ -37,19 +37,19 @@ namespace Theraot.Threading
             }
         }
 
-        internal bool IsOpen
-        {
-            get
-            {
-                return Thread.VolatileRead(ref _free) == 0;
-            }
-        }
-
         bool IReadOnlyNeedle<T>.IsAlive
         {
             get
             {
                 return !ReferenceEquals(_target, null);
+            }
+        }
+
+        internal bool IsOpen
+        {
+            get
+            {
+                return Thread.VolatileRead(ref _free) == 0;
             }
         }
 

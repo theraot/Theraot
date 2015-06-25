@@ -67,6 +67,15 @@ namespace Theraot.Collections
             }
         }
 
+        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns True")]
+        bool ICollection<T>.IsReadOnly
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         protected IEqualityComparer<T> Comparer
         {
             get
@@ -80,15 +89,6 @@ namespace Theraot.Collections
             get
             {
                 return _progressor;
-            }
-        }
-
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns True")]
-        bool ICollection<T>.IsReadOnly
-        {
-            get
-            {
-                return true;
             }
         }
 
@@ -156,11 +156,6 @@ namespace Theraot.Collections
             }
         }
 
-        protected virtual bool CacheContains(T item)
-        {
-            return _cache.Contains(item, _comparer);
-        }
-
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
         void ICollection<T>.Add(T item)
         {
@@ -182,6 +177,11 @@ namespace Theraot.Collections
         bool ICollection<T>.Remove(T item)
         {
             throw new NotSupportedException();
+        }
+
+        protected virtual bool CacheContains(T item)
+        {
+            return _cache.Contains(item, _comparer);
         }
     }
 }

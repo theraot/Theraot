@@ -99,11 +99,6 @@ namespace Theraot.Collections
             }
         }
 
-        protected override bool CacheContains(T item)
-        {
-            return _cache.Contains(item, Comparer);
-        }
-
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
         void ICollection<T>.Add(T item)
         {
@@ -126,6 +121,11 @@ namespace Theraot.Collections
         void IList<T>.RemoveAt(int index)
         {
             throw new NotSupportedException();
+        }
+
+        protected override bool CacheContains(T item)
+        {
+            return _cache.Contains(item, Comparer);
         }
     }
 }

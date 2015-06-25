@@ -289,19 +289,24 @@ namespace Theraot.Collections.ThreadSafe
             return InternalWhere(predicate);
         }
 
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         internal bool InternalInsertOrUpdate(int index, Func<object> itemFactory, Func<object, object> itemUpdateFactory, Predicate<object> check, out T stored, out bool isNew)
         {
             // NOTICE this method has no null check
             object storedObject;
             var result = _root.InsertOrUpdate
-                (
-                    unchecked((uint)index),
-                    itemFactory,
-                    itemUpdateFactory,
-                    check,
-                    out storedObject,
-                    out isNew
-                );
+                         (
+                             unchecked((uint)index),
+                             itemFactory,
+                             itemUpdateFactory,
+                             check,
+                             out storedObject,
+                             out isNew
+                         );
             if (isNew)
             {
                 Interlocked.Increment(ref _count);
@@ -315,14 +320,14 @@ namespace Theraot.Collections.ThreadSafe
             // NOTICE this method has no null check
             object storedObject;
             var result = _root.InsertOrUpdate
-                (
-                    unchecked((uint)index),
-                    item,
-                    itemUpdateFactory,
-                    check,
-                    out storedObject,
-                    out isNew
-                );
+                         (
+                             unchecked((uint)index),
+                             item,
+                             itemUpdateFactory,
+                             check,
+                             out storedObject,
+                             out isNew
+                         );
             if (isNew)
             {
                 Interlocked.Increment(ref _count);
@@ -390,11 +395,6 @@ namespace Theraot.Collections.ThreadSafe
                 Interlocked.Increment(ref _count);
             }
             return result; // true means value was set
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

@@ -305,11 +305,10 @@ namespace Theraot.Collections.Specialized
         {
             if (_hasNull)
             {
-                yield return new KeyValuePair<TKey, TValue>
-                             (
-                                 _typedNull,
-                                 _valueForNull[0]
-                             );
+                yield return new KeyValuePair<TKey, TValue>(
+                    _typedNull,
+                    _valueForNull[0]
+                );
             }
             foreach (var item in _dictionary)
             {
@@ -469,15 +468,15 @@ namespace Theraot.Collections.Specialized
             this.AddRange(Check.NotNullArgument(other, "other"));
         }
 
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         private void ClearForNull()
         {
             _hasNull = false;
             _valueForNull = new[] { default(TValue) };
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         private void InitializeNotNullable()
@@ -495,12 +494,9 @@ namespace Theraot.Collections.Specialized
             _hasNull = false;
             _valueForNull = new[] { default(TValue) };
             _valueComparer = EqualityComparer<TValue>.Default;
-            _keys = new ExtendedReadOnlyCollection<TKey>
-            (
-                new EnumerationCollection<TKey>
-                (
-                    new ConditionalExtendedEnumerable<TKey>
-                    (
+            _keys = new ExtendedReadOnlyCollection<TKey>(
+                new EnumerationCollection<TKey>(
+                    new ConditionalExtendedEnumerable<TKey>(
                         new[] { _typedNull },
                         _dictionary.Keys,
                         () => _hasNull,
@@ -508,12 +504,9 @@ namespace Theraot.Collections.Specialized
                     )
                 )
             );
-            _values = new ExtendedReadOnlyCollection<TValue>
-            (
-                new EnumerationCollection<TValue>
-                (
-                    new ConditionalExtendedEnumerable<TValue>
-                    (
+            _values = new ExtendedReadOnlyCollection<TValue>(
+                new EnumerationCollection<TValue>(
+                    new ConditionalExtendedEnumerable<TValue>(
                         _valueForNull,
                         _dictionary.Values,
                         () => _hasNull,

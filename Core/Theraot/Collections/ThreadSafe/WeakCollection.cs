@@ -21,19 +21,19 @@ namespace Theraot.Collections.ThreadSafe
         public WeakCollection()
             : this(null, true)
         {
-            //Empty
+            // Empty
         }
 
         public WeakCollection(IEqualityComparer<T> comparer)
             : this(comparer, true)
         {
-            //Empty
+            // Empty
         }
 
         public WeakCollection(bool autoRemoveDeadItems)
             : this(null, autoRemoveDeadItems)
         {
-            //Empty
+            // Empty
         }
 
         public WeakCollection(IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
@@ -54,13 +54,13 @@ namespace Theraot.Collections.ThreadSafe
         public WeakCollection(IEqualityComparer<T> comparer, int initialProbing)
             : this(comparer, true, initialProbing)
         {
-            //Empty
+            // Empty
         }
 
         public WeakCollection(bool autoRemoveDeadItems, int initialProbing)
             : this(null, autoRemoveDeadItems, initialProbing)
         {
-            //Empty
+            // Empty
         }
 
         public WeakCollection(IEqualityComparer<T> comparer, bool autoRemoveDeadItems, int initialProbing)
@@ -81,7 +81,7 @@ namespace Theraot.Collections.ThreadSafe
         public WeakCollection(int initialProbing)
             : this(null, true, initialProbing)
         {
-            //Empty
+            // Empty
         }
 
         ~WeakCollection()
