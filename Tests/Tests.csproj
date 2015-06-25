@@ -90,6 +90,7 @@
     <Compile Include="System\Linq\Expressions\ExpressionTest_Subtract.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTest_SubtractChecked.cs" />
     <Compile Include="System\Threading\CancellationTokenSourceTestEx.cs" />
+    <Compile Include="System\Threading\ReaderWriterLockSlimTest.cs" />
     <Compile Include="Theraot\Collections\ExtensionsTest.cs" />
     <Compile Include="Theraot\Collections\ProgressiveLookupTestEx.cs" />
     <Compile Include="Theraot\Collections\ProgressiveLookupTest.cs">
