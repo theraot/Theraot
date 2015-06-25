@@ -86,7 +86,7 @@ namespace Theraot.Threading
             }
         }
 
-        bool IExpected.IsCanceled
+        bool IPromise.IsCanceled
         {
             get
             {
@@ -94,7 +94,7 @@ namespace Theraot.Threading
             }
         }
 
-        bool IExpected.IsCompleted
+        bool IPromise.IsCompleted
         {
             get
             {
@@ -102,7 +102,7 @@ namespace Theraot.Threading
             }
         }
 
-        bool IExpected.IsFaulted
+        bool IPromise.IsFaulted
         {
             get
             {

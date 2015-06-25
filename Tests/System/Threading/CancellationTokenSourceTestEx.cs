@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
-using System;
 using System.Threading;
-using Theraot.Threading;
+using System.Threading.Tasks;
 
 namespace MonoTests.System.Threading
 {
@@ -35,7 +34,7 @@ namespace MonoTests.System.Threading
                 called += 11;
             });
 
-            var t = WorkContext.DefaultContext.AddWork(() => { cts.Cancel(); });
+            var t = TaskScheduler.Default.AddWork(() => { cts.Cancel(); });
             t.Start();
 
             Assert.IsTrue(mre2.WaitOne(1000), "#0");

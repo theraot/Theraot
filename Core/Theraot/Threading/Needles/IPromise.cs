@@ -2,10 +2,25 @@ using System;
 
 namespace Theraot.Threading.Needles
 {
-    public interface IPromise : IExpected
+    public interface IPromise
     {
-        Exception Error { get; }
+        bool IsCanceled
+        {
+            get;
+        }
 
+        bool IsCompleted
+        {
+            get;
+        }
+
+        bool IsFaulted
+        {
+            get;
+        }
+
+        Exception Error { get; }
+        
         void Wait();
     }
 

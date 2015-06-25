@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Threading
@@ -10,13 +11,13 @@ namespace Theraot.Threading
         {
             private static readonly WeakDelegateCollection _collectedEventHandlers;
 #if FAT
-            private static readonly Work _work;
+            private static readonly Task _task;
 #endif
 
             static Internal()
             {
 #if FAT
-                _work = WorkContext.DefaultContext.AddWork(RaiseCollected);
+                _task = TaskScheduler.Default.AddWork(RaiseCollected);
 #endif
                 _collectedEventHandlers = new WeakDelegateCollection(false, false, INT_MaxProbingHint);
             }
@@ -32,7 +33,7 @@ namespace Theraot.Threading
             public static void Invoke()
             {
 #if FAT
-                _work.Start();
+                _task.Start();
 #else
                 ThreadPool.QueueUserWorkItem(_ => RaiseCollected());
 #endif
