@@ -98,6 +98,7 @@ namespace System.Collections.Concurrent
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
         bool IDictionary.IsFixedSize
         {
             get
@@ -106,6 +107,7 @@ namespace System.Collections.Concurrent
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
         bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
         {
             get
@@ -114,6 +116,7 @@ namespace System.Collections.Concurrent
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
         bool IDictionary.IsReadOnly
         {
             get
@@ -122,6 +125,7 @@ namespace System.Collections.Concurrent
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
         bool ICollection.IsSynchronized
         {
             get
@@ -130,7 +134,7 @@ namespace System.Collections.Concurrent
             }
         }
 
-        ICollection<TKey> IDictionary<TKey, TValue>.Keys
+        public ICollection<TKey> Keys
         {
             get
             {
@@ -146,6 +150,7 @@ namespace System.Collections.Concurrent
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns this")]
         object ICollection.SyncRoot
         {
             get
@@ -154,7 +159,7 @@ namespace System.Collections.Concurrent
             }
         }
 
-        ICollection<TValue> IDictionary<TKey, TValue>.Values
+        public ICollection<TValue> Values
         {
             get
             {
@@ -359,6 +364,7 @@ namespace System.Collections.Concurrent
             return _wrapped.TryUpdate(key, newValue, comparisonValue);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Use AddNew instead")]
         void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
         {
             if (ReferenceEquals(key, null))
@@ -369,6 +375,7 @@ namespace System.Collections.Concurrent
             _wrapped.AddNew(key, value);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Use AddNew instead")]
         void IDictionary.Add(object key, object value)
         {
             if (ReferenceEquals(key, null))
@@ -384,6 +391,7 @@ namespace System.Collections.Concurrent
             throw new ArgumentException();
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Use AddNew instead")]
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
         {
             if (ReferenceEquals(item.Key, null))
@@ -407,6 +415,7 @@ namespace System.Collections.Concurrent
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Use ContainsKey instead")]
         bool IDictionary.Contains(object key)
         {
             if (ReferenceEquals(key, null))
@@ -422,6 +431,7 @@ namespace System.Collections.Concurrent
             return false;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Use TryGet and Equals instead")]
         bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
         {
             if (ReferenceEquals(item.Key, null))
@@ -442,6 +452,7 @@ namespace System.Collections.Concurrent
             return false;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Microsoft's Design")]
         void ICollection<KeyValuePair<TKey, TValue>>.CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
             // This should be an snaptshot operation
@@ -449,6 +460,7 @@ namespace System.Collections.Concurrent
             this.CopyTo(array, arrayIndex);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Microsoft's Design")]
         void ICollection.CopyTo(Array array, int index)
         {
             // WORST API EVER - I shouldn't be supporting this
@@ -508,6 +520,7 @@ namespace System.Collections.Concurrent
             return GetEnumerator();
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Call TryRemove instead")]
         void IDictionary.Remove(object key)
         {
             if (ReferenceEquals(key, null))
@@ -522,6 +535,7 @@ namespace System.Collections.Concurrent
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Microsoft's Design")]
         bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
         {
             if (ReferenceEquals(item.Key, null))
@@ -535,14 +549,11 @@ namespace System.Collections.Concurrent
             return _wrapped.Remove(item.Key, input => EqualityComparer<TValue>.Default.Equals(item.Value, item.Value), out found);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Call TryRemove instead")]
         bool IDictionary<TKey, TValue>.Remove(TKey key)
         {
-            if (ReferenceEquals(key, null))
-            {
-                // ConcurrentDictionary hates null
-                throw new ArgumentNullException("key");
-            }
-            return _wrapped.Remove(key);
+            TValue bundle;
+            return TryRemove(key, out bundle);
         }
 
         private sealed class DictionaryEnumerator : IDictionaryEnumerator
