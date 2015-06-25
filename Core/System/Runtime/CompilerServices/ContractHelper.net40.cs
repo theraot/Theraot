@@ -12,6 +12,8 @@ namespace System.Runtime.CompilerServices
 {
     public static class ContractHelper
     {
+        internal const int COR_E_CODECONTRACTFAILED = unchecked((int)0x80131542);
+
         public static void TriggerFailure(ContractFailureKind kind, string displayMessage, string userMessage, string conditionText, Exception innerException)
         {
             throw new NotImplementedException();

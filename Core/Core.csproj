@@ -662,6 +662,7 @@
     <Compile Include="System\Diagnostics\Contracts\PureAttribute.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\ContractHelper.net40.cs" />
     <Compile Include="System\Diagnostics\Contracts\Internal\ContractHelper.net35.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractException.net35.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
