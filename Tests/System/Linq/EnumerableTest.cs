@@ -366,6 +366,7 @@ namespace MonoTests.System.Linq
         }
 
         [Test]
+        [Category("NotDotNet")] // Mirosoft is failing at this, from .NET 3.5 on :/
         public void TestAverageOverflowOnInt64()
         {
             var x = new long[] { Int64.MaxValue, Int64.MaxValue };
