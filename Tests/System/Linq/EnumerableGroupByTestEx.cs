@@ -28,6 +28,20 @@ namespace MonoTests.System.Linq
         }
 
         [Test]
+        public void GroupByIsDeferedToGetEnumerator()
+        {
+            var _src = new IterateAndCount(10);
+            var a = _src.GroupBy(i => i > 5, null);
+            Assert.AreEqual(_src.Total, 0);
+            using (var enumerator = a.GetEnumerator())
+            {
+                // This is a shame, GroupBy is not really deffered
+                Assert.AreEqual(_src.Total, 10);
+            }
+            Assert.AreEqual(_src.Total, 10);
+        }
+
+        [Test]
         public void GroupByOverloadA()
         {
             var _src = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
