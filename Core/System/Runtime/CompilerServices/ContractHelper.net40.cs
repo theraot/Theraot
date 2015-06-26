@@ -181,11 +181,7 @@ namespace System.Runtime.CompilerServices
                         // {
                         //     innerException = eventArgs.thrownDuringHandler;
                         // }
-#if NET40
-                        throw new ContractExceptionNew(failureKind, displayMessage, userMessage, conditionText, innerException);
-#else
                         throw new ContractException(failureKind, displayMessage, userMessage, conditionText, innerException);
-#endif
                     }
                 }
             }
@@ -216,11 +212,7 @@ namespace System.Runtime.CompilerServices
         {
             if (!Environment.UserInteractive)
             {
-#if NET40
-                throw new ContractExceptionNew(kind, displayMessage, userMessage, conditionText, innerException);
-#else
                 throw new ContractException(kind, displayMessage, userMessage, conditionText, innerException);
-#endif
             }
             ContractHelperEx.Fail(displayMessage);
         }
