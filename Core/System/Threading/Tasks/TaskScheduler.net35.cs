@@ -173,7 +173,7 @@ namespace System.Threading.Tasks
                 {
                     lock (_locker)
                     {
-                        Monitor.Pulse(_locker);
+                        Monitor.PulseAll(_locker);
                     }
                 }
             }
@@ -222,7 +222,7 @@ namespace System.Threading.Tasks
                 {
                     lock (_locker)
                     {
-                        Monitor.Pulse(_locker);
+                        Monitor.PulseAll(_locker);
                     }
                 }
             }
