@@ -1,4 +1,5 @@
 #if FAT
+#if NET20 || NET30 || NET35
 
 using System.Collections.Generic;
 using Theraot.Collections.ThreadSafe;
@@ -407,4 +408,5 @@ namespace System.Threading.Tasks
     }
 }
 
+#endif
 #endif

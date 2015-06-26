@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Threading;
-using System.Threading.Tasks;
 using Theraot.Collections.ThreadSafe;
+
+#if FAT && (NET20 || NET30 || NET35)
+using System.Threading.Tasks;
+#endif
 
 namespace Theraot.Threading
 {
@@ -10,13 +13,13 @@ namespace Theraot.Threading
         private static class Internal
         {
             private static readonly WeakDelegateCollection _collectedEventHandlers;
-#if FAT
+#if FAT && (NET20 || NET30 || NET35)
             private static readonly Task _task;
 #endif
 
             static Internal()
             {
-#if FAT
+#if FAT && (NET20 || NET30 || NET35)
                 _task = TaskScheduler.Default.AddWork(RaiseCollected);
 #endif
                 _collectedEventHandlers = new WeakDelegateCollection(false, false, INT_MaxProbingHint);
@@ -32,7 +35,7 @@ namespace Theraot.Threading
 
             public static void Invoke()
             {
-#if FAT
+#if FAT && (NET20 || NET30 || NET35)
                 _task.Restart();
 #else
                 ThreadPool.QueueUserWorkItem(_ => RaiseCollected());

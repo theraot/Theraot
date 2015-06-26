@@ -1,4 +1,5 @@
 #if FAT
+#if NET20 || NET30 || NET35
 
 using Theraot.Core;
 using Theraot.Threading;
@@ -328,4 +329,5 @@ namespace System.Threading.Tasks
     }
 }
 
+#endif
 #endif
