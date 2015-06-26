@@ -30,7 +30,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public AggregateException Exception
+        public Exception Exception
         {
             get
             {

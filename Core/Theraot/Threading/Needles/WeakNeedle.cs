@@ -43,7 +43,7 @@ namespace Theraot.Threading.Needles
             _hashCode = NeedleHelper.GetNextHashCode();
         }
 
-        public AggregateException Exception
+        public Exception Exception
         {
             get
             {

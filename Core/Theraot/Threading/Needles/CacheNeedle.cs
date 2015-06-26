@@ -108,7 +108,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        AggregateException IPromise.Exception
+        Exception IPromise.Exception
         {
             get
             {

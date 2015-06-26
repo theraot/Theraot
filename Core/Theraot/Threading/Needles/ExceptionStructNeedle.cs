@@ -7,14 +7,14 @@ namespace Theraot.Threading.Needles
     [global::System.Diagnostics.DebuggerNonUserCode]
     public struct ExceptionStructNeedle<T> : INeedle<T>, IEquatable<ExceptionStructNeedle<T>>
     {
-        private readonly AggregateException _exception;
+        private readonly Exception _exception;
 
         public ExceptionStructNeedle(Exception exception)
         {
-            _exception = new AggregateException (exception);
+            _exception = exception;
         }
 
-        public AggregateException Exception
+        public Exception Exception
         {
             get
             {

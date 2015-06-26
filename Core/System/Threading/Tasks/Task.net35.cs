@@ -7,7 +7,7 @@ using Theraot.Threading.Needles;
 
 namespace System.Threading.Tasks
 {
-    public sealed class Task : IPromise
+    public sealed class Task
     {
         [ThreadStatic]
         private static Task _current;

@@ -39,7 +39,7 @@ namespace Theraot.Threading.Needles
             promised = _promised;
         }
 
-        public AggregateException Exception
+        public Exception Exception
         {
             get
             {
@@ -90,7 +90,7 @@ namespace Theraot.Threading.Needles
         public sealed class Promised : IEquatable<Promised>, IObserver<object>
         {
             private readonly int _hashCode;
-            private AggregateException _exception;
+            private Exception _exception;
             private int _isCompleted;
             private StructNeedle<ManualResetEvent> _waitHandle;
 
@@ -102,7 +102,7 @@ namespace Theraot.Threading.Needles
 
             public Promised(Exception exception)
             {
-                _exception = new AggregateException(exception);
+                _exception = exception;
                 _hashCode = exception.GetHashCode();
                 Thread.VolatileWrite(ref _isCompleted, 1);
                 _waitHandle = new ManualResetEvent(true);
@@ -118,7 +118,7 @@ namespace Theraot.Threading.Needles
                 _waitHandle.Value = null;
             }
 
-            public AggregateException Exception
+            public Exception Exception
             {
                 get
                 {
@@ -202,7 +202,7 @@ namespace Theraot.Threading.Needles
 
             public void OnError(Exception error)
             {
-                _exception = ReferenceEquals(_exception, null) ? new AggregateException(error) : (new AggregateException(error, _exception)).Flatten();
+                _exception = ReferenceEquals(_exception, null) ? error : (new AggregateException(error, _exception)).Flatten();
                 Thread.VolatileWrite(ref _isCompleted, 1);
                 _waitHandle.Value.Set();
             }

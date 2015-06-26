@@ -5,7 +5,7 @@ namespace Theraot.Threading.Needles
 {
     public interface IPromise
     {
-        AggregateException Exception
+        Exception Exception
         {
             get;
         }
