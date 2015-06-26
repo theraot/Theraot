@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if FAT
+
+using System;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Collections.ThreadSafe
@@ -64,3 +66,5 @@ namespace Theraot.Collections.ThreadSafe
         }
     }
 }
+
+#endif

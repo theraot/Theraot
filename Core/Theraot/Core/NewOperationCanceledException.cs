@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Needed for NET35
+
+using System;
 
 #if NET20 || NET30 || NET35
 

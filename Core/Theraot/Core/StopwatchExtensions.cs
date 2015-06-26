@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿// Needed for Workaround
+
+using System.Diagnostics;
 
 namespace Theraot.Core
 {

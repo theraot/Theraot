@@ -1,4 +1,6 @@
-﻿namespace Theraot.Threading
+﻿#if FAT
+
+namespace Theraot.Threading
 {
     public static partial class ThreadingHelper
     {
@@ -22,3 +24,5 @@
         }
     }
 }
+
+#endif

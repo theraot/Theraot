@@ -19,6 +19,8 @@
 // Authors:
 //    Alejandro Serrano "Serras" (trupill@yahoo.es)
 
+#if FAT
+
 using System.Collections;
 using System.Collections.Generic;
 
@@ -58,3 +60,5 @@ namespace System.Linq
         }
     }
 }
+
+#endif

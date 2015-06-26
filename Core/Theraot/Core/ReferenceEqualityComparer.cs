@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#if FAT
+
+using System.Collections.Generic;
 
 namespace Theraot.Core
 {
@@ -30,3 +32,5 @@ namespace Theraot.Core
         }
     }
 }
+
+#endif

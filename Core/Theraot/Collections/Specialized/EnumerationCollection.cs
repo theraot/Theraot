@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Needed for NET30
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Theraot.Core;

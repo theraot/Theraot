@@ -1,3 +1,5 @@
+// Needed for NET30
+
 using System.Collections.Generic;
 using Theraot.Collections.ThreadSafe;
 

@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿#if FAT
+
+using NUnit.Framework;
 using System;
 using System.Threading;
 using Theraot.Threading.Needles;
@@ -308,3 +310,5 @@ namespace Tests.Theraot.Threading.Needles
         }
     }
 }
+
+#endif

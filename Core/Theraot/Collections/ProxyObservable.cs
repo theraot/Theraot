@@ -1,3 +1,5 @@
+// Needed for NET40
+
 using System;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Threading;

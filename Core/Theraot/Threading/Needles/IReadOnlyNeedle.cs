@@ -1,4 +1,6 @@
-﻿namespace Theraot.Threading.Needles
+﻿// Needed for NET40
+
+namespace Theraot.Threading.Needles
 {
     public interface IReadOnlyNeedle<out T>
     {

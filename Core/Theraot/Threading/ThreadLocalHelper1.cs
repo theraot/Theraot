@@ -1,3 +1,5 @@
+// Needed for NET35
+
 using Theraot.Threading.Needles;
 
 namespace Theraot.Threading

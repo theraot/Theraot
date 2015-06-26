@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿// Needed for NET40
+
+using System.Collections.Generic;
 
 using Theraot.Core;
 

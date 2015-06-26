@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Needed for Workaround
+
+using System;
 using System.Threading;
 using Theraot.Collections.ThreadSafe;
 

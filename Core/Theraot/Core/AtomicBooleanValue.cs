@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#if FAT
+
 using System.Runtime.CompilerServices;
 
 namespace System.Threading
@@ -107,3 +109,5 @@ namespace System.Threading
         }
     }
 }
+
+#endif

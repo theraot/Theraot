@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+// Needed for NET30
+
 using System.Runtime.CompilerServices;
 
 namespace System.Threading
