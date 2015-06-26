@@ -54,6 +54,8 @@
     <Compile Include="System\Collections\Concurrent\ConcurrentDictionaryTestsEx.cs" />
     <Compile Include="System\Collections\Concurrent\ConcurrentDictionaryTests.cs" />
     <Compile Include="System\Collections\ObjectModel\ObservableCollectionTest.cs" />
+    <Compile Include="System\Diagnostics\Contracts\AssertTests.cs" />
+    <Compile Include="System\Diagnostics\Contracts\Utilities.cs" />
     <Compile Include="System\Linq\LookupTestEx.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTest.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTest_Add.cs" />
