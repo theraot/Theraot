@@ -36,7 +36,11 @@ namespace System.Diagnostics.Contracts.Tests
             using (Utilities.WithContractFailed(handler))
             {
                 Contract.Assert(false);
+#if DEBUG
                 NUnit.Framework.Assert.True(eventRaised, "ContractFailed event not raised");
+#else
+                NUnit.Framework.Assert.False(eventRaised, "ContractFailed event not raised");
+#endif
             }
         }
 
