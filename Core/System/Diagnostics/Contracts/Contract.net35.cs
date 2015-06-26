@@ -7,6 +7,8 @@
 // ==--==
 
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.ConstrainedExecution;
 using System.Security;
 using System.Security.Permissions;
@@ -15,6 +17,9 @@ namespace System.Diagnostics.Contracts
 {
     public static class Contract
     {
+        [ThreadStatic]
+        private static bool _assertingMustUseRewriter;
+
         /// <summary>
         /// Allows a managed application environment such as an interactive interpreter (IronPython)
         /// to be notified of contract failures and 
@@ -27,13 +32,13 @@ namespace System.Diagnostics.Contracts
         public static event EventHandler<ContractFailedEventArgs> ContractFailed
         {
             [SecurityCritical]
-            [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
+            // [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
             add
             {
                 System.Runtime.CompilerServices.ContractHelper.InternalContractFailed += value;
             }
             [SecurityCritical]
-            [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
+            // [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
             remove
             {
                 System.Runtime.CompilerServices.ContractHelper.InternalContractFailed -= value;
@@ -92,6 +97,116 @@ namespace System.Diagnostics.Contracts
             if (displayMessage == null) return;
 
             System.Runtime.CompilerServices.ContractHelper.TriggerFailure(failureKind, displayMessage, userMessage, conditionText, innerException);
+        }
+
+        /// <summary>
+        /// Specifies a contract such that the expression <paramref name="condition"/> must be true before the enclosing method or property is invoked.
+        /// </summary>
+        /// <param name="condition">Boolean expression representing the contract.</param>
+        /// <remarks>
+        /// This call must happen at the beginning of a method or property before any other code.
+        /// This contract is exposed to clients so must only reference members at least as visible as the enclosing method.
+        /// Use this form when backward compatibility does not force you to throw a particular exception.
+        /// </remarks>
+        [Pure]
+        [Conditional("CONTRACTS_FULL")]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+        public static void Requires(bool condition)
+        {
+            AssertMustUseRewriter(ContractFailureKind.Precondition, "Requires");
+        }
+
+        /// <summary>
+        /// Specifies a contract such that the expression <paramref name="condition"/> must be true before the enclosing method or property is invoked.
+        /// </summary>
+        /// <param name="condition">Boolean expression representing the contract.</param>
+        /// <param name="userMessage">If it is not a constant string literal, then the contract may not be understood by tools.</param>
+        /// <remarks>
+        /// This call must happen at the beginning of a method or property before any other code.
+        /// This contract is exposed to clients so must only reference members at least as visible as the enclosing method.
+        /// Use this form when backward compatibility does not force you to throw a particular exception.
+        /// </remarks>
+        [Pure]
+        [Conditional("CONTRACTS_FULL")]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+        public static void Requires(bool condition, String userMessage)
+        {
+            AssertMustUseRewriter(ContractFailureKind.Precondition, "Requires");
+        }
+
+        /// <summary>
+        /// Specifies a contract such that the expression <paramref name="condition"/> must be true before the enclosing method or property is invoked.
+        /// </summary>
+        /// <param name="condition">Boolean expression representing the contract.</param>
+        /// <remarks>
+        /// This call must happen at the beginning of a method or property before any other code.
+        /// This contract is exposed to clients so must only reference members at least as visible as the enclosing method.
+        /// Use this form when you want to throw a particular exception.
+        /// </remarks>
+        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "condition")]
+        [SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        [Pure]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+        public static void Requires<TException>(bool condition) where TException : Exception
+        {
+            AssertMustUseRewriter(ContractFailureKind.Precondition, "Requires<TException>");
+        }
+
+        /// <summary>
+        /// Specifies a contract such that the expression <paramref name="condition"/> must be true before the enclosing method or property is invoked.
+        /// </summary>
+        /// <param name="condition">Boolean expression representing the contract.</param>
+        /// <param name="userMessage">If it is not a constant string literal, then the contract may not be understood by tools.</param>
+        /// <remarks>
+        /// This call must happen at the beginning of a method or property before any other code.
+        /// This contract is exposed to clients so must only reference members at least as visible as the enclosing method.
+        /// Use this form when you want to throw a particular exception.
+        /// </remarks>
+        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "userMessage")]
+        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "condition")]
+        [SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        [Pure]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+        public static void Requires<TException>(bool condition, String userMessage) where TException : Exception
+        {
+            AssertMustUseRewriter(ContractFailureKind.Precondition, "Requires<TException>");
+        }
+
+        /// <summary>
+        /// This method is used internally to trigger a failure indicating to the "programmer" that he is using the interface incorrectly.
+        /// It is NEVER used to indicate failure of actual contracts at runtime.
+        /// </summary>
+        [SecuritySafeCritical]
+        static void AssertMustUseRewriter(ContractFailureKind kind, String contractKind)
+        {
+            if (_assertingMustUseRewriter)
+            {
+                ContractHelperEx.Fail("Asserting that we must use the rewriter went reentrant."); // Didn't rewrite this mscorlib?
+            }
+            _assertingMustUseRewriter = true;
+
+            // For better diagnostics, report which assembly is at fault.  Walk up stack and
+            // find the first non-mscorlib assembly.
+            Assembly thisAssembly = typeof(Contract).Assembly;  // In case we refactor mscorlib, use Contract class instead of Object.
+            StackTrace stack = new StackTrace();
+            Assembly probablyNotRewritten = null;
+            for (int i = 0; i < stack.FrameCount; i++)
+            {
+                Assembly caller = stack.GetFrame(i).GetMethod().DeclaringType.Assembly;
+                if (caller != thisAssembly)
+                {
+                    probablyNotRewritten = caller;
+                    break;
+                }
+            }
+
+            if (probablyNotRewritten == null)
+            {
+                probablyNotRewritten = thisAssembly;
+            }
+            var simpleName = probablyNotRewritten.GetName().Name;
+            ContractHelper.TriggerFailure(kind, string.Format("The code has not been rewriten. ContractKind: {0} - Source: {1}", contractKind, simpleName), null, null, null);
+            _assertingMustUseRewriter = false;
         }
 
         /// <summary>

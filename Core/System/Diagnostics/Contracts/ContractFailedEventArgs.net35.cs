@@ -21,8 +21,7 @@ namespace System.Diagnostics.Contracts
 
         public ContractFailedEventArgs(ContractFailureKind failureKind, String message, String condition, Exception originalException)
         {
-            // TODO: Contract.Requires
-            // Contract.Requires(originalException == null || failureKind == ContractFailureKind.PostconditionOnException);
+            Contract.Requires(originalException == null || failureKind == ContractFailureKind.PostconditionOnException);
             _failureKind = failureKind;
             _message = message;
             _condition = condition;

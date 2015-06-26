@@ -168,7 +168,7 @@ namespace System.Runtime.CompilerServices
                         {
                             handler(null, eventArgs);
                         }
-                        catch (Exception e)
+                        catch (Exception /*e*/)
                         {
                             // eventArgs.thrownDuringHandler = e;
                             eventArgs.SetUnwind();
