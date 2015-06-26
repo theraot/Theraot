@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿#if FAT && (NET20 || NET30 || NET35)
+
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -214,3 +216,5 @@ namespace Tests.Theraot.Threading.Needles
         }
     }
 }
+
+#endif
