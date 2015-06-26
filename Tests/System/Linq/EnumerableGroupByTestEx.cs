@@ -1,8 +1,8 @@
-﻿using NUnit.Framework;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using NUnit.Framework;
 using Theraot.Collections;
 using Theraot.Core;
 
@@ -39,6 +39,12 @@ namespace MonoTests.System.Linq
                 Assert.AreEqual(_src.Total, 10);
             }
             Assert.AreEqual(_src.Total, 10);
+            using (var enumerator = a.GetEnumerator())
+            {
+                // This is a shame, GroupBy is not really deffered
+                Assert.AreEqual(_src.Total, 20);
+            }
+            Assert.AreEqual(_src.Total, 20);
         }
 
         [Test]
