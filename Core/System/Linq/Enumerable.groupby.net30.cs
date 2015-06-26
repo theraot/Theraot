@@ -1,6 +1,8 @@
 #if NET20 || NET30
 
+using System.Collections;
 using System.Collections.Generic;
+using Theraot.Core;
 
 namespace System.Linq
 {
@@ -13,9 +15,7 @@ namespace System.Linq
 
         public static IEnumerable<IGrouping<TKey, TSource>> GroupBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer)
         {
-            LinqCheck.SourceAndKeySelector(source, keySelector);
-
-            return CreateGroupByIterator(source, keySelector, comparer);
+            return new GroupedEnumerable<TSource, TKey, TSource>(source, keySelector, FuncHelper.GetIdentityFunc<TSource>(), comparer);
         }
 
         public static IEnumerable<IGrouping<TKey, TElement>> GroupBy<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector)
@@ -49,135 +49,81 @@ namespace System.Linq
 
         public static IEnumerable<TResult> GroupBy<TSource, TKey, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TKey, IEnumerable<TSource>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
         {
-            LinqCheck.SourceAndKeyResultSelectors(source, keySelector, resultSelector);
-
-            return CreateGroupByIterator(source, keySelector, resultSelector, comparer);
-        }
-
-        private static IEnumerable<IGrouping<TKey, TSource>> CreateGroupByIterator<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer)
-        {
-            var groups = new Dictionary<TKey, List<TSource>>(comparer);
-            var nullList = new List<TSource>();
-            int counter = 0;
-            int nullCounter = -1;
-
-            foreach (TSource element in source)
-            {
-                TKey key = keySelector(element);
-                if (ReferenceEquals(key, null))
-                {
-                    nullList.Add(element);
-                    if (nullCounter == -1)
-                    {
-                        nullCounter = counter;
-                        counter++;
-                    }
-                }
-                else
-                {
-                    List<TSource> group;
-                    if (!groups.TryGetValue(key, out group))
-                    {
-                        group = new List<TSource>();
-                        groups.Add(key, group);
-                        counter++;
-                    }
-                    group.Add(element);
-                }
-            }
-
-            counter = 0;
-            foreach (var group in groups)
-            {
-                if (counter == nullCounter)
-                {
-                    yield return new Grouping<TKey, TSource>(default(TKey), nullList);
-                    counter++;
-                }
-
-                yield return new Grouping<TKey, TSource>(group.Key, group.Value);
-                counter++;
-            }
-
-            if (counter == nullCounter)
-            {
-                yield return new Grouping<TKey, TSource>(default(TKey), nullList);
-                // counter++;
-            }
+            return new GroupedEnumerable<TSource, TKey, TSource, TResult>(source, keySelector, FuncHelper.GetIdentityFunc<TSource>(), resultSelector, comparer);
         }
 
         private static IEnumerable<IGrouping<TKey, TElement>> CreateGroupByIterator<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer)
         {
-            var groups = new Dictionary<TKey, List<TElement>>(comparer);
-            var nullList = new List<TElement>();
-            int counter = 0;
-            int nullCounter = -1;
-
-            foreach (TSource item in source)
-            {
-                TKey key = keySelector(item);
-                TElement element = elementSelector(item);
-                if (ReferenceEquals(key, null))
-                {
-                    nullList.Add(element);
-                    if (nullCounter == -1)
-                    {
-                        nullCounter = counter;
-                        counter++;
-                    }
-                }
-                else
-                {
-                    List<TElement> group;
-                    if (!groups.TryGetValue(key, out group))
-                    {
-                        group = new List<TElement>();
-                        groups.Add(key, group);
-                        counter++;
-                    }
-                    group.Add(element);
-                }
-            }
-
-            counter = 0;
-            foreach (var group in groups)
-            {
-                if (counter == nullCounter)
-                {
-                    yield return new Grouping<TKey, TElement>(default(TKey), nullList);
-                    counter++;
-                }
-
-                yield return new Grouping<TKey, TElement>(group.Key, group.Value);
-                counter++;
-            }
-
-            if (counter == nullCounter)
-            {
-                yield return new Grouping<TKey, TElement>(default(TKey), nullList);
-                // counter++;
-            }
+            return new GroupedEnumerable<TSource, TKey, TElement>(source, keySelector, elementSelector, comparer) as IEnumerable<IGrouping<TKey, TElement>>;
         }
 
         private static IEnumerable<TResult> CreateGroupByIterator<TSource, TKey, TElement, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, Func<TKey, IEnumerable<TElement>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
         {
-            IEnumerable<IGrouping<TKey, TElement>> groups = GroupBy(source, keySelector, elementSelector, comparer);
-
-            foreach (IGrouping<TKey, TElement> group in groups)
-            {
-                yield return resultSelector(group.Key, group);
-            }
+            return new GroupedEnumerable<TSource, TKey, TElement, TResult>(source, keySelector, elementSelector, resultSelector, comparer) as IEnumerable<TResult>;
         }
 
-        private static IEnumerable<TResult> CreateGroupByIterator<TSource, TKey, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TKey, IEnumerable<TSource>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
+        internal class GroupedEnumerable<TSource, TKey, TElement, TResult> : IEnumerable<TResult>
         {
-            IEnumerable<IGrouping<TKey, TSource>> groups = GroupBy(source, keySelector, comparer);
+            IEnumerable<TSource> source;
+            Func<TSource, TKey> keySelector;
+            Func<TSource, TElement> elementSelector;
+            IEqualityComparer<TKey> comparer;
+            Func<TKey, IEnumerable<TElement>, TResult> resultSelector;
 
-            foreach (IGrouping<TKey, TSource> group in groups)
+            public GroupedEnumerable(IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, Func<TKey, IEnumerable<TElement>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
             {
-                yield return resultSelector(group.Key, group);
+                if (source == null) throw new ArgumentNullException("source");
+                if (keySelector == null) throw new ArgumentNullException("keySelector");
+                if (elementSelector == null) throw new ArgumentNullException("elementSelector");
+                if (resultSelector == null) throw new ArgumentNullException("resultSelector");
+                this.source = source;
+                this.keySelector = keySelector;
+                this.elementSelector = elementSelector;
+                this.comparer = comparer;
+                this.resultSelector = resultSelector;
+            }
+
+            public IEnumerator<TResult> GetEnumerator()
+            {
+                Lookup<TKey, TElement> lookup = Lookup<TKey, TElement>.Create<TSource>(source, keySelector, elementSelector, comparer);
+                return lookup.ApplyResultSelector(resultSelector).GetEnumerator();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
             }
         }
+
+        internal class GroupedEnumerable<TSource, TKey, TElement> : IEnumerable<IGrouping<TKey, TElement>>
+        {
+            IEnumerable<TSource> source;
+            Func<TSource, TKey> keySelector;
+            Func<TSource, TElement> elementSelector;
+            IEqualityComparer<TKey> comparer;
+
+            public GroupedEnumerable(IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer)
+            {
+                if (source == null) throw new ArgumentNullException("source");
+                if (keySelector == null) throw new ArgumentNullException("keySelector");
+                if (elementSelector == null) throw new ArgumentNullException("elementSelector");
+                this.source = source;
+                this.keySelector = keySelector;
+                this.elementSelector = elementSelector;
+                this.comparer = comparer;
+            }
+
+            public IEnumerator<IGrouping<TKey, TElement>> GetEnumerator()
+            {
+                return Lookup<TKey, TElement>.Create<TSource>(source, keySelector, elementSelector, comparer).GetEnumerator();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+        }
+
     }
 }
 

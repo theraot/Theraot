@@ -128,27 +128,27 @@ namespace Theraot.Collections
 
         public static ProgressiveLookup<TKey, TItem> Create(IEnumerable<TItem> source, Func<TItem, TKey> keySelector)
         {
-            return new ProgressiveLookup<TKey, TItem>(source.GroupBy(keySelector));
+            return new ProgressiveLookup<TKey, TItem>(source.GroupProgressiveBy(keySelector));
         }
 
         public static ProgressiveLookup<TKey, TItem> Create(IEnumerable<TItem> source, Func<TItem, TKey> keySelector, IEqualityComparer<TKey> keyComparer)
         {
-            return new ProgressiveLookup<TKey, TItem>(source.GroupBy(keySelector, keyComparer), keyComparer);
+            return new ProgressiveLookup<TKey, TItem>(source.GroupProgressiveBy(keySelector, keyComparer), keyComparer);
         }
 
         public static ProgressiveLookup<TKey, TItem> Create<TSource>(IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TItem> elementSelector, IEqualityComparer<TKey> keyComparer)
         {
-            return new ProgressiveLookup<TKey, TItem>(source.GroupBy(keySelector, elementSelector, keyComparer), keyComparer);
+            return new ProgressiveLookup<TKey, TItem>(source.GroupProgressiveBy(keySelector, elementSelector, keyComparer), keyComparer);
         }
 
         public static ProgressiveLookup<TKey, TItem> Create(IEnumerable<KeyValuePair<TKey, TItem>> source)
         {
-            return new ProgressiveLookup<TKey, TItem>(source.GroupBy(item => item.Key, item => item.Value));
+            return new ProgressiveLookup<TKey, TItem>(source.GroupProgressiveBy(item => item.Key, item => item.Value));
         }
 
         public static ProgressiveLookup<TKey, TItem> Create(IEnumerable<KeyValuePair<TKey, TItem>> source, IEqualityComparer<TKey> keyComparer)
         {
-            return new ProgressiveLookup<TKey, TItem>(source.GroupBy(item => item.Key, item => item.Value, keyComparer), keyComparer);
+            return new ProgressiveLookup<TKey, TItem>(source.GroupProgressiveBy(item => item.Key, item => item.Value, keyComparer), keyComparer);
         }
 
         public bool Contains(TKey key)
