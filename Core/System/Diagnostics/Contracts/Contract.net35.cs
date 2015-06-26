@@ -173,6 +173,41 @@ namespace System.Diagnostics.Contracts
         }
 
         /// <summary>
+        /// Specifies a contract such that the expression <paramref name="condition"/> will be true after every method or property on the enclosing class.
+        /// </summary>
+        /// <param name="condition">Boolean expression representing the contract.</param>
+        /// <remarks>
+        /// This contact can only be specified in a dedicated invariant method declared on a class.
+        /// This contract is not exposed to clients so may reference members less visible as the enclosing method.
+        /// The contract rewriter must be used for runtime enforcement of this invariant.
+        /// </remarks>
+        [Pure]
+        [Conditional("CONTRACTS_FULL")]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+        public static void Invariant(bool condition)
+        {
+            AssertMustUseRewriter(ContractFailureKind.Invariant, "Invariant");
+        }
+
+        /// <summary>
+        /// Specifies a contract such that the expression <paramref name="condition"/> will be true after every method or property on the enclosing class.
+        /// </summary>
+        /// <param name="condition">Boolean expression representing the contract.</param>
+        /// <param name="userMessage">If it is not a constant string literal, then the contract may not be understood by tools.</param>
+        /// <remarks>
+        /// This contact can only be specified in a dedicated invariant method declared on a class.
+        /// This contract is not exposed to clients so may reference members less visible as the enclosing method.
+        /// The contract rewriter must be used for runtime enforcement of this invariant.
+        /// </remarks>
+        [Pure]
+        [Conditional("CONTRACTS_FULL")]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+        public static void Invariant(bool condition, String userMessage)
+        {
+            AssertMustUseRewriter(ContractFailureKind.Invariant, "Invariant");
+        }
+
+        /// <summary>
         /// This method is used internally to trigger a failure indicating to the "programmer" that he is using the interface incorrectly.
         /// It is NEVER used to indicate failure of actual contracts at runtime.
         /// </summary>
