@@ -1,3 +1,5 @@
+// Needed for NET35
+
 using System;
 
 namespace Theraot.Threading

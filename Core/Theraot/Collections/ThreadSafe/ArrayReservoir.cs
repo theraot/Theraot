@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Needed for NET40
+
+using System;
 using System.Threading;
 using Theraot.Core;
 

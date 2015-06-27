@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿#if FAT
+
+using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -135,3 +137,5 @@ namespace Tests.Theraot.Collections
         }
     }
 }
+
+#endif

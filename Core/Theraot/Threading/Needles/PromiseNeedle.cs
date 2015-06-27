@@ -1,3 +1,5 @@
+// Needed for Workaround
+
 using System;
 using System.Threading;
 
@@ -39,11 +41,11 @@ namespace Theraot.Threading.Needles
             promised = _promised;
         }
 
-        public Exception Error
+        public Exception Exception
         {
             get
             {
-                return _promised.Error;
+                return _promised.Exception;
             }
         }
 
@@ -90,7 +92,7 @@ namespace Theraot.Threading.Needles
         public sealed class Promised : IEquatable<Promised>, IObserver<object>
         {
             private readonly int _hashCode;
-            private Exception _error;
+            private Exception _exception;
             private int _isCompleted;
             private StructNeedle<ManualResetEvent> _waitHandle;
 
@@ -100,10 +102,10 @@ namespace Theraot.Threading.Needles
                 _waitHandle = new ManualResetEvent(false);
             }
 
-            public Promised(Exception error)
+            public Promised(Exception exception)
             {
-                _error = error;
-                _hashCode = error.GetHashCode();
+                _exception = exception;
+                _hashCode = exception.GetHashCode();
                 Thread.VolatileWrite(ref _isCompleted, 1);
                 _waitHandle = new ManualResetEvent(true);
             }
@@ -118,12 +120,12 @@ namespace Theraot.Threading.Needles
                 _waitHandle.Value = null;
             }
 
-            public Exception Error
+            public Exception Exception
             {
                 get
                 {
                     Wait();
-                    return _error;
+                    return _exception;
                 }
             }
 
@@ -147,7 +149,7 @@ namespace Theraot.Threading.Needles
             {
                 get
                 {
-                    return !ReferenceEquals(_error, null);
+                    return !ReferenceEquals(_exception, null);
                 }
             }
 
@@ -157,13 +159,13 @@ namespace Theraot.Threading.Needles
                 {
                     if (other.IsCompleted)
                     {
-                        if (ReferenceEquals(_error, null))
+                        if (ReferenceEquals(_exception, null))
                         {
-                            return ReferenceEquals(other._error, null);
+                            return ReferenceEquals(other._exception, null);
                         }
                         else
                         {
-                            return !ReferenceEquals(other._error, null);
+                            return !ReferenceEquals(other._exception, null);
                         }
                     }
                     else
@@ -195,14 +197,14 @@ namespace Theraot.Threading.Needles
 
             public void OnCompleted()
             {
-                _error = null;
+                _exception = null;
                 Thread.VolatileWrite(ref _isCompleted, 1);
                 _waitHandle.Value.Set();
             }
 
             public void OnError(Exception error)
             {
-                _error = error;
+                _exception = ReferenceEquals(_exception, null) ? error : (new AggregateException(error, _exception)).Flatten();
                 Thread.VolatileWrite(ref _isCompleted, 1);
                 _waitHandle.Value.Set();
             }
@@ -211,13 +213,13 @@ namespace Theraot.Threading.Needles
             {
                 if (IsCompleted)
                 {
-                    if (ReferenceEquals(_error, null))
+                    if (ReferenceEquals(_exception, null))
                     {
                         return "[Done]";
                     }
                     else
                     {
-                        return _error.ToString();
+                        return _exception.ToString();
                     }
                 }
                 else

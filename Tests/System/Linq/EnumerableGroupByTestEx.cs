@@ -1,8 +1,8 @@
-﻿using NUnit.Framework;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using NUnit.Framework;
 using Theraot.Collections;
 using Theraot.Core;
 
@@ -25,6 +25,26 @@ namespace MonoTests.System.Linq
             c.Consume();
             d.Consume();
             Assert.AreEqual(_src.Total, 40);
+        }
+
+        [Test]
+        public void GroupByIsDeferedToGetEnumerator()
+        {
+            var _src = new IterateAndCount(10);
+            var a = _src.GroupBy(i => i > 5, null);
+            Assert.AreEqual(_src.Total, 0);
+            using (var enumerator = a.GetEnumerator())
+            {
+                // This is a shame, GroupBy is not really deffered
+                Assert.AreEqual(_src.Total, 10);
+            }
+            Assert.AreEqual(_src.Total, 10);
+            using (var enumerator = a.GetEnumerator())
+            {
+                // This is a shame, GroupBy is not really deffered
+                Assert.AreEqual(_src.Total, 20);
+            }
+            Assert.AreEqual(_src.Total, 20);
         }
 
         [Test]

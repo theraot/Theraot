@@ -1,3 +1,5 @@
+// Needed for NET40
+
 using System;
 using System.Threading;
 using Theraot.Core;
@@ -30,13 +32,13 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public Exception Error
+        public Exception Exception
         {
             get
             {
                 if (_target is ExceptionStructNeedle<T>)
                 {
-                    return ((ExceptionStructNeedle<T>)_target).Error;
+                    return ((ExceptionStructNeedle<T>)_target).Exception;
                 }
                 return null;
             }

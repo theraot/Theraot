@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿#if FAT && (NET20 || NET30 || NET35)
+
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,7 +24,8 @@ namespace Tests.Theraot.Threading.Needles
                 {
                     for (int i = 0; i < ce.InitialCount; ++i)
                     {
-                        TaskScheduler.Default.AddWork(delegate{
+                        TaskScheduler.Default.AddWork(delegate
+                        {
                             ce.Signal();
                         }).Start();
                     }
@@ -88,6 +91,7 @@ namespace Tests.Theraot.Threading.Needles
         [Test]
         public void ManualResetEventSlim_Wait_SetConcurrent()
         {
+            // TODO review
             for (int i = 0; i < 10000; ++i)
             {
                 var mre = new ManualResetEventSlim();
@@ -107,26 +111,37 @@ namespace Tests.Theraot.Threading.Needles
                 Assert.IsTrue(b, i.ToString());
             }
         }
+
         [Test]
         public void Progressor_ThreadedUse()
         {
-            var source = new Progressor<int>(new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }).AsEnumerable();
+            // TODO review
+            var source = new Progressor<int>(new List<int>
+            {
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9
+            }).AsEnumerable();
             var handle = new ManualResetEvent(false);
             int[] count = { 0, 0, 0 };
-            var work = new Action
-                (
-                    () =>
-                    {
-                        Interlocked.Increment(ref count[0]);
-                        handle.WaitOne();
-                        foreach (var item in source)
-                        {
-                            GC.KeepAlive(item);
-                            Interlocked.Increment(ref count[2]);
-                        }
-                        Interlocked.Increment(ref count[1]);
-                    }
-                );
+            Action work = () =>
+            {
+                Interlocked.Increment(ref count[0]);
+                handle.WaitOne();
+                foreach (var item in source)
+                {
+                    GC.KeepAlive(item);
+                    Interlocked.Increment(ref count[2]);
+                }
+                Interlocked.Increment(ref count[1]);
+            };
             TaskScheduler.Default.AddWork(work).Start();
             TaskScheduler.Default.AddWork(work).Start();
             while (Thread.VolatileRead(ref count[0]) != 2)
@@ -201,3 +216,5 @@ namespace Tests.Theraot.Threading.Needles
         }
     }
 }
+
+#endif

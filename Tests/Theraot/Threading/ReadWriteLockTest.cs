@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿#if FAT
+
+using NUnit.Framework;
 using System;
 using System.Threading;
 using Theraot.Threading;
@@ -1147,3 +1149,5 @@ namespace Tests.Theraot.Threading
         }
     }
 }
+
+#endif

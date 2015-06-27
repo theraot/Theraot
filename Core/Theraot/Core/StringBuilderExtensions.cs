@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿// Needed for Workadound
+
+using System.Text;
 
 namespace Theraot.Core
 {

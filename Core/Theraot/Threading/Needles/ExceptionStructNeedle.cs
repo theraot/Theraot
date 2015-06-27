@@ -1,4 +1,7 @@
+// Needed for NET40
+
 using System;
+using System.Threading;
 
 namespace Theraot.Threading.Needles
 {
@@ -13,7 +16,7 @@ namespace Theraot.Threading.Needles
             _exception = exception;
         }
 
-        public Exception Error
+        public Exception Exception
         {
             get
             {

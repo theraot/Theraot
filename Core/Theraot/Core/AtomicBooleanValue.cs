@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#if FAT
+
 using System.Runtime.CompilerServices;
 
 namespace System.Threading
@@ -42,19 +44,29 @@ namespace System.Threading
             }
         }
 
+        public static implicit operator AtomicBooleanValue(bool value)
+        {
+            return FromValue(value);
+        }
+
         public static explicit operator bool(AtomicBooleanValue atomicBooleanValue)
         {
             return atomicBooleanValue.Value;
         }
 
+        public static bool operator ==(AtomicBooleanValue left, AtomicBooleanValue right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(AtomicBooleanValue left, AtomicBooleanValue right)
+        {
+            return !left.Equals(right);
+        }
+
         public static AtomicBooleanValue FromValue(bool value)
         {
             return new AtomicBooleanValue { Value = value };
-        }
-
-        public static implicit operator AtomicBooleanValue(bool value)
-        {
-            return FromValue(value);
         }
 
         public bool CompareAndExchange(bool expected, bool newVal)
@@ -95,15 +107,7 @@ namespace System.Threading
         {
             return !Exchange(true);
         }
-
-        public static bool operator ==(AtomicBooleanValue left, AtomicBooleanValue right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(AtomicBooleanValue left, AtomicBooleanValue right)
-        {
-            return !left.Equals(right);
-        }
     }
 }
+
+#endif

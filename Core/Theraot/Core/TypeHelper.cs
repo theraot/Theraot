@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Needed for NET40
+
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices;

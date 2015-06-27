@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Needed for Workaround
+
+using System;
 
 namespace Theraot.Core
 {

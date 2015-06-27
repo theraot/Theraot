@@ -1,3 +1,5 @@
+#if FAT
+
 namespace Theraot.Collections.ThreadSafe
 {
     internal enum BucketStatus
@@ -9,3 +11,5 @@ namespace Theraot.Collections.ThreadSafe
         CopyCleanup = 4
     }
 }
+
+#endif

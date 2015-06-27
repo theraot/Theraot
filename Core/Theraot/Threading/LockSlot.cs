@@ -1,3 +1,5 @@
+#if FAT
+
 using System;
 using System.Threading;
 using Theraot.Threading.Needles;
@@ -80,3 +82,5 @@ namespace Theraot.Threading
         }
     }
 }
+
+#endif

@@ -28,8 +28,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>True</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>
-    </DefineConstants>
+    <DefineConstants>;NET20</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -236,6 +235,8 @@
     <Compile Include="System\Collections\Specialized\NotifyCollectionChangedEventArgs.net30.cs" />
     <Compile Include="System\Collections\Specialized\NotifyCollectionChangedEventHandler.net30.cs" />
     <Compile Include="System\Collections\StructuralComparisons.net35.cs" />
+    <Compile Include="System\Diagnostics\Contracts\Contract.net35.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractInvariantMethodAttribute.net35.cs" />
     <Compile Include="System\Linq\Enumerable.join.net30.cs" />
     <Compile Include="System\Linq\Enumerable.groupjoin.net30.cs" />
     <Compile Include="System\Linq\Enumerable.groupby.net30.cs" />
@@ -246,6 +247,7 @@
     <Compile Include="System\Linq\Expressions\NewExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\UnaryExpression.net30.cs" />
     <Compile Include="System\Numerics\BigInteger.net35.cs" />
+    <Compile Include="System\Numerics\NumericsHelpers.cs" />
     <Compile Include="System\Threading\CancellationToken.net35.cs" />
     <Compile Include="System\Threading\CancellationTokenRegistration.net35.cs" />
     <Compile Include="System\Threading\CancellationTokenSource.net35.cs" />
@@ -268,6 +270,7 @@
     <Compile Include="Theraot\Collections\ExtendedReadOnlySet.cs" />
     <Compile Include="Theraot\Collections\ExtendedSet.cs" />
     <Compile Include="Theraot\Collections\ExtendedStack.cs" />
+    <Compile Include="Theraot\Collections\Extensions.groupby.cs" />
     <Compile Include="Theraot\Collections\Extensions.add.cs" />
     <Compile Include="Theraot\Collections\Extensions.beforeafter.cs" />
     <Compile Include="Theraot\Collections\Extensions.drop.cs" />
@@ -397,6 +400,8 @@
     <Compile Include="Theraot\Core\MonitorHelper.cs" />
     <Compile Include="Theraot\Core\NewEventHandler.cs" />
     <Compile Include="Theraot\Core\NewOperationCanceledException.cs" />
+    <Compile Include="Theraot\Core\NumericHelper.unchecked.cs" />
+    <Compile Include="Theraot\Core\NumericHelper.checked.cs" />
     <Compile Include="Theraot\Core\NumericHelper.Binary.cs" />
     <Compile Include="Theraot\Core\NumericHelper.build.cs" />
     <Compile Include="Theraot\Core\NumericHelper.cs">
@@ -506,8 +511,8 @@
     <Compile Include="Theraot\Threading\ThreadLocalHelper1.cs" />
     <Compile Include="Theraot\Threading\TrackingThreadLocal.cs" />
     <Compile Include="Theraot\Threading\VersionProvider.cs" />
-    <Compile Include="System\Threading\Tasks\Task.cs" />
-    <Compile Include="System\Threading\Tasks\TaskScheduler.cs" />
+    <Compile Include="System\Threading\Tasks\Task.net35.cs" />
+    <Compile Include="System\Threading\Tasks\TaskScheduler.net35.cs" />
     <Compile Include="System\Threading\LazyInitializer.net35.cs" />
     <Compile Include="System\Threading\LockRecursionException.cs" />
     <Compile Include="System\Threading\SemaphoreSlim.net35.cs" />
@@ -656,6 +661,12 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ThreadingHelper.SpinWait.cs</LastGenOutput>
     </None>
+    <Compile Include="System\Diagnostics\Contracts\ContractFailureKind.net35.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractFailedEventArgs.net35.cs" />
+    <Compile Include="System\Diagnostics\Contracts\PureAttribute.net35.cs" />
+    <Compile Include="System\Runtime\CompilerServices\ContractHelper.net40.cs" />
+    <Compile Include="System\Diagnostics\Contracts\Internal\ContractHelper.net35.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractException.net40.cs" />
     <Compile Include="Theraot\Core\AtomicBooleanValue.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -709,5 +720,6 @@
   <ItemGroup>
     <None Include="OpenSourceKey.snk" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup />
 </Project>

@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Needed for Workaround
+
+using System;
 using System.Collections.Generic;
 
 using Theraot.Collections.Specialized;
@@ -7,6 +9,14 @@ namespace Theraot.Core
 {
     public static class ComparerExtensions
     {
+        public static IComparer<T> ToComparer<T>(this Comparison<T> comparison)
+        {
+            // Replacement for Comparer.Create(Comparison<T>) added in .NET 4.5
+            return new CustomComparer<T>(comparison);
+        }
+
+#if FAT
+
         public static IComparer<T> LinkComparer<T>(this IComparer<T> comparer, IComparer<T> linkedComparer)
         {
             return new ComparerLinked<T>(comparer, linkedComparer);
@@ -28,12 +38,6 @@ namespace Theraot.Core
             {
                 return originalAsReverse.Wrapped;
             }
-        }
-
-        public static IComparer<T> ToComparer<T>(this Comparison<T> comparison)
-        {
-            // Replacement for Comparer.Create(Comparison<T>) added in .NET 4.5
-            return new CustomComparer<T>(comparison);
         }
 
         public static IComparer<T> ToComparer<T>(this Func<T, T, int> comparison)
@@ -85,5 +89,8 @@ namespace Theraot.Core
                 return _wrapped.Compare(y, x);
             }
         }
+
+#endif
+
     }
 }

@@ -1,3 +1,5 @@
+// Needed for Workaround
+
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -43,7 +45,7 @@ namespace Theraot.Threading.Needles
             _hashCode = NeedleHelper.GetNextHashCode();
         }
 
-        public Exception Error
+        public Exception Exception
         {
             get
             {
@@ -60,7 +62,7 @@ namespace Theraot.Threading.Needles
                     }
                     if (target is ExceptionStructNeedle<T>)
                     {
-                        return ((ExceptionStructNeedle<T>)target).Error;
+                        return ((ExceptionStructNeedle<T>)target).Exception;
                     }
                 }
                 return null;

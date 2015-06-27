@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Needed for NET40
+
+using System;
 
 namespace Theraot.Core
 {
@@ -6,70 +8,26 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerStepThrough]
     public static partial class NumericHelper
     {
-        public static int CheckedDecrement(this int value)
-        {
-            checked
-            {
-                value--;
-                return value;
-            }
-        }
-
-        public static short CheckedDecrement(this short value)
-        {
-            checked
-            {
-                value--;
-                return value;
-            }
-        }
-
-        public static long CheckedDecrement(this long value)
-        {
-            checked
-            {
-                value--;
-                return value;
-            }
-        }
-
-        public static int CheckedIncrement(this int value)
-        {
-            checked
-            {
-                value++;
-                return value;
-            }
-        }
-
-        public static short CheckedIncrement(this short value)
-        {
-            checked
-            {
-                value++;
-                return value;
-            }
-        }
-
-        public static long CheckedIncrement(this long value)
-        {
-            checked
-            {
-                value++;
-                return value;
-            }
-        }
-
         [global::System.Diagnostics.DebuggerNonUserCode]
         public static int Log2(int number)
         {
+            if (number < 0)
+            {
+                throw new ArgumentOutOfRangeException("The logarithm of a negative number is imaginary.");
+            }
+            else
+            {
+                return Log2(unchecked((uint)number));
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        [global::System.Diagnostics.DebuggerNonUserCode]
+        public static int Log2(uint number)
+        {
             if (number == 0)
             {
-                throw new ArgumentException("The logarithm of zero is not defined.");
-            }
-            if (number <= 0)
-            {
-                throw new ArgumentException("The logarithm of a negative number is imaginary.");
+                throw new ArgumentOutOfRangeException("The logarithm of zero is not defined.");
             }
             else
             {
@@ -79,6 +37,39 @@ namespace Theraot.Core
                 number |= number >> 8;
                 number |= number >> 16;
                 return PopulationCount(number >> 1);
+            }
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCode]
+        public static int Log2(long number)
+        {
+            if (number < 0)
+            {
+                throw new ArgumentOutOfRangeException("The logarithm of a negative number is imaginary.");
+            }
+            else
+            {
+                return Log2(unchecked((ulong)number));
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        [global::System.Diagnostics.DebuggerNonUserCode]
+        public static int Log2(ulong number)
+        {
+            if (number == 0)
+            {
+                throw new ArgumentOutOfRangeException("The logarithm of zero is not defined.");
+            }
+            else
+            {
+                number |= number >> 1;
+                number |= number >> 2;
+                number |= number >> 4;
+                number |= number >> 8;
+                number |= number >> 16;
+                number |= number >> 32;
+                return PopulationCount(number >> 1);               
             }
         }
 

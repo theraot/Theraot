@@ -12,18 +12,17 @@ namespace MonoTests.System.Threading
     [TestFixtureAttribute]
     public class ThreadLocalTestsEx
     {
+#if NET20 || NET30 || NET35 || NET45
         [Test]
         [Category("NotDotNet")] // Running this test against .NET 4.0 fails
         public void InitializeThrowingTest()
         {
-            if (Environment.Version.Major >= 4)
-            {
-                throw new NotSupportedException("Not available in .NET 4.0");
-            }
             TestException(false);
             TestException(true);
         }
+#endif
 
+#if NET20 || NET30 || NET35 || NET45
         [Test]
         [Category("NotDotNet")] // nunit results in stack overflow
         public void MultipleReferenceToValueTest()
@@ -55,7 +54,9 @@ namespace MonoTests.System.Threading
                 }
             );
         }
+#endif
 
+#if NET20 || NET30 || NET35 || NET45
         [Test]
         public void TestValues()
         {
@@ -81,7 +82,9 @@ namespace MonoTests.System.Threading
                     () => GC.KeepAlive(tlocal.Values));
             }
         }
+#endif
 
+#if NET20 || NET30 || NET35 || NET45
         [Test]
         public void TestValuesWithExceptions()
         {
@@ -100,6 +103,7 @@ namespace MonoTests.System.Threading
             }
             Assert.AreEqual(count, 3);
         }
+#endif
 
         [Test]
         public void ThreadLocalDoesNotUseTheDefaultConstructor()
@@ -110,6 +114,7 @@ namespace MonoTests.System.Threading
             }
         }
 
+#if NET20 || NET30 || NET35 || NET45
         [Test]
         public void ValuesIsNewCopy()
         {
@@ -123,6 +128,7 @@ namespace MonoTests.System.Threading
                 Assert.AreEqual(threadLocal.Values.Count, 1);
             }
         }
+#endif
 
         private static void LaunchAndWaitThread(ThreadLocal<int> threadLocal)
         {
@@ -144,6 +150,7 @@ namespace MonoTests.System.Threading
             thread.Join();
         }
 
+#if NET20 || NET30 || NET35 || NET45
         private static void TestException(bool tracking)
         {
             int callTime = 0;
@@ -184,6 +191,7 @@ namespace MonoTests.System.Threading
                 Assert.AreEqual(1, callTime, "#6");
             }
         }
+#endif
     }
 }
 

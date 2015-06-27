@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Needed for Workaround
+
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using Theraot.Core;
@@ -39,7 +41,11 @@ namespace Theraot.Collections.ThreadSafe
         public WeakCollection(IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
         {
             _maxIndex = -1;
+#if FAT
             _comparer = comparer ?? EqualityComparerHelper<T>.Default;
+#else
+            _comparer = comparer ?? EqualityComparer<T>.Default;
+#endif
             _wrapped = new SafeDictionary<int, TNeedle>();
             if (autoRemoveDeadItems)
             {
@@ -66,7 +72,11 @@ namespace Theraot.Collections.ThreadSafe
         public WeakCollection(IEqualityComparer<T> comparer, bool autoRemoveDeadItems, int initialProbing)
         {
             _maxIndex = -1;
+#if FAT
             _comparer = comparer ?? EqualityComparerHelper<T>.Default;
+#else
+            _comparer = comparer ?? EqualityComparer<T>.Default;
+#endif
             _wrapped = new SafeDictionary<int, TNeedle>(initialProbing);
             if (autoRemoveDeadItems)
             {

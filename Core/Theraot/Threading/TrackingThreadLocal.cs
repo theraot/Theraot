@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Needed for NET35
+
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using Theraot.Collections;
@@ -70,7 +72,7 @@ namespace Theraot.Threading
             }
         }
 
-        Exception IPromise.Error
+        Exception IPromise.Exception
         {
             get
             {

@@ -1,7 +1,7 @@
-Theraot's Libraries
+Theraot.Core [![Build status](https://ci.appveyor.com/api/projects/status/rulmie40mm1ydvno/branch/master?svg=true)](https://ci.appveyor.com/project/theraot/theraot/branch/master)
 ===
 
-Theraot's Libraries are an ongoing effort to ease the work on .NET, including a backport of recent .NET features to .NET 2.0 among other things.
+These Libraries are an ongoing effort to ease the work on .NET, including a backport of recent .NET features to .NET 2.0 among other things.
 
 ---
 Introduction

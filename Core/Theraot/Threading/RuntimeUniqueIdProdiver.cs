@@ -1,3 +1,5 @@
+#if FAT
+
 using System;
 using System.Globalization;
 using System.Threading;
@@ -67,3 +69,5 @@ namespace Theraot.Threading
         }
     }
 }
+
+#endif

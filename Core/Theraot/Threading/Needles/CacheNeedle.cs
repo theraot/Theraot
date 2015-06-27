@@ -1,3 +1,5 @@
+#if FAT
+
 using System;
 using System.Threading;
 
@@ -108,11 +110,11 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        Exception IPromise.Error
+        Exception IPromise.Exception
         {
             get
             {
-                return Error;
+                return Exception;
             }
         }
 
@@ -263,3 +265,5 @@ namespace Theraot.Threading.Needles
         }
     }
 }
+
+#endif

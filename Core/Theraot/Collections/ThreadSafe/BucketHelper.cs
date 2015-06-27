@@ -1,4 +1,6 @@
-﻿namespace Theraot.Collections.ThreadSafe
+﻿// Needed for NET40
+
+namespace Theraot.Collections.ThreadSafe
 {
     internal static class BucketHelper
     {

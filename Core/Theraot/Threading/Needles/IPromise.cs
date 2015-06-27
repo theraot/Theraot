@@ -1,10 +1,16 @@
+// Needed for NET40
+
 using System;
+using System.Threading;
 
 namespace Theraot.Threading.Needles
 {
     public interface IPromise
     {
-        Exception Error { get; }
+        Exception Exception
+        {
+            get;
+        }
 
         bool IsCanceled
         {

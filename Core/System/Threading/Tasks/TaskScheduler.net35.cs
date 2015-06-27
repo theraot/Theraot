@@ -1,4 +1,5 @@
 #if FAT
+#if NET20 || NET30 || NET35
 
 using System.Collections.Generic;
 using Theraot.Collections.ThreadSafe;
@@ -155,7 +156,11 @@ namespace System.Threading.Tasks
         }
 
         private sealed class TimeSlot
-        {
+        {       
+            private const int INT_WAITING = 1;
+            private const int INT_RUNNING = 3;
+            private const int INT_FREE = 0;
+            private const int INT_USING = 2;
             private readonly object _locker;
             private readonly DefaultTaskScheduler _scheduler;
             private int _status;
@@ -168,60 +173,56 @@ namespace System.Threading.Tasks
 
             public void Reject()
             {
-                if (Interlocked.CompareExchange(ref _status, 0, 1) == 1)
+                if (Interlocked.CompareExchange(ref _status, INT_FREE, INT_WAITING) == INT_WAITING)
                 {
                     lock (_locker)
                     {
-                        Monitor.Pulse(_locker);
+                        Monitor.PulseAll(_locker);
                     }
                 }
             }
 
             public bool ServeAll()
             {
-                if (Interlocked.CompareExchange(ref _status, 1, 0) == 0)
+                if (Interlocked.CompareExchange(ref _status, INT_WAITING, INT_FREE) == INT_FREE)
                 {
                     lock (_locker)
                     {
                         _scheduler._servSlots.Donate(this);
                         Monitor.Wait(_locker);
                     }
-                    if (Interlocked.CompareExchange(ref _status, 3, 2) == 2)
-                    {
-                        RunAll();
-                        Thread.VolatileWrite(ref _status, 0);
-                        return true;
-                    }
+                    Interlocked.CompareExchange(ref _status, INT_RUNNING, INT_USING);
+                    RunAll();
+                    Interlocked.CompareExchange(ref _status, INT_FREE, INT_RUNNING);
+                    return true;
                 }
                 return false;
             }
 
             public bool ServeOnce()
             {
-                if (Interlocked.CompareExchange(ref _status, 1, 0) == 0)
+                if (Interlocked.CompareExchange(ref _status, INT_WAITING, INT_FREE) == INT_FREE)
                 {
                     lock (_locker)
                     {
                         _scheduler._servSlots.Donate(this);
                         Monitor.Wait(_locker);
                     }
-                    if (Interlocked.CompareExchange(ref _status, 3, 2) == 2)
-                    {
-                        RunOnce();
-                        Thread.VolatileWrite(ref _status, 0);
-                        return true;
-                    }
+                    Interlocked.CompareExchange(ref _status, INT_RUNNING, INT_USING);
+                    RunOnce();
+                    Interlocked.CompareExchange(ref _status, INT_FREE, INT_RUNNING);
+                    return true;
                 }
                 return false;
             }
 
             public void Use()
             {
-                if (Interlocked.CompareExchange(ref _status, 2, 1) == 1)
+                if (Interlocked.CompareExchange(ref _status, INT_USING, INT_WAITING) == INT_WAITING)
                 {
                     lock (_locker)
                     {
-                        Monitor.Pulse(_locker);
+                        Monitor.PulseAll(_locker);
                     }
                 }
             }
@@ -407,4 +408,5 @@ namespace System.Threading.Tasks
     }
 }
 
+#endif
 #endif

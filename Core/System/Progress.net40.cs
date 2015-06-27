@@ -1,7 +1,10 @@
-﻿using System.Threading;
+﻿#if NET20 || NET30 || NET35 || NET40
+
+using System.Threading;
 
 namespace System
 {
+    // This class is new in .NET 4.5
     public class Progress<T> : IProgress<T>
     {
         private readonly Action<T> _post;
@@ -62,3 +65,5 @@ namespace System
         }
     }
 }
+
+#endif

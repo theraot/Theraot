@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Needed for NET35
+
+using System;
 
 #if NET20 || NET30 || NET35
 
@@ -77,8 +79,8 @@ namespace Theraot.Core
             //Empty
         }
 
-        protected NewOperationCanceledException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
+        protected NewOperationCanceledException(SerializationInfo info, StreamingContext scheduler)
+            : base(info, scheduler)
         {
             //Empty
         }
