@@ -493,6 +493,57 @@ namespace Tests.Theraot.Core
                 }
             }
         }
+    }
 
+    internal partial class NumericHelperTest
+    {
+        [Test]
+        public void BuildDouble()
+        {
+            var input_long = new long[]
+            {
+                2318709486335437829,
+                5863966414194722965,
+                1901433884841312373,
+                2370638483762077987,
+                942754748826369726,
+                -6658171829963888942,
+                -7008354965981861999,
+                -4082161363149237830,
+                -3043789911413372093,
+                -6411351321497233834
+            };
+            foreach (var x in input_long)
+            {
+                CheckValue(NumericHelper.Int64AsDouble(x));
+            }
+            var input_double = new double[]
+            {
+                2318709486335437829,
+                5863966414194722965,
+                1901433884841312373,
+                2370638483762077987,
+                942754748826369726,
+                -6658171829963888942,
+                -7008354965981861999,
+                -4082161363149237830,
+                -3043789911413372093,
+                -6411351321497233834,
+            };
+            foreach (var x in input_double)
+            {
+                CheckValue(x);
+            }
+        }
+
+        private static void CheckValue(double value)
+        {
+            int sign;
+            long mantissa;
+            int exponent;
+            NumericHelper.GetParts(value, out sign, out mantissa, out exponent);
+            var check = NumericHelper.BuildDouble(sign, mantissa, exponent);
+            Assert.AreEqual(value, check);
+        }
     }
 }
