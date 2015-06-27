@@ -400,6 +400,8 @@
     <Compile Include="Theraot\Core\MonitorHelper.cs" />
     <Compile Include="Theraot\Core\NewEventHandler.cs" />
     <Compile Include="Theraot\Core\NewOperationCanceledException.cs" />
+    <Compile Include="Theraot\Core\NumericHelper.unchecked.cs" />
+    <Compile Include="Theraot\Core\NumericHelper.checked.cs" />
     <Compile Include="Theraot\Core\NumericHelper.Binary.cs" />
     <Compile Include="Theraot\Core\NumericHelper.build.cs" />
     <Compile Include="Theraot\Core\NumericHelper.cs">

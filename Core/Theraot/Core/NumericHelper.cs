@@ -8,60 +8,6 @@ namespace Theraot.Core
     [global::System.Diagnostics.DebuggerStepThrough]
     public static partial class NumericHelper
     {
-        public static int CheckedDecrement(this int value)
-        {
-            checked
-            {
-                value--;
-                return value;
-            }
-        }
-
-        public static short CheckedDecrement(this short value)
-        {
-            checked
-            {
-                value--;
-                return value;
-            }
-        }
-
-        public static long CheckedDecrement(this long value)
-        {
-            checked
-            {
-                value--;
-                return value;
-            }
-        }
-
-        public static int CheckedIncrement(this int value)
-        {
-            checked
-            {
-                value++;
-                return value;
-            }
-        }
-
-        public static short CheckedIncrement(this short value)
-        {
-            checked
-            {
-                value++;
-                return value;
-            }
-        }
-
-        public static long CheckedIncrement(this long value)
-        {
-            checked
-            {
-                value++;
-                return value;
-            }
-        }
-
         [global::System.Diagnostics.DebuggerNonUserCode]
         public static int Log2(int number)
         {
