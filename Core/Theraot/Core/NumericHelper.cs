@@ -41,6 +41,39 @@ namespace Theraot.Core
         }
 
         [global::System.Diagnostics.DebuggerNonUserCode]
+        public static int Log2(long number)
+        {
+            if (number < 0)
+            {
+                throw new ArgumentOutOfRangeException("The logarithm of a negative number is imaginary.");
+            }
+            else
+            {
+                return Log2(unchecked((ulong)number));
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        [global::System.Diagnostics.DebuggerNonUserCode]
+        public static int Log2(ulong number)
+        {
+            if (number == 0)
+            {
+                throw new ArgumentOutOfRangeException("The logarithm of zero is not defined.");
+            }
+            else
+            {
+                number |= number >> 1;
+                number |= number >> 2;
+                number |= number >> 4;
+                number |= number >> 8;
+                number |= number >> 16;
+                number |= number >> 32;
+                return PopulationCount(number >> 1);               
+            }
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCode]
         public static int NextPowerOf2(int number)
         {
             if (number < 0)
