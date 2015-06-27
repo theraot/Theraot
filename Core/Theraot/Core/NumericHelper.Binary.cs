@@ -407,7 +407,7 @@ namespace Theraot.Core
                 {
                     if ((_value & check) != 0)
                     {
-                        yield return log2;
+                        yield return log2 - 1;
                     }
                     check >>= 1;
                     log2--;
@@ -427,7 +427,7 @@ namespace Theraot.Core
                 {
                     if ((_value & check) != 0)
                     {
-                        yield return log2;
+                        yield return log2 - 1;
                     }
                     check >>= 1;
                     log2--;
@@ -447,7 +447,7 @@ namespace Theraot.Core
                 {
                     if ((_value & check) != 0)
                     {
-                        yield return log2;
+                        yield return log2 - 1;
                     }
                     check >>= 1;
                     log2--;
@@ -467,7 +467,7 @@ namespace Theraot.Core
                 {
                     if ((_value & check) != 0)
                     {
-                        yield return log2;
+                        yield return log2 - 1;
                     }
                     check >>= 1;
                     log2--;
@@ -486,7 +486,7 @@ namespace Theraot.Core
                 {
                     if ((value & check) != 0)
                     {
-                        yield return log2;
+                        yield return log2 - 1;
                     }
                     check >>= 1;
                     log2--;
@@ -506,7 +506,7 @@ namespace Theraot.Core
                 {
                     if ((value & check) != 0)
                     {
-                        yield return log2;
+                        yield return log2 - 1;
                     }
                     check >>= 1;
                     log2--;
@@ -526,7 +526,7 @@ namespace Theraot.Core
                 {
                     if ((value & check) != 0)
                     {
-                        yield return log2;
+                        yield return log2 - 1;
                     }
                     check >>= 1;
                     log2--;
@@ -546,7 +546,7 @@ namespace Theraot.Core
                 {
                     if ((value & check) != 0)
                     {
-                        yield return log2;
+                        yield return log2 - 1;
                     }
                     check >>= 1;
                     log2--;
