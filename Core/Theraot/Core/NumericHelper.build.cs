@@ -20,69 +20,14 @@ namespace Theraot.Core
                     sign = -sign;
                 }
                 var _mantissa = (ulong)mantissa;
-                return BuildDouble(sign, _mantissa, exponent);
+                return System.Numerics.NumericsHelpers.GetDoubleFromParts(sign, exponent, _mantissa);
             }
         }
 
         [CLSCompliantAttribute(false)]
         public static double BuildDouble(int sign, ulong mantissa, int exponent)
         {
-            const int ExponentBias = 1023;
-            const int MantissaLength = 52;
-            const int ExponentLength = 11;
-            const int MaxExponent = 2046;
-            const long MantissaMask = 0xfffffffffffffL;
-            const long ExponentMask = 0x7ffL;
-            const ulong NegativeMark = 0x8000000000000000uL;
-
-            if (sign == 0 || mantissa == 0)
-            {
-                return 0.0;
-            }
-            else
-            {
-                exponent += ExponentBias + MantissaLength;
-                int offset = LeadingZeroCount(mantissa) - ExponentLength;
-                if (exponent - offset > MaxExponent)
-                {
-                    return sign > 0 ? double.PositiveInfinity : double.NegativeInfinity;
-                }
-                else
-                {
-                    if (offset < 0)
-                    {
-                        mantissa >>= -offset;
-                        exponent += -offset;
-                    }
-                    else if (offset >= exponent)
-                    {
-                        mantissa <<= exponent - 1;
-                        exponent = 0;
-                    }
-                    else
-                    {
-                        mantissa <<= offset;
-                        exponent -= offset;
-                    }
-                    mantissa = mantissa & MantissaMask;
-                    if ((exponent & ExponentMask) == exponent)
-                    {
-                        unchecked
-                        {
-                            ulong bits = mantissa | ((ulong)exponent << MantissaLength);
-                            if (sign < 0)
-                            {
-                                bits |= NegativeMark;
-                            }
-                            return BitConverter.Int64BitsToDouble((long)bits);
-                        }
-                    }
-                    else
-                    {
-                        return sign > 0 ? double.PositiveInfinity : double.NegativeInfinity;
-                    }
-                }
-            }
+            return System.Numerics.NumericsHelpers.GetDoubleFromParts(sign, exponent, mantissa);
         }
 
         public static long BuildInt64(int hi, int lo)
