@@ -11,13 +11,23 @@ namespace Theraot.Core
         [global::System.Diagnostics.DebuggerNonUserCode]
         public static int Log2(int number)
         {
+            if (number < 0)
+            {
+                throw new ArgumentOutOfRangeException("The logarithm of a negative number is imaginary.");
+            }
+            else
+            {
+                return Log2(unchecked((uint)number));
+            }
+        }
+
+        [CLSCompliantAttribute(false)]
+        [global::System.Diagnostics.DebuggerNonUserCode]
+        public static int Log2(uint number)
+        {
             if (number == 0)
             {
                 throw new ArgumentOutOfRangeException("The logarithm of zero is not defined.");
-            }
-            if (number <= 0)
-            {
-                throw new ArgumentOutOfRangeException("The logarithm of a negative number is imaginary.");
             }
             else
             {
