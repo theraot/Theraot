@@ -13,11 +13,11 @@ namespace Theraot.Core
         {
             if (number == 0)
             {
-                throw new ArgumentException("The logarithm of zero is not defined.");
+                throw new ArgumentOutOfRangeException("The logarithm of zero is not defined.");
             }
             if (number <= 0)
             {
-                throw new ArgumentException("The logarithm of a negative number is imaginary.");
+                throw new ArgumentOutOfRangeException("The logarithm of a negative number is imaginary.");
             }
             else
             {
