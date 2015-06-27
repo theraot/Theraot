@@ -150,7 +150,7 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 if (_keyComparer.Equals(found.Key, key))
                 {
-                    throw new ArgumentException("An item with the same key has already been added");
+                    throw new ArgumentException("An item with the same key has already been added", "Key");
                 }
                 attempts++;
             }
@@ -1216,7 +1216,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         // This is the item that has been stored with the key
                         // Throw to abort overwrite
-                        throw new ArgumentException("An item with the same key has already been added");
+                        throw new ArgumentException("An item with the same key has already been added", "key");
                     }
                     // This is not the key, overwrite?
                     return keyOverwriteCheck(_found.Key);
@@ -1250,7 +1250,7 @@ namespace Theraot.Collections.ThreadSafe
                         // This is the item that has been stored with the key
                         value = _found.Value;
                         // Throw to abort overwrite
-                        throw new ArgumentException("An item with the same key has already been added");
+                        throw new ArgumentException("An item with the same key has already been added", "key");
                     }
                     // This is not the key, overwrite?
                     return keyOverwriteCheck(_found.Key);
@@ -1358,7 +1358,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         // This is the item that has been stored with the key
                         // Throw to abort overwrite
-                        throw new ArgumentException("An item with the same key has already been added");
+                        throw new ArgumentException("An item with the same key has already been added", "key");
                     }
                     // This is not the key, overwrite?
                     return keyOverwriteCheck(_found.Key);
@@ -1409,7 +1409,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         // This is the item that has been stored with the key
                         // Throw to abort overwrite
-                        throw new ArgumentException("An item with the same key has already been added");
+                        throw new ArgumentException("An item with the same key has already been added", "key");
                     }
                     // This is not the key, overwrite?
                     return keyOverwriteCheck(_found.Key);
@@ -1452,7 +1452,7 @@ namespace Theraot.Collections.ThreadSafe
                         // This is the item that has been stored with the key
                         value = _found.Value;
                         // Throw to abort overwrite
-                        throw new ArgumentException("An item with the same key has already been added");
+                        throw new ArgumentException("An item with the same key has already been added", "key");
                     }
                     // This is not the key, overwrite?
                     return keyOverwriteCheck(_found.Key);
@@ -1496,7 +1496,7 @@ namespace Theraot.Collections.ThreadSafe
                         // This is the item that has been stored with the key
                         value = _found.Value;
                         // Throw to abort overwrite
-                        throw new ArgumentException("An item with the same key has already been added");
+                        throw new ArgumentException("An item with the same key has already been added", "key");
                     }
                     // This is not the key, overwrite?
                     return keyOverwriteCheck(_found.Key);
