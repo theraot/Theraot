@@ -173,6 +173,121 @@ namespace System.Diagnostics.Contracts
         }
 
         /// <summary>
+        /// Specifies a public contract such that the expression <paramref name="condition"/> will be true when the enclosing method or property returns normally.
+        /// </summary>
+        /// <param name="condition">Boolean expression representing the contract.  May include <seealso cref="OldValue"/> and <seealso cref="Result"/>.</param>
+        /// <remarks>
+        /// This call must happen at the beginning of a method or property before any other code.
+        /// This contract is exposed to clients so must only reference members at least as visible as the enclosing method.
+        /// The contract rewriter must be used for runtime enforcement of this postcondition.
+        /// </remarks>
+        [Pure]
+        [Conditional("CONTRACTS_FULL")]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+        public static void Ensures(bool condition)
+        {
+            AssertMustUseRewriter(ContractFailureKind.Postcondition, "Ensures");
+        }
+
+        /// <summary>
+        /// Specifies a public contract such that the expression <paramref name="condition"/> will be true when the enclosing method or property returns normally.
+        /// </summary>
+        /// <param name="condition">Boolean expression representing the contract.  May include <seealso cref="OldValue"/> and <seealso cref="Result"/>.</param>
+        /// <param name="userMessage">If it is not a constant string literal, then the contract may not be understood by tools.</param>
+        /// <remarks>
+        /// This call must happen at the beginning of a method or property before any other code.
+        /// This contract is exposed to clients so must only reference members at least as visible as the enclosing method.
+        /// The contract rewriter must be used for runtime enforcement of this postcondition.
+        /// </remarks>
+        [Pure]
+        [Conditional("CONTRACTS_FULL")]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+        public static void Ensures(bool condition, String userMessage)
+        {
+            AssertMustUseRewriter(ContractFailureKind.Postcondition, "Ensures");
+        }
+
+        /// <summary>
+        /// Specifies a contract such that if an exception of type <typeparamref name="TException"/> is thrown then the expression <paramref name="condition"/> will be true when the enclosing method or property terminates abnormally.
+        /// </summary>
+        /// <typeparam name="TException">Type of exception related to this postcondition.</typeparam>
+        /// <param name="condition">Boolean expression representing the contract.  May include <seealso cref="OldValue"/> and <seealso cref="Result"/>.</param>
+        /// <remarks>
+        /// This call must happen at the beginning of a method or property before any other code.
+        /// This contract is exposed to clients so must only reference types and members at least as visible as the enclosing method.
+        /// The contract rewriter must be used for runtime enforcement of this postcondition.
+        /// </remarks>
+        [Pure]
+        [Conditional("CONTRACTS_FULL")]
+        [SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "Exception type used in tools.")]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+        public static void EnsuresOnThrow<TException>(bool condition) where TException : Exception
+        {
+            AssertMustUseRewriter(ContractFailureKind.PostconditionOnException, "EnsuresOnThrow");
+        }
+
+        /// <summary>
+        /// Specifies a contract such that if an exception of type <typeparamref name="TException"/> is thrown then the expression <paramref name="condition"/> will be true when the enclosing method or property terminates abnormally.
+        /// </summary>
+        /// <typeparam name="TException">Type of exception related to this postcondition.</typeparam>
+        /// <param name="condition">Boolean expression representing the contract.  May include <seealso cref="OldValue"/> and <seealso cref="Result"/>.</param>
+        /// <param name="userMessage">If it is not a constant string literal, then the contract may not be understood by tools.</param>
+        /// <remarks>
+        /// This call must happen at the beginning of a method or property before any other code.
+        /// This contract is exposed to clients so must only reference types and members at least as visible as the enclosing method.
+        /// The contract rewriter must be used for runtime enforcement of this postcondition.
+        /// </remarks>
+        [Pure]
+        [Conditional("CONTRACTS_FULL")]
+        [SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "Exception type used in tools.")]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+        public static void EnsuresOnThrow<TException>(bool condition, String userMessage) where TException : Exception
+        {
+            AssertMustUseRewriter(ContractFailureKind.PostconditionOnException, "EnsuresOnThrow");
+        }
+
+        /// <summary>
+        /// Represents the result (a.k.a. return value) of a method or property.
+        /// </summary>
+        /// <typeparam name="T">Type of return value of the enclosing method or property.</typeparam>
+        /// <returns>Return value of the enclosing method or property.</returns>
+        /// <remarks>
+        /// This method can only be used within the argument to the <seealso cref="Ensures(bool)"/> contract.
+        /// </remarks>
+        [SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "Not intended to be called at runtime.")]
+        [Pure]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+        public static T Result<T>() { return default(T); }
+
+        /// <summary>
+        /// Represents the final (output) value of an out parameter when returning from a method.
+        /// </summary>
+        /// <typeparam name="T">Type of the out parameter.</typeparam>
+        /// <param name="value">The out parameter.</param>
+        /// <returns>The output value of the out parameter.</returns>
+        /// <remarks>
+        /// This method can only be used within the argument to the <seealso cref="Ensures(bool)"/> contract.
+        /// </remarks>
+        [SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "0#", Justification = "Not intended to be called at runtime.")]
+        [Pure]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+        public static T ValueAtReturn<T>(out T value) { value = default(T); return value; }
+
+        /// <summary>
+        /// Represents the value of <paramref name="value"/> as it was at the start of the method or property.
+        /// </summary>
+        /// <typeparam name="T">Type of <paramref name="value"/>.  This can be inferred.</typeparam>
+        /// <param name="value">Value to represent.  This must be a field or parameter.</param>
+        /// <returns>Value of <paramref name="value"/> at the start of the method or property.</returns>
+        /// <remarks>
+        /// This method can only be used within the argument to the <seealso cref="Ensures(bool)"/> contract.
+        /// </remarks>
+        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "value")]
+        [Pure]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+        public static T OldValue<T>(T value) { return default(T); }
+
+        /// <summary>
         /// Specifies a contract such that the expression <paramref name="condition"/> will be true after every method or property on the enclosing class.
         /// </summary>
         /// <param name="condition">Boolean expression representing the contract.</param>
