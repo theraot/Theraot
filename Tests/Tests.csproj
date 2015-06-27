@@ -255,6 +255,7 @@
     <Compile Include="System\Linq\Expressions\ExpressionTest_RightShift.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTest_Subtract.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTest_SubtractChecked.cs" />
+    <Compile Include="System\Runtime\CompilationServices\ConditionalWeakTableTest.cs" />
     <Compile Include="System\Threading\CancellationTokenSourceTestEx.cs" />
     <Compile Include="System\Threading\ReaderWriterLockSlimTest.cs" />
     <Compile Include="Theraot\Collections\ExtensionsTest.cs" />
@@ -354,4 +355,5 @@
       <Name>Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
 </Project>

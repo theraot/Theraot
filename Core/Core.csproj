@@ -248,6 +248,7 @@
     <Compile Include="System\Linq\Expressions\UnaryExpression.net30.cs" />
     <Compile Include="System\Numerics\BigInteger.net35.cs" />
     <Compile Include="System\Numerics\NumericsHelpers.cs" />
+    <Compile Include="System\Runtime\CompilerServices\ConditionalWeakTable.net35.cs" />
     <Compile Include="System\Threading\CancellationToken.net35.cs" />
     <Compile Include="System\Threading\CancellationTokenRegistration.net35.cs" />
     <Compile Include="System\Threading\CancellationTokenSource.net35.cs" />
