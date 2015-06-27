@@ -183,6 +183,66 @@ namespace Tests.Theraot.Core
         }
 
         [Test]
+        public void BinaryLong()
+        {
+            var input = new long[]
+            {
+                2318709486335437829,
+                5863966414194722965,
+                1901433884841312373,
+                2370638483762077987,
+                942754748826369726,
+                -6658171829963888942,
+                -7008354965981861999,
+                -4082161363149237830,
+                -3043789911413372093,
+                -6411351321497233834
+            };
+            var output = new string[]
+            {
+                "0010000000101101101101011111111000100110010110100010110000000101",
+                "0101000101100000111111100110001010010100111001011100100010010101",
+                "0001101001100011010000000000101101000101110110111000000001110101",
+                "0010000011100110001100110010010000001011100000100110000100100011",
+                "0000110100010101010101100111001011111010000110111011111010111110",
+                "1010001110011001011010111111111101000101011111010110011011010010",
+                "1001111010111101010100100100101001010000110011100110011110010001",
+                "1100011101011001001111111101111001010001101010100101000110111010",
+                "1101010111000010010010010011001111000111010010011100101101000011",
+                "1010011100000110010011011111000100011111111011010001011001010110"
+            };
+            for (int index = 0; index < input.Length; index++)
+            {
+                Assert.AreEqual(output[index], NumericHelper.ToStringBinary(input[index]));
+                var characters = output[index].ToCharArray();
+                var bitsBinary = NumericHelper.BitsBinary(input[index]).ToArray();
+                var bits = NumericHelper.Bits(input[index]).ToArray();
+                var bitsLog2 = NumericHelper.BitsLog2(input[index]).ToArray();
+                var reverse = NumericHelper.BinaryReverse(input[index]);
+                var rbitsBinary = NumericHelper.BitsBinary(reverse).ToArray();
+                var bitIndex = 0;
+                for (int subindex = 0; subindex < 64; subindex++)
+                {
+                    Assert.AreEqual(characters[subindex].ToString(), bitsBinary[subindex].ToString());
+                    Assert.AreEqual(characters[63 - subindex].ToString(), rbitsBinary[subindex].ToString());
+                    if (bitIndex < bits.Length)
+                    {
+                        var log2 = NumericHelper.Log2(unchecked((ulong)bits[bitIndex]));
+                        Assert.AreEqual(log2, bitsLog2[bitIndex]);
+                        if (log2 == 63 - subindex)
+                        {
+                            if (characters[subindex] == '0')
+                            {
+                                Assert.Fail();
+                            }
+                            bitIndex++;
+                        }
+                    }
+                }
+            }
+        }
+
+        [Test]
         public void BinarySByte()
         {
             var input = new sbyte[] { -57, -55, 92, -29, -66, 0, 17, -68, -58, -28 };
@@ -279,7 +339,7 @@ namespace Tests.Theraot.Core
         }
 
         [Test]
-        public void BinaryUint()
+        public void BinaryUInt()
         {
             var input = new uint[] { 22141034, 146009798, 106447544, 66083576, 28048294, 3848650, 119601527, 182384611, 160860217, 52726162 };
             var output = new string[]
@@ -314,6 +374,66 @@ namespace Tests.Theraot.Core
                         var log2 = NumericHelper.Log2(bits[bitIndex]);
                         Assert.AreEqual(log2, bitsLog2[bitIndex]);
                         if (log2 == 31 - subindex)
+                        {
+                            if (characters[subindex] == '0')
+                            {
+                                Assert.Fail();
+                            }
+                            bitIndex++;
+                        }
+                    }
+                }
+            }
+        }
+
+        [Test]
+        public void BinaryULong()
+        {
+            var input = new ulong[]
+            {
+                2318709486335437829,
+                5863966414194722965,
+                1901433884841312373,
+                2370638483762077987,
+                942754748826369726,
+                6658171829963888942,
+                7008354965981861999,
+                4082161363149237830,
+                3043789911413372093,
+                6411351321497233834
+            };
+            var output = new string[]
+            {
+                "0010000000101101101101011111111000100110010110100010110000000101",
+                "0101000101100000111111100110001010010100111001011100100010010101",
+                "0001101001100011010000000000101101000101110110111000000001110101",
+                "0010000011100110001100110010010000001011100000100110000100100011",
+                "0000110100010101010101100111001011111010000110111011111010111110",
+                "0101110001100110100101000000000010111010100000101001100100101110",
+                "0110000101000010101011011011010110101111001100011001100001101111",
+                "0011100010100110110000000010000110101110010101011010111001000110",
+                "0010101000111101101101101100110000111000101101100011010010111101",
+                "0101100011111001101100100000111011100000000100101110100110101010"
+            };
+            for (int index = 0; index < input.Length; index++)
+            {
+                Assert.AreEqual(output[index], NumericHelper.ToStringBinary(input[index]));
+                var characters = output[index].ToCharArray();
+                var bitsBinary = NumericHelper.BitsBinary(input[index]).ToArray();
+                var bits = NumericHelper.Bits(input[index]).ToArray();
+                var bitsLog2 = NumericHelper.BitsLog2(input[index]).ToArray();
+                var reverse = NumericHelper.BinaryReverse(input[index]);
+                var rbitsBinary = NumericHelper.BitsBinary(reverse).ToArray();
+                var bitIndex = 0;
+                for (int subindex = 0; subindex < 64; subindex++)
+                {
+                    Assert.AreEqual(characters[subindex].ToString(), bitsBinary[subindex].ToString());
+                    Assert.AreEqual(characters[63 - subindex].ToString(), rbitsBinary[subindex].ToString());
+                    if (bitIndex < bits.Length)
+                    {
+                        var log2 = NumericHelper.Log2(unchecked((ulong)bits[bitIndex]));
+                        Assert.AreEqual(log2, bitsLog2[bitIndex]);
+                        if (log2 == 63 - subindex)
                         {
                             if (characters[subindex] == '0')
                             {
