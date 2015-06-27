@@ -77,13 +77,14 @@ namespace Theraot.Core
             }
         }
 
-        public static void GetParts(float value, out int sign, out int mantissa, out int exponent)
+        public static void GetParts(float value, out int sign, out int mantissa, out int exponent, out bool finite)
         {
             if (value.CompareTo(0.0f) == 0)
             {
                 sign = 0;
                 mantissa = 0;
                 exponent = 1;
+                finite = true;
             }
             else
             {
@@ -92,10 +93,13 @@ namespace Theraot.Core
                 exponent = (bits >> 23) & 0xff;
                 if (exponent == 2047)
                 {
-                    throw new ArgumentException("The value is NaN, PositiveInfinity or NegativeInfinity");
+                    finite = false;
+                    mantissa = 0;
+                    return;
                 }
                 else
                 {
+                    finite = true;
                     mantissa = bits & 0xffffff;
                     if (exponent == 0)
                     {
