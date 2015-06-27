@@ -35,5 +35,13 @@ namespace Tests.Theraot.Core
                 Assert.AreEqual(output[index] == 1, PrimeHelper.IsPrime(input[index]));
             }
         }
+
+        [Test]
+        public void TestNextPrimeBounds()
+        {
+            // 2147483629 is tha last prime below int.MaxValue
+            Assert.AreEqual(2, PrimeHelper.NextPrime(-1));
+            Assert.Throws<OverflowException>(() => PrimeHelper.NextPrime(2147483629));
+        }
     }
 }

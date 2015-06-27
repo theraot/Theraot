@@ -61,6 +61,10 @@ namespace Theraot.Core
             {
                 return 2;
             }
+            if (fromNumber >= 2147483629)
+            {
+                throw new OverflowException("2147483629 is the last prime below int.MaxValue");
+            }
             else
             {
                 if (fromNumber < _smallPrimes[_smallPrimes.Length - 1])
