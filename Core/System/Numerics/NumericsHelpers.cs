@@ -4,8 +4,6 @@
 // 
 // ==--==
 
-#if NET20 || NET30 || NET35
-
 using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices;
 
@@ -378,5 +376,3 @@ namespace System.Numerics
         }
     }
 }
-
-#endif
