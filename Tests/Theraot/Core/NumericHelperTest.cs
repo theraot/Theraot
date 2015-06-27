@@ -529,6 +529,9 @@ namespace Tests.Theraot.Core
                 -4082161363149237830,
                 -3043789911413372093,
                 -6411351321497233834,
+                double.PositiveInfinity,
+                double.NegativeInfinity,
+                double.NaN
             };
             foreach (var x in input_double)
             {
@@ -541,9 +544,14 @@ namespace Tests.Theraot.Core
             int sign;
             long mantissa;
             int exponent;
-            NumericHelper.GetParts(value, out sign, out mantissa, out exponent);
+            bool finite;
+            NumericHelper.GetParts(value, out sign, out mantissa, out exponent, out finite);
             var check = NumericHelper.BuildDouble(sign, mantissa, exponent);
-            Assert.AreEqual(value, check);
+            Assert.AreEqual(finite, !double.IsInfinity(value) && !double.IsNaN(value));
+            if (finite)
+            {
+                Assert.AreEqual(value, check);
+            }
         }
     }
 }

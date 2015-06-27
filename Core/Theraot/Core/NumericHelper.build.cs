@@ -180,52 +180,11 @@ namespace Theraot.Core
             }
         }
 
-        public static void GetParts(double value, out int sign, out long mantissa, out int exponent)
+        public static void GetParts(double value, out int sign, out long mantissa, out int exponent, out bool finite)
         {
-            if (value.CompareTo(0.0) == 0)
-            {
-                sign = 0;
-                mantissa = 0;
-                exponent = 1;
-            }
-            else
-            {
-                long bits = BitConverter.DoubleToInt64Bits(value);
-                sign = (bits < 0) ? -1 : 1;
-                exponent = (int)((bits >> 52) & 0x7ffL);
-                if (exponent == 2047)
-                {
-                    throw new ArgumentException("The value is NaN, PositiveInfinity or NegativeInfinity");
-                }
-                else
-                {
-                    mantissa = bits & 0xfffffffffffffL;
-                    if (exponent == 0)
-                    {
-                        // Subnormal numbers; exponent is effectively one higher,
-                        // but there's no extra normalisation bit in the mantissa
-                        exponent = 1;
-                    }
-                    else
-                    {
-                        // Normal numbers; leave exponent as it is but add extra
-                        // bit to the front of the mantissa
-                        mantissa = mantissa | (1L << 52);
-                    }
-                    // Bias the exponent. It's actually biased by 1023, but we're
-                    // treating the mantissa as m.0 rather than 0.m, so we need
-                    // to subtract another 52 from it.
-                    exponent -= 1075;
-                    if (mantissa != 0)
-                    {
-                        while ((mantissa & 1) == 0)
-                        {
-                            mantissa >>= 1;
-                            exponent++;
-                        }
-                    }
-                }
-            }
+            ulong _mantissa;
+            System.Numerics.NumericsHelpers.GetDoubleParts(value, out sign, out exponent, out _mantissa, out finite);
+            mantissa = (long)_mantissa;
         }
     }
 }
