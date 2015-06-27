@@ -4,16 +4,13 @@
 // 
 // ==--==
 
-using System;
-using System.Diagnostics;
+#if NET20 || NET30 || NET35
+
 using System.Diagnostics.Contracts;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace System.Numerics
 {
-
     [StructLayout(LayoutKind.Explicit)]
     internal struct DoubleUlong
     {
@@ -22,7 +19,6 @@ namespace System.Numerics
         [FieldOffset(0)]
         public ulong uu;
     }
-
 
     internal static class NumericsHelpers
     {
@@ -114,8 +110,6 @@ namespace System.Numerics
 
             return du.dbl;
         }
-
-
 
         // Do an in-place twos complement of d and also return the result.
         // "Dangerous" because it causes a mutation and needs to be used
@@ -305,11 +299,6 @@ namespace System.Numerics
             return ((uint)a ^ mask) - mask;
         }
 
-        //    public static ulong Abs(long a) {
-        //      ulong mask = (ulong)(a >> 63);
-        //      return ((ulong)a ^ mask) - mask;
-        //    }
-
         public static uint CombineHash(uint u1, uint u2)
         {
             return ((u1 << 7) | (u1 >> 25)) ^ u2;
@@ -387,28 +376,7 @@ namespace System.Numerics
                 return 32 + CbitHighZero((uint)uu);
             return CbitHighZero((uint)(uu >> 32));
         }
-
-        //    public static int CbitLowZero(ulong uu) {
-        //      if ((uint)uu == 0)
-        //        return 32 + CbitLowZero((uint)(uu >> 32));
-        //      return CbitLowZero((uint)uu);
-        //    }
-        //
-        //    public static int Cbit(uint u) {
-        //      u = (u & 0x55555555) + ((u >> 1) & 0x55555555);
-        //      u = (u & 0x33333333) + ((u >> 2) & 0x33333333);
-        //      u = (u & 0x0F0F0F0F) + ((u >> 4) & 0x0F0F0F0F);
-        //      u = (u & 0x00FF00FF) + ((u >> 8) & 0x00FF00FF);
-        //      return (int)((ushort)u + (ushort)(u >> 16));
-        //    }
-        //
-        //    static int Cbit(ulong uu) {
-        //      uu = (uu & 0x5555555555555555) + ((uu >> 1) & 0x5555555555555555);
-        //      uu = (uu & 0x3333333333333333) + ((uu >> 2) & 0x3333333333333333);
-        //      uu = (uu & 0x0F0F0F0F0F0F0F0F) + ((uu >> 4) & 0x0F0F0F0F0F0F0F0F);
-        //      uu = (uu & 0x00FF00FF00FF00FF) + ((uu >> 8) & 0x00FF00FF00FF00FF);
-        //      uu = (uu & 0x0000FFFF0000FFFF) + ((uu >> 16) & 0x0000FFFF0000FFFF);
-        //      return (int)((uint)uu + (uint)(uu >> 32));
-        //    }
     }
 }
+
+#endif
