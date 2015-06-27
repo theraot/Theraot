@@ -1,6 +1,4 @@
-﻿#if FAT
-
-using System;
+﻿using System;
 
 namespace Theraot.Core
 {
@@ -96,5 +94,3 @@ namespace Theraot.Core
         }
     }
 }
-
-#endif
