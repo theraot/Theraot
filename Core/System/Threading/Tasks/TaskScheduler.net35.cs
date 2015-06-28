@@ -2,7 +2,6 @@
 #if NET20 || NET30 || NET35
 
 using System.Collections.Generic;
-using Theraot.Collections.ThreadSafe;
 using Theraot.Threading;
 
 namespace System.Threading.Tasks
@@ -59,6 +58,7 @@ namespace System.Threading.Tasks
 
         public static TaskScheduler FromCurrentSynchronizationContext()
         {
+            // TODO
             throw new NotImplementedException();
         }
 
@@ -76,14 +76,18 @@ namespace System.Threading.Tasks
 
         protected internal virtual bool TryDequeue(Task task)
         {
-            throw new NotImplementedException();
+            return false;
         }
 
         protected abstract IEnumerable<Task> GetScheduledTasks();
 
         protected bool TryExecuteTask(Task task)
         {
-            throw new NotImplementedException();
+            if (task.Scheduler != this)
+            {
+                throw new InvalidOperationException("Wrong Task Scheduler");
+            }
+            return task.ExecuteEntry(true);
         }
 
         protected abstract bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued);

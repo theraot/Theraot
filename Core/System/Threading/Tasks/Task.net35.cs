@@ -104,7 +104,7 @@ namespace System.Threading.Tasks
             }
         }
 
-        public TaskScheduler Scheduler
+        internal TaskScheduler Scheduler
         {
             get
             {
