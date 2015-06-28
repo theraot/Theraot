@@ -290,26 +290,6 @@ namespace System.Threading.Tasks
             }
         }
 
-        internal void Restart()
-        {
-            if (GCMonitor.FinalizingForUnload)
-            {
-                // Silent fail
-                return;
-            }
-            if
-                (
-                    (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingToRun, (int)TaskStatus.Created) != (int)TaskStatus.Created)
-                    && (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingToRun, (int)TaskStatus.Faulted) != (int)TaskStatus.Faulted)
-                    && (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingToRun, (int)TaskStatus.Canceled) != (int)TaskStatus.Canceled)
-                    && (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingToRun, (int)TaskStatus.RanToCompletion) != (int)TaskStatus.RanToCompletion)
-                )
-            {
-                throw new InvalidOperationException();
-            }
-            Schedule();
-        }
-
         private void Schedule()
         {
             _exception = null;
