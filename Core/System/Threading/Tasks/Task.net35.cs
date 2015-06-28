@@ -16,6 +16,7 @@ namespace System.Threading.Tasks
         private readonly Action _action;
         private readonly int _id = Interlocked.Increment(ref _lastId) - 1;
         private readonly TaskScheduler _scheduler;
+        private readonly TaskCreationOptions _taskCreationOptions;
         private AggregateException _exception;
         private int _status = (int)TaskStatus.Created;
 
@@ -30,6 +31,12 @@ namespace System.Threading.Tasks
             _scheduler = TaskScheduler.Default;
             _action = action;
             _waitHandle = new ManualResetEventSlim(false);
+        }
+
+        public Task(Action action, TaskCreationOptions creationOptions)
+            : this(action)
+        {
+            _taskCreationOptions = creationOptions;
         }
 
         internal Task(Action action, TaskScheduler scheduler)
@@ -133,8 +140,7 @@ namespace System.Threading.Tasks
         {
             get
             {
-                // TODO
-                return (TaskCreationOptions)0;
+                return _taskCreationOptions;
             }
         }
 
