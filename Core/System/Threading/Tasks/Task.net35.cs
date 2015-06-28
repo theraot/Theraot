@@ -19,6 +19,7 @@ namespace System.Threading.Tasks
         private readonly TaskCreationOptions _taskCreationOptions;
         private AggregateException _exception;
         private int _status = (int)TaskStatus.Created;
+        private int _isDisposed = 0;
 
         private StructNeedle<ManualResetEventSlim> _waitHandle;
 
@@ -159,6 +160,10 @@ namespace System.Threading.Tasks
 
         public void Start()
         {
+            if (Thread.VolatileRead(ref _isDisposed) == 1)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
             Thread.VolatileWrite(ref _status, (int)TaskStatus.WaitingForActivation);
             if (GCMonitor.FinalizingForUnload)
             {
@@ -355,12 +360,24 @@ namespace System.Threading.Tasks
 
         private void Dispose(bool disposing)
         {
-            var waitHandle = _waitHandle.Value;
-            if (!ReferenceEquals(waitHandle, null))
+            if (disposing)
             {
-                waitHandle.Dispose();
+                if (!IsCompleted)
+                {
+                    throw new InvalidOperationException("A task may only be disposed if it is in a completion state.");
+                }
+                var waitHandle = _waitHandle.Value;
+                if (!ReferenceEquals(waitHandle, null))
+                {
+                    if (!waitHandle.IsSet())
+                    {
+                        waitHandle.Set();
+                    }
+                    waitHandle.Dispose();
+                    _waitHandle.Value = null;
+                }
             }
-            _waitHandle.Value = null;
+            Thread.VolatileWrite(ref _isDisposed, 1);
         }
     }
 }
