@@ -67,33 +67,57 @@ namespace Theraot.Core
             }
             else
             {
-                if (fromNumber < _smallPrimes[_smallPrimes.Length - 1])
+                fromNumber++;
+                return ToPrimeInternal(fromNumber);
+            }
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCode]
+        public static int ToPrime(int fromNumber)
+        {
+            if (fromNumber <= 2)
+            {
+                return 2;
+            }
+            if (fromNumber >= 2147483629)
+            {
+                return 2147483629;
+            }
+            else
+            {
+                return ToPrimeInternal(fromNumber);
+            }
+        }
+
+        [global::System.Diagnostics.DebuggerNonUserCode]
+        internal static int ToPrimeInternal(int fromNumber)
+        {
+            if (fromNumber < _smallPrimes[_smallPrimes.Length - 1])
+            {
+                var index = Array.BinarySearch(_smallPrimes, fromNumber);
+                if (index < 0)
                 {
-                    var index = Array.BinarySearch(_smallPrimes, fromNumber);
-                    if (index < 0)
-                    {
-                        return _smallPrimes[-index - 1];
-                    }
-                    else
-                    {
-                        return fromNumber;
-                    }
+                    return _smallPrimes[-index - 1];
                 }
                 else
                 {
-                    if (fromNumber % 2 == 0)
-                    {
-                        fromNumber++;
-                    }
-                    for (int index = fromNumber; index < int.MaxValue; index += 2)
-                    {
-                        if (IsPrime(index))
-                        {
-                            return index;
-                        }
-                    }
                     return fromNumber;
                 }
+            }
+            else
+            {
+                if (fromNumber % 2 == 0)
+                {
+                    fromNumber++;
+                }
+                for (int index = fromNumber; index < int.MaxValue; index += 2)
+                {
+                    if (IsPrime(index))
+                    {
+                        return index;
+                    }
+                }
+                return fromNumber;
             }
         }
     }

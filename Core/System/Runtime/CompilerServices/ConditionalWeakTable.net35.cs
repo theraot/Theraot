@@ -505,7 +505,7 @@ namespace System.Runtime.CompilerServices
 
             if (!hasExpiredEntries)
             {
-                Theraot.Core.PrimeHelper.NextPrime(_buckets.Length == 0 ? _initialCapacity + 1 : _buckets.Length * 2);
+                Theraot.Core.PrimeHelper.ToPrimeInternal(_buckets.Length == 0 ? _initialCapacity + 1 : _buckets.Length * 2);
             }
 
 
