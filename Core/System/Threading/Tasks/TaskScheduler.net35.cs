@@ -128,21 +128,6 @@ namespace System.Threading.Tasks
             }
         }
 
-        private void Execute(Task item)
-        {
-            if (item.Exclusive)
-            {
-                Thread.VolatileWrite(ref _waitRequest, 1);
-                ThreadingHelper.SpinWaitUntil(ref _workingTotalThreadCount, 1);
-                item.Execute();
-                Thread.VolatileWrite(ref _waitRequest, 0);
-            }
-            else
-            {
-                item.Execute();
-            }
-        }
-
         private bool NewDedicatedThread(Task firstTask)
         {
             var threadNumber = Interlocked.Increment(ref _dedidatedThreadCount);
@@ -232,7 +217,7 @@ namespace System.Threading.Tasks
                 Task item;
                 while (_scheduler._tasks.TryTake(out item))
                 {
-                    _scheduler.Execute(item);
+                    item.Execute();
                 }
             }
 
@@ -241,7 +226,7 @@ namespace System.Threading.Tasks
                 Task item;
                 if (_scheduler._tasks.TryTake(out item))
                 {
-                    _scheduler.Execute(item);
+                    item.Execute();
                 }
             }
         }
@@ -314,7 +299,7 @@ namespace System.Threading.Tasks
 
             private void Run(Task firstTask)
             {
-                _scheduler.Execute(firstTask);
+                firstTask.Execute();
                 PrivateRun();
             }
         }
@@ -377,12 +362,7 @@ namespace System.Threading.Tasks
 
         public Task AddWork(Action action)
         {
-            return GCMonitor.FinalizingForUnload ? null : new Task(action, false, this);
-        }
-
-        public Task AddWork(Action action, bool exclusive)
-        {
-            return GCMonitor.FinalizingForUnload ? null : new Task(action, exclusive, this);
+            return GCMonitor.FinalizingForUnload ? null : new Task(action, this);
         }
 
         internal void RunAndWait(Task task, bool taskWasPreviouslyQueued)

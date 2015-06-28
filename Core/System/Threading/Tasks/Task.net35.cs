@@ -14,7 +14,6 @@ namespace System.Threading.Tasks
 
         private static int _lastId;
         private readonly Action _action;
-        private readonly bool _exclusive;
         private readonly int _id = Interlocked.Increment(ref _lastId) - 1;
         private readonly TaskScheduler _scheduler;
         private AggregateException _exception;
@@ -30,11 +29,10 @@ namespace System.Threading.Tasks
             }
             _scheduler = TaskScheduler.Default;
             _action = action;
-            _exclusive = false;
             _waitHandle = new ManualResetEventSlim(false);
         }
 
-        internal Task(Action action, bool exclusive, TaskScheduler scheduler)
+        internal Task(Action action, TaskScheduler scheduler)
         {
             if (ReferenceEquals(scheduler, null))
             {
@@ -42,7 +40,6 @@ namespace System.Threading.Tasks
             }
             _scheduler = scheduler;
             _action = action ?? ActionHelper.GetNoopAction();
-            _exclusive = exclusive;
             _waitHandle = new ManualResetEventSlim(false);
         }
 
@@ -120,14 +117,6 @@ namespace System.Threading.Tasks
             get
             {
                 return _current;
-            }
-        }
-
-        internal bool Exclusive
-        {
-            get
-            {
-                return _exclusive;
             }
         }
 
