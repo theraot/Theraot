@@ -7,7 +7,7 @@ using Theraot.Threading.Needles;
 
 namespace System.Threading.Tasks
 {
-    public sealed class Task
+    public sealed class Task: IDisposable
     {
         [ThreadStatic]
         private static Task _current;
@@ -52,12 +52,7 @@ namespace System.Threading.Tasks
 
         ~Task()
         {
-            var waitHandle = _waitHandle.Value;
-            if (!ReferenceEquals(waitHandle, null))
-            {
-                waitHandle.Dispose();
-            }
-            _waitHandle.Value = null;
+            Dispose(false);
         }
 
         public static int CurrentId
@@ -351,6 +346,21 @@ namespace System.Threading.Tasks
             }
             ThreadingHelper.SpinOnce(ref count);
             goto retry;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            var waitHandle = _waitHandle.Value;
+            if (!ReferenceEquals(waitHandle, null))
+            {
+                waitHandle.Dispose();
+            }
+            _waitHandle.Value = null;
         }
     }
 }
