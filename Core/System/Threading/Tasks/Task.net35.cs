@@ -149,6 +149,7 @@ namespace System.Threading.Tasks
 
         public void Start()
         {
+            Thread.VolatileWrite(ref _status, (int)TaskStatus.WaitingForActivation);
             if (GCMonitor.FinalizingForUnload)
             {
                 // Silent fail
@@ -163,6 +164,7 @@ namespace System.Threading.Tasks
 
         public void Start(TaskScheduler scheduler)
         {
+            Thread.VolatileWrite(ref _status, (int)TaskStatus.WaitingForActivation);
             if (GCMonitor.FinalizingForUnload)
             {
                 // Silent fail
@@ -271,8 +273,12 @@ namespace System.Threading.Tasks
             return true;
         }
 
-        internal void Execute()
+        internal void Execute(bool preventDoubleExecution)
         {
+            if (!SetRunning(preventDoubleExecution))
+            {
+                return;
+            }
             var oldCurrent = Interlocked.Exchange(ref _current, this);
             try
             {
@@ -284,6 +290,7 @@ namespace System.Threading.Tasks
             }
             finally
             {
+                // TODO: Wait for children, what children?
                 Thread.VolatileWrite(ref _status, (int)TaskStatus.RanToCompletion);
                 _waitHandle.Value.Set();
                 Interlocked.Exchange(ref _current, oldCurrent);
@@ -292,8 +299,42 @@ namespace System.Threading.Tasks
 
         private void Schedule()
         {
+            // Only called from Start where status is set to TaskStatus.WaitingForActivation
             _exception = null;
             _scheduler.QueueTask(this);
+            // If _status is no longer TaskStatus.WaitingForActivation it means that it is already TaskStatus.Running or beyond
+            Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingToRun, (int)TaskStatus.WaitingForActivation);
+        }
+
+        private bool SetRunning(bool preventDoubleExecution)
+        {
+            // For this method to be called the Task must have been scheduled,
+            // this means that _status must be at least TaskStatus.WaitingForActivation (1),
+            // if status is:
+            // TaskStatus.WaitingForActivation (1) -> ok
+            // WaitingToRun (2) -> ok
+            // TaskStatus.Running (3) -> ok if preventDoubleExecution = false
+            // TaskStatus.WaitingForChildrenToComplete (4) -> ok if preventDoubleExecution = false
+            // TaskStatus.RanToCompletion (5) -> ok if preventDoubleExecution = false
+            // TaskStatus.Canceled (6) -> not ok
+            // TaskStatus.Faulted (7) -> -> ok if preventDoubleExecution = false
+            int count = 0;
+            retry:
+            var lastValue = Thread.VolatileRead(ref _status);
+            if ((preventDoubleExecution && lastValue >= 3) || lastValue == 6)
+            {
+                return false;
+            }
+            else
+            {
+                var tmpB = Interlocked.CompareExchange(ref _status, 3, lastValue);
+                if (tmpB == lastValue)
+                {
+                    return true;
+                }
+            }
+            ThreadingHelper.SpinOnce(ref count);
+            goto retry;
         }
     }
 }
