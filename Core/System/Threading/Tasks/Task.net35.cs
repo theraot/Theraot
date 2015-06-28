@@ -129,6 +129,15 @@ namespace System.Threading.Tasks
             }
         }
 
+        internal TaskCreationOptions Options
+        {
+            get
+            {
+                // TODO
+                return (TaskCreationOptions)0;
+            }
+        }
+
         public void RunSynchronously()
         {
             Start();
@@ -273,11 +282,11 @@ namespace System.Threading.Tasks
             return true;
         }
 
-        internal void Execute(bool preventDoubleExecution)
+        internal bool ExecuteEntry(bool preventDoubleExecution)
         {
             if (!SetRunning(preventDoubleExecution))
             {
-                return;
+                return false;
             }
             var oldCurrent = Interlocked.Exchange(ref _current, this);
             try
@@ -295,6 +304,7 @@ namespace System.Threading.Tasks
                 _waitHandle.Value.Set();
                 Interlocked.Exchange(ref _current, oldCurrent);
             }
+            return true;
         }
 
         private void Schedule()

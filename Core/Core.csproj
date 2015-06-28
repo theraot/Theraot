@@ -256,6 +256,7 @@
     <Compile Include="System\Threading\LockRecursionPolicy.net30.cs" />
     <Compile Include="System\Threading\ReaderWriterLockSlim.helpers.cs" />
     <Compile Include="System\Threading\ReaderWriterLockSlim.net35.cs" />
+    <Compile Include="System\Threading\Tasks\ThreadPoolTaskScheduler.net35.cs" />
     <Compile Include="System\Threading\Tasks\UnobservedTaskExceptionEventArgs.net35.cs" />
     <Compile Include="Theraot\Collections\ActionObserver.cs" />
     <Compile Include="Theraot\Collections\ConversionSet.cs" />
