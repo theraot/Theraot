@@ -217,7 +217,7 @@ namespace System.Threading.Tasks
                 Task item;
                 while (_scheduler._tasks.TryTake(out item))
                 {
-                    item.Execute();
+                    item.Execute(true);
                 }
             }
 
@@ -226,7 +226,7 @@ namespace System.Threading.Tasks
                 Task item;
                 if (_scheduler._tasks.TryTake(out item))
                 {
-                    item.Execute();
+                    item.Execute(true);
                 }
             }
         }
@@ -299,7 +299,7 @@ namespace System.Threading.Tasks
 
             private void Run(Task firstTask)
             {
-                firstTask.Execute();
+                firstTask.Execute(true);
                 PrivateRun();
             }
         }
