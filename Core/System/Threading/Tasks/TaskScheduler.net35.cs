@@ -341,7 +341,7 @@ namespace System.Threading.Tasks
             }
         }
 
-        public TaskScheduler Current
+        public static TaskScheduler Current
         {
             get
             {
