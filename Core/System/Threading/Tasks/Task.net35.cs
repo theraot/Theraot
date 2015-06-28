@@ -7,7 +7,7 @@ using Theraot.Threading.Needles;
 
 namespace System.Threading.Tasks
 {
-    public sealed class Task: IDisposable
+    public class Task: IDisposable
     {
         [ThreadStatic]
         private static Task _current;
@@ -358,7 +358,7 @@ namespace System.Threading.Tasks
             Dispose(true);
         }
 
-        private void Dispose(bool disposing)
+        protected virtual void Dispose(bool disposing)
         {
             if (disposing)
             {
