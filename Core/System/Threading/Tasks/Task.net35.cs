@@ -7,7 +7,7 @@ using Theraot.Threading.Needles;
 
 namespace System.Threading.Tasks
 {
-    public class Task: IDisposable
+    public class Task: IDisposable, IAsyncResult
     {
         [ThreadStatic]
         private static Task _current;
@@ -20,6 +20,7 @@ namespace System.Threading.Tasks
         private AggregateException _exception;
         private int _status = (int)TaskStatus.Created;
         private int _isDisposed = 0;
+        private object _state;
 
         private StructNeedle<ManualResetEventSlim> _waitHandle;
 
@@ -32,6 +33,7 @@ namespace System.Threading.Tasks
             _scheduler = TaskScheduler.Default;
             _action = action;
             _waitHandle = new ManualResetEventSlim(false);
+            _state = null;
         }
 
         public Task(Action action, TaskCreationOptions creationOptions)
@@ -137,6 +139,34 @@ namespace System.Threading.Tasks
             get
             {
                 return _taskCreationOptions;
+            }
+        }
+
+        WaitHandle IAsyncResult.AsyncWaitHandle
+        {
+            get
+            {
+                if (Thread.VolatileRead(ref _isDisposed) == 1)
+                {
+                    throw new ObjectDisposedException(GetType().FullName);
+                }
+                return _waitHandle.Value.WaitHandle;
+            }
+        }
+
+        public object AsyncState
+        {
+            get
+            {
+                return _state;
+            }
+        }
+
+        bool IAsyncResult.CompletedSynchronously
+        {
+            get
+            {
+                return false;
             }
         }
 
