@@ -17,12 +17,11 @@ namespace System.Threading.Tasks
         private readonly int _id = Interlocked.Increment(ref _lastId) - 1;
         private readonly TaskScheduler _scheduler;
         private readonly TaskCreationOptions _taskCreationOptions;
+        private CancellationToken _cancellationToken;
         private AggregateException _exception;
-        private int _status = (int)TaskStatus.Created;
         private int _isDisposed = 0;
         private object _state;
-        private CancellationToken _cancellationToken;
-
+        private int _status = (int)TaskStatus.Created;
         private StructNeedle<ManualResetEventSlim> _waitHandle;
 
         public Task(Action action)
@@ -64,6 +63,14 @@ namespace System.Threading.Tasks
             get
             {
                 return _current.Id;
+            }
+        }
+
+        public object AsyncState
+        {
+            get
+            {
+                return _state;
             }
         }
 
@@ -110,39 +117,6 @@ namespace System.Threading.Tasks
             }
         }
 
-        internal TaskScheduler Scheduler
-        {
-            get
-            {
-                return _scheduler;
-            }
-        }
-
-        internal static Task Current
-        {
-            get
-            {
-                return _current;
-            }
-        }
-
-        private bool IsScheduled
-        {
-            get
-            {
-                var status = Thread.VolatileRead(ref _status);
-                return status == (int)TaskStatus.WaitingToRun || status == (int)TaskStatus.Running || status == (int)TaskStatus.WaitingForChildrenToComplete;
-            }
-        }
-
-        internal TaskCreationOptions Options
-        {
-            get
-            {
-                return _taskCreationOptions;
-            }
-        }
-
         [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Microsoft's Design")]
         WaitHandle IAsyncResult.AsyncWaitHandle
         {
@@ -156,14 +130,6 @@ namespace System.Threading.Tasks
             }
         }
 
-        public object AsyncState
-        {
-            get
-            {
-                return _state;
-            }
-        }
-
         [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
         bool IAsyncResult.CompletedSynchronously
         {
@@ -171,6 +137,44 @@ namespace System.Threading.Tasks
             {
                 return false;
             }
+        }
+
+        internal static Task Current
+        {
+            get
+            {
+                return _current;
+            }
+        }
+
+        internal TaskCreationOptions Options
+        {
+            get
+            {
+                return _taskCreationOptions;
+            }
+        }
+
+        internal TaskScheduler Scheduler
+        {
+            get
+            {
+                return _scheduler;
+            }
+        }
+
+        private bool IsScheduled
+        {
+            get
+            {
+                var status = Thread.VolatileRead(ref _status);
+                return status == (int)TaskStatus.WaitingToRun || status == (int)TaskStatus.Running || status == (int)TaskStatus.WaitingForChildrenToComplete;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
         }
 
         public void RunSynchronously()
@@ -357,6 +361,29 @@ namespace System.Threading.Tasks
             return true;
         }
 
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "Microsoft's Design")]
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (!IsCompleted)
+                {
+                    throw new InvalidOperationException("A task may only be disposed if it is in a completion state.");
+                }
+                var waitHandle = _waitHandle.Value;
+                if (!ReferenceEquals(waitHandle, null))
+                {
+                    if (!waitHandle.IsSet())
+                    {
+                        waitHandle.Set();
+                    }
+                    waitHandle.Dispose();
+                    _waitHandle.Value = null;
+                }
+            }
+            Thread.VolatileWrite(ref _isDisposed, 1);
+        }
+
         private void Schedule()
         {
             // Only called from Start where status is set to TaskStatus.WaitingForActivation
@@ -395,34 +422,6 @@ namespace System.Threading.Tasks
             }
             ThreadingHelper.SpinOnce(ref count);
             goto retry;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-
-        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "Microsoft's Design")]
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (!IsCompleted)
-                {
-                    throw new InvalidOperationException("A task may only be disposed if it is in a completion state.");
-                }
-                var waitHandle = _waitHandle.Value;
-                if (!ReferenceEquals(waitHandle, null))
-                {
-                    if (!waitHandle.IsSet())
-                    {
-                        waitHandle.Set();
-                    }
-                    waitHandle.Dispose();
-                    _waitHandle.Value = null;
-                }
-            }
-            Thread.VolatileWrite(ref _isDisposed, 1);
         }
     }
 }
