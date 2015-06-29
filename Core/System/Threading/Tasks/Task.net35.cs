@@ -7,7 +7,7 @@ using Theraot.Threading.Needles;
 
 namespace System.Threading.Tasks
 {
-    public class Task: IDisposable, IAsyncResult
+    public class Task : IDisposable, IAsyncResult
     {
         [ThreadStatic]
         private static Task _current;
@@ -142,6 +142,7 @@ namespace System.Threading.Tasks
             }
         }
 
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Microsoft's Design")]
         WaitHandle IAsyncResult.AsyncWaitHandle
         {
             get
@@ -162,6 +163,7 @@ namespace System.Threading.Tasks
             }
         }
 
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
         bool IAsyncResult.CompletedSynchronously
         {
             get
@@ -388,6 +390,7 @@ namespace System.Threading.Tasks
             Dispose(true);
         }
 
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "Microsoft's Design")]
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
