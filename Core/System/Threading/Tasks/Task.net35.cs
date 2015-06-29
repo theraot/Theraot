@@ -21,6 +21,7 @@ namespace System.Threading.Tasks
         private int _status = (int)TaskStatus.Created;
         private int _isDisposed = 0;
         private object _state;
+        private CancellationToken _cancellationToken;
 
         private StructNeedle<ManualResetEventSlim> _waitHandle;
 
@@ -326,21 +327,32 @@ namespace System.Threading.Tasks
             {
                 return false;
             }
-            var oldCurrent = Interlocked.Exchange(ref _current, this);
-            try
+            if (!IsCanceled)
             {
-                _action.Invoke();
-            }
-            catch (Exception exception)
-            {
-                _exception = new AggregateException(exception);
-            }
-            finally
-            {
-                // TODO: Wait for children, what children?
-                Thread.VolatileWrite(ref _status, (int)TaskStatus.RanToCompletion);
-                _waitHandle.Value.Set();
-                Interlocked.Exchange(ref _current, oldCurrent);
+                if (_cancellationToken.IsCancellationRequested)
+                {
+                    Thread.VolatileWrite(ref _status, (int)TaskStatus.Canceled);
+                    // TODO: Notify? Clean up?
+                }
+                else
+                {
+                    var oldCurrent = Interlocked.Exchange(ref _current, this);
+                    try
+                    {
+                        _action.Invoke();
+                    }
+                    catch (Exception exception)
+                    {
+                        _exception = new AggregateException(exception);
+                    }
+                    finally
+                    {
+                        // TODO: Wait for children, what children?
+                        Thread.VolatileWrite(ref _status, (int)TaskStatus.RanToCompletion);
+                        _waitHandle.Value.Set();
+                        Interlocked.Exchange(ref _current, oldCurrent);
+                    }
+                }
             }
             return true;
         }
