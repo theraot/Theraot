@@ -372,6 +372,7 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
+    <Compile Include="Theraot\Core\AggregateExceptionHelper.cs" />
     <Compile Include="Theraot\Core\AtomicBoolean.cs" />
     <Compile Include="Theraot\Core\CancellationTokenHelper.cs" />
     <Compile Include="Theraot\Core\Check.cs" />

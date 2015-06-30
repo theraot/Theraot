@@ -204,7 +204,7 @@ namespace Theraot.Threading.Needles
 
             public void OnError(Exception error)
             {
-                _exception = ReferenceEquals(_exception, null) ? error : (new AggregateException(error, _exception)).Flatten();
+                Core.AggregateExceptionHelper.AddException(ref _exception, error);
                 Thread.VolatileWrite(ref _isCompleted, 1);
                 _waitHandle.Value.Set();
             }
