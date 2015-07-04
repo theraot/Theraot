@@ -255,6 +255,7 @@
     <Compile Include="System\Linq\Expressions\ExpressionTest_RightShift.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTest_Subtract.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTest_SubtractChecked.cs" />
+    <Compile Include="System\Runtime\ExceptionServices\ExceptionDispatchInfoTestEx.cs" />
     <Compile Include="System\Threading\CancellationTokenSourceTestEx.cs" />
     <Compile Include="System\Threading\ReaderWriterLockSlimTest.cs" />
     <Compile Include="Theraot\Collections\ExtensionsTest.cs" />
@@ -324,6 +325,7 @@
     </Compile>
     <Compile Include="Theraot\Threading\ReadWriteLockTest.cs" />
     <Compile Include="Theraot\Threading\Needles\TransactionalTests.cs" />
+    <Compile Include="System\Runtime\ExceptionServices\ExceptionDispatchInfoTest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -354,4 +356,5 @@
       <Name>Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
 </Project>

@@ -1,4 +1,4 @@
-﻿#if FAT && (NET20 || NET30 || NET35)
+﻿#if NET20 || NET30 || NET35
 
 using NUnit.Framework;
 using System;
@@ -24,10 +24,10 @@ namespace Tests.Theraot.Threading.Needles
                 {
                     for (int i = 0; i < ce.InitialCount; ++i)
                     {
-                        TaskScheduler.Default.AddWork(delegate
+                        Task.Factory.StartNew(delegate
                         {
                             ce.Signal();
-                        }).Start();
+                        });
                     }
                     Assert.IsTrue(ce.Wait(1000), "#1");
                 }
@@ -46,7 +46,7 @@ namespace Tests.Theraot.Threading.Needles
                 CountdownEvent evt = new CountdownEvent(2);
                 CountdownEvent evtFinish = new CountdownEvent(2);
 
-                TaskScheduler.Default.AddWork(delegate
+                Task.Factory.StartNew(delegate
                 {
                     try
                     {
@@ -59,8 +59,8 @@ namespace Tests.Theraot.Threading.Needles
                         disp = e;
                     }
                     evtFinish.Signal();
-                }).Start();
-                TaskScheduler.Default.AddWork(delegate
+                });
+                Task.Factory.StartNew(delegate
                 {
                     try
                     {
@@ -73,7 +73,7 @@ namespace Tests.Theraot.Threading.Needles
                         setting = e;
                     }
                     evtFinish.Signal();
-                }).Start();
+                });
 
                 bool bb = evtFinish.Wait(1000);
                 if (!bb)
@@ -91,21 +91,20 @@ namespace Tests.Theraot.Threading.Needles
         [Test]
         public void ManualResetEventSlim_Wait_SetConcurrent()
         {
-            // TODO review
             for (int i = 0; i < 10000; ++i)
             {
                 var mre = new ManualResetEventSlim();
                 bool b = true;
 
-                TaskScheduler.Default.AddWork(delegate
+                Task.Factory.StartNew(delegate
                 {
                     mre.Set();
-                }).Start();
+                });
 
-                TaskScheduler.Default.AddWork(delegate
+                Task.Factory.StartNew(delegate
                 {
                     b &= mre.Wait(1000);
-                }).Start();
+                });
 
                 Assert.IsTrue(mre.Wait(1000), i.ToString());
                 Assert.IsTrue(b, i.ToString());
@@ -115,7 +114,6 @@ namespace Tests.Theraot.Threading.Needles
         [Test]
         public void Progressor_ThreadedUse()
         {
-            // TODO review
             var source = new Progressor<int>(new List<int>
             {
                 0,
@@ -142,8 +140,8 @@ namespace Tests.Theraot.Threading.Needles
                 }
                 Interlocked.Increment(ref count[1]);
             };
-            TaskScheduler.Default.AddWork(work).Start();
-            TaskScheduler.Default.AddWork(work).Start();
+            Task.Factory.StartNew(work);
+            Task.Factory.StartNew(work);
             while (Thread.VolatileRead(ref count[0]) != 2)
             {
                 Thread.Sleep(0);
@@ -165,7 +163,7 @@ namespace Tests.Theraot.Threading.Needles
             var needle = Transact.CreateNeedle(5);
             var winner = 0;
             Assert.AreEqual(needle.Value, 5);
-            TaskScheduler.Default.AddWork
+            Task.Factory.StartNew
             (
                 () =>
                 {
@@ -181,8 +179,8 @@ namespace Tests.Theraot.Threading.Needles
                         Interlocked.Increment(ref count[1]);
                     }
                 }
-            ).Start();
-            TaskScheduler.Default.AddWork
+            );
+            Task.Factory.StartNew
             (
                 () =>
                 {
@@ -198,7 +196,7 @@ namespace Tests.Theraot.Threading.Needles
                         Interlocked.Increment(ref count[1]);
                     }
                 }
-            ).Start();
+            );
             while (Thread.VolatileRead(ref count[0]) != 2)
             {
                 Thread.Sleep(0);

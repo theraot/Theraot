@@ -1,5 +1,4 @@
-﻿#if FAT
-#if NET20 || NET30 || NET35
+﻿#if NET20 || NET30 || NET35
 
 // ==++==
 //
@@ -83,16 +82,11 @@ namespace System.Threading.Tasks
         [SecurityCritical]
         protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
         {
-            // TODO?
-            // If the task was previously scheduled, and we can't pop it, then return false.
-            // if (taskWasPreviouslyQueued && !ThreadPool.TryPopCustomWorkItem(task))
-            //    return false;
-
             // Propagate the return value of Task.ExecuteEntry()
             bool rval = false;
             try
             {
-                rval = task.ExecuteEntry(false); // handles switching Task.Current etc.
+                rval = task.ExecuteEntry(true); // handles switching Task.Current etc.
             }
             finally
             {
@@ -139,5 +133,4 @@ namespace System.Threading.Tasks
     }
 }
 
-#endif
 #endif

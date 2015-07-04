@@ -1,4 +1,3 @@
-#if FAT
 #if NET20 || NET30 || NET35
 
 using Theraot.Core;
@@ -15,9 +14,11 @@ namespace System.Threading.Tasks
         private static int _lastId;
         private readonly Action _action;
         private readonly int _id = Interlocked.Increment(ref _lastId) - 1;
+        private readonly Task _parent;
         private readonly TaskScheduler _scheduler;
-        private readonly TaskCreationOptions _taskCreationOptions;
+        private readonly TaskCreationOptions _options;
         private CancellationToken _cancellationToken;
+        private ExecutionContext _capturedContext; // TODO
         private AggregateException _exception;
         private int _isDisposed = 0;
         private object _state;
@@ -39,18 +40,40 @@ namespace System.Threading.Tasks
         public Task(Action action, TaskCreationOptions creationOptions)
             : this(action)
         {
-            _taskCreationOptions = creationOptions;
+            _options = creationOptions;
         }
 
-        internal Task(Action action, TaskScheduler scheduler)
+        internal Task(Action action, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
             if (ReferenceEquals(scheduler, null))
             {
                 throw new ArgumentNullException("scheduler");
             }
-            _scheduler = scheduler;
+            if ((creationOptions & TaskCreationOptions.AttachedToParent) != TaskCreationOptions.None)
+            {
+                _parent = Current;
+                if (_parent != null)
+                {
+                    _parent.AddChild(this);
+                }
+            }
             _action = action ?? ActionHelper.GetNoopAction();
+            _state = state;
+            _scheduler = scheduler;
             _waitHandle = new ManualResetEventSlim(false);
+            //TODO validate creationOptions
+            _options = creationOptions;
+            if (cancellationToken.CanBeCanceled)
+            {
+                // TODO
+                // AssignCancellationToken(cancellationToken, null, null);
+            }
+        }
+
+        private void AddChild(Task task)
+        {
+            // TODO
+            throw new NotImplementedException();
         }
 
         ~Task()
@@ -63,6 +86,14 @@ namespace System.Threading.Tasks
             get
             {
                 return _current.Id;
+            }
+        }
+
+        public static TaskFactory Factory
+        {
+            get
+            {
+                return TaskFactory._defaultInstance;
             }
         }
 
@@ -151,7 +182,7 @@ namespace System.Threading.Tasks
         {
             get
             {
-                return _taskCreationOptions;
+                return _options;
             }
         }
 
@@ -201,40 +232,32 @@ namespace System.Threading.Tasks
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
-            Thread.VolatileWrite(ref _status, (int)TaskStatus.WaitingForActivation);
-            if (GCMonitor.FinalizingForUnload)
-            {
-                // Silent fail
-                return;
-            }
-            if (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingToRun, (int)TaskStatus.Created) != (int)TaskStatus.Created)
+            if (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingForActivation, (int)TaskStatus.Created) != (int)TaskStatus.Created)
             {
                 throw new InvalidOperationException();
             }
-            Schedule();
+            Schedule(_scheduler);
         }
 
         public void Start(TaskScheduler scheduler)
         {
-            Thread.VolatileWrite(ref _status, (int)TaskStatus.WaitingForActivation);
-            if (GCMonitor.FinalizingForUnload)
+            if (Thread.VolatileRead(ref _isDisposed) == 1)
             {
-                // Silent fail
-                return;
+                throw new ObjectDisposedException(GetType().FullName);
             }
-            if (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingToRun, (int)TaskStatus.Created) != (int)TaskStatus.Created)
+            if (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingForActivation, (int)TaskStatus.Created) != (int)TaskStatus.Created)
             {
                 throw new InvalidOperationException();
             }
-            Schedule();
+            Schedule(scheduler);
         }
 
         public void Wait()
         {
-            var scheduled = IsScheduled;
+            var isScheduled = IsScheduled;
             while (!IsCompleted)
             {
-                _scheduler.RunAndWait(this, scheduled);
+                _scheduler.RunAndWait(this, isScheduled);
             }
         }
 
@@ -347,7 +370,7 @@ namespace System.Threading.Tasks
                     }
                     catch (Exception exception)
                     {
-                        _exception = new AggregateException(exception);
+                        AddException(exception);
                     }
                     finally
                     {
@@ -359,6 +382,11 @@ namespace System.Threading.Tasks
                 }
             }
             return true;
+        }
+
+        private void AddException(Exception exception)
+        {
+            AggregateExceptionHelper.AddException(ref _exception, exception);
         }
 
         [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "Microsoft's Design")]
@@ -373,7 +401,7 @@ namespace System.Threading.Tasks
                 var waitHandle = _waitHandle.Value;
                 if (!ReferenceEquals(waitHandle, null))
                 {
-                    if (!waitHandle.IsSet())
+                    if (!waitHandle.IsSet)
                     {
                         waitHandle.Set();
                     }
@@ -384,11 +412,11 @@ namespace System.Threading.Tasks
             Thread.VolatileWrite(ref _isDisposed, 1);
         }
 
-        private void Schedule()
+        private void Schedule(TaskScheduler scheduler)
         {
             // Only called from Start where status is set to TaskStatus.WaitingForActivation
             _exception = null;
-            _scheduler.QueueTask(this);
+            scheduler.QueueTask(this);
             // If _status is no longer TaskStatus.WaitingForActivation it means that it is already TaskStatus.Running or beyond
             Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingToRun, (int)TaskStatus.WaitingForActivation);
         }
@@ -426,5 +454,4 @@ namespace System.Threading.Tasks
     }
 }
 
-#endif
 #endif
