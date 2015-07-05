@@ -91,6 +91,5 @@ namespace Theraot.Core
         }
 
 #endif
-
     }
 }

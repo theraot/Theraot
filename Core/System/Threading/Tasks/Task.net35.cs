@@ -1,4 +1,3 @@
-#if FAT
 #if NET20 || NET30 || NET35
 
 using Theraot.Core;
@@ -7,19 +6,23 @@ using Theraot.Threading.Needles;
 
 namespace System.Threading.Tasks
 {
-    public sealed class Task
+    public class Task : IDisposable, IAsyncResult
     {
         [ThreadStatic]
         private static Task _current;
 
         private static int _lastId;
         private readonly Action _action;
-        private readonly bool _exclusive;
         private readonly int _id = Interlocked.Increment(ref _lastId) - 1;
+        private readonly Task _parent;
         private readonly TaskScheduler _scheduler;
+        private readonly TaskCreationOptions _options;
+        private CancellationToken _cancellationToken;
+        private ExecutionContext _capturedContext; // TODO
         private AggregateException _exception;
+        private int _isDisposed = 0;
+        private object _state;
         private int _status = (int)TaskStatus.Created;
-
         private StructNeedle<ManualResetEventSlim> _waitHandle;
 
         public Task(Action action)
@@ -30,30 +33,52 @@ namespace System.Threading.Tasks
             }
             _scheduler = TaskScheduler.Default;
             _action = action;
-            _exclusive = false;
             _waitHandle = new ManualResetEventSlim(false);
+            _state = null;
         }
 
-        internal Task(Action action, bool exclusive, TaskScheduler scheduler)
+        public Task(Action action, TaskCreationOptions creationOptions)
+            : this(action)
+        {
+            _options = creationOptions;
+        }
+
+        internal Task(Action action, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
             if (ReferenceEquals(scheduler, null))
             {
                 throw new ArgumentNullException("scheduler");
             }
-            _scheduler = scheduler;
+            if ((creationOptions & TaskCreationOptions.AttachedToParent) != TaskCreationOptions.None)
+            {
+                _parent = Current;
+                if (_parent != null)
+                {
+                    _parent.AddChild(this);
+                }
+            }
             _action = action ?? ActionHelper.GetNoopAction();
-            _exclusive = exclusive;
+            _state = state;
+            _scheduler = scheduler;
             _waitHandle = new ManualResetEventSlim(false);
+            //TODO validate creationOptions
+            _options = creationOptions;
+            if (cancellationToken.CanBeCanceled)
+            {
+                // TODO
+                // AssignCancellationToken(cancellationToken, null, null);
+            }
+        }
+
+        private void AddChild(Task task)
+        {
+            // TODO
+            throw new NotImplementedException();
         }
 
         ~Task()
         {
-            var waitHandle = _waitHandle.Value;
-            if (!ReferenceEquals(waitHandle, null))
-            {
-                waitHandle.Dispose();
-            }
-            _waitHandle.Value = null;
+            Dispose(false);
         }
 
         public static int CurrentId
@@ -61,6 +86,22 @@ namespace System.Threading.Tasks
             get
             {
                 return _current.Id;
+            }
+        }
+
+        public static TaskFactory Factory
+        {
+            get
+            {
+                return TaskFactory._defaultInstance;
+            }
+        }
+
+        public object AsyncState
+        {
+            get
+            {
+                return _state;
             }
         }
 
@@ -107,11 +148,25 @@ namespace System.Threading.Tasks
             }
         }
 
-        public TaskScheduler Scheduler
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Microsoft's Design")]
+        WaitHandle IAsyncResult.AsyncWaitHandle
         {
             get
             {
-                return _scheduler;
+                if (Thread.VolatileRead(ref _isDisposed) == 1)
+                {
+                    throw new ObjectDisposedException(GetType().FullName);
+                }
+                return _waitHandle.Value.WaitHandle;
+            }
+        }
+
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
+        bool IAsyncResult.CompletedSynchronously
+        {
+            get
+            {
+                return false;
             }
         }
 
@@ -123,11 +178,19 @@ namespace System.Threading.Tasks
             }
         }
 
-        internal bool Exclusive
+        internal TaskCreationOptions Options
         {
             get
             {
-                return _exclusive;
+                return _options;
+            }
+        }
+
+        internal TaskScheduler Scheduler
+        {
+            get
+            {
+                return _scheduler;
             }
         }
 
@@ -138,6 +201,11 @@ namespace System.Threading.Tasks
                 var status = Thread.VolatileRead(ref _status);
                 return status == (int)TaskStatus.WaitingToRun || status == (int)TaskStatus.Running || status == (int)TaskStatus.WaitingForChildrenToComplete;
             }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
         }
 
         public void RunSynchronously()
@@ -160,38 +228,36 @@ namespace System.Threading.Tasks
 
         public void Start()
         {
-            if (GCMonitor.FinalizingForUnload)
+            if (Thread.VolatileRead(ref _isDisposed) == 1)
             {
-                // Silent fail
-                return;
+                throw new ObjectDisposedException(GetType().FullName);
             }
-            if (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingToRun, (int)TaskStatus.Created) != (int)TaskStatus.Created)
+            if (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingForActivation, (int)TaskStatus.Created) != (int)TaskStatus.Created)
             {
                 throw new InvalidOperationException();
             }
-            Schedule();
+            Schedule(_scheduler);
         }
 
         public void Start(TaskScheduler scheduler)
         {
-            if (GCMonitor.FinalizingForUnload)
+            if (Thread.VolatileRead(ref _isDisposed) == 1)
             {
-                // Silent fail
-                return;
+                throw new ObjectDisposedException(GetType().FullName);
             }
-            if (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingToRun, (int)TaskStatus.Created) != (int)TaskStatus.Created)
+            if (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingForActivation, (int)TaskStatus.Created) != (int)TaskStatus.Created)
             {
                 throw new InvalidOperationException();
             }
-            Schedule();
+            Schedule(scheduler);
         }
 
         public void Wait()
         {
-            var scheduled = IsScheduled;
+            var isScheduled = IsScheduled;
             while (!IsCompleted)
             {
-                _scheduler.RunAndWait(this, scheduled);
+                _scheduler.RunAndWait(this, isScheduled);
             }
         }
 
@@ -282,52 +348,110 @@ namespace System.Threading.Tasks
             return true;
         }
 
-        internal void Execute()
+        internal bool ExecuteEntry(bool preventDoubleExecution)
         {
-            var oldCurrent = Interlocked.Exchange(ref _current, this);
-            try
+            if (!SetRunning(preventDoubleExecution))
             {
-                _action.Invoke();
+                return false;
             }
-            catch (Exception exception)
+            if (!IsCanceled)
             {
-                _exception = new AggregateException(exception);
+                if (_cancellationToken.IsCancellationRequested)
+                {
+                    Thread.VolatileWrite(ref _status, (int)TaskStatus.Canceled);
+                    // TODO: Notify? Clean up?
+                }
+                else
+                {
+                    var oldCurrent = Interlocked.Exchange(ref _current, this);
+                    try
+                    {
+                        _action.Invoke();
+                    }
+                    catch (Exception exception)
+                    {
+                        AddException(exception);
+                    }
+                    finally
+                    {
+                        // TODO: Wait for children, what children?
+                        Thread.VolatileWrite(ref _status, (int)TaskStatus.RanToCompletion);
+                        _waitHandle.Value.Set();
+                        Interlocked.Exchange(ref _current, oldCurrent);
+                    }
+                }
             }
-            finally
-            {
-                Thread.VolatileWrite(ref _status, (int)TaskStatus.RanToCompletion);
-                _waitHandle.Value.Set();
-                Interlocked.Exchange(ref _current, oldCurrent);
-            }
+            return true;
         }
 
-        internal void Restart()
+        private void AddException(Exception exception)
         {
-            if (GCMonitor.FinalizingForUnload)
-            {
-                // Silent fail
-                return;
-            }
-            if
-                (
-                    (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingToRun, (int)TaskStatus.Created) != (int)TaskStatus.Created)
-                    && (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingToRun, (int)TaskStatus.Faulted) != (int)TaskStatus.Faulted)
-                    && (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingToRun, (int)TaskStatus.Canceled) != (int)TaskStatus.Canceled)
-                    && (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingToRun, (int)TaskStatus.RanToCompletion) != (int)TaskStatus.RanToCompletion)
-                )
-            {
-                throw new InvalidOperationException();
-            }
-            Schedule();
+            AggregateExceptionHelper.AddException(ref _exception, exception);
         }
 
-        private void Schedule()
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "Microsoft's Design")]
+        protected virtual void Dispose(bool disposing)
         {
+            if (disposing)
+            {
+                if (!IsCompleted)
+                {
+                    throw new InvalidOperationException("A task may only be disposed if it is in a completion state.");
+                }
+                var waitHandle = _waitHandle.Value;
+                if (!ReferenceEquals(waitHandle, null))
+                {
+                    if (!waitHandle.IsSet)
+                    {
+                        waitHandle.Set();
+                    }
+                    waitHandle.Dispose();
+                    _waitHandle.Value = null;
+                }
+            }
+            Thread.VolatileWrite(ref _isDisposed, 1);
+        }
+
+        private void Schedule(TaskScheduler scheduler)
+        {
+            // Only called from Start where status is set to TaskStatus.WaitingForActivation
             _exception = null;
-            _scheduler.QueueTask(this);
+            scheduler.QueueTask(this);
+            // If _status is no longer TaskStatus.WaitingForActivation it means that it is already TaskStatus.Running or beyond
+            Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingToRun, (int)TaskStatus.WaitingForActivation);
+        }
+
+        private bool SetRunning(bool preventDoubleExecution)
+        {
+            // For this method to be called the Task must have been scheduled,
+            // this means that _status must be at least TaskStatus.WaitingForActivation (1),
+            // if status is:
+            // TaskStatus.WaitingForActivation (1) -> ok
+            // WaitingToRun (2) -> ok
+            // TaskStatus.Running (3) -> ok if preventDoubleExecution = false
+            // TaskStatus.WaitingForChildrenToComplete (4) -> ok if preventDoubleExecution = false
+            // TaskStatus.RanToCompletion (5) -> ok if preventDoubleExecution = false
+            // TaskStatus.Canceled (6) -> not ok
+            // TaskStatus.Faulted (7) -> -> ok if preventDoubleExecution = false
+            int count = 0;
+            retry:
+            var lastValue = Thread.VolatileRead(ref _status);
+            if ((preventDoubleExecution && lastValue >= 3) || lastValue == 6)
+            {
+                return false;
+            }
+            else
+            {
+                var tmpB = Interlocked.CompareExchange(ref _status, 3, lastValue);
+                if (tmpB == lastValue)
+                {
+                    return true;
+                }
+            }
+            ThreadingHelper.SpinOnce(ref count);
+            goto retry;
         }
     }
 }
 
-#endif
 #endif

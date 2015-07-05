@@ -4,10 +4,6 @@ using System;
 using System.Threading;
 using Theraot.Collections.ThreadSafe;
 
-#if FAT && (NET20 || NET30 || NET35)
-using System.Threading.Tasks;
-#endif
-
 namespace Theraot.Threading
 {
     public static partial class GCMonitor
@@ -15,15 +11,11 @@ namespace Theraot.Threading
         private static class Internal
         {
             private static readonly WeakDelegateCollection _collectedEventHandlers;
-#if FAT && (NET20 || NET30 || NET35)
-            private static readonly Task _task;
-#endif
+            private static readonly WaitCallback work;
 
             static Internal()
             {
-#if FAT && (NET20 || NET30 || NET35)
-                _task = TaskScheduler.Default.AddWork(RaiseCollected);
-#endif
+                work = _ => RaiseCollected();
                 _collectedEventHandlers = new WeakDelegateCollection(false, false, INT_MaxProbingHint);
             }
 
@@ -37,11 +29,7 @@ namespace Theraot.Threading
 
             public static void Invoke()
             {
-#if FAT && (NET20 || NET30 || NET35)
-                _task.Restart();
-#else
-                ThreadPool.QueueUserWorkItem(_ => RaiseCollected());
-#endif
+                ThreadPool.QueueUserWorkItem(work);
             }
 
             private static void RaiseCollected()
