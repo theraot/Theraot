@@ -491,6 +491,18 @@ namespace System.Threading.Tasks
             return true;
         }
 
+        internal void InternalStart(TaskScheduler scheduler)
+        {
+            if (Thread.VolatileRead(ref _isDisposed) == 1)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
+            if (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingForActivation, (int)TaskStatus.Created) == (int)TaskStatus.Created)
+            {
+                Schedule(scheduler);
+            }
+        }
+
         [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "Microsoft's Design")]
         protected virtual void Dispose(bool disposing)
         {
