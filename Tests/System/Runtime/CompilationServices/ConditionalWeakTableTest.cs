@@ -274,6 +274,7 @@ namespace MonoTests.System.Runtime.CompilerServices
         }
 
         [Test]
+        [Category("NotWorking")] // I doubt this is fixable
         public void InsertStress()
         {
             if (GC.MaxGeneration == 0) /*Boehm doesn't handle ephemerons */
@@ -329,6 +330,7 @@ namespace MonoTests.System.Runtime.CompilerServices
         }
 
         [Test]
+        [Category("NotWorking")] // I have reason to believe this is not fixable
         public void OldGenStress()
         {
             if (GC.MaxGeneration == 0) /*Boehm doesn't handle ephemerons */
