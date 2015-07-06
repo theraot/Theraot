@@ -57,6 +57,7 @@ namespace MonoTests.System.Runtime.ExceptionServices
             Assert.AreEqual(e, edi.SourceException);
         }
 
+#if FAT
         [Test]
         public void Throw()
         {
@@ -88,6 +89,7 @@ namespace MonoTests.System.Runtime.ExceptionServices
                 Assert.AreNotEqual(orig_stack, e.StackTrace, "#3");
             }
         }
+#endif
 
         [Test]
         public void ThrowWithEmptyFrames()

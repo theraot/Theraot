@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if FAT
+
+using System;
 using NUnit.Framework;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
@@ -49,3 +51,5 @@ namespace MonoTests.System.Runtime.ExceptionServices
         }
     }
 }
+
+#endif
