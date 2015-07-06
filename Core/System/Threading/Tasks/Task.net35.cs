@@ -314,15 +314,18 @@ namespace System.Threading.Tasks
             }
             var start = ThreadingHelper.TicksNow();
             var scheduled = IsScheduled;
-            while (!IsCompleted)
+            while(true)
             {
                 _scheduler.RunAndWait(this, scheduled);
+                if (IsCompleted)
+                {
+                    return true;
+                }
                 if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) >= milliseconds)
                 {
                     return false;
                 }
             }
-            return true;
         }
 
         public bool Wait(TimeSpan timeout)
