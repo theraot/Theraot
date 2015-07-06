@@ -16,14 +16,14 @@ echo Starting.
 echo.
 
 SET mypath=%~dp0
-echo Running build.cmd from %mypath:~0,-1%
+echo Running build.bat from %mypath:~0,-1%
 
 echo Looking for MSBuild in PATH
 
 for %%X in (MSBuild.exe) do (SET FOUND_A=%%~$PATH:X)
 if defined FOUND_A (
 	echo MSBuild.exe is in PATH
-	SET msbuild=%FOUND_A%
+	SET msbuild="%FOUND_A%"
 ) ELSE (
 	echo MSBuild.exe is in not in PATH
 	echo Fallback to default MSBuild.exe location
@@ -83,7 +83,7 @@ if EXIST %msbuild:~1,-1% (
 		for %%X in (NuGet.exe) do (SET FOUND_B=%%~$PATH:X)
 		if defined FOUND_B (
 			echo NuGet.exe is in PATH
-			SET nuget=%FOUND_B%
+			SET nuget="%FOUND_B%"
 		) ELSE (
 			echo NuGet.exe is in not in PATH
 			echo Fallback to NuGet.CommandLine
@@ -95,7 +95,7 @@ if EXIST %msbuild:~1,-1% (
 				SET folder=!folder:~2,17!
 				if "!folder!" == "NuGet.CommandLine" (
 					SET folder=%%s
-					SET nuget=%mypath:~0,-1%\packages\!folder:~2!\tools\NuGet.exe
+					SET nuget="%mypath:~0,-1%\packages\!folder:~2!\tools\NuGet.exe"
 					SET dst_folder=%mypath:~0,-1%\packages\!folder:~2!\tools\
 				)
 			)
@@ -113,10 +113,14 @@ if EXIST %msbuild:~1,-1% (
 
 		popd
 
-		if EXIST !nuget! (
+		if EXIST !nuget:~1,-1! (
 			pushd %~dp0
-			cd !dst_folder!
-			.\NuGet.exe pack %mypath:~0,-1%\package\%spec_file% -OutputDirectory %mypath:~0,-1%\package\ !version!
+			if defined dst_folder (
+				cd !dst_folder!
+				.\NuGet.exe pack %mypath:~0,-1%\package\%spec_file% -OutputDirectory %mypath:~0,-1%\package\ !version!
+			) ELSE (
+				NuGet.exe pack %mypath:~0,-1%\package\%spec_file% -OutputDirectory %mypath:~0,-1%\package\ !version!
+			)
 			popd
 			exit
 		) ELSE (
