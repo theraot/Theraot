@@ -31,6 +31,7 @@ namespace System.Threading.Tasks
         /// </summary>
         internal ThreadPoolTaskScheduler()
         {
+            // Empty
         }
 
         // static delegate for threads allocated to handle LongRunning tasks.
@@ -100,8 +101,7 @@ namespace System.Threading.Tasks
         [SecurityCritical]
         protected internal override bool TryDequeue(Task task)
         {
-            // TODO?
-            return false;
+            throw new Theraot.Core.InternalSpecialCancelException("ThreadPool");
         }
 
         [SecurityCritical]

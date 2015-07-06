@@ -1,25 +1,27 @@
 #if NET20 || NET30 || NET35
 
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Runtime.ExceptionServices;
 using Theraot.Core;
 using Theraot.Threading;
 using Theraot.Threading.Needles;
 
 namespace System.Threading.Tasks
 {
-    public class Task : IDisposable, IAsyncResult
+    public partial class Task : IDisposable, IAsyncResult
     {
         [ThreadStatic]
         private static Task _current;
 
         private static int _lastId;
-        private readonly Action _action;
-        private readonly int _id;
+        private object _action;
         private readonly TaskCreationOptions _creationOptions;
+        private readonly int _id;
         private readonly Task _parent;
         private readonly TaskScheduler _scheduler;
         private CancellationToken _cancellationToken;
         private ExecutionContext _capturedContext;
-        // TODO use _capturedContext ?
         private AggregateException _exception;
         private int _isDisposed = 0;
         private object _state;
@@ -78,8 +80,7 @@ namespace System.Threading.Tasks
             _creationOptions = creationOptions;
             if (cancellationToken.CanBeCanceled)
             {
-                // TODO
-                // AssignCancellationToken(cancellationToken, null, null);
+                AssignCancellationToken(cancellationToken);
             }
         }
 
@@ -88,11 +89,19 @@ namespace System.Threading.Tasks
             Dispose(false);
         }
 
-        public static int CurrentId
+        public static int? CurrentId
         {
             get
             {
-                return _current.Id;
+                var current = _current;
+                if (_current != null)
+                {
+                    return _current.Id;
+                }
+                else
+                {
+                    return null;
+                }
             }
         }
 
@@ -355,6 +364,73 @@ namespace System.Threading.Tasks
             return true;
         }
 
+        internal bool InternalCancel(bool cancelNonExecutingOnly)
+        {
+            // TODO: Promise tasks support?
+            bool popSucceeded = false;
+            bool cancelSucceeded = false;
+            TaskSchedulerException taskSchedulerException = null;
+
+            RecordInternalCancellationRequest();
+
+            var status = Thread.VolatileRead(ref _status);
+            if (status == (int)TaskStatus.Created || status == (int)TaskStatus.WaitingToRun)
+            {
+                // Note: status may advance to TaskStatus.Running or even TaskStatus.RanToCompletion during the execution of this method
+                var scheduler = _scheduler;
+                var requiresAtomicStartTransition = scheduler.RequiresAtomicStartTransition;
+                if (scheduler == null)
+                {
+                    popSucceeded = false;
+                }
+                else
+                {
+                    try
+                    {
+                        popSucceeded = scheduler.TryDequeue(this);
+                    }
+                    catch (Exception exception)
+                    {
+                        if (exception is InternalSpecialCancelException)
+                        {
+                            // Special path for ThreadPool
+                            requiresAtomicStartTransition = true;
+                        }
+                        else if (exception is ThreadAbortException)
+                        {
+                            // Pokémon
+                        }
+                        else
+                        {
+                            taskSchedulerException = new TaskSchedulerException(exception);
+                        }
+                    }
+                    if (!popSucceeded && requiresAtomicStartTransition)
+                    {
+                        cancelSucceeded = Interlocked.CompareExchange(ref _status, (int)TaskStatus.Canceled, (int)TaskStatus.WaitingToRun) == (int)TaskStatus.WaitingToRun;
+                    }
+                }
+            }
+            if (Thread.VolatileRead(ref _status) >= (int)TaskStatus.Running && !cancelNonExecutingOnly)
+            {
+                // We are going to pretend that the cancel call came after the task finished running, but we may still set to cancel on TaskStatus.WaitingForChildrenToComplete
+                cancelSucceeded = cancelSucceeded || Interlocked.CompareExchange(ref _status, (int)TaskStatus.Canceled, (int)TaskStatus.WaitingForChildrenToComplete) == (int)TaskStatus.WaitingForChildrenToComplete;
+            }
+            if (cancelSucceeded)
+            {
+                SetCompleted();
+                FinishStageThree();
+            }
+            if (taskSchedulerException != null)
+            {
+                throw taskSchedulerException;
+            }
+            else
+            {
+                return cancelSucceeded;
+            }
+        }
+
         internal bool ExecuteEntry(bool preventDoubleExecution)
         {
             if (!SetRunning(preventDoubleExecution))
@@ -366,26 +442,12 @@ namespace System.Threading.Tasks
                 if (_cancellationToken.IsCancellationRequested)
                 {
                     Thread.VolatileWrite(ref _status, (int)TaskStatus.Canceled);
-                    // TODO: Notify? Clean up?
+                    SetCompleted();
+                    FinishStageThree();
                 }
                 else
                 {
-                    var oldCurrent = Interlocked.Exchange(ref _current, this);
-                    try
-                    {
-                        _action.Invoke();
-                    }
-                    catch (Exception exception)
-                    {
-                        AddException(exception);
-                    }
-                    finally
-                    {
-                        // TODO: Wait for children, what children?
-                        Thread.VolatileWrite(ref _status, (int)TaskStatus.RanToCompletion);
-                        _waitHandle.Value.Set();
-                        Interlocked.Exchange(ref _current, oldCurrent);
-                    }
+                    ExecuteWithThreadLocal(ref _current);
                 }
             }
             return true;
@@ -425,6 +487,56 @@ namespace System.Threading.Tasks
             AggregateExceptionHelper.AddException(ref _exception, exception);
         }
 
+        /// <summary>
+        /// Adds an exception to the list of exceptions this task has thrown.
+        /// </summary>
+        /// <param name="exceptionObject">An object representing either an Exception or a collection of Exceptions.</param>
+        /// <param name="representsCancellation">Whether the exceptionObject is an OperationCanceledException representing cancellation.</param>
+        internal void AddException(object exceptionObject, bool representsCancellation)
+        {
+            Contract.Requires(exceptionObject != null, "Task.AddException: Expected a non-null exception object");
+
+#if DEBUG
+            var eoAsException = exceptionObject as Exception;
+            var eoAsEnumerableException = exceptionObject as IEnumerable<Exception>;
+            var eoAsEdi = exceptionObject as ExceptionDispatchInfo;
+            var eoAsEnumerableEdi = exceptionObject as IEnumerable<ExceptionDispatchInfo>;
+
+            Contract.Assert(
+                eoAsException != null || eoAsEnumerableException != null || eoAsEdi != null || eoAsEnumerableEdi != null,
+                "Task.AddException: Expected an Exception, ExceptionDispatchInfo, or an IEnumerable<> of one of those");
+
+            var eoAsOce = exceptionObject as OperationCanceledException;
+
+            Contract.Assert(
+                !representsCancellation ||
+                eoAsOce != null ||
+                (eoAsEdi != null && eoAsEdi.SourceException is OperationCanceledException),
+                "representsCancellation should be true only if an OCE was provided.");
+#endif
+
+            //
+            // WARNING: A great deal of care went into ensuring that
+            // AddException() and GetExceptions() are never called
+            // simultaneously.  See comment at start of GetExceptions().
+            //
+
+            // Lazily initialize the holder, ensuring only one thread wins.
+            if (_exceptionsHolder == null)
+            {
+                TaskExceptionHolder holder = new TaskExceptionHolder(this);
+                if (Interlocked.CompareExchange(ref _exceptionsHolder, holder, null) != null)
+                {
+                    // If we lost the ----, suppress finalization.
+                    holder.MarkAsHandled(false);
+                }
+            }
+            lock (_exceptionsHolder)
+            {
+                _exceptionsHolder.Add(exceptionObject, representsCancellation);
+            }
+        }
+
         private void Schedule(TaskScheduler scheduler)
         {
             // Only called from Start where status is set to TaskStatus.WaitingForActivation
@@ -432,6 +544,15 @@ namespace System.Threading.Tasks
             scheduler.QueueTask(this);
             // If _status is no longer TaskStatus.WaitingForActivation it means that it is already TaskStatus.Running or beyond
             Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingToRun, (int)TaskStatus.WaitingForActivation);
+        }
+
+        private void SetCompleted()
+        {
+            var handle = _waitHandle.Value;
+            if (_waitHandle.IsAlive)
+            {
+                handle.Set();
+            }
         }
 
         private bool SetRunning(bool preventDoubleExecution)
