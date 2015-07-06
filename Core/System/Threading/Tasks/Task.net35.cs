@@ -237,7 +237,7 @@ namespace System.Threading.Tasks
             Start();
             while (!IsCompleted)
             {
-                _scheduler.RunAndWait(this, true);
+                _scheduler.RunAndWait(this, false);
             }
         }
 
