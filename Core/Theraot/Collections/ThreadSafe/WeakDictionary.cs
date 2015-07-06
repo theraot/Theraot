@@ -1229,9 +1229,7 @@ namespace Theraot.Collections.ThreadSafe
             }
             else
             {
-                // TODO: use TryGetValue
-                eventHandler = _eventHandler.Value.Value;
-                if (!_eventHandler.IsAlive)
+                if (_eventHandler.Value.TryGetValue(out eventHandler))
                 {
                     eventHandler = GarbageCollected;
                     _eventHandler.Value = eventHandler;
