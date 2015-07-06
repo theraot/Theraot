@@ -279,9 +279,16 @@ namespace System.Threading.Tasks
         public void Wait()
         {
             var isScheduled = IsScheduled;
-            while (!IsCompleted)
+            while (true)
             {
-                _scheduler.RunAndWait(this, isScheduled);
+                if (IsScheduled)
+                {
+                    _scheduler.RunAndWait(this, true);
+                }
+                if (IsCompleted)
+                {
+                    return;
+                }
             }
         }
 
@@ -289,10 +296,16 @@ namespace System.Threading.Tasks
         {
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var scheduled = IsScheduled;
-            while (!IsCompleted)
+            while (true)
             {
-                _scheduler.RunAndWait(this, scheduled);
+                if (IsScheduled)
+                {
+                    _scheduler.RunAndWait(this, true);
+                }
+                if (IsCompleted)
+                {
+                    return;
+                }
                 if (!IsCompleted)
                 {
                     cancellationToken.ThrowIfCancellationRequested();
@@ -313,10 +326,12 @@ namespace System.Threading.Tasks
                 return true;
             }
             var start = ThreadingHelper.TicksNow();
-            var scheduled = IsScheduled;
             while(true)
             {
-                _scheduler.RunAndWait(this, scheduled);
+                if (IsScheduled)
+                {
+                    _scheduler.RunAndWait(this, true);
+                }
                 if (IsCompleted)
                 {
                     return true;
@@ -332,16 +347,21 @@ namespace System.Threading.Tasks
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
             var start = ThreadingHelper.TicksNow();
-            var scheduled = IsScheduled;
-            while (!IsCompleted)
+            while (true)
             {
-                _scheduler.RunAndWait(this, scheduled);
+                if (IsScheduled)
+                {
+                    _scheduler.RunAndWait(this, true);
+                }
+                if (IsCompleted)
+                {
+                    return true;
+                }
                 if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) >= milliseconds)
                 {
                     return false;
                 }
             }
-            return true;
         }
 
         public bool Wait(int milliseconds, CancellationToken cancellationToken)
@@ -358,10 +378,16 @@ namespace System.Threading.Tasks
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             var start = ThreadingHelper.TicksNow();
-            var scheduled = IsScheduled;
-            while (!IsCompleted)
+            while (true)
             {
-                _scheduler.RunAndWait(this, scheduled);
+                if (IsScheduled)
+                {
+                    _scheduler.RunAndWait(this, true);
+                }
+                if (IsCompleted)
+                {
+                    return true;
+                }
                 if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) >= milliseconds)
                 {
                     return false;
@@ -372,7 +398,6 @@ namespace System.Threading.Tasks
                     GC.KeepAlive(cancellationToken.WaitHandle);
                 }
             }
-            return true;
         }
 
         internal bool InternalCancel(bool cancelNonExecutingOnly)
