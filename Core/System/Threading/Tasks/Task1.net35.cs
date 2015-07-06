@@ -8,7 +8,7 @@ namespace System.Threading.Tasks
 {
     public partial class Task<TResult> : Task
     {
-        private ErsatzFunc<TResult> _erzatz;
+        private IErsatz<TResult> _erzatz;
 
         public TResult Result
         {
@@ -23,19 +23,19 @@ namespace System.Threading.Tasks
             }
         }
 
-        private Task(ErsatzFunc<TResult> erzatz)
-            : base(erzatz.InvokeAction())
+        private Task(IErsatz<TResult> erzatz)
+            : base(erzatz.InvokeAction(), null, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default)
         {
             _erzatz = erzatz;
         }
 
-        private Task(ErsatzFunc<TResult> erzatz, TaskCreationOptions creationOptions)
-            : base(erzatz.InvokeAction(), creationOptions)
+        private Task(IErsatz<TResult> erzatz, TaskCreationOptions creationOptions)
+            : base(erzatz.InvokeAction(), null, CancellationToken.None, creationOptions, TaskScheduler.Default)
         {
             _erzatz = erzatz;
         }
 
-        private Task(ErsatzFunc<TResult> erzatz, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
+        private Task(IErsatz<TResult> erzatz, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
             : base(erzatz.InvokeAction(), state, cancellationToken, creationOptions, scheduler)
         {
             _erzatz = erzatz;

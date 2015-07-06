@@ -52,7 +52,7 @@ namespace System.Threading.Tasks
             // Empty
         }
 
-        internal Task(Action action, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
+        internal Task(object action, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
             if (ReferenceEquals(action, null))
             {
