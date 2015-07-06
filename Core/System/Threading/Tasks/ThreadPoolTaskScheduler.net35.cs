@@ -57,7 +57,7 @@ namespace System.Threading.Tasks
         [SecurityCritical]
         protected internal override void QueueTask(Task task)
         {
-            if ((task.Options & TaskCreationOptions.LongRunning) != 0)
+            if ((task.CreationOptions & TaskCreationOptions.LongRunning) != 0)
             {
                 // Run LongRunning tasks on their own dedicated thread.
                 Thread thread = new Thread(s_longRunningThreadWork);
