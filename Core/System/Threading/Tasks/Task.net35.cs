@@ -265,6 +265,10 @@ namespace System.Threading.Tasks
 
         public void Start(TaskScheduler scheduler)
         {
+            if (scheduler == null)
+            {
+                throw new ArgumentNullException("scheduler");
+            }
             if (Thread.VolatileRead(ref _isDisposed) == 1)
             {
                 throw new ObjectDisposedException(GetType().FullName);
