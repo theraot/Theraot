@@ -4,12 +4,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Theraot")]
+[assembly: AssemblyTitle("Theraot.Core")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Theraot")]
-[assembly: AssemblyProduct("Theraot")]
-[assembly: AssemblyCopyright("Copyright 2010 - 2014 by Theraot")]
+[assembly: AssemblyProduct("Theraot.Core")]
+[assembly: AssemblyCopyright("Copyright 2010 - 2015 by Theraot")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

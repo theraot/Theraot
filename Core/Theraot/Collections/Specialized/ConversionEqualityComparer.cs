@@ -1,4 +1,4 @@
-#if FAT
+// Needed for NET35
 
 using System;
 using System.Collections.Generic;
@@ -30,5 +30,3 @@ namespace Theraot.Collections.Specialized
         }
     }
 }
-
-#endif

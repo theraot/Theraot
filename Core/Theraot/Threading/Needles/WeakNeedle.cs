@@ -16,6 +16,7 @@ namespace Theraot.Threading.Needles
         private readonly int _hashCode;
         private readonly bool _trackResurrection;
         private GCHandle _handle;
+        private volatile bool _faultExpected;
         private int _managedDisposal;
 
         public WeakNeedle()
@@ -49,20 +50,12 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                if (_handle.IsAllocated)
+                object target;
+                if (ReadTarget(out target))
                 {
-                    object target;
-                    try
+                    if (target is Exception && _faultExpected)
                     {
-                        target = _handle.Target; // Throws InvalidOperationException
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        return null;
-                    }
-                    if (target is ExceptionStructNeedle<T>)
-                    {
-                        return ((ExceptionStructNeedle<T>)target).Exception;
+                        return target as Exception;
                     }
                 }
                 return null;
@@ -73,21 +66,12 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                if (_handle.IsAllocated)
+                object target;
+                if (ReadTarget(out target))
                 {
-                    object target;
-                    try
+                    if (target is T && !_faultExpected)
                     {
-                        target = _handle.Target; // Throws InvalidOperationException
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        return false;
-                    }
-                    var needle = target as INeedle<T>;
-                    if (needle != null)
-                    {
-                        return needle.IsAlive;
+                        return true;
                     }
                 }
                 return false;
@@ -98,18 +82,10 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                if (_handle.IsAllocated)
+                object target;
+                if (ReadTarget(out target))
                 {
-                    object target;
-                    try
-                    {
-                        target = _handle.Target; // Throws InvalidOperationException
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        return false;
-                    }
-                    if (target is ExceptionStructNeedle<T>)
+                    if (target is Exception && _faultExpected)
                     {
                         return true;
                     }
@@ -131,21 +107,13 @@ namespace Theraot.Threading.Needles
             [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
             get
             {
-                if (_handle.IsAllocated)
+                object target;
+                if (ReadTarget(out target))
                 {
-                    object target;
-                    try
+                    var inner = target as T;
+                    if (inner != null && !_faultExpected)
                     {
-                        target = _handle.Target; // Throws InvalidOperationException
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        return null;
-                    }
-                    var needle = target as INeedle<T>;
-                    if (needle != null)
-                    {
-                        return needle.Value;
+                        return inner;
                     }
                 }
                 return null;
@@ -231,21 +199,13 @@ namespace Theraot.Threading.Needles
         public virtual bool TryGetValue(out T value)
         {
             value = null;
-            if (_handle.IsAllocated)
+            object target;
+            if (ReadTarget(out target))
             {
-                object target;
-                try
+                var inner = target as T;
+                if (inner != null)
                 {
-                    target = _handle.Target; // Throws InvalidOperationException
-                }
-                catch (InvalidOperationException)
-                {
-                    return false;
-                }
-                var needle = target as INeedle<T>;
-                if (needle != null)
-                {
-                    value = needle.Value;
+                    value = inner;
                     return true;
                 }
             }
@@ -255,104 +215,15 @@ namespace Theraot.Threading.Needles
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
         protected void SetTargetError(Exception error)
         {
-            var target = new ExceptionStructNeedle<T>(error);
-            if (_status == -1 || !ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
-            {
-                ReleaseExtracted();
-                _handle = CreateHandle(target, _trackResurrection);
-                if (Interlocked.CompareExchange(ref _managedDisposal, 0, 1) == 1)
-                {
-                    GC.ReRegisterForFinalize(this);
-                }
-                UnDispose();
-            }
-            else
-            {
-                try
-                {
-                    var oldHandle = _handle;
-                    if (oldHandle.IsAllocated)
-                    {
-                        try
-                        {
-                            oldHandle.Target = target;
-                        }
-                        catch (InvalidOperationException)
-                        {
-                            // Empty
-                        }
-                    }
-                    _handle = CreateHandle(target, _trackResurrection);
-                    if (oldHandle.IsAllocated)
-                    {
-                        oldHandle.Free();
-                        try
-                        {
-                            oldHandle.Free();
-                        }
-                        catch (InvalidOperationException)
-                        {
-                            // Empty
-                        }
-                    }
-                }
-                finally
-                {
-                    Interlocked.Decrement(ref _status);
-                }
-            }
+            _faultExpected = true;
+            WriteTarget(error);
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
         protected void SetTargetValue(T value)
         {
-            var target = new StructNeedle<T>(value);
-            if (_status == -1 || !ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
-            {
-                ReleaseExtracted();
-                _handle = CreateHandle(target, _trackResurrection);
-                if (Interlocked.CompareExchange(ref _managedDisposal, 0, 1) == 1)
-                {
-                    GC.ReRegisterForFinalize(this);
-                }
-                UnDispose();
-            }
-            else
-            {
-                try
-                {
-                    var oldHandle = _handle;
-                    if (oldHandle.IsAllocated)
-                    {
-                        try
-                        {
-                            oldHandle.Target = target;
-                            return;
-                        }
-                        catch (InvalidOperationException)
-                        {
-                            // Empty
-                        }
-                    }
-                    _handle = CreateHandle(target, _trackResurrection);
-                    if (oldHandle.IsAllocated)
-                    {
-                        oldHandle.Free();
-                        try
-                        {
-                            oldHandle.Free();
-                        }
-                        catch (InvalidOperationException)
-                        {
-                            // Empty
-                        }
-                    }
-                }
-                finally
-                {
-                    Interlocked.Decrement(ref _status);
-                }
-            }
+            _faultExpected = false;
+            WriteTarget(value);
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
@@ -420,11 +291,82 @@ namespace Theraot.Threading.Needles
             {
                 try
                 {
-                    _handle.Free();
+                    _handle.Free(); // Throws InvalidOperationException
                 }
                 catch (InvalidOperationException)
                 {
                     // Empty
+                }
+            }
+        }
+
+        private bool ReadTarget(out object target)
+        {
+            target = null;
+            if (_handle.IsAllocated)
+            {
+                try
+                {
+                    target = _handle.Target; // Throws InvalidOperationException
+                }
+                catch (InvalidOperationException)
+                {
+                    return false;
+                }
+                return true;
+            }
+            return false;
+        }
+
+        private void WriteTarget(object target)
+        {
+            if (_status == -1 || !ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
+            {
+                ReleaseExtracted();
+                _handle = GCHandle.Alloc(target, _trackResurrection ? GCHandleType.Weak : GCHandleType.WeakTrackResurrection);
+                if (Interlocked.CompareExchange(ref _managedDisposal, 0, 1) == 1)
+                {
+                    GC.ReRegisterForFinalize(this);
+                }
+                UnDispose();
+            }
+            else
+            {
+                try
+                {
+                    var oldHandle = _handle;
+                    if (oldHandle.IsAllocated)
+                    {
+                        try
+                        {
+                            oldHandle.Target = target;
+                            return;
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            _handle = GCHandle.Alloc(target, _trackResurrection ? GCHandleType.Weak : GCHandleType.WeakTrackResurrection);
+                        }
+                    }
+                    else
+                    {
+                        _handle = GCHandle.Alloc(target, _trackResurrection ? GCHandleType.Weak : GCHandleType.WeakTrackResurrection);
+                    }
+                    if (oldHandle.IsAllocated)
+                    {
+                        oldHandle.Free();
+                        try
+                        {
+                            oldHandle.Free();
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            // Empty
+                        }
+                    }
+                }
+                finally
+                {
+                    Interlocked.Decrement(ref _status);
                 }
             }
         }

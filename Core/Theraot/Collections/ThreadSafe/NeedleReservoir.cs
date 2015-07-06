@@ -1,4 +1,4 @@
-﻿#if FAT
+﻿// Needed for NET35
 
 using System;
 using Theraot.Threading.Needles;
@@ -66,5 +66,3 @@ namespace Theraot.Collections.ThreadSafe
         }
     }
 }
-
-#endif

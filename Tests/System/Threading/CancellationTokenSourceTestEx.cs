@@ -37,8 +37,7 @@ namespace MonoTests.System.Threading
                 called += 11;
             });
 
-            var t = TaskScheduler.Default.AddWork(() => { cts.Cancel(); });
-            t.Start();
+            var t = Task.Factory.StartNew(() => { cts.Cancel(); });
 
             Assert.IsTrue(mre2.WaitOne(1000), "#0");
             cts.Token.Register(() => { called++; });

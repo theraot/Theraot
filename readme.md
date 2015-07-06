@@ -41,7 +41,7 @@ This project is under MIT license, refer to LICENSE.txt for the license text.
 
 The reason for this license is that this library includes code from Mono under MIT License.
 
-This repository also includes a copy of NUnit 2.6.3 which includes its own license file.
+This repository also includes a copy of NUnit 2.6.4 and a copy of Nuget.CommandLine 2.8.5 with their respective license files.
 
 ---
 Warranty

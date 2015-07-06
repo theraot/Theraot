@@ -323,7 +323,7 @@ namespace Theraot.Threading.Needles
 
             public void OnError(Exception error)
             {
-                _exception = ReferenceEquals(_exception, null) ? error : (new AggregateException(error, _exception)).Flatten();
+                AggregateExceptionHelper.AddException(ref _exception, error);
                 _target = default(T);
                 ReleaseWaitHandle();
             }
