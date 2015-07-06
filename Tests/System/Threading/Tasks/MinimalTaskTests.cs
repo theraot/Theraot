@@ -1,4 +1,6 @@
-﻿//
+﻿#if FAT
+
+//
 // TaskTest.cs
 //
 // Authors:
@@ -579,3 +581,5 @@ namespace MonoTests.System.Threading.Tasks
 #endif
     }
 }
+
+#endif
