@@ -17,6 +17,10 @@ namespace System.Threading.Tasks
                 {
                     throw Exception;
                 }
+                else if (IsCanceled)
+                {
+                    throw new AggregateException((Exception)new TaskCanceledException(this));
+                }
                 return _erzatz.Result;
             }
         }

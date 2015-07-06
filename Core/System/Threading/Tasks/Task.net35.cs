@@ -20,7 +20,7 @@ namespace System.Threading.Tasks
         private readonly int _id;
         private readonly Task _parent;
         private readonly TaskScheduler _scheduler;
-        private CancellationToken _cancellationToken;
+        internal CancellationToken _cancellationToken;
         private ExecutionContext _capturedContext;
         private AggregateException _exception;
         private int _isDisposed = 0;
