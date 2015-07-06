@@ -382,7 +382,7 @@ namespace System.Threading.Tasks
             RecordInternalCancellationRequest();
 
             var status = Thread.VolatileRead(ref _status);
-            if (status == (int)TaskStatus.Created || status == (int)TaskStatus.WaitingToRun)
+            if (status <= (int)TaskStatus.WaitingToRun)
             {
                 // Note: status may advance to TaskStatus.Running or even TaskStatus.RanToCompletion during the execution of this method
                 var scheduler = _scheduler;
@@ -415,7 +415,9 @@ namespace System.Threading.Tasks
                     }
                     if (!popSucceeded && requiresAtomicStartTransition)
                     {
-                        cancelSucceeded = Interlocked.CompareExchange(ref _status, (int)TaskStatus.Canceled, (int)TaskStatus.WaitingToRun) == (int)TaskStatus.WaitingToRun;
+                        cancelSucceeded = cancelSucceeded || Interlocked.CompareExchange(ref _status, (int)TaskStatus.Canceled, (int)TaskStatus.Created) == (int)TaskStatus.WaitingToRun;
+                        cancelSucceeded = cancelSucceeded || Interlocked.CompareExchange(ref _status, (int)TaskStatus.Canceled, (int)TaskStatus.WaitingForActivation) == (int)TaskStatus.WaitingToRun;
+                        cancelSucceeded = cancelSucceeded || Interlocked.CompareExchange(ref _status, (int)TaskStatus.Canceled, (int)TaskStatus.WaitingToRun) == (int)TaskStatus.WaitingToRun;
                     }
                 }
             }
