@@ -528,6 +528,7 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void DenyChildAttachTest()
         {
+            Assert.Fail();
             var mre = new ManualResetEventSlim();
             Task nested = null;
             Task parent = Task.Factory.StartNew(() => {
