@@ -13,16 +13,17 @@ namespace System.Threading.Tasks
 
         private static int _lastId;
         private readonly Action _action;
-        private readonly int _id = Interlocked.Increment(ref _lastId) - 1;
+        private readonly int _id;
+        private readonly TaskCreationOptions _options;
         private readonly Task _parent;
         private readonly TaskScheduler _scheduler;
-        private readonly TaskCreationOptions _options;
         private CancellationToken _cancellationToken;
-        private ExecutionContext _capturedContext; // TODO
+        private ExecutionContext _capturedContext;
+        // TODO use _capturedContext ?
         private AggregateException _exception;
         private int _isDisposed = 0;
         private object _state;
-        private int _status = (int)TaskStatus.Created;
+        private int _status;
         private StructNeedle<ManualResetEventSlim> _waitHandle;
 
         public Task(Action action)
@@ -59,6 +60,8 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException("scheduler");
             }
+            _id = Interlocked.Increment(ref _lastId) - 1;
+            _status = (int)TaskStatus.Created;
             if ((creationOptions & TaskCreationOptions.AttachedToParent) != TaskCreationOptions.None)
             {
                 _parent = Current;
@@ -71,19 +74,13 @@ namespace System.Threading.Tasks
             _state = state;
             _scheduler = scheduler;
             _waitHandle = new ManualResetEventSlim(false);
-            //TODO validate creationOptions
+            // TODO validate creationOptions
             _options = creationOptions;
             if (cancellationToken.CanBeCanceled)
             {
                 // TODO
                 // AssignCancellationToken(cancellationToken, null, null);
             }
-        }
-
-        private void AddChild(Task task)
-        {
-            // TODO
-            throw new NotImplementedException();
         }
 
         ~Task()
@@ -112,6 +109,14 @@ namespace System.Threading.Tasks
             get
             {
                 return _state;
+            }
+        }
+
+        public TaskCreationOptions CreationOptions
+        {
+            get
+            {
+                return _options;
             }
         }
 
@@ -185,14 +190,6 @@ namespace System.Threading.Tasks
             get
             {
                 return _current;
-            }
-        }
-
-        public TaskCreationOptions CreationOptions
-        {
-            get
-            {
-                return _options;
             }
         }
 
@@ -394,11 +391,6 @@ namespace System.Threading.Tasks
             return true;
         }
 
-        private void AddException(Exception exception)
-        {
-            AggregateExceptionHelper.AddException(ref _exception, exception);
-        }
-
         [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "Microsoft's Design")]
         protected virtual void Dispose(bool disposing)
         {
@@ -420,6 +412,17 @@ namespace System.Threading.Tasks
                 }
             }
             Thread.VolatileWrite(ref _isDisposed, 1);
+        }
+
+        private void AddChild(Task task)
+        {
+            // TODO
+            throw new NotImplementedException();
+        }
+
+        private void AddException(Exception exception)
+        {
+            AggregateExceptionHelper.AddException(ref _exception, exception);
         }
 
         private void Schedule(TaskScheduler scheduler)
