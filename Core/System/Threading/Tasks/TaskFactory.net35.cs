@@ -20,6 +20,13 @@ namespace System.Threading.Tasks
             return result;
         }
 
+        public Task StartNew(Action action, TaskCreationOptions creationOptions)
+        {
+            var result = new Task(action, null, CancellationToken.None, creationOptions, TaskScheduler.Default);
+            result.Start();
+            return result;
+        }
+
         public Task StartNew(Action action, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
             var result = new Task(action, null, cancellationToken, creationOptions, scheduler);
@@ -65,6 +72,13 @@ namespace System.Threading.Tasks
         public Task<TResult> StartNew<TResult>(Func<TResult> function, CancellationToken cancellationToken)
         {
             var result = new Task<TResult>(function, null, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
+            result.Start();
+            return result;
+        }
+
+        public Task<TResult> StartNew<TResult>(Func<TResult> function, TaskCreationOptions creationOptions)
+        {
+            var result = new Task<TResult>(function, null, CancellationToken.None, creationOptions, TaskScheduler.Default);
             result.Start();
             return result;
         }
