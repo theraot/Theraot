@@ -14,7 +14,7 @@ namespace System.Threading.Tasks
         private static int _lastId;
         private readonly Action _action;
         private readonly int _id;
-        private readonly TaskCreationOptions _options;
+        private readonly TaskCreationOptions _creationOptions;
         private readonly Task _parent;
         private readonly TaskScheduler _scheduler;
         private CancellationToken _cancellationToken;
@@ -75,7 +75,7 @@ namespace System.Threading.Tasks
             _scheduler = scheduler;
             _waitHandle = new ManualResetEventSlim(false);
             // TODO validate creationOptions
-            _options = creationOptions;
+            _creationOptions = creationOptions;
             if (cancellationToken.CanBeCanceled)
             {
                 // TODO
@@ -116,7 +116,7 @@ namespace System.Threading.Tasks
         {
             get
             {
-                return _options;
+                return _creationOptions;
             }
         }
 
