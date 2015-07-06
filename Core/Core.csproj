@@ -259,6 +259,7 @@
     <Compile Include="System\Threading\ReaderWriterLockSlim.helpers.cs" />
     <Compile Include="System\Threading\ReaderWriterLockSlim.net35.cs" />
     <Compile Include="System\Threading\Tasks\Task1.net35.cs" />
+    <Compile Include="System\Threading\Tasks\TaskContinuationOptions.net35.cs" />
     <Compile Include="System\Threading\Tasks\TaskFactory.net35.cs" />
     <Compile Include="System\Threading\Tasks\TaskSchedulerException.net35.cs" />
     <Compile Include="System\Threading\Tasks\ThreadPoolTaskScheduler.net35.cs" />
