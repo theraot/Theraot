@@ -8,11 +8,7 @@ using System.Threading;
 
 #endif
 
-#if NET40 || NET45
-
 using System.Runtime.Serialization;
-
-#endif
 
 namespace Theraot.Core
 {
@@ -65,7 +61,6 @@ namespace Theraot.Core
         }
 
 #endif
-#if NET40 || NET45
 
         public NewOperationCanceledException(string message)
             : base(message)
@@ -84,7 +79,5 @@ namespace Theraot.Core
         {
             //Empty
         }
-
-#endif
     }
 }

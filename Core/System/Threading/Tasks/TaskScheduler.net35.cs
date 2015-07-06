@@ -2,29 +2,18 @@
 #if NET20 || NET30 || NET35
 
 using System.Collections.Generic;
-using Theraot.Threading;
 
 namespace System.Threading.Tasks
 {
-    public abstract class TaskScheduler
+    public abstract partial class TaskScheduler
     {
         private static readonly TaskScheduler _default = new ThreadPoolTaskScheduler();
-
         private static int _lastId;
-
         private readonly int _id;
 
         protected TaskScheduler()
         {
             _id = Interlocked.Increment(ref _lastId) - 1;
-        }
-
-        public static TaskScheduler Default
-        {
-            get
-            {
-                return _default;
-            }
         }
 
         public static TaskScheduler Current
@@ -40,6 +29,13 @@ namespace System.Threading.Tasks
             }
         }
 
+        public static TaskScheduler Default
+        {
+            get
+            {
+                return _default;
+            }
+        }
         public int Id
         {
             get
@@ -56,10 +52,23 @@ namespace System.Threading.Tasks
             }
         }
 
+        internal virtual bool RequiresAtomicStartTransition
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         public static TaskScheduler FromCurrentSynchronizationContext()
         {
             // TODO
             throw new NotImplementedException();
+        }
+
+        internal virtual void NotifyWorkItemProgress()
+        {
+            // Empty
         }
 
         internal void RunAndWait(Task task, bool taskWasPreviouslyQueued)
@@ -86,19 +95,6 @@ namespace System.Threading.Tasks
         }
 
         protected abstract bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued);
-
-        internal virtual void NotifyWorkItemProgress()
-        {
-            // Empty
-        }
-
-        internal virtual bool RequiresAtomicStartTransition
-        {
-            get
-            {
-                return true;
-            }
-        }
     }
 }
 
