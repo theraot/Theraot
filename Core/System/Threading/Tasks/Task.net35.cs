@@ -188,7 +188,7 @@ namespace System.Threading.Tasks
             }
         }
 
-        internal TaskCreationOptions Options
+        public TaskCreationOptions CreationOptions
         {
             get
             {
