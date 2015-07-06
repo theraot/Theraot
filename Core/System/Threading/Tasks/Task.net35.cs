@@ -26,25 +26,35 @@ namespace System.Threading.Tasks
         private StructNeedle<ManualResetEventSlim> _waitHandle;
 
         public Task(Action action)
+            : this(action, null, default(CancellationToken), TaskCreationOptions.None, TaskScheduler.Default)
+        {
+            // Empty
+        }
+
+        public Task(Action action, CancellationToken cancellationToken)
+            : this(action, null, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default)
+        {
+            // Empty
+        }
+
+        public Task(Action action, TaskCreationOptions creationOptions)
+            : this(action, null, default(CancellationToken), creationOptions, TaskScheduler.Default)
+        {
+            // Empty
+        }
+
+        public Task(Action action, CancellationToken cancellationToken, TaskCreationOptions creationOptions)
+            : this(action, null, cancellationToken, creationOptions, TaskScheduler.Default)
+        {
+            // Empty
+        }
+
+        internal Task(Action action, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
             if (ReferenceEquals(action, null))
             {
                 throw new ArgumentNullException("action");
             }
-            _scheduler = TaskScheduler.Default;
-            _action = action;
-            _waitHandle = new ManualResetEventSlim(false);
-            _state = null;
-        }
-
-        public Task(Action action, TaskCreationOptions creationOptions)
-            : this(action)
-        {
-            _options = creationOptions;
-        }
-
-        internal Task(Action action, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
-        {
             if (ReferenceEquals(scheduler, null))
             {
                 throw new ArgumentNullException("scheduler");
@@ -57,7 +67,7 @@ namespace System.Threading.Tasks
                     _parent.AddChild(this);
                 }
             }
-            _action = action ?? ActionHelper.GetNoopAction();
+            _action = action;
             _state = state;
             _scheduler = scheduler;
             _waitHandle = new ManualResetEventSlim(false);
