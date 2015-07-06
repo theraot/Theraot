@@ -13,11 +13,10 @@ namespace Theraot.Threading.Needles
     public partial class WeakNeedle<T> : INeedle<T>, IEquatable<WeakNeedle<T>>, IRecyclableNeedle<T>
         where T : class
     {
-        // we are storing the values directly to prevent premature garbage collection...
-        // TODO: We don't have a way to distinguish a faulted needle from a needle that holds an Exception
         private readonly int _hashCode;
         private readonly bool _trackResurrection;
         private GCHandle _handle;
+        private volatile bool _faultExpected;
         private int _managedDisposal;
 
         public WeakNeedle()
@@ -54,7 +53,7 @@ namespace Theraot.Threading.Needles
                 object target;
                 if (ReadTarget(out target))
                 {
-                    if (target is Exception)
+                    if (target is Exception && _faultExpected)
                     {
                         return target as Exception;
                     }
@@ -70,8 +69,7 @@ namespace Theraot.Threading.Needles
                 object target;
                 if (ReadTarget(out target))
                 {
-                    var needle = target as T;
-                    if (needle != null)
+                    if (target is T && !_faultExpected)
                     {
                         return true;
                     }
@@ -87,7 +85,7 @@ namespace Theraot.Threading.Needles
                 object target;
                 if (ReadTarget(out target))
                 {
-                    if (target is Exception)
+                    if (target is Exception && _faultExpected)
                     {
                         return true;
                     }
@@ -113,7 +111,7 @@ namespace Theraot.Threading.Needles
                 if (ReadTarget(out target))
                 {
                     var inner = target as T;
-                    if (inner != null)
+                    if (inner != null && !_faultExpected)
                     {
                         return inner;
                     }
@@ -217,12 +215,14 @@ namespace Theraot.Threading.Needles
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
         protected void SetTargetError(Exception error)
         {
+            _faultExpected = true;
             WriteTarget(error);
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
         protected void SetTargetValue(T value)
         {
+            _faultExpected = false;
             WriteTarget(value);
         }
 
