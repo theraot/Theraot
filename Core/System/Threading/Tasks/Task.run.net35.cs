@@ -24,7 +24,25 @@ namespace System.Threading.Tasks
         public static Task Run(Func<Task> action)
         {
             // TODO: change to continue with and promise task?
-            var result = new Task(() => action().Wait(), CancellationToken.None, TaskCreationOptions.DenyChildAttach);
+            var result = new Task
+                (
+                    () =>
+                    {
+                        var task = action();
+                        task.InternalStart(task.Scheduler);
+                        task.Wait();
+                        if (task.IsFaulted)
+                        {
+                            throw task.Exception;
+                        }
+                        else if (task.IsCanceled)
+                        {
+                            throw new TaskCanceledException(task);
+                        }
+                    },
+                    CancellationToken.None,
+                    TaskCreationOptions.DenyChildAttach
+                );
             result.Start();
             return result;
         }
@@ -32,7 +50,25 @@ namespace System.Threading.Tasks
         public static Task Run(Func<Task> action, CancellationToken cancellationToken)
         {
             // TODO: change to continue with and promise task?
-            var result = new Task(() => action().Wait(), cancellationToken, TaskCreationOptions.DenyChildAttach);
+            var result = new Task
+                (
+                    () =>
+                    {
+                        var task = action();
+                        task.InternalStart(task.Scheduler);
+                        task.Wait();
+                        if (task.IsFaulted)
+                        {
+                            throw task.Exception;
+                        }
+                        else if (task.IsCanceled)
+                        {
+                            throw new TaskCanceledException(task);
+                        }
+                    },
+                    cancellationToken,
+                    TaskCreationOptions.DenyChildAttach
+                );
             if (!cancellationToken.IsCancellationRequested)
             {
                 result.InternalStart(result.Scheduler);
