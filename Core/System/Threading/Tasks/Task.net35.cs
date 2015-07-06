@@ -19,7 +19,7 @@ namespace System.Threading.Tasks
         private readonly TaskCreationOptions _creationOptions;
         private readonly int _id;
         private readonly Task _parent;
-        private readonly TaskScheduler _scheduler;
+        private TaskScheduler _scheduler;
         internal CancellationToken _cancellationToken;
         private ExecutionContext _capturedContext;
         private AggregateException _exception;
@@ -243,11 +243,8 @@ namespace System.Threading.Tasks
 
         public void RunSynchronously(TaskScheduler scheduler)
         {
-            Start(scheduler);
-            while (!IsCompleted)
-            {
-                _scheduler.RunAndWait(this, true);
-            }
+            _scheduler = scheduler;
+            RunSynchronously();
         }
 
         public void Start()
