@@ -1,4 +1,4 @@
-﻿#if FAT
+﻿// Needed for NET35
 
 using System;
 using System.Collections;
@@ -1284,5 +1284,3 @@ namespace Theraot.Collections.ThreadSafe
         }
     }
 }
-
-#endif
