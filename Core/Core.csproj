@@ -396,10 +396,15 @@
     <Compile Include="Theraot\Core\EnumHelper.cs" />
     <Compile Include="Theraot\Core\EqualityComparerHelper.cs" />
     <Compile Include="Theraot\Core\EqualityComparerHelper1.cs" />
-    <Compile Include="Theraot\Core\Ersatz.cs">
+    <Compile Include="Theraot\Core\ErsatzAction.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>Ersatz.tt</DependentUpon>
+      <DependentUpon>ErsatzAction.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Theraot\Core\ErsatzFunc.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ErsatzFunc.tt</DependentUpon>
     </Compile>
     <Compile Include="Theraot\Core\FolderEnumeration.cs" />
     <Compile Include="Theraot\Core\FuncHelper.cs">
@@ -656,10 +661,6 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ActionHelper.cs</LastGenOutput>
     </None>
-    <None Include="Theraot\Core\Ersatz.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Ersatz.cs</LastGenOutput>
-    </None>
     <None Include="Theraot\Core\FuncHelper.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>FuncHelper.cs</LastGenOutput>
@@ -735,6 +736,15 @@
   <ItemGroup>
     <None Include="OpenSourceKey.snk" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Theraot\Core\ErsatzAction.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ErsatzAction.cs</LastGenOutput>
+    </Content>
+    <Content Include="Theraot\Core\ErsatzFunc.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ErsatzFunc.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
   <ItemGroup />
 </Project>
