@@ -172,6 +172,14 @@ namespace System.Threading.Tasks
             }
         }
 
+        public TaskStatus Status
+        {
+            get
+            {
+                return (TaskStatus)Thread.VolatileRead(ref _status);
+            }
+        }
+        
         [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Microsoft's Design")]
         WaitHandle IAsyncResult.AsyncWaitHandle
         {
