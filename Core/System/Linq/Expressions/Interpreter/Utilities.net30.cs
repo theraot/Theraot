@@ -490,7 +490,19 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int GetHashCode(ICollection<T> obj)
         {
-            return obj.ListHashCode();
+            return ListHashCode(obj);
+        }
+
+        // We could probably improve the hashing here
+        private static int ListHashCode<T>(IEnumerable<T> list)
+        {
+            var cmp = EqualityComparer<T>.Default;
+            int h = 6551;
+            foreach (T t in list)
+            {
+                h ^= (h << 5) ^ cmp.GetHashCode(t);
+            }
+            return h;
         }
     }
 }
