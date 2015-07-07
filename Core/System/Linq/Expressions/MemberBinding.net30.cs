@@ -1,3 +1,5 @@
+#if NET20 || NET30
+
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
@@ -6,6 +8,7 @@ using System.Reflection;
 
 namespace System.Linq.Expressions
 {
+
     /// <summary>
     /// Describes the binding types that are used in MemberInitExpression objects.
     /// </summary>
@@ -71,3 +74,5 @@ namespace System.Linq.Expressions
         }
     }
 }
+
+#endif

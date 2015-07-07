@@ -136,6 +136,8 @@ namespace System.Linq.Expressions
         }
     }
 
+#if NET20 || NET30
+
     public partial class Expression
     {
         /// <summary>
@@ -157,7 +159,7 @@ namespace System.Linq.Expressions
             }
         }
 
-        #region ArrayAccess
+    #region ArrayAccess
 
         /// <summary>
         /// Creates an <see cref="IndexExpression"></see> to access an array.
@@ -208,9 +210,9 @@ namespace System.Linq.Expressions
             return new IndexExpression(array, null, indexList);
         }
 
-        #endregion
+    #endregion
 
-        #region Property
+    #region Property
         /// <summary>
         /// Creates an <see cref="IndexExpression"/> representing the access to an indexed property.
         /// </summary>
@@ -226,7 +228,7 @@ namespace System.Linq.Expressions
             return Property(instance, pi, arguments);
         }
 
-        #region methods for finding a PropertyInfo by its name
+    #region methods for finding a PropertyInfo by its name
         /// <summary>
         /// The method finds the instance property with the specified name in a type. The property's type signature needs to be compatible with
         /// the arguments if it is a indexer. If the arguments is null or empty, we get a normal property.
@@ -350,7 +352,7 @@ namespace System.Linq.Expressions
             }
             return true;
         }
-        #endregion
+    #endregion
 
         /// <summary>
         /// Creates an <see cref="IndexExpression"/> representing the access to an indexed property.
@@ -505,6 +507,8 @@ namespace System.Linq.Expressions
                 throw Error.IncorrectNumberOfMethodCallArguments(method);
             }
         }
-        #endregion
+    #endregion
     }
+
+#endif
 }

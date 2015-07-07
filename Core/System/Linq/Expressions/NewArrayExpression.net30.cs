@@ -12,6 +12,8 @@ using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
+#if NET20 || NET30
+
     /// <summary>
     /// Represents creating a new array and possibly initializing the elements of the new array.
     /// </summary>
@@ -85,6 +87,8 @@ namespace System.Linq.Expressions
         }
     }
 
+#endif
+
     internal sealed class NewArrayInitExpression : NewArrayExpression
     {
         internal NewArrayInitExpression(Type type, ReadOnlyCollection<Expression> expressions)
@@ -120,9 +124,11 @@ namespace System.Linq.Expressions
         }
     }
 
+#if NET20 || NET30
+
     public partial class Expression
     {
-        #region NewArrayInit
+    #region NewArrayInit
 
 
         /// <summary>
@@ -187,9 +193,9 @@ namespace System.Linq.Expressions
             return NewArrayExpression.Make(ExpressionType.NewArrayInit, type.MakeArrayType(), initializerList);
         }
 
-        #endregion
+    #endregion
 
-        #region NewArrayBounds
+    #region NewArrayBounds
 
 
         /// <summary>
@@ -249,7 +255,9 @@ namespace System.Linq.Expressions
 
             return NewArrayExpression.Make(ExpressionType.NewArrayBounds, arrayType, bounds.ToReadOnly());
         }
-        #endregion
+    #endregion
 
     }
+
+#endif
 }

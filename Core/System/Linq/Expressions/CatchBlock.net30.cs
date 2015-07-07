@@ -91,6 +91,8 @@ namespace System.Linq.Expressions
         }
     }
 
+#if NET20 || NET30
+
     public partial class Expression
     {
         /// <summary>
@@ -172,4 +174,6 @@ namespace System.Linq.Expressions
             return new CatchBlock(type, variable, body, filter);
         }
     }
+
+#endif
 }

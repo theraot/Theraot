@@ -9,6 +9,8 @@ using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
+#if NET20 || NET30
+
     /// <summary>
     /// Represents accessing a field or property.
     /// </summary>
@@ -92,6 +94,8 @@ namespace System.Linq.Expressions
         }
     }
 
+#endif
+
     internal class FieldExpression : MemberExpression
     {
         private readonly FieldInfo _field;
@@ -133,9 +137,11 @@ namespace System.Linq.Expressions
         }
     }
 
+#if NET20 || NET30
+
     public partial class Expression
     {
-        #region Field
+    #region Field
 
         /// <summary>
         /// Creates a <see cref="MemberExpression"/> accessing a field.
@@ -213,9 +219,9 @@ namespace System.Linq.Expressions
             }
             return Expression.Field(expression, fi);
         }
-        #endregion
+    #endregion
 
-        #region Property
+    #region Property
 
         /// <summary>
         /// Creates a <see cref="MemberExpression"/> accessing a property.
@@ -348,7 +354,7 @@ namespace System.Linq.Expressions
             return false;
         }
 
-        #endregion
+    #endregion
 
         /// <summary>
         /// Creates a <see cref="MemberExpression"/> accessing a property or field.
@@ -399,4 +405,6 @@ namespace System.Linq.Expressions
             throw Error.MemberNotFieldOrProperty(member);
         }
     }
+
+#endif
 }

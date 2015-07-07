@@ -16,6 +16,8 @@ using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
+#if NET20 || NET30
+
     /// <summary>
     /// Creates a <see cref="LambdaExpression"/> node.
     /// This captures a block of code that is similar to a .NET method body.
@@ -119,7 +121,7 @@ namespace System.Linq.Expressions
             return Compiler.LambdaCompiler.Compile(this);
 #else
             return new System.Linq.Expressions.Interpreter.LightCompiler().CompileTop(this).CreateDelegate();
-#endif 
+#endif
         }
 
         /// <summary>
@@ -141,8 +143,12 @@ namespace System.Linq.Expressions
 
 #if FEATURE_CORECLR
         internal abstract LambdaExpression Accept(Compiler.StackSpiller spiller);
-#endif 
+#endif
     }
+
+#endif
+
+#if NET20 || NET30
 
     /// <summary>
     /// Defines a <see cref="Expression{TDelegate}"/> node.
@@ -169,7 +175,7 @@ namespace System.Linq.Expressions
             return (TDelegate)(object)Compiler.LambdaCompiler.Compile(this);
 #else
             return (TDelegate)(object)new System.Linq.Expressions.Interpreter.LightCompiler().CompileTop(this).CreateDelegate();
-#endif 
+#endif
         }
 
         /// <summary>
@@ -207,8 +213,10 @@ namespace System.Linq.Expressions
         {
             return new Expression<TDelegate>(body, name, tailCall, parameters);
         }
-#endif  
+#endif
     }
+
+#endif
 
 #if !FEATURE_CORECLR
     // Seperate expression creation class to hide the CreateExpressionFunc function from users reflecting on Expression<T>
@@ -220,6 +228,8 @@ namespace System.Linq.Expressions
         }
     }
 #endif
+
+#if NET20 || NET30
 
     public partial class Expression
     {
@@ -694,4 +704,6 @@ namespace System.Linq.Expressions
             return Compiler.DelegateHelpers.MakeDelegateType(typeArgs);
         }
     }
+
+#endif
 }

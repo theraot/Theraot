@@ -9,6 +9,8 @@ using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
+#if NET20 || NET30
+
     /// <summary>
     /// Represents an expression that has a constant value.
     /// </summary>
@@ -78,6 +80,8 @@ namespace System.Linq.Expressions
         }
     }
 
+#endif
+
     internal class TypedConstantExpression : ConstantExpression
     {
         private readonly Type _type;
@@ -93,6 +97,8 @@ namespace System.Linq.Expressions
             get { return _type; }
         }
     }
+
+#if NET20 || NET30
 
     public partial class Expression
     {
@@ -135,4 +141,6 @@ namespace System.Linq.Expressions
             return ConstantExpression.Make(value, type);
         }
     }
+
+#endif
 }

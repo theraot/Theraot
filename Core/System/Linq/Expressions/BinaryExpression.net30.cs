@@ -10,6 +10,8 @@ using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
+#if NET20 || NET30
+
     /// <summary>
     /// Represents an expression that has a binary operator.
     /// </summary>
@@ -479,7 +481,7 @@ namespace System.Linq.Expressions
         }
     }
 
-    // Optimized representation of simple logical expressions:
+        // Optimized representation of simple logical expressions:
     // && || == != > < >= <=
     internal sealed class LogicalBinaryExpression : BinaryExpression
     {
@@ -550,6 +552,8 @@ namespace System.Linq.Expressions
         }
     }
 
+#endif
+
     // OpAssign with conversion
     // This is not a frequently used node, but rather we want to save every
     // other BinaryExpression from holding onto the null conversion lambda
@@ -612,9 +616,11 @@ namespace System.Linq.Expressions
         }
     }
 
+#if NET20 || NET30
+
     public partial class Expression
     {
-        #region Assign
+#region Assign
 
         /// <summary>
         /// Creates a <see cref="BinaryExpression"/> that represents an assignment operation.
@@ -637,7 +643,7 @@ namespace System.Linq.Expressions
             return new AssignBinaryExpression(left, right);
         }
 
-        #endregion
+#endregion
 
 
         private static BinaryExpression GetUserDefinedBinaryOperator(ExpressionType binaryType, string name, Expression left, Expression right, bool liftToNull)
@@ -1040,7 +1046,7 @@ namespace System.Linq.Expressions
             }
         }
 
-        #region Equality Operators
+#region Equality Operators
 
 
         /// <summary>
@@ -1184,9 +1190,9 @@ namespace System.Linq.Expressions
             throw Error.BinaryOperatorNotDefined(binaryType, left.Type, right.Type);
         }
 
-        #endregion
+#endregion
 
-        #region Comparison Expressions
+#region Comparison Expressions
 
 
         /// <summary>
@@ -1341,9 +1347,9 @@ namespace System.Linq.Expressions
             return GetUserDefinedBinaryOperatorOrThrow(binaryType, opName, left, right, liftToNull);
         }
 
-        #endregion
+#endregion
 
-        #region Boolean Expressions
+#region Boolean Expressions
 
 
         /// <summary>
@@ -1453,9 +1459,9 @@ namespace System.Linq.Expressions
             return new MethodBinaryExpression(ExpressionType.OrElse, left, right, returnType, method);
         }
 
-        #endregion
+#endregion
 
-        #region Coalescing Expressions
+#region Coalescing Expressions
 
 
         /// <summary>
@@ -1553,9 +1559,9 @@ namespace System.Linq.Expressions
 
 
 
-        #endregion
+#endregion
 
-        #region Arithmetic Expressions
+#region Arithmetic Expressions
 
 
         /// <summary>
@@ -2944,9 +2950,9 @@ namespace System.Linq.Expressions
             return GetMethodBasedAssignOperator(ExpressionType.PowerAssign, left, right, method, conversion, true);
         }
 
-        #endregion
+#endregion
 
-        #region ArrayIndex Expression
+#region ArrayIndex Expression
 
 
         /// <summary>
@@ -2976,6 +2982,8 @@ namespace System.Linq.Expressions
 
             return new SimpleBinaryExpression(ExpressionType.ArrayIndex, array, index, arrayType.GetElementType());
         }
-        #endregion
+#endregion
     }
+
+#endif
 }

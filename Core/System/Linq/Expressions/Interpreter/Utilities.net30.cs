@@ -494,7 +494,7 @@ namespace System.Linq.Expressions.Interpreter
         }
 
         // We could probably improve the hashing here
-        private static int ListHashCode<T>(IEnumerable<T> list)
+        private static int ListHashCode(IEnumerable<T> list)
         {
             var cmp = EqualityComparer<T>.Default;
             int h = 6551;
