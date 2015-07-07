@@ -391,6 +391,16 @@ namespace Theraot.Collections
             }
         }
 
+        public static T[] Copy<T>(this T[] array)
+        {
+            // Copyright (c) Microsoft. All rights reserved.
+            // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+            T[] copy = new T[array.Length];
+            Array.Copy(array, copy, array.Length);
+            return copy;
+        }
+
         public static void CopyTo<TItem>(this IEnumerable<TItem> collection, TItem[] array)
         {
             CopyTo(collection, array, 0);
