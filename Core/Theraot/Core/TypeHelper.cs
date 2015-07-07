@@ -196,40 +196,6 @@ namespace Theraot.Core
             return constructorInfo == null;
         }
 
-        public static bool InheritsFrom(this Type type, Type baseType)
-        {
-            if (baseType.IsGenericType)
-            {
-                while (type != null)
-                {
-                    if (type.IsGenericType)
-                    {
-                        type = type.GetGenericTypeDefinition();
-                        if (baseType == type)
-                        {
-                            return true;
-                        }
-                    }
-                    else
-                    {
-                        type = type.BaseType;
-                    }
-                }
-            }
-            else
-            {
-                while (type != null)
-                {
-                    if (baseType == type)
-                    {
-                        return true;
-                    }
-                    type = type.BaseType;
-                }
-            }
-            return false;
-        }
-
         public static bool IsArrayTypeAssignableTo(Type type, Type target)
         {
             if (!type.IsArray || !target.IsArray)
@@ -435,6 +401,41 @@ namespace Theraot.Core
                 )
             {
                 return true;
+            }
+            return false;
+        }
+
+        public static bool IsSameOrSubclass(this Type type, Type baseType)
+        {
+            if (baseType.IsGenericType)
+            {
+                /*while (type != null)
+                {
+                    if (type.IsGenericType)
+                    {
+                        type = type.GetGenericTypeDefinition();
+                        if (baseType == type)
+                        {
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        type = type.BaseType;
+                    }
+                }*/
+                return false;
+            }
+            else
+            {
+                while (type != null)
+                {
+                    if (baseType == type)
+                    {
+                        return true;
+                    }
+                    type = type.BaseType;
+                }
             }
             return false;
         }
