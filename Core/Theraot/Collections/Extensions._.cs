@@ -15,6 +15,17 @@ namespace Theraot.Collections
     [global::System.Diagnostics.DebuggerNonUserCode]
     public static partial class Extensions
     {
+        public static T[] AddFirst<T>(this IList<T> list, T item)
+        {
+            // Copyright (c) Microsoft. All rights reserved.
+            // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+            T[] res = new T[list.Count + 1];
+            res[0] = item;
+            list.CopyTo(res, 1);
+            return res;
+        }
+
         public static void CanCopyTo(int count, Array array)
         {
             if (array == null)
