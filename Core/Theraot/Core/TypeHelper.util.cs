@@ -1,4 +1,4 @@
-﻿// Needed for NET40
+﻿// Needed for NET30
 
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
@@ -385,6 +385,15 @@ namespace Theraot.Core
             return type.IsGenericType && !type.IsGenericTypeDefinition;
         }
 
+        public static bool IsContravariant(Type type)
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException("type");
+            }
+            return PrivateIsContravariant(type);
+        }
+
         public static bool IsConvertible(Type type)
         {
             type = GetNonNullableType(type);
@@ -411,6 +420,24 @@ namespace Theraot.Core
                 return true;
             }
             return false;
+        }
+
+        public static bool IsCovariant(Type type)
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException("type");
+            }
+            return PrivateIsCovariant(type);
+        }
+
+        public static bool IsDelegate(Type type)
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException("type");
+            }
+            return PrivateIsDelegate(type);
         }
 
         public static bool IsEquivalentTo(this Type t1, Type t2)
@@ -538,6 +565,15 @@ namespace Theraot.Core
                 return true;
             }
             return false;
+        }
+
+        public static bool IsInvariant(Type type)
+        {
+            if (type == null)
+            {
+                throw new ArgumentNullException("type");
+            }
+            return PrivateIsInvariant(type);
         }
 
         public static bool IsLegalExplicitVariantDelegateConversion(Type source, Type target)
@@ -756,40 +792,20 @@ namespace Theraot.Core
             return false;
         }
 
-        public static bool IsContravariant(Type type)
+        internal static void ValidateType(Type type)
         {
-            if (type == null)
+            if (type != typeof(void))
             {
-                throw new ArgumentNullException("type");
+                // A check to avoid a bunch of reflection (currently not supported) during cctor
+                if (type.IsGenericTypeDefinition)
+                {
+                    throw new ArgumentException("type is Generic");
+                }
+                if (type.ContainsGenericParameters)
+                {
+                    throw new ArgumentException("type contains generic parameters.");
+                }
             }
-            return PrivateIsContravariant(type);
-        }
-
-        public static bool IsCovariant(Type type)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException("type");
-            }
-            return PrivateIsCovariant(type);
-        }
-
-        public static bool IsDelegate(Type type)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException("type");
-            }
-            return PrivateIsDelegate(type);
-        }
-
-        public static bool IsInvariant(Type type)
-        {
-            if (type == null)
-            {
-                throw new ArgumentNullException("type");
-            }
-            return PrivateIsInvariant(type);
         }
 
         private static bool PrivateIsContravariant(Type type)
