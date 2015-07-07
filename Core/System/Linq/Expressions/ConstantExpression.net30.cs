@@ -1,201 +1,137 @@
-#if NET20 || NET30
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System;
+using System.Diagnostics;
+using System.Dynamic.Utils;
 using System.Reflection;
-using System.Reflection.Emit;
-using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
-    public sealed class ConstantExpression : Expression
+    /// <summary>
+    /// Represents an expression that has a constant value.
+    /// </summary>
+    [DebuggerTypeProxy(typeof(Expression.ConstantExpressionProxy))]
+    public class ConstantExpression : Expression
     {
-        private object value;
+        // Possible optimization: we could have a Constant<T> subclass that
+        // stores the unboxed value.
+        private readonly object _value;
 
-        internal ConstantExpression(object value, Type type)
-            : base(ExpressionType.Constant, type)
+        internal ConstantExpression(object value)
         {
-            this.value = value;
+            _value = value;
         }
 
-        public object Value
+        internal static ConstantExpression Make(object value, Type type)
         {
-            get
+            if ((value == null && type == typeof(object)) || (value != null && value.GetType() == type))
             {
-                return value;
-            }
-        }
-
-        internal static bool IsNull(Expression e)
-        {
-            var c = e as ConstantExpression;
-            return c != null && c.value == null;
-        }
-
-        internal override void Emit(EmitContext ec)
-        {
-            if (Type.IsNullable())
-            {
-                EmitNullableConstant(ec, Type, value);
-                return;
-            }
-
-            EmitConstant(ec, Type, value);
-        }
-
-        private void EmitConstant(EmitContext ec, Type type, object value)
-        {
-            var ig = ec.ig;
-
-            switch (Type.GetTypeCode(type))
-            {
-                case TypeCode.Byte:
-                    ig.Emit(OpCodes.Ldc_I4, (int)((byte)value));
-                    return;
-
-                case TypeCode.SByte:
-                    ig.Emit(OpCodes.Ldc_I4, (int)((sbyte)value));
-                    return;
-
-                case TypeCode.Int16:
-                    ig.Emit(OpCodes.Ldc_I4, (int)((short)value));
-                    return;
-
-                case TypeCode.UInt16:
-                    ig.Emit(OpCodes.Ldc_I4, (int)((ushort)value));
-                    return;
-
-                case TypeCode.Int32:
-                    ig.Emit(OpCodes.Ldc_I4, (int)value);
-                    return;
-
-                case TypeCode.UInt32:
-                    ig.Emit(OpCodes.Ldc_I4, unchecked((int)((uint)Value)));
-                    return;
-
-                case TypeCode.Int64:
-                    ig.Emit(OpCodes.Ldc_I8, (long)value);
-                    return;
-
-                case TypeCode.UInt64:
-                    ig.Emit(OpCodes.Ldc_I8, unchecked((long)((ulong)value)));
-                    return;
-
-                case TypeCode.Boolean:
-                    if ((bool)Value)
-                        ig.Emit(OpCodes.Ldc_I4_1);
-                    else
-                        ec.ig.Emit(OpCodes.Ldc_I4_0);
-                    return;
-
-                case TypeCode.Char:
-                    ig.Emit(OpCodes.Ldc_I4, (int)((char)value));
-                    return;
-
-                case TypeCode.Single:
-                    ig.Emit(OpCodes.Ldc_R4, (float)value);
-                    return;
-
-                case TypeCode.Double:
-                    ig.Emit(OpCodes.Ldc_R8, (double)value);
-                    return;
-
-                case TypeCode.Decimal:
-                    {
-                        Decimal v = (decimal)value;
-                        int[] words = Decimal.GetBits(v);
-                        int power = (words[3] >> 16) & 0xff;
-                        Type ti = typeof(int);
-
-                        if (power == 0 && v <= int.MaxValue && v >= int.MinValue)
-                        {
-                            ig.Emit(OpCodes.Ldc_I4, (int)v);
-
-                            ig.Emit(OpCodes.Newobj, typeof(Decimal).GetConstructor(new Type[1] { ti }));
-                            return;
-                        }
-                        ig.Emit(OpCodes.Ldc_I4, words[0]);
-                        ig.Emit(OpCodes.Ldc_I4, words[1]);
-                        ig.Emit(OpCodes.Ldc_I4, words[2]);
-                        // sign
-                        ig.Emit(OpCodes.Ldc_I4, words[3] >> 31);
-
-                        // power
-                        ig.Emit(OpCodes.Ldc_I4, power);
-
-                        var types = new Type[5]
-                        {
-                            ti,
-                            ti,
-                            ti,
-                            typeof(bool),
-                            typeof(byte)
-                        };
-
-                        ig.Emit(OpCodes.Newobj, typeof(Decimal).GetConstructor(types));
-                        return;
-                    }
-
-                case TypeCode.DateTime:
-                    {
-                        var date = (DateTime)value;
-                        var local = ig.DeclareLocal(typeof(DateTime));
-
-                        ig.Emit(OpCodes.Ldloca, local);
-                        ig.Emit(OpCodes.Ldc_I8, date.Ticks);
-                        ig.Emit(OpCodes.Ldc_I4, (int)date.Kind);
-
-                        var types = new[]
-                        {
-                            typeof(long),
-                            typeof(DateTimeKind)
-                        };
-
-                        ig.Emit(OpCodes.Call, typeof(DateTime).GetConstructor(types));
-                        ig.Emit(OpCodes.Ldloc, local);
-
-                        return;
-                    }
-
-                case TypeCode.DBNull:
-                    ig.Emit(OpCodes.Ldsfld, typeof(DBNull).GetField("Value", BindingFlags.Public | BindingFlags.Static));
-                    return;
-
-                case TypeCode.String:
-                    EmitIfNotNull(ec, c => c.ig.Emit(OpCodes.Ldstr, (string)value));
-                    return;
-
-                case TypeCode.Object:
-                    EmitIfNotNull(ec, c => c.EmitReadGlobal(value));
-                    return;
-            }
-
-            throw new NotImplementedException(String.Format("No support for constants of type {0} yet", Type));
-        }
-
-        private void EmitIfNotNull(EmitContext ec, Action<EmitContext> emit)
-        {
-            if (value == null)
-            {
-                ec.ig.Emit(OpCodes.Ldnull);
-                return;
-            }
-
-            emit(ec);
-        }
-
-        private void EmitNullableConstant(EmitContext ec, Type type, object value)
-        {
-            if (value == null)
-            {
-                var local = ec.ig.DeclareLocal(type);
-                ec.EmitNullableInitialize(local);
+                return new ConstantExpression(value);
             }
             else
             {
-                EmitConstant(ec, type.GetFirstGenericArgument(), value);
-                ec.EmitNullableNew(type);
+                return new TypedConstantExpression(value, type);
             }
+        }
+
+        /// <summary>
+        /// Gets the static type of the expression that this <see cref="Expression" /> represents.
+        /// </summary>
+        /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
+        public override Type Type
+        {
+            get
+            {
+                if (_value == null)
+                {
+                    return typeof(object);
+                }
+                return _value.GetType();
+            }
+        }
+
+        /// <summary>
+        /// Returns the node type of this Expression. Extension nodes should return
+        /// ExpressionType.Extension when overriding this method.
+        /// </summary>
+        /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
+        public sealed override ExpressionType NodeType
+        {
+            get { return ExpressionType.Constant; }
+        }
+        /// <summary>
+        /// Gets the value of the constant expression.
+        /// </summary>
+        public object Value
+        {
+            get { return _value; }
+        }
+
+        /// <summary>
+        /// Dispatches to the specific visit method for this node type.
+        /// </summary>
+        protected internal override Expression Accept(ExpressionVisitor visitor)
+        {
+            return visitor.VisitConstant(this);
+        }
+    }
+
+    internal class TypedConstantExpression : ConstantExpression
+    {
+        private readonly Type _type;
+
+        internal TypedConstantExpression(object value, Type type)
+            : base(value)
+        {
+            _type = type;
+        }
+
+        public sealed override Type Type
+        {
+            get { return _type; }
+        }
+    }
+
+    public partial class Expression
+    {
+        /// <summary>
+        /// Creates a <see cref="ConstantExpression"/> that has the <see cref="P:ConstantExpression.Value"/> property set to the specified value. .
+        /// </summary>
+        /// <param name="value">An <see cref="System.Object"/> to set the <see cref="P:ConstantExpression.Value"/> property equal to.</param>
+        /// <returns>
+        /// A <see cref="ConstantExpression"/> that has the <see cref="P:Expression.NodeType"/> property equal to 
+        /// <see cref="F:ExpressionType.Constant"/> and the <see cref="P:Expression.Value"/> property set to the specified value.
+        /// </returns>
+        public static ConstantExpression Constant(object value)
+        {
+            return ConstantExpression.Make(value, value == null ? typeof(object) : value.GetType());
+        }
+
+
+        /// <summary>
+        /// Creates a <see cref="ConstantExpression"/> that has the <see cref="P:ConstantExpression.Value"/> 
+        /// and <see cref="P:ConstantExpression.Type"/> properties set to the specified values. .
+        /// </summary>
+        /// <param name="value">An <see cref="System.Object"/> to set the <see cref="P:ConstantExpression.Value"/> property equal to.</param>
+        /// <param name="type">A <see cref="System.Type"/> to set the <see cref="P:Expression.Type"/> property equal to.</param>
+        /// <returns>
+        /// A <see cref="ConstantExpression"/> that has the <see cref="P:Expression.NodeType"/> property equal to 
+        /// <see cref="F:ExpressionType.Constant"/> and the <see cref="P:ConstantExpression.Value"/> and 
+        /// <see cref="P:Expression.Type"/> properties set to the specified values.
+        /// </returns>
+        public static ConstantExpression Constant(object value, Type type)
+        {
+            ContractUtils.RequiresNotNull(type, "type");
+            if (value == null && type.GetTypeInfo().IsValueType && !TypeUtils.IsNullableType(type))
+            {
+                throw Error.ArgumentTypesMustMatch();
+            }
+            if (value != null && !type.IsAssignableFrom(value.GetType()))
+            {
+                throw Error.ArgumentTypesMustMatch();
+            }
+            return ConstantExpression.Make(value, type);
         }
     }
 }
-
-#endif
