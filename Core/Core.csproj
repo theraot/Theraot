@@ -237,6 +237,7 @@
     <Compile Include="System\Collections\StructuralComparisons.net35.cs" />
     <Compile Include="System\Diagnostics\Contracts\Contract.net35.cs" />
     <Compile Include="System\Diagnostics\Contracts\ContractInvariantMethodAttribute.net35.cs" />
+    <Compile Include="System\Dynamic\Utils\ContractsUtil.cs" />
     <Compile Include="System\Dynamic\Utils\Helpers.cs" />
     <Compile Include="System\Linq\Enumerable.join.net30.cs" />
     <Compile Include="System\Linq\Enumerable.groupjoin.net30.cs" />
