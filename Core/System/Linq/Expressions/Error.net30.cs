@@ -1120,7 +1120,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static Exception OperatorNotImplementedForType(object p0, object p1)
         {
-            return NotImplemented.ByDesignWithMessage(Strings.OperatorNotImplementedForType(p0, p1));
+            return new NotImplementedException(Strings.OperatorNotImplementedForType(p0, p1));
         }
     }
 }
