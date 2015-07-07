@@ -1,3 +1,4 @@
+#if FAT
 #if NET20 || NET30 || NET35
 
 using System.Collections.Generic;
@@ -639,4 +640,5 @@ namespace System.Threading.Tasks
     }
 }
 
+#endif
 #endif
