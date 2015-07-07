@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Reflection.Emit;
 
 namespace Theraot.Core
 {
@@ -84,6 +85,10 @@ namespace Theraot.Core
         /// </summary>
         public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType)
         {
+            if (methodInfo is DynamicMethod)
+            {
+                return (methodInfo as DynamicMethod).CreateDelegate(delegateType);
+            }
             return Delegate.CreateDelegate(delegateType, methodInfo);
         }
 
@@ -92,6 +97,10 @@ namespace Theraot.Core
         /// </summary>
         public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType, object target)
         {
+            if (methodInfo is DynamicMethod)
+            {
+                return (methodInfo as DynamicMethod).CreateDelegate(delegateType, target);
+            }
             return Delegate.CreateDelegate(delegateType, target, methodInfo);
         }
 

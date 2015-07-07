@@ -1,3 +1,4 @@
+#define FEATURE_CORECLR
 #if NET20 || NET30
 
 // Copyright (c) Microsoft. All rights reserved.

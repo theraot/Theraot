@@ -255,6 +255,7 @@
     <Compile Include="System\Linq\Expressions\BlockExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\CatchBlock.net30.cs" />
     <Compile Include="System\Linq\Expressions\Compiler\AnalyzedTree.net30.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\AssemblyGen.cs" />
     <Compile Include="System\Linq\Expressions\Compiler\BoundConstants.net30.cs" />
     <Compile Include="System\Linq\Expressions\Compiler\CompilerScope.net30.cs" />
     <Compile Include="System\Linq\Expressions\Compiler\CompilerScope.Storage.net30.cs" />
@@ -275,6 +276,10 @@
     <Compile Include="System\Linq\Expressions\Compiler\LambdaCompiler.net30.cs" />
     <Compile Include="System\Linq\Expressions\Compiler\LambdaCompiler.Statements.net30.cs" />
     <Compile Include="System\Linq\Expressions\Compiler\LambdaCompiler.Unary.net30.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\StackSpiller.Bindings.net30.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\StackSpiller.Generated.net30.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\StackSpiller.net30.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\StackSpiller.Temps.net30.cs" />
     <Compile Include="System\Linq\Expressions\Compiler\VariableBinder.net30.cs" />
     <Compile Include="System\Linq\Expressions\ConstantExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\DebugInfoExpression.net30.cs" />

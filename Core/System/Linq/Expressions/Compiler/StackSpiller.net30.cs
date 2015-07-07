@@ -1,4 +1,6 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+﻿#define FEATURE_CORECLR
+#if FEATURE_CORECLR
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Collections.ObjectModel;
@@ -115,7 +117,7 @@ namespace System.Linq.Expressions.Compiler
             return lambda;
         }
 
-        #region Expressions
+#region Expressions
 
         [Conditional("DEBUG")]
         private static void VerifyRewrite(Result result, Expression node)
@@ -738,9 +740,9 @@ namespace System.Linq.Expressions.Compiler
             return new Result(action, expr);
         }
 
-        #endregion
+#endregion
 
-        #region Statements
+#region Statements
 
         // Block
         private Result RewriteBlockExpression(Expression expr, Stack stack)
@@ -1004,9 +1006,9 @@ namespace System.Linq.Expressions.Compiler
             return new Result(result.Action | RewriteAction.Copy, result.Node);
         }
 
-        #endregion
+#endregion
 
-        #region Cloning
+#region Cloning
 
         /// <summary>
         /// Will clone an IList into an array of the same size, and copy
@@ -1026,7 +1028,7 @@ namespace System.Linq.Expressions.Compiler
             return clone;
         }
 
-        #endregion
+#endregion
 
         /// <summary>
         /// If we are spilling, requires that there are no byref arguments to
@@ -1081,3 +1083,5 @@ namespace System.Linq.Expressions.Compiler
         }
     }
 }
+
+#endif

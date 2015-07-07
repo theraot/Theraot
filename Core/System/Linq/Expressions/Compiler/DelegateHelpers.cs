@@ -1,9 +1,13 @@
+#define FEATURE_CORECLR
+
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Threading;
+using Theraot.Collections;
 
 namespace System.Linq.Expressions.Compiler
 {
@@ -25,7 +29,7 @@ namespace System.Linq.Expressions.Compiler
             TypeBuilder builder = AssemblyGen.DefineDelegateType("Delegate" + types.Length);
             builder.DefineConstructor(CtorAttributes, CallingConventions.Standard, s_delegateCtorSignature).SetImplementationFlags(ImplAttributes);
             builder.DefineMethod("Invoke", InvokeAttributes, returnType, parameters).SetImplementationFlags(ImplAttributes);
-            return builder.CreateTypeInfo().AsType();
+            return builder.CreateType();
 #else
             throw new PlatformNotSupportedException();
 #endif
