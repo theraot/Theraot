@@ -155,7 +155,7 @@ namespace System.Linq.Expressions
             {
                 if (expression == null) throw new ArgumentException(Strings.OnlyStaticFieldsHaveNullInstance, "field");
                 RequiresCanRead(expression, "expression");
-                if (!TypeUtils.AreReferenceAssignable(field.DeclaringType, expression.Type))
+                if (!TypeHelper.AreReferenceAssignable(field.DeclaringType, expression.Type))
                 {
                     throw Error.FieldInfoNotDefinedForType(field.DeclaringType, field.Name, expression.Type);
                 }
@@ -289,7 +289,7 @@ namespace System.Linq.Expressions
             {
                 if (expression == null) throw new ArgumentException(Strings.OnlyStaticPropertiesHaveNullInstance, "property");
                 RequiresCanRead(expression, "expression");
-                if (!TypeUtils.IsValidInstanceType(property, expression.Type))
+                if (!TypeHelper.IsValidInstanceType(property, expression.Type))
                 {
                     throw Error.PropertyNotDefinedForType(property, expression.Type);
                 }
@@ -340,7 +340,7 @@ namespace System.Linq.Expressions
             // same as that returned by reflection.
             // Check for this condition and try and get the method from reflection.
             Type type = method.DeclaringType;
-            if (type.GetTypeInfo().IsInterface && method.Name == propertyMethod.Name && type.GetMethod(method.Name) == propertyMethod)
+            if (type.IsInterface && method.Name == propertyMethod.Name && type.GetMethod(method.Name) == propertyMethod)
             {
                 return true;
             }

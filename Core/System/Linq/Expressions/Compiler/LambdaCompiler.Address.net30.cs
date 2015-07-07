@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Reflection.Emit;
+using Theraot.Core;
 
 namespace System.Linq.Expressions.Compiler
 {
@@ -68,12 +69,12 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(node.NodeType == ExpressionType.ArrayIndex && node.Method == null);
 
-            if (TypeUtils.AreEquivalent(type, node.Type))
+            if (TypeHelper.AreEquivalent(type, node.Type))
             {
                 EmitExpression(node.Left);
                 EmitExpression(node.Right);
                 Type rightType = node.Right.Type;
-                if (TypeUtils.IsNullableType(rightType))
+                if (TypeHelper.IsNullableType(rightType))
                 {
                     LocalBuilder loc = GetLocal(rightType);
                     _ilg.Emit(OpCodes.Stloc, loc);
@@ -81,7 +82,7 @@ namespace System.Linq.Expressions.Compiler
                     _ilg.EmitGetValue(rightType);
                     FreeLocal(loc);
                 }
-                Type indexType = TypeUtils.GetNonNullableType(rightType);
+                Type indexType = TypeHelper.GetNonNullableType(rightType);
                 if (indexType != typeof(int))
                 {
                     _ilg.EmitConvertToType(indexType, typeof(int), true);
@@ -96,7 +97,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void AddressOf(ParameterExpression node, Type type)
         {
-            if (TypeUtils.AreEquivalent(type, node.Type))
+            if (TypeHelper.AreEquivalent(type, node.Type))
             {
                 if (node.IsByRef)
                 {
@@ -116,7 +117,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void AddressOf(MemberExpression node, Type type)
         {
-            if (TypeUtils.AreEquivalent(type, node.Type))
+            if (TypeHelper.AreEquivalent(type, node.Type))
             {
                 // emit "this", if any
                 Type objectType = null;
@@ -191,7 +192,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void AddressOf(IndexExpression node, Type type)
         {
-            if (!TypeUtils.AreEquivalent(type, node.Type) || node.Indexer != null)
+            if (!TypeHelper.AreEquivalent(type, node.Type) || node.Indexer != null)
             {
                 EmitExpressionAddress(node, type);
                 return;
@@ -213,7 +214,7 @@ namespace System.Linq.Expressions.Compiler
         private void AddressOf(UnaryExpression node, Type type)
         {
             Debug.Assert(node.NodeType == ExpressionType.Unbox);
-            Debug.Assert(type.GetTypeInfo().IsValueType && !TypeUtils.IsNullableType(type));
+            Debug.Assert(type.IsValueType && !TypeHelper.IsNullableType(type));
 
             // Unbox leaves a pointer to the boxed value on the stack
             EmitExpression(node.Operand);
@@ -222,7 +223,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitExpressionAddress(Expression node, Type type)
         {
-            Debug.Assert(TypeUtils.AreReferenceAssignable(type, node.Type));
+            Debug.Assert(TypeHelper.AreReferenceAssignable(type, node.Type));
 
             EmitExpression(node, CompilationFlags.EmitAsNoTail | CompilationFlags.EmitNoExpressionStart);
             LocalBuilder tmp = GetLocal(type);
@@ -240,7 +241,7 @@ namespace System.Linq.Expressions.Compiler
             CompilationFlags startEmitted = EmitExpressionStart(node);
 
             WriteBack result = null;
-            if (TypeUtils.AreEquivalent(type, node.Type))
+            if (TypeHelper.AreEquivalent(type, node.Type))
             {
                 switch (node.NodeType)
                 {

@@ -9,6 +9,8 @@ using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Theraot.Collections;
+using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
@@ -317,14 +319,14 @@ namespace System.Linq.Expressions
             ParameterInfo[] parms;
             if (mi != null)
             {
-                parms = mi.GetParametersCached();
+                parms = mi.GetParameters();
             }
             else
             {
                 mi = pi.GetSetMethod(true);
                 //The setter has an additional parameter for the value to set,
                 //need to remove the last type to match the arguments.
-                parms = mi.GetParametersCached().RemoveLast();
+                parms = mi.GetParameters().RemoveLast();
             }
 
             if (mi == null)
@@ -341,7 +343,7 @@ namespace System.Linq.Expressions
             for (int i = 0; i < args.Length; i++)
             {
                 if (args[i] == null) return false;
-                if (!TypeUtils.AreReferenceAssignable(parms[i].ParameterType, args[i].Type))
+                if (!TypeHelper.AreReferenceAssignable(parms[i].ParameterType, args[i].Type))
                 {
                     return false;
                 }
@@ -396,14 +398,14 @@ namespace System.Linq.Expressions
             MethodInfo getter = property.GetGetMethod(true);
             if (getter != null)
             {
-                getParameters = getter.GetParametersCached();
+                getParameters = getter.GetParameters();
                 ValidateAccessor(instance, getter, getParameters, ref argList);
             }
 
             MethodInfo setter = property.GetSetMethod(true);
             if (setter != null)
             {
-                ParameterInfo[] setParameters = setter.GetParametersCached();
+                ParameterInfo[] setParameters = setter.GetParameters();
                 if (setParameters.Length == 0) throw Error.SetterHasNoParams();
 
                 // valueType is the type of the value passed to the setter (last parameter)
@@ -471,9 +473,9 @@ namespace System.Linq.Expressions
 
                     Type pType = pi.ParameterType;
                     if (pType.IsByRef) throw Error.AccessorsCannotHaveByRefArgs();
-                    TypeUtils.ValidateType(pType);
+                    TypeHelper.ValidateType(pType);
 
-                    if (!TypeUtils.AreReferenceAssignable(pType, arg.Type))
+                    if (!TypeHelper.AreReferenceAssignable(pType, arg.Type))
                     {
                         if (!TryQuote(pType, ref arg))
                         {

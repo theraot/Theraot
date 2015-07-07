@@ -164,7 +164,7 @@ namespace System.Linq.Expressions
             {
                 throw Error.ArgumentMustBeBoolean();
             }
-            if (!TypeUtils.AreEquivalent(ifTrue.Type, ifFalse.Type))
+            if (!TypeHelper.AreEquivalent(ifTrue.Type, ifFalse.Type))
             {
                 throw Error.ArgumentTypesMustMatch();
             }
@@ -200,8 +200,8 @@ namespace System.Linq.Expressions
 
             if (type != typeof(void))
             {
-                if (!TypeUtils.AreReferenceAssignable(type, ifTrue.Type) ||
-                    !TypeUtils.AreReferenceAssignable(type, ifFalse.Type))
+                if (!TypeHelper.AreReferenceAssignable(type, ifTrue.Type) ||
+                    !TypeHelper.AreReferenceAssignable(type, ifFalse.Type))
                 {
                     throw Error.ArgumentTypesMustMatch();
                 }

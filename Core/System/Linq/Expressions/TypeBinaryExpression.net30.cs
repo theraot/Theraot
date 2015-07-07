@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
+using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
@@ -68,7 +69,7 @@ namespace System.Linq.Expressions
 
             // For value types (including Void, but not nullables), we can
             // determine the result now
-            if (cType.GetTypeInfo().IsValueType && !cType.IsNullableType())
+            if (cType.IsValueType && !cType.IsNullableType())
             {
                 return Expression.Block(Expression, Expression.Constant(cType == _typeOperand.GetNonNullableType()));
             }
@@ -81,7 +82,7 @@ namespace System.Linq.Expressions
 
             // If the operand type is a sealed reference type or a nullable
             // type, it will match if value is not null
-            if (cType.GetTypeInfo().IsSealed && (cType == _typeOperand))
+            if (cType.IsSealed && (cType == _typeOperand))
             {
                 if (cType.IsNullableType())
                 {
@@ -105,7 +106,7 @@ namespace System.Linq.Expressions
 
             // Convert to object if necessary
             var expression = Expression;
-            if (!TypeUtils.AreReferenceAssignable(typeof(object), expression.Type))
+            if (!TypeHelper.AreReferenceAssignable(typeof(object), expression.Type))
             {
                 expression = Expression.Convert(expression, typeof(object));
             }
@@ -127,7 +128,7 @@ namespace System.Linq.Expressions
             // causing it to always return false.
             // We workaround this optimization by generating different, less optimal IL
             // if TypeOperand is an interface.
-            if (_typeOperand.GetTypeInfo().IsInterface)
+            if (_typeOperand.IsInterface)
             {
                 var temp = Expression.Parameter(typeof(Type));
                 getType = Expression.Block(new[] { temp }, Expression.Assign(temp, getType), temp);

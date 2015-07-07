@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
+using Theraot.Core;
 
 namespace System.Linq.Expressions.Interpreter
 {
@@ -178,8 +179,8 @@ namespace System.Linq.Expressions.Interpreter
 
         public static Instruction Create(Type type)
         {
-            Debug.Assert(!type.GetTypeInfo().IsEnum);
-            switch (System.Dynamic.Utils.TypeExtensions.GetTypeCode(TypeUtils.GetNonNullableType(type)))
+            Debug.Assert(!type.IsEnum);
+            switch (TypeHelper.GetTypeCode(TypeHelper.GetNonNullableType(type)))
             {
                 case TypeCode.Int16: return s_int16 ?? (s_int16 = new AddInt16());
                 case TypeCode.Int32: return s_int32 ?? (s_int32 = new AddInt32());
@@ -371,8 +372,8 @@ namespace System.Linq.Expressions.Interpreter
 
         public static Instruction Create(Type type)
         {
-            Debug.Assert(!type.GetTypeInfo().IsEnum);
-            switch (System.Dynamic.Utils.TypeExtensions.GetTypeCode(TypeUtils.GetNonNullableType(type)))
+            Debug.Assert(!type.IsEnum);
+            switch (TypeHelper.GetTypeCode(TypeHelper.GetNonNullableType(type)))
             {
                 case TypeCode.Int16: return s_int16 ?? (s_int16 = new AddOvfInt16());
                 case TypeCode.Int32: return s_int32 ?? (s_int32 = new AddOvfInt32());

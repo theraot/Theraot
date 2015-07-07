@@ -3,6 +3,7 @@
 
 using System.Diagnostics;
 using System.Dynamic.Utils;
+using Theraot.Core;
 
 namespace System.Linq.Expressions.Compiler
 {
@@ -260,7 +261,7 @@ namespace System.Linq.Expressions.Compiler
                         // Found the label. We can directly return from this place
                         // only if the label type is reference assignable to the lambda return type.
                         var label = ((LabelExpression)expression).Target;
-                        _labelInfo.Add(label, new LabelInfo(_ilg, label, TypeUtils.AreReferenceAssignable(lambda.ReturnType, label.Type)));
+                        _labelInfo.Add(label, new LabelInfo(_ilg, label, TypeHelper.AreReferenceAssignable(lambda.ReturnType, label.Type)));
                         return;
                     case ExpressionType.Block:
                         // Look in the last significant expression of a block

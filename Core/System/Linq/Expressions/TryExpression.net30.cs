@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
+using Theraot.Collections;
+using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
@@ -207,13 +209,13 @@ namespace System.Linq.Expressions
             {
                 if (type != typeof(void))
                 {
-                    if (!TypeUtils.AreReferenceAssignable(type, tryBody.Type))
+                    if (!TypeHelper.AreReferenceAssignable(type, tryBody.Type))
                     {
                         throw Error.ArgumentTypesMustMatch();
                     }
                     foreach (var cb in handlers)
                     {
-                        if (!TypeUtils.AreReferenceAssignable(type, cb.Body.Type))
+                        if (!TypeHelper.AreReferenceAssignable(type, cb.Body.Type))
                         {
                             throw Error.ArgumentTypesMustMatch();
                         }
@@ -237,7 +239,7 @@ namespace System.Linq.Expressions
                 type = tryBody.Type;
                 foreach (CatchBlock cb in handlers)
                 {
-                    if (cb.Body == null || !TypeUtils.AreEquivalent(cb.Body.Type, type))
+                    if (cb.Body == null || !TypeHelper.AreEquivalent(cb.Body.Type, type))
                     {
                         throw Error.BodyOfCatchMustHaveSameTypeAsBodyOfTry();
                     }

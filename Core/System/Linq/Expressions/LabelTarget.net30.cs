@@ -89,7 +89,7 @@ namespace System.Linq.Expressions
         public static LabelTarget Label(Type type, string name)
         {
             ContractUtils.RequiresNotNull(type, "type");
-            TypeUtils.ValidateType(type);
+            TypeHelper.ValidateType(type);
             return new LabelTarget(type, name);
         }
     }

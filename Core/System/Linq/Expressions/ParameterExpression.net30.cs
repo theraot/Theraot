@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
+using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
@@ -29,7 +30,7 @@ namespace System.Linq.Expressions
             }
             else
             {
-                if (!type.GetTypeInfo().IsEnum)
+                if (!type.IsEnum)
                 {
                     switch (type.GetTypeCode())
                     {

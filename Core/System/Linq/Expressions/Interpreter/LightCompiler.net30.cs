@@ -10,7 +10,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-
+using Theraot.Collections.ThreadSafe;
+using Theraot.Core;
 using AstUtils = System.Linq.Expressions.Interpreter.Utils;
 
 namespace System.Linq.Expressions.Interpreter
@@ -264,7 +265,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private readonly LightCompiler _parent;
 
-        private static LocalDefinition[] s_emptyLocals = Array.Empty<LocalDefinition>();
+        private static LocalDefinition[] s_emptyLocals = ArrayReservoir<LocalDefinition>.EmptyArray;
 
         public LightCompiler()
         {
@@ -331,7 +332,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (type != typeof(void))
             {
-                if (type.GetTypeInfo().IsValueType)
+                if (type.IsValueType)
                 {
                     object value = ScriptingRuntimeHelpers.GetPrimitiveDefaultValue(type);
                     if (value != null)
@@ -422,7 +423,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private bool MaybeMutableValueType(Type type)
         {
-            return type.GetTypeInfo().IsValueType && !type.GetTypeInfo().IsEnum && !type.GetTypeInfo().IsPrimitive;
+            return type.IsValueType && !type.IsEnum && !type.IsPrimitive;
         }
 
         public void CompileGetBoxedVariable(ParameterExpression variable)
@@ -715,7 +716,7 @@ namespace System.Linq.Expressions.Interpreter
         private bool EmitLiftedNullCheck(Expression node, BranchLabel makeCall)
         {
             Compile(node);
-            if (TypeUtils.IsNullableType(node.Type) || !node.Type.GetTypeInfo().IsValueType)
+            if (TypeHelper.IsNullableType(node.Type) || !node.Type.IsValueType)
             {
                 _instructions.EmitDup();
                 _instructions.EmitLoad(null, typeof(object));
@@ -729,7 +730,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private static bool IsNullableOrReferenceType(Type t)
         {
-            return !t.GetTypeInfo().IsValueType || TypeUtils.IsNullableType(t);
+            return !t.IsValueType || TypeHelper.IsNullableType(t);
         }
 
         private void CompileBinaryExpression(Expression expr)
@@ -774,7 +775,7 @@ namespace System.Linq.Expressions.Interpreter
                                 goto default;
                             }
 
-                            Type resultType = TypeUtils.GetNullableType(node.Type);
+                            Type resultType = TypeHelper.GetNullableType(node.Type);
                             BranchLabel testRight = _instructions.MakeLabel();
                             BranchLabel callMethod = _instructions.MakeLabel();
 
@@ -825,7 +826,7 @@ namespace System.Linq.Expressions.Interpreter
                         default:
                             BranchLabel loadDefault = _instructions.MakeLabel();
 
-                            if (!node.Left.Type.GetTypeInfo().IsValueType || TypeUtils.IsNullableType(node.Left.Type))
+                            if (!node.Left.Type.IsValueType || TypeHelper.IsNullableType(node.Left.Type))
                             {
                                 _instructions.EmitLoadLocal(leftTemp.Index);
                                 _instructions.EmitLoad(null, typeof(object));
@@ -833,7 +834,7 @@ namespace System.Linq.Expressions.Interpreter
                                 _instructions.EmitBranchTrue(loadDefault);
                             }
 
-                            if (!node.Right.Type.GetTypeInfo().IsValueType || TypeUtils.IsNullableType(node.Right.Type))
+                            if (!node.Right.Type.IsValueType || TypeHelper.IsNullableType(node.Right.Type))
                             {
                                 _instructions.EmitLoadLocal(rightTemp.Index);
                                 _instructions.EmitLoad(null, typeof(object));
@@ -949,7 +950,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private void CompileEqual(Expression left, Expression right, bool liftedToNull)
         {
-            Debug.Assert(left.Type == right.Type || !left.Type.GetTypeInfo().IsValueType && !right.Type.GetTypeInfo().IsValueType);
+            Debug.Assert(left.Type == right.Type || !left.Type.IsValueType && !right.Type.IsValueType);
             Compile(left);
             Compile(right);
             _instructions.EmitEqual(left.Type, liftedToNull);
@@ -957,7 +958,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private void CompileNotEqual(Expression left, Expression right, bool liftedToNull)
         {
-            Debug.Assert(left.Type == right.Type || !left.Type.GetTypeInfo().IsValueType && !right.Type.GetTypeInfo().IsValueType);
+            Debug.Assert(left.Type == right.Type || !left.Type.IsValueType && !right.Type.IsValueType);
             Compile(left);
             Compile(right);
             _instructions.EmitNotEqual(left.Type, liftedToNull);
@@ -967,7 +968,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             var left = node.Left;
             var right = node.Right;
-            Debug.Assert(left.Type == right.Type && TypeUtils.IsNumeric(left.Type));
+            Debug.Assert(left.Type == right.Type && TypeHelper.IsNumeric(left.Type));
 
             Compile(left);
             Compile(right);
@@ -984,7 +985,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private void CompileArithmetic(ExpressionType nodeType, Expression left, Expression right)
         {
-            Debug.Assert(left.Type == right.Type && TypeUtils.IsArithmetic(left.Type));
+            Debug.Assert(left.Type == right.Type && TypeHelper.IsArithmetic(left.Type));
             Compile(left);
             Compile(right);
             switch (nodeType)
@@ -1013,8 +1014,8 @@ namespace System.Linq.Expressions.Interpreter
                 Compile(node.Operand);
                 _instructions.EmitStoreLocal(opTemp.Index);
 
-                if (!node.Operand.Type.GetTypeInfo().IsValueType || 
-                    (TypeUtils.IsNullableType(node.Operand.Type) && node.IsLiftedToNull))
+                if (!node.Operand.Type.IsValueType || 
+                    (TypeHelper.IsNullableType(node.Operand.Type) && node.IsLiftedToNull))
                 {
                     _instructions.EmitLoadLocal(opTemp.Index);
                     _instructions.EmitLoad(null, typeof(object));
@@ -1023,8 +1024,8 @@ namespace System.Linq.Expressions.Interpreter
                 }
 
                 _instructions.EmitLoadLocal(opTemp.Index);
-                if(TypeUtils.IsNullableType(node.Operand.Type) &&
-                    node.Method.GetParametersCached()[0].ParameterType.Equals(TypeUtils.GetNonNullableType(node.Operand.Type)))
+                if(TypeHelper.IsNullableType(node.Operand.Type) &&
+                    node.Method.GetParameters()[0].ParameterType.Equals(TypeHelper.GetNonNullableType(node.Operand.Type)))
                 {
                     _instructions.Emit(NullableMethodCallInstruction.Create("get_Value", 1));
                 }
@@ -1060,17 +1061,17 @@ namespace System.Linq.Expressions.Interpreter
                 return;
             }
 
-            if (typeFrom.GetTypeInfo().IsValueType &&
-                TypeUtils.IsNullableType(typeTo) &&
-                TypeUtils.GetNonNullableType(typeTo).Equals(typeFrom))
+            if (typeFrom.IsValueType &&
+                TypeHelper.IsNullableType(typeTo) &&
+                TypeHelper.GetNonNullableType(typeTo).Equals(typeFrom))
             {
                 // VT -> vt?, no conversion necessary
                 return;
             }
 
-            if (typeTo.GetTypeInfo().IsValueType &&
-                TypeUtils.IsNullableType(typeFrom) &&
-                TypeUtils.GetNonNullableType(typeFrom).Equals(typeTo))
+            if (typeTo.IsValueType &&
+                TypeHelper.IsNullableType(typeFrom) &&
+                TypeHelper.GetNonNullableType(typeFrom).Equals(typeTo))
             {
                 // VT? -> vt, call get_Value
                 _instructions.Emit(NullableMethodCallInstruction.Create("get_Value", 1));
@@ -1081,16 +1082,16 @@ namespace System.Linq.Expressions.Interpreter
             Type nonNullableTo = typeTo.GetNonNullableType();
 
             // use numeric conversions for both numeric types and enums
-            if ((TypeUtils.IsNumeric(nonNullableFrom) || nonNullableFrom.GetTypeInfo().IsEnum)
-                 && (TypeUtils.IsNumeric(nonNullableTo) || nonNullableTo.GetTypeInfo().IsEnum))
+            if ((TypeHelper.IsNumeric(nonNullableFrom) || nonNullableFrom.IsEnum)
+                 && (TypeHelper.IsNumeric(nonNullableTo) || nonNullableTo.IsEnum))
             {
                 Type enumTypeTo = null;
 
-                if (nonNullableFrom.GetTypeInfo().IsEnum)
+                if (nonNullableFrom.IsEnum)
                 {
                     nonNullableFrom = Enum.GetUnderlyingType(nonNullableFrom);
                 }
-                if (nonNullableTo.GetTypeInfo().IsEnum)
+                if (nonNullableTo.IsEnum)
                 {
                     enumTypeTo = nonNullableTo;
                     nonNullableTo = Enum.GetUnderlyingType(nonNullableTo);
@@ -1262,7 +1263,7 @@ namespace System.Linq.Expressions.Interpreter
             Compile(expr.Left);
             _instructions.EmitDup();
 
-            MethodInfo opTrue = TypeUtils.GetBooleanOperator(expr.Method.DeclaringType, andAlso ? "op_False" : "op_True");
+            MethodInfo opTrue = TypeHelper.GetBooleanOperator(expr.Method.DeclaringType, andAlso ? "op_False" : "op_True");
             Debug.Assert(opTrue != null, "factory should check that the method exists");
             _instructions.EmitCall(opTrue);
             _instructions.EmitBranchTrue(labEnd);
@@ -1444,7 +1445,7 @@ namespace System.Linq.Expressions.Interpreter
 
             if (node.Cases.All(c => c.TestValues.All(t => t is ConstantExpression)))
             {
-                var switchType = System.Dynamic.Utils.TypeExtensions.GetTypeCode(node.SwitchValue.Type);
+                var switchType = TypeHelper.GetTypeCode(node.SwitchValue.Type);
 
                 if (node.Comparison == null)
                 {
@@ -2110,7 +2111,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             if (!node.Method.IsStatic &&
-                node.Object.Type.GetTypeInfo().IsGenericType &&
+                node.Object.Type.IsGenericType &&
                 node.Object.Type.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
                 // reflection doesn't let us call methods on Nullable<T> when the value
@@ -2183,7 +2184,7 @@ namespace System.Linq.Expressions.Interpreter
                     return CompileArrayIndexAddress(array.Left, array.Right, index);
                 case ExpressionType.Index:
                     var indexNode = (IndexExpression)node;
-                    if (/*!TypeUtils.AreEquivalent(type, node.Type) || */indexNode.Indexer != null)
+                    if (/*!TypeHelper.AreEquivalent(type, node.Type) || */indexNode.Indexer != null)
                     {
                         LocalDefinition? objTmp = null;
                         if (indexNode.Object != null)
@@ -2340,7 +2341,7 @@ namespace System.Linq.Expressions.Interpreter
             }
             else
             {
-                Debug.Assert(expr.Type.GetTypeInfo().IsValueType);
+                Debug.Assert(expr.Type.IsValueType);
                 _instructions.EmitDefaultValue(node.Type);
             }
         }
@@ -2538,7 +2539,7 @@ namespace System.Linq.Expressions.Interpreter
 
             if (typeof(LambdaExpression).IsAssignableFrom(node.Expression.Type))
             {
-                var compMethod = node.Expression.Type.GetMethod("Compile", Array.Empty<Type>());
+                var compMethod = node.Expression.Type.GetMethod("Compile", ArrayReservoir<Type>.EmptyArray);
                 CompileMethodCallExpression(
                     Expression.Call(
                         Expression.Call(
@@ -2613,7 +2614,7 @@ namespace System.Linq.Expressions.Interpreter
                         var memberMember = (MemberMemberBinding)binding;
                         _instructions.EmitDup();
                         Type type = GetMemberType(memberMember.Member);
-                        if (memberMember.Member is PropertyInfo && type.GetTypeInfo().IsValueType)
+                        if (memberMember.Member is PropertyInfo && type.IsValueType)
                         {
                             throw new InvalidOperationException("CannotAutoInitializeValueTypeMemberThroughProperty");
                         }
@@ -2751,9 +2752,9 @@ namespace System.Linq.Expressions.Interpreter
             var node = (TypeBinaryExpression)expr;
 
             Compile(node.Expression);
-            if (node.TypeOperand.GetTypeInfo().IsGenericType && node.TypeOperand.GetGenericTypeDefinition() == typeof(Nullable<>))
+            if (node.TypeOperand.IsGenericType && node.TypeOperand.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
-                _instructions.EmitLoad(node.TypeOperand.GenericTypeArguments[0]);
+                _instructions.EmitLoad(node.TypeOperand.GetGenericArguments()[0]);
                 _instructions.EmitNullableTypeEquals();
             }
             else
@@ -2795,9 +2796,9 @@ namespace System.Linq.Expressions.Interpreter
                 return;
             }
 
-            if (node.TypeOperand.GetTypeInfo().IsGenericType && node.TypeOperand.GetGenericTypeDefinition() == typeof(Nullable<>))
+            if (node.TypeOperand.IsGenericType && node.TypeOperand.GetGenericTypeDefinition() == typeof(Nullable<>))
             {
-                _instructions.EmitLoad(node.TypeOperand.GenericTypeArguments[0]);
+                _instructions.EmitLoad(node.TypeOperand.GetGenericArguments()[0]);
                 _instructions.EmitNullableTypeEquals();
             }
             else

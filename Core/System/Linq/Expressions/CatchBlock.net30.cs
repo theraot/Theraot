@@ -156,7 +156,7 @@ namespace System.Linq.Expressions
         public static CatchBlock MakeCatchBlock(Type type, ParameterExpression variable, Expression body, Expression filter)
         {
             ContractUtils.RequiresNotNull(type, "type");
-            ContractUtils.Requires(variable == null || TypeUtils.AreEquivalent(variable.Type, type), "variable");
+            ContractUtils.Requires(variable == null || TypeHelper.AreEquivalent(variable.Type, type), "variable");
             if (variable != null && variable.IsByRef)
             {
                 throw Error.VariableMustNotBeByRef(variable, variable.Type);

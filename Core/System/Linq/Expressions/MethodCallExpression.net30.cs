@@ -8,6 +8,9 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Theraot.Collections;
+using Theraot.Collections.ThreadSafe;
+using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
@@ -746,7 +749,7 @@ namespace System.Linq.Expressions
         ///<returns>A <see cref="T:System.Linq.Expressions.MethodCallExpression" /> that has the <see cref="P:System.Linq.Expressions.Expression.NodeType" /> property equal to <see cref="F:System.Linq.Expressions.ExpressionType.Call" /> and the <see cref="P:System.Linq.Expressions.MethodCallExpression.Object" /> and <see cref="P:System.Linq.Expressions.MethodCallExpression.Method" /> properties set to the specified values.</returns>
         public static MethodCallExpression Call(Expression instance, MethodInfo method)
         {
-            return Call(instance, method, EmptyReadOnlyCollection<Expression>.Instance);
+            return Call(instance, method, EmptyCollection<Expression>.Instance);
         }
 
         /// <summary>
@@ -839,7 +842,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(methodName, "methodName");
             if (arguments == null)
             {
-                arguments = Array.Empty<Expression>();
+                arguments = ArrayReservoir<Expression>.EmptyArray;
             }
 
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
@@ -863,7 +866,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(type, "type");
             ContractUtils.RequiresNotNull(methodName, "methodName");
 
-            if (arguments == null) arguments = Array.Empty<Expression>();
+            if (arguments == null) arguments = ArrayReservoir<Expression>.EmptyArray;
             BindingFlags flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
             return Expression.Call(null, FindMethod(type, methodName, typeArguments, arguments, flags), arguments);
         }
@@ -921,7 +924,7 @@ namespace System.Linq.Expressions
 
         private static void ValidateCallInstanceType(Type instanceType, MethodInfo method)
         {
-            if (!TypeUtils.IsValidInstanceType(method, instanceType))
+            if (!TypeHelper.IsValidInstanceType(method, instanceType))
             {
                 throw Error.InstanceAndMethodTypeMismatch(method, method.DeclaringType, instanceType);
             }
@@ -1007,7 +1010,7 @@ namespace System.Linq.Expressions
 
         private static bool IsCompatible(MethodBase m, Expression[] args)
         {
-            ParameterInfo[] parms = m.GetParametersCached();
+            ParameterInfo[] parms = m.GetParameters();
             if (parms.Length != args.Length)
                 return false;
             for (int i = 0; i < args.Length; i++)
@@ -1020,8 +1023,8 @@ namespace System.Linq.Expressions
                 {
                     pType = pType.GetElementType();
                 }
-                if (!TypeUtils.AreReferenceAssignable(pType, argType) &&
-                    !(TypeUtils.IsSameOrSubclass(typeof(LambdaExpression), pType) && pType.IsAssignableFrom(arg.GetType())))
+                if (!TypeHelper.AreReferenceAssignable(pType, argType) &&
+                    !(TypeHelper.IsSameOrSubclass(typeof(LambdaExpression), pType) && pType.IsAssignableFrom(arg.GetType())))
                 {
                     return false;
                 }

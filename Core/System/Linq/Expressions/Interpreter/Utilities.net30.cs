@@ -100,7 +100,7 @@ namespace System.Linq.Expressions.Interpreter
 
         internal static object GetPrimitiveDefaultValue(Type type)
         {
-            switch (System.Dynamic.Utils.TypeExtensions.GetTypeCode(type))
+            switch (TypeHelper.GetTypeCode(type))
             {
                 case TypeCode.Boolean: return ScriptingRuntimeHelpers.False;
                 case TypeCode.SByte: return default(SByte);

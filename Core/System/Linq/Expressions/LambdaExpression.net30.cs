@@ -11,6 +11,8 @@ using System.Reflection;
 using System.Threading;
 using System.Runtime.CompilerServices;
 using System.Linq.Expressions;
+using Theraot.Collections;
+using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
@@ -245,7 +247,7 @@ namespace System.Linq.Expressions
 #else
                 create = typeof(ExpressionCreator<>).MakeGenericType(delegateType).GetMethod("CreateExpressionFunc", BindingFlags.Static | BindingFlags.Public);
 #endif
-                if (TypeUtils.CanCache(delegateType))
+                if (TypeHelper.CanCache(delegateType))
                 {
                     factories[delegateType] = fastPath = (Func<Expression, string, bool, ReadOnlyCollection<ParameterExpression>, LambdaExpression>)create.CreateDelegate(typeof(Func<Expression, string, bool, ReadOnlyCollection<ParameterExpression>, LambdaExpression>));
                 }
@@ -533,12 +535,12 @@ namespace System.Linq.Expressions
             var ldc = s_lambdaDelegateCache;
             if (!ldc.TryGetValue(delegateType, out mi)) {
                 mi = delegateType.GetMethod("Invoke");
-                if (TypeUtils.CanCache(delegateType)) {
+                if (TypeHelper.CanCache(delegateType)) {
                     ldc[delegateType] = mi;
                 }
             }
 
-            ParameterInfo[] pis = mi.GetParametersCached();
+            ParameterInfo[] pis = mi.GetParameters();
 
             if (pis.Length > 0)
             {
@@ -562,7 +564,7 @@ namespace System.Linq.Expressions
                         }
                         pType = pType.GetElementType();
                     }
-                    if (!TypeUtils.AreReferenceAssignable(pex.Type, pType))
+                    if (!TypeHelper.AreReferenceAssignable(pex.Type, pType))
                     {
                         throw Error.ParameterExpressionNotValidAsDelegate(pex.Type, pType);
                     }
@@ -577,7 +579,7 @@ namespace System.Linq.Expressions
             {
                 throw Error.IncorrectNumberOfLambdaDeclarationParameters();
             }
-            if (mi.ReturnType != typeof(void) && !TypeUtils.AreReferenceAssignable(mi.ReturnType, body.Type))
+            if (mi.ReturnType != typeof(void) && !TypeHelper.AreReferenceAssignable(mi.ReturnType, body.Type))
             {
                 if (!TryQuote(mi.ReturnType, ref body))
                 {

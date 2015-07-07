@@ -7,6 +7,7 @@ using System.Dynamic.Utils;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Globalization;
+using Theraot.Core;
 
 namespace System.Linq.Expressions.Compiler
 {
@@ -190,7 +191,7 @@ namespace System.Linq.Expressions.Compiler
                     // stack as the switch. This simplifies spilling.
                     EmitExpression(test);
                     _scope.EmitSet(testValue);
-                    Debug.Assert(TypeUtils.AreReferenceAssignable(testValue.Type, test.Type));
+                    Debug.Assert(TypeHelper.AreReferenceAssignable(testValue.Type, test.Type));
                     EmitExpressionAndBranch(true, Expression.Equal(switchValue, testValue, false, node.Comparison), labels[i]);
                 }
             }
@@ -216,10 +217,10 @@ namespace System.Linq.Expressions.Compiler
             }
 
             // Otherwise, get the type from the method.
-            Type result = node.Comparison.GetParametersCached()[1].ParameterType.GetNonRefType();
+            Type result = node.Comparison.GetParameters()[1].ParameterType.GetNonRefType();
             if (node.IsLifted)
             {
-                result = TypeUtils.GetNullableType(result);
+                result = TypeHelper.GetNullableType(result);
             }
             return result;
         }
@@ -255,7 +256,7 @@ namespace System.Linq.Expressions.Compiler
                 Value = value;
                 Default = @default;
                 Type = Node.SwitchValue.Type;
-                IsUnsigned = TypeUtils.IsUnsigned(Type);
+                IsUnsigned = TypeHelper.IsUnsigned(Type);
                 var code = Type.GetTypeCode();
                 Is64BitSwitch = code == TypeCode.UInt64 || code == TypeCode.Int64;
             }
@@ -343,7 +344,7 @@ namespace System.Linq.Expressions.Compiler
             // are types we can optimize
             Type type = node.SwitchValue.Type;
             if (!CanOptimizeSwitchType(type) ||
-                !TypeUtils.AreEquivalent(type, node.Cases[0].TestValues[0].Type))
+                !TypeHelper.AreEquivalent(type, node.Cases[0].TestValues[0].Type))
             {
                 return false;
             }

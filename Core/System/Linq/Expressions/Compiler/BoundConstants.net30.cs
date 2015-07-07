@@ -188,7 +188,7 @@ namespace System.Linq.Expressions.Compiler
 
             lc.IL.EmitInt(index);
             lc.IL.Emit(OpCodes.Ldelem_Ref);
-            if (type.GetTypeInfo().IsValueType)
+            if (type.IsValueType)
             {
                 lc.IL.Emit(OpCodes.Unbox_Any, type);
             }

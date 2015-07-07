@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Runtime.CompilerServices;
 using System.Reflection;
+using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
@@ -712,15 +713,15 @@ namespace System.Linq.Expressions
         // different operation, e.g. adding two doubles vs adding two ints.
         private static void ValidateChildType(Type before, Type after, string methodName)
         {
-            if (before.GetTypeInfo().IsValueType)
+            if (before.IsValueType)
             {
-                if (TypeUtils.AreEquivalent(before, after))
+                if (TypeHelper.AreEquivalent(before, after))
                 {
                     // types are the same value type
                     return;
                 }
             }
-            else if (!after.GetTypeInfo().IsValueType)
+            else if (!after.IsValueType)
             {
                 // both are reference types
                 return;

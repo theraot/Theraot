@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Theraot.Core;
 
 namespace System.Linq.Expressions.Interpreter
 {
@@ -165,7 +166,7 @@ namespace System.Linq.Expressions.Interpreter
         }
         public override int Run(InterpretedFrame frame)
         {
-            object value = _type.GetTypeInfo().IsValueType ? Activator.CreateInstance(_type) : null;
+            object value = _type.IsValueType ? Activator.CreateInstance(_type) : null;
             frame.Push(value);
             return +1;
         }
@@ -441,8 +442,8 @@ namespace System.Linq.Expressions.Interpreter
 
         public static Instruction Create(Type type)
         {
-            Debug.Assert(!type.GetTypeInfo().IsEnum);
-            switch (System.Dynamic.Utils.TypeExtensions.GetTypeCode(TypeUtils.GetNonNullableType(type)))
+            Debug.Assert(!type.IsEnum);
+            switch (TypeHelper.GetTypeCode(TypeHelper.GetNonNullableType(type)))
             {
                 case TypeCode.Int16: return s_int16 ?? (s_int16 = new NegateInt16());
                 case TypeCode.Int32: return s_int32 ?? (s_int32 = new NegateInt32());
@@ -598,8 +599,8 @@ namespace System.Linq.Expressions.Interpreter
 
         public static Instruction Create(Type type)
         {
-            Debug.Assert(!type.GetTypeInfo().IsEnum);
-            switch (System.Dynamic.Utils.TypeExtensions.GetTypeCode(TypeUtils.GetNonNullableType(type)))
+            Debug.Assert(!type.IsEnum);
+            switch (TypeHelper.GetTypeCode(TypeHelper.GetNonNullableType(type)))
             {
                 case TypeCode.Int16: return s_int16 ?? (s_int16 = new NegateCheckedInt16());
                 case TypeCode.Int32: return s_int32 ?? (s_int32 = new NegateCheckedInt32());
@@ -755,8 +756,8 @@ namespace System.Linq.Expressions.Interpreter
 
         public static Instruction Create(Type type)
         {
-            Debug.Assert(!type.GetTypeInfo().IsEnum);
-            switch (System.Dynamic.Utils.TypeExtensions.GetTypeCode(type))
+            Debug.Assert(!type.IsEnum);
+            switch (TypeHelper.GetTypeCode(type))
             {
                 case TypeCode.Int16: return s_int16 ?? (s_int16 = new IncrementInt16());
                 case TypeCode.Int32: return s_int32 ?? (s_int32 = new IncrementInt32());
@@ -912,8 +913,8 @@ namespace System.Linq.Expressions.Interpreter
 
         public static Instruction Create(Type type)
         {
-            Debug.Assert(!type.GetTypeInfo().IsEnum);
-            switch (System.Dynamic.Utils.TypeExtensions.GetTypeCode(type))
+            Debug.Assert(!type.IsEnum);
+            switch (TypeHelper.GetTypeCode(type))
             {
                 case TypeCode.Int16: return s_int16 ?? (s_int16 = new DecrementInt16());
                 case TypeCode.Int32: return s_int32 ?? (s_int32 = new DecrementInt32());
@@ -1098,7 +1099,7 @@ namespace System.Linq.Expressions.Interpreter
         public static Instruction Create(Type type)
         {
             // Boxed enums can be unboxed as their underlying types:
-            switch (System.Dynamic.Utils.TypeExtensions.GetTypeCode(type.GetTypeInfo().IsEnum ? Enum.GetUnderlyingType(type) : TypeUtils.GetNonNullableType(type)))
+            switch (TypeHelper.GetTypeCode(type.IsEnum ? Enum.GetUnderlyingType(type) : TypeHelper.GetNonNullableType(type)))
             {
                 case TypeCode.SByte: return s_SByte ?? (s_SByte = new LeftShiftSByte());
                 case TypeCode.Byte: return s_byte ?? (s_byte = new LeftShiftByte());
@@ -1284,7 +1285,7 @@ namespace System.Linq.Expressions.Interpreter
         public static Instruction Create(Type type)
         {
             // Boxed enums can be unboxed as their underlying types:
-            switch (System.Dynamic.Utils.TypeExtensions.GetTypeCode(type.GetTypeInfo().IsEnum ? Enum.GetUnderlyingType(type) : TypeUtils.GetNonNullableType(type)))
+            switch (TypeHelper.GetTypeCode(type.IsEnum ? Enum.GetUnderlyingType(type) : TypeHelper.GetNonNullableType(type)))
             {
                 case TypeCode.SByte: return s_SByte ?? (s_SByte = new RightShiftSByte());
                 case TypeCode.Byte: return s_byte ?? (s_byte = new RightShiftByte());
@@ -1490,7 +1491,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private static TypeCode GetTypeCode(Type type)
         {
-            return System.Dynamic.Utils.TypeExtensions.GetTypeCode(type.GetTypeInfo().IsEnum ? Enum.GetUnderlyingType(type) : TypeUtils.GetNonNullableType(type));
+            return TypeHelper.GetTypeCode(type.IsEnum ? Enum.GetUnderlyingType(type) : TypeHelper.GetNonNullableType(type));
         }
 
         public override string ToString()
@@ -1674,7 +1675,7 @@ namespace System.Linq.Expressions.Interpreter
         public static Instruction Create(Type type)
         {
             // Boxed enums can be unboxed as their underlying types:
-            switch (System.Dynamic.Utils.TypeExtensions.GetTypeCode(type.GetTypeInfo().IsEnum ? Enum.GetUnderlyingType(type) : TypeUtils.GetNonNullableType(type)))
+            switch (TypeHelper.GetTypeCode(type.IsEnum ? Enum.GetUnderlyingType(type) : TypeHelper.GetNonNullableType(type)))
             {
                 case TypeCode.SByte: return s_SByte ?? (s_SByte = new OrSByte());
                 case TypeCode.Byte: return s_byte ?? (s_byte = new OrByte());
@@ -1873,7 +1874,7 @@ namespace System.Linq.Expressions.Interpreter
         public static Instruction Create(Type type)
         {
             // Boxed enums can be unboxed as their underlying types:
-            switch (System.Dynamic.Utils.TypeExtensions.GetTypeCode(type.GetTypeInfo().IsEnum ? Enum.GetUnderlyingType(type) : TypeUtils.GetNonNullableType(type)))
+            switch (TypeHelper.GetTypeCode(type.IsEnum ? Enum.GetUnderlyingType(type) : TypeHelper.GetNonNullableType(type)))
             {
                 case TypeCode.SByte: return s_SByte ?? (s_SByte = new AndSByte());
                 case TypeCode.Byte: return s_byte ?? (s_byte = new AndByte());
@@ -2092,8 +2093,8 @@ namespace System.Linq.Expressions.Interpreter
                 var value = frame.Pop();
                 if (value != null)
                 {
-                    if (!TypeUtils.HasReferenceConversion(value.GetType(), _t) &&
-                        !TypeUtils.HasIdentityPrimitiveOrNullableConversion(value.GetType(), _t))
+                    if (!TypeHelper.HasReferenceConversion(value.GetType(), _t) &&
+                        !TypeHelper.HasIdentityPrimitiveOrNullableConversion(value.GetType(), _t))
                     {
                         throw new InvalidCastException();
                     }
@@ -2109,9 +2110,9 @@ namespace System.Linq.Expressions.Interpreter
 
         public static Instruction Create(Type t)
         {
-            if (!t.GetTypeInfo().IsEnum)
+            if (!t.IsEnum)
             {
-                switch (System.Dynamic.Utils.TypeExtensions.GetTypeCode(t))
+                switch (TypeHelper.GetTypeCode(t))
                 {
                     case TypeCode.Boolean: return s_boolean ?? (s_boolean = new CastInstructionT<Boolean>());
                     case TypeCode.Byte: return s_byte ?? (s_byte = new CastInstructionT<Byte>());
@@ -2140,7 +2141,7 @@ namespace System.Linq.Expressions.Interpreter
         private readonly Type _t;
         public CastToEnumInstruction(Type t)
         {
-            Debug.Assert(t.GetTypeInfo().IsEnum);
+            Debug.Assert(t.IsEnum);
             _t = t;
         }
 

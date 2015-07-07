@@ -7,6 +7,8 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Reflection.Emit;
+using Theraot.Collections.ThreadSafe;
+using Theraot.Core;
 
 namespace System.Linq.Expressions.Compiler
 {
@@ -127,10 +129,10 @@ namespace System.Linq.Expressions.Compiler
             {
                 // if the node is emitted as a different type, CastClass IL is emitted at the end,
                 // should not emit with tail calls.
-                if (!TypeUtils.AreEquivalent(node.Type, type))
+                if (!TypeHelper.AreEquivalent(node.Type, type))
                 {
                     EmitExpression(node);
-                    Debug.Assert(TypeUtils.AreReferenceAssignable(type, node.Type));
+                    Debug.Assert(TypeHelper.AreReferenceAssignable(type, node.Type));
                     _ilg.Emit(OpCodes.Castclass, type);
                 }
                 else
@@ -183,7 +185,7 @@ namespace System.Linq.Expressions.Compiler
             if (typeof(LambdaExpression).IsAssignableFrom(expr.Type))
             {
                 // if the invoke target is a lambda expression tree, first compile it into a delegate
-                expr = Expression.Call(expr, expr.Type.GetMethod("Compile", Array.Empty<Type>()));
+                expr = Expression.Call(expr, expr.Type.GetMethod("Compile", ArrayReservoir<Type>.EmptyArray));
             }
             expr = Expression.Call(expr, expr.Type.GetMethod("Invoke"), node.Arguments);
 
@@ -354,7 +356,7 @@ namespace System.Linq.Expressions.Compiler
             }
             // if the obj has a value type, its address is passed to the method call so we cannot destroy the 
             // stack by emitting a tail call
-            if (obj != null && obj.Type.GetTypeInfo().IsValueType)
+            if (obj != null && obj.Type.IsValueType)
             {
                 EmitMethodCall(method, methodCallExpr, objectType);
             }
@@ -378,7 +380,7 @@ namespace System.Linq.Expressions.Compiler
 
             // Emit the actual call
             OpCode callOp = UseVirtual(mi) ? OpCodes.Callvirt : OpCodes.Call;
-            if (callOp == OpCodes.Callvirt && objectType.GetTypeInfo().IsValueType)
+            if (callOp == OpCodes.Callvirt && objectType.IsValueType)
             {
                 // This automatically boxes value types if necessary.
                 _ilg.Emit(OpCodes.Constrained, objectType);
@@ -414,7 +416,7 @@ namespace System.Linq.Expressions.Compiler
 
         private static bool MethodHasByRefParameter(MethodInfo mi)
         {
-            foreach (var pi in mi.GetParametersCached())
+            foreach (var pi in mi.GetParameters())
             {
                 if (pi.IsByRefParameter())
                 {
@@ -432,7 +434,7 @@ namespace System.Linq.Expressions.Compiler
             }
 
             OpCode callOp = UseVirtual(method) ? OpCodes.Callvirt : OpCodes.Call;
-            if (callOp == OpCodes.Callvirt && objectType.GetTypeInfo().IsValueType)
+            if (callOp == OpCodes.Callvirt && objectType.IsValueType)
             {
                 _ilg.Emit(OpCodes.Constrained, objectType);
             }
@@ -465,7 +467,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 return false;
             }
-            if (mi.DeclaringType.GetTypeInfo().IsValueType)
+            if (mi.DeclaringType.IsValueType)
             {
                 return false;
             }
@@ -488,7 +490,7 @@ namespace System.Linq.Expressions.Compiler
         /// </summary>
         private List<WriteBack> EmitArguments(MethodBase method, IArgumentProvider args, int skipParameters)
         {
-            ParameterInfo[] pis = method.GetParametersCached();
+            ParameterInfo[] pis = method.GetParameters();
             Debug.Assert(args.ArgumentCount + skipParameters == pis.Length);
 
             var writeBacks = new List<WriteBack>();
@@ -588,7 +590,7 @@ namespace System.Linq.Expressions.Compiler
             else
             {
                 Debug.Assert(node.Arguments.Count == 0, "Node with arguments must have a constructor.");
-                Debug.Assert(node.Type.GetTypeInfo().IsValueType, "Only value type may have constructor not set.");
+                Debug.Assert(node.Type.IsValueType, "Only value type may have constructor not set.");
                 LocalBuilder temp = GetLocal(node.Type);
                 _ilg.Emit(OpCodes.Ldloca, temp);
                 _ilg.Emit(OpCodes.Initobj, node.Type);
@@ -633,7 +635,7 @@ namespace System.Linq.Expressions.Compiler
                     return;
                 }
 
-                Debug.Assert(!type.GetTypeInfo().IsValueType);
+                Debug.Assert(!type.IsValueType);
                 EmitExpression(node.Expression);
                 _ilg.Emit(OpCodes.Ldnull);
                 _ilg.Emit(OpCodes.Ceq);
@@ -646,7 +648,7 @@ namespace System.Linq.Expressions.Compiler
 
             // Emit a full runtime "isinst" check
             EmitExpression(node.Expression);
-            if (type.GetTypeInfo().IsValueType)
+            if (type.IsValueType)
             {
                 _ilg.Emit(OpCodes.Box, type);
             }
@@ -846,7 +848,7 @@ namespace System.Linq.Expressions.Compiler
         {
             if (instance != null)
             {
-                if (type.GetTypeInfo().IsValueType)
+                if (type.IsValueType)
                 {
                     EmitAddress(instance, type);
                 }
@@ -951,11 +953,11 @@ namespace System.Linq.Expressions.Compiler
         private void EmitMemberMemberBinding(MemberMemberBinding binding)
         {
             Type type = GetMemberType(binding.Member);
-            if (binding.Member is PropertyInfo && type.GetTypeInfo().IsValueType)
+            if (binding.Member is PropertyInfo && type.IsValueType)
             {
                 throw Error.CannotAutoInitializeValueTypeMemberThroughProperty(binding.Member);
             }
-            if (type.GetTypeInfo().IsValueType)
+            if (type.IsValueType)
             {
                 EmitMemberAddress(binding.Member, binding.Member.DeclaringType);
             }
@@ -969,11 +971,11 @@ namespace System.Linq.Expressions.Compiler
         private void EmitMemberListBinding(MemberListBinding binding)
         {
             Type type = GetMemberType(binding.Member);
-            if (binding.Member is PropertyInfo && type.GetTypeInfo().IsValueType)
+            if (binding.Member is PropertyInfo && type.IsValueType)
             {
                 throw Error.CannotAutoInitializeValueTypeElementThroughProperty(binding.Member);
             }
-            if (type.GetTypeInfo().IsValueType)
+            if (type.IsValueType)
             {
                 EmitMemberAddress(binding.Member, binding.Member.DeclaringType);
             }
@@ -988,7 +990,7 @@ namespace System.Linq.Expressions.Compiler
         {
             EmitExpression(init.NewExpression);
             LocalBuilder loc = null;
-            if (init.NewExpression.Type.GetTypeInfo().IsValueType && init.Bindings.Count > 0)
+            if (init.NewExpression.Type.IsValueType && init.Bindings.Count > 0)
             {
                 loc = _ilg.DeclareLocal(init.NewExpression.Type);
                 _ilg.Emit(OpCodes.Stloc, loc);
@@ -1031,7 +1033,7 @@ namespace System.Linq.Expressions.Compiler
         {
             EmitExpression(init.NewExpression);
             LocalBuilder loc = null;
-            if (init.NewExpression.Type.GetTypeInfo().IsValueType)
+            if (init.NewExpression.Type.IsValueType)
             {
                 loc = _ilg.DeclareLocal(init.NewExpression.Type);
                 _ilg.Emit(OpCodes.Stloc, loc);
@@ -1101,7 +1103,7 @@ namespace System.Linq.Expressions.Compiler
             }
             for (int i = 0, n = variables.Count; i < n; i++)
             {
-                if (!TypeUtils.AreReferenceAssignable(variables[i].Type, TypeUtils.GetNonNullableType(arguments[i].Type)))
+                if (!TypeHelper.AreReferenceAssignable(variables[i].Type, TypeHelper.GetNonNullableType(arguments[i].Type)))
                 {
                     throw Error.ArgumentTypesMustMatch();
                 }
@@ -1111,7 +1113,7 @@ namespace System.Linq.Expressions.Compiler
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private void EmitLift(ExpressionType nodeType, Type resultType, MethodCallExpression mc, ParameterExpression[] paramList, Expression[] argList)
         {
-            Debug.Assert(TypeUtils.AreEquivalent(TypeUtils.GetNonNullableType(resultType), TypeUtils.GetNonNullableType(mc.Type)));
+            Debug.Assert(TypeHelper.AreEquivalent(TypeHelper.GetNonNullableType(resultType), TypeHelper.GetNonNullableType(mc.Type)));
 
             switch (nodeType)
             {
@@ -1128,7 +1130,7 @@ namespace System.Linq.Expressions.Compiler
                         {
                             ParameterExpression v = paramList[i];
                             Expression arg = argList[i];
-                            if (TypeUtils.IsNullableType(arg.Type))
+                            if (TypeHelper.IsNullableType(arg.Type))
                             {
                                 _scope.AddLocal(this, v);
                                 EmitAddress(arg, arg.Type);
@@ -1144,7 +1146,7 @@ namespace System.Linq.Expressions.Compiler
                             {
                                 _scope.AddLocal(this, v);
                                 EmitExpression(arg);
-                                if (!arg.Type.GetTypeInfo().IsValueType)
+                                if (!arg.Type.IsValueType)
                                 {
                                     _ilg.Emit(OpCodes.Dup);
                                     _ilg.Emit(OpCodes.Ldnull);
@@ -1157,16 +1159,16 @@ namespace System.Linq.Expressions.Compiler
                             _ilg.Emit(OpCodes.Brtrue, exitNull);
                         }
                         EmitMethodCallExpression(mc);
-                        if (TypeUtils.IsNullableType(resultType) && !TypeUtils.AreEquivalent(resultType, mc.Type))
+                        if (TypeHelper.IsNullableType(resultType) && !TypeHelper.AreEquivalent(resultType, mc.Type))
                         {
                             ConstructorInfo ci = resultType.GetConstructor(new Type[] { mc.Type });
                             _ilg.Emit(OpCodes.Newobj, ci);
                         }
                         _ilg.Emit(OpCodes.Br_S, exit);
                         _ilg.MarkLabel(exitNull);
-                        if (TypeUtils.AreEquivalent(resultType, TypeUtils.GetNullableType(mc.Type)))
+                        if (TypeHelper.AreEquivalent(resultType, TypeHelper.GetNullableType(mc.Type)))
                         {
-                            if (resultType.GetTypeInfo().IsValueType)
+                            if (resultType.IsValueType)
                             {
                                 LocalBuilder result = GetLocal(resultType);
                                 _ilg.Emit(OpCodes.Ldloca, result);
@@ -1199,7 +1201,7 @@ namespace System.Linq.Expressions.Compiler
                 case ExpressionType.Equal:
                 case ExpressionType.NotEqual:
                     {
-                        if (TypeUtils.AreEquivalent(resultType, TypeUtils.GetNullableType(mc.Type)))
+                        if (TypeHelper.AreEquivalent(resultType, TypeHelper.GetNullableType(mc.Type)))
                         {
                             goto default;
                         }
@@ -1219,7 +1221,7 @@ namespace System.Linq.Expressions.Compiler
                             ParameterExpression v = paramList[i];
                             Expression arg = argList[i];
                             _scope.AddLocal(this, v);
-                            if (TypeUtils.IsNullableType(arg.Type))
+                            if (TypeHelper.IsNullableType(arg.Type))
                             {
                                 EmitAddress(arg, arg.Type);
                                 _ilg.Emit(OpCodes.Dup);
@@ -1238,7 +1240,7 @@ namespace System.Linq.Expressions.Compiler
                             else
                             {
                                 EmitExpression(arg);
-                                if (!arg.Type.GetTypeInfo().IsValueType)
+                                if (!arg.Type.IsValueType)
                                 {
                                     _ilg.Emit(OpCodes.Dup);
                                     _ilg.Emit(OpCodes.Ldnull);
@@ -1265,7 +1267,7 @@ namespace System.Linq.Expressions.Compiler
                         _ilg.Emit(OpCodes.Brtrue, exitAnyNull);
 
                         EmitMethodCallExpression(mc);
-                        if (TypeUtils.IsNullableType(resultType) && !TypeUtils.AreEquivalent(resultType, mc.Type))
+                        if (TypeHelper.IsNullableType(resultType) && !TypeHelper.AreEquivalent(resultType, mc.Type))
                         {
                             ConstructorInfo ci = resultType.GetConstructor(new Type[] { mc.Type });
                             _ilg.Emit(OpCodes.Newobj, ci);

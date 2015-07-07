@@ -376,7 +376,7 @@ namespace System.Linq.Expressions
             RequiresCanRead(value, paramName);
             if (expectedType != typeof(void))
             {
-                if (!TypeUtils.AreReferenceAssignable(expectedType, value.Type))
+                if (!TypeHelper.AreReferenceAssignable(expectedType, value.Type))
                 {
                     // C# autoquotes return values, so we'll do that here
                     if (!TryQuote(expectedType, ref value))

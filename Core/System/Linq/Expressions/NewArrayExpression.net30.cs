@@ -7,6 +7,8 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Runtime.CompilerServices;
+using Theraot.Collections;
+using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
@@ -157,7 +159,7 @@ namespace System.Linq.Expressions
                 Expression expr = initializerList[i];
                 RequiresCanRead(expr, "initializers");
 
-                if (!TypeUtils.AreReferenceAssignable(type, expr.Type))
+                if (!TypeHelper.AreReferenceAssignable(type, expr.Type))
                 {
                     if (!TryQuote(type, ref expr))
                     {
@@ -227,7 +229,7 @@ namespace System.Linq.Expressions
             {
                 Expression expr = boundsList[i];
                 RequiresCanRead(expr, "bounds");
-                if (!TypeUtils.IsInteger(expr.Type))
+                if (!TypeHelper.IsInteger(expr.Type))
                 {
                     throw Error.ArgumentMustBeInteger();
                 }

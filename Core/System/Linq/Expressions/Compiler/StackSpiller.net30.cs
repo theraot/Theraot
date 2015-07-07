@@ -137,7 +137,7 @@ namespace System.Linq.Expressions.Compiler
             // (our rewrites preserve type exactly, but the rules for rewriting
             // an extension node are more lenient, see Expression.ReduceAndCheck())
             Debug.Assert(
-                TypeUtils.AreReferenceAssignable(node.Type, result.Node.Type),
+                TypeHelper.AreReferenceAssignable(node.Type, result.Node.Type),
                 "rewritten object must be reference assignable to the original type"
             );
         }
@@ -1046,7 +1046,7 @@ namespace System.Linq.Expressions.Compiler
         /// </remarks>
         private static void RequireNoRefArgs(MethodBase method)
         {
-            if (method != null && method.GetParametersCached().Any(p => p.ParameterType.IsByRef))
+            if (method != null && method.GetParameters().Any(p => p.ParameterType.IsByRef))
             {
                 throw Error.TryNotSupportedForMethodsWithRefArgs(method);
             }
@@ -1073,7 +1073,7 @@ namespace System.Linq.Expressions.Compiler
             // Primitive value types are okay because they are all readonly,
             // but we can't rely on this for non-primitive types. So we throw
             // NotSupported.
-            if (instance != null && instance.Type.GetTypeInfo().IsValueType && instance.Type.GetTypeCode() == TypeCode.Object)
+            if (instance != null && instance.Type.IsValueType && instance.Type.GetTypeCode() == TypeCode.Object)
             {
                 throw Error.TryNotSupportedForValueTypeInstances(instance.Type);
             }

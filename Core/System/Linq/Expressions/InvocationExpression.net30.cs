@@ -7,6 +7,8 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
+using Theraot.Collections;
+using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
@@ -190,7 +192,7 @@ namespace System.Linq.Expressions
             Type delegateType = expression.Type;
             if (!expression.Type.IsSubclassOf(typeof(MulticastDelegate)))
             {
-                Type exprType = TypeUtils.FindGenericType(typeof(Expression<>), expression.Type);
+                Type exprType = TypeHelper.FindGenericType(typeof(Expression<>), expression.Type);
                 if (exprType == null)
                 {
                     throw Error.ExpressionTypeNotInvocable(expression.Type);

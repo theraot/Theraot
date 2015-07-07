@@ -9,6 +9,8 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Theraot.Collections.ThreadSafe;
+using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
@@ -535,7 +537,7 @@ namespace System.Linq.Expressions
             int start = 0;
             Expression ob = node.Object;
 
-            if (node.Method.GetCustomAttribute(typeof(ExtensionAttribute)) != null)
+            if (TypeHelper.HasAttribute<ExtensionAttribute>(node.Method))
             {
                 start = 1;
                 ob = node.Arguments[0];
@@ -796,7 +798,7 @@ namespace System.Linq.Expressions
         protected internal override Expression VisitExtension(Expression node)
         {
             // Prefer an overridden ToString, if available.
-            var toString = node.GetType().GetMethod("ToString", Array.Empty<Type>());
+            var toString = node.GetType().GetMethod("ToString", ArrayReservoir<Type>.EmptyArray);
             if (toString.DeclaringType != typeof(Expression) && !toString.IsStatic)
             {
                 Out(node.ToString());

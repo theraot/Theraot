@@ -8,6 +8,8 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Theraot.Collections;
+using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
@@ -163,7 +165,7 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(constructor, "constructor");
             ContractUtils.RequiresNotNull(constructor.DeclaringType, "constructor.DeclaringType");
-            TypeUtils.ValidateType(constructor.DeclaringType);
+            TypeHelper.ValidateType(constructor.DeclaringType);
             var argList = arguments.ToReadOnly();
             ValidateArgumentTypes(constructor, ExpressionType.New, ref argList);
 
@@ -214,7 +216,7 @@ namespace System.Linq.Expressions
                 throw Error.ArgumentCannotBeOfTypeVoid();
             }
             ConstructorInfo ci = null;
-            if (!type.GetTypeInfo().IsValueType)
+            if (!type.IsValueType)
             {
                 ci = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Where(c => c.GetParameters().Length == 0).SingleOrDefault();
                 if (ci == null)
@@ -223,7 +225,7 @@ namespace System.Linq.Expressions
                 }
                 return New(ci);
             }
-            return new NewValueTypeExpression(type, EmptyReadOnlyCollection<Expression>.Instance, null);
+            return new NewValueTypeExpression(type, EmptyCollection<Expression>.Instance, null);
         }
 
 
@@ -232,7 +234,7 @@ namespace System.Linq.Expressions
         private static void ValidateNewArgs(ConstructorInfo constructor, ref ReadOnlyCollection<Expression> arguments, ref ReadOnlyCollection<MemberInfo> members)
         {
             ParameterInfo[] pis;
-            if ((pis = constructor.GetParametersCached()).Length > 0)
+            if ((pis = constructor.GetParameters()).Length > 0)
             {
                 if (arguments.Count != pis.Length)
                 {
@@ -250,13 +252,13 @@ namespace System.Linq.Expressions
                     RequiresCanRead(arg, "argument");
                     MemberInfo member = members[i];
                     ContractUtils.RequiresNotNull(member, "member");
-                    if (!TypeUtils.AreEquivalent(member.DeclaringType, constructor.DeclaringType))
+                    if (!TypeHelper.AreEquivalent(member.DeclaringType, constructor.DeclaringType))
                     {
                         throw Error.ArgumentMemberNotDeclOnType(member.Name, constructor.DeclaringType.Name);
                     }
                     Type memberType;
                     ValidateAnonymousTypeMember(ref member, out memberType);
-                    if (!TypeUtils.AreReferenceAssignable(memberType, arg.Type))
+                    if (!TypeHelper.AreReferenceAssignable(memberType, arg.Type))
                     {
                         if (!TryQuote(memberType, ref arg))
                         {
@@ -269,7 +271,7 @@ namespace System.Linq.Expressions
                     {
                         pType = pType.GetElementType();
                     }
-                    if (!TypeUtils.AreReferenceAssignable(pType, arg.Type))
+                    if (!TypeHelper.AreReferenceAssignable(pType, arg.Type))
                     {
                         if (!TryQuote(pType, ref arg))
                         {

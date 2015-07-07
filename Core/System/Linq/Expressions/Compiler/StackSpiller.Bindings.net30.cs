@@ -85,7 +85,7 @@ namespace System.Linq.Expressions.Compiler
 
             internal override Expression AsExpression(Expression target)
             {
-                if (target.Type.GetTypeInfo().IsValueType && _binding.Member is System.Reflection.PropertyInfo)
+                if (target.Type.IsValueType && _binding.Member is System.Reflection.PropertyInfo)
                 {
                     throw Error.CannotAutoInitializeValueTypeMemberThroughProperty(_binding.Member);
                 }
@@ -104,7 +104,7 @@ namespace System.Linq.Expressions.Compiler
                 }
 
                 // We need to copy back value types
-                if (memberTemp.Type.GetTypeInfo().IsValueType)
+                if (memberTemp.Type.IsValueType)
                 {
                     block[_bindings.Count + 1] = Expression.Block(
                         typeof(void),
@@ -169,7 +169,7 @@ namespace System.Linq.Expressions.Compiler
 
             internal override Expression AsExpression(Expression target)
             {
-                if (target.Type.GetTypeInfo().IsValueType && _binding.Member is System.Reflection.PropertyInfo)
+                if (target.Type.IsValueType && _binding.Member is System.Reflection.PropertyInfo)
                 {
                     throw Error.CannotAutoInitializeValueTypeElementThroughProperty(_binding.Member);
                 }
@@ -189,7 +189,7 @@ namespace System.Linq.Expressions.Compiler
                 }
 
                 // We need to copy back value types
-                if (memberTemp.Type.GetTypeInfo().IsValueType)
+                if (memberTemp.Type.IsValueType)
                 {
                     block[_inits.Count + 1] = Expression.Block(
                         typeof(void),

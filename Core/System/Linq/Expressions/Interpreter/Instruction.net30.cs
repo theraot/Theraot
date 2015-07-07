@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Theraot.Core;
 
 namespace System.Linq.Expressions.Interpreter
 {
@@ -225,7 +226,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public static Instruction Create(Type t)
         {
-            switch (System.Dynamic.Utils.TypeExtensions.GetTypeCode(TypeUtils.GetNonNullableType(t)))
+            switch (TypeHelper.GetTypeCode(TypeHelper.GetNonNullableType(t)))
             {
                 case TypeCode.Boolean: return _Bool ?? (_Bool = new BoolNot());
                 case TypeCode.Int64: return _Int64 ?? (_Int64 = new Int64Not());

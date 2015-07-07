@@ -7,6 +7,8 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Threading;
+using Theraot.Collections;
+using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
@@ -129,7 +131,7 @@ namespace System.Linq.Expressions
 
         internal virtual ReadOnlyCollection<ParameterExpression> GetOrMakeVariables()
         {
-            return EmptyReadOnlyCollection<ParameterExpression>.Instance;
+            return EmptyCollection<ParameterExpression>.Instance;
         }
 
         /// <summary>
@@ -799,7 +801,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="BlockExpression"/>.</returns>
         public static BlockExpression Block(IEnumerable<Expression> expressions)
         {
-            return Block(EmptyReadOnlyCollection<ParameterExpression>.Instance, expressions);
+            return Block(EmptyCollection<ParameterExpression>.Instance, expressions);
         }
 
         /// <summary>
@@ -822,7 +824,7 @@ namespace System.Linq.Expressions
         /// <returns>The created <see cref="BlockExpression"/>.</returns>
         public static BlockExpression Block(Type type, IEnumerable<Expression> expressions)
         {
-            return Block(type, EmptyReadOnlyCollection<ParameterExpression>.Instance, expressions);
+            return Block(type, EmptyCollection<ParameterExpression>.Instance, expressions);
         }
 
         /// <summary>
@@ -886,13 +888,13 @@ namespace System.Linq.Expressions
             Expression last = expressionList.Last();
             if (type != typeof(void))
             {
-                if (!TypeUtils.AreReferenceAssignable(type, last.Type))
+                if (!TypeHelper.AreReferenceAssignable(type, last.Type))
                 {
                     throw Error.ArgumentTypesMustMatch();
                 }
             }
 
-            if (!TypeUtils.AreEquivalent(type, last.Type))
+            if (!TypeHelper.AreEquivalent(type, last.Type))
             {
                 return new ScopeWithType(variableList, expressionList, type);
             }

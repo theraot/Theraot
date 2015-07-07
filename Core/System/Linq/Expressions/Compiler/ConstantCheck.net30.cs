@@ -3,6 +3,7 @@
 
 using System.Dynamic.Utils;
 using System.Reflection;
+using Theraot.Core;
 
 namespace System.Linq.Expressions.Compiler
 {
@@ -77,7 +78,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 // If the operand is a value type (other than nullable), we
                 // know the result is always true.
-                if (operandType.GetTypeInfo().IsValueType && !operandType.IsNullableType())
+                if (operandType.IsValueType && !operandType.IsNullableType())
                 {
                     return AnalyzeTypeIsResult.KnownTrue;
                 }

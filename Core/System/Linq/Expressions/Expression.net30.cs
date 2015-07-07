@@ -10,6 +10,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
@@ -186,7 +187,7 @@ namespace System.Linq.Expressions
             // 1. Reduction must return a new, non-null node
             // 2. Reduction must return a new node whose result type can be assigned to the type of the original node
             if (newNode == null || newNode == this) throw Error.MustReduceToDifferent();
-            if (!TypeUtils.AreReferenceAssignable(Type, newNode.Type)) throw Error.ReducedNotCompatible();
+            if (!TypeHelper.AreReferenceAssignable(Type, newNode.Type)) throw Error.ReducedNotCompatible();
             return newNode;
         }
 

@@ -7,6 +7,8 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
+using Theraot.Collections;
+using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
@@ -97,7 +99,7 @@ namespace System.Linq.Expressions
                 if (_switchValue.Type.IsNullableType())
                 {
                     return (_comparison == null) ||
-                        !TypeUtils.AreEquivalent(_switchValue.Type, _comparison.GetParametersCached()[0].ParameterType.GetNonRefType());
+                        !TypeHelper.AreEquivalent(_switchValue.Type, _comparison.GetParameters()[0].ParameterType.GetNonRefType());
                 }
                 return false;
             }
@@ -211,7 +213,7 @@ namespace System.Linq.Expressions
 
             if (comparison != null)
             {
-                var pms = comparison.GetParametersCached();
+                var pms = comparison.GetParameters();
                 if (pms.Length != 2)
                 {
                     throw Error.IncorrectNumberOfMethodCallArguments(comparison);
@@ -266,7 +268,7 @@ namespace System.Linq.Expressions
                     // When no comparison method is provided, require all test values to have the same type.
                     for (int i = 0; i < c.TestValues.Count; i++)
                     {
-                        if (!TypeUtils.AreEquivalent(firstTestValue.Type, c.TestValues[i].Type))
+                        if (!TypeHelper.AreEquivalent(firstTestValue.Type, c.TestValues[i].Type))
                         {
                             throw new ArgumentException(Strings.AllTestValuesMustHaveSameType, "cases");
                         }
@@ -311,7 +313,7 @@ namespace System.Linq.Expressions
             {
                 if (resultType != typeof(void))
                 {
-                    if (!TypeUtils.AreReferenceAssignable(resultType, @case.Type))
+                    if (!TypeHelper.AreReferenceAssignable(resultType, @case.Type))
                     {
                         throw new ArgumentException(Strings.ArgumentTypesMustMatch, parameterName);
                     }
@@ -319,7 +321,7 @@ namespace System.Linq.Expressions
             }
             else
             {
-                if (!TypeUtils.AreEquivalent(resultType, @case.Type))
+                if (!TypeHelper.AreEquivalent(resultType, @case.Type))
                 {
                     throw new ArgumentException(Strings.AllCaseBodiesMustHaveSameType, parameterName);
                 }

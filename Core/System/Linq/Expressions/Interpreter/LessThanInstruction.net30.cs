@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Theraot.Core;
 
 namespace System.Linq.Expressions.Interpreter
 {
@@ -282,10 +283,10 @@ namespace System.Linq.Expressions.Interpreter
         }
         public static Instruction Create(Type type, bool liftedToNull = false)
         {
-            Debug.Assert(!type.GetTypeInfo().IsEnum);
+            Debug.Assert(!type.IsEnum);
             if (liftedToNull)
             {
-                switch (System.Dynamic.Utils.TypeExtensions.GetTypeCode(TypeUtils.GetNonNullableType(type)))
+                switch (TypeHelper.GetTypeCode(TypeHelper.GetNonNullableType(type)))
                 {
                     case TypeCode.SByte: return s_liftedToNullSByte ?? (s_liftedToNullSByte = new LessThanSByte(null));
                     case TypeCode.Byte: return s_liftedToNullByte ?? (s_liftedToNullByte = new LessThanByte(null));
@@ -305,7 +306,7 @@ namespace System.Linq.Expressions.Interpreter
             }
             else
             {
-                switch (System.Dynamic.Utils.TypeExtensions.GetTypeCode(TypeUtils.GetNonNullableType(type)))
+                switch (TypeHelper.GetTypeCode(TypeHelper.GetNonNullableType(type)))
                 {
                     case TypeCode.SByte: return s_SByte ?? (s_SByte = new LessThanSByte(ScriptingRuntimeHelpers.False));
                     case TypeCode.Byte: return s_byte ?? (s_byte = new LessThanByte(ScriptingRuntimeHelpers.False));
@@ -603,10 +604,10 @@ namespace System.Linq.Expressions.Interpreter
 
         public static Instruction Create(Type type, bool liftedToNull = false)
         {
-            Debug.Assert(!type.GetTypeInfo().IsEnum);
+            Debug.Assert(!type.IsEnum);
             if (liftedToNull)
             {
-                switch (System.Dynamic.Utils.TypeExtensions.GetTypeCode(TypeUtils.GetNonNullableType(type)))
+                switch (TypeHelper.GetTypeCode(TypeHelper.GetNonNullableType(type)))
                 {
                     case TypeCode.SByte: return s_liftedToNullSByte ?? (s_liftedToNullSByte = new LessThanOrEqualSByte(null));
                     case TypeCode.Byte: return s_liftedToNullByte ?? (s_liftedToNullByte = new LessThanOrEqualByte(null));
@@ -626,7 +627,7 @@ namespace System.Linq.Expressions.Interpreter
             }
             else
             {
-                switch (System.Dynamic.Utils.TypeExtensions.GetTypeCode(TypeUtils.GetNonNullableType(type)))
+                switch (TypeHelper.GetTypeCode(TypeHelper.GetNonNullableType(type)))
                 {
                     case TypeCode.SByte: return s_SByte ?? (s_SByte = new LessThanOrEqualSByte(ScriptingRuntimeHelpers.False));
                     case TypeCode.Byte: return s_byte ?? (s_byte = new LessThanOrEqualByte(ScriptingRuntimeHelpers.False));

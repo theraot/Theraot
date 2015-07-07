@@ -6,6 +6,7 @@ using System.Dynamic.Utils;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
+using Theraot.Core;
 
 namespace System.Linq.Expressions.Compiler
 {
@@ -71,7 +72,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 EmitUnaryMethod(node, flags);
             }
-            else if (node.NodeType == ExpressionType.NegateChecked && TypeUtils.IsInteger(node.Operand.Type))
+            else if (node.NodeType == ExpressionType.NegateChecked && TypeHelper.IsInteger(node.Operand.Type))
             {
                 EmitExpression(node.Operand);
                 LocalBuilder loc = GetLocal(node.Operand.Type);
@@ -92,7 +93,7 @@ namespace System.Linq.Expressions.Compiler
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private void EmitUnaryOperator(ExpressionType op, Type operandType, Type resultType)
         {
-            bool operandIsNullable = TypeUtils.IsNullableType(operandType);
+            bool operandIsNullable = TypeHelper.IsNullableType(operandType);
 
             if (op == ExpressionType.ArrayLength)
             {
@@ -124,7 +125,7 @@ namespace System.Linq.Expressions.Compiler
                             // do op on non-null value
                             _ilg.Emit(OpCodes.Ldloca, loc);
                             _ilg.EmitGetValueOrDefault(operandType);
-                            Type nnOperandType = TypeUtils.GetNonNullableType(operandType);
+                            Type nnOperandType = TypeHelper.GetNonNullableType(operandType);
                             EmitUnaryOperator(op, nnOperandType, typeof(bool));
 
                             // construct result
@@ -146,7 +147,7 @@ namespace System.Linq.Expressions.Compiler
                     case ExpressionType.IsFalse:
                     case ExpressionType.IsTrue:
                         {
-                            Debug.Assert(TypeUtils.AreEquivalent(operandType, resultType));
+                            Debug.Assert(TypeHelper.AreEquivalent(operandType, resultType));
                             Label labIfNull = _ilg.DefineLabel();
                             Label labEnd = _ilg.DefineLabel();
                             LocalBuilder loc = GetLocal(operandType);
@@ -160,7 +161,7 @@ namespace System.Linq.Expressions.Compiler
                             // apply operator to non-null value
                             _ilg.Emit(OpCodes.Ldloca, loc);
                             _ilg.EmitGetValueOrDefault(operandType);
-                            Type nnOperandType = TypeUtils.GetNonNullableType(resultType);
+                            Type nnOperandType = TypeHelper.GetNonNullableType(resultType);
                             EmitUnaryOperator(op, nnOperandType, nnOperandType);
 
                             // construct result
@@ -182,7 +183,7 @@ namespace System.Linq.Expressions.Compiler
                     case ExpressionType.TypeAs:
                         _ilg.Emit(OpCodes.Box, operandType);
                         _ilg.Emit(OpCodes.Isinst, resultType);
-                        if (TypeUtils.IsNullableType(resultType))
+                        if (TypeHelper.IsNullableType(resultType))
                         {
                             _ilg.Emit(OpCodes.Unbox_Any, resultType);
                         }
@@ -227,12 +228,12 @@ namespace System.Linq.Expressions.Compiler
                         _ilg.Emit(OpCodes.Neg);
                         break;
                     case ExpressionType.TypeAs:
-                        if (operandType.GetTypeInfo().IsValueType)
+                        if (operandType.IsValueType)
                         {
                             _ilg.Emit(OpCodes.Box, operandType);
                         }
                         _ilg.Emit(OpCodes.Isinst, resultType);
-                        if (TypeUtils.IsNullableType(resultType))
+                        if (TypeHelper.IsNullableType(resultType))
                         {
                             _ilg.Emit(OpCodes.Unbox_Any, resultType);
                         }
@@ -276,7 +277,7 @@ namespace System.Linq.Expressions.Compiler
                     break;
                 default:
                     // we only have to worry about arithmetic types, see
-                    // TypeUtils.IsArithmetic
+                    // TypeHelper.IsArithmetic
                     throw ContractUtils.Unreachable;
             }
         }
@@ -284,7 +285,7 @@ namespace System.Linq.Expressions.Compiler
         private void EmitUnboxUnaryExpression(Expression expr)
         {
             var node = (UnaryExpression)expr;
-            Debug.Assert(node.Type.GetTypeInfo().IsValueType && !TypeUtils.IsNullableType(node.Type));
+            Debug.Assert(node.Type.IsValueType && !TypeHelper.IsNullableType(node.Type));
 
             // Unbox_Any leaves the value on the stack
             EmitExpression(node.Operand);
@@ -316,9 +317,9 @@ namespace System.Linq.Expressions.Compiler
                 // an expression tree and then compiling it.  We can live with this
                 // discrepancy however.
 
-                if (node.IsLifted && (!node.Type.GetTypeInfo().IsValueType || !node.Operand.Type.GetTypeInfo().IsValueType))
+                if (node.IsLifted && (!node.Type.IsValueType || !node.Operand.Type.IsValueType))
                 {
-                    ParameterInfo[] pis = node.Method.GetParametersCached();
+                    ParameterInfo[] pis = node.Method.GetParameters();
                     Debug.Assert(pis != null && pis.Length == 1);
                     Type paramType = pis[0].ParameterType;
                     if (paramType.IsByRef)
@@ -347,7 +348,7 @@ namespace System.Linq.Expressions.Compiler
             }
             else
             {
-                if (TypeUtils.AreEquivalent(node.Operand.Type, node.Type))
+                if (TypeHelper.AreEquivalent(node.Operand.Type, node.Type))
                 {
                     EmitExpression(node.Operand, flags);
                 }
@@ -365,10 +366,10 @@ namespace System.Linq.Expressions.Compiler
         {
             if (node.IsLifted)
             {
-                ParameterExpression v = Expression.Variable(TypeUtils.GetNonNullableType(node.Operand.Type), null);
+                ParameterExpression v = Expression.Variable(TypeHelper.GetNonNullableType(node.Operand.Type), null);
                 MethodCallExpression mc = Expression.Call(node.Method, v);
 
-                Type resultType = TypeUtils.GetNullableType(mc.Type);
+                Type resultType = TypeHelper.GetNullableType(mc.Type);
                 EmitLift(node.NodeType, resultType, mc, new ParameterExpression[] { v }, new Expression[] { node.Operand });
                 _ilg.EmitConvertToType(resultType, node.Type, false);
             }

@@ -245,6 +245,7 @@
     <Compile Include="System\Dynamic\Utils\Helpers.cs" />
     <Compile Include="System\Dynamic\Utils\ListArgumentProvider.cs" />
     <Compile Include="System\Dynamic\Utils\Strings.cs" />
+    <Compile Include="System\Dynamic\Utils\TrueReadOnlyCollection.cs" />
     <Compile Include="System\Linq\Enumerable.join.net30.cs" />
     <Compile Include="System\Linq\Enumerable.groupjoin.net30.cs" />
     <Compile Include="System\Linq\Enumerable.groupby.net30.cs" />

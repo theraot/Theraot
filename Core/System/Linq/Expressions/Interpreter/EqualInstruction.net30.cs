@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Theraot.Core;
 
 namespace System.Linq.Expressions.Interpreter
 {
@@ -541,7 +542,7 @@ namespace System.Linq.Expressions.Interpreter
             // Boxed enums can be unboxed as their underlying types:
             if (liftedToNull)
             {
-                switch (System.Dynamic.Utils.TypeExtensions.GetTypeCode(type.GetTypeInfo().IsEnum ? Enum.GetUnderlyingType(type) : TypeUtils.GetNonNullableType(type)))
+                switch (TypeHelper.GetTypeCode(type.IsEnum ? Enum.GetUnderlyingType(type) : TypeHelper.GetNonNullableType(type)))
                 {
                     case TypeCode.Boolean: return s_booleanLiftedToNull ?? (s_booleanLiftedToNull = new EqualBooleanLiftedToNull());
                     case TypeCode.SByte: return s_SByteLiftedToNull ?? (s_SByteLiftedToNull = new EqualSByteLiftedToNull());
@@ -560,7 +561,7 @@ namespace System.Linq.Expressions.Interpreter
 
                     case TypeCode.String:
                     case TypeCode.Object:
-                        if (!type.GetTypeInfo().IsValueType)
+                        if (!type.IsValueType)
                         {
                             return s_referenceLiftedToNull ?? (s_referenceLiftedToNull = new EqualReferenceLiftedToNull());
                         }
@@ -573,7 +574,7 @@ namespace System.Linq.Expressions.Interpreter
             }
             else
             {
-                switch (System.Dynamic.Utils.TypeExtensions.GetTypeCode(type.GetTypeInfo().IsEnum ? Enum.GetUnderlyingType(type) : TypeUtils.GetNonNullableType(type)))
+                switch (TypeHelper.GetTypeCode(type.IsEnum ? Enum.GetUnderlyingType(type) : TypeHelper.GetNonNullableType(type)))
                 {
                     case TypeCode.Boolean: return s_boolean ?? (s_boolean = new EqualBoolean());
                     case TypeCode.SByte: return s_SByte ?? (s_SByte = new EqualSByte());
@@ -592,7 +593,7 @@ namespace System.Linq.Expressions.Interpreter
 
                     case TypeCode.String:
                     case TypeCode.Object:
-                        if (!type.GetTypeInfo().IsValueType)
+                        if (!type.IsValueType)
                         {
                             return s_reference ?? (s_reference = new EqualReference());
                         }
