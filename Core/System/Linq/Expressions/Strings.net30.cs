@@ -1458,7 +1458,6 @@ namespace System.Linq.Expressions
             }
         }
 
-#if FEATURE_CORECLR
         /// <summary>
         /// A string like "The operator '{0}' is not implemented for type '{1}'"
         /// </summary>
@@ -1466,6 +1465,5 @@ namespace System.Linq.Expressions
         {
             return SR.Format(SR.OperatorNotImplementedForType, p0, p1);
         }
-#endif
     }
 }
