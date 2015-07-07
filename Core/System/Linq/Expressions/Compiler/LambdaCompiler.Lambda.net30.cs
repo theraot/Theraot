@@ -92,12 +92,26 @@ namespace System.Linq.Expressions.Compiler
             DynamicMethod dynamicMethod = inner._method as DynamicMethod;
             if (dynamicMethod != null)
             {
-                // Emit MethodInfo.CreateDelegate instead because DynamicMethod is not in Windows 8 Profile
-                _boundConstants.EmitConstant(this, dynamicMethod, typeof(MethodInfo));
-                _ilg.EmitType(delegateType);
-                EmitClosureCreation(inner);
-                _ilg.Emit(OpCodes.Callvirt, typeof(MethodInfo).GetMethod("CreateDelegate", new Type[] { typeof(Type), typeof(object) }));
-                _ilg.Emit(OpCodes.Castclass, delegateType);
+                var types = new[] {typeof (Type), typeof(object)};
+                var createDelegate = typeof (DynamicMethod).GetMethod("CreateDelegate", types);
+                if (createDelegate != null)
+                {
+                    _boundConstants.EmitConstant(this, dynamicMethod, typeof(DynamicMethod));
+                    _ilg.EmitType(delegateType);
+                    EmitClosureCreation(inner);
+                    _ilg.Emit(OpCodes.Callvirt, createDelegate);
+                    _ilg.Emit(OpCodes.Castclass, delegateType);
+                }
+                else
+                {
+                    // Emit MethodInfo.CreateDelegate instead because DynamicMethod is not in Windows 8 Profile
+                    _boundConstants.EmitConstant(this, dynamicMethod, typeof (MethodInfo));
+                    _ilg.EmitType(delegateType);
+                    EmitClosureCreation(inner);
+                    _ilg.Emit(OpCodes.Callvirt,
+                        typeof (MethodInfo).GetMethod("CreateDelegate", types));
+                    _ilg.Emit(OpCodes.Castclass, delegateType);
+                }
             }
             else
             {
