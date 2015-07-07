@@ -1489,6 +1489,20 @@ namespace Theraot.Collections
             }
         }
 
+        public static T[] RemoveFirst<T>(this T[] array)
+        {
+            T[] result = new T[array.Length - 1];
+            Array.Copy(array, 1, result, 0, result.Length);
+            return result;
+        }
+
+        public static T[] RemoveLast<T>(this T[] array)
+        {
+            T[] result = new T[array.Length - 1];
+            Array.Copy(array, 0, result, 0, result.Length);
+            return result;
+        }
+
         public static int RemoveWhere<TItem>(this ICollection<TItem> collection, Predicate<TItem> predicate)
         {
             return RemoveWhere(collection, items => Where(items, Check.NotNullArgument(predicate, "predicate")));
