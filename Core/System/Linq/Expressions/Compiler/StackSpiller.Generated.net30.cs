@@ -1,3 +1,4 @@
+#if NET20 || NET30
 #define FEATURE_CORECLR
 #if FEATURE_CORECLR
 // Copyright (c) Microsoft. All rights reserved.
@@ -250,4 +251,5 @@ namespace System.Linq.Expressions.Compiler
     }
 }
 
+#endif
 #endif
