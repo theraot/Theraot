@@ -1420,6 +1420,31 @@ namespace Theraot.Collections
             }
         }
 
+        [System.Diagnostics.Contracts.Pure]
+        public static bool ListEquals<T>(this ICollection<T> first, ICollection<T> second)
+        {
+            // Copyright (c) Microsoft. All rights reserved.
+            // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+            if (first.Count != second.Count)
+            {
+                return false;
+            }
+            var cmp = EqualityComparer<T>.Default;
+            var f = first.GetEnumerator();
+            var s = second.GetEnumerator();
+            while (f.MoveNext())
+            {
+                s.MoveNext();
+
+                if (!cmp.Equals(f.Current, s.Current))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         public static void Move<T>(this IList<T> list, int oldIndex, int newIndex)
         {
             var item = list[oldIndex];
@@ -1491,6 +1516,9 @@ namespace Theraot.Collections
 
         public static T[] RemoveFirst<T>(this T[] array)
         {
+            // Copyright (c) Microsoft. All rights reserved.
+            // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
             T[] result = new T[array.Length - 1];
             Array.Copy(array, 1, result, 0, result.Length);
             return result;
@@ -1498,6 +1526,9 @@ namespace Theraot.Collections
 
         public static T[] RemoveLast<T>(this T[] array)
         {
+            // Copyright (c) Microsoft. All rights reserved.
+            // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
             T[] result = new T[array.Length - 1];
             Array.Copy(array, 0, result, 0, result.Length);
             return result;
