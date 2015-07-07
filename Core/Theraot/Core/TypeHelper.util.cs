@@ -12,6 +12,20 @@ namespace Theraot.Core
 {
     public static partial class TypeHelper
     {
+        private static Assembly _corlib;
+
+        private static Assembly Corlib
+        {
+            get
+            {
+                if (_corlib == null)
+                {
+                    _corlib = typeof(object).Assembly;
+                }
+                return _corlib;
+            }
+        }
+
         public static bool AreEquivalent(Type t1, Type t2)
         {
             return t1.IsEquivalentTo(t2);
@@ -29,6 +43,40 @@ namespace Theraot.Core
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// We can cache references to types, as long as they aren't in
+        /// collectable assemblies. Unfortunately, we can't really distinguish
+        /// between different flavors of assemblies. But, we can at least
+        /// create a cache for types in mscorlib (so we get the primitives, etc).
+        /// </summary>
+        public static bool CanCache(this Type t)
+        {
+            // Note: we don't have to scan base or declaring types here.
+            // There's no way for a type in mscorlib to derive from or be
+            // contained in a type from another assembly. The only thing we
+            // need to look at is the generic arguments, which are the thing
+            // that allows mscorlib types to be specialized by types in other
+            // assemblies.
+
+            var asm = t.Assembly;
+            if (asm != Corlib || asm != Assembly.GetExecutingAssembly())
+            {
+                // Not in mscorlib or our assembly
+                return false;
+            }
+            if (t.IsGenericType)
+            {
+                foreach (Type g in t.GetGenericArguments())
+                {
+                    if (!CanCache(g))
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
 
         public static MethodInfo FindConversionOperator(MethodInfo[] methods, Type typeFrom, Type typeTo, bool implicitOnly)
@@ -172,6 +220,46 @@ namespace Theraot.Core
                 }
             }
             return list.ToArray();
+        }
+
+        public static TypeCode GetTypeCode(this Type type)
+        {
+            if (type == null)
+                return TypeCode.Empty;
+            else if (type == typeof(bool))
+                return TypeCode.Boolean;
+            else if (type == typeof(char))
+                return TypeCode.Char;
+            else if (type == typeof(sbyte))
+                return TypeCode.SByte;
+            else if (type == typeof(byte))
+                return TypeCode.Byte;
+            else if (type == typeof(short))
+                return TypeCode.Int16;
+            else if (type == typeof(ushort))
+                return TypeCode.UInt16;
+            else if (type == typeof(int))
+                return TypeCode.Int32;
+            else if (type == typeof(uint))
+                return TypeCode.UInt32;
+            else if (type == typeof(long))
+                return TypeCode.Int64;
+            else if (type == typeof(ulong))
+                return TypeCode.UInt64;
+            else if (type == typeof(float))
+                return TypeCode.Single;
+            else if (type == typeof(double))
+                return TypeCode.Double;
+            else if (type == typeof(decimal))
+                return TypeCode.Decimal;
+            else if (type == typeof(System.DateTime))
+                return TypeCode.DateTime;
+            else if (type == typeof(string))
+                return TypeCode.String;
+            else if (type.IsEnum)
+                return GetTypeCode(Enum.GetUnderlyingType(type));
+            else
+                return TypeCode.Object;
         }
 
         public static MethodInfo GetUserDefinedCoercionMethod(Type convertFrom, Type convertToType, bool implicitOnly)
