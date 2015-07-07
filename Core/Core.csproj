@@ -278,6 +278,7 @@
     <Compile Include="Theraot\Collections\ActionObserver.cs" />
     <Compile Include="Theraot\Collections\ConversionSet.cs" />
     <Compile Include="Theraot\Collections\ConvertedObserver.cs" />
+    <Compile Include="Theraot\Collections\EmptyCollection.cs" />
     <Compile Include="Theraot\Collections\EmptyList.cs" />
     <Compile Include="Theraot\Collections\EmptySet.cs" />
     <Compile Include="Theraot\Collections\ExtendedDictionary.cs" />
