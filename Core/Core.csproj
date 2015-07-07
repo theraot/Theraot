@@ -239,6 +239,7 @@
     <Compile Include="System\Diagnostics\Contracts\ContractInvariantMethodAttribute.net35.cs" />
     <Compile Include="System\Dynamic\Utils\CacheDict.cs" />
     <Compile Include="System\Dynamic\Utils\ContractsUtil.cs" />
+    <Compile Include="System\Dynamic\Utils\DelegateHelpers.cs" />
     <Compile Include="System\Dynamic\Utils\Error.cs" />
     <Compile Include="System\Dynamic\Utils\ExpressionUtils.cs" />
     <Compile Include="System\Dynamic\Utils\ExpressionVisitorUtils.cs" />
