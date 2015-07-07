@@ -420,31 +420,23 @@ namespace Theraot.Core
             return !ReferenceEquals(Nullable.GetUnderlyingType(type), null);
         }
 
-        public static bool IsPrimitiveIntegerType(this Type type)
+        public static bool IsPrimitiveInteger(this Type type)
         {
-            if (type.IsPrimitive)
-            {
-                if
+            if
                 (
-                    type == typeof(bool)
-                    || type == typeof(char)
-                    || type == typeof(IntPtr)
-                    || type == typeof(UIntPtr)
-                    || type == typeof(double)
-                    || type == typeof(float)
+                    type == typeof(sbyte)
+                    || type == typeof(byte)
+                    || type == typeof(short)
+                    || type == typeof(int)
+                    || type == typeof(long)
+                    || type == typeof(ushort)
+                    || type == typeof(uint)
+                    || type == typeof(ulong)
                 )
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
-            }
-            else
             {
-                return false;
+                return true;
             }
+            return false;
         }
 
         public static bool IsValueTypeRecursive(this Type type)

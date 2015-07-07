@@ -447,6 +447,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>TupleEqualityComparer.tt</DependentUpon>
     </Compile>
+    <Compile Include="Theraot\Core\TypeHelper.util.cs" />
     <Compile Include="Theraot\Core\TypeHelper.ConstructorHelper.cs">
       <DependentUpon>TypeHelper.ConstructorHelper.tt</DependentUpon>
       <DesignTime>True</DesignTime>
