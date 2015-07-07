@@ -1,3 +1,5 @@
+#if NET20 || NET30
+
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
@@ -32,7 +34,7 @@ namespace System.Linq.Expressions.Interpreter
         }
     }
 
-    #region Load
+#region Load
 
     internal sealed class LoadLocalInstruction : LocalAccessInstruction, IBoxableInstruction
     {
@@ -106,9 +108,9 @@ namespace System.Linq.Expressions.Interpreter
         }
     }
 
-    #endregion
+#endregion
 
-    #region Store, Assign
+#region Store, Assign
 
     internal sealed class AssignLocalInstruction : LocalAccessInstruction, IBoxableInstruction
     {
@@ -225,9 +227,9 @@ namespace System.Linq.Expressions.Interpreter
         }
     }
 
-    #endregion
+#endregion
 
-    #region Initialize
+#region Initialize
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1012:AbstractTypesShouldNotHaveConstructors")]
     internal abstract class InitializeLocalInstruction : LocalAccessInstruction
@@ -455,9 +457,9 @@ namespace System.Linq.Expressions.Interpreter
         }
     }
 
-    #endregion
+#endregion
 
-    #region RuntimeVariables
+#region RuntimeVariables
 
     internal sealed class RuntimeVariablesInstruction : Instruction
     {
@@ -487,5 +489,7 @@ namespace System.Linq.Expressions.Interpreter
             return "GetRuntimeVariables()";
         }
     }
-    #endregion
+#endregion
 }
+
+#endif

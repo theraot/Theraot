@@ -1,3 +1,5 @@
+#if NET20 || NET30
+
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
@@ -16,7 +18,7 @@ namespace System.Linq.Expressions.Interpreter
         /// </summary>
         public abstract int ArgumentCount { get; }
 
-        #region Construction
+#region Construction
 
         internal CallInstruction() { }
         public override string InstructionName
@@ -251,9 +253,9 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        #endregion
+#endregion
 
-        #region Instruction
+#region Instruction
 
         public override int ConsumedStack { get { return ArgumentCount; } }
 
@@ -261,7 +263,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             return "Call()";
         }
-        #endregion
+#endregion
 
         /// <summary>
         /// If the target of invokation happens to be a delegate
@@ -535,3 +537,5 @@ namespace System.Linq.Expressions.Interpreter
         }
     }
 }
+
+#endif

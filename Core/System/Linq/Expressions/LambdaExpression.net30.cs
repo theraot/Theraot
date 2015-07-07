@@ -1,3 +1,5 @@
+#if NET20 || NET30
+
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
@@ -16,8 +18,6 @@ using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
-#if NET20 || NET30
-
     /// <summary>
     /// Creates a <see cref="LambdaExpression"/> node.
     /// This captures a block of code that is similar to a .NET method body.
@@ -146,10 +146,6 @@ namespace System.Linq.Expressions
 #endif
     }
 
-#endif
-
-#if NET20 || NET30
-
     /// <summary>
     /// Defines a <see cref="Expression{TDelegate}"/> node.
     /// This captures a block of code that is similar to a .NET method body.
@@ -216,11 +212,9 @@ namespace System.Linq.Expressions
 #endif
     }
 
-#endif
-
 #if !FEATURE_CORECLR
-    // Seperate expression creation class to hide the CreateExpressionFunc function from users reflecting on Expression<T>
-    public class ExpressionCreator<TDelegate>
+// Seperate expression creation class to hide the CreateExpressionFunc function from users reflecting on Expression<T>
+public class ExpressionCreator<TDelegate>
     {
         public static LambdaExpression CreateExpressionFunc(Expression body, string name, bool tailCall, ReadOnlyCollection<ParameterExpression> parameters)
         {
@@ -228,8 +222,6 @@ namespace System.Linq.Expressions
         }
     }
 #endif
-
-#if NET20 || NET30
 
     public partial class Expression
     {
@@ -704,6 +696,6 @@ namespace System.Linq.Expressions
             return Compiler.DelegateHelpers.MakeDelegateType(typeArgs);
         }
     }
+}
 
 #endif
-}

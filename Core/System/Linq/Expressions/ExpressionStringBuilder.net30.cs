@@ -1,3 +1,5 @@
+#if NET20 || NET30
+
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
@@ -107,7 +109,7 @@ namespace System.Linq.Expressions
             }
         }
 
-        #region The printing code
+#region The printing code
 
         private void Out(string s)
         {
@@ -119,9 +121,9 @@ namespace System.Linq.Expressions
             _out.Append(c);
         }
 
-        #endregion
+#endregion
 
-        #region Output an expresstion tree to a string
+#region Output an expresstion tree to a string
 
         /// <summary>
         /// Output a given expression tree to a string.
@@ -832,6 +834,8 @@ namespace System.Linq.Expressions
                 Out("UnamedLabel_" + labelId);
             }
         }
-        #endregion
+#endregion
     }
 }
+
+#endif

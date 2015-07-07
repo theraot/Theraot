@@ -1,3 +1,5 @@
+#if NET20 || NET30
+
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
@@ -12,8 +14,6 @@ using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
-#if NET20 || NET30
-
     /// <summary>
     /// Represents creating a new array and possibly initializing the elements of the new array.
     /// </summary>
@@ -87,8 +87,6 @@ namespace System.Linq.Expressions
         }
     }
 
-#endif
-
     internal sealed class NewArrayInitExpression : NewArrayExpression
     {
         internal NewArrayInitExpression(Type type, ReadOnlyCollection<Expression> expressions)
@@ -123,8 +121,6 @@ namespace System.Linq.Expressions
             get { return ExpressionType.NewArrayBounds; }
         }
     }
-
-#if NET20 || NET30
 
     public partial class Expression
     {
@@ -258,6 +254,6 @@ namespace System.Linq.Expressions
     #endregion
 
     }
+}
 
 #endif
-}

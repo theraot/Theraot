@@ -1,3 +1,5 @@
+#if NET20 || NET30
+
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
@@ -120,7 +122,7 @@ namespace System.Linq.Expressions
             throw ContractUtils.Unreachable;
         }
 
-    #region IArgumentProvider Members
+#region IArgumentProvider Members
 
         public virtual Expression GetArgument(int index)
         {
@@ -131,12 +133,12 @@ namespace System.Linq.Expressions
         {
             get { throw ContractUtils.Unreachable; }
         }
-    #endregion
+#endregion
     }
 
 #endif
 
-    #region Specialized Subclasses
+#region Specialized Subclasses
 
     internal class MethodCallExpressionN : MethodCallExpression, IArgumentProvider
     {
@@ -586,13 +588,11 @@ namespace System.Linq.Expressions
         }
     }
 
-    #endregion
-
-#if NET20 || NET30
+#endregion
 
     public partial class Expression
     {
-    #region Call
+#region Call
 
         ///<summary>Creates a <see cref="T:System.Linq.Expressions.MethodCallExpression" /> that represents a call to a static method that takes one argument.</summary>
         ///<returns>A <see cref="T:System.Linq.Expressions.MethodCallExpression" /> that has the <see cref="P:System.Linq.Expressions.Expression.NodeType" /> property equal to <see cref="F:System.Linq.Expressions.ExpressionType.Call" /> and the <see cref="P:System.Linq.Expressions.MethodCallExpression.Object" /> and <see cref="P:System.Linq.Expressions.MethodCallExpression.Method" /> properties set to the specified values.</returns>
@@ -1054,9 +1054,9 @@ namespace System.Linq.Expressions
         }
 
 
-    #endregion
+#endregion
 
-    #region ArrayIndex
+#region ArrayIndex
 
         ///<summary>Creates a <see cref="T:System.Linq.Expressions.MethodCallExpression" /> that represents applying an array index operator to a multi-dimensional array.</summary>
         ///<returns>A <see cref="T:System.Linq.Expressions.BinaryExpression" /> that has the <see cref="P:System.Linq.Expressions.Expression.NodeType" /> property equal to <see cref="F:System.Linq.Expressions.ExpressionType.ArrayIndex" /> and the <see cref="P:System.Linq.Expressions.BinaryExpression.Left" /> and <see cref="P:System.Linq.Expressions.BinaryExpression.Right" /> properties set to the specified values.</returns>
@@ -1104,9 +1104,9 @@ namespace System.Linq.Expressions
             MethodInfo mi = array.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance);
             return Call(array, mi, indexList);
         }
-    #endregion
+#endregion
 
     }
+}
 
 #endif
-}

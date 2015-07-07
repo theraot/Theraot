@@ -1,3 +1,5 @@
+#if NET20 || NET30
+
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
@@ -13,8 +15,6 @@ using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
-#if NET20 || NET30
-
     /// <summary>
     /// Represents a constructor call.
     /// </summary>
@@ -116,8 +116,6 @@ namespace System.Linq.Expressions
         }
     }
 
-#endif
-
     internal class NewValueTypeExpression : NewExpression
     {
         private readonly Type _valueType;
@@ -133,8 +131,6 @@ namespace System.Linq.Expressions
             get { return _valueType; }
         }
     }
-
-#if NET20 || NET30
 
     public partial class Expression
     {
@@ -374,6 +370,6 @@ namespace System.Linq.Expressions
             throw Error.ArgumentMustBeFieldInfoOrPropertInfoOrMethod();
         }
     }
+}
 
 #endif
-}

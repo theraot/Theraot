@@ -1,4 +1,6 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+﻿#if NET20 || NET30
+
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Collections.Generic;
@@ -164,7 +166,7 @@ namespace System.Linq.Expressions.Compiler
             return parent;
         }
 
-        #region LocalScopeExpression support
+#region LocalScopeExpression support
 
         internal void EmitVariableAccess(LambdaCompiler lc, ReadOnlyCollection<ParameterExpression> vars)
         {
@@ -206,9 +208,9 @@ namespace System.Linq.Expressions.Compiler
             return;
         }
 
-        #endregion
+#endregion
 
-        #region Variable access
+#region Variable access
 
         /// <summary>
         /// Adds a new virtual variable corresponding to an IL local
@@ -283,7 +285,7 @@ namespace System.Linq.Expressions.Compiler
             throw Error.UndefinedVariable(variable.Name, variable.Type, CurrentLambdaName);
         }
 
-        #endregion
+#endregion
 
         private void SetParent(LambdaCompiler lc, CompilerScope parent)
         {
@@ -490,6 +492,7 @@ namespace System.Linq.Expressions.Compiler
                 return block.Variables;
             }
             return new[] { ((CatchBlock)scope).Variable };
+            return new ParameterExpression[0];
         }
 
         private string CurrentLambdaName
@@ -509,3 +512,5 @@ namespace System.Linq.Expressions.Compiler
         }
     }
 }
+
+#endif

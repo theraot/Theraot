@@ -1,3 +1,5 @@
+#if NET20 || NET30
+
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
@@ -10,8 +12,6 @@ using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
-#if NET20 || NET30
-
     /// <summary>
     /// Represents an expression that has a binary operator.
     /// </summary>
@@ -552,8 +552,6 @@ namespace System.Linq.Expressions
         }
     }
 
-#endif
-
     // OpAssign with conversion
     // This is not a frequently used node, but rather we want to save every
     // other BinaryExpression from holding onto the null conversion lambda
@@ -615,8 +613,6 @@ namespace System.Linq.Expressions
             return _method;
         }
     }
-
-#if NET20 || NET30
 
     public partial class Expression
     {
@@ -2984,6 +2980,6 @@ namespace System.Linq.Expressions
         }
 #endregion
     }
+}
 
 #endif
-}

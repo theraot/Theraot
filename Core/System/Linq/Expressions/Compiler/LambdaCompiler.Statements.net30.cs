@@ -1,4 +1,6 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+﻿#if NET20 || NET30
+
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Collections.Generic;
@@ -148,7 +150,7 @@ namespace System.Linq.Expressions.Compiler
             breakTarget.MarkWithEmptyStack();
         }
 
-        #region SwitchExpression
+#region SwitchExpression
 
         private void EmitSwitchExpression(Expression expr, CompilationFlags flags)
         {
@@ -723,7 +725,7 @@ namespace System.Linq.Expressions.Compiler
             return true;
         }
 
-        #endregion
+#endregion
 
         private void CheckRethrow()
         {
@@ -743,7 +745,7 @@ namespace System.Linq.Expressions.Compiler
             throw Error.RethrowRequiresCatch();
         }
 
-        #region TryStatement
+#region TryStatement
 
         private void CheckTry()
         {
@@ -914,6 +916,8 @@ namespace System.Linq.Expressions.Compiler
             _ilg.Emit(OpCodes.Pop);
         }
 
-        #endregion
+#endregion
     }
 }
+
+#endif

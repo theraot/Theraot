@@ -89,7 +89,11 @@ namespace System.Dynamic.Utils
 
         public static void ValidateArgumentTypes(MethodBase method, ExpressionType nodeKind, ref ReadOnlyCollection<Expression> arguments)
         {
-            Debug.Assert(nodeKind == ExpressionType.Invoke || nodeKind == ExpressionType.Call || nodeKind == ExpressionType.Dynamic || nodeKind == ExpressionType.New);
+#if NET35
+            Debug.Assert(nodeKind == ExpressionType.Invoke || nodeKind == ExpressionType.Call || nodeKind == ExpressionType.New);
+#else
+            Debug.Assert(nodeKind == ExpressionType.Invoke || nodeKind == ExpressionType.Call || nodeKind == ExpressionType.Dynamic || nodeKind == ExpressionType.New); 
+#endif
 
             ParameterInfo[] pis = GetParametersForValidation(method, nodeKind);
 
@@ -132,7 +136,9 @@ namespace System.Dynamic.Utils
                         throw Error.IncorrectNumberOfConstructorArguments();
                     case ExpressionType.Invoke:
                         throw Error.IncorrectNumberOfLambdaArguments();
+#if !NET35
                     case ExpressionType.Dynamic:
+#endif
                     case ExpressionType.Call:
                         throw Error.IncorrectNumberOfMethodCallArguments(method);
                     default:
@@ -161,7 +167,9 @@ namespace System.Dynamic.Utils
                             throw Error.ExpressionTypeDoesNotMatchConstructorParameter(arg.Type, pType);
                         case ExpressionType.Invoke:
                             throw Error.ExpressionTypeDoesNotMatchParameter(arg.Type, pType);
+#if !NET35
                         case ExpressionType.Dynamic:
+#endif
                         case ExpressionType.Call:
                             throw Error.ExpressionTypeDoesNotMatchMethodParameter(arg.Type, pType, method);
                         default:
@@ -182,6 +190,7 @@ namespace System.Dynamic.Utils
             // validate that we can read the node
             switch (expression.NodeType)
             {
+#if !NET35
                 case ExpressionType.Index:
                     IndexExpression index = (IndexExpression)expression;
                     if (index.Indexer != null && !index.Indexer.CanRead)
@@ -189,6 +198,7 @@ namespace System.Dynamic.Utils
                         throw new ArgumentException(Strings.ExpressionMustBeReadable, paramName);
                     }
                     break;
+#endif
                 case ExpressionType.MemberAccess:
                     MemberExpression member = (MemberExpression)expression;
                     PropertyInfo prop = member.Member as PropertyInfo;
@@ -223,11 +233,12 @@ namespace System.Dynamic.Utils
         internal static ParameterInfo[] GetParametersForValidation(MethodBase method, ExpressionType nodeKind)
         {
             ParameterInfo[] pis = method.GetParameters();
-
+#if !NET35
             if (nodeKind == ExpressionType.Dynamic)
             {
                 pis = pis.RemoveFirst(); // ignore CallSite argument
             }
+#endif
             return pis;
         }
     }

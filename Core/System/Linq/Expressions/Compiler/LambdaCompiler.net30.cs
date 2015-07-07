@@ -1,3 +1,5 @@
+#if NET20 || NET30
+
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
@@ -163,7 +165,7 @@ namespace System.Linq.Expressions.Compiler
             get { return _method is DynamicMethod; }
         }
 
-        #region Compiler entry points
+#region Compiler entry points
 
         /// <summary>
         /// Compiler entry point
@@ -186,7 +188,7 @@ namespace System.Linq.Expressions.Compiler
             return c.CreateDelegate();
         }
 
-        #endregion
+#endregion
 
         private static AnalyzedTree AnalyzeLambda(ref LambdaExpression lambda)
         {
@@ -288,3 +290,5 @@ namespace System.Linq.Expressions.Compiler
         }
     }
 }
+
+#endif

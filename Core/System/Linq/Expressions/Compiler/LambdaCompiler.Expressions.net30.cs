@@ -1,4 +1,6 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+﻿#if NET20 || NET30
+
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Collections.Generic;
@@ -143,7 +145,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        #region label block tracking
+#region label block tracking
 
         private CompilationFlags EmitExpressionStart(Expression node)
         {
@@ -162,9 +164,9 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        #endregion
+#endregion
 
-        #region InvocationExpression
+#region InvocationExpression
 
         private void EmitInvocationExpression(Expression expr, CompilationFlags flags)
         {
@@ -219,9 +221,9 @@ namespace System.Linq.Expressions.Compiler
             EmitWriteBack(wb);
         }
 
-        #endregion
+#endregion
 
-        #region IndexExpression
+#region IndexExpression
 
         private void EmitIndexExpression(Expression expr)
         {
@@ -325,9 +327,9 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        #endregion
+#endregion
 
-        #region MethodCallExpression
+#region MethodCallExpression
 
         private void EmitMethodCallExpression(Expression expr, CompilationFlags flags)
         {
@@ -526,7 +528,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        #endregion
+#endregion
 
         private void EmitConstantExpression(Expression expr)
         {
@@ -898,7 +900,7 @@ namespace System.Linq.Expressions.Compiler
             throw Error.ExtensionNotReduced();
         }
 
-        #region ListInit, MemberInit
+#region ListInit, MemberInit
 
         private void EmitListInitExpression(Expression expr)
         {
@@ -1088,9 +1090,9 @@ namespace System.Linq.Expressions.Compiler
             throw Error.MemberNotFieldOrProperty(member);
         }
 
-        #endregion
+#endregion
 
-        #region Expression helpers
+#region Expression helpers
 
         internal static void ValidateLift(IList<ParameterExpression> variables, IList<Expression> arguments)
         {
@@ -1287,6 +1289,8 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        #endregion
+#endregion
     }
 }
+
+#endif

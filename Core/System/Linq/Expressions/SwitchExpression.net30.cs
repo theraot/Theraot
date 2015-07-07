@@ -1,3 +1,5 @@
+#if NET20 || NET30
+
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
@@ -123,8 +125,6 @@ namespace System.Linq.Expressions
             return Expression.Switch(Type, switchValue, defaultBody, Comparison, cases);
         }
     }
-
-#if NET20 || NET30
 
     public partial class Expression
     {
@@ -330,6 +330,6 @@ namespace System.Linq.Expressions
             }
         }
     }
+}
 
 #endif
-}

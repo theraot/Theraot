@@ -1,4 +1,6 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+﻿#if NET20 || NET30
+
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Diagnostics;
@@ -11,7 +13,7 @@ namespace System.Linq.Expressions.Compiler
 {
     internal partial class LambdaCompiler
     {
-        #region Conditional
+#region Conditional
 
         private void EmitConditionalExpression(Expression expr, CompilationFlags flags)
         {
@@ -79,9 +81,9 @@ namespace System.Linq.Expressions.Compiler
             return NotEmpty(node) && !(node is DebugInfoExpression);
         }
 
-        #endregion
+#endregion
 
-        #region Coalesce
+#region Coalesce
 
 
         private void EmitCoalesceBinaryExpression(Expression expr)
@@ -231,9 +233,9 @@ namespace System.Linq.Expressions.Compiler
             _ilg.MarkLabel(labEnd);
         }
 
-        #endregion
+#endregion
 
-        #region AndAlso
+#region AndAlso
 
         private void EmitLiftedAndAlso(BinaryExpression b)
         {
@@ -359,9 +361,9 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        #endregion
+#endregion
 
-        #region OrElse
+#region OrElse
 
         private void EmitLiftedOrElse(BinaryExpression b)
         {
@@ -487,9 +489,9 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        #endregion
+#endregion
 
-        #region Optimized branching
+#region Optimized branching
 
         /// <summary>
         /// Emits the expression and then either brtrue/brfalse to the label.
@@ -724,6 +726,8 @@ namespace System.Linq.Expressions.Compiler
             ExitScope(node);
         }
 
-        #endregion
+#endregion
     }
 }
+
+#endif

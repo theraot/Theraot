@@ -1,3 +1,5 @@
+#if NET20 || NET30
+
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
@@ -42,7 +44,7 @@ namespace System.Linq.Expressions.Interpreter
             get { return Instructions.Length; }
         }
 
-        #region Debug View
+#region Debug View
 
         internal sealed class DebugView
         {
@@ -67,7 +69,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
             }
         }
-        #endregion
+#endregion
     }
 
     [DebuggerTypeProxy(typeof(InstructionList.DebugView))]
@@ -87,7 +89,7 @@ namespace System.Linq.Expressions.Interpreter
         // list of (instruction index, cookie) sorted by instruction index:
         private List<KeyValuePair<int, object>> _debugCookies = null;
 
-        #region Debug View
+#region Debug View
 
         internal sealed class DebugView
         {
@@ -181,9 +183,9 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        #endregion
+#endregion
 
-        #region Core Emit Ops
+#region Core Emit Ops
 
         public void Emit(Instruction instruction)
         {
@@ -312,9 +314,9 @@ namespace System.Linq.Expressions.Interpreter
             );
         }
 
-        #endregion
+#endregion
 
-        #region Stack Operations
+#region Stack Operations
 
         private const int PushIntMinCachedValue = -100;
         private const int PushIntMaxCachedValue = 100;
@@ -406,9 +408,9 @@ namespace System.Linq.Expressions.Interpreter
             Emit(PopInstruction.Instance);
         }
 
-        #endregion
+#endregion
 
-        #region Locals
+#region Locals
 
         internal void SwitchToBoxed(int index, int instructionIndex)
         {
@@ -657,9 +659,9 @@ namespace System.Linq.Expressions.Interpreter
             Emit(new RuntimeVariablesInstruction(count));
         }
 
-        #endregion
+#endregion
 
-        #region Array Operations
+#region Array Operations
 
         public void EmitGetArrayItem()
         {
@@ -686,9 +688,9 @@ namespace System.Linq.Expressions.Interpreter
             Emit(new NewArrayInitInstruction(elementType, elementCount));
         }
 
-        #endregion
+#endregion
 
-        #region Arithmetic Operations
+#region Arithmetic Operations
 
         public void EmitAdd(Type type, bool @checked)
         {
@@ -738,9 +740,9 @@ namespace System.Linq.Expressions.Interpreter
             Emit(ModuloInstruction.Create(type));
         }
 
-        #endregion
+#endregion
 
-        #region Comparisons
+#region Comparisons
 
         public void EmitExclusiveOr(Type type)
         {
@@ -797,9 +799,9 @@ namespace System.Linq.Expressions.Interpreter
             Emit(GreaterThanOrEqualInstruction.Create(type, liftedToNull));
         }
 
-        #endregion
+#endregion
 
-        #region Conversions
+#region Conversions
 
         public void EmitNumericConvertChecked(TypeCode from, TypeCode to, bool isLiftedToNull)
         {
@@ -821,18 +823,18 @@ namespace System.Linq.Expressions.Interpreter
             Emit(new CastToEnumInstruction(toType));
         }
 
-        #endregion
+#endregion
 
-        #region Boolean Operators
+#region Boolean Operators
 
         public void EmitNot(Type type)
         {
             Emit(NotInstruction.Create(type));
         }
 
-        #endregion
+#endregion
 
-        #region Types
+#region Types
 
         public void EmitDefaultValue(Type type)
         {
@@ -899,9 +901,9 @@ namespace System.Linq.Expressions.Interpreter
             Emit(new TypeAsInstruction(type));
         }
 
-        #endregion
+#endregion
 
-        #region Fields and Methods
+#region Fields and Methods
 
         private static readonly Dictionary<FieldInfo, Instruction> s_loadFields = new Dictionary<FieldInfo, Instruction>();
 
@@ -967,9 +969,9 @@ namespace System.Linq.Expressions.Interpreter
         {
             Emit(NullCheckInstruction.Create(stackOffset));
         }
-        #endregion
+#endregion
 
-        #region Control Flow
+#region Control Flow
 
         private static readonly RuntimeLabel[] s_emptyRuntimeLabels = new RuntimeLabel[] { new RuntimeLabel(Interpreter.RethrowOnReturn, 0, 0) };
 
@@ -1140,6 +1142,8 @@ namespace System.Linq.Expressions.Interpreter
             Emit(new StringSwitchInstruction(cases, nullCase));
         }
 
-        #endregion
+#endregion
     }
 }
+
+#endif

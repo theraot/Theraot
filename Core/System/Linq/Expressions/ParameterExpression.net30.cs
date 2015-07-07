@@ -1,3 +1,5 @@
+#if NET20 || NET30
+
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
@@ -9,8 +11,6 @@ using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
-#if NET20 || NET30
-
     /// <summary>
     /// Represents a named parameter expression.
     /// </summary>
@@ -126,9 +126,6 @@ namespace System.Linq.Expressions
         }
     }
 
-
-#endif
-
     /// <summary>
     /// Specialized subclass to avoid holding onto the byref flag in a 
     /// parameter expression.  This version always holds onto the expression
@@ -183,8 +180,6 @@ namespace System.Linq.Expressions
             get { return typeof(T); }
         }
     }
-
-#if NET20 || NET30
 
     public partial class Expression
     {
@@ -246,6 +241,6 @@ namespace System.Linq.Expressions
             return ParameterExpression.Make(type, name, false);
         }
     }
+}
 
 #endif
-}

@@ -1,3 +1,5 @@
+#if NET20 || NET30
+
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
@@ -70,7 +72,7 @@ namespace System.Linq.Expressions.Interpreter
             get { return Interpreter._name; }
         }
 
-        #region Data Stack Operations
+#region Data Stack Operations
 
         public void Push(object value)
         {
@@ -129,9 +131,9 @@ namespace System.Linq.Expressions.Interpreter
             StackIndex = i + 1;
         }
 
-        #endregion
+#endregion
 
-        #region Stack Trace
+#region Stack Trace
 
         public InterpretedFrame Parent
         {
@@ -196,9 +198,9 @@ namespace System.Linq.Expressions.Interpreter
             CurrentFrame = prevFrame;
         }
 
-        #endregion
+#endregion
 
-        #region Continuations
+#region Continuations
 
         internal bool IsJumpHappened()
         {
@@ -305,7 +307,9 @@ namespace System.Linq.Expressions.Interpreter
             _pendingValue = value;
             return YieldToCurrentContinuation();
         }
-        #endregion
+#endregion
 
     }
 }
+
+#endif

@@ -1,4 +1,6 @@
-﻿// Copyright (c) Microsoft. All rights reserved.
+﻿#if NET20 || NET30
+
+// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using System.Collections.Generic;
@@ -94,7 +96,7 @@ namespace System.Runtime.CompilerServices
             }
 
             protected override CatchBlock VisitCatchBlock(CatchBlock node)
-            {
+            
                 if (node.Variable != null)
                 {
                     _shadowedVars.Push(new Set<ParameterExpression>(new[] { node.Variable }));
@@ -274,3 +276,5 @@ namespace System.Runtime.CompilerServices
         }
     }
 }
+
+#endif

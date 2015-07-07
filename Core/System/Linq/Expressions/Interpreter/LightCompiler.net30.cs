@@ -1,3 +1,5 @@
+#if NET20 || NET30
+
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
@@ -1410,7 +1412,7 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        #region Loops
+#region Loops
 
         private void CompileLoopExpression(Expression expr)
         {
@@ -1437,7 +1439,7 @@ namespace System.Linq.Expressions.Interpreter
             enterLoop.FinishLoop(_instructions.Count);
         }
 
-        #endregion
+#endregion
 
         private void CompileSwitchExpression(Expression expr)
         {
@@ -3136,3 +3138,5 @@ namespace System.Linq.Expressions.Interpreter
         }
     }
 }
+
+#endif

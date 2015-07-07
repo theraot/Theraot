@@ -1,3 +1,5 @@
+#if NET20 || NET30
+
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
@@ -168,7 +170,7 @@ namespace System.Linq.Expressions
             }
         }
 
-        #region The printing code
+#region The printing code
 
         private void Out(string s)
         {
@@ -241,9 +243,9 @@ namespace System.Linq.Expressions
             return flow;
         }
 
-        #endregion
+#endregion
 
-        #region The AST Output
+#region The AST Output
 
         private void VisitExpressions<T>(char open, IList<T> expressions) where T : Expression
         {
@@ -1293,6 +1295,8 @@ namespace System.Linq.Expressions
                 return name;
             }
         }
-        #endregion
+#endregion
     }
 }
+
+#endif
