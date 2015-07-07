@@ -848,6 +848,136 @@ namespace Theraot.Core
             return true;
         }
 
+        /// <summary>
+        /// Creates a closed delegate for the given (dynamic)method.
+        /// </summary>
+        internal static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType, object target)
+        {
+            return methodInfo.CreateDelegate(delegateType, target);
+        }
+
+        internal static ConstructorInfo GetConstructor(this Type type, Type[] argTypes)
+        {
+            return GetConstructor(type, BindingFlags.Static | BindingFlags.Public, null, argTypes, null);
+        }
+
+        internal static ConstructorInfo GetConstructor(this Type type, BindingFlags flags, object binder, Type[] argTypes, object[] modifier)
+        {
+            foreach (var ctor in type.GetConstructors())
+            {
+                var parameters = ctor.GetParameters();
+                if (parameters.Length == argTypes.Length)
+                {
+                    bool mismatch = false;
+                    for (int i = 0; i < parameters.Length; i++)
+                    {
+                        if (parameters[i].ParameterType != argTypes[i])
+                        {
+                            mismatch = true;
+                        }
+                    }
+                    if (!mismatch)
+                    {
+                        return ctor;
+                    }
+                }
+            }
+            return null;
+        }
+
+        internal static FieldInfo GetField(this Type type, string fieldName)
+        {
+            foreach (var field in type.GetFields())
+            {
+                if (field.Name == fieldName)
+                {
+                    return field;
+                }
+            }
+            return null;
+        }
+
+        internal static IEnumerable<MemberInfo> GetMember(this Type type, string name, MemberTypes memberType, BindingFlags flags)
+        {
+            switch (memberType)
+            {
+                case MemberTypes.Method:
+                    foreach (var method in type.GetMethods())
+                    {
+                        if (method.Name == name)
+                        {
+                            yield return method;
+                        }
+                    }
+                    break;
+
+                default:
+                    throw new InvalidOperationException("type.GetMember for " + memberType);
+            }
+        }
+
+        internal static MethodInfo GetMethod(this Type type, string name, Type[] argTypes)
+        {
+            return GetMethod(type, name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static, null, argTypes, null);
+        }
+
+        internal static MethodInfo GetMethod(this Type type, string name, BindingFlags flags, object binder, Type[] argTypes, object[] modifier)
+        {
+            foreach (var method in type.GetMethods())
+            {
+                if (method.Name != name)
+                {
+                    continue;
+                }
+
+                var parameters = method.GetParameters();
+                if (parameters.Length == argTypes.Length)
+                {
+                    bool mismatch = false;
+                    for (int i = 0; i < parameters.Length; i++)
+                    {
+                        if (parameters[i].ParameterType != argTypes[i])
+                        {
+                            mismatch = true;
+                        }
+                    }
+                    if (!mismatch)
+                    {
+                        return method;
+                    }
+                }
+            }
+            return null;
+        }
+
+        internal static IEnumerable<MethodInfo> GetMethods(this Type type, BindingFlags flags)
+        {
+            foreach (var method in type.GetMethods())
+            {
+                yield return method;
+            }
+        }
+
+        internal static Type GetReturnType(this MethodBase mi)
+        {
+            return (mi.IsConstructor) ? mi.DeclaringType : ((MethodInfo)mi).ReturnType;
+        }
+
+        internal static bool IsAssignableFrom(this Type source, Type destination)
+        {
+            return source.IsAssignableFrom(destination);
+        }
+
+        // Expression trees/compiler just use IsByRef, why do we need this?
+        // (see LambdaCompiler.EmitArguments for usage in the compiler)
+        internal static bool IsByRefParameter(this ParameterInfo pi)
+        {
+            // not using IsIn/IsOut properties as they are not available in Silverlight:
+            if (pi.ParameterType.IsByRef) return true;
+
+            return (pi.Attributes & (ParameterAttributes.Out)) == ParameterAttributes.Out;
+        }
+
         internal static bool IsFloatingPoint(this Type type)
         {
             type = GetNonNullableType(type);
@@ -860,6 +990,11 @@ namespace Theraot.Core
                 return true;
             }
             return false;
+        }
+
+        internal static bool IsSubclassOf(this Type source, Type other)
+        {
+            return source.IsSubclassOf(other);
         }
 
         internal static bool IsUnsigned(this Type type)
