@@ -115,6 +115,8 @@ namespace Theraot.Collections
             }
         }
 
+#if NET35
+
         public static bool Contains<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> items)
         {
             var comparer = EqualityComparer<TItem>.Default;
@@ -142,6 +144,8 @@ namespace Theraot.Collections
             }
             return true;
         }
+
+#endif
 
         public static bool ContainsAny<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> items)
         {
