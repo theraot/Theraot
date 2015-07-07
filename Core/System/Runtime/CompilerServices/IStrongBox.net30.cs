@@ -1,3 +1,5 @@
+#if NET20 || NET30
+
 namespace System.Runtime.CompilerServices
 {
     public interface IStrongBox
@@ -9,3 +11,5 @@ namespace System.Runtime.CompilerServices
         }
     }
 }
+
+#endif

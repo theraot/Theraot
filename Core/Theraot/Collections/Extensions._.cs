@@ -15,6 +15,17 @@ namespace Theraot.Collections
     [global::System.Diagnostics.DebuggerNonUserCode]
     public static partial class Extensions
     {
+        public static T[] AddFirst<T>(this IList<T> list, T item)
+        {
+            // Copyright (c) Microsoft. All rights reserved.
+            // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+            T[] res = new T[list.Count + 1];
+            res[0] = item;
+            list.CopyTo(res, 1);
+            return res;
+        }
+
         public static void CanCopyTo(int count, Array array)
         {
             if (array == null)
@@ -104,6 +115,8 @@ namespace Theraot.Collections
             }
         }
 
+#if NET35
+
         public static bool Contains<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> items)
         {
             var comparer = EqualityComparer<TItem>.Default;
@@ -131,6 +144,8 @@ namespace Theraot.Collections
             }
             return true;
         }
+
+#endif
 
         public static bool ContainsAny<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> items)
         {
@@ -389,6 +404,16 @@ namespace Theraot.Collections
                 }
                 index++;
             }
+        }
+
+        public static T[] Copy<T>(this T[] array)
+        {
+            // Copyright (c) Microsoft. All rights reserved.
+            // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+            T[] copy = new T[array.Length];
+            Array.Copy(array, copy, array.Length);
+            return copy;
         }
 
         public static void CopyTo<TItem>(this IEnumerable<TItem> collection, TItem[] array)
@@ -1410,6 +1435,47 @@ namespace Theraot.Collections
             }
         }
 
+        [System.Diagnostics.Contracts.Pure]
+        public static bool ListEquals<T>(this ICollection<T> first, ICollection<T> second)
+        {
+            // Copyright (c) Microsoft. All rights reserved.
+            // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+            if (first.Count != second.Count)
+            {
+                return false;
+            }
+            var cmp = EqualityComparer<T>.Default;
+            var f = first.GetEnumerator();
+            var s = second.GetEnumerator();
+            while (f.MoveNext())
+            {
+                s.MoveNext();
+
+                if (!cmp.Equals(f.Current, s.Current))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Name needs to be different so it doesn't conflict with Enumerable.Select
+        public static U[] Map<T, U>(this ICollection<T> collection, Func<T, U> select)
+        {
+            // Copyright (c) Microsoft. All rights reserved.
+            // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+            int count = collection.Count;
+            U[] result = new U[count];
+            count = 0;
+            foreach (T t in collection)
+            {
+                result[count++] = select(t);
+            }
+            return result;
+        }
+
         public static void Move<T>(this IList<T> list, int oldIndex, int newIndex)
         {
             var item = list[oldIndex];
@@ -1477,6 +1543,26 @@ namespace Theraot.Collections
             {
                 return enumerator.MoveNext();
             }
+        }
+
+        public static T[] RemoveFirst<T>(this T[] array)
+        {
+            // Copyright (c) Microsoft. All rights reserved.
+            // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+            T[] result = new T[array.Length - 1];
+            Array.Copy(array, 1, result, 0, result.Length);
+            return result;
+        }
+
+        public static T[] RemoveLast<T>(this T[] array)
+        {
+            // Copyright (c) Microsoft. All rights reserved.
+            // Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+            T[] result = new T[array.Length - 1];
+            Array.Copy(array, 0, result, 0, result.Length);
+            return result;
         }
 
         public static int RemoveWhere<TItem>(this ICollection<TItem> collection, Predicate<TItem> predicate)
@@ -1611,7 +1697,7 @@ namespace Theraot.Collections
             return (new List<TItem>(collection)).ToArray();
         }
 
-        public static ReadOnlyCollection<TSource> ToReadOnlyCollection<TSource>(this IEnumerable<TSource> source)
+        public static ReadOnlyCollection<TSource> ToReadOnly<TSource>(this IEnumerable<TSource> source)
         {
             if (source == null)
             {
