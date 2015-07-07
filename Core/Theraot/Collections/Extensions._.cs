@@ -1621,7 +1621,7 @@ namespace Theraot.Collections
             return (new List<TItem>(collection)).ToArray();
         }
 
-        public static ReadOnlyCollection<TSource> ToReadOnlyCollection<TSource>(this IEnumerable<TSource> source)
+        public static ReadOnlyCollection<TSource> ToReadOnly<TSource>(this IEnumerable<TSource> source)
         {
             if (source == null)
             {
