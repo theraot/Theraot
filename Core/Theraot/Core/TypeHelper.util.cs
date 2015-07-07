@@ -851,9 +851,19 @@ namespace Theraot.Core
         /// <summary>
         /// Creates a closed delegate for the given (dynamic)method.
         /// </summary>
+        internal static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType)
+        {
+            // TODO
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Creates a closed delegate for the given (dynamic)method.
+        /// </summary>
         internal static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType, object target)
         {
-            return methodInfo.CreateDelegate(delegateType, target);
+            // TODO
+            throw new NotImplementedException();
         }
 
         internal static ConstructorInfo GetConstructor(this Type type, Type[] argTypes)
