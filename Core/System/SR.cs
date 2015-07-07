@@ -120,11 +120,15 @@
 
         internal static string ExtensionNotReduced { get { return "Extension should have been reduced."; } }
 
+        internal static string FaultBlockNotSupported { get { return "Fault blocks are not supported"; } }
+
         internal static string FaultCannotHaveCatchOrFinally { get { return "fault cannot be used with catch or finally clauses"; } }
 
         internal static string FieldInfoNotDefinedForType { get { return "Field '{0}.{1}' is not defined for type '{2}'"; } }
 
         internal static string FieldNotDefinedForType { get { return "Field '{0}' is not defined for type '{1}'"; } }
+
+        internal static string FilterBlockNotSupported { get { return "Filter blocks are not supported"; } }
 
         internal static string GenericMethodWithArgsDoesNotExistOnType { get { return "No generic method '{0}' on type '{1}' is compatible with the supplied type arguments and arguments. No type arguments should be provided if the method is non-generic. "; } }
 
@@ -228,6 +232,8 @@
 
         internal static string NonLocalJumpWithValue { get { return "Cannot jump to non-local label '{0}' with a value. Only jumps to labels defined in outer blocks can pass values."; } }
 
+        internal static string NonReducibleExpressionExtensionsNotSupported { get { return "Non-reducible expression extensions are not supported"; } }
+
         internal static string NotAMemberOfType { get { return "{0}' is not a member of type '{1}'"; } }
 
         internal static string OnlyStaticFieldsHaveNullInstance { get { return "Static field requires null instance, non-static field requires non-null instance."; } }
@@ -329,6 +335,8 @@
         internal static string UnknownBindingType { get { return "Unknown binding type"; } }
 
         internal static string UnknownLiftType { get { return "unknown lift type: '{0}'."; } }
+
+        internal static string UnsupportedExpressionType { get { return "The expression type '{0}' is not supported"; } }
 
         internal static string UserDefinedOperatorMustBeStatic { get { return "User-defined operator method '{0}' must be static."; } }
 
