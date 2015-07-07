@@ -10,6 +10,7 @@ using System.Dynamic.Utils;
 using System.Linq.Expressions;
 using System.Linq.Expressions.Compiler;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace System.Runtime.CompilerServices
 {
@@ -96,7 +97,7 @@ namespace System.Runtime.CompilerServices
             }
 
             protected override CatchBlock VisitCatchBlock(CatchBlock node)
-            
+            {
                 if (node.Variable != null)
                 {
                     _shadowedVars.Push(new Set<ParameterExpression>(new[] { node.Variable }));
