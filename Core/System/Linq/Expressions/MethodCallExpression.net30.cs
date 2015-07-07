@@ -852,7 +852,7 @@ namespace System.Linq.Expressions
             }
 
             BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
-            return Expression.Call(instance, FindMethod(instance.Type, methodName, typeArguments, arguments, flags), arguments);
+            return InternalCall(instance, FindMethod(instance.Type, methodName, typeArguments, arguments, flags), arguments);
         }
 
         ///<summary>Creates a <see cref="T:System.Linq.Expressions.MethodCallExpression" /> that represents a call to a static (Shared in Visual Basic) method by calling the appropriate factory method.</summary>
@@ -874,7 +874,7 @@ namespace System.Linq.Expressions
 
             if (arguments == null) arguments = ArrayReservoir<Expression>.EmptyArray;
             BindingFlags flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
-            return Expression.Call(null, FindMethod(type, methodName, typeArguments, arguments, flags), arguments);
+            return InternalCall(null, FindMethod(type, methodName, typeArguments, arguments, flags), arguments);
         }
 
         ///<summary>Creates a <see cref="T:System.Linq.Expressions.MethodCallExpression" /> that represents a method call.</summary>
@@ -906,6 +906,26 @@ namespace System.Linq.Expressions
             }
         }
 
+        internal static MethodCallExpression InternalCall(Expression instance, MethodInfo method, IEnumerable<Expression> arguments)
+        {
+            ContractUtils.RequiresNotNull(method, "method");
+
+            ReadOnlyCollection<Expression> argList = arguments.ToReadOnly();
+
+            ValidateMethodInfo(method);
+            ValidateStaticOrInstanceMethodAlternative(instance, method);
+            ValidateArgumentTypes(method, ExpressionType.Call, ref argList);
+
+            if (instance == null)
+            {
+                return new MethodCallExpressionN(method, argList);
+            }
+            else
+            {
+                return new InstanceMethodCallExpressionN(method, instance, argList);
+            }
+        }
+
         private static ParameterInfo[] ValidateMethodAndGetParameters(Expression instance, MethodInfo method)
         {
             ValidateMethodInfo(method);
@@ -923,6 +943,20 @@ namespace System.Linq.Expressions
             else
             {
                 if (instance == null) throw new ArgumentException(Strings.OnlyStaticMethodsHaveNullInstance, "method");
+                RequiresCanRead(instance, "instance");
+                ValidateCallInstanceType(instance.Type, method);
+            }
+        }
+
+        private static void ValidateStaticOrInstanceMethodAlternative(Expression instance, MethodInfo method)
+        {
+            if (method.IsStatic)
+            {
+                if (instance != null) throw new InvalidOperationException(Strings.OnlyStaticMethodsHaveNullInstance);
+            }
+            else
+            {
+                if (instance == null) throw new InvalidOperationException(Strings.OnlyStaticMethodsHaveNullInstance);
                 RequiresCanRead(instance, "instance");
                 ValidateCallInstanceType(instance.Type, method);
             }
