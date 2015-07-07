@@ -258,6 +258,7 @@
     <Compile Include="System\Linq\Expressions\Compiler\CompilerScope.Storage.net30.cs" />
     <Compile Include="System\Linq\Expressions\Compiler\ConstantCheck.net30.cs" />
     <Compile Include="System\Linq\Expressions\Compiler\DelegateHelpers.Generated.net30.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\DelegateHelpers.net30.cs" />
     <Compile Include="System\Linq\Expressions\Compiler\HoistedLocals.net30.cs" />
     <Compile Include="System\Linq\Expressions\Compiler\ILGen.net30.cs" />
     <Compile Include="System\Linq\Expressions\Compiler\KeyedQueue.net30.cs" />
