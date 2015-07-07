@@ -1066,7 +1066,20 @@ namespace System.Linq.Expressions
                 if (!TypeHelper.AreReferenceAssignable(pType, argType) &&
                     !(TypeHelper.IsSameOrSubclass(typeof(LambdaExpression), pType) && pType.IsAssignableFrom(arg.GetType())))
                 {
-                    return false;
+                    if (pType.IsExpression())
+                    {
+                        argType = arg.GetType();
+                        if (!TypeHelper.AreReferenceAssignable(pType, argType) &&
+                            !(TypeHelper.IsSameOrSubclass(typeof (LambdaExpression), pType) &&
+                              pType.IsAssignableFrom(arg.GetType())))
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
             return true;

@@ -405,36 +405,36 @@ namespace Theraot.Core
             return false;
         }
 
-        public static bool IsSameOrSubclass(this Type type, Type baseType)
+        public static bool IsSameOrSubclass(this Type type, Type subType)
         {
-            if (baseType.IsGenericType)
+            if (type.IsGenericType)
             {
-                /*while (type != null)
+                /*while (subType != null)
                 {
-                    if (type.IsGenericType)
+                    if (subType.IsGenericType)
                     {
-                        type = type.GetGenericTypeDefinition();
-                        if (baseType == type)
+                        subType = subType.GetGenericTypeDefinition();
+                        if (type == subType)
                         {
                             return true;
                         }
                     }
                     else
                     {
-                        type = type.BaseType;
+                        subType = subType.BaseType;
                     }
                 }*/
                 return false;
             }
             else
             {
-                while (type != null)
+                while (subType != null)
                 {
-                    if (baseType == type)
+                    if (type == subType)
                     {
                         return true;
                     }
-                    type = type.BaseType;
+                    subType = subType.BaseType;
                 }
             }
             return false;
