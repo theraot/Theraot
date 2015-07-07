@@ -248,7 +248,9 @@
     <Compile Include="System\Linq\Expressions\UnaryExpression.net30.cs" />
     <Compile Include="System\Numerics\BigInteger.net35.cs" />
     <Compile Include="System\Numerics\NumericsHelpers.cs" />
+    <Compile Include="System\Runtime\CompilerServices\Closure.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\ConditionalWeakTable.net35.cs" />
+    <Compile Include="System\Runtime\CompilerServices\IRuntimeVariables.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\IStrongBox.net30.cs" />
     <Compile Include="System\Runtime\ExceptionServices\ExceptionDispatchInfo.net40.cs" />
     <Compile Include="System\Security\SecuritySafeCriticalAttribute.net30.cs" />
