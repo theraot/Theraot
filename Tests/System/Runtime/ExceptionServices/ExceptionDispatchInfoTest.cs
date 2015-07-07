@@ -92,6 +92,7 @@ namespace MonoTests.System.Runtime.ExceptionServices
 #endif
 
         [Test]
+        [Category("NotDotNet")] // Failing in .NET 4.5
         public void ThrowWithEmptyFrames()
         {
             var edi = ExceptionDispatchInfo.Capture(new OperationCanceledException());
@@ -108,6 +109,7 @@ namespace MonoTests.System.Runtime.ExceptionServices
         }
 
         [Test]
+        [Category("NotDotNet")] // Failing in .NET 4.5
         public void LastThrowWins()
         {
             Exception e;
@@ -151,6 +153,7 @@ namespace MonoTests.System.Runtime.ExceptionServices
         }
 
         [Test]
+        [Category("NotDotNet")] // Failing in .NET 4.5
         public void ThrowMultipleCaptures()
         {
             Exception e;

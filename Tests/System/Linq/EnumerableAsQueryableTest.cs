@@ -326,7 +326,6 @@ namespace MonoTests.System.Linq
         }
 
         [Test]
-        [Category("NotWorkingInterpreter")]
         public void UserExtensionMethod()
         {
             BindingFlags extensionFlags = BindingFlags.Static | BindingFlags.Public;

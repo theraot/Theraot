@@ -155,7 +155,6 @@ namespace MonoTests.System.Linq.Expressions
 		}
 
 		[Test]
-		[Category ("NotWorkingInterpreter")]
 		public void UserDefinedNotNullableNegateNullable ()
 		{
 			var s = Expression.Parameter (typeof (Slot?), "s");
@@ -293,7 +292,6 @@ namespace MonoTests.System.Linq.Expressions
 		}
 
 		[Test]
-		[Category ("NotWorkingInterpreter")]
 		public void NegateLiftedDecimal ()
 		{
 			var d = Expression.Parameter (typeof (decimal?), "l");
