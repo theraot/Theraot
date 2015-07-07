@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using System.Reflection.Emit;
 
 namespace Theraot.Core
 {
@@ -78,6 +77,22 @@ namespace Theraot.Core
                 }
             }
             return true;
+        }
+
+        /// <summary>
+        /// Creates a closed delegate for the given (dynamic)method.
+        /// </summary>
+        public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType)
+        {
+            return Delegate.CreateDelegate(delegateType, methodInfo);
+        }
+
+        /// <summary>
+        /// Creates a closed delegate for the given (dynamic)method.
+        /// </summary>
+        public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType, object target)
+        {
+            return Delegate.CreateDelegate(delegateType, target, methodInfo);
         }
 
         public static MethodInfo FindConversionOperator(MethodInfo[] methods, Type typeFrom, Type typeTo, bool implicitOnly)
@@ -847,42 +862,6 @@ namespace Theraot.Core
                 }
             }
             return true;
-        }
-
-        /// <summary>
-        /// Creates a closed delegate for the given (dynamic)method.
-        /// </summary>
-        internal static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType)
-        {
-            // MethodInfo is abstract, and by itself wont support creating delegates
-            // Futhermore, these are the only public derived types in .NET 2.0 - in theory all I can support :/
-            if (methodInfo is DynamicMethod)
-            {
-                // TODO
-            }
-            else if (methodInfo is MethodBuilder)
-            {
-                // TODO
-            }
-            throw new NotSupportedException();
-        }
-
-        /// <summary>
-        /// Creates a closed delegate for the given (dynamic)method.
-        /// </summary>
-        internal static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType, object target)
-        {
-            // MethodInfo is abstract, and by itself wont support creating delegates
-            // Futhermore, these are the only public derived types in .NET 2.0 - in theory all I can support :/
-            if (methodInfo is DynamicMethod)
-            {
-                // TODO
-            }
-            else if (methodInfo is MethodBuilder)
-            {
-                // TODO
-            }
-            throw new NotSupportedException();
         }
 
         internal static ConstructorInfo GetConstructor(this Type type, Type[] argTypes)
