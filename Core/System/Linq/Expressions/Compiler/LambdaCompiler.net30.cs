@@ -190,9 +190,10 @@ namespace System.Linq.Expressions.Compiler
 
         private static AnalyzedTree AnalyzeLambda(ref LambdaExpression lambda)
         {
-            // Spill the stack for any exception handling blocks or other
-            // constructs which require entering with an empty stack
-            lambda = StackSpiller.AnalyzeLambda(lambda);
+            // Spill not supported
+            // // Spill the stack for any exception handling blocks or other
+            // // constructs which require entering with an empty stack
+            // lambda = StackSpiller.AnalyzeLambda(lambda);
 
             // Bind any variable references in this lambda
             return VariableBinder.Bind(lambda);

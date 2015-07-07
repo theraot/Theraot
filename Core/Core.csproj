@@ -273,10 +273,6 @@
     <Compile Include="System\Linq\Expressions\Compiler\LambdaCompiler.net30.cs" />
     <Compile Include="System\Linq\Expressions\Compiler\LambdaCompiler.Statements.net30.cs" />
     <Compile Include="System\Linq\Expressions\Compiler\LambdaCompiler.Unary.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Compiler\StackSpiller.Bindings.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Compiler\StackSpiller.Generated.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Compiler\StackSpiller.net30.cs" />
-    <Compile Include="System\Linq\Expressions\Compiler\StackSpiller.Temps.net30.cs" />
     <Compile Include="System\Linq\Expressions\Compiler\VariableBinder.net30.cs" />
     <Compile Include="System\Linq\Expressions\ConstantExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\DebugInfoExpression.net30.cs" />

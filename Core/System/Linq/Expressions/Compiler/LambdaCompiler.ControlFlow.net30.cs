@@ -179,11 +179,12 @@ namespace System.Linq.Expressions.Compiler
                     PushLabelBlock(LabelScopeKind.Statement);
                     return true;
                 case ExpressionType.Block:
-                    if (node is SpilledExpressionBlock)
-                    {
-                        // treat it as an expression
-                        goto default;
-                    }
+                    // Spill not supported
+                    // if (node is SpilledExpressionBlock)
+                    // {
+                    //    // treat it as an expression
+                    //    goto default;
+                    // }
 
                     PushLabelBlock(LabelScopeKind.Block);
                     // Labels defined immediately in the block are valid for
@@ -227,7 +228,7 @@ namespace System.Linq.Expressions.Compiler
         private void DefineBlockLabels(Expression node)
         {
             var block = node as BlockExpression;
-            if (block == null || block is SpilledExpressionBlock)
+            if (block == null /*|| block is SpilledExpressionBlock *//*Spill not supported*/)
             {
                 return;
             }
