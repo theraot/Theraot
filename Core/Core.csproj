@@ -245,6 +245,8 @@
     <Compile Include="System\Dynamic\Utils\ExpressionVisitorUtils.cs" />
     <Compile Include="System\Dynamic\Utils\Helpers.cs" />
     <Compile Include="System\Dynamic\Utils\ListArgumentProvider.cs" />
+    <Compile Include="System\Dynamic\Utils\RuntimeOps.ExpressionQuoter.cs" />
+    <Compile Include="System\Dynamic\Utils\RuntimeOps.RuntimeVariableList.cs" />
     <Compile Include="System\Dynamic\Utils\Strings.cs" />
     <Compile Include="System\Dynamic\Utils\TrueReadOnlyCollection.cs" />
     <Compile Include="System\Linq\Enumerable.join.net30.cs" />
