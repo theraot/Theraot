@@ -237,8 +237,11 @@
     <Compile Include="System\Collections\StructuralComparisons.net35.cs" />
     <Compile Include="System\Diagnostics\Contracts\Contract.net35.cs" />
     <Compile Include="System\Diagnostics\Contracts\ContractInvariantMethodAttribute.net35.cs" />
+    <Compile Include="System\Dynamic\Utils\CacheDict.cs" />
     <Compile Include="System\Dynamic\Utils\ContractsUtil.cs" />
+    <Compile Include="System\Dynamic\Utils\Error.cs" />
     <Compile Include="System\Dynamic\Utils\Helpers.cs" />
+    <Compile Include="System\Dynamic\Utils\Strings.cs" />
     <Compile Include="System\Linq\Enumerable.join.net30.cs" />
     <Compile Include="System\Linq\Enumerable.groupjoin.net30.cs" />
     <Compile Include="System\Linq\Enumerable.groupby.net30.cs" />
@@ -256,6 +259,7 @@
     <Compile Include="System\Runtime\CompilerServices\IStrongBox.net30.cs" />
     <Compile Include="System\Runtime\ExceptionServices\ExceptionDispatchInfo.net40.cs" />
     <Compile Include="System\Security\SecuritySafeCriticalAttribute.net30.cs" />
+    <Compile Include="System\SR.cs" />
     <Compile Include="System\Threading\CancellationToken.net35.cs" />
     <Compile Include="System\Threading\CancellationTokenRegistration.net35.cs" />
     <Compile Include="System\Threading\CancellationTokenSource.net35.cs" />
@@ -584,7 +588,6 @@
     <Compile Include="System\Linq\Expressions\ConditionalExpression.net30.cs" />
     <Compile Include="System\Linq\Expressions\ElementInit.net30.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTransformer.cs" />
-    <Compile Include="System\Linq\Expressions\ExpressionVisitor.net35.cs" />
     <Compile Include="System\Linq\Expressions\Expression1.net30.cs" />
     <Compile Include="System\Linq\Expressions\Extensions.cs" />
     <Compile Include="System\Linq\Expressions\InvocationExpression.net30.cs" />
