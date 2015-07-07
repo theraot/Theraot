@@ -6,6 +6,7 @@ using System.Dynamic.Utils;
 
 namespace System.Linq.Expressions
 {
+#if NET20 || NET30 || NET35
     /// <summary>
     /// Stores information needed to emit debugging symbol information for a
     /// source file, in particular the file name and unique language identifier.
@@ -101,6 +102,7 @@ namespace System.Linq.Expressions
         }
     }
 
+#endif
 #if NET20 || NET30
 
     public partial class Expression

@@ -7,6 +7,8 @@ using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
+#if NET20 || NET30 || NET35
+
     /// <summary>
     /// Used to denote the target of a <see cref="GotoExpression"/>.
     /// </summary>
@@ -50,6 +52,7 @@ namespace System.Linq.Expressions
         }
     }
 
+#endif
 #if NET20 || NET30
 
     public partial class Expression
