@@ -1,6 +1,4 @@
-﻿#if FAT
-
-//
+﻿//
 // TaskTest.cs
 //
 // Authors:
@@ -530,7 +528,6 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void DenyChildAttachTest()
         {
-            Assert.Fail();
             var mre = new ManualResetEventSlim();
             Task nested = null;
             Task parent = Task.Factory.StartNew(() => {
@@ -581,5 +578,3 @@ namespace MonoTests.System.Threading.Tasks
 #endif
     }
 }
-
-#endif
