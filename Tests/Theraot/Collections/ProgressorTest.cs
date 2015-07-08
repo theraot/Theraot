@@ -376,7 +376,8 @@ namespace Tests.Theraot.Collections
                         value = 0;
                         return false;
                     }
-                }
+                },
+                false
             );
             int indexA = 0;
             int indexB = 0;
