@@ -150,7 +150,7 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 if (_keyComparer.Equals(found.Key, key))
                 {
-                    throw new ArgumentException("An item with the same key has already been added", "Key");
+                    throw new ArgumentException("An item with the same key has already been added", "key");
                 }
                 attempts++;
             }
