@@ -726,10 +726,11 @@ namespace Theraot.Collections.ThreadSafe
             isNew = false;
             var subindex = GetSubindex(index);
             var found = Interlocked.CompareExchange(ref _entries[subindex], null, null);
-            object result = itemFactory();
+            object result;
             if (found == null)
             {
                 // -- Not found TryAdd
+                result = itemFactory();
                 var previous = Interlocked.CompareExchange(ref _entries[subindex], result ?? BucketHelper.Null, null);
                 if (previous == null)
                 {
