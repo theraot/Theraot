@@ -1149,44 +1149,6 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
-        /// <summary>
-        /// Attempts to add the specified key and associated value. The value is added if the key is not found.
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <param name="keyOverwriteCheck">The key predicate to approve overwriting.</param>
-        /// <param name="value">The value.</param>
-        /// <param name="stored">The stored pair independently of success.</param>
-        /// <returns>
-        ///   <c>true</c> if the specified key and associated value were added; otherwise, <c>false</c>.
-        /// </returns>
-        internal bool TryAdd(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value, out KeyValuePair<TKey, TValue> stored)
-        {
-            // NOTICE this method has no null check
-            var needle = PrivateGetNeedle(key);
-            KeyValuePair<TNeedle, TValue> _stored;
-            var result = _wrapped.TryAdd
-                (
-                    needle,
-                    input =>
-                    {
-                        TKey _key;
-                        if (PrivateTryGetValue(input, out _key))
-                        {
-                            return keyOverwriteCheck(_key);
-                        }
-                        return true;
-                    },
-                    value,
-                    out _stored
-                );
-            if (!result)
-            {
-                NeedleReservoir<TKey, TNeedle>.DonateNeedle(needle);
-            }
-            stored = new KeyValuePair<TKey, TValue>(_stored.Key.Value, _stored.Value); // TODO: Nothing prevents the needle from dying just before the call
-            return result;
-        }
-
         internal bool TryGetOrAdd(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value, out TValue stored)
         {
             // NOTICE this method has no null check
