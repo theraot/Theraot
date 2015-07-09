@@ -453,6 +453,30 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
+        private bool PrivateInsert(uint index, Func<object> itemFactory, out object previous, out object stored)
+        {
+            Interlocked.Increment(ref _useCount); // We are most likely to add - overstatimate count
+            var subindex = GetSubindex(index);
+            previous = Thread.VolatileRead(ref _entries[subindex]);
+            if (previous == null)
+            {
+                var result = itemFactory();
+                previous = Interlocked.CompareExchange(ref _entries[subindex], result ?? BucketHelper.Null, null);
+                if (previous == null)
+                {
+                    stored = result;
+                    return true;
+                }
+            }
+            if (previous == BucketHelper.Null)
+            {
+                previous = null;
+            }
+            stored = previous;
+            Interlocked.Decrement(ref _useCount); // We did not add after all
+            return false;
+        }
+
         private bool PrivateInsertOrUpdate(uint index, object item, Func<object, object> itemUpdateFactory, Predicate<object> check, out object stored, out bool isNew)
         {
             object previous;
@@ -482,10 +506,9 @@ namespace Theraot.Collections.ThreadSafe
 
         private bool PrivateInsertOrUpdate(uint index, Func<object> itemFactory, Func<object, object> itemUpdateFactory, Predicate<object> check, out object stored, out bool isNew)
         {
-            var addResult = itemFactory();
             object previous;
             // NOTICE this method is a while loop, it may starve
-            while (!PrivateInsert(index, addResult, out previous))
+            while (!PrivateInsert(index, itemFactory, out previous, out stored))
             {
                 isNew = false;
                 if (check(previous))
@@ -504,7 +527,6 @@ namespace Theraot.Collections.ThreadSafe
                 }
             }
             isNew = true;
-            stored = addResult;
             return true;
         }
 
@@ -773,12 +795,16 @@ namespace Theraot.Collections.ThreadSafe
         {
             Interlocked.Increment(ref _useCount); // We are most likely to add - overstatimate count
             var subindex = GetSubindex(index);
-            var result = itemFactory();
-            var previous = Interlocked.CompareExchange(ref _entries[subindex], result ?? BucketHelper.Null, null);
+            var previous = Thread.VolatileRead(ref _entries[subindex]);
             if (previous == null)
             {
-                stored = result;
-                return true;
+                var result = itemFactory();
+                previous = Interlocked.CompareExchange(ref _entries[subindex], result ?? BucketHelper.Null, null);
+                if (previous == null)
+                {
+                    stored = result;
+                    return true;
+                }
             }
             if (previous == BucketHelper.Null)
             {
