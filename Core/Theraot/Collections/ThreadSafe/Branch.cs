@@ -250,14 +250,14 @@ namespace Theraot.Collections.ThreadSafe
             return result;
         }
 
-        internal bool TryGetCheckSet(uint index, Func<object> itemFactory, Predicate<object> check, out bool isNew)
+        internal bool TryGetCheckSet(uint index, Func<object> itemFactory, TryConvert<object, object> itemUpdateFactory, out bool isNew)
         {
             // Get the target branches
             int resultCount;
             var branches = Map(index, out resultCount);
             // ---
             var branch = branches[resultCount - 1];
-            var result = branch.PrivateTryGetCheckSet(index, itemFactory, check, out isNew); // true means value was set
+            var result = branch.PrivateTryGetCheckSet(index, itemFactory, itemUpdateFactory, out isNew); // true means value was set
             Leave(branches, resultCount);
             return result;
         }
@@ -720,16 +720,17 @@ namespace Theraot.Collections.ThreadSafe
             return false; // false means value was not set
         }
 
-        private bool PrivateTryGetCheckSet(uint index, Func<object> itemFactory, Predicate<object> check, out bool isNew)
+        private bool PrivateTryGetCheckSet(uint index, Func<object> itemFactory, TryConvert<object, object> itemUpdateFactory, out bool isNew)
         {
             Interlocked.Increment(ref _useCount); // We are most likely to add - overstatimate count
             isNew = false;
             var subindex = GetSubindex(index);
             var found = Interlocked.CompareExchange(ref _entries[subindex], null, null);
+            object result = itemFactory();
             if (found == null)
             {
                 // -- Not found TryAdd
-                var previous = Interlocked.CompareExchange(ref _entries[subindex], itemFactory() ?? BucketHelper.Null, null);
+                var previous = Interlocked.CompareExchange(ref _entries[subindex], result ?? BucketHelper.Null, null);
                 if (previous == null)
                 {
                     isNew = true;
@@ -746,7 +747,7 @@ namespace Theraot.Collections.ThreadSafe
             bool checkResult;
             try
             {
-                checkResult = check(found);
+                checkResult = itemUpdateFactory(found, out result);
             }
             finally
             {
@@ -758,7 +759,7 @@ namespace Theraot.Collections.ThreadSafe
                 // This works under the presumption that check will result true to whatever value may have replaced found...
                 // That's why we don't use CompareExchange, but simply Exchange instead
                 // And also that's why this method is internal, we cannot guarantee the presumption outside internal code.
-                var previous = Interlocked.Exchange(ref _entries[subindex], itemFactory() ?? BucketHelper.Null);
+                var previous = Interlocked.Exchange(ref _entries[subindex], result ?? BucketHelper.Null);
                 if (previous == null)
                 {
                     isNew = true;

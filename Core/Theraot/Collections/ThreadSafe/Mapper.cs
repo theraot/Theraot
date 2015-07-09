@@ -387,11 +387,11 @@ namespace Theraot.Collections.ThreadSafe
             return result; // true means value was set
         }
 
-        internal bool TryGetCheckSet(int index, Func<T> itemFactory, Predicate<object> check, out bool isNew)
+        internal bool TryGetCheckSet(int index, Func<object> itemFactory, TryConvert<object, object> itemUpdateFactory, out bool isNew)
         {
             // NOTICE this method has no null check
             // Keep this method internal
-            var result = _root.TryGetCheckSet(unchecked((uint)index), () => itemFactory(), check, out isNew);
+            var result = _root.TryGetCheckSet(unchecked((uint)index), itemFactory, itemUpdateFactory, out isNew);
             if (isNew)
             {
                 Interlocked.Increment(ref _count);

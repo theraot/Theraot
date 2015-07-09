@@ -1032,48 +1032,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        internal TValue GetOrAdd(TKey key, Predicate<TKey> keyOverwriteCheck, TValue value)
-        {
-            // NOTICE this method has no null check
-            var hashCode = _keyComparer.GetHashCode(key);
-            var neo = new KeyValuePair<TKey, TValue>(key, value);
-            var attempts = 0;
-            while (true)
-            {
-                ExtendProbingIfNeeded(attempts);
-                Predicate<object> check = found =>
-                {
-                    var _found = (KeyValuePair<TKey, TValue>)found;
-                    if (_keyComparer.Equals(_found.Key, key))
-                    {
-                        // This is the item that has been stored with the key
-                        value = _found.Value;
-                        // Throw to abort overwrite
-                        throw new ArgumentException("An item with the same key has already been added", "key");
-                    }
-                    // This is not the key, overwrite?
-                    return keyOverwriteCheck(_found.Key);
-                };
-                try
-                {
-                    bool isNew;
-                    // TryGetCheckSet will add if no item is found, otherwise it calls check
-                    if (_mapper.TryGetCheckSet(hashCode + attempts, neo, check, out isNew))
-                    {
-                        // It added a new item
-                        return value;
-                    }
-                }
-                catch (ArgumentException)
-                {
-                    // An item with the same key has already been added
-                    // Return it
-                    return value;
-                }
-                attempts++;
-            }
-        }
-
         /// <summary>
         /// Sets the value associated with the specified key.
         /// </summary>
@@ -1491,7 +1449,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        internal bool TryGetOrAdd(TKey key, Predicate<TKey> keyOverwriteCheck, Func<TKey, TValue> valueFactory, out TValue stored)
+        internal bool TryGetOrAdd(TKey key, Func<TValue> addValueFactory, TryConvert<KeyValuePair<TKey, TValue>, TValue> updateValueFactory, out TValue stored)
         {
             // NOTICE this method has no null check
             var hashCode = _keyComparer.GetHashCode(key);
@@ -1500,7 +1458,8 @@ namespace Theraot.Collections.ThreadSafe
             {
                 TValue value = default(TValue);
                 ExtendProbingIfNeeded(attempts);
-                Predicate<object> check = found =>
+                Func<object> itemFactory = () => addValueFactory();
+                TryConvert<object, object> itemUpdateFactory = (object found, out object result) =>
                 {
                     var _found = (KeyValuePair<TKey, TValue>)found;
                     if (_keyComparer.Equals(_found.Key, key))
@@ -1511,13 +1470,18 @@ namespace Theraot.Collections.ThreadSafe
                         throw new ArgumentException("An item with the same key has already been added", "key");
                     }
                     // This is not the key, overwrite?
-                    return keyOverwriteCheck(_found.Key);
+                    if (updateValueFactory(_found, out value))
+                    {
+                        result = new KeyValuePair<TKey, TValue>(key, value);
+                        return true;
+                    }
+                    result = default(KeyValuePair<TKey, TValue>);
+                    return false;
                 };
                 try
                 {
                     bool isNew;
-                    // TryGetCheckSet will add if no item is found, otherwise it calls check
-                    if (_mapper.TryGetCheckSet(hashCode + attempts, () => new KeyValuePair<TKey, TValue>(key, value = valueFactory(key)), check, out isNew))
+                    if (_mapper.TryGetCheckSet(hashCode + attempts, itemFactory, itemUpdateFactory, out isNew))
                     {
                         // It added a new item
                         stored = value;
