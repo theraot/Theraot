@@ -1458,7 +1458,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 TValue value = default(TValue);
                 ExtendProbingIfNeeded(attempts);
-                Func<object> itemFactory = () => addValueFactory();
+                Func<object> itemFactory = () => new KeyValuePair<TKey, TValue>(key, value = addValueFactory());
                 TryConvert<object, object> itemUpdateFactory = (object found, out object result) =>
                 {
                     var _found = (KeyValuePair<TKey, TValue>)found;
