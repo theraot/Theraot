@@ -310,8 +310,13 @@ namespace Theraot.Collections.ThreadSafe
             var displaced = _wrapped.ClearEnumerable();
             foreach (var item in displaced)
             {
-                yield return new KeyValuePair<TKey, TValue>(item.Key.Value, item.Value); // TODO: Nothing prevents the needle from dying just before the call
-                NeedleReservoir<TKey, TNeedle>.DonateNeedle(item.Key);
+                TKey key;
+                if (PrivateTryGetValue(item.Key, out key))
+                {
+                    var value = item.Value;
+                    yield return new KeyValuePair<TKey, TValue>(key, value);
+                    NeedleReservoir<TKey, TNeedle>.DonateNeedle(item.Key);
+                }
             }
         }
 
@@ -482,7 +487,12 @@ namespace Theraot.Collections.ThreadSafe
             var result = new List<KeyValuePair<TKey, TValue>>(_wrapped.Count);
             foreach (var pair in _wrapped)
             {
-                result.Add(new KeyValuePair<TKey, TValue>(pair.Key.Value, pair.Value)); // TODO: Nothing prevents the needle from dying just before the call
+                TKey key;
+                if (PrivateTryGetValue(pair.Key, out key))
+                {
+                    var value = pair.Value;
+                    result.Add(new KeyValuePair<TKey, TValue>(key, value));
+                }
             }
             return result;
         }
