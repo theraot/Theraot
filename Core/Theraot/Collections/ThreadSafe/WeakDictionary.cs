@@ -14,7 +14,7 @@ namespace Theraot.Collections.ThreadSafe
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
     public class WeakDictionary<TKey, TValue, TNeedle> : IDictionary<TKey, TValue>
         where TKey : class
-        where TNeedle : WeakNeedle<TKey>
+        where TNeedle : class, IRecyclableNeedle<TKey>
     {
         private readonly KeyCollection<TKey, TValue> _keyCollection;
         private readonly IEqualityComparer<TKey> _keyComparer;
