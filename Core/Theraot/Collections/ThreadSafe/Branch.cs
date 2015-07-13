@@ -141,20 +141,6 @@ namespace Theraot.Collections.ThreadSafe
             // if this returns false, something was inserted first... so we get the previous item
         }
 
-        public bool InsertOrUpdate(uint index, Func<object> itemFactory, TryConvert<object, object> itemUpdateFactory, out object stored, out bool isNew)
-        {
-            // Get the target branches
-            int resultCount;
-            var branches = Map(index, out resultCount);
-            // ---
-            var branch = branches[resultCount - 1];
-            var result = branch.PrivateInsertOrUpdate(index, itemFactory, itemUpdateFactory, out stored, out isNew);
-            Leave(branches, resultCount);
-            return result;
-            // if this returns true, the new item was inserted, so there was no previous item
-            // if this returns false, something was inserted first... so we get the previous item
-        }
-
         public bool RemoveAt(uint index, out object previous)
         {
             previous = null;
@@ -264,7 +250,7 @@ namespace Theraot.Collections.ThreadSafe
             return result;
         }
 
-        internal bool TryGetCheckSet(uint index, Func<object> itemFactory, TryConvert<object, object> itemUpdateFactory, out bool isNew)
+        internal bool TryGetCheckSet(uint index, Func<object> itemFactory, Func<object, object> itemUpdateFactory, out bool isNew)
         {
             // Get the target branches
             int resultCount;
@@ -544,32 +530,6 @@ namespace Theraot.Collections.ThreadSafe
             return true;
         }
 
-        private bool PrivateInsertOrUpdate(uint index, Func<object> itemFactory, TryConvert<object, object> itemUpdateFactory, out object stored, out bool isNew)
-        {
-            object previous;
-            // NOTICE this method is a while loop, it may starve
-            while (!PrivateInsert(index, itemFactory, out previous, out stored))
-            {
-                isNew = false;
-                object result;
-                if (itemUpdateFactory(previous, out result))
-                {
-                    if (PrivateTryUpdate(index, result, previous))
-                    {
-                        stored = result;
-                        return true;
-                    }
-                }
-                else
-                {
-                    stored = previous;
-                    return false; // returns false only when check returns false
-                }
-            }
-            isNew = true;
-            return true;
-        }
-
         private bool PrivateRemoveAt(uint index, out object previous)
         {
             var subindex = GetSubindex(index);
@@ -760,7 +720,7 @@ namespace Theraot.Collections.ThreadSafe
             return false; // false means value was not set
         }
 
-        private bool PrivateTryGetCheckSet(uint index, Func<object> itemFactory, TryConvert<object, object> itemUpdateFactory, out bool isNew)
+        private bool PrivateTryGetCheckSet(uint index, Func<object> itemFactory, Func<object, object> itemUpdateFactory, out bool isNew)
         {
             Interlocked.Increment(ref _useCount); // We are most likely to add - overstatimate count
             isNew = false;
@@ -785,18 +745,15 @@ namespace Theraot.Collections.ThreadSafe
                 found = null;
             }
             // -- Found
-            bool checkResult;
             try
             {
-                checkResult = itemUpdateFactory(found, out result);
+                result = itemUpdateFactory(found);
             }
             finally
             {
                 Interlocked.Decrement(ref _useCount); // We did not add after all
             }
-            if (checkResult)
             {
-                // -- Passed
                 // This works under the presumption that check will result true to whatever value may have replaced found...
                 // That's why we don't use CompareExchange, but simply Exchange instead
                 // And also that's why this method is internal, we cannot guarantee the presumption outside internal code.
@@ -811,7 +768,6 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 return true; // true means value was set
             }
-            return false; // false means value was not set
         }
 
         private bool PrivateTryGetOrInsert(uint index, object item, out object stored)

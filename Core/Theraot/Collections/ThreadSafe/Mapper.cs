@@ -317,26 +317,6 @@ namespace Theraot.Collections.ThreadSafe
             return result;
         }
 
-        internal bool InternalInsertOrUpdate(int index, Func<object> itemFactory, TryConvert<object, object> itemUpdateFactory, out T stored, out bool isNew)
-        {
-            // NOTICE this method has no null check
-            object storedObject;
-            var result = _root.InsertOrUpdate
-                         (
-                             unchecked((uint)index),
-                             itemFactory,
-                             itemUpdateFactory,
-                             out storedObject,
-                             out isNew
-                         );
-            if (isNew)
-            {
-                Interlocked.Increment(ref _count);
-            }
-            stored = (T)storedObject;
-            return result;
-        }
-
         internal bool InternalInsertOrUpdate(int index, T item, Func<object, object> itemUpdateFactory, Predicate<object> check, out T stored, out bool isNew)
         {
             // NOTICE this method has no null check
@@ -407,7 +387,7 @@ namespace Theraot.Collections.ThreadSafe
             return result; // true means value was set
         }
 
-        internal bool TryGetCheckSet(int index, Func<object> itemFactory, TryConvert<object, object> itemUpdateFactory, out bool isNew)
+        internal bool TryGetCheckSet(int index, Func<object> itemFactory, Func<object, object> itemUpdateFactory, out bool isNew)
         {
             // NOTICE this method has no null check
             // Keep this method internal
