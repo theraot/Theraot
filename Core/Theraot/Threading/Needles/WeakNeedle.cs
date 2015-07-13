@@ -10,7 +10,7 @@ using Theraot.Core;
 namespace Theraot.Threading.Needles
 {
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public partial class WeakNeedle<T> : INeedle<T>, IEquatable<WeakNeedle<T>>, IRecyclableNeedle<T>
+    public partial class WeakNeedle<T> : INeedle<T>, IEquatable<WeakNeedle<T>>, IRecyclableNeedle<T>, ICacheNeedle<T>
         where T : class
     {
         private readonly int _hashCode;
@@ -59,6 +59,22 @@ namespace Theraot.Threading.Needles
                     }
                 }
                 return null;
+            }
+        }
+
+        bool IPromise.IsCanceled
+        {
+            get
+            {
+                return !IsAlive;
+            }
+        }
+
+        bool IPromise.IsCompleted
+        {
+            get
+            {
+                return IsAlive;
             }
         }
 
@@ -224,12 +240,6 @@ namespace Theraot.Threading.Needles
         {
             _faultExpected = false;
             WriteTarget(value);
-        }
-
-        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
-        private static GCHandle CreateHandle(object target, bool trackResurrection)
-        {
-            return GCHandle.Alloc(target, trackResurrection ? GCHandleType.WeakTrackResurrection : GCHandleType.Weak);
         }
 
         private static bool EqualsExtracted(WeakNeedle<T> left, WeakNeedle<T> right)
