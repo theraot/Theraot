@@ -307,6 +307,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public IEnumerable<KeyValuePair<TKey, TValue>> ClearEnumerable()
         {
+            // No risk of dead needles here
             var displaced = _wrapped.ClearEnumerable();
             foreach (var item in displaced)
             {
@@ -967,18 +968,19 @@ namespace Theraot.Collections.ThreadSafe
         {
             // No risk of dead needles here
             TValue found;
+            Predicate<TNeedle> check = input =>
+            {
+                TKey _key;
+                if (PrivateTryGetValue(input, out _key))
+                {
+                    return _keyComparer.Equals(_key, item.Key);
+                }
+                return false;
+            };
             return _wrapped.Remove
                 (
                     _keyComparer.GetHashCode(item.Key),
-                    input =>
-                {
-                    TKey _key;
-                    if (PrivateTryGetValue(input, out _key))
-                    {
-                        return _keyComparer.Equals(_key, item.Key);
-                    }
-                    return false;
-                },
+                    check,
                     input => EqualityComparer<TValue>.Default.Equals(input, item.Value),
                     out found
                 );
@@ -987,18 +989,19 @@ namespace Theraot.Collections.ThreadSafe
         bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
         {
             // No risk of dead needles here
+            Predicate<TNeedle> check = input =>
+            {
+                TKey _key;
+                if (PrivateTryGetValue(input, out _key))
+                {
+                    return _keyComparer.Equals(_key, item.Key);
+                }
+                return false;
+            };
             return _wrapped.ContainsKey
                 (
                     _keyComparer.GetHashCode(item.Key),
-                    input =>
-                {
-                    TKey _key;
-                    if (PrivateTryGetValue(input, out _key))
-                    {
-                        return _keyComparer.Equals(_key, item.Key);
-                    }
-                    return false;
-                },
+                    check,
                     input => EqualityComparer<TValue>.Default.Equals(input, item.Value)
                 );
         }
@@ -1221,6 +1224,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private bool RegisterForAutoRemoveDeadItemsExtracted()
         {
+            // No risk of dead needles here
             bool result = false;
             EventHandler eventHandler;
             if (ReferenceEquals(_eventHandler.Value, null))
