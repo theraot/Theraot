@@ -10,7 +10,7 @@ using Theraot.Core;
 namespace Theraot.Threading.Needles
 {
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public partial class WeakNeedle<T> : INeedle<T>, IEquatable<WeakNeedle<T>>, IRecyclableNeedle<T>, ICacheNeedle<T>
+    public partial class WeakNeedle<T> : IEquatable<WeakNeedle<T>>, IRecyclableNeedle<T>, ICacheNeedle<T>
         where T : class
     {
         private readonly int _hashCode;
@@ -53,15 +53,17 @@ namespace Theraot.Threading.Needles
                 object target;
                 if (ReadTarget(out target))
                 {
-                    if (target is Exception && _faultExpected)
+                    var exception = target as Exception;
+                    if (exception != null && _faultExpected)
                     {
-                        return target as Exception;
+                        return exception;
                     }
                 }
                 return null;
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
         bool IPromise.IsCanceled
         {
             get
@@ -70,6 +72,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns true")]
         bool IPromise.IsCompleted
         {
             get
