@@ -809,12 +809,27 @@ namespace Theraot.Collections.ThreadSafe
         {
             var needle = PrivateGetNeedle(key);
             KeyValuePair<TNeedle, TValue> _stored;
-            var result = _wrapped.TryAdd(needle, input => !input.IsAlive, value, out _stored);
+            Predicate<TNeedle> check = found =>
+            {
+                TKey foundKey;
+                if (PrivateTryGetValue(found, out foundKey))
+                {
+                    // Keeping the found key alive
+                    // If we found a key, key will be the key found
+                    // If we didn't key will be the key added
+                    // So, either way key is the key that is stored
+                    // By having it here, we don't need to read _stored.Key.Value
+                    key = foundKey;
+                    return false;
+                }
+                return true;
+            };
+            var result = _wrapped.TryAdd(needle, check, value, out _stored);
             if (!result)
             {
                 NeedleReservoir<TKey, TNeedle>.DonateNeedle(needle);
             }
-            stored = new KeyValuePair<TKey, TValue>(_stored.Key.Value, _stored.Value); // TODO: Nothing prevents the needle from dying just before the call
+            stored = new KeyValuePair<TKey, TValue>(key, _stored.Value);
             return result;
         }
 
