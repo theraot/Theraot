@@ -859,8 +859,16 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool TryGetValue(TKey key, out TValue value)
         {
-            // TODO: Nothing prevents the needle from dying just before the call
-            return _wrapped.TryGetValue(_keyComparer.GetHashCode(key), input => object.Equals(key, input.Value), out value);
+            Predicate<TNeedle> check = found =>
+            {
+                TKey foundKey;
+                if (PrivateTryGetValue(found, out foundKey))
+                {
+                    return _keyComparer.Equals(key, foundKey);
+                }
+                return false;
+            };
+            return _wrapped.TryGetValue(_keyComparer.GetHashCode(key), check, out value);
         }
 
         /// <summary>
@@ -878,7 +886,16 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("keyCheck");
             }
-            return _wrapped.TryGetValue(hashCode, input => keyCheck(input.Value), out value); // TODO: Nothing prevents the needle from dying just before the call
+            Predicate<TNeedle> check = found =>
+            {
+                TKey foundKey;
+                if (PrivateTryGetValue(found, out foundKey))
+                {
+                    return keyCheck(foundKey);
+                }
+                return false;
+            };
+            return _wrapped.TryGetValue(hashCode, check, out value);
         }
 
         public bool TryUpdate(TKey key, TValue newValue, TValue comparisonValue)
