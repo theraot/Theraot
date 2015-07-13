@@ -66,7 +66,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return !IsAlive;
+                return false;
             }
         }
 
@@ -74,7 +74,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return IsAlive;
+                return true;
             }
         }
 
