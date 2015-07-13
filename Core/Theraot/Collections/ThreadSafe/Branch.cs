@@ -141,6 +141,20 @@ namespace Theraot.Collections.ThreadSafe
             // if this returns false, something was inserted first... so we get the previous item
         }
 
+        public bool InsertOrUpdate(uint index, Func<object> itemFactory, TryConvert<object, object> itemUpdateFactory, out object stored, out bool isNew)
+        {
+            // Get the target branches
+            int resultCount;
+            var branches = Map(index, out resultCount);
+            // ---
+            var branch = branches[resultCount - 1];
+            var result = branch.PrivateInsertOrUpdate(index, itemFactory, itemUpdateFactory, out stored, out isNew);
+            Leave(branches, resultCount);
+            return result;
+            // if this returns true, the new item was inserted, so there was no previous item
+            // if this returns false, something was inserted first... so we get the previous item
+        }
+
         public bool RemoveAt(uint index, out object previous)
         {
             previous = null;
@@ -514,6 +528,32 @@ namespace Theraot.Collections.ThreadSafe
                 if (check(previous))
                 {
                     object result = itemUpdateFactory(previous);
+                    if (PrivateTryUpdate(index, result, previous))
+                    {
+                        stored = result;
+                        return true;
+                    }
+                }
+                else
+                {
+                    stored = previous;
+                    return false; // returns false only when check returns false
+                }
+            }
+            isNew = true;
+            return true;
+        }
+
+        private bool PrivateInsertOrUpdate(uint index, Func<object> itemFactory, TryConvert<object, object> itemUpdateFactory, out object stored, out bool isNew)
+        {
+            object previous;
+            // NOTICE this method is a while loop, it may starve
+            while (!PrivateInsert(index, itemFactory, out previous, out stored))
+            {
+                isNew = false;
+                object result;
+                if (itemUpdateFactory(previous, out result))
+                {
                     if (PrivateTryUpdate(index, result, previous))
                     {
                         stored = result;

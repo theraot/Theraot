@@ -1396,6 +1396,92 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
+        internal TValue AddOrUpdate(TKey key, Func<TKey, TValue> addValueFactory, TryConvert<KeyValuePair<TKey, TValue>, TValue> updateValueFactory, out bool added)
+        {
+            if (ReferenceEquals(addValueFactory, null))
+            {
+                throw new ArgumentNullException("addValueFactory");
+            }
+            if (ReferenceEquals(updateValueFactory, null))
+            {
+                throw new ArgumentNullException("updateValueFactory");
+            }
+            var hashCode = _keyComparer.GetHashCode(key);
+            var attempts = 0;
+            while (true)
+            {
+                ExtendProbingIfNeeded(attempts);
+                KeyValuePair<TKey, TValue> stored;
+                Func<object> valueFactory = () => new KeyValuePair<TKey, TValue>(key, addValueFactory(key));
+                TryConvert<object, object> itemUpdateFactory = (object found, out object output) =>
+                {
+                    var _found = (KeyValuePair<TKey, TValue>)found;
+                    TValue value;
+                    if (_keyComparer.Equals(key, _found.Key) && updateValueFactory(_found, out value))
+                    {
+                        output = new KeyValuePair<TKey, TValue>(key, value);
+                        return true;
+                    }
+                    output = null;
+                    return false;
+                };
+                var result = _mapper.InternalInsertOrUpdate
+                             (
+                                 hashCode + attempts,
+                                 valueFactory,
+                                 itemUpdateFactory,
+                                 out stored,
+                                 out added
+                             );
+                if (result)
+                {
+                    return stored.Value;
+                }
+                attempts++;
+            }
+        }
+
+        internal TValue AddOrUpdate(TKey key, TValue addValue, TryConvert<KeyValuePair<TKey, TValue>, TValue> updateValueFactory, out bool added)
+        {
+            if (ReferenceEquals(updateValueFactory, null))
+            {
+                throw new ArgumentNullException("updateValueFactory");
+            }
+            var hashCode = _keyComparer.GetHashCode(key);
+            var attempts = 0;
+            while (true)
+            {
+                ExtendProbingIfNeeded(attempts);
+                KeyValuePair<TKey, TValue> stored;
+                Func<object> valueFactory = () => new KeyValuePair<TKey, TValue>(key, addValue);
+                TryConvert<object, object> itemUpdateFactory = (object found, out object output) =>
+                {
+                    var _found = (KeyValuePair<TKey, TValue>)found;
+                    TValue value;
+                    if (_keyComparer.Equals(key, _found.Key) && updateValueFactory(_found, out value))
+                    {
+                        output = new KeyValuePair<TKey, TValue>(key, value);
+                        return true;
+                    }
+                    output = null;
+                    return false;
+                };
+                var result = _mapper.InternalInsertOrUpdate
+                             (
+                                 hashCode + attempts,
+                                 valueFactory,
+                                 itemUpdateFactory,
+                                 out stored,
+                                 out added
+                             );
+                if (result)
+                {
+                    return stored.Value;
+                }
+                attempts++;
+            }
+        }
+
         /// <summary>
         /// Attempts to add the specified key and associated value. The value is added if the key is not found.
         /// </summary>
@@ -1459,7 +1545,7 @@ namespace Theraot.Collections.ThreadSafe
                 TValue value = default(TValue);
                 ExtendProbingIfNeeded(attempts);
                 Func<object> itemFactory = () => new KeyValuePair<TKey, TValue>(key, value = addValueFactory());
-                TryConvert<object, object> itemUpdateFactory = (object found, out object result) =>
+                TryConvert<object, object> itemUpdateFactory = (object found, out object output) =>
                 {
                     var _found = (KeyValuePair<TKey, TValue>)found;
                     if (_keyComparer.Equals(_found.Key, key))
@@ -1472,10 +1558,10 @@ namespace Theraot.Collections.ThreadSafe
                     // This is not the key, overwrite?
                     if (updateValueFactory(_found, out value))
                     {
-                        result = new KeyValuePair<TKey, TValue>(key, value);
+                        output = new KeyValuePair<TKey, TValue>(key, value);
                         return true;
                     }
-                    result = default(KeyValuePair<TKey, TValue>);
+                    output = null;
                     return false;
                 };
                 try

@@ -208,11 +208,22 @@ namespace Theraot.Collections.ThreadSafe
             }
             bool added;
             TNeedle needle = PrivateGetNeedle(key);
+            TryConvert<KeyValuePair<TNeedle, TValue>, TValue> factory = (KeyValuePair<TNeedle, TValue> found, out TValue value) =>
+            {
+                TKey foundKey;
+                if (PrivateTryGetValue(found.Key, out foundKey))
+                {
+                    value = updateValueFactory(foundKey, found.Value);
+                    return true;
+                }
+                value = default(TValue);
+                return false;
+            };
             var result = _wrapped.AddOrUpdate
                 (
                     needle,
                     input => addValueFactory(input.Value), // TODO: Nothing prevents the needle from dying just before the call
-                    (inputNeedle, inputValue) => updateValueFactory(inputNeedle.Value, inputValue), // TODO: Nothing prevents the needle from dying just before the call
+                    factory,
                     out added
                 );
             if (!added)
@@ -230,11 +241,22 @@ namespace Theraot.Collections.ThreadSafe
             }
             bool added;
             TNeedle needle = PrivateGetNeedle(key);
+            TryConvert<KeyValuePair<TNeedle, TValue>, TValue> factory = (KeyValuePair<TNeedle, TValue> found, out TValue value) =>
+            {
+                TKey foundKey;
+                if (PrivateTryGetValue(found.Key, out foundKey))
+                {
+                    value = updateValueFactory(foundKey, found.Value);
+                    return true;
+                }
+                value = default(TValue);
+                return false;
+            };
             var result = _wrapped.AddOrUpdate
                 (
                     needle,
                     addValue,
-                    (inputNeedle, inputValue) => updateValueFactory(inputNeedle.Value, inputValue), // TODO: Nothing prevents the needle from dying just before the call
+                    factory,
                     out added
                 );
             if (!added)
@@ -255,11 +277,22 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException("updateValueFactory");
             }
             TNeedle needle = PrivateGetNeedle(key);
+            TryConvert<KeyValuePair<TNeedle, TValue>, TValue> factory = (KeyValuePair<TNeedle, TValue> found, out TValue value) =>
+            {
+                TKey foundKey;
+                if (PrivateTryGetValue(found.Key, out foundKey))
+                {
+                    value = updateValueFactory(foundKey, found.Value);
+                    return true;
+                }
+                value = default(TValue);
+                return false;
+            };
             var result = _wrapped.AddOrUpdate
                 (
                     needle,
                     input => addValueFactory(input.Value), // TODO: Nothing prevents the needle from dying just before the call
-                    (inputNeedle, inputValue) => updateValueFactory(inputNeedle.Value, inputValue), // TODO: Nothing prevents the needle from dying just before the call
+                    factory,
                     out added
                 );
             if (!added)
@@ -276,11 +309,22 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException("updateValueFactory");
             }
             TNeedle needle = PrivateGetNeedle(key);
+            TryConvert<KeyValuePair<TNeedle, TValue>, TValue> factory = (KeyValuePair<TNeedle, TValue> found, out TValue value) =>
+            {
+                TKey foundKey;
+                if (PrivateTryGetValue(found.Key, out foundKey))
+                {
+                    value = updateValueFactory(foundKey, found.Value);
+                    return true;
+                }
+                value = default(TValue);
+                return false;
+            };
             var result = _wrapped.AddOrUpdate
                 (
                     needle,
                     addValue,
-                    (inputNeedle, inputValue) => updateValueFactory(inputNeedle.Value, inputValue), // TODO: Nothing prevents the needle from dying just before the call
+                    factory,
                     out added
                 );
             if (!added)
@@ -472,13 +516,13 @@ namespace Theraot.Collections.ThreadSafe
             }
             TNeedle needle = PrivateGetNeedle(key);
             TValue result;
-            TryConvert<KeyValuePair<TNeedle, TValue>, TValue> updateValueFactory = (KeyValuePair<TNeedle, TValue> found, out TValue value) =>
+            TryConvert<KeyValuePair<TNeedle, TValue>, TValue> factory = (KeyValuePair<TNeedle, TValue> found, out TValue value) =>
             {
                 TKey foundKey;
                 result = value = valueFactory(PrivateTryGetValue(found.Key, out foundKey) ? foundKey : key);
                 return true;
             };
-            if (!_wrapped.TryGetOrAdd(needle, () => valueFactory(key), updateValueFactory, out result))
+            if (!_wrapped.TryGetOrAdd(needle, () => valueFactory(key), factory, out result))
             {
                 NeedleReservoir<TKey, TNeedle>.DonateNeedle(needle);
             }
@@ -490,6 +534,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public IList<KeyValuePair<TKey, TValue>> GetPairs()
         {
+            // No risk of dead needles here
             var result = new List<KeyValuePair<TKey, TValue>>(_wrapped.Count);
             foreach (var pair in _wrapped)
             {
@@ -807,6 +852,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool TryAdd(TKey key, TValue value, out KeyValuePair<TKey, TValue> stored)
         {
+            // No risk of dead needles here
             var needle = PrivateGetNeedle(key);
             KeyValuePair<TNeedle, TValue> _stored;
             Predicate<TNeedle> check = found =>
@@ -818,7 +864,7 @@ namespace Theraot.Collections.ThreadSafe
                     // If we found a key, key will be the key found
                     // If we didn't key will be the key added
                     // So, either way key is the key that is stored
-                    // By having it here, we don't need to read _stored.Key.Value
+                    // By having it here, we don't need to read _stored.Key
                     key = foundKey;
                     return false;
                 }
@@ -840,13 +886,13 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException("valueFactory");
             }
             var needle = PrivateGetNeedle(key);
-            TryConvert<KeyValuePair<TNeedle, TValue>, TValue> updateValueFactory = (KeyValuePair<TNeedle, TValue> found, out TValue value) =>
+            TryConvert<KeyValuePair<TNeedle, TValue>, TValue> factory = (KeyValuePair<TNeedle, TValue> found, out TValue value) =>
             {
                 TKey foundKey;
                 value = valueFactory(PrivateTryGetValue(found.Key, out foundKey) ? foundKey : key);
                 return true;
             };
-            if (_wrapped.TryGetOrAdd(needle, () => valueFactory(key), updateValueFactory, out stored))
+            if (_wrapped.TryGetOrAdd(needle, () => valueFactory(key), factory, out stored))
             {
                 return true;
             }
