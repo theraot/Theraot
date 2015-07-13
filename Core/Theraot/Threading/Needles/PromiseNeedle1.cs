@@ -8,7 +8,7 @@ namespace Theraot.Threading.Needles
 {
     [Serializable]
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public sealed class PromiseNeedle<T> : IPromise<T>, ICacheNeedle<T>, IEquatable<PromiseNeedle<T>>
+    public sealed class PromiseNeedle<T> : IWaitablePromise<T>, ICacheNeedle<T>, IEquatable<PromiseNeedle<T>>
     {
         private readonly Promised _promised;
 

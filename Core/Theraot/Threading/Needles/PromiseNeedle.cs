@@ -7,7 +7,7 @@ namespace Theraot.Threading.Needles
 {
     [Serializable]
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public sealed class PromiseNeedle : IPromise
+    public sealed class PromiseNeedle : IWaitablePromise
     {
         private readonly Promised _promised;
 
@@ -149,6 +149,7 @@ namespace Theraot.Threading.Needles
             {
                 get
                 {
+                    // Exception can be not null
                     return !ReferenceEquals(_exception, null);
                 }
             }
@@ -159,6 +160,7 @@ namespace Theraot.Threading.Needles
                 {
                     if (other.IsCompleted)
                     {
+                        // Exception can be not null
                         if (ReferenceEquals(_exception, null))
                         {
                             return ReferenceEquals(other._exception, null);
