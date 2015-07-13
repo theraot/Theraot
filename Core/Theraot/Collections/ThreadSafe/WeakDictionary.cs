@@ -216,13 +216,14 @@ namespace Theraot.Collections.ThreadSafe
                     value = updateValueFactory(foundKey, found.Value);
                     return true;
                 }
-                value = default(TValue);
-                return false;
+                value = addValueFactory(key);
+                return true;
             };
+            Func<TNeedle, TValue> valueFactory = input => addValueFactory(key);
             var result = _wrapped.AddOrUpdate
                 (
                     needle,
-                    input => addValueFactory(input.Value), // TODO: Nothing prevents the needle from dying just before the call
+                    valueFactory,
                     factory,
                     out added
                 );
@@ -249,8 +250,8 @@ namespace Theraot.Collections.ThreadSafe
                     value = updateValueFactory(foundKey, found.Value);
                     return true;
                 }
-                value = default(TValue);
-                return false;
+                value = addValue;
+                return true;
             };
             var result = _wrapped.AddOrUpdate
                 (
@@ -285,13 +286,14 @@ namespace Theraot.Collections.ThreadSafe
                     value = updateValueFactory(foundKey, found.Value);
                     return true;
                 }
-                value = default(TValue);
-                return false;
+                value = addValueFactory(key);
+                return true;
             };
+            Func<TNeedle, TValue> valueFactory = input => addValueFactory(key);
             var result = _wrapped.AddOrUpdate
                 (
                     needle,
-                    input => addValueFactory(input.Value), // TODO: Nothing prevents the needle from dying just before the call
+                    valueFactory,
                     factory,
                     out added
                 );
@@ -317,8 +319,8 @@ namespace Theraot.Collections.ThreadSafe
                     value = updateValueFactory(foundKey, found.Value);
                     return true;
                 }
-                value = default(TValue);
-                return false;
+                value = addValue;
+                return true;
             };
             var result = _wrapped.AddOrUpdate
                 (
