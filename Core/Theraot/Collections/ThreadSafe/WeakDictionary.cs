@@ -919,7 +919,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("keyCheck");
             }
-            var matches = _wrapped.Where
+            return _wrapped.Where
                 (
                     input =>
                     {
@@ -931,10 +931,6 @@ namespace Theraot.Collections.ThreadSafe
                         return false;
                     }
                 );
-            foreach (var value in matches)
-            {
-                yield return value;
-            }
         }
 
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Use AddNew")]
