@@ -1011,4 +1011,97 @@ namespace Theraot.Core
 #endif
         }
     }
+
+    public static partial class StringHelper
+    {
+        public static string Join(string separator, IEnumerable<string> values)
+        {
+#if NET20 || NET30 || NET35
+            if (values == null)
+            {
+                throw new ArgumentNullException("values");
+            }
+            var stringList = new List<string>();
+            int length = 0;
+            int separatorLength = separator.Length;
+            foreach (var item in values)
+            {
+                if (length != 0)
+                {
+                    stringList.Add(separator);
+                    length += separatorLength;
+                }
+                stringList.Add(item);
+                length += item.Length;
+            }
+            return ConcatExtractedExtracted(stringList.ToArray(), 0, stringList.Count, length);
+#else
+            return string.Join(separator, values);
+#endif
+        }
+
+        public static string Join<T>(string separator, IEnumerable<T> values)
+        {
+#if NET20 || NET30 || NET35
+            if (values == null)
+            {
+                throw new ArgumentNullException("values");
+            }
+            var stringList = new List<string>();
+            int length = 0;
+            int separatorLength = separator.Length;
+            foreach (var item in values)
+            {
+                if (length != 0)
+                {
+                    stringList.Add(separator);
+                    length += separatorLength;
+                }
+                var itemToString = item.ToString();
+                stringList.Add(itemToString);
+                length += itemToString.Length;
+            }
+            return ConcatExtractedExtracted(stringList.ToArray(), 0, stringList.Count, length);
+#else
+            return string.Join(separator, values);
+#endif
+        }
+
+        public static string Join<T>(string separator, object[] values)
+        {
+#if NET20 || NET30 || NET35
+            if (values == null)
+            {
+                throw new ArgumentNullException("values");
+            }
+            var stringList = new List<string>();
+            int length = 0;
+            int separatorLength = separator.Length;
+            foreach (var item in values)
+            {
+                if (length != 0)
+                {
+                    stringList.Add(separator);
+                    length += separatorLength;
+                }
+                var itemToString = item.ToString();
+                stringList.Add(itemToString);
+                length += itemToString.Length;
+            }
+            return ConcatExtractedExtracted(stringList.ToArray(), 0, stringList.Count, length);
+#else
+            return string.Join(separator, values);
+#endif
+        }
+
+        public static string Join(string separator, string[] values)
+        {
+            return string.Join(separator, values);
+        }
+
+        public static string Join(string separator, string[] values, int startIndex, int count)
+        {
+            return string.Join(separator, values, startIndex, count);
+        }
+    }
 }

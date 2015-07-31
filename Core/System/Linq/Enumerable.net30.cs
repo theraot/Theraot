@@ -1097,6 +1097,29 @@ namespace System.Linq
                 count++;
             }
         }
+
+        public static IEnumerable<TReturn> Zip<T1, T2, TReturn>(this IEnumerable<T1> first, IEnumerable<T2> second, Func<T1, T2, TReturn> resultSelector)
+        {
+            var _1 = Check.NotNullArgument(first, "arg1");
+            var _2 = Check.NotNullArgument(second, "arg2");
+            var _result = Check.NotNullArgument(resultSelector, "resultSelector");
+            using (var enumerator1 = _1.GetEnumerator())
+            using (var enumerator2 = _2.GetEnumerator())
+            {
+                while
+                (
+                    enumerator1.MoveNext()
+                    && enumerator2.MoveNext()
+                )
+                {
+                    yield return _result
+                    (
+                        enumerator1.Current,
+                        enumerator2.Current
+                    );
+                }
+            }
+        }
     }
 }
 

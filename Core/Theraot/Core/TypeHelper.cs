@@ -196,40 +196,6 @@ namespace Theraot.Core
             return constructorInfo == null;
         }
 
-        public static bool InheritsFrom(this Type type, Type baseType)
-        {
-            if (baseType.IsGenericType)
-            {
-                while (type != null)
-                {
-                    if (type.IsGenericType)
-                    {
-                        type = type.GetGenericTypeDefinition();
-                        if (baseType == type)
-                        {
-                            return true;
-                        }
-                    }
-                    else
-                    {
-                        type = type.BaseType;
-                    }
-                }
-            }
-            else
-            {
-                while (type != null)
-                {
-                    if (baseType == type)
-                    {
-                        return true;
-                    }
-                    type = type.BaseType;
-                }
-            }
-            return false;
-        }
-
         public static bool IsArrayTypeAssignableTo(Type type, Type target)
         {
             if (!type.IsArray || !target.IsArray)
@@ -420,31 +386,58 @@ namespace Theraot.Core
             return !ReferenceEquals(Nullable.GetUnderlyingType(type), null);
         }
 
-        public static bool IsPrimitiveIntegerType(this Type type)
+        public static bool IsPrimitiveInteger(this Type type)
         {
-            if (type.IsPrimitive)
-            {
-                if
+            if
                 (
-                    type == typeof(bool)
-                    || type == typeof(char)
-                    || type == typeof(IntPtr)
-                    || type == typeof(UIntPtr)
-                    || type == typeof(double)
-                    || type == typeof(float)
+                    type == typeof(sbyte)
+                    || type == typeof(byte)
+                    || type == typeof(short)
+                    || type == typeof(int)
+                    || type == typeof(long)
+                    || type == typeof(ushort)
+                    || type == typeof(uint)
+                    || type == typeof(ulong)
                 )
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public static bool IsSameOrSubclass(this Type type, Type subType)
+        {
+            if (type.IsGenericType)
+            {
+                /*while (subType != null)
                 {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+                    if (subType.IsGenericType)
+                    {
+                        subType = subType.GetGenericTypeDefinition();
+                        if (type == subType)
+                        {
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        subType = subType.BaseType;
+                    }
+                }*/
+                return false;
             }
             else
             {
-                return false;
+                while (subType != null)
+                {
+                    if (type == subType)
+                    {
+                        return true;
+                    }
+                    subType = subType.BaseType;
+                }
             }
+            return false;
         }
 
         public static bool IsValueTypeRecursive(this Type type)

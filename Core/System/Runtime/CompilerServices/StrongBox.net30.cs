@@ -7,6 +7,11 @@ namespace System.Runtime.CompilerServices
         [global::System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Microsoft's Design")]
         public T Value;
 
+        public StrongBox()
+        {
+            // Empty
+        }
+
         public StrongBox(T value)
         {
             Value = value;

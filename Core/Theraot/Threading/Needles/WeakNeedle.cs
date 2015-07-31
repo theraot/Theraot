@@ -10,7 +10,7 @@ using Theraot.Core;
 namespace Theraot.Threading.Needles
 {
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public partial class WeakNeedle<T> : INeedle<T>, IEquatable<WeakNeedle<T>>, IRecyclableNeedle<T>
+    public partial class WeakNeedle<T> : IEquatable<WeakNeedle<T>>, IRecyclableNeedle<T>, ICacheNeedle<T>
         where T : class
     {
         private readonly int _hashCode;
@@ -53,12 +53,31 @@ namespace Theraot.Threading.Needles
                 object target;
                 if (ReadTarget(out target))
                 {
-                    if (target is Exception && _faultExpected)
+                    var exception = target as Exception;
+                    if (exception != null && _faultExpected)
                     {
-                        return target as Exception;
+                        return exception;
                     }
                 }
                 return null;
+            }
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
+        bool IPromise.IsCanceled
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns true")]
+        bool IPromise.IsCompleted
+        {
+            get
+            {
+                return true;
             }
         }
 
@@ -224,12 +243,6 @@ namespace Theraot.Threading.Needles
         {
             _faultExpected = false;
             WriteTarget(value);
-        }
-
-        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
-        private static GCHandle CreateHandle(object target, bool trackResurrection)
-        {
-            return GCHandle.Alloc(target, trackResurrection ? GCHandleType.WeakTrackResurrection : GCHandleType.Weak);
         }
 
         private static bool EqualsExtracted(WeakNeedle<T> left, WeakNeedle<T> right)

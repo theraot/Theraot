@@ -487,7 +487,7 @@ namespace MonoTests.System.Runtime.CompilerServices
         }
 
         [Test]
-        [Category("NotWorking")] // Works on debug, haven't figured why
+        [Category("NotDotNet")] // This fails in .net 4.0 too, so yeah
         public void FinalizableObjectsThatRetainDeadKeys()
         {
             if (GC.MaxGeneration == 0) /*Boehm doesn't handle ephemerons */

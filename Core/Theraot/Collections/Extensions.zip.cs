@@ -11,7 +11,7 @@ namespace Theraot.Collections
 {
     public static partial class Extensions
     {
-#if NET20 || NET30 || NET35
+#if NET35
         public static IEnumerable<TReturn> Zip<T1, T2, TReturn>(this IEnumerable<T1> first, IEnumerable<T2> second, Func<T1, T2, TReturn> resultSelector)
 #else
         public static IEnumerable<TReturn> Zip<T1, T2, TReturn>(IEnumerable<T1> first, IEnumerable<T2> second, Func<T1, T2, TReturn> resultSelector)

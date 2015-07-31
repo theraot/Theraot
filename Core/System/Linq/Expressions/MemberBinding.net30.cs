@@ -1,76 +1,76 @@
-﻿#if NET20 || NET30
+#if NET20 || NET30
 
+// Copyright (c) Microsoft. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+using System;
 using System.Reflection;
-using System.Reflection.Emit;
 
 namespace System.Linq.Expressions
 {
+
+    /// <summary>
+    /// Describes the binding types that are used in MemberInitExpression objects.
+    /// </summary>
+    public enum MemberBindingType
+    {
+        /// <summary>
+        /// A binding that represents initializing a member with the value of an expression.
+        /// </summary>
+        Assignment,
+        /// <summary>
+        /// A binding that represents recursively initializing members of a member.
+        /// </summary>
+        MemberBinding,
+        /// <summary>
+        /// A binding that represents initializing a member of type <see cref="System.Collections.IList"/> or <see cref="System.Collections.Generic.ICollection{T}"/> from a list of elements.
+        /// </summary>
+        ListBinding
+    }
+
+    /// <summary>
+    /// Provides the base class from which the classes that represent bindings that are used to initialize members of a newly created object derive.
+    /// </summary>
     public abstract class MemberBinding
     {
-        private readonly MemberBindingType _bindingType;
-        private readonly MemberInfo _member;
+        private MemberBindingType _type;
+        private MemberInfo _member;
 
-        protected MemberBinding(MemberBindingType bindingType, MemberInfo member)
+        /// <summary>
+        /// Initializes an instance of <see cref="MemberBinding"/> class.
+        /// </summary>
+        /// <param name="type">The type of member binding.</param>
+        /// <param name="member">The field or property to be initialized.</param>
+        [Obsolete("Do not use this constructor. It will be removed in future releases.")]
+        protected MemberBinding(MemberBindingType type, MemberInfo member)
         {
-            _bindingType = bindingType;
+            _type = type;
             _member = member;
         }
 
+        /// <summary>
+        /// Gets the type of binding that is represented.
+        /// </summary>
         public MemberBindingType BindingType
         {
-            get
-            {
-                return _bindingType;
-            }
+            get { return _type; }
         }
 
+        /// <summary>
+        /// Gets the field or property to be initialized.
+        /// </summary>
         public MemberInfo Member
         {
-            get
-            {
-                return _member;
-            }
+            get { return _member; }
         }
 
+        /// <summary>
+        /// Returns a <see cref="String"/> that represents the current <see cref="Object"/>. 
+        /// </summary>
+        /// <returns>A <see cref="String"/> that represents the current <see cref="Object"/>. </returns>
         public override string ToString()
         {
-            return ExpressionPrinter.ToString(this);
-        }
-
-        internal abstract void Emit(EmitContext emitContext, LocalBuilder local);
-
-        internal LocalBuilder EmitLoadMember(EmitContext emitContext, LocalBuilder local)
-        {
-            emitContext.EmitLoadSubject(local);
-            return _member.OnFieldOrProperty
-            (
-                field => EmitLoadField(emitContext, field),
-                prop => EmitLoadProperty(emitContext, prop)
-            );
-        }
-
-        private LocalBuilder EmitLoadField(EmitContext emitContext, FieldInfo field)
-        {
-            var store = emitContext.ig.DeclareLocal(field.FieldType);
-            emitContext.ig.Emit(OpCodes.Ldfld, field);
-            emitContext.ig.Emit(OpCodes.Stloc, store);
-            return store;
-        }
-
-        private LocalBuilder EmitLoadProperty(EmitContext emitContext, PropertyInfo property)
-        {
-            var getter = property.GetGetMethod(true);
-            if (getter == null)
-            {
-                throw new NotSupportedException();
-            }
-            else
-            {
-                var store = emitContext.ig.DeclareLocal(property.PropertyType);
-                emitContext.EmitCall(getter);
-                emitContext.ig.Emit(OpCodes.Stloc, store);
-                return store;
-            }
+            return ExpressionStringBuilder.MemberBindingToString(this);
         }
     }
 }

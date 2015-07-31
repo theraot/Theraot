@@ -45,7 +45,7 @@ namespace Theraot.Threading
         /// </summary>
         /// <param name="operation">The operation to execute.</param>
         /// <returns>Returns a promise to finish the execution.</returns>
-        public IPromise Execute(Action operation)
+        public IWaitablePromise Execute(Action operation)
         {
             var local = _workQueue.Value.Value;
             var result = AddExecution(operation, local);
@@ -59,7 +59,7 @@ namespace Theraot.Threading
         /// <typeparam name="T">The return value of the operation.</typeparam>
         /// <param name="operation">The operation to execute.</param>
         /// <returns>Returns a promise to finish the execution.</returns>
-        public IPromise<T> Execute<T>(Func<T> operation)
+        public IWaitablePromise<T> Execute<T>(Func<T> operation)
         {
             var local = _workQueue.Value.Value;
             var result = AddExecution(operation, local);
@@ -67,7 +67,7 @@ namespace Theraot.Threading
             return result;
         }
 
-        private static IPromise AddExecution(Action action, Tuple<Queue<Action>, Guard> local)
+        private static IWaitablePromise AddExecution(Action action, Tuple<Queue<Action>, Guard> local)
         {
             PromiseNeedle.Promised promised;
             // TODO: waiting on the returned promise will cause the thread to lock - replace with Tasks
@@ -90,7 +90,7 @@ namespace Theraot.Threading
             return result;
         }
 
-        private static IPromise<T> AddExecution<T>(Func<T> action, Tuple<Queue<Action>, Guard> local)
+        private static IWaitablePromise<T> AddExecution<T>(Func<T> action, Tuple<Queue<Action>, Guard> local)
         {
             PromiseNeedle<T>.Promised promised;
             // TODO: waiting on the returned promise will cause the thread to lock - replace with Tasks
