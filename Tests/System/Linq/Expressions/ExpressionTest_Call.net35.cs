@@ -93,7 +93,11 @@ namespace MonoTests.System.Linq.Expressions {
 		}
 
 		[Test]
+#if NET_4_0
 		[ExpectedException (typeof (ArgumentException))]
+#else
+		[ExpectedException (typeof (ArgumentNullException))]
+#endif
 		public void ArgInstanceNullForNonStaticMethod ()
 		{
 			Expression.Call (null, typeof (object).GetMethod ("ToString"));
@@ -103,6 +107,10 @@ namespace MonoTests.System.Linq.Expressions {
 		[ExpectedException (typeof (ArgumentException))]
 		public void InstanceTypeDoesntMatchMethodDeclaringType ()
 		{
+#if MOBILE
+			// ensure that String.Intern won't be removed by the linker
+			string s = String.Intern (String.Empty);
+#endif
 			Expression.Call (Expression.Constant (1), typeof (string).GetMethod ("Intern"));
 		}
 
@@ -225,6 +233,7 @@ namespace MonoTests.System.Linq.Expressions {
 		}
 
 		[Test]
+		[Category ("NotWorkingInterpreter")]
 		public void CallMethodOnStruct ()
 		{
 			var param = Expression.Parameter (typeof (EineStrukt), "s");
@@ -261,6 +270,7 @@ namespace MonoTests.System.Linq.Expressions {
 		}
 
 		[Test]
+		[Category ("NotWorkingInterpreter")]
 		public void CallStaticMethodWithRefParameter ()
 		{
 			var p = Expression.Parameter (typeof (int), "i");
@@ -272,6 +282,7 @@ namespace MonoTests.System.Linq.Expressions {
 		}
 
 		[Test]
+		[Category ("NotWorkingInterpreter")]
 		public void CallStaticMethodWithRefParameterAndOtherParameter ()
 		{
 			var i = Expression.Parameter (typeof (int), "i");
@@ -287,7 +298,18 @@ namespace MonoTests.System.Linq.Expressions {
 		{
 			return (int) (i as ConstantExpression).Value;
 		}
+#if !NET_4_0 // dlr bug 5875
+		[Test]
+		public void CallMethodWithExpressionParameter ()
+		{
+			var call = Expression.Call (GetType ().GetMethod ("Bang"), Expression.Constant (42));
+			Assert.AreEqual (ExpressionType.Quote, call.Arguments [0].NodeType);
 
+			var l = Expression.Lambda<Func<int>> (call).Compile ();
+
+			Assert.AreEqual (42, l ());
+		}
+#endif
 		static bool fout_called = false;
 
 		public static int FooOut (out int x)
@@ -297,6 +319,7 @@ namespace MonoTests.System.Linq.Expressions {
 		}
 
 		[Test]
+		[Category ("NotWorkingInterpreter")]
 		public void Connect282729 ()
 		{
 			// test from https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=282729
@@ -324,6 +347,7 @@ namespace MonoTests.System.Linq.Expressions {
 
 		[Test]
 		[Category ("NotWorking")]
+		[Category ("NotWorkingInterpreter")]
 		public void Connect290278 ()
 		{
 			// test from https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=290278
@@ -346,6 +370,7 @@ namespace MonoTests.System.Linq.Expressions {
 		}
 
 		[Test]
+		[Category ("NotWorkingInterpreter")]
 		public void Connect297597 ()
 		{
 			// test from https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=297597
@@ -379,6 +404,7 @@ namespace MonoTests.System.Linq.Expressions {
 		}
 
 		[Test]
+		[Category ("NotWorkingInterpreter")]
 		public void Connect282702 ()
 		{
 			var lambda = Expression.Lambda<Func<Func<int>>> (
@@ -468,6 +494,7 @@ namespace MonoTests.System.Linq.Expressions {
 		}
 
 		[Test]
+		[Category ("NotWorkingInterpreter")]
 		public void CallNullableGetValueOrDefault () // #568989
 		{
 			var value = Expression.Parameter (typeof (int?), "value");
