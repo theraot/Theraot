@@ -54,7 +54,7 @@ namespace Theraot.Collections
         protected ProgressiveLookup(TryTake<IGrouping<TKey, TItem>> tryTake, IDictionary<TKey, IGrouping<TKey, TItem>> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TItem> itemComparer)
         {
             _cache = Check.NotNullArgument(cache, "cache");
-            _progressor = new Progressor<IGrouping<TKey, TItem>>(tryTake);
+            _progressor = new Progressor<IGrouping<TKey, TItem>>(tryTake, false); // false because the underlaying structure may change
             _progressor.SubscribeAction(obj => _cache.Add(new KeyValuePair<TKey, IGrouping<TKey, TItem>>(obj.Key, obj)));
             _keyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
             _itemComparer = itemComparer ?? EqualityComparer<TItem>.Default;
