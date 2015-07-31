@@ -20,8 +20,6 @@ namespace System.Runtime.CompilerServices
 
     public partial class ExecutionScope
     {
-        private readonly int _compilationUnit;
-
         public Delegate CreateDelegate(int indexLambda, object[] locals)
         {
             throw new NotSupportedException();
