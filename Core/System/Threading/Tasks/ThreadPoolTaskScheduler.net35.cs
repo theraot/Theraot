@@ -90,6 +90,11 @@ namespace System.Threading.Tasks
         [SecurityCritical]
         protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
         {
+            if ((task.CreationOptions & TaskCreationOptions.LongRunning) != 0)
+            {
+                // LongRunning task are going to run on a dedicated Thread.
+                return false;
+            }
             // Propagate the return value of Task.ExecuteEntry()
             bool result;
             try
@@ -101,7 +106,6 @@ namespace System.Threading.Tasks
                 //   Only call NWIP() if task was previously queued
                 if (taskWasPreviouslyQueued) NotifyWorkItemProgress();
             }
-
             return result;
         }
 
