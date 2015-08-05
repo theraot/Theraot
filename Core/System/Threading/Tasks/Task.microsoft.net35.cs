@@ -13,7 +13,7 @@ namespace System.Threading.Tasks
     {
         internal StrongBox<CancellationTokenRegistration> _cancellationRegistration;
         internal volatile int _completionCountdown = 1;
-        internal volatile List<Task> _exceptionalChildren;
+        private List<Task> _exceptionalChildren;
         private TaskExceptionHolder _exceptionsHolder;
         private readonly static Predicate<Task> _IsExceptionObservedByParentPredicate = new Predicate<Task>((t) => { return t.IsExceptionObservedByParent; });
         private readonly static Action<object> _taskCancelCallback = new Action<object>(TaskCancelCallback);
@@ -75,7 +75,7 @@ namespace System.Threading.Tasks
             // simultaneously on the same task from two different contexts.  This can result in m_exceptionalChildren
             // being nulled out while it is being processed, which could lead to a NullReferenceException.  To
             // protect ourselves, we'll cache m_exceptionalChildren in a local variable.
-            List<Task> tmp = _exceptionalChildren;
+            var tmp = ThreadingHelper.VolatileRead(ref _exceptionalChildren);
 
             if (tmp != null)
             {
@@ -107,7 +107,7 @@ namespace System.Threading.Tasks
                 }
 
                 // Reduce memory pressure by getting rid of the array
-                _exceptionalChildren = null;
+                ThreadingHelper.VolatileWrite(ref _exceptionalChildren, null);
             }
         }
 
@@ -185,7 +185,7 @@ namespace System.Threading.Tasks
 
                 // Now is the time to prune exceptional children. We'll walk the list and removes the ones whose exceptions we might have observed after they threw.
                 // we use a local variable for exceptional children here because some other thread may be nulling out _exceptionalChildren 
-                List<Task> exceptionalChildren = ThreadingHelper.VolatileRead(ref _exceptionalChildren);
+                var exceptionalChildren = ThreadingHelper.VolatileRead(ref _exceptionalChildren);
 
                 if (exceptionalChildren != null)
                 {
@@ -323,7 +323,7 @@ namespace System.Threading.Tasks
             if (childTask.IsFaulted && !childTask.IsExceptionObservedByParent)
             {
                 // Lazily initialize the child exception list
-                if (_exceptionalChildren == null)
+                if (ThreadingHelper.VolatileRead(ref _exceptionalChildren) == null)
                 {
                     Interlocked.CompareExchange(ref _exceptionalChildren, new List<Task>(), null);
                 }
@@ -332,7 +332,7 @@ namespace System.Threading.Tasks
                 // multiple times for the same task.  In that case, AddExceptionsFromChildren() could be nulling m_exceptionalChildren
                 // out at the same time that we're processing it, resulting in a NullReferenceException here.  We'll protect
                 // ourselves by caching m_exceptionChildren in a local variable.
-                List<Task> tmp = _exceptionalChildren;
+                List<Task> tmp = ThreadingHelper.VolatileRead(ref _exceptionalChildren);
                 if (tmp != null)
                 {
                     lock (tmp)
