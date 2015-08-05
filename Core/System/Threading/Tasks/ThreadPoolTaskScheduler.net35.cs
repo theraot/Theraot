@@ -18,6 +18,7 @@
 using System.Security;
 using System.Diagnostics.Contracts;
 using System.Collections.Generic;
+using Theraot.Collections.ThreadSafe;
 
 namespace System.Threading.Tasks
 {
@@ -26,8 +27,10 @@ namespace System.Threading.Tasks
     /// </summary>
     internal sealed class ThreadPoolTaskScheduler : TaskScheduler
     {
+        private static readonly SafeQueue<Task> _longRunningTasks = new SafeQueue<Task>();
+
         // static delegate for threads allocated to handle LongRunning tasks.
-        private static readonly ParameterizedThreadStart _longRunningThreadWork = LongRunningThreadWork;
+        private static readonly ThreadStart _longRunningThreadWork = LongRunningThreadWork;
         private static readonly WaitCallback _executeCallback = TaskExecuteCallback;
 
         private static void TaskExecuteCallback(object obj)
@@ -39,17 +42,16 @@ namespace System.Threading.Tasks
             }
         }
 
-        private static void LongRunningThreadWork(object obj)
+        private static void LongRunningThreadWork()
         {
-            Contract.Requires(obj != null, "TaskScheduler.LongRunningThreadWork: obj is null");
-            var task = obj as Task;
-            if (task != null)
+            Task task;
+            if (_longRunningTasks.TryTake(out task))
             {
                 task.ExecuteEntry(false);
             }
             else
             {
-                Contract.Assert(false, "TaskScheduler.LongRunningThreadWork: t is null");
+                Contract.Assert(false, "TaskScheduler.LongRunningThreadWork: no task to run");
             }
         }
 
@@ -62,12 +64,13 @@ namespace System.Threading.Tasks
         {
             if ((task.CreationOptions & TaskCreationOptions.LongRunning) != 0)
             {
+                _longRunningTasks.Add(task);
                 // Run LongRunning tasks on their own dedicated thread.
                 var thread = new Thread(_longRunningThreadWork)
                 {
                     IsBackground = true // Keep this thread from blocking process shutdown
                 };
-                thread.Start(task);
+                thread.Start();
             }
             else
             {
