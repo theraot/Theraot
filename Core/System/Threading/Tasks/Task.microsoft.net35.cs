@@ -16,7 +16,7 @@ namespace System.Threading.Tasks
         private int _completionCountdown = 1;
         private List<Task> _exceptionalChildren;
         private TaskExceptionHolder _exceptionsHolder;
-        private readonly static Predicate<Task> _IsExceptionObservedByParentPredicate = new Predicate<Task>((t) => { return t.IsExceptionObservedByParent; });
+        private readonly static Predicate<Task> _isExceptionObservedByParentPredicate = new Predicate<Task>((t) => { return t.IsExceptionObservedByParent; });
         private readonly static Action<object> _taskCancelCallback = new Action<object>(TaskCancelCallback);
         [SecurityCritical]
         private static ContextCallback _executionContextCallback;
@@ -192,7 +192,7 @@ namespace System.Threading.Tasks
                 {
                     lock (exceptionalChildren)
                     {
-                        exceptionalChildren.RemoveAll(_IsExceptionObservedByParentPredicate); // RemoveAll has better performance than doing it ourselves
+                        exceptionalChildren.RemoveAll(_isExceptionObservedByParentPredicate); // RemoveAll has better performance than doing it ourselves
                     }
                 }
             }
