@@ -518,7 +518,7 @@ namespace System.Threading.Tasks
                 if (ec == null)
                 {
                     // No context, just run the task directly.
-                    InnerInvoke();
+                    Execute();
                 }
                 else
                 {
@@ -598,6 +598,12 @@ namespace System.Threading.Tasks
 
     public partial class Task
     {
+        private void AddException(object exceptionObject)
+        {
+            Contract.Requires(exceptionObject != null, "Task.AddException: Expected a non-null exception object");
+            AddException(exceptionObject, representsCancellation: false);
+        }
+
         /// <summary>
         /// Adds an exception to the list of exceptions this task has thrown.
         /// </summary>

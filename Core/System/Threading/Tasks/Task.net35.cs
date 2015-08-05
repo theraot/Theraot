@@ -518,11 +518,6 @@ namespace System.Threading.Tasks
             Thread.VolatileWrite(ref _isDisposed, 1);
         }
 
-        private void AddException(Exception exception)
-        {
-            AggregateExceptionHelper.AddException(ref _exception, exception);
-        }
-
         private void Schedule(TaskScheduler scheduler)
         {
             // Only called from Start where status is set to TaskStatus.WaitingForActivation
