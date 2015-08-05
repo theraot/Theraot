@@ -8,19 +8,20 @@ namespace System.Threading.Tasks
 {
     public partial class Task : IDisposable, IAsyncResult
     {
+        internal CancellationToken _cancellationToken;
+
         [ThreadStatic]
         private static Task _current;
 
         private static int _lastId;
-        private object _action;
         private readonly TaskCreationOptions _creationOptions;
         private readonly int _id;
         private readonly Task _parent;
-        private TaskScheduler _scheduler;
-        internal CancellationToken _cancellationToken;
+        private object _action;
         private ExecutionContext _capturedContext;
         private AggregateException _exception;
         private int _isDisposed = 0;
+        private TaskScheduler _scheduler;
         private object _state;
         private int _status;
         private StructNeedle<ManualResetEventSlim> _waitHandle;
@@ -131,6 +132,28 @@ namespace System.Threading.Tasks
             }
         }
 
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Microsoft's Design")]
+        WaitHandle IAsyncResult.AsyncWaitHandle
+        {
+            get
+            {
+                if (Thread.VolatileRead(ref _isDisposed) == 1)
+                {
+                    throw new ObjectDisposedException(GetType().FullName);
+                }
+                return _waitHandle.Value.WaitHandle;
+            }
+        }
+
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
+        bool IAsyncResult.CompletedSynchronously
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public int Id
         {
             get
@@ -173,29 +196,6 @@ namespace System.Threading.Tasks
                 return (TaskStatus)Thread.VolatileRead(ref _status);
             }
         }
-        
-        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Microsoft's Design")]
-        WaitHandle IAsyncResult.AsyncWaitHandle
-        {
-            get
-            {
-                if (Thread.VolatileRead(ref _isDisposed) == 1)
-                {
-                    throw new ObjectDisposedException(GetType().FullName);
-                }
-                return _waitHandle.Value.WaitHandle;
-            }
-        }
-
-        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
-        bool IAsyncResult.CompletedSynchronously
-        {
-            get
-            {
-                return false;
-            }
-        }
-
         internal static Task Current
         {
             get
@@ -398,6 +398,28 @@ namespace System.Threading.Tasks
             }
         }
 
+        internal bool ExecuteEntry(bool preventDoubleExecution)
+        {
+            if (!SetRunning(preventDoubleExecution))
+            {
+                return false;
+            }
+            if (!IsCanceled)
+            {
+                if (_cancellationToken.IsCancellationRequested)
+                {
+                    Thread.VolatileWrite(ref _status, (int)TaskStatus.Canceled);
+                    SetCompleted();
+                    FinishStageThree();
+                }
+                else
+                {
+                    ExecuteWithThreadLocal(ref _current);
+                }
+            }
+            return true;
+        }
+
         internal bool InternalCancel(bool cancelNonExecutingOnly)
         {
             // TODO: Promise tasks support?
@@ -459,29 +481,6 @@ namespace System.Threading.Tasks
                 return cancelSucceeded;
             }
         }
-
-        internal bool ExecuteEntry(bool preventDoubleExecution)
-        {
-            if (!SetRunning(preventDoubleExecution))
-            {
-                return false;
-            }
-            if (!IsCanceled)
-            {
-                if (_cancellationToken.IsCancellationRequested)
-                {
-                    Thread.VolatileWrite(ref _status, (int)TaskStatus.Canceled);
-                    SetCompleted();
-                    FinishStageThree();
-                }
-                else
-                {
-                    ExecuteWithThreadLocal(ref _current);
-                }
-            }
-            return true;
-        }
-
         internal void InternalStart(TaskScheduler scheduler)
         {
             if (Thread.VolatileRead(ref _isDisposed) == 1)
