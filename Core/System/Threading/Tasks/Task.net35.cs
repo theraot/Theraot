@@ -8,8 +8,6 @@ namespace System.Threading.Tasks
 {
     public partial class Task : IDisposable, IAsyncResult
     {
-        internal CancellationToken _cancellationToken;
-
         [ThreadStatic]
         private static Task _current;
 
@@ -196,6 +194,7 @@ namespace System.Threading.Tasks
                 return (TaskStatus)Thread.VolatileRead(ref _status);
             }
         }
+
         internal static Task Current
         {
             get
@@ -211,6 +210,8 @@ namespace System.Threading.Tasks
                 return _scheduler;
             }
         }
+
+        internal CancellationToken Token { get; set; }
 
         private bool IsScheduled
         {
@@ -324,7 +325,7 @@ namespace System.Threading.Tasks
                 return true;
             }
             var start = ThreadingHelper.TicksNow();
-            while(true)
+            while (true)
             {
                 if (IsScheduled)
                 {
@@ -406,7 +407,7 @@ namespace System.Threading.Tasks
             }
             if (!IsCanceled)
             {
-                if (_cancellationToken.IsCancellationRequested)
+                if (Token.IsCancellationRequested)
                 {
                     Thread.VolatileWrite(ref _status, (int)TaskStatus.Canceled);
                     SetCompleted();
@@ -481,6 +482,7 @@ namespace System.Threading.Tasks
                 return cancelSucceeded;
             }
         }
+
         internal void InternalStart(TaskScheduler scheduler)
         {
             if (Thread.VolatileRead(ref _isDisposed) == 1)
@@ -558,7 +560,7 @@ namespace System.Threading.Tasks
             // TaskStatus.Canceled (6) -> not ok
             // TaskStatus.Faulted (7) -> -> ok if preventDoubleExecution = false
             int count = 0;
-            retry:
+        retry:
             var lastValue = Thread.VolatileRead(ref _status);
             if ((preventDoubleExecution && lastValue >= 3) || lastValue == 6)
             {

@@ -403,7 +403,7 @@ namespace System.Threading.Tasks
         /// </summary>
         private void AssignCancellationToken(CancellationToken cancellationToken)
         {
-            _cancellationToken = cancellationToken;
+            Token = cancellationToken;
             try
             {
                 cancellationToken.ThrowIfSourceDisposed();
@@ -519,7 +519,7 @@ namespace System.Threading.Tasks
             Contract.Requires(unhandledException != null);
 
             NewOperationCanceledException exceptionAsOce = unhandledException as NewOperationCanceledException;
-            if (exceptionAsOce != null && IsCancellationRequested && _cancellationToken == exceptionAsOce.CancellationToken)
+            if (exceptionAsOce != null && IsCancellationRequested && Token == exceptionAsOce.CancellationToken)
             {
                 // All conditions are satisfied for us to go into canceled state in Finish().
                 // Mark the acknowledgement.  The exception is also stored to enable it to be
