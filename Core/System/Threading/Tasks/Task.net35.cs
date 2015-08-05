@@ -566,18 +566,27 @@ namespace System.Threading.Tasks
             //
 
             // Lazily initialize the holder, ensuring only one thread wins.
-            if (_exceptionsHolder == null)
+            var exceptionsHolder = ThreadingHelper.VolatileRead(ref _exceptionsHolder);
+            if (exceptionsHolder == null)
             {
+                // This is the only time we write to _exceptionsHolder
                 TaskExceptionHolder holder = new TaskExceptionHolder(this);
-                if (Interlocked.CompareExchange(ref _exceptionsHolder, holder, null) != null)
+                exceptionsHolder = Interlocked.CompareExchange(ref _exceptionsHolder, holder, null);
+                if (exceptionsHolder == null)
                 {
-                    // If we lost the ----, suppress finalization.
+                    // The current thread did initialize _exceptionsHolder.
+                    exceptionsHolder = holder;
+                }
+                else
+                {
+                    // Another thread initialized _exceptionsHolder first.
+                    // Suppress finalization.
                     holder.MarkAsHandled(false);
                 }
             }
-            lock (_exceptionsHolder)
+            lock (exceptionsHolder)
             {
-                _exceptionsHolder.Add(exceptionObject, representsCancellation);
+                exceptionsHolder.Add(exceptionObject, representsCancellation);
             }
         }
 

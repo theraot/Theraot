@@ -5,6 +5,7 @@ using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using System.Security;
 using Theraot.Core;
+using Theraot.Threading;
 
 namespace System.Threading.Tasks
 {
@@ -13,7 +14,7 @@ namespace System.Threading.Tasks
         internal StrongBox<CancellationTokenRegistration> _cancellationRegistration;
         internal volatile int _completionCountdown = 1;
         internal volatile List<Task> _exceptionalChildren;
-        internal volatile TaskExceptionHolder _exceptionsHolder;
+        private TaskExceptionHolder _exceptionsHolder;
         private readonly static Predicate<Task> _IsExceptionObservedByParentPredicate = new Predicate<Task>((t) => { return t.IsExceptionObservedByParent; });
         private readonly static Action<object> _taskCancelCallback = new Action<object>(TaskCancelCallback);
         [SecurityCritical]
@@ -31,7 +32,8 @@ namespace System.Threading.Tasks
         {
             get
             {
-                return (_exceptionsHolder != null) && (_exceptionsHolder.ContainsFaultList);
+                var exceptionsHolder = ThreadingHelper.VolatileRead(ref _exceptionsHolder);
+                return exceptionsHolder != null && exceptionsHolder.ContainsFaultList;
             }
         }
 
@@ -88,13 +90,18 @@ namespace System.Threading.Tasks
                         Contract.Assert(task.IsCompleted, "Expected all tasks in list to be completed");
                         if (task.IsFaulted && !task.IsExceptionObservedByParent)
                         {
-                            TaskExceptionHolder exceptionHolder = task._exceptionsHolder;
-                            Contract.Assert(exceptionHolder != null);
-
-                            // No locking necessary since child task is finished adding exceptions
-                            // and concurrent CreateExceptionObject() calls do not constitute
-                            // a concurrency hazard.
-                            AddException(exceptionHolder.CreateExceptionObject(false, null));
+                            var exceptionsHolder = ThreadingHelper.VolatileRead(ref task._exceptionsHolder);
+                            if (exceptionsHolder == null)
+                            {
+                                Contract.Assert(false);
+                            }
+                            else
+                            {
+                                // No locking necessary since child task is finished adding exceptions
+                                // and concurrent CreateExceptionObject() calls do not constitute
+                                // a concurrency hazard.
+                                AddException(exceptionsHolder.CreateExceptionObject(false, null));
+                            }
                         }
                     }
                 }
@@ -178,7 +185,7 @@ namespace System.Threading.Tasks
 
                 // Now is the time to prune exceptional children. We'll walk the list and removes the ones whose exceptions we might have observed after they threw.
                 // we use a local variable for exceptional children here because some other thread may be nulling out _exceptionalChildren 
-                List<Task> exceptionalChildren = _exceptionalChildren;
+                List<Task> exceptionalChildren = ThreadingHelper.VolatileRead(ref _exceptionalChildren);
 
                 if (exceptionalChildren != null)
                 {
@@ -263,14 +270,20 @@ namespace System.Threading.Tasks
         {
             if (Interlocked.CompareExchange(ref _threadAbortedmanaged, 1, 0) == 0)
             {
-                Contract.Assert(!bTAEAddedToExceptionHolder || (_exceptionsHolder != null),
-                                "FinishThreadAbortedTask() called on a task whose exception holder wasn't initialized");
-                // this will only be false for non-root self replicating task copies, because all of their exceptions go to the root task.
-                if (bTAEAddedToExceptionHolder)
+                var exceptionsHolder = ThreadingHelper.VolatileRead(ref _exceptionsHolder);
+                if (exceptionsHolder != null)
                 {
-                    _exceptionsHolder.MarkAsHandled(false);
+                    // this will only be false for non-root self replicating task copies, because all of their exceptions go to the root task.
+                    if (bTAEAddedToExceptionHolder)
+                    {
+                        exceptionsHolder.MarkAsHandled(false);
+                    }
+                    Finish(delegateRan);
                 }
-                Finish(delegateRan);
+                else
+                {
+                    Contract.Assert(!bTAEAddedToExceptionHolder, "FinishThreadAbortedTask() called on a task whose exception holder wasn't initialized");
+                }
             }
         }
 
