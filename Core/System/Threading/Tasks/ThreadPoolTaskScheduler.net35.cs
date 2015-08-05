@@ -27,10 +27,8 @@ namespace System.Threading.Tasks
     /// </summary>
     internal sealed class ThreadPoolTaskScheduler : TaskScheduler
     {
-        private static readonly SafeQueue<Task> _longRunningTasks = new SafeQueue<Task>();
-
         // static delegate for threads allocated to handle LongRunning tasks.
-        private static readonly ThreadStart _longRunningThreadWork = LongRunningThreadWork;
+        private static readonly ParameterizedThreadStart _longRunningThreadWork = LongRunningThreadWork;
         private static readonly WaitCallback _executeCallback = TaskExecuteCallback;
 
         private static void TaskExecuteCallback(object obj)
@@ -42,10 +40,10 @@ namespace System.Threading.Tasks
             }
         }
 
-        private static void LongRunningThreadWork()
+        private static void LongRunningThreadWork(object obj)
         {
-            Task task;
-            if (_longRunningTasks.TryTake(out task))
+            Task task = obj as Task;
+            if (task != null)
             {
                 task.ExecuteEntry(false);
             }
@@ -64,13 +62,12 @@ namespace System.Threading.Tasks
         {
             if ((task.CreationOptions & TaskCreationOptions.LongRunning) != 0)
             {
-                _longRunningTasks.Add(task);
                 // Run LongRunning tasks on their own dedicated thread.
                 var thread = new Thread(_longRunningThreadWork)
                 {
                     IsBackground = true // Keep this thread from blocking process shutdown
                 };
-                thread.Start();
+                thread.Start(task);
             }
             else
             {
