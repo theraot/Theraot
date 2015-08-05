@@ -9,7 +9,7 @@ using Theraot.Threading;
 
 namespace System.Threading.Tasks
 {
-    public partial class Task : IDisposable, IAsyncResult
+    public partial class Task
     {
         internal StrongBox<CancellationTokenRegistration> _cancellationRegistration;
         private int _completionCountdown = 1;
