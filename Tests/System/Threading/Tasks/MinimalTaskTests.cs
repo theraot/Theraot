@@ -442,21 +442,27 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void LongRunning()
         {
-            bool? is_tp = null;
-            bool? is_bg = null;
-            var t = new Task(() => { is_tp = Thread.CurrentThread.IsThreadPoolThread; is_bg = Thread.CurrentThread.IsBackground; });
+            var is_tp = false;
+            var is_bg = false;
+            Action action =
+                () =>
+                {
+                    is_tp = Thread.CurrentThread.IsThreadPoolThread;
+                    is_bg = Thread.CurrentThread.IsBackground;
+                };
+            var t = new Task(action);
             t.Start();
             Assert.IsTrue(t.Wait(5000), "#0");
-            Assert.IsTrue((bool)is_tp, "#1");
-            Assert.IsTrue((bool)is_bg, "#2");
+            Assert.IsTrue(is_tp, "#1");
+            Assert.IsTrue(is_bg, "#2");
 
-            is_tp = null;
-            is_bg = null;
-            t = new Task(() => { is_tp = Thread.CurrentThread.IsThreadPoolThread; is_bg = Thread.CurrentThread.IsBackground; }, TaskCreationOptions.LongRunning);
+            is_tp = true;
+            is_bg = false;
+            t = new Task(action, TaskCreationOptions.LongRunning);
             t.Start();
             Assert.IsTrue(t.Wait(5000), "#10");
-            Assert.IsFalse((bool)is_tp, "#11");
-            Assert.IsTrue((bool)is_bg, "#12");
+            Assert.IsFalse(is_tp, "#11");
+            Assert.IsTrue(is_bg, "#12");
         }
 
 #if !NET40
