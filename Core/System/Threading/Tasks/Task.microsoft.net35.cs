@@ -12,18 +12,19 @@ namespace System.Threading.Tasks
 {
     public partial class Task
     {
-        private StrongBox<CancellationTokenRegistration> _cancellationRegistration;
-        private int _completionCountdown = 1;
-        private List<Task> _exceptionalChildren;
-        private TaskExceptionHolder _exceptionsHolder;
         private readonly static Predicate<Task> _isExceptionObservedByParentPredicate = (t => t.IsExceptionObservedByParent);
         private readonly static Action<object> _taskCancelCallback = (TaskCancelCallback);
+
         [SecurityCritical]
         private static ContextCallback _executionContextCallback;
 
         private int _cancellationAcknowledged;
+        private StrongBox<CancellationTokenRegistration> _cancellationRegistration;
         private int _cancellationRequested;
+        private int _completionCountdown = 1;
+        private List<Task> _exceptionalChildren;
         private int _exceptionObservedByParent;
+        private TaskExceptionHolder _exceptionsHolder;
         private int _threadAbortedmanaged;
 
         /// <summary>
@@ -67,7 +68,7 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// This is to be called just before the task does its final state transition. 
+        /// This is to be called just before the task does its final state transition.
         /// It traverses the list of exceptional children, and appends their aggregate exceptions into this one's exception list
         /// </summary>
         internal void AddExceptionsFromChildren()
@@ -80,8 +81,8 @@ namespace System.Threading.Tasks
 
             if (tmp != null)
             {
-                // This lock is necessary because even though AddExceptionsFromChildren is last to execute, it may still 
-                // be racing with the code segment at the bottom of Finish() that prunes the exceptional child array. 
+                // This lock is necessary because even though AddExceptionsFromChildren is last to execute, it may still
+                // be racing with the code segment at the bottom of Finish() that prunes the exceptional child array.
                 lock (tmp)
                 {
                     foreach (Task task in tmp)
@@ -113,7 +114,7 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Checks if we registered a CT callback during construction, and deregisters it. 
+        /// Checks if we registered a CT callback during construction, and deregisters it.
         /// This should be called when we know the registration isn't useful anymore. Specifically from Finish() if the task has completed
         /// successfully or with an exception.
         /// </summary>
@@ -149,12 +150,12 @@ namespace System.Threading.Tasks
         /// Signals completion of this particular task.
         ///
         /// The bUserDelegateExecuted parameter indicates whether this Finish() call comes following the
-        /// full execution of the user delegate. 
-        /// 
+        /// full execution of the user delegate.
+        ///
         /// If bUserDelegateExecuted is false, it mean user delegate wasn't invoked at all (either due to
         /// a cancellation request, or because this task is a promise style Task). In this case, the steps
         /// involving child tasks (i.e. WaitForChildren) will be skipped.
-        /// 
+        ///
         /// </summary>
         internal void Finish(bool bUserDelegateExecuted)
         {
@@ -177,7 +178,7 @@ namespace System.Threading.Tasks
                     // Apparently some children still remain. It will be up to the last one to process the completion of this task on their own thread.
                     // We will now yield the thread back to ThreadPool. Mark our state appropriately before getting out.
 
-                    // We have to use an atomic update for this and make sure not to overwrite a final state, 
+                    // We have to use an atomic update for this and make sure not to overwrite a final state,
                     // because at this very moment the last child's thread may be concurrently completing us.
                     // Otherwise we risk overwriting the TaskStatus which may have been set by that child task.
 
@@ -185,7 +186,7 @@ namespace System.Threading.Tasks
                 }
 
                 // Now is the time to prune exceptional children. We'll walk the list and removes the ones whose exceptions we might have observed after they threw.
-                // we use a local variable for exceptional children here because some other thread may be nulling out _exceptionalChildren 
+                // we use a local variable for exceptional children here because some other thread may be nulling out _exceptionalChildren
                 var exceptionalChildren = ThreadingHelper.VolatileRead(ref _exceptionalChildren);
 
                 if (exceptionalChildren != null)
@@ -213,7 +214,7 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// FinishStageTwo is to be executed as soon as we known there are no more children to complete. 
+        /// FinishStageTwo is to be executed as soon as we known there are no more children to complete.
         /// It can happen i) either on the thread that originally executed this task (if no children were spawned, or they all completed by the time this task's delegate quit)
         ///              ii) or on the thread that executed the last child.
         /// </summary>
@@ -222,7 +223,7 @@ namespace System.Threading.Tasks
             AddExceptionsFromChildren();
 
             // At this point, the task is done executing and waiting for its children,
-            // we can transition our task to a completion state.  
+            // we can transition our task to a completion state.
             TaskStatus completionState;
             if (ExceptionRecorded)
             {
@@ -230,8 +231,8 @@ namespace System.Threading.Tasks
             }
             else if (IsCancellationRequested && IsCancellationAcknowledged)
             {
-                // We transition into the TASK_STATE_CANCELED final state if the task's CT was signalled for cancellation, 
-                // and the user delegate acknowledged the cancellation request by throwing an OCE, 
+                // We transition into the TASK_STATE_CANCELED final state if the task's CT was signalled for cancellation,
+                // and the user delegate acknowledged the cancellation request by throwing an OCE,
                 // and the task hasn't otherwise transitioned into faulted state. (TASK_STATE_FAULTED trumps TASK_STATE_CANCELED)
                 //
                 // If the task threw an OCE without cancellation being requestsed (while the CT not being in signaled state),
@@ -263,7 +264,7 @@ namespace System.Threading.Tasks
         /// such as inlined continuations
         /// </summary>
         /// <param name="bTAEAddedToExceptionHolder">
-        /// Indicates whether the ThreadAbortException was added to this task's exception holder. 
+        /// Indicates whether the ThreadAbortException was added to this task's exception holder.
         /// This should always be true except for the case of non-root self replicating task copies.
         /// </param>
         /// <param name="delegateRan">Whether the delegate was executed.</param>
@@ -365,13 +366,13 @@ namespace System.Threading.Tasks
         /// <summary>
         /// Checks whether this is an attached task, and whether we are being called by the parent task.
         /// And sets the TASK_STATE_EXCEPTIONOBSERVEDBYPARENT status flag based on that.
-        /// 
-        /// This is meant to be used internally when throwing an exception, and when WaitAll is gathering 
-        /// exceptions for tasks it waited on. If this flag gets set, the implicit wait on children 
+        ///
+        /// This is meant to be used internally when throwing an exception, and when WaitAll is gathering
+        /// exceptions for tasks it waited on. If this flag gets set, the implicit wait on children
         /// will skip exceptions to prevent duplication.
-        /// 
+        ///
         /// This should only be called when this task has completed with an exception
-        /// 
+        ///
         /// </summary>
         internal void UpdateExceptionObservedStatus()
         {
@@ -422,7 +423,7 @@ namespace System.Threading.Tasks
                 cancellationToken.ThrowIfSourceDisposed();
 
                 // If an unstarted task has a valid CancellationToken that gets signalled while the task is still not queued
-                // we need to proactively cancel it, because it may never execute to transition itself. 
+                // we need to proactively cancel it, because it may never execute to transition itself.
                 // The only way to accomplish this is to register a callback on the CT.
                 // We exclude Promise tasks from this, because TaskCompletionSource needs to fully control the inner tasks's lifetime (i.e. not allow external cancellations)
 
@@ -475,8 +476,8 @@ namespace System.Threading.Tasks
                 // Record this exception in the task's exception list
                 HandleException(tae);
 
-                // This is a ThreadAbortException and it will be rethrown from this catch clause, causing us to 
-                // skip the regular Finish codepath. In order not to leave the task unfinished, we now call 
+                // This is a ThreadAbortException and it will be rethrown from this catch clause, causing us to
+                // skip the regular Finish codepath. In order not to leave the task unfinished, we now call
                 // FinishThreadAbortedTask here.
                 FinishThreadAbortedTask(true, true);
             }
@@ -524,7 +525,7 @@ namespace System.Threading.Tasks
 
         /// <summary>
         /// Performs whatever handling is necessary for an unhandled exception. Normally
-        /// this just entails adding the exception to the holder object. 
+        /// this just entails adding the exception to the holder object.
         /// </summary>
         /// <param name="unhandledException">The exception that went unhandled.</param>
         private void HandleException(Exception unhandledException)
@@ -543,8 +544,8 @@ namespace System.Threading.Tasks
             }
             else
             {
-                // Other exceptions, including any OCE from the task that doesn't match the tasks' own CT, 
-                // or that gets thrown without the CT being set will be treated as an ordinary exception 
+                // Other exceptions, including any OCE from the task that doesn't match the tasks' own CT,
+                // or that gets thrown without the CT being set will be treated as an ordinary exception
                 // and added to the aggregate.
 
                 AddException(unhandledException);
