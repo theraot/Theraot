@@ -337,7 +337,7 @@ namespace System.Threading.Tasks
                 }
                 if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) >= milliseconds)
                 {
-                    return false;
+                    return IsCompleted;
                 }
             }
         }
@@ -358,7 +358,7 @@ namespace System.Threading.Tasks
                 }
                 if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) >= milliseconds)
                 {
-                    return false;
+                    return IsCompleted;
                 }
             }
         }
@@ -389,7 +389,7 @@ namespace System.Threading.Tasks
                 }
                 if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) >= milliseconds)
                 {
-                    return false;
+                    return IsCompleted;
                 }
                 if (!IsCompleted)
                 {
