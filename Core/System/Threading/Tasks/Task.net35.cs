@@ -566,13 +566,10 @@ namespace System.Threading.Tasks
             {
                 return false;
             }
-            else
+            var tmpB = Interlocked.CompareExchange(ref _status, 3, lastValue);
+            if (tmpB == lastValue)
             {
-                var tmpB = Interlocked.CompareExchange(ref _status, 3, lastValue);
-                if (tmpB == lastValue)
-                {
-                    return true;
-                }
+                return true;
             }
             ThreadingHelper.SpinOnce(ref count);
             goto retry;

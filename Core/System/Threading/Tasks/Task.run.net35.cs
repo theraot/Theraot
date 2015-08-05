@@ -35,7 +35,7 @@ namespace System.Threading.Tasks
                         {
                             throw task.Exception;
                         }
-                        else if (task.IsCanceled)
+                        if (task.IsCanceled)
                         {
                             throw new TaskCanceledException(task);
                         }
@@ -61,7 +61,7 @@ namespace System.Threading.Tasks
                         {
                             throw task.Exception;
                         }
-                        else if (task.IsCanceled)
+                        if (task.IsCanceled)
                         {
                             throw new TaskCanceledException(task);
                         }
