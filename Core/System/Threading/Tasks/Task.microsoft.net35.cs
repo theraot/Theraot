@@ -488,16 +488,15 @@ namespace System.Threading.Tasks
             }
         }
 
-        // A trick so we can refer to the TLS slot with a byref.
         [SecurityCritical]
-        private void ExecuteWithThreadLocal(ref Task currentTaskSlot)
+        private void ExecuteWithThreadLocal()
         {
             // Remember the current task so we can restore it after running, and then
-            Task previousTask = currentTaskSlot;
+            Task previousTask = _current;
             try
             {
                 // place the current task into TLS.
-                currentTaskSlot = this;
+                _current = this;
 
                 ExecutionContext ec = _capturedContext;
                 if (ec == null)
@@ -512,14 +511,14 @@ namespace System.Threading.Tasks
 
                     // Lazily initialize the callback delegate; benign ----
                     var callback = _executionContextCallback;
-                    if (callback == null) _executionContextCallback = callback = new ContextCallback(ExecutionContextCallback);
+                    if (callback == null) _executionContextCallback = callback = ExecutionContextCallback;
                     ExecutionContext.Run(ec, callback, this);
                 }
                 Finish(true);
             }
             finally
             {
-                currentTaskSlot = previousTask;
+                _current = previousTask;
             }
         }
 

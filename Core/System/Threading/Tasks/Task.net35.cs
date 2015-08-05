@@ -415,7 +415,7 @@ namespace System.Threading.Tasks
                 }
                 else
                 {
-                    ExecuteWithThreadLocal(ref _current);
+                    ExecuteWithThreadLocal();
                 }
             }
             return true;
