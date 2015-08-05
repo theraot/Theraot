@@ -375,7 +375,7 @@ namespace System.Threading.Tasks
         /// </summary>
         internal void UpdateExceptionObservedStatus()
         {
-            if ((_parent != null) && ((_creationOptions & TaskCreationOptions.AttachedToParent) != 0) && ((_parent._creationOptions & TaskCreationOptions.DenyChildAttach) == 0) && Task._current == _parent)
+            if ((_parent != null) && ((_creationOptions & TaskCreationOptions.AttachedToParent) != 0) && ((_parent._creationOptions & TaskCreationOptions.DenyChildAttach) == 0) && _current == _parent)
             {
                 Thread.VolatileWrite(ref _exceptionObservedByParent, 1);
             }
@@ -384,17 +384,30 @@ namespace System.Threading.Tasks
         [SecurityCritical]
         private static void ExecutionContextCallback(object obj)
         {
-            Task task = obj as Task;
-            Contract.Assert(task != null, "expected a task object");
-            task.Execute();
+            var task = obj as Task;
+            if (task == null)
+            {
+                Contract.Assert(false, "expected a task object");
+            }
+            else
+            {
+                task.Execute();
+            }
         }
 
-        private static void TaskCancelCallback(object o)
+        private static void TaskCancelCallback(object obj)
         {
-            var targetTask = o as Task;
-            Contract.Assert(targetTask != null, "targetTask should have been non-null, with the supplied argument being a task or a tuple containing one");
-            targetTask.CancelContinuations();
-            targetTask.InternalCancel(false);
+            var task = obj as Task;
+            if (task == null)
+            {
+                Contract.Assert(false,
+                    "targetTask should have been non-null, with the supplied argument being a task or a tuple containing one");
+            }
+            else
+            {
+                task.CancelContinuations();
+                task.InternalCancel(false);
+            }
         }
 
         /// <summary>
