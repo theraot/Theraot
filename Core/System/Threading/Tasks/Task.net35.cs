@@ -240,6 +240,10 @@ namespace System.Threading.Tasks
 
         public void RunSynchronously(TaskScheduler scheduler)
         {
+            if (scheduler == null)
+            {
+                throw new ArgumentNullException("scheduler");
+            }
             _scheduler = scheduler;
             RunSynchronously();
         }
@@ -412,38 +416,31 @@ namespace System.Threading.Tasks
                 // Note: status may advance to TaskStatus.Running or even TaskStatus.RanToCompletion during the execution of this method
                 var scheduler = _scheduler;
                 var requiresAtomicStartTransition = scheduler.RequiresAtomicStartTransition;
-                if (scheduler == null)
+                try
                 {
-                    popSucceeded = false;
+                    popSucceeded = scheduler.TryDequeue(this);
                 }
-                else
+                catch (Exception exception)
                 {
-                    try
+                    if (exception is InternalSpecialCancelException)
                     {
-                        popSucceeded = scheduler.TryDequeue(this);
+                        // Special path for ThreadPool
+                        requiresAtomicStartTransition = true;
                     }
-                    catch (Exception exception)
+                    else if (exception is ThreadAbortException)
                     {
-                        if (exception is InternalSpecialCancelException)
-                        {
-                            // Special path for ThreadPool
-                            requiresAtomicStartTransition = true;
-                        }
-                        else if (exception is ThreadAbortException)
-                        {
-                            // Pokémon
-                        }
-                        else
-                        {
-                            taskSchedulerException = new TaskSchedulerException(exception);
-                        }
+                        // Ignore the exception
                     }
-                    if (!popSucceeded && requiresAtomicStartTransition)
+                    else
                     {
-                        cancelSucceeded = cancelSucceeded || Interlocked.CompareExchange(ref _status, (int)TaskStatus.Canceled, (int)TaskStatus.Created) == (int)TaskStatus.WaitingToRun;
-                        cancelSucceeded = cancelSucceeded || Interlocked.CompareExchange(ref _status, (int)TaskStatus.Canceled, (int)TaskStatus.WaitingForActivation) == (int)TaskStatus.WaitingToRun;
-                        cancelSucceeded = cancelSucceeded || Interlocked.CompareExchange(ref _status, (int)TaskStatus.Canceled, (int)TaskStatus.WaitingToRun) == (int)TaskStatus.WaitingToRun;
+                        taskSchedulerException = new TaskSchedulerException(exception);
                     }
+                }
+                if (!popSucceeded && requiresAtomicStartTransition)
+                {
+                    cancelSucceeded = cancelSucceeded || Interlocked.CompareExchange(ref _status, (int)TaskStatus.Canceled, (int)TaskStatus.Created) == (int)TaskStatus.WaitingToRun;
+                    cancelSucceeded = cancelSucceeded || Interlocked.CompareExchange(ref _status, (int)TaskStatus.Canceled, (int)TaskStatus.WaitingForActivation) == (int)TaskStatus.WaitingToRun;
+                    cancelSucceeded = cancelSucceeded || Interlocked.CompareExchange(ref _status, (int)TaskStatus.Canceled, (int)TaskStatus.WaitingToRun) == (int)TaskStatus.WaitingToRun;
                 }
             }
             if (Thread.VolatileRead(ref _status) >= (int)TaskStatus.Running && !cancelNonExecutingOnly)
