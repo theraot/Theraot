@@ -94,14 +94,11 @@ namespace System.Threading.Tasks
             get
             {
                 var current = _current;
-                if (_current != null)
+                if (current != null)
                 {
-                    return _current.Id;
+                    return current.Id;
                 }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
         }
 
@@ -279,7 +276,6 @@ namespace System.Threading.Tasks
 
         public void Wait()
         {
-            var isScheduled = IsScheduled;
             while (true)
             {
                 if (IsScheduled)
