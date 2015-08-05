@@ -262,29 +262,45 @@ namespace System.Threading.Tasks
         /// Special purpose Finish() entry point to be used when the task delegate throws a ThreadAbortedException
         /// This makes a note in the state flags so that we avoid any costly synchronous operations in the finish codepath
         /// such as inlined continuations
-        /// </summary>
-        /// <param name="bTAEAddedToExceptionHolder">
-        /// Indicates whether the ThreadAbortException was added to this task's exception holder.
+        /// 
+        /// Assumes ThreadAbortException was added to this task's exception holder.
         /// This should always be true except for the case of non-root self replicating task copies.
-        /// </param>
+        /// </summary>
         /// <param name="delegateRan">Whether the delegate was executed.</param>
-        internal void FinishThreadAbortedTask(bool bTAEAddedToExceptionHolder, bool delegateRan)
+        internal void FinishThreadAbortedTaskWithException(bool delegateRan)
         {
             if (Interlocked.CompareExchange(ref _threadAbortedmanaged, 1, 0) == 0)
             {
                 var exceptionsHolder = ThreadingHelper.VolatileRead(ref _exceptionsHolder);
                 if (exceptionsHolder != null)
                 {
-                    // this will only be false for non-root self replicating task copies, because all of their exceptions go to the root task.
-                    if (bTAEAddedToExceptionHolder)
-                    {
-                        exceptionsHolder.MarkAsHandled(false);
-                    }
+                    exceptionsHolder.MarkAsHandled(false);
                     Finish(delegateRan);
                 }
                 else
                 {
-                    Contract.Assert(!bTAEAddedToExceptionHolder, "FinishThreadAbortedTask() called on a task whose exception holder wasn't initialized");
+                    Contract.Assert(false, "FinishThreadAbortedTask() called on a task whose exception holder wasn't initialized");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Special purpose Finish() entry point to be used when the task delegate throws a ThreadAbortedException
+        /// This makes a note in the state flags so that we avoid any costly synchronous operations in the finish codepath
+        /// such as inlined continuations
+        /// 
+        /// Assumes ThreadAbortException was NOT added to this task's exception holder.
+        /// This should always be true except for the case of non-root self replicating task copies.
+        /// </summary>
+        /// <param name="delegateRan">Whether the delegate was executed.</param>
+        internal void FinishThreadAbortedTaskWithoutException(bool delegateRan)
+        {
+            if (Interlocked.CompareExchange(ref _threadAbortedmanaged, 1, 0) == 0)
+            {
+                var exceptionsHolder = ThreadingHelper.VolatileRead(ref _exceptionsHolder);
+                if (exceptionsHolder != null)
+                {
+                    Finish(delegateRan);
                 }
             }
         }
@@ -479,7 +495,7 @@ namespace System.Threading.Tasks
                 // This is a ThreadAbortException and it will be rethrown from this catch clause, causing us to
                 // skip the regular Finish codepath. In order not to leave the task unfinished, we now call
                 // FinishThreadAbortedTask here.
-                FinishThreadAbortedTask(true, true);
+                FinishThreadAbortedTaskWithException(true);
             }
             catch (Exception exn)
             {
