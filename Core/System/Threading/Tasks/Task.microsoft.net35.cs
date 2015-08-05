@@ -566,6 +566,34 @@ namespace System.Threading.Tasks
                 AddException(unhandledException);
             }
         }
+
+        /// <summary>
+        /// Internal function that will be called by a new child task to add itself to 
+        /// the children list of the parent (this).
+        /// 
+        /// Since a child task can only be created from the thread executing the action delegate
+        /// of this task, reentrancy is neither required nor supported. This should not be called from
+        /// anywhere other than the task construction/initialization codepaths.
+        /// </summary>
+        private void AddNewChild()
+        {
+            // TODO: Self Replicating
+            Contract.Assert(_current == this, "Task.AddNewChild(): Called from an external context");
+
+            if (_completionCountdown == 1)
+            {
+                // A count of 1 indicates so far there was only the parent, and this is the first child task
+                // Single kid => no fuss about who else is accessing the count. Let's save ourselves 100 cycles
+                // We exclude self replicating root tasks from this optimization, because further child creation can take place on 
+                // other cores and with bad enough timing this write may not be visible to them.
+                _completionCountdown++;
+            }
+            else
+            {
+                // otherwise do it safely
+                Interlocked.Increment(ref _completionCountdown);
+            }
+        }
     }
 
     public partial class Task

@@ -63,9 +63,9 @@ namespace System.Threading.Tasks
             if ((creationOptions & TaskCreationOptions.AttachedToParent) != TaskCreationOptions.None)
             {
                 _parent = Current;
-                if (_parent != null)
+                if (_parent != null && (_parent.CreationOptions & TaskCreationOptions.DenyChildAttach) == TaskCreationOptions.None)
                 {
-                    _parent.AddChild(this);
+                    _parent.AddNewChild();
                 }
             }
             _action = action;
@@ -516,12 +516,6 @@ namespace System.Threading.Tasks
                 }
             }
             Thread.VolatileWrite(ref _isDisposed, 1);
-        }
-
-        private void AddChild(Task task)
-        {
-            // TODO
-            throw new NotImplementedException();
         }
 
         private void AddException(Exception exception)
