@@ -530,10 +530,24 @@ namespace MonoTests.System.Threading.Tasks
         {
             var mre = new ManualResetEventSlim();
             Task nested = null;
-            Task parent = Task.Factory.StartNew(() => {
-                nested = Task.Factory.StartNew(() => mre.Wait(2000), TaskCreationOptions.AttachedToParent);
-            }, TaskCreationOptions.DenyChildAttach);
-            Assert.IsTrue(parent.Wait(1000), "#1");
+            Action innerAction = () =>
+            {
+                mre.Wait(2000);
+            };
+            Action outerAction = () =>
+            {
+                nested = Task.Factory.StartNew
+                (
+                    innerAction,
+                    TaskCreationOptions.AttachedToParent
+                );
+            };
+            Task parent = Task.Factory.StartNew
+                (
+                    outerAction,
+                    TaskCreationOptions.DenyChildAttach
+                );
+            Assert.IsTrue(parent.Wait(10000), "#1");
             mre.Set();
             Assert.IsTrue(nested.Wait(2000), "#2");
         }
