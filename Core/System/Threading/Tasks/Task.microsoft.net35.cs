@@ -12,7 +12,7 @@ namespace System.Threading.Tasks
     public partial class Task : IDisposable, IAsyncResult
     {
         internal StrongBox<CancellationTokenRegistration> _cancellationRegistration;
-        internal volatile int _completionCountdown = 1;
+        private int _completionCountdown = 1;
         private List<Task> _exceptionalChildren;
         private TaskExceptionHolder _exceptionsHolder;
         private readonly static Predicate<Task> _IsExceptionObservedByParentPredicate = new Predicate<Task>((t) => { return t.IsExceptionObservedByParent; });
@@ -140,7 +140,7 @@ namespace System.Threading.Tasks
         internal void DisregardChild()
         {
             Contract.Assert(_current == this, "Task.DisregardChild(): Called from an external context");
-            Contract.Assert(_completionCountdown >= 2, "Task.DisregardChild(): Expected parent count to be >= 2");
+            Contract.Assert(Thread.VolatileRead(ref _completionCountdown) >= 2, "Task.DisregardChild(): Expected parent count to be >= 2");
             Interlocked.Decrement(ref _completionCountdown);
         }
 
