@@ -452,6 +452,7 @@ namespace MonoTests.System.Threading.Tasks
                 };
             var t = new Task(action);
             t.Start();
+            Thread.Sleep(1); // Preventing the task to be executed form Wait
             Assert.IsTrue(t.Wait(5000), "#0");
             Assert.IsTrue(is_tp, "#1");
             Assert.IsTrue(is_bg, "#2");
