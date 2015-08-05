@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Security;
 using Theraot.Core;
 using Theraot.Threading;
@@ -534,6 +535,68 @@ namespace System.Threading.Tasks
                 // and added to the aggregate.
 
                 AddException(unhandledException);
+            }
+        }
+    }
+
+    public partial class Task
+    {
+        /// <summary>
+        /// Adds an exception to the list of exceptions this task has thrown.
+        /// </summary>
+        /// <param name="exceptionObject">An object representing either an Exception or a collection of Exceptions.</param>
+        /// <param name="representsCancellation">Whether the exceptionObject is an OperationCanceledException representing cancellation.</param>
+        internal void AddException(object exceptionObject, bool representsCancellation)
+        {
+            Contract.Requires(exceptionObject != null, "Task.AddException: Expected a non-null exception object");
+
+#if DEBUG
+            var eoAsException = exceptionObject as Exception;
+            var eoAsEnumerableException = exceptionObject as IEnumerable<Exception>;
+            var eoAsEdi = exceptionObject as ExceptionDispatchInfo;
+            var eoAsEnumerableEdi = exceptionObject as IEnumerable<ExceptionDispatchInfo>;
+
+            Contract.Assert(
+                eoAsException != null || eoAsEnumerableException != null || eoAsEdi != null || eoAsEnumerableEdi != null,
+                "Task.AddException: Expected an Exception, ExceptionDispatchInfo, or an IEnumerable<> of one of those");
+
+            var eoAsOce = exceptionObject as OperationCanceledException;
+
+            Contract.Assert(
+                !representsCancellation ||
+                eoAsOce != null ||
+                (eoAsEdi != null && eoAsEdi.SourceException is OperationCanceledException),
+                "representsCancellation should be true only if an OCE was provided.");
+#endif
+
+            //
+            // WARNING: A great deal of care went into ensuring that
+            // AddException() and GetExceptions() are never called
+            // simultaneously.  See comment at start of GetExceptions().
+            //
+
+            // Lazily initialize the holder, ensuring only one thread wins.
+            var exceptionsHolder = ThreadingHelper.VolatileRead(ref _exceptionsHolder);
+            if (exceptionsHolder == null)
+            {
+                // This is the only time we write to _exceptionsHolder
+                TaskExceptionHolder holder = new TaskExceptionHolder(this);
+                exceptionsHolder = Interlocked.CompareExchange(ref _exceptionsHolder, holder, null);
+                if (exceptionsHolder == null)
+                {
+                    // The current thread did initialize _exceptionsHolder.
+                    exceptionsHolder = holder;
+                }
+                else
+                {
+                    // Another thread initialized _exceptionsHolder first.
+                    // Suppress finalization.
+                    holder.MarkAsHandled(false);
+                }
+            }
+            lock (exceptionsHolder)
+            {
+                exceptionsHolder.Add(exceptionObject, representsCancellation);
             }
         }
     }
