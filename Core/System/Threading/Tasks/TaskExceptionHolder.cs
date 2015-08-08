@@ -369,26 +369,25 @@ namespace System.Threading.Tasks
         internal AggregateException CreateExceptionObject(bool calledFromFinalizer, Exception includeThisException)
         {
             var exceptions = m_faultExceptions;
-            Contract.Assert(exceptions != null, "Expected an initialized list.");
-            Contract.Assert(exceptions.Count > 0, "Expected at least one exception.");
 
-            // Mark as handled and aggregate the exceptions.
-            MarkAsHandled(calledFromFinalizer);
-
-            // If we're only including the previously captured exceptions, 
-            // return them immediately in an aggregate.
-            if (includeThisException == null)
-                return new AggregateException((IEnumerable<Exception>)exceptions);
-
-            // Otherwise, the caller wants a specific exception to be included, 
-            // so return an aggregate containing that exception and the rest.
-            Exception[] combinedExceptions = new Exception[exceptions.Count + 1];
-            for (int i = 0; i < combinedExceptions.Length - 1; i++)
+            if (exceptions != null)
             {
-                combinedExceptions[i] = exceptions[i].SourceException;
+                Contract.Assert(exceptions.Count > 0, "Expected at least one exception.");
+                // Mark as handled and aggregate the exceptions.
+                MarkAsHandled(calledFromFinalizer);
+                var combinedExceptions = new Exception[exceptions.Count + (includeThisException == null ? 0 : 1)];
+                for (var i = 0; i < exceptions.Count; i++)
+                {
+                    combinedExceptions[i] = exceptions[i].SourceException;
+                }
+                if (includeThisException != null)
+                {
+                    combinedExceptions[combinedExceptions.Length - 1] = includeThisException;
+                }
+                return new AggregateException(combinedExceptions);
             }
-            combinedExceptions[combinedExceptions.Length - 1] = includeThisException;
-            return new AggregateException(combinedExceptions);
+            Contract.Assert(false, "Expected an initialized list.");
+            return new AggregateException();
         }
 
         /// <summary>
