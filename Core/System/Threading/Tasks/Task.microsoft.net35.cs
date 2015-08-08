@@ -147,6 +147,78 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
+        /// Returns a list of exceptions by aggregating the holder's contents. Or null if
+        /// no exceptions have been thrown.
+        /// </summary>
+        /// <param name="includeTaskCanceledExceptions">Whether to include a TCE if cancelled.</param>
+        /// <returns>An aggregate exception, or null if no exceptions have been caught.</returns>
+        private AggregateException GetExceptions(bool includeTaskCanceledExceptions)
+        {
+            //
+            // WARNING: The Task/Task<TResult>/TaskCompletionSource classes
+            // have all been carefully crafted to insure that GetExceptions()
+            // is never called while AddException() is being called.  There
+            // are locks taken on m_contingentProperties in several places:
+            //
+            // -- Task<TResult>.TrySetException(): The lock allows the
+            //    task to be set to Faulted state, and all exceptions to
+            //    be recorded, in one atomic action.  
+            //
+            // -- Task.Exception_get(): The lock ensures that Task<TResult>.TrySetException()
+            //    is allowed to complete its operation before Task.Exception_get()
+            //    can access GetExceptions().
+            //
+            // -- Task.ThrowIfExceptional(): The lock insures that Wait() will
+            //    not attempt to call GetExceptions() while Task<TResult>.TrySetException()
+            //    is in the process of calling AddException().
+            //
+            // For "regular" tasks, we effectively keep AddException() and GetException()
+            // from being called concurrently by the way that the state flows.  Until
+            // a Task is marked Faulted, Task.Exception_get() returns null.  And
+            // a Task is not marked Faulted until it and all of its children have
+            // completed, which means that all exceptions have been recorded.
+            //
+            // It might be a lot easier to follow all of this if we just required
+            // that all calls to GetExceptions() and AddExceptions() were made
+            // under a lock on m_contingentProperties.  But that would also
+            // increase our lock occupancy time and the frequency with which we
+            // would need to take the lock.
+            //
+            // If you add a call to GetExceptions() anywhere in the code,
+            // please continue to maintain the invariant that it can't be
+            // called when AddException() is being called.
+            //
+
+            // We'll lazily create a TCE if the task has been canceled.
+            Exception canceledException = null;
+            if (includeTaskCanceledExceptions && IsCanceled)
+            {
+                // Backcompat: 
+                // Ideally we'd just use the cached OCE from this.GetCancellationExceptionDispatchInfo()
+                // here.  However, that would result in a potentially breaking change from .NET 4, which
+                // has the code here that throws a new exception instead of the original, and the EDI
+                // may not contain a TCE, but an OCE or any OCE-derived type, which would mean we'd be
+                // propagating an exception of a different type.
+                canceledException = new TaskCanceledException(this);
+            }
+
+            var exceptionsHolder = ThreadingHelper.VolatileRead(ref _exceptionsHolder);
+            if (exceptionsHolder != null && exceptionsHolder.ContainsFaultList)
+            {
+                // No need to lock around this, as other logic prevents the consumption of exceptions
+                // before they have been completely processed.
+                return _exceptionsHolder.CreateExceptionObject(false, canceledException);
+            }
+            if (canceledException != null)
+            {
+                // No exceptions, but there was a cancelation. Aggregate and return it.
+                return new AggregateException(canceledException);
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Signals completion of this particular task.
         ///
         /// The bUserDelegateExecuted parameter indicates whether this Finish() call comes following the

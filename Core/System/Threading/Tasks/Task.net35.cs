@@ -1,5 +1,6 @@
 #if NET20 || NET30 || NET35
 
+using System.Diagnostics.Contracts;
 using Theraot.Core;
 using Theraot.Threading;
 using Theraot.Threading.Needles;
@@ -17,7 +18,6 @@ namespace System.Threading.Tasks
         private readonly Task _parent;
         private object _action;
         private ExecutionContext _capturedContext;
-        private AggregateException _exception;
         private int _isDisposed = 0;
         private TaskScheduler _scheduler;
         private object _state;
@@ -126,7 +126,20 @@ namespace System.Threading.Tasks
         {
             get
             {
-                return _exception;
+                AggregateException e = null;
+
+                // If you're faulted, retrieve the exception(s)
+                if (IsFaulted)
+                {
+                    e = GetExceptions(false);
+                }
+
+                // Only return an exception in faulted state (skip manufactured exceptions)
+                // A "benevolent" race condition makes it possible to return null when IsFaulted is
+                // true (i.e., if IsFaulted is set just after the check to IsFaulted above).
+                Contract.Assert((e == null) || IsFaulted, "Task.Exception_get(): returning non-null value when not Faulted");
+
+                return e;
             }
         }
 
@@ -229,11 +242,7 @@ namespace System.Threading.Tasks
 
         public void RunSynchronously()
         {
-            Start();
-            while (!IsCompleted)
-            {
-                _scheduler.RunAndWait(this, false);
-            }
+            PrivateRunSynchronously();
         }
 
         public void RunSynchronously(TaskScheduler scheduler)
@@ -243,7 +252,71 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException("scheduler");
             }
             _scheduler = scheduler;
-            RunSynchronously();
+            PrivateRunSynchronously();
+        }
+
+        private void PrivateRunSynchronously()
+        {
+            if (Thread.VolatileRead(ref _isDisposed) == 1)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
+
+            // TODO: Do not Run Synchronously Continuation Tasks: InvalidOperationException("RunSynchronously may not be called on a continuation task.");
+            // TODO: Do not Run Synchronously Promise Tasks: InvalidOperationException("RunSynchronously may not be called on a task not bound to a delegate, such as the task returned from an asynchronous method.");
+
+            // Can't call this method on a task that has already completed
+            if (IsCompleted)
+            {
+                throw new InvalidOperationException("RunSynchronously may not be called on a task that has already completed.");
+            }
+
+            if (IsScheduled)
+            {
+                throw new InvalidOperationException("RunSynchronously may not be called on a task that was already started.");
+            }
+
+            // Make sure that Task only gets started once.  Or else throw an exception.
+            if (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingForActivation, (int)TaskStatus.Created) != (int)TaskStatus.Created)
+            {
+                throw new InvalidOperationException("RunSynchronously may not be called on a task that was already started.");
+            }
+
+            try
+            {
+                Schedule(_scheduler);
+                while (!IsCompleted)
+                {
+                    _scheduler.RunAndWait(this, false);
+                }
+            }
+            catch (Exception exception)
+            {
+                if (exception is ThreadAbortException)
+                {
+                    throw;
+                }
+
+                // Record the exception, marking ourselves as Completed/Faulted.
+                var taskSchedulerException = new TaskSchedulerException(exception);
+                AddException(taskSchedulerException);
+                Finish(false);
+
+                const string assertFailure = "Task.PrivateRunSynchronously(): Expected _exceptionsHolder to exist and to have faults recorded.";
+                if (_exceptionsHolder != null)
+                {
+                    Contract.Assert(_exceptionsHolder.ContainsFaultList, assertFailure);
+                    _exceptionsHolder.MarkAsHandled(false);
+                }
+                else
+                {
+                    Contract.Assert(false, assertFailure);
+                }
+
+                // And re-throw.
+                throw taskSchedulerException;
+                // We had a problem with waiting or this is a thread abort.  Just re-throw.
+            }
         }
 
         public void Start()
@@ -521,7 +594,6 @@ namespace System.Threading.Tasks
         private void Schedule(TaskScheduler scheduler)
         {
             // Only called from Start where status is set to TaskStatus.WaitingForActivation
-            _exception = null;
             scheduler.QueueTask(this);
             // If _status is no longer TaskStatus.WaitingForActivation it means that it is already TaskStatus.Running or beyond
             Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingToRun, (int)TaskStatus.WaitingForActivation);
@@ -548,15 +620,15 @@ namespace System.Threading.Tasks
             // TaskStatus.RanToCompletion (5) -> ok if preventDoubleExecution = false
             // TaskStatus.Canceled (6) -> not ok
             // TaskStatus.Faulted (7) -> -> ok if preventDoubleExecution = false
-            int count = 0;
+            var count = 0;
         retry:
             var lastValue = Thread.VolatileRead(ref _status);
             if ((preventDoubleExecution && lastValue >= 3) || lastValue == 6)
             {
                 return false;
             }
-            var tmpB = Interlocked.CompareExchange(ref _status, 3, lastValue);
-            if (tmpB == lastValue)
+            var tmp = Interlocked.CompareExchange(ref _status, 3, lastValue);
+            if (tmp == lastValue)
             {
                 return true;
             }
