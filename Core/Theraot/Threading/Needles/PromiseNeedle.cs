@@ -6,54 +6,48 @@ using System.Threading;
 namespace Theraot.Threading.Needles
 {
     [Serializable]
-    [global::System.Diagnostics.DebuggerNonUserCode]
-    public sealed class PromiseNeedle : IWaitablePromise
+    [System.Diagnostics.DebuggerNonUserCode]
+    public class PromiseNeedle : IWaitablePromise
     {
-        private readonly Promised _promised;
+        private readonly int _hashCode;
+        private Exception _exception;
+        private StructNeedle<ManualResetEventSlim> _waitHandle;
 
         public PromiseNeedle(bool done)
         {
-            _promised = new Promised();
-            if (done)
+            _exception = null;
+            _hashCode = base.GetHashCode();
+            if (!done)
             {
-                _promised.OnCompleted();
+                _waitHandle = new ManualResetEventSlim(false);
             }
         }
 
         public PromiseNeedle(Exception exception)
         {
-            _promised = new Promised(exception);
+            _exception = exception;
+            _hashCode = exception.GetHashCode();
+            _waitHandle = new ManualResetEventSlim(true);
         }
 
-        public PromiseNeedle(out Promised promised, bool done)
+        ~PromiseNeedle()
         {
-            _promised = new Promised();
-            if (done)
-            {
-                _promised.OnCompleted();
-            }
-            promised = _promised;
-        }
-
-        public PromiseNeedle(out Promised promised, Exception exception)
-        {
-            _promised = new Promised(exception);
-            promised = _promised;
+            ReleaseWaitHandle(false);
         }
 
         public Exception Exception
         {
             get
             {
-                return _promised.Exception;
+                return _exception;
             }
         }
 
-        public bool IsCanceled
+        bool IPromise.IsCanceled
         {
             get
             {
-                return _promised.IsCanceled;
+                return false;
             }
         }
 
@@ -61,7 +55,8 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return _promised.IsCompleted;
+                var waitHandle = _waitHandle.Value;
+                return waitHandle == null || waitHandle.IsSet;
             }
         }
 
@@ -69,171 +64,86 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return _promised.IsFaulted;
+                return _exception != null;
             }
+        }
+
+        protected IRecyclableNeedle<ManualResetEventSlim> WaitHandle
+        {
+            get
+            {
+                return _waitHandle;
+            }
+        }
+
+        public virtual void Free()
+        {
+            if (_waitHandle.IsAlive)
+            {
+                _waitHandle.Value.Reset();
+            }
+            else
+            {
+                _waitHandle.Value = new ManualResetEventSlim(false);
+            }
+            _exception = null;
         }
 
         public override int GetHashCode()
         {
-            return _promised.GetHashCode();
+            return _hashCode;
+        }
+
+        public void SetCompleted()
+        {
+            _exception = null;
+            ReleaseWaitHandle(true);
+        }
+
+        public void SetError(Exception error)
+        {
+            _exception = error;
+            ReleaseWaitHandle(true);
         }
 
         public override string ToString()
         {
-            return string.Format("{{Promise: {0}}}", _promised);
+            return IsCompleted
+                ? (ReferenceEquals(_exception, null)
+                    ? "[Done]"
+                    : _exception.ToString())
+                : "[Not Created]";
         }
 
-        public void Wait()
+        public virtual void Wait()
         {
-            _promised.Wait();
+            var waitHandle = _waitHandle.Value;
+            if (waitHandle != null)
+            {
+                try
+                {
+                    waitHandle.Wait();
+                }
+                catch (ObjectDisposedException exception)
+                {
+                    // Came late to the party, initialization was done
+                    GC.KeepAlive(exception);
+                }
+            }
         }
 
-        [Serializable]
-        public sealed class Promised : IEquatable<Promised>, IObserver<object>
+        protected void ReleaseWaitHandle(bool done)
         {
-            private readonly int _hashCode;
-            private Exception _exception;
-            private int _isCompleted;
-            private StructNeedle<ManualResetEvent> _waitHandle;
-
-            public Promised()
+            var waitHandle = _waitHandle.Value;
+            if (!ReferenceEquals(waitHandle, null))
             {
-                _hashCode = base.GetHashCode();
-                _waitHandle = new ManualResetEvent(false);
-            }
-
-            public Promised(Exception exception)
-            {
-                _exception = exception;
-                _hashCode = exception.GetHashCode();
-                Thread.VolatileWrite(ref _isCompleted, 1);
-                _waitHandle = new ManualResetEvent(true);
-            }
-
-            ~Promised()
-            {
-                var waitHandle = _waitHandle.Value;
-                if (!ReferenceEquals(waitHandle, null))
+                if (done)
                 {
-                    waitHandle.Close();
+                    waitHandle.Set();
                 }
-                _waitHandle.Value = null;
+                waitHandle.Dispose();
             }
-
-            public Exception Exception
-            {
-                get
-                {
-                    Wait();
-                    return _exception;
-                }
-            }
-
-            public bool IsCanceled
-            {
-                get
-                {
-                    return false;
-                }
-            }
-
-            public bool IsCompleted
-            {
-                get
-                {
-                    return Thread.VolatileRead(ref _isCompleted) == 1;
-                }
-            }
-
-            public bool IsFaulted
-            {
-                get
-                {
-                    // Exception can be not null
-                    return !ReferenceEquals(_exception, null);
-                }
-            }
-
-            public bool Equals(Promised other)
-            {
-                if (IsCompleted)
-                {
-                    if (other.IsCompleted)
-                    {
-                        // Exception can be not null
-                        if (ReferenceEquals(_exception, null))
-                        {
-                            return ReferenceEquals(other._exception, null);
-                        }
-                        else
-                        {
-                            return !ReferenceEquals(other._exception, null);
-                        }
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    return !other.IsCompleted;
-                }
-            }
-
-            public override bool Equals(object obj)
-            {
-                var _obj = obj as Promised;
-                return _obj != null && Equals(_obj);
-            }
-
-            public override int GetHashCode()
-            {
-                return _hashCode;
-            }
-
-            void IObserver<object>.OnNext(object value)
-            {
-                OnCompleted();
-            }
-
-            public void OnCompleted()
-            {
-                _exception = null;
-                Thread.VolatileWrite(ref _isCompleted, 1);
-                _waitHandle.Value.Set();
-            }
-
-            public void OnError(Exception error)
-            {
-                Core.AggregateExceptionHelper.AddException(ref _exception, error);
-                Thread.VolatileWrite(ref _isCompleted, 1);
-                _waitHandle.Value.Set();
-            }
-
-            public override string ToString()
-            {
-                if (IsCompleted)
-                {
-                    if (ReferenceEquals(_exception, null))
-                    {
-                        return "[Done]";
-                    }
-                    else
-                    {
-                        return _exception.ToString();
-                    }
-                }
-                else
-                {
-                    return "[Not Created]";
-                }
-            }
-
-            public void Wait()
-            {
-                _waitHandle.Value.WaitOne();
-            }
+            _waitHandle.Value = null;
         }
     }
 }

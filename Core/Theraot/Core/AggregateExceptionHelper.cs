@@ -7,12 +7,12 @@ namespace Theraot.Core
     {
         public static void AddException(ref AggregateException target, Exception source)
         {
-            target = ReferenceEquals(target, null) ? new AggregateException(target) : (new AggregateException(source, target)).Flatten();
+            target = ReferenceEquals(target, null) ? new AggregateException(source) : (new AggregateException(source, target)).Flatten();
         }
 
         public static void AddException(ref Exception target, Exception source)
         {
-            target = ReferenceEquals(target, null) ? new AggregateException(target) : (new AggregateException(source, target)).Flatten();
+            target = ReferenceEquals(target, null) ? source : (new AggregateException(source, target)).Flatten();
         }
     }
 }

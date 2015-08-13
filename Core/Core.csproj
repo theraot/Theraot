@@ -600,6 +600,7 @@
     <Compile Include="Theraot\Threading\Needles\ReadOnlyDisposableNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\ReadOnlyDisposableNeedle.disposable.cs" />
     <Compile Include="Theraot\Threading\Needles\ReadOnlyNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\ReadOnlyPromiseNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\ReadOnlyStructNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\StructNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\Transact.cs" />

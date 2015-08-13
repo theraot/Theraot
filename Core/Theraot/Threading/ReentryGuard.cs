@@ -9,7 +9,7 @@ namespace Theraot.Threading
     /// <summary>
     /// Represents a context to execute operation without reentry.
     /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public sealed class ReentryGuard
     {
         private StructNeedle<NoTrackingThreadLocal<Tuple<Queue<Action>, Guard>>> _workQueue;
@@ -45,7 +45,7 @@ namespace Theraot.Threading
         /// </summary>
         /// <param name="operation">The operation to execute.</param>
         /// <returns>Returns a promise to finish the execution.</returns>
-        public IWaitablePromise Execute(Action operation)
+        public IPromise Execute(Action operation)
         {
             var local = _workQueue.Value.Value;
             var result = AddExecution(operation, local);
@@ -59,7 +59,7 @@ namespace Theraot.Threading
         /// <typeparam name="T">The return value of the operation.</typeparam>
         /// <param name="operation">The operation to execute.</param>
         /// <returns>Returns a promise to finish the execution.</returns>
-        public IWaitablePromise<T> Execute<T>(Func<T> operation)
+        public IPromise<T> Execute<T>(Func<T> operation)
         {
             var local = _workQueue.Value.Value;
             var result = AddExecution(operation, local);
@@ -67,45 +67,44 @@ namespace Theraot.Threading
             return result;
         }
 
-        private static IWaitablePromise AddExecution(Action action, Tuple<Queue<Action>, Guard> local)
+        private static IPromise AddExecution(Action action, Tuple<Queue<Action>, Guard> local)
         {
-            PromiseNeedle.Promised promised;
-            // TODO: waiting on the returned promise will cause the thread to lock - replace with Tasks
-            var result = new PromiseNeedle(out promised, false);
+            var promised = new PromiseNeedle(false);
+            var result = new ReadOnlyPromiseNeedle(promised, false);
             local.Item1.Enqueue
             (
                 () =>
                 {
                     try
                     {
+
                         action.Invoke();
-                        promised.OnCompleted();
+                        promised.SetCompleted();
                     }
                     catch (Exception exception)
                     {
-                        promised.OnError(exception);
+                        promised.SetError(exception);
                     }
                 }
             );
             return result;
         }
 
-        private static IWaitablePromise<T> AddExecution<T>(Func<T> action, Tuple<Queue<Action>, Guard> local)
+        private static IPromise<T> AddExecution<T>(Func<T> action, Tuple<Queue<Action>, Guard> local)
         {
-            PromiseNeedle<T>.Promised promised;
-            // TODO: waiting on the returned promise will cause the thread to lock - replace with Tasks
-            var result = new PromiseNeedle<T>(out promised, false);
+            var promised = new PromiseNeedle<T>(false);
+            var result = new ReadOnlyPromiseNeedle<T>(promised, false);
             local.Item1.Enqueue
             (
                 () =>
                 {
                     try
                     {
-                        promised.OnNext(action.Invoke());
+                        promised.Value = action.Invoke();
                     }
                     catch (Exception exception)
                     {
-                        promised.OnError(exception);
+                        promised.SetError(exception);
                     }
                 }
             );
