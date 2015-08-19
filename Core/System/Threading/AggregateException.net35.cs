@@ -15,9 +15,6 @@ namespace System.Threading
     {
         private const string STR_BaseMessage = "Exception(s) occurred while inside the Parallel loop. {0}.";
 
-        [ThreadStatic]
-        private static CreationInfo _creationInfo;
-
         private readonly ReadOnlyCollection<Exception> _innerExceptions;
 
         public AggregateException()
@@ -83,11 +80,16 @@ namespace System.Threading
             }
         }
 
-        private AggregateException(IEnumerable<Exception> innerExceptions, string message)
-            : base(GetCreationInfo(message, innerExceptions).String, _creationInfo.Exception)
+        private AggregateException(CreationInfo creationInfo)
+            : base(creationInfo.String, creationInfo.Exception)
         {
-            _innerExceptions = _creationInfo.InnerExceptions;
-            _creationInfo = null;
+            _innerExceptions = creationInfo.InnerExceptions;
+        }
+
+        private AggregateException(IEnumerable<Exception> innerExceptions, string message)
+            : this(GetCreationInfo(message, innerExceptions))
+        {
+            // Empty
         }
 
         public ReadOnlyCollection<Exception> InnerExceptions
@@ -194,7 +196,7 @@ namespace System.Threading
             {
                 throw new ArgumentNullException("innerExceptions");
             }
-            return _creationInfo = new CreationInfo(customMessage, innerExceptions);
+            return new CreationInfo(customMessage, innerExceptions);
         }
 
         private class CreationInfo
