@@ -569,7 +569,6 @@
     <Compile Include="Theraot\Threading\DisposableExtensions.cs" />
     <Compile Include="Theraot\Threading\GCMonitor.internal.cs" />
     <Compile Include="Theraot\Threading\GCMonitor.cs" />
-    <Compile Include="Theraot\Threading\Guard.cs" />
     <Compile Include="Theraot\Threading\IExtendedDisposable.cs" />
     <Compile Include="Theraot\Threading\IReadWriteLock.cs" />
     <Compile Include="Theraot\Threading\IThreadLocal.cs" />
