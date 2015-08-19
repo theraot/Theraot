@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace Theraot.Collections.ThreadSafe
@@ -91,10 +92,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public IEnumerator<T> GetEnumerator()
         {
-            foreach (var item in _root)
-            {
-                yield return (T)item;
-            }
+            return _root.Select(item => (T)item).GetEnumerator();
         }
 
         /// <summary>
@@ -186,8 +184,8 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool RemoveAt(int index)
         {
-            object _previous;
-            if (_root.RemoveAt(unchecked((uint)index), out _previous))
+            object previousObject;
+            if (_root.RemoveAt(unchecked((uint)index), out previousObject))
             {
                 Interlocked.Decrement(ref _count);
                 return true;
@@ -206,11 +204,11 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool RemoveAt(int index, out T previous)
         {
-            object _previous;
-            if (_root.RemoveAt(unchecked((uint)index), out _previous))
+            object previousObject;
+            if (_root.RemoveAt(unchecked((uint)index), out previousObject))
             {
                 Interlocked.Decrement(ref _count);
-                previous = (T)_previous;
+                previous = (T)previousObject;
                 return true;
             }
             previous = default(T);
@@ -241,13 +239,13 @@ namespace Theraot.Collections.ThreadSafe
         public bool TryGetOrInsert(int index, T item, out T stored)
         {
             // This method should be encapsulated in a public one.
-            object _stored;
-            var result = _root.TryGetOrInsert(unchecked((uint)index), item, out _stored);
+            object storedObject;
+            var result = _root.TryGetOrInsert(unchecked((uint)index), item, out storedObject);
             if (result)
             {
                 Interlocked.Increment(ref _count);
             }
-            stored = (T)_stored;
+            stored = (T)storedObject;
             return result; // true means value was set
         }
 
@@ -341,33 +339,30 @@ namespace Theraot.Collections.ThreadSafe
         internal bool InternalTryGetOrInsert(int index, Func<T> itemFactory, out T stored)
         {
             // This method should be encapsulated in a public one.
-            object _stored;
-            var result = _root.TryGetOrInsert(unchecked((uint)index), () => itemFactory(), out _stored);
+            object storedObject;
+            var result = _root.TryGetOrInsert(unchecked((uint)index), () => itemFactory(), out storedObject);
             if (result)
             {
                 Interlocked.Increment(ref _count);
             }
-            stored = (T)_stored;
+            stored = (T)storedObject;
             return result; // true means value was set
         }
 
         internal IEnumerable<T> InternalWhere(Predicate<T> predicate)
         {
             // This method should be encapsulated in a public one.
-            foreach (var value in _root.Where(value => predicate((T)value)))
-            {
-                yield return (T)value;
-            }
+            return _root.Where(value => predicate((T)value)).Select(value => (T)value);
         }
 
         internal bool TryGetCheckRemoveAt(int index, Predicate<object> check, out T previous)
         {
             // NOTICE this method has no null check
             // Keep this method internal
-            object _previous;
-            if (_root.TryGetCheckRemoveAt(unchecked((uint)index), check, out _previous))
+            object storedObject;
+            if (_root.TryGetCheckRemoveAt(unchecked((uint)index), check, out storedObject))
             {
-                previous = (T)_previous;
+                previous = (T)storedObject;
                 Interlocked.Decrement(ref _count);
                 return true; // true means value was found and removed
             }
