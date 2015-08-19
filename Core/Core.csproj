@@ -482,7 +482,7 @@
       <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="Theraot\Core\AggregateExceptionHelper.cs" />
-    <Compile Include="Theraot\Core\AtomicBoolean.cs" />
+    <Compile Include="Theraot\Threading\AtomicBoolean.cs" />
     <Compile Include="Theraot\Core\CancellationTokenHelper.cs" />
     <Compile Include="Theraot\Core\Check.cs" />
     <Compile Include="Theraot\Core\CloneHelper.cs" />
@@ -780,7 +780,7 @@
     <Compile Include="System\Runtime\CompilerServices\ContractHelper.net40.cs" />
     <Compile Include="System\Diagnostics\Contracts\Internal\ContractHelper.net35.cs" />
     <Compile Include="System\Diagnostics\Contracts\ContractException.net40.cs" />
-    <Compile Include="Theraot\Core\AtomicBooleanValue.cs" />
+    <Compile Include="Theraot\Threading\AtomicBooleanValue.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
