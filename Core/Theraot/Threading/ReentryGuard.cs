@@ -69,8 +69,8 @@ namespace Theraot.Threading
 
         private static IPromise AddExecution(Action action, Tuple<Queue<Action>, Guard> local)
         {
-            var promised = new PromiseNeedle(false);
-            var result = new ReadOnlyPromiseNeedle(promised, false);
+            var promised = new Promise(false);
+            var result = new ReadOnlyPromise(promised, false);
             local.Item1.Enqueue
             (
                 () =>

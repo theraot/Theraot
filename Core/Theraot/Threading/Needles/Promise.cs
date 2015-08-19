@@ -7,13 +7,13 @@ namespace Theraot.Threading.Needles
 {
     [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
-    public class PromiseNeedle : IWaitablePromise
+    public class Promise : IWaitablePromise
     {
         private readonly int _hashCode;
         private Exception _exception;
         private StructNeedle<ManualResetEventSlim> _waitHandle;
 
-        public PromiseNeedle(bool done)
+        public Promise(bool done)
         {
             _exception = null;
             _hashCode = base.GetHashCode();
@@ -23,14 +23,14 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public PromiseNeedle(Exception exception)
+        public Promise(Exception exception)
         {
             _exception = exception;
             _hashCode = exception.GetHashCode();
             _waitHandle = new ManualResetEventSlim(true);
         }
 
-        ~PromiseNeedle()
+        ~Promise()
         {
             ReleaseWaitHandle(false);
         }

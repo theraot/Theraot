@@ -6,7 +6,7 @@ namespace Theraot.Threading.Needles
 {
     [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
-    public class PromiseNeedle<T> : PromiseNeedle, ICacheNeedle<T>, IWaitablePromise<T>, IRecyclableNeedle<T>
+    public class PromiseNeedle<T> : Promise, ICacheNeedle<T>, IWaitablePromise<T>, IRecyclableNeedle<T>
     {
         private readonly int _hashCode;
         private T _target;
