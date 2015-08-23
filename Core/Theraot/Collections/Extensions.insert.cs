@@ -3,8 +3,6 @@
 using System;
 using System.Collections.Generic;
 
-using Theraot.Core;
-
 namespace Theraot.Collections
 {
     public static partial class Extensions
@@ -12,39 +10,71 @@ namespace Theraot.Collections
         public static void InsertRange<TItem, TCollection>(this TCollection collection, int index, TItem item)
             where TCollection : class, IList<TItem>
         {
-            Check.NotNullArgument(collection, "collection").Insert(index, item);
+            if (collection == null)
+            {
+                throw new ArgumentNullException("collection");
+            }
+            collection.Insert(index, item);
         }
 
         public static void InsertRange<TItem, TCollection>(this TCollection collection, int index, Func<TItem> item)
             where TCollection : class, IList<TItem>
         {
-            Check.NotNullArgument(collection, "collection").Insert(index, Check.NotNullArgument(item, "item")());
+            if (collection == null)
+            {
+                throw new ArgumentNullException("collection");
+            }
+            if (item == null)
+            {
+                throw new ArgumentNullException("item");
+            }
+            collection.Insert(index, item());
         }
 
         public static int InsertRange<TItem, TCollection>(this TCollection collection, int index, IEnumerable<TItem> items)
             where TCollection : class, IList<TItem>
         {
-            int _index = index;
-            Check.NotNullArgument(collection, "collection");
-            foreach (var item in Check.NotNullArgument(items, "items"))
+            if (collection == null)
             {
-                collection.Insert(index, item);
-                _index.CheckedIncrement();
+                throw new ArgumentNullException("collection");
             }
-            return _index - index;
+            if (items == null)
+            {
+                throw new ArgumentNullException("items");
+            }
+            var initialIndex = index;
+            foreach (var item in items)
+            {
+                collection.Insert(initialIndex, item);
+                checked
+                {
+                    index++;
+                }
+            }
+            return index - initialIndex;
         }
 
         public static int InsertRange<TItem, TCollection>(this TCollection collection, int index, IEnumerable<Func<TItem>> items)
             where TCollection : class, IList<TItem>
         {
-            int _index = index;
-            var _collection = Check.NotNullArgument(collection, "collection");
-            foreach (var item in Check.NotNullArgument(items, "items"))
+            if (collection == null)
             {
-                _collection.Insert(index, item());
-                _index.CheckedIncrement();
+                throw new ArgumentNullException("collection");
             }
-            return _index - index;
+            if (items == null)
+            {
+                throw new ArgumentNullException("items");
+            }
+            var initialIndex = index;
+            foreach (var item in items)
+            {
+                collection.Insert(initialIndex, item());
+                checked
+                {
+                    index++;
+                }
+            }
+            return index - initialIndex;
         }
     }
 }
