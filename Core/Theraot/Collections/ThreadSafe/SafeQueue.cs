@@ -27,6 +27,16 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="SafeQueue{T}" /> class.
+        /// </summary>
+        public SafeQueue(IEnumerable<T> source)
+        {
+            _root = new Node(source);
+            _count = _root.Queue.Count;
+            _tail = _root;
+        }
+
+        /// <summary>
         /// Gets the number of items actually contained.
         /// </summary>
         public int Count
@@ -153,6 +163,11 @@ namespace Theraot.Collections.ThreadSafe
             public Node()
             {
                 Queue = new FixedSizeQueue<T>(64);
+            }
+
+            public Node(IEnumerable<T> source)
+            {
+                Queue = new FixedSizeQueue<T>(source);
             }
         }
     }
