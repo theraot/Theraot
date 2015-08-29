@@ -137,14 +137,14 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="System.ArgumentException">An item with the same key has already been added</exception>
         public void AddNew(TKey key, TValue value)
         {
-            var neo = new KeyValuePair<TKey, TValue>(key, value);
+            var created = new KeyValuePair<TKey, TValue>(key, value);
             var hashCode = _keyComparer.GetHashCode(key);
             var attempts = 0;
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
                 KeyValuePair<TKey, TValue> found;
-                if (_mapper.Insert(hashCode + attempts, neo, out found))
+                if (_mapper.Insert(hashCode + attempts, created, out found))
                 {
                     return;
                 }
@@ -309,13 +309,13 @@ namespace Theraot.Collections.ThreadSafe
         public TValue GetOrAdd(TKey key, TValue value)
         {
             var hashCode = _keyComparer.GetHashCode(key);
-            var neo = new KeyValuePair<TKey, TValue>(key, value);
+            var created = new KeyValuePair<TKey, TValue>(key, value);
             var attempts = 0;
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
                 KeyValuePair<TKey, TValue> stored;
-                if (_mapper.TryGetOrInsert(hashCode + attempts, neo, out stored))
+                if (_mapper.TryGetOrInsert(hashCode + attempts, created, out stored))
                 {
                     return stored.Value;
                 }
@@ -683,13 +683,13 @@ namespace Theraot.Collections.ThreadSafe
         public void Set(TKey key, TValue value)
         {
             var hashCode = _keyComparer.GetHashCode(key);
-            var neo = new KeyValuePair<TKey, TValue>(key, value);
+            var created = new KeyValuePair<TKey, TValue>(key, value);
             var attempts = 0;
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
                 bool isNew;
-                if (_mapper.TryGetCheckSet(hashCode + attempts, neo, found => _keyComparer.Equals(((KeyValuePair<TKey, TValue>)found).Key, key), out isNew))
+                if (_mapper.TryGetCheckSet(hashCode + attempts, created, found => _keyComparer.Equals(((KeyValuePair<TKey, TValue>)found).Key, key), out isNew))
                 {
                     return;
                 }
@@ -706,12 +706,12 @@ namespace Theraot.Collections.ThreadSafe
         public void Set(TKey key, TValue value, out bool isNew)
         {
             var hashCode = _keyComparer.GetHashCode(key);
-            var neo = new KeyValuePair<TKey, TValue>(key, value);
+            var created = new KeyValuePair<TKey, TValue>(key, value);
             var attempts = 0;
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
-                if (_mapper.TryGetCheckSet(hashCode + attempts, neo, found => _keyComparer.Equals(((KeyValuePair<TKey, TValue>)found).Key, key), out isNew))
+                if (_mapper.TryGetCheckSet(hashCode + attempts, created, found => _keyComparer.Equals(((KeyValuePair<TKey, TValue>)found).Key, key), out isNew))
                 {
                     return;
                 }
@@ -730,13 +730,13 @@ namespace Theraot.Collections.ThreadSafe
         public bool TryAdd(TKey key, TValue value)
         {
             var hashCode = _keyComparer.GetHashCode(key);
-            var neo = new KeyValuePair<TKey, TValue>(key, value);
+            var created = new KeyValuePair<TKey, TValue>(key, value);
             var attempts = 0;
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
                 KeyValuePair<TKey, TValue> found;
-                if (_mapper.Insert(hashCode + attempts, neo, out found))
+                if (_mapper.Insert(hashCode + attempts, created, out found))
                 {
                     return true;
                 }
@@ -760,14 +760,14 @@ namespace Theraot.Collections.ThreadSafe
         public bool TryAdd(TKey key, TValue value, out KeyValuePair<TKey, TValue> stored)
         {
             var hashCode = _keyComparer.GetHashCode(key);
-            var neo = new KeyValuePair<TKey, TValue>(key, value);
+            var created = new KeyValuePair<TKey, TValue>(key, value);
             var attempts = 0;
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
-                if (_mapper.Insert(hashCode + attempts, neo, out stored))
+                if (_mapper.Insert(hashCode + attempts, created, out stored))
                 {
-                    stored = neo;
+                    stored = created;
                     return true;
                 }
                 if (_keyComparer.Equals(stored.Key, key))
@@ -781,13 +781,13 @@ namespace Theraot.Collections.ThreadSafe
         public bool TryGetOrAdd(TKey key, TValue value, out TValue stored)
         {
             var hashCode = _keyComparer.GetHashCode(key);
-            var neo = new KeyValuePair<TKey, TValue>(key, value);
+            var created = new KeyValuePair<TKey, TValue>(key, value);
             var attempts = 0;
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
                 KeyValuePair<TKey, TValue> _stored;
-                if (_mapper.TryGetOrInsert(hashCode + attempts, neo, out _stored))
+                if (_mapper.TryGetOrInsert(hashCode + attempts, created, out _stored))
                 {
                     stored = _stored.Value;
                     return true;
@@ -853,7 +853,7 @@ namespace Theraot.Collections.ThreadSafe
         public bool TryUpdate(TKey key, TValue newValue, TValue comparisonValue)
         {
             var hashCode = _keyComparer.GetHashCode(key);
-            var neo = new KeyValuePair<TKey, TValue>(key, newValue);
+            var created = new KeyValuePair<TKey, TValue>(key, newValue);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 bool keyMatch = false;
@@ -863,7 +863,7 @@ namespace Theraot.Collections.ThreadSafe
                     keyMatch = _keyComparer.Equals(found.Key, key);
                     return keyMatch && _valueComparer.Equals(found.Value, comparisonValue);
                 };
-                if (_mapper.TryUpdate(hashCode + attempts, neo, check))
+                if (_mapper.TryUpdate(hashCode + attempts, created, check))
                 {
                     return true;
                 }
@@ -878,7 +878,7 @@ namespace Theraot.Collections.ThreadSafe
         public bool TryUpdate(TKey key, TValue newValue, Predicate<TValue> valueCheck)
         {
             var hashCode = _keyComparer.GetHashCode(key);
-            var neo = new KeyValuePair<TKey, TValue>(key, newValue);
+            var created = new KeyValuePair<TKey, TValue>(key, newValue);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 bool keyMatch = false;
@@ -888,7 +888,7 @@ namespace Theraot.Collections.ThreadSafe
                     keyMatch = _keyComparer.Equals(found.Key, key);
                     return keyMatch && valueCheck(found.Value);
                 };
-                if (_mapper.TryUpdate(hashCode + attempts, neo, check))
+                if (_mapper.TryUpdate(hashCode + attempts, created, check))
                 {
                     return true;
                 }
@@ -1003,7 +1003,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             // NOTICE this method has no null check
             var hashCode = _keyComparer.GetHashCode(key);
-            var neo = new KeyValuePair<TKey, TValue>(key, value);
+            var created = new KeyValuePair<TKey, TValue>(key, value);
             var attempts = 0;
             while (true)
             {
@@ -1023,7 +1023,7 @@ namespace Theraot.Collections.ThreadSafe
                 // No try-catch - let the exception go.
                 bool isNew;
                 // TryGetCheckSet will add if no item is found, otherwise it calls check
-                if (_mapper.TryGetCheckSet(hashCode + attempts, neo, check, out isNew))
+                if (_mapper.TryGetCheckSet(hashCode + attempts, created, check, out isNew))
                 {
                     // It added a new item
                     return;
@@ -1042,7 +1042,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             // NOTICE this method has no null check
             var hashCode = _keyComparer.GetHashCode(key);
-            var neo = new KeyValuePair<TKey, TValue>(key, value);
+            var created = new KeyValuePair<TKey, TValue>(key, value);
             var attempts = 0;
             while (true)
             {
@@ -1053,7 +1053,7 @@ namespace Theraot.Collections.ThreadSafe
                     var _found = (KeyValuePair<TKey, TValue>)found;
                     return _keyComparer.Equals(_found.Key, key) || keyOverwriteCheck(_found.Key);
                 };
-                if (_mapper.TryGetCheckSet(hashCode + attempts, neo, check, out isNew))
+                if (_mapper.TryGetCheckSet(hashCode + attempts, created, check, out isNew))
                 {
                     return;
                 }
@@ -1072,7 +1072,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             // NOTICE this method has no null check
             var hashCode = _keyComparer.GetHashCode(key);
-            var neo = new KeyValuePair<TKey, TValue>(key, value);
+            var created = new KeyValuePair<TKey, TValue>(key, value);
             var attempts = 0;
             while (true)
             {
@@ -1082,7 +1082,7 @@ namespace Theraot.Collections.ThreadSafe
                     var _found = (KeyValuePair<TKey, TValue>)found;
                     return _keyComparer.Equals(_found.Key, key) || keyOverwriteCheck(_found.Key);
                 };
-                if (_mapper.TryGetCheckSet(hashCode + attempts, neo, check, out isNew))
+                if (_mapper.TryGetCheckSet(hashCode + attempts, created, check, out isNew))
                 {
                     return;
                 }
@@ -1103,7 +1103,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             // NOTICE this method has no null check
             var hashCode = _keyComparer.GetHashCode(key);
-            var neo = new KeyValuePair<TKey, TValue>(key, value);
+            var created = new KeyValuePair<TKey, TValue>(key, value);
             var attempts = 0;
             while (true)
             {
@@ -1124,7 +1124,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     bool isNew;
                     // TryGetCheckSet will add if no item is found, otherwise it calls check
-                    if (_mapper.TryGetCheckSet(hashCode + attempts, neo, check, out isNew))
+                    if (_mapper.TryGetCheckSet(hashCode + attempts, created, check, out isNew))
                     {
                         // It added a new item
                         return true;
@@ -1143,7 +1143,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             // NOTICE this method has no null check
             var hashCode = _keyComparer.GetHashCode(key);
-            var neo = new KeyValuePair<TKey, TValue>(key, value);
+            var created = new KeyValuePair<TKey, TValue>(key, value);
             var attempts = 0;
             while (true)
             {
@@ -1165,7 +1165,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     bool isNew;
                     // TryGetCheckSet will add if no item is found, otherwise it calls check
-                    if (_mapper.TryGetCheckSet(hashCode + attempts, neo, check, out isNew))
+                    if (_mapper.TryGetCheckSet(hashCode + attempts, created, check, out isNew))
                     {
                         // It added a new item
                         stored = value;
@@ -1248,7 +1248,7 @@ namespace Theraot.Collections.ThreadSafe
             }
             var hashCode = _keyComparer.GetHashCode(key);
             var attempts = 0;
-            var neo = new KeyValuePair<TKey, TValue>(key, addValue);
+            var created = new KeyValuePair<TKey, TValue>(key, addValue);
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
@@ -1267,7 +1267,7 @@ namespace Theraot.Collections.ThreadSafe
                 var result = _mapper.InternalInsertOrUpdate
                              (
                                  hashCode + attempts,
-                                 neo,
+                                 created,
                                  updateFactory,
                                  check,
                                  out stored,
@@ -1333,7 +1333,7 @@ namespace Theraot.Collections.ThreadSafe
             }
             var hashCode = _keyComparer.GetHashCode(key);
             var attempts = 0;
-            var neo = new KeyValuePair<TKey, TValue>(key, addValue);
+            var created = new KeyValuePair<TKey, TValue>(key, addValue);
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
@@ -1351,7 +1351,7 @@ namespace Theraot.Collections.ThreadSafe
                 var result = _mapper.InternalInsertOrUpdate
                              (
                                  hashCode + attempts,
-                                 neo,
+                                 created,
                                  updateFactory,
                                  check,
                                  out stored,
@@ -1410,11 +1410,11 @@ namespace Theraot.Collections.ThreadSafe
         {
             // NOTICE this method has no null check
             var hashCode = _keyComparer.GetHashCode(key);
-            var neo = new KeyValuePair<TKey, TValue>(key, value);
+            var created = new KeyValuePair<TKey, TValue>(key, value);
             var attempts = 0;
             while (true)
             {
-                KeyValuePair<TKey, TValue> _found = neo;
+                KeyValuePair<TKey, TValue> _found = created;
                 ExtendProbingIfNeeded(attempts);
                 Predicate<object> check = found =>
                 {
@@ -1432,10 +1432,10 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     bool isNew;
                     // TryGetCheckSet will add if no item is found, otherwise it calls check
-                    if (_mapper.TryGetCheckSet(hashCode + attempts, neo, check, out isNew))
+                    if (_mapper.TryGetCheckSet(hashCode + attempts, created, check, out isNew))
                     {
                         // It added a new item
-                        stored = neo;
+                        stored = created;
                         return true;
                     }
                 }
