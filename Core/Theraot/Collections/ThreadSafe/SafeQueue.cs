@@ -50,16 +50,9 @@ namespace Theraot.Collections.ThreadSafe
             }
             else
             {
-                var neo = new Node();
-                var found = Interlocked.CompareExchange(ref _tail.Next, neo, null);
-                if (found == null)
-                {
-                    _tail = neo;
-                }
-                else
-                {
-                    _tail = found;
-                }
+                var created = new Node();
+                var found = Interlocked.CompareExchange(ref _tail.Next, created, null);
+                _tail = found ?? created;
                 goto loop;
             }
         }
