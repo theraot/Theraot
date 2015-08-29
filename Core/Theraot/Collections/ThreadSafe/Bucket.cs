@@ -41,8 +41,6 @@ namespace Theraot.Collections.ThreadSafe
             _capacity = _entries.Length;
             foreach (var item in source)
             {
-                _entries[_count] = (object)item ?? BucketHelper.Null;
-                _count++;
                 if (_count == _capacity)
                 {
                     _capacity <<= 1;
@@ -51,6 +49,8 @@ namespace Theraot.Collections.ThreadSafe
                     Array.Copy(old, 0, _entries, 0, _count);
                     ArrayReservoir<object>.DonateArray(old);
                 }
+                _entries[_count] = (object)item ?? BucketHelper.Null;
+                _count++;
             }
         }
 
