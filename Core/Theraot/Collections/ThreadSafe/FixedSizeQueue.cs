@@ -146,7 +146,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             item = default(T);
             int index = Interlocked.Add(ref _indexEnqueue, 0);
-            return index < _capacity && index > 0 && _entries.TryGet(index, out item);
+            return index < _capacity && index > 0 && _entries.TryGetInternal(index, out item);
         }
 
         /// <summary>
