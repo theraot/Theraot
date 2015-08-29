@@ -34,6 +34,18 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="FixedSizeQueue{T}" /> class.
+        /// </summary>
+        public FixedSizeQueue(IEnumerable<T> source)
+        {
+            _indexDequeue = 0;
+            _entries = new Bucket<T>(source);
+            _capacity = _entries.Capacity;
+            _indexEnqueue = _entries.Count;
+            _preCount = _indexEnqueue;
+        }
+
+        /// <summary>
         /// Gets the capacity.
         /// </summary>
         public int Capacity
