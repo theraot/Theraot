@@ -31,6 +31,29 @@ namespace Theraot.Collections.ThreadSafe
             _capacity = _entries.Length;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Bucket{T}" /> class.
+        /// </summary>
+        public Bucket(IEnumerable<T> source)
+        {
+            ICollection<T> collection = source as ICollection<T>;
+            _entries = ArrayReservoir<object>.GetArray(collection == null ? 64 : collection.Count);
+            _capacity = _entries.Length;
+            foreach (var item in source)
+            {
+                _entries[_count] = (object)item ?? BucketHelper.Null;
+                _count++;
+                if (_count == _capacity)
+                {
+                    _capacity <<= 1;
+                    var old = _entries;
+                    _entries = ArrayReservoir<object>.GetArray(_capacity);
+                    Array.Copy(old, 0, _entries, 0, _count);
+                    ArrayReservoir<object>.DonateArray(old);
+                }
+            }
+        }
+
         ~Bucket()
         {
             if (!AppDomain.CurrentDomain.IsFinalizingForUnload())
