@@ -66,7 +66,7 @@ namespace System.Threading
         /// <param name="message">A string that describes the exception.</param>
         /// <param name="innerException">The exception that is the cause of the current exception.</param>
         public BarrierPostPhaseException(string message, Exception innerException)
-            : base(message ?? "BarrierPostPhaseException", innerException)
+            : base(message ?? "The postPhaseAction failed with an exception.", innerException)
         {
             // Empty
         }
@@ -234,7 +234,7 @@ namespace System.Threading
             // the count must be non negative value
             if (participantCount < 0 || participantCount > Max_Participants)
             {
-                throw new ArgumentOutOfRangeException("participantCount", participantCount, "Barrier_ctor_ArgumentOutOfRange");
+                throw new ArgumentOutOfRangeException("participantCount", participantCount, "The participantCount argument must be non-negative and less than or equal to 32767.");
             }
             Thread.VolatileWrite(ref _currentTotalCount, participantCount);
             _postPhaseAction = postPhaseAction;
@@ -308,7 +308,7 @@ namespace System.Threading
             }
             catch (ArgumentOutOfRangeException)
             {
-                throw new InvalidOperationException("Barrier_AddParticipants_Overflow_ArgumentOutOfRange");
+                throw new InvalidOperationException("Adding participantCount participants would result in the number of participants exceeding the maximum number allowed.");
             }
         }
 
@@ -335,17 +335,17 @@ namespace System.Threading
 
             if (participantCount < 1)
             {
-                throw new ArgumentOutOfRangeException("participantCount", participantCount, "Barrier_AddParticipants_NonPositive_ArgumentOutOfRange");
+                throw new ArgumentOutOfRangeException("participantCount", participantCount, "The participantCount argument must be a positive value.");
             }
             else if (participantCount > Max_Participants) //overflow
             {
-                throw new ArgumentOutOfRangeException("participantCount", "Barrier_AddParticipants_Overflow_ArgumentOutOfRange");
+                throw new ArgumentOutOfRangeException("participantCount", "Adding participantCount participants would result in the number of participants exceeding the maximum number allowed.");
             }
 
             // in case of this is called from the PHA
             if (_actionCallerId != 0 && Thread.CurrentThread.ManagedThreadId == _actionCallerId)
             {
-                throw new InvalidOperationException("Barrier_InvalidOperation_CalledFromPHA");
+                throw new InvalidOperationException("This method may not be called from within the postPhaseAction.");
             }
 
             var spinner = new SpinWait();
@@ -359,7 +359,7 @@ namespace System.Threading
                 GetCurrentTotal(currentTotal, out current, out total, out sense);
                 if (participantCount + total > Max_Participants) //overflow
                 {
-                    throw new ArgumentOutOfRangeException("participantCount", "Barrier_AddParticipants_Overflow_ArgumentOutOfRange");
+                    throw new ArgumentOutOfRangeException("participantCount", "Adding participantCount participants would result in the number of participants exceeding the maximum number allowed.");
                 }
 
                 if (SetCurrentTotal(currentTotal, current, total + participantCount, sense))
@@ -438,13 +438,13 @@ namespace System.Threading
             // Validate input
             if (participantCount < 1)
             {
-                throw new ArgumentOutOfRangeException("participantCount", participantCount, "Barrier_RemoveParticipants_NonPositive_ArgumentOutOfRange");
+                throw new ArgumentOutOfRangeException("participantCount", participantCount, "The participantCount argument must be a positive value.");
             }
 
             // in case of this is called from the PHA
             if (_actionCallerId != 0 && Thread.CurrentThread.ManagedThreadId == _actionCallerId)
             {
-                throw new InvalidOperationException("Barrier_InvalidOperation_CalledFromPHA");
+                throw new InvalidOperationException("This method may not be called from within the postPhaseAction.");
             }
 
             var spinner = new SpinWait();
@@ -458,11 +458,11 @@ namespace System.Threading
 
                 if (total < participantCount)
                 {
-                    throw new ArgumentOutOfRangeException("participantCount", "Barrier_RemoveParticipants_ArgumentOutOfRange");
+                    throw new ArgumentOutOfRangeException("participantCount", "The participantCount argument must be less than or equal the number of participants.");
                 }
                 if (total - participantCount < current)
                 {
-                    throw new InvalidOperationException("Barrier_RemoveParticipants_InvalidOperation");
+                    throw new InvalidOperationException("The participantCount argument is greater than the number of participants that haven't yet arrived at the barrier in this phase.");
                 }
                 // If the remaining participats = current participants, then finish the current phase
                 var remaingParticipants = total - participantCount;
@@ -570,7 +570,7 @@ namespace System.Threading
             var totalMilliseconds = (Int64)timeout.TotalMilliseconds;
             if (totalMilliseconds < -1 || totalMilliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout", timeout, "Barrier_SignalAndWait_ArgumentOutOfRange");
+                throw new ArgumentOutOfRangeException("timeout", timeout, "The specified timeout must represent a value between -1 and Int32.MaxValue, inclusive.");
             }
             return SignalAndWait((int)timeout.TotalMilliseconds, cancellationToken);
         }
@@ -624,13 +624,13 @@ namespace System.Threading
 
             if (millisecondsTimeout < -1)
             {
-                throw new ArgumentOutOfRangeException("millisecondsTimeout", millisecondsTimeout, "Barrier_SignalAndWait_ArgumentOutOfRange");
+                throw new ArgumentOutOfRangeException("millisecondsTimeout", millisecondsTimeout, "The specified timeout must represent a value between -1 and Int32.MaxValue, inclusive.");
             }
 
             // in case of this is called from the PHA
             if (_actionCallerId != 0 && Thread.CurrentThread.ManagedThreadId == _actionCallerId)
             {
-                throw new InvalidOperationException("Barrier_InvalidOperation_CalledFromPHA");
+                throw new InvalidOperationException("This method may not be called from within the postPhaseAction.");
             }
 
             // local variables to extract the basic barrier variable and update them
@@ -649,13 +649,13 @@ namespace System.Threading
                 // throw if zero participants
                 if (total == 0)
                 {
-                    throw new InvalidOperationException("Barrier_SignalAndWait_InvalidOperation_ZeroTotal");
+                    throw new InvalidOperationException("The barrier has no registered participants.");
                 }
                 // Try to detect if the number of threads for this phase exceeded the total number of participants or not
                 // This can be detected if the current is zero which means all participants for that phase has arrived and the phase number is not changed yet
                 if (current == 0 && sense != (CurrentPhaseNumber % 2 == 0))
                 {
-                    throw new InvalidOperationException("Barrier_SignalAndWait_InvalidOperation_ThreadsExceeded");
+                    throw new InvalidOperationException("The number of threads using the barrier exceeded the total number of registered participants.");
                 }
                 //This is the last thread, finish the phase
                 if (current + 1 == total)
@@ -735,7 +735,7 @@ namespace System.Threading
                         //or return false if it was the timeout that woke the wait.
                         //
                         if (waitWasCanceled)
-                            throw new NewOperationCanceledException("Common_OperationCanceled", cancellationToken);
+                            throw new NewOperationCanceledException("The operation was canceled.", cancellationToken);
                         else
                             return false;
                     }
@@ -907,7 +907,7 @@ namespace System.Threading
             // in case of this is called from the PHA
             if (_actionCallerId != 0 && Thread.CurrentThread.ManagedThreadId == _actionCallerId)
             {
-                throw new InvalidOperationException("Barrier_InvalidOperation_CalledFromPHA");
+                throw new InvalidOperationException("This method may not be called from within the postPhaseAction.");
             }
             Dispose(true);
             GC.SuppressFinalize(this);
@@ -943,7 +943,7 @@ namespace System.Threading
         {
             if (_disposed)
             {
-                throw new ObjectDisposedException("Barrier", SR.Barrier_Dispose);
+                throw new ObjectDisposedException("Barrier", "The barrier has been disposed");
             }
         }
     }
