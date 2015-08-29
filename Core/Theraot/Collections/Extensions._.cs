@@ -12,7 +12,7 @@ using Theraot.Core;
 
 namespace Theraot.Collections
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public static partial class Extensions
     {
         public static T[] AddFirst<T>(this IList<T> list, T item)
@@ -20,7 +20,7 @@ namespace Theraot.Collections
             // Copyright (c) Microsoft. All rights reserved.
             // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-            T[] res = new T[list.Count + 1];
+            var res = new T[list.Count + 1];
             res[0] = item;
             list.CopyTo(res, 1);
             return res;
@@ -109,7 +109,11 @@ namespace Theraot.Collections
 
         public static void Consume<T>(this IEnumerable<T> source)
         {
-            foreach (T element in Check.NotNullArgument(source, "source"))
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            foreach (var element in source)
             {
                 GC.KeepAlive(element);
             }
@@ -119,11 +123,15 @@ namespace Theraot.Collections
 
         public static bool Contains<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> items)
         {
-            var comparer = EqualityComparer<TItem>.Default;
-            var _collection = collection as ICollection<TItem> ?? new ProgressiveSet<TItem>(Check.NotNullArgument(collection, "collection"));
-            foreach (TItem item in Check.NotNullArgument(items, "items"))
+            if (collection == null)
             {
-                if (!_collection.Contains(item, comparer))
+                throw new ArgumentNullException("collection");
+            }
+            var localComparer = EqualityComparer<TItem>.Default;
+            var localCollection = collection as ICollection<TItem> ?? new ProgressiveSet<TItem>(collection);
+            foreach (var item in Check.NotNullArgument(items, "items"))
+            {
+                if (!localCollection.Contains(item, localComparer))
                 {
                     return false;
                 }
@@ -133,11 +141,16 @@ namespace Theraot.Collections
 
         public static bool Contains<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> items, IEqualityComparer<TItem> comparer)
         {
-            var _comparer = comparer ?? EqualityComparer<TItem>.Default;
-            var _collection = collection as ICollection<TItem> ?? new ProgressiveSet<TItem>(Check.NotNullArgument(collection, "collection"));
-            foreach (TItem item in Check.NotNullArgument(items, "items"))
+
+            if (collection == null)
             {
-                if (!_collection.Contains(item, _comparer))
+                throw new ArgumentNullException("collection");
+            }
+            var localComparer = comparer ?? EqualityComparer<TItem>.Default;
+            var localCollection = collection as ICollection<TItem> ?? new ProgressiveSet<TItem>(collection);
+            foreach (var item in Check.NotNullArgument(items, "items"))
+            {
+                if (!localCollection.Contains(item, localComparer))
                 {
                     return false;
                 }
@@ -150,10 +163,10 @@ namespace Theraot.Collections
         public static bool ContainsAny<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> items)
         {
             IEqualityComparer<TItem> comparer = EqualityComparer<TItem>.Default;
-            var _collection = collection as ICollection<TItem> ?? new ProgressiveSet<TItem>(Check.NotNullArgument(collection, "collection"));
-            foreach (TItem item in Check.NotNullArgument(items, "items"))
+            var localCollection = collection as ICollection<TItem> ?? new ProgressiveSet<TItem>(Check.NotNullArgument(collection, "collection"));
+            foreach (var item in Check.NotNullArgument(items, "items"))
             {
-                if (_collection.Contains(item, comparer))
+                if (localCollection.Contains(item, comparer))
                 {
                     return true;
                 }
@@ -164,10 +177,10 @@ namespace Theraot.Collections
         public static bool ContainsAny<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> items, IEqualityComparer<TItem> comparer)
         {
             var _comparer = comparer ?? EqualityComparer<TItem>.Default;
-            var _collection = collection as ICollection<TItem> ?? new ProgressiveSet<TItem>(Check.NotNullArgument(collection, "collection"));
-            foreach (TItem item in Check.NotNullArgument(items, "items"))
+            var localCollection = collection as ICollection<TItem> ?? new ProgressiveSet<TItem>(Check.NotNullArgument(collection, "collection"));
+            foreach (var item in Check.NotNullArgument(items, "items"))
             {
-                if (_collection.Contains(item, _comparer))
+                if (localCollection.Contains(item, _comparer))
                 {
                     return true;
                 }
@@ -184,7 +197,7 @@ namespace Theraot.Collections
         {
             var _converter = Check.NotNullArgument(converter, "converter");
             var result = new List<TOutput>();
-            foreach (TItem item in Check.NotNullArgument(collection, "collection"))
+            foreach (var item in Check.NotNullArgument(collection, "collection"))
             {
                 result.Add(_converter(item));
             }
@@ -196,7 +209,7 @@ namespace Theraot.Collections
         {
             var _converter = Check.NotNullArgument(converter, "converter");
             var result = new TList();
-            foreach (TItem item in Check.NotNullArgument(collection, "collection"))
+            foreach (var item in Check.NotNullArgument(collection, "collection"))
             {
                 result.Add(_converter(item));
             }
@@ -208,7 +221,7 @@ namespace Theraot.Collections
             var _converter = Check.NotNullArgument(converter, "converter");
             var _filter = Check.NotNullArgument(filter, "filter");
             var result = new List<TOutput>();
-            foreach (TItem item in Check.NotNullArgument(collection, "collection"))
+            foreach (var item in Check.NotNullArgument(collection, "collection"))
             {
                 if (_filter(item))
                 {
@@ -222,9 +235,9 @@ namespace Theraot.Collections
         {
             var _converter = Check.NotNullArgument(converter, "converter");
             var _filter = Check.NotNullArgument(filter, "filter");
-            int index = 0;
+            var index = 0;
             var result = new List<TOutput>();
-            foreach (TItem item in Check.NotNullArgument(collection, "collection"))
+            foreach (var item in Check.NotNullArgument(collection, "collection"))
             {
                 if (_filter(item, index))
                 {
@@ -241,7 +254,7 @@ namespace Theraot.Collections
             var _converter = Check.NotNullArgument(converter, "converter");
             var _filter = Check.NotNullArgument(filter, "filter");
             var result = new TList();
-            foreach (TItem item in Check.NotNullArgument(collection, "collection"))
+            foreach (var item in Check.NotNullArgument(collection, "collection"))
             {
                 if (_filter(item))
                 {
@@ -256,9 +269,9 @@ namespace Theraot.Collections
         {
             var _converter = Check.NotNullArgument(converter, "converter");
             var _filter = Check.NotNullArgument(filter, "filter");
-            int index = 0;
+            var index = 0;
             var result = new TList();
-            foreach (TItem item in Check.NotNullArgument(collection, "collection"))
+            foreach (var item in Check.NotNullArgument(collection, "collection"))
             {
                 if (_filter(item, index))
                 {
@@ -273,9 +286,9 @@ namespace Theraot.Collections
         {
             var _converter = Check.NotNullArgument(converter, "converter");
             var _filter = Check.NotNullArgument(filter, "filter");
-            int index = 0;
+            var index = 0;
             var result = new List<KeyValuePair<int, TOutput>>();
-            foreach (TItem item in Check.NotNullArgument(collection, "collection"))
+            foreach (var item in Check.NotNullArgument(collection, "collection"))
             {
                 if (_filter(item))
                 {
@@ -290,9 +303,9 @@ namespace Theraot.Collections
         {
             var _converter = Check.NotNullArgument(converter, "converter");
             var _filter = Check.NotNullArgument(filter, "filter");
-            int index = 0;
+            var index = 0;
             var result = new List<KeyValuePair<int, TOutput>>();
-            foreach (TItem item in Check.NotNullArgument(collection, "collection"))
+            foreach (var item in Check.NotNullArgument(collection, "collection"))
             {
                 if (_filter(item, index))
                 {
@@ -308,9 +321,9 @@ namespace Theraot.Collections
         {
             var _converter = Check.NotNullArgument(converter, "converter");
             var _filter = Check.NotNullArgument(filter, "filter");
-            int index = 0;
+            var index = 0;
             var result = new TList();
-            foreach (TItem item in Check.NotNullArgument(collection, "collection"))
+            foreach (var item in Check.NotNullArgument(collection, "collection"))
             {
                 if (_filter(item))
                 {
@@ -326,9 +339,9 @@ namespace Theraot.Collections
         {
             var _converter = Check.NotNullArgument(converter, "converter");
             var _filter = Check.NotNullArgument(filter, "filter");
-            int index = 0;
+            var index = 0;
             var result = new TList();
-            foreach (TItem item in Check.NotNullArgument(collection, "collection"))
+            foreach (var item in Check.NotNullArgument(collection, "collection"))
             {
                 if (_filter(item, index))
                 {
@@ -342,7 +355,7 @@ namespace Theraot.Collections
         public static IEnumerable<TOutput> ConvertProgressive<TItem, TOutput>(this IEnumerable<TItem> collection, Converter<TItem, TOutput> converter)
         {
             var _converter = Check.NotNullArgument(converter, "converter");
-            foreach (TItem item in Check.NotNullArgument(collection, "collection"))
+            foreach (var item in Check.NotNullArgument(collection, "collection"))
             {
                 yield return _converter(item);
             }
@@ -352,7 +365,7 @@ namespace Theraot.Collections
         {
             var _converter = Check.NotNullArgument(converter, "converter");
             var _filter = Check.NotNullArgument(filter, "filter");
-            foreach (TItem item in Check.NotNullArgument(collection, "collection"))
+            foreach (var item in Check.NotNullArgument(collection, "collection"))
             {
                 if (_filter(item))
                 {
@@ -365,8 +378,8 @@ namespace Theraot.Collections
         {
             var _converter = Check.NotNullArgument(converter, "converter");
             var _filter = Check.NotNullArgument(filter, "filter");
-            int index = 0;
-            foreach (TItem item in Check.NotNullArgument(collection, "collection"))
+            var index = 0;
+            foreach (var item in Check.NotNullArgument(collection, "collection"))
             {
                 if (_filter(item, index))
                 {
@@ -380,8 +393,8 @@ namespace Theraot.Collections
         {
             var _converter = Check.NotNullArgument(converter, "converter");
             var _filter = Check.NotNullArgument(filter, "filter");
-            int index = 0;
-            foreach (TItem item in Check.NotNullArgument(collection, "collection"))
+            var index = 0;
+            foreach (var item in Check.NotNullArgument(collection, "collection"))
             {
                 if (_filter(item))
                 {
@@ -395,8 +408,8 @@ namespace Theraot.Collections
         {
             var _converter = Check.NotNullArgument(converter, "converter");
             var _filter = Check.NotNullArgument(filter, "filter");
-            int index = 0;
-            foreach (TItem item in Check.NotNullArgument(collection, "collection"))
+            var index = 0;
+            foreach (var item in Check.NotNullArgument(collection, "collection"))
             {
                 if (_filter(item, index))
                 {
@@ -411,7 +424,7 @@ namespace Theraot.Collections
             // Copyright (c) Microsoft. All rights reserved.
             // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-            T[] copy = new T[array.Length];
+            var copy = new T[array.Length];
             Array.Copy(array, copy, array.Length);
             return copy;
         }
@@ -426,7 +439,7 @@ namespace Theraot.Collections
             var _array = Check.NotNullArgument(array, "array");
             try
             {
-                int index = arrayIndex;
+                var index = arrayIndex;
                 foreach (var item in Check.NotNullArgument(collection, "collection"))
                 {
                     _array[index] = item;
@@ -446,9 +459,9 @@ namespace Theraot.Collections
 
         public static int CountContiguousItems<TItem>(this IEnumerable<TItem> collection, TItem item)
         {
-            int result = 0;
+            var result = 0;
             var equalityComparer = EqualityComparer<TItem>.Default;
-            foreach (TItem value in Check.NotNullArgument(collection, "collection"))
+            foreach (var value in Check.NotNullArgument(collection, "collection"))
             {
                 if (equalityComparer.Equals(value, item))
                 {
@@ -464,9 +477,9 @@ namespace Theraot.Collections
 
         public static int CountContiguousItemsWhere<TItem>(this IEnumerable<TItem> collection, Predicate<TItem> predicate)
         {
-            int result = 0;
-            Predicate<TItem> _predicate = Check.NotNullArgument(predicate, "predicate");
-            foreach (TItem item in Check.NotNullArgument(collection, "collection"))
+            var result = 0;
+            var _predicate = Check.NotNullArgument(predicate, "predicate");
+            foreach (var item in Check.NotNullArgument(collection, "collection"))
             {
                 if (_predicate(item))
                 {
@@ -482,8 +495,8 @@ namespace Theraot.Collections
 
         public static int CountItems<TItem>(this IEnumerable<TItem> collection)
         {
-            int result = 0;
-            foreach (TItem value in Check.NotNullArgument(collection, "collection"))
+            var result = 0;
+            foreach (var value in Check.NotNullArgument(collection, "collection"))
             {
                 result++;
                 GC.KeepAlive(value);
@@ -493,9 +506,9 @@ namespace Theraot.Collections
 
         public static int CountItems<TItem>(this IEnumerable<TItem> collection, TItem item)
         {
-            int result = 0;
+            var result = 0;
             var equalityComparer = EqualityComparer<TItem>.Default;
-            foreach (TItem value in Check.NotNullArgument(collection, "collection"))
+            foreach (var value in Check.NotNullArgument(collection, "collection"))
             {
                 if (equalityComparer.Equals(value, item))
                 {
@@ -507,9 +520,9 @@ namespace Theraot.Collections
 
         public static int CountItemsWhere<TItem>(this IEnumerable<TItem> collection, Predicate<TItem> predicate)
         {
-            int result = 0;
-            Predicate<TItem> _predicate = Check.NotNullArgument(predicate, "predicate");
-            foreach (TItem item in Check.NotNullArgument(collection, "collection"))
+            var result = 0;
+            var _predicate = Check.NotNullArgument(predicate, "predicate");
+            foreach (var item in Check.NotNullArgument(collection, "collection"))
             {
                 if (_predicate(item))
                 {
@@ -521,7 +534,7 @@ namespace Theraot.Collections
 
         public static void DeprecatedCopyTo<T>(this IEnumerable<T> collection, Array array)
         {
-            int index = 0;
+            var index = 0;
             foreach (var item in collection)
             {
                 array.SetValue(item, index++);
@@ -538,11 +551,11 @@ namespace Theraot.Collections
 
         public static int ExceptWith<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other)
         {
-            int count = 0;
-            var _collection = Check.NotNullArgument(collection, "collection");
+            var count = 0;
+            var localCollection = Check.NotNullArgument(collection, "collection");
             foreach (var item in Check.NotNullArgument(other, "other"))
             {
-                while (_collection.Remove(item))
+                while (localCollection.Remove(item))
                 {
                     count++;
                 }
@@ -552,10 +565,10 @@ namespace Theraot.Collections
 
         public static IEnumerable<TItem> ExceptWithEnumerable<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other)
         {
-            var _collection = Check.NotNullArgument(collection, "collection");
+            var localCollection = Check.NotNullArgument(collection, "collection");
             foreach (var item in Check.NotNullArgument(other, "other"))
             {
-                while (_collection.Remove(item))
+                while (localCollection.Remove(item))
                 {
                     yield return item;
                 }
@@ -565,7 +578,7 @@ namespace Theraot.Collections
         public static bool Exists<TItem>(this IEnumerable<TItem> collection, TItem value)
         {
             IEqualityComparer<TItem> comparer = EqualityComparer<TItem>.Default;
-            foreach (TItem local in Check.NotNullArgument(collection, "collection"))
+            foreach (var local in Check.NotNullArgument(collection, "collection"))
             {
                 if (comparer.Equals(local, value))
                 {
@@ -578,7 +591,7 @@ namespace Theraot.Collections
         public static bool Exists<TItem>(this IEnumerable<TItem> collection, TItem value, IEqualityComparer<TItem> comparer)
         {
             var _comparer = comparer ?? EqualityComparer<TItem>.Default;
-            foreach (TItem local in Check.NotNullArgument(collection, "collection"))
+            foreach (var local in Check.NotNullArgument(collection, "collection"))
             {
                 if (_comparer.Equals(local, value))
                 {
@@ -590,8 +603,8 @@ namespace Theraot.Collections
 
         public static bool Exists<TItem>(this IEnumerable<TItem> collection, Predicate<TItem> predicate)
         {
-            Predicate<TItem> _predicate = Check.NotNullArgument(predicate, "predicate");
-            foreach (TItem item in Check.NotNullArgument(collection, "collection"))
+            var _predicate = Check.NotNullArgument(predicate, "predicate");
+            foreach (var item in Check.NotNullArgument(collection, "collection"))
             {
                 if (_predicate(item))
                 {
@@ -603,8 +616,8 @@ namespace Theraot.Collections
 
         public static TItem Find<TItem>(this IEnumerable<TItem> collection, int index, int count, Predicate<TItem> predicate)
         {
-            int currentIndex = 0;
-            int limit = index + count;
+            var currentIndex = 0;
+            var limit = index + count;
             var _predicate = Check.NotNullArgument(predicate, "predicate");
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
@@ -634,7 +647,7 @@ namespace Theraot.Collections
 
         public static TItem Find<TItem>(this IEnumerable<TItem> collection, int index, Predicate<TItem> predicate)
         {
-            int currentIndex = 0;
+            var currentIndex = 0;
             var _predicate = Check.NotNullArgument(predicate, "predicate");
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
@@ -676,8 +689,8 @@ namespace Theraot.Collections
 
         public static int FindIndex<TItem>(this IEnumerable<TItem> collection, int index, int count, Predicate<TItem> predicate)
         {
-            int currentIndex = 0;
-            int limit = index + count;
+            var currentIndex = 0;
+            var limit = index + count;
             var _predicate = Check.NotNullArgument(predicate, "predicate");
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
@@ -707,7 +720,7 @@ namespace Theraot.Collections
 
         public static int FindIndex<TItem>(this IEnumerable<TItem> collection, Predicate<TItem> predicate)
         {
-            int currentIndex = 0;
+            var currentIndex = 0;
             var _predicate = Check.NotNullArgument(predicate, "predicate");
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
@@ -725,7 +738,7 @@ namespace Theraot.Collections
 
         public static int FindIndex<TItem>(this IEnumerable<TItem> collection, int index, Predicate<TItem> predicate)
         {
-            int currentIndex = 0;
+            var currentIndex = 0;
             var _predicate = Check.NotNullArgument(predicate, "predicate");
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
@@ -751,10 +764,10 @@ namespace Theraot.Collections
 
         public static TItem FindLast<TItem>(this IEnumerable<TItem> collection, int index, int count, Predicate<TItem> predicate)
         {
-            int currentIndex = 0;
-            int limit = index + count;
+            var currentIndex = 0;
+            var limit = index + count;
             var _predicate = Check.NotNullArgument(predicate, "predicate");
-            TItem result = default(TItem);
+            var result = default(TItem);
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
                 while (enumerator.MoveNext())
@@ -783,9 +796,9 @@ namespace Theraot.Collections
 
         public static TItem FindLast<TItem>(this IEnumerable<TItem> collection, int index, Predicate<TItem> predicate)
         {
-            int currentIndex = 0;
+            var currentIndex = 0;
             var _predicate = Check.NotNullArgument(predicate, "predicate");
-            TItem result = default(TItem);
+            var result = default(TItem);
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
                 while (enumerator.MoveNext())
@@ -811,7 +824,7 @@ namespace Theraot.Collections
         public static TItem FindLast<TItem>(this IEnumerable<TItem> collection, Predicate<TItem> predicate)
         {
             var _predicate = Check.NotNullArgument(predicate, "predicate");
-            TItem result = default(TItem);
+            var result = default(TItem);
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
                 while (enumerator.MoveNext())
@@ -827,10 +840,10 @@ namespace Theraot.Collections
 
         public static int FindLastIndex<TItem>(this IEnumerable<TItem> collection, int index, int count, Predicate<TItem> predicate)
         {
-            int currentIndex = 0;
-            int limit = index + count;
+            var currentIndex = 0;
+            var limit = index + count;
             var _predicate = Check.NotNullArgument(predicate, "predicate");
-            int result = -1;
+            var result = -1;
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
                 while (enumerator.MoveNext())
@@ -859,9 +872,9 @@ namespace Theraot.Collections
 
         public static int FindLastIndex<TItem>(this IEnumerable<TItem> collection, int index, Predicate<TItem> predicate)
         {
-            int currentIndex = 0;
+            var currentIndex = 0;
             var _predicate = Check.NotNullArgument(predicate, "predicate");
-            int result = -1;
+            var result = -1;
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
                 while (enumerator.MoveNext())
@@ -886,9 +899,9 @@ namespace Theraot.Collections
 
         public static int FindLastIndex<TItem>(this IEnumerable<TItem> collection, Predicate<TItem> predicate)
         {
-            int currentIndex = 0;
+            var currentIndex = 0;
             var _predicate = Check.NotNullArgument(predicate, "predicate");
-            int result = -1;
+            var result = -1;
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
                 while (enumerator.MoveNext())
@@ -907,7 +920,7 @@ namespace Theraot.Collections
         {
             var result = new List<TItem>();
             var _predicate = Check.NotNullArgument(predicate, "predicate");
-            foreach (TItem item in Check.NotNullArgument(collection, "collection"))
+            foreach (var item in Check.NotNullArgument(collection, "collection"))
             {
                 if (_predicate(item))
                 {
@@ -922,7 +935,7 @@ namespace Theraot.Collections
         {
             var result = new TList();
             var _predicate = Check.NotNullArgument(predicate, "predicate");
-            foreach (TItem item in Check.NotNullArgument(collection, "collection"))
+            foreach (var item in Check.NotNullArgument(collection, "collection"))
             {
                 if (_predicate(item))
                 {
@@ -940,9 +953,9 @@ namespace Theraot.Collections
         public static void For<TItem>(this IEnumerable<TItem> collection, Action<int, TItem> action)
         {
             var _action = Check.NotNullArgument(action, "action");
-            IEnumerable<TItem> _collection = Check.NotNullArgument(collection, "collection");
-            int index = 0;
-            foreach (TItem item in _collection)
+            var localCollection = Check.NotNullArgument(collection, "collection");
+            var index = 0;
+            foreach (var item in localCollection)
             {
                 _action.Invoke(index, item);
                 index++;
@@ -952,10 +965,10 @@ namespace Theraot.Collections
         public static void For<TItem>(this IEnumerable<TItem> collection, Action<int, TItem> action, Predicate<TItem> predicate)
         {
             var _action = Check.NotNullArgument(action, "action");
-            var _collection = Check.NotNullArgument(collection, "collection");
+            var localCollection = Check.NotNullArgument(collection, "collection");
             var _predicate = Check.NotNullArgument(predicate, "predicate");
-            int index = 0;
-            foreach (TItem item in _collection)
+            var index = 0;
+            foreach (var item in localCollection)
             {
                 if (_predicate.Invoke(item))
                 {
@@ -968,10 +981,10 @@ namespace Theraot.Collections
         public static void For<TItem>(this IEnumerable<TItem> collection, Action<int, TItem> action, Func<TItem, int, bool> filter)
         {
             var _action = Check.NotNullArgument(action, "action");
-            var _collection = Check.NotNullArgument(collection, "collection");
+            var localCollection = Check.NotNullArgument(collection, "collection");
             var _filter = Check.NotNullArgument(filter, "filter");
-            int index = 0;
-            foreach (TItem item in _collection)
+            var index = 0;
+            foreach (var item in localCollection)
             {
                 if (_filter.Invoke(item, index))
                 {
@@ -984,7 +997,7 @@ namespace Theraot.Collections
         public static void ForEach<TItem>(this IEnumerable<TItem> collection, Action<TItem> action)
         {
             var _action = Check.NotNullArgument(action, "action");
-            foreach (TItem item in Check.NotNullArgument(collection, "collection"))
+            foreach (var item in Check.NotNullArgument(collection, "collection"))
             {
                 _action.Invoke(item);
             }
@@ -994,7 +1007,7 @@ namespace Theraot.Collections
         {
             var _action = Check.NotNullArgument(action, "action");
             var _predicate = Check.NotNullArgument(predicate, "predicate");
-            foreach (TItem item in Check.NotNullArgument(collection, "collection"))
+            foreach (var item in Check.NotNullArgument(collection, "collection"))
             {
                 if (_predicate.Invoke(item))
                 {
@@ -1011,12 +1024,9 @@ namespace Theraot.Collections
             {
                 return value;
             }
-            else
-            {
-                var newValue = TypeHelper.CreateOrDefault<TValue>();
-                _dictionary.Add(key, newValue);
-                return newValue;
-            }
+            var newValue = TypeHelper.CreateOrDefault<TValue>();
+            _dictionary.Add(key, newValue);
+            return newValue;
         }
 
         public static TValue GetOrCreate<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue newValue)
@@ -1027,11 +1037,8 @@ namespace Theraot.Collections
             {
                 return value;
             }
-            else
-            {
-                _dictionary.Add(key, newValue);
-                return newValue;
-            }
+            _dictionary.Add(key, newValue);
+            return newValue;
         }
 
         public static TValue GetOrCreate<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, Func<TValue> create)
@@ -1042,18 +1049,15 @@ namespace Theraot.Collections
             {
                 return value;
             }
-            else
-            {
-                TValue newValue = create == null ? default(TValue) : create();
-                _dictionary.Add(key, newValue);
-                return newValue;
-            }
+            var newValue = create == null ? default(TValue) : create();
+            _dictionary.Add(key, newValue);
+            return newValue;
         }
 
         public static int IndexOf<TItem>(this IEnumerable<TItem> collection, TItem item, int index, int count)
         {
-            int currentIndex = 0;
-            int limit = index + count;
+            var currentIndex = 0;
+            var limit = index + count;
             var _comparer = EqualityComparer<TItem>.Default;
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
@@ -1083,8 +1087,8 @@ namespace Theraot.Collections
 
         public static int IndexOf<TItem>(this IEnumerable<TItem> collection, TItem item, int index, int count, IEqualityComparer<TItem> comparer)
         {
-            int currentIndex = 0;
-            int limit = index + count;
+            var currentIndex = 0;
+            var limit = index + count;
             var _comparer = comparer ?? EqualityComparer<TItem>.Default;
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
@@ -1114,7 +1118,7 @@ namespace Theraot.Collections
 
         public static int IndexOf<TItem>(this IEnumerable<TItem> collection, TItem item, int index)
         {
-            int currentIndex = 0;
+            var currentIndex = 0;
             var _comparer = EqualityComparer<TItem>.Default;
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
@@ -1140,7 +1144,7 @@ namespace Theraot.Collections
 
         public static int IndexOf<TItem>(this IEnumerable<TItem> collection, TItem item, int index, IEqualityComparer<TItem> comparer)
         {
-            int currentIndex = 0;
+            var currentIndex = 0;
             var _comparer = comparer ?? EqualityComparer<TItem>.Default;
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
@@ -1166,7 +1170,7 @@ namespace Theraot.Collections
 
         public static int IndexOf<TItem>(this IEnumerable<TItem> collection, TItem item)
         {
-            int currentIndex = 0;
+            var currentIndex = 0;
             var _comparer = EqualityComparer<TItem>.Default;
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
@@ -1184,7 +1188,7 @@ namespace Theraot.Collections
 
         public static int IndexOf<TItem>(this IEnumerable<TItem> collection, TItem item, IEqualityComparer<TItem> comparer)
         {
-            int currentIndex = 0;
+            var currentIndex = 0;
             var _comparer = comparer ?? EqualityComparer<TItem>.Default;
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
@@ -1281,9 +1285,9 @@ namespace Theraot.Collections
 
         public static int LastIndexOf<TItem>(this IEnumerable<TItem> collection, TItem item, int index, IEqualityComparer<TItem> comparer)
         {
-            int currentIndex = 0;
+            var currentIndex = 0;
             var _comparer = comparer ?? EqualityComparer<TItem>.Default;
-            int result = -1;
+            var result = -1;
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
                 while (enumerator.MoveNext())
@@ -1308,9 +1312,9 @@ namespace Theraot.Collections
 
         public static int LastIndexOf<TItem>(this IEnumerable<TItem> collection, TItem item, int index)
         {
-            int currentIndex = 0;
+            var currentIndex = 0;
             var _comparer = EqualityComparer<TItem>.Default;
-            int result = -1;
+            var result = -1;
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
                 while (enumerator.MoveNext())
@@ -1335,9 +1339,9 @@ namespace Theraot.Collections
 
         public static int LastIndexOf<TItem>(this IEnumerable<TItem> collection, TItem item)
         {
-            int currentIndex = 0;
+            var currentIndex = 0;
             var _comparer = EqualityComparer<TItem>.Default;
-            int result = -1;
+            var result = -1;
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
                 while (enumerator.MoveNext())
@@ -1354,9 +1358,9 @@ namespace Theraot.Collections
 
         public static int LastIndexOf<TItem>(this IEnumerable<TItem> collection, TItem item, IEqualityComparer<TItem> comparer)
         {
-            int currentIndex = 0;
+            var currentIndex = 0;
             var _comparer = comparer ?? EqualityComparer<TItem>.Default;
-            int result = -1;
+            var result = -1;
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
                 while (enumerator.MoveNext())
@@ -1373,10 +1377,10 @@ namespace Theraot.Collections
 
         public static int LastIndexOf<TItem>(this IEnumerable<TItem> collection, TItem item, int index, int count, IEqualityComparer<TItem> comparer)
         {
-            int currentIndex = 0;
-            int limit = index + count;
+            var currentIndex = 0;
+            var limit = index + count;
             var _comparer = comparer ?? EqualityComparer<TItem>.Default;
-            int result = -1;
+            var result = -1;
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
                 while (enumerator.MoveNext())
@@ -1405,10 +1409,10 @@ namespace Theraot.Collections
 
         public static int LastIndexOf<TItem>(this IEnumerable<TItem> collection, TItem item, int index, int count)
         {
-            int currentIndex = 0;
-            int limit = index + count;
+            var currentIndex = 0;
+            var limit = index + count;
             var _comparer = EqualityComparer<TItem>.Default;
-            int result = -1;
+            var result = -1;
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
                 while (enumerator.MoveNext())
@@ -1466,10 +1470,10 @@ namespace Theraot.Collections
             // Copyright (c) Microsoft. All rights reserved.
             // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-            int count = collection.Count;
-            U[] result = new U[count];
+            var count = collection.Count;
+            var result = new U[count];
             count = 0;
-            foreach (T t in collection)
+            foreach (var t in collection)
             {
                 result[count++] = select(t);
             }
@@ -1495,7 +1499,7 @@ namespace Theraot.Collections
         public static IEnumerable<TPackage> Pack<T, TPackage>(this IEnumerable<T> source, int size)
             where TPackage : ICollection<T>, new()
         {
-            int count = 0;
+            var count = 0;
             var currentPackage = new TPackage();
             foreach (var item in source)
             {
@@ -1516,7 +1520,7 @@ namespace Theraot.Collections
 
         public static IEnumerable<T[]> Pack<T>(this IEnumerable<T> source, int size)
         {
-            int index = 0;
+            var index = 0;
             var currentPackage = new T[size];
             foreach (var item in source)
             {
@@ -1550,7 +1554,7 @@ namespace Theraot.Collections
             // Copyright (c) Microsoft. All rights reserved.
             // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-            T[] result = new T[array.Length - 1];
+            var result = new T[array.Length - 1];
             Array.Copy(array, 1, result, 0, result.Length);
             return result;
         }
@@ -1560,7 +1564,7 @@ namespace Theraot.Collections
             // Copyright (c) Microsoft. All rights reserved.
             // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-            T[] result = new T[array.Length - 1];
+            var result = new T[array.Length - 1];
             Array.Copy(array, 0, result, 0, result.Length);
             return result;
         }
@@ -1572,11 +1576,11 @@ namespace Theraot.Collections
 
         public static int RemoveWhere<TItem>(this ICollection<TItem> collection, Converter<IEnumerable<TItem>, IEnumerable<TItem>> converter)
         {
-            var _collection = Check.NotNullArgument(collection, "collection");
+            var localCollection = Check.NotNullArgument(collection, "collection");
             return ExceptWith
                    (
-                       _collection,
-                       new List<TItem>(Check.NotNullArgument(converter, "converter").Invoke(_collection))
+                       localCollection,
+                       new List<TItem>(Check.NotNullArgument(converter, "converter").Invoke(localCollection))
                    );
         }
 
@@ -1587,11 +1591,11 @@ namespace Theraot.Collections
 
         public static IEnumerable<TItem> RemoveWhereEnumerable<TItem>(this ICollection<TItem> collection, Converter<IEnumerable<TItem>, IEnumerable<TItem>> converter)
         {
-            var _collection = Check.NotNullArgument(collection, "collection");
+            var localCollection = Check.NotNullArgument(collection, "collection");
             return ExceptWithEnumerable
                    (
-                       _collection,
-                       new List<TItem>(Check.NotNullArgument(converter, "converter").Invoke(_collection))
+                       localCollection,
+                       new List<TItem>(Check.NotNullArgument(converter, "converter").Invoke(localCollection))
                    );
         }
 
@@ -1606,12 +1610,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentOutOfRangeException("count", "Non-negative number is required.");
             }
-            int listCount = _list.Count;
+            var listCount = _list.Count;
             if (count > listCount - index)
             {
                 throw new ArgumentException("The list does not contain the number of elements.", "list");
             }
-            int end = index + count;
+            var end = index + count;
             for (; index < end; index++, end++)
             {
                 SwapExtracted(_list, index, end);
@@ -1620,15 +1624,15 @@ namespace Theraot.Collections
 
         public static bool SetEquals<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> other)
         {
-            var _collection = Check.NotNullArgument(collection, "collection");
+            var localCollection = Check.NotNullArgument(collection, "collection");
             var _other = Check.NotNullArgument(other, "other");
             var _that = _other as ICollection<TItem> ?? new ProgressiveSet<TItem>(_other);
-            foreach (var item in _that.Where(input => !_collection.Contains(input)))
+            foreach (var item in _that.Where(input => !localCollection.Contains(input)))
             {
                 GC.KeepAlive(item);
                 return false;
             }
-            foreach (var item in _collection.Where(input => !_that.Contains(input)))
+            foreach (var item in localCollection.Where(input => !_that.Contains(input)))
             {
                 GC.KeepAlive(item);
                 return false;
@@ -1644,19 +1648,16 @@ namespace Theraot.Collections
             {
                 throw new ArgumentOutOfRangeException("index", "Non-negative number is required.");
             }
-            else if (count < 0)
+            if (count < 0)
             {
                 throw new ArgumentOutOfRangeException("count", "Non-negative number is required.");
             }
-            else
+            var listCount = list.Count;
+            if (count > listCount - index)
             {
-                int listCount = list.Count;
-                if (count > listCount - index)
-                {
-                    throw new ArgumentException("The list does not contain the number of elements.", "list");
-                }
-                SortExtracted(_list, index, count + index, _comparer);
+                throw new ArgumentException("The list does not contain the number of elements.", "list");
             }
+            SortExtracted(_list, index, count + index, _comparer);
         }
 
         public static void Swap<T>(this IList<T> list, int indexA, int indexB)
@@ -1670,7 +1671,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentOutOfRangeException("indexB", "Non-negative number is required.");
             }
-            int listCount = list.Count;
+            var listCount = list.Count;
             if (indexA >= listCount || indexB >= listCount)
             {
                 throw new ArgumentException("The list does not contain the number of elements.", "list");
@@ -1703,24 +1704,18 @@ namespace Theraot.Collections
             {
                 return new ReadOnlyCollection<TSource>(ArrayReservoir<TSource>.EmptyArray);
             }
-            else
+            var sourceAsReadOnlyCollection = source as ReadOnlyCollection<TSource>;
+            if (sourceAsReadOnlyCollection != null)
             {
-                var sourceAsReadOnlyCollection = source as ReadOnlyCollection<TSource>;
-                if (sourceAsReadOnlyCollection != null)
-                {
-                    return sourceAsReadOnlyCollection;
-                }
-                else
-                {
-                    return new ReadOnlyCollection<TSource>(source.ToArray());
-                }
+                return sourceAsReadOnlyCollection;
             }
+            return new ReadOnlyCollection<TSource>(source.ToArray());
         }
 
         public static bool TryFind<TItem>(this IEnumerable<TItem> collection, int index, int count, Predicate<TItem> predicate, out TItem fountItem)
         {
-            int currentIndex = 0;
-            int limit = index + count;
+            var currentIndex = 0;
+            var limit = index + count;
             var _predicate = Check.NotNullArgument(predicate, "predicate");
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
@@ -1752,7 +1747,7 @@ namespace Theraot.Collections
 
         public static bool TryFind<TItem>(this IEnumerable<TItem> collection, int index, Predicate<TItem> predicate, out TItem fountItem)
         {
-            int currentIndex = 0;
+            var currentIndex = 0;
             var _predicate = Check.NotNullArgument(predicate, "predicate");
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
@@ -1798,11 +1793,11 @@ namespace Theraot.Collections
 
         public static bool TryFindLast<TItem>(this IEnumerable<TItem> collection, int index, int count, Predicate<TItem> predicate, out TItem foundItem)
         {
-            int currentIndex = 0;
-            int limit = index + count;
+            var currentIndex = 0;
+            var limit = index + count;
             var _predicate = Check.NotNullArgument(predicate, "predicate");
             foundItem = default(TItem);
-            bool found = false;
+            var found = false;
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
                 while (enumerator.MoveNext())
@@ -1832,10 +1827,10 @@ namespace Theraot.Collections
 
         public static bool TryFindLast<TItem>(this IEnumerable<TItem> collection, int index, Predicate<TItem> predicate, out TItem foundItem)
         {
-            int currentIndex = 0;
+            var currentIndex = 0;
             var _predicate = Check.NotNullArgument(predicate, "predicate");
             foundItem = default(TItem);
-            bool found = false;
+            var found = false;
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
                 while (enumerator.MoveNext())
@@ -1863,7 +1858,7 @@ namespace Theraot.Collections
         {
             var _predicate = Check.NotNullArgument(predicate, "predicate");
             foundItem = default(TItem);
-            bool found = false;
+            var found = false;
             using (var enumerator = Check.NotNullArgument(collection, "collection").GetEnumerator())
             {
                 while (enumerator.MoveNext())
@@ -1891,71 +1886,59 @@ namespace Theraot.Collections
         public static IEnumerable<TItem> Where<TItem>(IEnumerable<TItem> collection, Predicate<TItem> predicate)
         {
             var _predicate = Check.NotNullArgument(predicate, "predicate");
-            var _collection = Check.NotNullArgument(collection, "collection");
-            return WhereExtracted(_collection, _predicate);
+            var localCollection = Check.NotNullArgument(collection, "collection");
+            return WhereExtracted(localCollection, _predicate);
         }
 
         public static IEnumerable<TItem> Where<TItem>(this IEnumerable<TItem> collection, Func<TItem, int, bool> predicate)
         {
             var _predicate = Check.NotNullArgument(predicate, "predicate");
-            var _collection = Check.NotNullArgument(collection, "collection");
-            return WhereExtracted(_collection, _predicate);
+            var localCollection = Check.NotNullArgument(collection, "collection");
+            return WhereExtracted(localCollection, _predicate);
         }
 
         public static IEnumerable<TItem> Where<TItem>(this IEnumerable<TItem> source, Func<TItem, bool> predicate, Action whereNot)
         {
             var _predicate = Check.NotNullArgument(predicate, "predicate");
-            var _collection = Check.NotNullArgument(source, "source");
+            var localCollection = Check.NotNullArgument(source, "source");
             if (whereNot == null)
             {
-                return WhereExtracted(_collection, _predicate);
+                return WhereExtracted(localCollection, _predicate);
             }
-            else
-            {
-                return WhereExtracted(_collection, _predicate, whereNot);
-            }
+            return WhereExtracted(localCollection, _predicate, whereNot);
         }
 
         public static IEnumerable<TItem> Where<TItem>(this IEnumerable<TItem> source, Func<TItem, bool> predicate, Action<TItem> whereNot)
         {
             var _predicate = Check.NotNullArgument(predicate, "predicate");
-            var _collection = Check.NotNullArgument(source, "source");
+            var localCollection = Check.NotNullArgument(source, "source");
             if (whereNot == null)
             {
-                return WhereExtracted(_collection, _predicate);
+                return WhereExtracted(localCollection, _predicate);
             }
-            else
-            {
-                return WhereExtracted(_collection, _predicate, whereNot);
-            }
+            return WhereExtracted(localCollection, _predicate, whereNot);
         }
 
         public static IEnumerable<TItem> Where<TItem>(this IEnumerable<TItem> source, Func<TItem, int, bool> predicate, Action whereNot)
         {
             var _predicate = Check.NotNullArgument(predicate, "predicate");
-            var _collection = Check.NotNullArgument(source, "source");
+            var localCollection = Check.NotNullArgument(source, "source");
             if (whereNot == null)
             {
-                return WhereExtracted(_collection, _predicate);
+                return WhereExtracted(localCollection, _predicate);
             }
-            else
-            {
-                return WhereExtracted(_collection, _predicate, whereNot);
-            }
+            return WhereExtracted(localCollection, _predicate, whereNot);
         }
 
         public static IEnumerable<TItem> Where<TItem>(this IEnumerable<TItem> source, Func<TItem, int, bool> predicate, Action<TItem> whereNot)
         {
             var _predicate = Check.NotNullArgument(predicate, "predicate");
-            var _collection = Check.NotNullArgument(source, "source");
+            var localCollection = Check.NotNullArgument(source, "source");
             if (whereNot == null)
             {
-                return WhereExtracted(_collection, _predicate);
+                return WhereExtracted(localCollection, _predicate);
             }
-            else
-            {
-                return WhereExtracted(_collection, _predicate, whereNot);
-            }
+            return WhereExtracted(localCollection, _predicate, whereNot);
         }
 
         public static IEnumerable<T> WhereType<T>(IEnumerable enumerable)
@@ -1995,56 +1978,50 @@ namespace Theraot.Collections
 
         private static bool IsSubsetOf<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> other, bool proper)
         {
-            var _this = AsDistinctCollection(collection);
-            var _that = AsDistinctCollection(other);
-            int elementCount = 0;
-            int matchCount = 0;
-            foreach (var item in _that)
+            var @this = AsDistinctCollection(collection);
+            var that = AsDistinctCollection(other);
+            var elementCount = 0;
+            var matchCount = 0;
+            foreach (var item in that)
             {
                 elementCount++;
-                if (_this.Contains(item))
+                if (@this.Contains(item))
                 {
                     matchCount++;
                 }
             }
             if (proper)
             {
-                return matchCount == _this.Count && elementCount > _this.Count;
+                return matchCount == @this.Count && elementCount > @this.Count;
             }
-            else
-            {
-                return matchCount == _this.Count;
-            }
+            return matchCount == @this.Count;
         }
 
         private static bool IsSupersetOf<TItem>(this IEnumerable<TItem> collection, IEnumerable<TItem> other, bool proper)
         {
-            var _this = AsDistinctCollection(collection);
-            var _that = AsDistinctCollection(other);
-            int elementCount = 0;
-            foreach (var item in _that)
+            var @this = AsDistinctCollection(collection);
+            var that = AsDistinctCollection(other);
+            var elementCount = 0;
+            foreach (var item in that)
             {
                 elementCount++;
-                if (!_this.Contains(item))
+                if (!@this.Contains(item))
                 {
                     return false;
                 }
             }
             if (proper)
             {
-                return elementCount < _this.Count;
+                return elementCount < @this.Count;
             }
-            else
-            {
-                return true;
-            }
+            return true;
         }
 
         private static void SortExtracted<T>(IList<T> list, int indexStart, int indexEnd, IComparer<T> comparer)
         {
-            int low = indexStart;
-            int high = indexEnd;
-            T pivot = list[low + ((high - low) / 2)];
+            var low = indexStart;
+            var high = indexEnd;
+            var pivot = list[low + ((high - low) / 2)];
             while (low <= high)
             {
                 while (low < indexEnd && comparer.Compare(list[low], pivot) < 0)
@@ -2079,8 +2056,8 @@ namespace Theraot.Collections
 
         private static void SwapExtracted<T>(IList<T> list, int indexA, int indexB)
         {
-            T itemA = list[indexA];
-            T itemB = list[indexB];
+            var itemA = list[indexA];
+            var itemB = list[indexB];
             list[indexA] = itemB;
             list[indexB] = itemA;
         }
@@ -2098,7 +2075,7 @@ namespace Theraot.Collections
 
         private static IEnumerable<TItem> WhereExtracted<TItem>(IEnumerable<TItem> collection, Func<TItem, int, bool> predicate)
         {
-            int index = 0;
+            var index = 0;
             foreach (var item in collection)
             {
                 if (predicate(item, index))
@@ -2137,7 +2114,7 @@ namespace Theraot.Collections
 
         private static IEnumerable<TItem> WhereExtracted<TItem>(IEnumerable<TItem> source, Func<TItem, int, bool> predicate, Action whereNot)
         {
-            int index = 0;
+            var index = 0;
             foreach (var item in source)
             {
                 if (predicate(item, index))
@@ -2169,7 +2146,7 @@ namespace Theraot.Collections
 
         private static IEnumerable<TItem> WhereExtracted<TItem>(IEnumerable<TItem> source, Func<TItem, int, bool> predicate, Action<TItem> whereNot)
         {
-            int index = 0;
+            var index = 0;
             foreach (var item in source)
             {
                 if (predicate(item, index))
