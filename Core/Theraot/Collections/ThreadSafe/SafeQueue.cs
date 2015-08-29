@@ -100,7 +100,6 @@ namespace Theraot.Collections.ThreadSafe
             {
                 if (_root.Queue.TryPeek(out item))
                 {
-                    Interlocked.Decrement(ref _count);
                     return true;
                 }
                 if (root.Next != null)

@@ -145,7 +145,7 @@ namespace Theraot.Collections.ThreadSafe
         public bool TryPeek(out T item)
         {
             item = default(T);
-            int index = Interlocked.Add(ref _indexEnqueue, 0);
+            int index = Interlocked.Add(ref _indexDequeue, 0);
             return index < _capacity && index > 0 && _entries.TryGetInternal(index, out item);
         }
 
