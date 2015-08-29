@@ -215,8 +215,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="System\Collections\Concurrent\CollectionStressTestHelper.cs" />
     <Compile Include="System\Collections\Concurrent\ConcurrentDictionaryTestsEx.cs" />
     <Compile Include="System\Collections\Concurrent\ConcurrentDictionaryTests.cs" />
+    <Compile Include="System\Collections\Concurrent\ConcurrentQueueTests.cs" />
     <Compile Include="System\Collections\ObjectModel\ObservableCollectionTest.cs" />
     <Compile Include="System\Diagnostics\Contracts\AssertTests.cs" />
     <Compile Include="System\Diagnostics\Contracts\RequireTests.cs" />
