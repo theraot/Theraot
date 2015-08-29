@@ -256,22 +256,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
             }
-            object _previous;
-            if (RemoveAtPrivate(index, out _previous))
-            {
-                Interlocked.Decrement(ref _count);
-                if (ReferenceEquals(_previous, BucketHelper.Null))
-                {
-                    previous = default(T);
-                }
-                else
-                {
-                    previous = (T)_previous;
-                }
-                return true;
-            }
-            previous = default(T);
-            return false;
+            return RemoveAtInternal(index, out previous);
         }
 
         /// <summary>
@@ -381,6 +366,26 @@ namespace Theraot.Collections.ThreadSafe
                 Interlocked.Increment(ref _count);
                 return true;
             }
+            return false;
+        }
+
+        internal bool RemoveAtInternal(int index, out T previous)
+        {
+            object _previous;
+            if (RemoveAtPrivate(index, out _previous))
+            {
+                Interlocked.Decrement(ref _count);
+                if (ReferenceEquals(_previous, BucketHelper.Null))
+                {
+                    previous = default(T);
+                }
+                else
+                {
+                    previous = (T)_previous;
+                }
+                return true;
+            }
+            previous = default(T);
             return false;
         }
 

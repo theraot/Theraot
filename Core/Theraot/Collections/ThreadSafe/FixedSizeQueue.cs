@@ -164,7 +164,7 @@ namespace Theraot.Collections.ThreadSafe
                 if (preCount >= 0)
                 {
                     var index = (Interlocked.Increment(ref _indexDequeue) - 1) & (_capacity - 1);
-                    if (_entries.RemoveAt(index, out item))
+                    if (_entries.RemoveAtInternal(index, out item))
                     {
                         return true;
                     }
