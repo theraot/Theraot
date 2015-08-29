@@ -43,7 +43,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             get
             {
-                return _count;
+                return Thread.VolatileRead(ref _count);
             }
         }
 
