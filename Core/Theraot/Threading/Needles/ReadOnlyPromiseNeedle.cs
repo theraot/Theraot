@@ -22,6 +22,7 @@ namespace Theraot.Threading.Needles
             {
                 return _promised.Value;
             }
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
             set
             {
                 throw new NotSupportedException();

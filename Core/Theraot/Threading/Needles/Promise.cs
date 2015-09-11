@@ -45,6 +45,7 @@ namespace Theraot.Threading.Needles
 
         bool IPromise.IsCanceled
         {
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns False")]
             get
             {
                 return false;

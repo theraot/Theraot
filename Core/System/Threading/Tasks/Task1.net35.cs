@@ -10,6 +10,7 @@ namespace System.Threading.Tasks
 
         public TResult Result
         {
+            [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "Microsoft's Design")]
             get
             {
                 Wait();
