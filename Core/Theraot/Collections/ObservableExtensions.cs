@@ -35,13 +35,24 @@ namespace Theraot.Collections
 
         public static IObserver<T> ToObserver<T>(this Action<T> listener)
         {
-            return new ActionObserver<T>(listener);
+            if (listener == null)
+            {
+                throw new ArgumentNullException("listener");
+            }
+            return new CustomObserver<T>(listener);
         }
 
         public static IObserver<TInput> ToObserver<TInput, TOutput>(this Action<TOutput> listener, Converter<TInput, TOutput> converter)
         {
-            var _converter = Check.NotNullArgument(converter, "converter");
-            return new ActionObserver<TInput>(input => listener(_converter.Invoke(input)));
+            if (converter == null)
+            {
+                throw new ArgumentNullException("converter");
+            }
+            if (listener == null)
+            {
+                throw new ArgumentNullException("listener");
+            }
+            return new CustomObserver<TInput>(input => listener(converter(input)));
         }
     }
 }

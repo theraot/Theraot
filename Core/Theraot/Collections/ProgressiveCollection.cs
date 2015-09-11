@@ -47,7 +47,7 @@ namespace Theraot.Collections
         protected ProgressiveCollection(TryTake<T> tryTake, ICollection<T> cache, IEqualityComparer<T> comparer)
         {
             _cache = Check.NotNullArgument(cache, "cache");
-            _progressor = new Progressor<T>(tryTake);
+            _progressor = new Progressor<T>(tryTake, false); // false because the underlaying structure may change
             _progressor.SubscribeAction(obj => _cache.Add(obj));
             _comparer = comparer ?? EqualityComparer<T>.Default;
         }
