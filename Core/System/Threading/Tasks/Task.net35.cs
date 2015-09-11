@@ -1,4 +1,3 @@
-#if FAT
 #if NET20 || NET30 || NET35
 
 using System.Diagnostics.Contracts;
@@ -639,5 +638,4 @@ namespace System.Threading.Tasks
     }
 }
 
-#endif
 #endif
