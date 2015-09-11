@@ -18,6 +18,7 @@
 using System.Security;
 using System.Diagnostics.Contracts;
 using System.Collections.Generic;
+using Theraot.Collections.ThreadSafe;
 
 namespace System.Threading.Tasks
 {
@@ -26,29 +27,30 @@ namespace System.Threading.Tasks
     /// </summary>
     internal sealed class ThreadPoolTaskScheduler : TaskScheduler
     {
-        /// <summary>
-        /// Constructs a new ThreadPool task scheduler object
-        /// </summary>
-        internal ThreadPoolTaskScheduler()
-        {
-            // Empty
-        }
-
         // static delegate for threads allocated to handle LongRunning tasks.
-        private static readonly ParameterizedThreadStart s_longRunningThreadWork = new ParameterizedThreadStart(LongRunningThreadWork);
-        private static readonly WaitCallback executeCallback = new WaitCallback(TaskExecuteCallback);
+        private static readonly ParameterizedThreadStart _longRunningThreadWork = LongRunningThreadWork;
+        private static readonly WaitCallback _executeCallback = TaskExecuteCallback;
 
         private static void TaskExecuteCallback(object obj)
         {
-            (obj as Task).ExecuteEntry(true);
+            var task = obj as Task;
+            if (task != null)
+            {
+                task.ExecuteEntry(true);
+            }
         }
 
         private static void LongRunningThreadWork(object obj)
         {
-            Contract.Requires(obj != null, "TaskScheduler.LongRunningThreadWork: obj is null");
-            Task t = obj as Task;
-            Contract.Assert(t != null, "TaskScheduler.LongRunningThreadWork: t is null");
-            t.ExecuteEntry(false);
+            Task task = obj as Task;
+            if (task != null)
+            {
+                task.ExecuteEntry(false);
+            }
+            else
+            {
+                Contract.Assert(false, "TaskScheduler.LongRunningThreadWork: no task to run");
+            }
         }
 
         /// <summary>
@@ -61,14 +63,16 @@ namespace System.Threading.Tasks
             if ((task.CreationOptions & TaskCreationOptions.LongRunning) != 0)
             {
                 // Run LongRunning tasks on their own dedicated thread.
-                Thread thread = new Thread(s_longRunningThreadWork);
-                thread.IsBackground = true; // Keep this thread from blocking process shutdown
+                var thread = new Thread(_longRunningThreadWork)
+                {
+                    IsBackground = true // Keep this thread from blocking process shutdown
+                };
                 thread.Start(task);
             }
             else
             {
                 // TODO: TaskCreationOptions.PreferFairness
-                ThreadPool.QueueUserWorkItem(executeCallback, task);
+                ThreadPool.QueueUserWorkItem(_executeCallback, task);
             }
         }
 
@@ -83,19 +87,23 @@ namespace System.Threading.Tasks
         [SecurityCritical]
         protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
         {
+            if ((task.CreationOptions & TaskCreationOptions.LongRunning) != 0)
+            {
+                // LongRunning task are going to run on a dedicated Thread.
+                return false;
+            }
             // Propagate the return value of Task.ExecuteEntry()
-            bool rval = false;
+            bool result;
             try
             {
-                rval = task.ExecuteEntry(true); // handles switching Task.Current etc.
+                result = task.ExecuteEntry(true); // handles switching Task.Current etc.
             }
             finally
             {
                 //   Only call NWIP() if task was previously queued
                 if (taskWasPreviouslyQueued) NotifyWorkItemProgress();
             }
-
-            return rval;
+            return result;
         }
 
         [SecurityCritical]

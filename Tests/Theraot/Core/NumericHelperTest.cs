@@ -13,25 +13,25 @@ namespace Tests.Theraot.Core
         [Test]
         public void Decrements()
         {
-            Assert.AreEqual(int.MaxValue, NumericHelper.UncheckedDecrement(int.MinValue));
-            Assert.AreEqual(short.MaxValue, NumericHelper.UncheckedDecrement(short.MinValue));
-            Assert.AreEqual(long.MaxValue, NumericHelper.UncheckedDecrement(long.MinValue));
+            Assert.AreEqual(int.MaxValue, int.MinValue.UncheckedDecrement());
+            Assert.AreEqual(short.MaxValue, short.MinValue.UncheckedDecrement());
+            Assert.AreEqual(long.MaxValue, long.MinValue.UncheckedDecrement());
 
-            Assert.Throws<OverflowException>(() => NumericHelper.CheckedDecrement(int.MinValue));
-            Assert.Throws<OverflowException>(() => NumericHelper.CheckedDecrement(short.MinValue));
-            Assert.Throws<OverflowException>(() => NumericHelper.CheckedDecrement(long.MinValue));
+            Assert.Throws<OverflowException>(() => int.MinValue.CheckedDecrement());
+            Assert.Throws<OverflowException>(() => short.MinValue.CheckedDecrement());
+            Assert.Throws<OverflowException>(() => long.MinValue.CheckedDecrement());
         }
 
         [Test]
         public void Increments()
         {
-            Assert.AreEqual(int.MinValue, NumericHelper.UncheckedIncrement(int.MaxValue));
-            Assert.AreEqual(short.MinValue, NumericHelper.UncheckedIncrement(short.MaxValue));
-            Assert.AreEqual(long.MinValue, NumericHelper.UncheckedIncrement(long.MaxValue));
+            Assert.AreEqual(int.MinValue, int.MaxValue.UncheckedIncrement());
+            Assert.AreEqual(short.MinValue, short.MaxValue.UncheckedIncrement());
+            Assert.AreEqual(long.MinValue, long.MaxValue.UncheckedIncrement());
 
-            Assert.Throws<OverflowException>(() => NumericHelper.CheckedIncrement(int.MaxValue));
-            Assert.Throws<OverflowException>(() => NumericHelper.CheckedIncrement(short.MaxValue));
-            Assert.Throws<OverflowException>(() => NumericHelper.CheckedIncrement(long.MaxValue));
+            Assert.Throws<OverflowException>(() => int.MaxValue.CheckedIncrement());
+            Assert.Throws<OverflowException>(() => short.MaxValue.CheckedIncrement());
+            Assert.Throws<OverflowException>(() => long.MaxValue.CheckedIncrement());
         }
 
 #endif
@@ -39,8 +39,8 @@ namespace Tests.Theraot.Core
         [Test]
         public void Log2Tests()
         {
-            var input = new int[] { 22141034, 146009798, 106447544, 66083576, 28048294, 3848650, 119601527, 182384611, 160860217, 52726162 };
-            var output = new int[] { 24, 27, 26, 25, 24, 21, 26, 27, 27, 25 };
+            var input = new[] { 22141034, 146009798, 106447544, 66083576, 28048294, 3848650, 119601527, 182384611, 160860217, 52726162 };
+            var output = new[] { 24, 27, 26, 25, 24, 21, 26, 27, 27, 25 };
             for (int index = 0; index < input.Length; index++)
             {
                 Assert.AreEqual(output[index], NumericHelper.Log2(input[index]));
@@ -53,8 +53,8 @@ namespace Tests.Theraot.Core
         [Test]
         public void NextPowerOf2Int()
         {
-            var input = new int[] { -1, 835, 246444, 448905, 610268, 855701, 1017047, 1228188, 1717470, 1917025, 2130772 };
-            var output = new int[] { 1, 1024, 262144, 524288, 1048576, 1048576, 1048576, 2097152, 2097152, 2097152, 4194304 };
+            var input = new[] { -1, 835, 246444, 448905, 610268, 855701, 1017047, 1228188, 1717470, 1917025, 2130772 };
+            var output = new[] { 1, 1024, 262144, 524288, 1048576, 1048576, 1048576, 2097152, 2097152, 2097152, 4194304 };
             for (int index = 0; index < input.Length; index++)
             {
                 Assert.AreEqual(output[index], NumericHelper.NextPowerOf2(input[index]));
@@ -75,8 +75,8 @@ namespace Tests.Theraot.Core
         [Test]
         public void Sqrt()
         {
-            var input = new int[] { 835, 246444, 448905, 610268, 855701, 1017047, 1228188, 1717470, 1917025, 2130772 };
-            var output = new int[] { 28, 496, 670, 781, 925, 1008, 1108, 1310, 1384, 1459 };
+            var input = new[] { 835, 246444, 448905, 610268, 855701, 1017047, 1228188, 1717470, 1917025, 2130772 };
+            var output = new[] { 28, 496, 670, 781, 925, 1008, 1108, 1310, 1384, 1459 };
             for (int index = 0; index < input.Length; index++)
             {
                 Assert.AreEqual(output[index], NumericHelper.Sqrt(input[index]));
@@ -90,7 +90,7 @@ namespace Tests.Theraot.Core
         public void BinaryByte()
         {
             var input = new byte[] { 157, 155, 92, 129, 166, 100, 17, 168, 158, 128 };
-            var output = new string[]
+            var output = new[]
             {
                 "10011101",
                 "10011011",
@@ -105,13 +105,13 @@ namespace Tests.Theraot.Core
             };
             for (int index = 0; index < input.Length; index++)
             {
-                Assert.AreEqual(output[index], NumericHelper.ToStringBinary(input[index]));
+                Assert.AreEqual(output[index], input[index].ToStringBinary());
                 var characters = output[index].ToCharArray();
-                var bitsBinary = NumericHelper.BitsBinary(input[index]).ToArray();
-                var bits = NumericHelper.Bits(input[index]).ToArray();
-                var bitsLog2 = NumericHelper.BitsLog2(input[index]).ToArray();
+                var bitsBinary = input[index].BitsBinary().ToArray();
+                var bits = input[index].Bits().ToArray();
+                var bitsLog2 = input[index].BitsLog2().ToArray();
                 var reverse = NumericHelper.BinaryReverse(input[index]);
-                var rbitsBinary = NumericHelper.BitsBinary(reverse).ToArray();
+                var rbitsBinary = reverse.BitsBinary().ToArray();
                 var bitIndex = 0;
                 for (int subindex = 0; subindex < 8; subindex++)
                 {
@@ -137,8 +137,8 @@ namespace Tests.Theraot.Core
         [Test]
         public void BinaryInt()
         {
-            var input = new int[] { 22141034, -46009798, 106447544, -6083576, 28048294, -848650, 119601527, -82384611, 160860217, -2726162 };
-            var output = new string[]
+            var input = new[] { 22141034, -46009798, 106447544, -6083576, 28048294, -848650, 119601527, -82384611, 160860217, -2726162 };
+            var output = new[]
             {
                 "00000001010100011101100001101010",
                 "11111101010000011111001000111010",
@@ -153,13 +153,13 @@ namespace Tests.Theraot.Core
             };
             for (int index = 0; index < input.Length; index++)
             {
-                Assert.AreEqual(output[index], NumericHelper.ToStringBinary(input[index]));
+                Assert.AreEqual(output[index], input[index].ToStringBinary());
                 var characters = output[index].ToCharArray();
-                var bitsBinary = NumericHelper.BitsBinary(input[index]).ToArray();
-                var bits = NumericHelper.Bits(input[index]).ToArray();
-                var bitsLog2 = NumericHelper.BitsLog2(input[index]).ToArray();
-                var reverse = NumericHelper.BinaryReverse(input[index]);
-                var rbitsBinary = NumericHelper.BitsBinary(reverse).ToArray();
+                var bitsBinary = input[index].BitsBinary().ToArray();
+                var bits = input[index].Bits().ToArray();
+                var bitsLog2 = input[index].BitsLog2().ToArray();
+                var reverse = input[index].BinaryReverse();
+                var rbitsBinary = reverse.BitsBinary().ToArray();
                 var bitIndex = 0;
                 for (int subindex = 0; subindex < 32; subindex++)
                 {
@@ -185,7 +185,7 @@ namespace Tests.Theraot.Core
         [Test]
         public void BinaryLong()
         {
-            var input = new long[]
+            var input = new[]
             {
                 2318709486335437829,
                 5863966414194722965,
@@ -198,7 +198,7 @@ namespace Tests.Theraot.Core
                 -3043789911413372093,
                 -6411351321497233834
             };
-            var output = new string[]
+            var output = new[]
             {
                 "0010000000101101101101011111111000100110010110100010110000000101",
                 "0101000101100000111111100110001010010100111001011100100010010101",
@@ -213,13 +213,13 @@ namespace Tests.Theraot.Core
             };
             for (int index = 0; index < input.Length; index++)
             {
-                Assert.AreEqual(output[index], NumericHelper.ToStringBinary(input[index]));
+                Assert.AreEqual(output[index], input[index].ToStringBinary());
                 var characters = output[index].ToCharArray();
-                var bitsBinary = NumericHelper.BitsBinary(input[index]).ToArray();
-                var bits = NumericHelper.Bits(input[index]).ToArray();
-                var bitsLog2 = NumericHelper.BitsLog2(input[index]).ToArray();
-                var reverse = NumericHelper.BinaryReverse(input[index]);
-                var rbitsBinary = NumericHelper.BitsBinary(reverse).ToArray();
+                var bitsBinary = input[index].BitsBinary().ToArray();
+                var bits = input[index].Bits().ToArray();
+                var bitsLog2 = input[index].BitsLog2().ToArray();
+                var reverse = input[index].BinaryReverse();
+                var rbitsBinary = reverse.BitsBinary().ToArray();
                 var bitIndex = 0;
                 for (int subindex = 0; subindex < 64; subindex++)
                 {
@@ -246,7 +246,7 @@ namespace Tests.Theraot.Core
         public void BinarySByte()
         {
             var input = new sbyte[] { -57, -55, 92, -29, -66, 0, 17, -68, -58, -28 };
-            var output = new string[]
+            var output = new[]
             {
                 "11000111",
                 "11001001",
@@ -261,13 +261,13 @@ namespace Tests.Theraot.Core
             };
             for (int index = 0; index < input.Length; index++)
             {
-                Assert.AreEqual(output[index], NumericHelper.ToStringBinary(input[index]));
+                Assert.AreEqual(output[index], input[index].ToStringBinary());
                 var characters = output[index].ToCharArray();
-                var bitsBinary = NumericHelper.BitsBinary(input[index]).ToArray();
-                var bits = NumericHelper.Bits(input[index]).ToArray();
-                var bitsLog2 = NumericHelper.BitsLog2(input[index]).ToArray();
+                var bitsBinary = input[index].BitsBinary().ToArray();
+                var bits = input[index].Bits().ToArray();
+                var bitsLog2 = input[index].BitsLog2().ToArray();
                 var reverse = NumericHelper.BinaryReverse(input[index]);
-                var rbitsBinary = NumericHelper.BitsBinary(reverse).ToArray();
+                var rbitsBinary = reverse.BitsBinary().ToArray();
                 var bitIndex = 0;
                 for (int subindex = 0; subindex < 8; subindex++)
                 {
@@ -294,7 +294,7 @@ namespace Tests.Theraot.Core
         public void BinaryShort()
         {
             var input = new short[] { 22141, -4600, 10644, -6083, 28048, -848, 11960, -8238, 16086, -2726 };
-            var output = new string[]
+            var output = new[]
             {
                 "0101011001111101",
                 "1110111000001000",
@@ -309,13 +309,13 @@ namespace Tests.Theraot.Core
             };
             for (int index = 0; index < input.Length; index++)
             {
-                Assert.AreEqual(output[index], NumericHelper.ToStringBinary(input[index]));
+                Assert.AreEqual(output[index], input[index].ToStringBinary());
                 var characters = output[index].ToCharArray();
-                var bitsBinary = NumericHelper.BitsBinary(input[index]).ToArray();
-                var bits = NumericHelper.Bits(input[index]).ToArray();
-                var bitsLog2 = NumericHelper.BitsLog2(input[index]).ToArray();
+                var bitsBinary = input[index].BitsBinary().ToArray();
+                var bits = input[index].Bits().ToArray();
+                var bitsLog2 = input[index].BitsLog2().ToArray();
                 var reverse = NumericHelper.BinaryReverse(input[index]);
-                var rbitsBinary = NumericHelper.BitsBinary(reverse).ToArray();
+                var rbitsBinary = reverse.BitsBinary().ToArray();
                 var bitIndex = 0;
                 for (int subindex = 0; subindex < 16; subindex++)
                 {
@@ -342,7 +342,7 @@ namespace Tests.Theraot.Core
         public void BinaryUInt()
         {
             var input = new uint[] { 22141034, 146009798, 106447544, 66083576, 28048294, 3848650, 119601527, 182384611, 160860217, 52726162 };
-            var output = new string[]
+            var output = new[]
             {
                 "00000001010100011101100001101010",
                 "00001000101100111110111011000110",
@@ -357,13 +357,13 @@ namespace Tests.Theraot.Core
             };
             for (int index = 0; index < input.Length; index++)
             {
-                Assert.AreEqual(output[index], NumericHelper.ToStringBinary(input[index]));
+                Assert.AreEqual(output[index], input[index].ToStringBinary());
                 var characters = output[index].ToCharArray();
-                var bitsBinary = NumericHelper.BitsBinary(input[index]).ToArray();
-                var bits = NumericHelper.Bits(input[index]).ToArray();
-                var bitsLog2 = NumericHelper.BitsLog2(input[index]).ToArray();
-                var reverse = NumericHelper.BinaryReverse(input[index]);
-                var rbitsBinary = NumericHelper.BitsBinary(reverse).ToArray();
+                var bitsBinary = input[index].BitsBinary().ToArray();
+                var bits = input[index].Bits().ToArray();
+                var bitsLog2 = input[index].BitsLog2().ToArray();
+                var reverse = input[index].BinaryReverse();
+                var rbitsBinary = reverse.BitsBinary().ToArray();
                 var bitIndex = 0;
                 for (int subindex = 0; subindex < 32; subindex++)
                 {
@@ -402,7 +402,7 @@ namespace Tests.Theraot.Core
                 3043789911413372093,
                 6411351321497233834
             };
-            var output = new string[]
+            var output = new[]
             {
                 "0010000000101101101101011111111000100110010110100010110000000101",
                 "0101000101100000111111100110001010010100111001011100100010010101",
@@ -417,13 +417,13 @@ namespace Tests.Theraot.Core
             };
             for (int index = 0; index < input.Length; index++)
             {
-                Assert.AreEqual(output[index], NumericHelper.ToStringBinary(input[index]));
+                Assert.AreEqual(output[index], input[index].ToStringBinary());
                 var characters = output[index].ToCharArray();
-                var bitsBinary = NumericHelper.BitsBinary(input[index]).ToArray();
-                var bits = NumericHelper.Bits(input[index]).ToArray();
-                var bitsLog2 = NumericHelper.BitsLog2(input[index]).ToArray();
-                var reverse = NumericHelper.BinaryReverse(input[index]);
-                var rbitsBinary = NumericHelper.BitsBinary(reverse).ToArray();
+                var bitsBinary = input[index].BitsBinary().ToArray();
+                var bits = input[index].Bits().ToArray();
+                var bitsLog2 = input[index].BitsLog2().ToArray();
+                var reverse = input[index].BinaryReverse();
+                var rbitsBinary = reverse.BitsBinary().ToArray();
                 var bitIndex = 0;
                 for (int subindex = 0; subindex < 64; subindex++)
                 {
@@ -431,7 +431,7 @@ namespace Tests.Theraot.Core
                     Assert.AreEqual(characters[63 - subindex].ToString(), rbitsBinary[subindex].ToString());
                     if (bitIndex < bits.Length)
                     {
-                        var log2 = NumericHelper.Log2(unchecked((ulong)bits[bitIndex]));
+                        var log2 = NumericHelper.Log2(unchecked(bits[bitIndex]));
                         Assert.AreEqual(log2, bitsLog2[bitIndex]);
                         if (log2 == 63 - subindex)
                         {
@@ -450,7 +450,7 @@ namespace Tests.Theraot.Core
         public void BinaryUShort()
         {
             var input = new ushort[] { 22141, 14600, 10644, 16083, 28048, 1848, 11960, 18238, 16086, 12726 };
-            var output = new string[]
+            var output = new[]
             {
                 "0101011001111101",
                 "0011100100001000",
@@ -465,13 +465,13 @@ namespace Tests.Theraot.Core
             };
             for (int index = 0; index < input.Length; index++)
             {
-                Assert.AreEqual(output[index], NumericHelper.ToStringBinary(input[index]));
+                Assert.AreEqual(output[index], input[index].ToStringBinary());
                 var characters = output[index].ToCharArray();
-                var bitsBinary = NumericHelper.BitsBinary(input[index]).ToArray();
-                var bits = NumericHelper.Bits(input[index]).ToArray();
-                var bitsLog2 = NumericHelper.BitsLog2(input[index]).ToArray();
+                var bitsBinary = input[index].BitsBinary().ToArray();
+                var bits = input[index].Bits().ToArray();
+                var bitsLog2 = input[index].BitsLog2().ToArray();
                 var reverse = NumericHelper.BinaryReverse(input[index]);
-                var rbitsBinary = NumericHelper.BitsBinary(reverse).ToArray();
+                var rbitsBinary = reverse.BitsBinary().ToArray();
                 var bitIndex = 0;
                 for (int subindex = 0; subindex < 16; subindex++)
                 {
@@ -479,7 +479,7 @@ namespace Tests.Theraot.Core
                     Assert.AreEqual(characters[15 - subindex].ToString(), rbitsBinary[subindex].ToString());
                     if (bitIndex < bits.Length)
                     {
-                        var log2 = NumericHelper.Log2(unchecked((ushort)bits[bitIndex]));
+                        var log2 = NumericHelper.Log2(unchecked(bits[bitIndex]));
                         Assert.AreEqual(log2, bitsLog2[bitIndex]);
                         if (log2 == 15 - subindex)
                         {
@@ -500,7 +500,7 @@ namespace Tests.Theraot.Core
         [Test]
         public void BuildDouble()
         {
-            var input_long = new long[]
+            var inputLong = new[]
             {
                 2318709486335437829,
                 5863966414194722965,
@@ -513,11 +513,11 @@ namespace Tests.Theraot.Core
                 -3043789911413372093,
                 -6411351321497233834
             };
-            foreach (var x in input_long)
+            foreach (var x in inputLong)
             {
                 CheckValue(NumericHelper.Int64AsDouble(x));
             }
-            var input_double = new double[]
+            var inputDouble = new[]
             {
                 2318709486335437829,
                 5863966414194722965,
@@ -533,7 +533,7 @@ namespace Tests.Theraot.Core
                 double.NegativeInfinity,
                 double.NaN
             };
-            foreach (var x in input_double)
+            foreach (var x in inputDouble)
             {
                 CheckValue(x);
             }

@@ -1,6 +1,4 @@
-﻿#if FAT
-
-//
+﻿//
 // TaskTest.cs
 //
 // Authors:
@@ -444,21 +442,28 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void LongRunning()
         {
-            bool? is_tp = null;
-            bool? is_bg = null;
-            var t = new Task(() => { is_tp = Thread.CurrentThread.IsThreadPoolThread; is_bg = Thread.CurrentThread.IsBackground; });
+            var is_tp = false;
+            var is_bg = false;
+            Action action =
+                () =>
+                {
+                    is_tp = Thread.CurrentThread.IsThreadPoolThread;
+                    is_bg = Thread.CurrentThread.IsBackground;
+                };
+            var t = new Task(action);
             t.Start();
+            Thread.Sleep(1); // Preventing the task to be executed form Wait
             Assert.IsTrue(t.Wait(5000), "#0");
-            Assert.IsTrue((bool)is_tp, "#1");
-            Assert.IsTrue((bool)is_bg, "#2");
+            Assert.IsTrue(is_tp, "#1");
+            Assert.IsTrue(is_bg, "#2");
 
-            is_tp = null;
-            is_bg = null;
-            t = new Task(() => { is_tp = Thread.CurrentThread.IsThreadPoolThread; is_bg = Thread.CurrentThread.IsBackground; }, TaskCreationOptions.LongRunning);
+            is_tp = true;
+            is_bg = false;
+            t = new Task(action, TaskCreationOptions.LongRunning);
             t.Start();
             Assert.IsTrue(t.Wait(5000), "#10");
-            Assert.IsFalse((bool)is_tp, "#11");
-            Assert.IsTrue((bool)is_bg, "#12");
+            Assert.IsFalse(is_tp, "#11");
+            Assert.IsTrue(is_bg, "#12");
         }
 
 #if !NET40
@@ -530,13 +535,26 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void DenyChildAttachTest()
         {
-            Assert.Fail();
             var mre = new ManualResetEventSlim();
             Task nested = null;
-            Task parent = Task.Factory.StartNew(() => {
-                nested = Task.Factory.StartNew(() => mre.Wait(2000), TaskCreationOptions.AttachedToParent);
-            }, TaskCreationOptions.DenyChildAttach);
-            Assert.IsTrue(parent.Wait(1000), "#1");
+            Action innerAction = () =>
+            {
+                mre.Wait(2000);
+            };
+            Action outerAction = () =>
+            {
+                nested = Task.Factory.StartNew
+                (
+                    innerAction,
+                    TaskCreationOptions.AttachedToParent
+                );
+            };
+            Task parent = Task.Factory.StartNew
+                (
+                    outerAction,
+                    TaskCreationOptions.DenyChildAttach
+                );
+            Assert.IsTrue(parent.Wait(10000), "#1");
             mre.Set();
             Assert.IsTrue(nested.Wait(2000), "#2");
         }
@@ -581,5 +599,3 @@ namespace MonoTests.System.Threading.Tasks
 #endif
     }
 }
-
-#endif

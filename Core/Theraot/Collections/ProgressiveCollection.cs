@@ -8,8 +8,8 @@ using Theraot.Core;
 
 namespace Theraot.Collections
 {
-    [System.Serializable]
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [Serializable]
+    [System.Diagnostics.DebuggerNonUserCode]
     public partial class ProgressiveCollection<T> : IReadOnlyCollection<T>, ICollection<T>
     {
         private readonly ICollection<T> _cache;
@@ -69,7 +69,7 @@ namespace Theraot.Collections
             }
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns True")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns True")]
         bool ICollection<T>.IsReadOnly
         {
             get
@@ -105,18 +105,15 @@ namespace Theraot.Collections
             {
                 return true;
             }
-            else
+            T found;
+            while (_progressor.TryTake(out found))
             {
-                T _item;
-                while (_progressor.TryTake(out _item))
+                if (_comparer.Equals(item, found))
                 {
-                    if (_comparer.Equals(item, _item))
-                    {
-                        return true;
-                    }
+                    return true;
                 }
-                return false;
             }
+            return false;
         }
 
         public bool Contains(T item, IEqualityComparer<T> comparer)
@@ -158,13 +155,13 @@ namespace Theraot.Collections
             }
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
         void ICollection<T>.Add(T item)
         {
             throw new NotSupportedException();
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
         void ICollection<T>.Clear()
         {
             throw new NotSupportedException();
@@ -175,7 +172,7 @@ namespace Theraot.Collections
             return GetEnumerator();
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
         bool ICollection<T>.Remove(T item)
         {
             throw new NotSupportedException();

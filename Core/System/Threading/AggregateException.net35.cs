@@ -3,10 +3,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Security;
-using Theraot.Collections;
 using Theraot.Core;
 
 namespace System.Threading
@@ -37,43 +35,25 @@ namespace System.Threading
         }
 
         public AggregateException(params Exception[] innerExceptions)
-            : this
-            (
-                Check.NotNullArgument
-                (
-                    innerExceptions as IEnumerable<Exception>,
-                    "innerExceptions"
-                ),
-                string.Empty,
-                innerExceptions.FirstOrDefault()
-            )
+            : this(innerExceptions, string.Empty)
         {
             //Empty
         }
 
         public AggregateException(string message, params Exception[] innerExceptions)
-            : this
-            (
-                Check.NotNullArgument
-                (
-                    innerExceptions as IEnumerable<Exception>,
-                    "innerExceptions"
-                ),
-                message,
-                innerExceptions.FirstOrDefault()
-            )
+            : this(innerExceptions, message)
         {
             //Empty
         }
 
         public AggregateException(IEnumerable<Exception> innerExceptions)
-            : this(Check.NotNullArgument(innerExceptions, "innerExceptions"), string.Empty, System.Linq.Enumerable.FirstOrDefault(innerExceptions))
+            : this(innerExceptions, string.Empty)
         {
             //Empty
         }
 
         public AggregateException(string message, IEnumerable<Exception> innerExceptions)
-            : this(Check.NotNullArgument(innerExceptions, "innerExceptions"), message, innerExceptions.FirstOrDefault())
+            : this(innerExceptions, message)
         {
             //Empty
         }
@@ -100,17 +80,16 @@ namespace System.Threading
             }
         }
 
-        private AggregateException(IEnumerable<Exception> innerExceptions, string message, Exception innerException)
-            : base(GetFormattedMessage(message, innerExceptions), innerException)
+        private AggregateException(CreationInfo creationInfo)
+            : base(creationInfo.String, creationInfo.Exception)
         {
-            _innerExceptions = new ReadOnlyCollection<Exception>
-            (
-                innerExceptions.Where
-                (
-                    input => input != null,
-                    ActionHelper.GetThrowAction(new ArgumentException("An element of innerExceptions is null."))
-                ).ToList()
-            );
+            _innerExceptions = creationInfo.InnerExceptions;
+        }
+
+        private AggregateException(IEnumerable<Exception> innerExceptions, string message)
+            : this(GetCreationInfo(message, innerExceptions))
+        {
+            // Empty
         }
 
         public ReadOnlyCollection<Exception> InnerExceptions
@@ -155,23 +134,17 @@ namespace System.Threading
                 {
                     return result;
                 }
-                else
+                var tmp = item as AggregateException;
+                if (tmp == null)
                 {
-                    var tmp = item as AggregateException;
-                    if (tmp == null)
-                    {
-                        return item;
-                    }
-                    else
-                    {
-                        result = tmp;
-                    }
+                    return item;
                 }
+                result = tmp;
             }
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2123:OverrideLinkDemandsShouldBeIdenticalToBase", Justification = "Microsoft's Design")]
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands", Justification = "Microsoft's Design")]
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2123:OverrideLinkDemandsShouldBeIdenticalToBase", Justification = "Microsoft's Design")]
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2122:DoNotIndirectlyExposeMethodsWithLinkDemands", Justification = "Microsoft's Design")]
         [SecurityCritical]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
@@ -179,13 +152,10 @@ namespace System.Threading
             {
                 throw new ArgumentNullException("info");
             }
-            else
-            {
-                base.GetObjectData(info, context);
-                var exceptionArray = new Exception[_innerExceptions.Count];
-                _innerExceptions.CopyTo(exceptionArray, 0);
-                info.AddValue("InnerExceptions", exceptionArray, typeof(Exception[]));
-            }
+            base.GetObjectData(info, context);
+            var exceptionArray = new Exception[_innerExceptions.Count];
+            _innerExceptions.CopyTo(exceptionArray, 0);
+            info.AddValue("InnerExceptions", exceptionArray, typeof(Exception[]));
         }
 
         public void Handle(Func<Exception, bool> predicate)
@@ -194,27 +164,24 @@ namespace System.Threading
             {
                 throw new ArgumentNullException("predicate");
             }
-            else
+            var failed = new List<Exception>();
+            foreach (var exception in _innerExceptions)
             {
-                var failed = new List<Exception>();
-                foreach (var exception in _innerExceptions)
+                try
                 {
-                    try
+                    if (!predicate(exception))
                     {
-                        if (!predicate(exception))
-                        {
-                            failed.Add(exception);
-                        }
-                    }
-                    catch
-                    {
-                        throw new AggregateException(failed);
+                        failed.Add(exception);
                     }
                 }
-                if (failed.Count > 0)
+                catch
                 {
                     throw new AggregateException(failed);
                 }
+            }
+            if (failed.Count > 0)
+            {
+                throw new AggregateException(failed);
             }
         }
 
@@ -223,18 +190,74 @@ namespace System.Threading
             return Message;
         }
 
-        private static string GetFormattedMessage(string customMessage, IEnumerable<Exception> exceptions)
+        private static CreationInfo GetCreationInfo(string customMessage, IEnumerable<Exception> innerExceptions)
         {
-            var result = new System.Text.StringBuilder(string.Format(STR_BaseMessage, customMessage));
-            foreach (var exception in exceptions)
+            if (innerExceptions == null)
             {
-                result.Append(Environment.NewLine);
-                result.Append("[ ");
-                result.Append(exception);
-                result.Append(" ]");
-                result.Append(Environment.NewLine);
+                throw new ArgumentNullException("innerExceptions");
             }
-            return result.ToString();
+            return new CreationInfo(customMessage, innerExceptions);
+        }
+
+        private class CreationInfo
+        {
+            private readonly Exception _exception;
+
+            private readonly ReadOnlyCollection<Exception> _innerExceptions;
+
+            private readonly string _string;
+
+            public CreationInfo(string customMessage, IEnumerable<Exception> innerExceptions)
+            {
+                var exceptions = new List<Exception>();
+                var result = new Text.StringBuilder(string.Format(STR_BaseMessage, customMessage));
+                var first = true;
+                _exception = null;
+                foreach (var exception in innerExceptions)
+                {
+                    if (exception == null)
+                    {
+                        throw new ArgumentException("An element of innerExceptions is null.");
+                    }
+                    if (first)
+                    {
+                        _exception = exception;
+                        first = false;
+                    }
+                    exceptions.Add(exception);
+                    result.Append(Environment.NewLine);
+                    result.Append("[ ");
+                    result.Append(exception);
+                    result.Append(" ]");
+                    result.Append(Environment.NewLine);
+                }
+                _string = result.ToString();
+                _innerExceptions = exceptions.AsReadOnly();
+            }
+
+            public Exception Exception
+            {
+                get
+                {
+                    return _exception;
+                }
+            }
+
+            public ReadOnlyCollection<Exception> InnerExceptions
+            {
+                get
+                {
+                    return _innerExceptions;
+                }
+            }
+
+            public string String
+            {
+                get
+                {
+                    return _string;
+                }
+            }
         }
     }
 }
