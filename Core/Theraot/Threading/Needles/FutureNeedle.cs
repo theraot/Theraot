@@ -1,18 +1,57 @@
 #if FAT
 
 using System;
+using System.Threading;
 
 namespace Theraot.Threading.Needles
 {
     [Serializable]
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public class FutureNeedle<T> : LazyNeedle<T>
     {
-        public FutureNeedle(Func<T> load)
-            : base(load)
+        private int _status;
+
+        public FutureNeedle(Func<T> valueFactory)
+            : base(valueFactory)
         {
-            var waitCallback = new System.Threading.WaitCallback(_ => Initialize());
-            System.Threading.ThreadPool.QueueUserWorkItem(waitCallback);
+            Schedule();
+        }
+
+        public FutureNeedle(Func<T> valueFactory, bool schedule)
+            : base(valueFactory)
+        {
+            if (schedule)
+            {
+                Schedule();
+            }
+        }
+
+        public override void Initialize()
+        {
+            if (Interlocked.CompareExchange(ref _status, 1, 0) != 0)
+            {
+                base.Wait();
+            }
+            else
+            {
+                base.Initialize();
+            }
+        }
+
+        public bool Schedule()
+        {
+            if (Interlocked.CompareExchange(ref _status, 1, 0) != 0)
+            {
+                return false;
+            }
+            var waitCallback = new WaitCallback(_ => Initialize());
+            ThreadPool.QueueUserWorkItem(waitCallback);
+            return true;
+        }
+
+        public override void Wait()
+        {
+            Initialize();
         }
     }
 }

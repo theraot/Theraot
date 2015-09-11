@@ -15,6 +15,7 @@ namespace Theraot.Collections
     {
         private ProxyObservable<T> _proxy;
         private TryTake<T> _tryTake;
+        private bool _done;
 
         public Progressor(Progressor<T> wrapped)
         {
@@ -48,6 +49,7 @@ namespace Theraot.Collections
                     }
                     else
                     {
+                        _done = wrapped._done;
                         return false;
                     }
                 }
@@ -117,6 +119,7 @@ namespace Theraot.Collections
                             }
                             else
                             {
+                                _done = wrapped._done;
                                 return false;
                             }
                         }
@@ -219,6 +222,7 @@ namespace Theraot.Collections
                             }
                             else
                             {
+                                _done = wrapped._done;
                                 return false;
                             }
                         }
@@ -279,7 +283,7 @@ namespace Theraot.Collections
             };
         }
 
-        public Progressor(TryTake<T> tryTake)
+        public Progressor(TryTake<T> tryTake, bool doneOnFalse)
         {
             Check.NotNullArgument(tryTake, "tryTake");
             _proxy = new ProxyObservable<T>();
@@ -290,17 +294,39 @@ namespace Theraot.Collections
                     _proxy.OnNext(value);
                     return true;
                 }
-                else
+                _done = doneOnFalse;
+                return false;
+            };
+        }
+
+        public Progressor(TryTake<T> tryTake, Func<bool> isDone)
+        {
+            Check.NotNullArgument(tryTake, "tryTake");
+            _proxy = new ProxyObservable<T>();
+            _tryTake = (out T value) =>
+            {
+                if (tryTake(out value))
                 {
-                    return false;
+                    _proxy.OnNext(value);
+                    return true;
                 }
+                _done = isDone();
+                return false;
             };
         }
 
         public Progressor(IObservable<T> wrapped)
         {
             var buffer = new SafeQueue<T>();
-            wrapped.SubscribeAction(buffer.Add);
+            wrapped.Subscribe
+                (
+                    new CustomObserver<T>
+                    (
+                        () => _done = true,
+                        exception => _done = true,
+                        buffer.Add
+                    )
+                );
             _proxy = new ProxyObservable<T>();
 
             _tryTake = (out T value) =>
@@ -310,11 +336,8 @@ namespace Theraot.Collections
                     _proxy.OnNext(value);
                     return true;
                 }
-                else
-                {
-                    value = default(T);
-                    return false;
-                }
+                value = default(T);
+                return false;
             };
         }
 
@@ -328,7 +351,7 @@ namespace Theraot.Collections
         {
             get
             {
-                return _tryTake != null;
+                return _tryTake == null;
             }
         }
 
@@ -341,19 +364,9 @@ namespace Theraot.Collections
 
             Predicate<TInput> newFilter = item => Thread.VolatileRead(ref control) == 0;
             var buffer = new SafeQueue<T>();
-            wrapped.SubscribeAction
-            (
-                item =>
-                {
-                    if (newFilter(item))
-                    {
-                        buffer.Add(converter(item));
-                    }
-                }
-            );
             var proxy = new ProxyObservable<T>();
 
-            return new Progressor<T>(
+            var result = new Progressor<T>(
                 (out T value) =>
                 {
                     Interlocked.Increment(ref control);
@@ -381,6 +394,22 @@ namespace Theraot.Collections
                 },
                 proxy
             );
+            wrapped.Subscribe
+            (
+                new CustomObserver<TInput>
+                (
+                    () => result._done = true,
+                    exception => result._done = true,
+                    item =>
+                    {
+                        if (newFilter(item))
+                        {
+                            buffer.Add(converter(item));
+                        }
+                    }
+                )
+            );
+            return result;
         }
 
         public static Progressor<T> CreatedFiltered(Progressor<T> wrapped, Predicate<T> filter)
@@ -392,19 +421,9 @@ namespace Theraot.Collections
 
             Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0 && filter(item);
             var buffer = new SafeQueue<T>();
-            wrapped.SubscribeAction
-            (
-                item =>
-                {
-                    if (newFilter(item))
-                    {
-                        buffer.Add(item);
-                    }
-                }
-            );
             var proxy = new ProxyObservable<T>();
 
-            return new Progressor<T>(
+            var result = new Progressor<T>(
                 (out T value) =>
                 {
                     Thread.VolatileWrite(ref control, 1);
@@ -438,6 +457,22 @@ namespace Theraot.Collections
                 },
                 proxy
             );
+            wrapped.Subscribe
+            (
+                new CustomObserver<T>
+                (
+                    () => result._done = true,
+                    exception => result._done = true,
+                    item =>
+                    {
+                        if (newFilter(item))
+                        {
+                            buffer.Add(item);
+                        }
+                    }
+                )
+            );
+            return result;
         }
 
         public static Progressor<T> CreatedFilteredConverted<TInput>(Progressor<TInput> wrapped, Predicate<TInput> filter, Converter<TInput, T> converter)
@@ -450,19 +485,9 @@ namespace Theraot.Collections
 
             Predicate<TInput> newFilter = item => Thread.VolatileRead(ref control) == 0 && filter(item);
             var buffer = new SafeQueue<T>();
-            wrapped.SubscribeAction
-            (
-                item =>
-                {
-                    if (newFilter(item))
-                    {
-                        buffer.Add(converter(item));
-                    }
-                }
-            );
             var proxy = new ProxyObservable<T>();
 
-            return new Progressor<T>(
+            var result = new Progressor<T>(
                 (out T value) =>
                 {
                     Interlocked.Increment(ref control);
@@ -498,6 +523,22 @@ namespace Theraot.Collections
                 },
                 proxy
             );
+            wrapped.Subscribe
+            (
+                new CustomObserver<TInput>
+                (
+                    () => result._done = true,
+                    exception => result._done = true,
+                    item =>
+                    {
+                        if (newFilter(item))
+                        {
+                            buffer.Add(converter(item));
+                        }
+                    }
+                )
+            );
+            return result;
         }
 
         public static Progressor<T> CreateDistinct(Progressor<T> wrapped)
@@ -508,19 +549,9 @@ namespace Theraot.Collections
 
             var buffer = new SafeDictionary<T, bool>();
             Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0;
-            wrapped.SubscribeAction
-            (
-                item =>
-                {
-                    if (newFilter(item))
-                    {
-                        buffer.TryAdd(item, false);
-                    }
-                }
-            );
             var proxy = new ProxyObservable<T>();
 
-            return new Progressor<T>(
+            var result = new Progressor<T>(
                 (out T value) =>
                 {
                     Interlocked.Increment(ref control);
@@ -560,10 +591,27 @@ namespace Theraot.Collections
                 },
                 proxy
             );
+            wrapped.Subscribe
+            (
+                new CustomObserver<T>
+                (
+                    () => result._done = true,
+                    exception => result._done = true,
+                    item =>
+                    {
+                        if (newFilter(item))
+                        {
+                            buffer.TryAdd(item, false);
+                        }
+                    }
+                )
+            );
+            return result;
         }
 
         public IEnumerable<T> AsEnumerable()
         {
+            // After enumerating, check if the Progressor is closed.
             T item;
             while (_tryTake(out item))
             {
@@ -584,10 +632,7 @@ namespace Theraot.Collections
             {
                 return _proxy.Subscribe(observer);
             }
-            else
-            {
-                return Disposable.Create(ActionHelper.GetNoopAction());
-            }
+            return Disposable.Create(ActionHelper.GetNoopAction());
         }
 
         public bool TryTake(out T item)
@@ -598,17 +643,14 @@ namespace Theraot.Collections
                 {
                     return true;
                 }
-                else
+                if (_done)
                 {
                     Close();
-                    return false;
                 }
-            }
-            else
-            {
-                item = default(T);
                 return false;
             }
+            item = default(T);
+            return false;
         }
 
         public IEnumerable<T> While(Predicate<T> predicate)

@@ -11,7 +11,7 @@ using Theraot.Threading.Needles;
 namespace Theraot.Threading
 {
     [System.Diagnostics.DebuggerDisplay("IsValueCreated={IsValueCreated}, Value={ValueForDebugDisplay}")]
-    public sealed class TrackingThreadLocal<T> : IDisposable, IThreadLocal<T>, IPromise<T>, ICacheNeedle<T>, IObserver<T>
+    public sealed class TrackingThreadLocal<T> : IDisposable, IThreadLocal<T>, IWaitablePromise<T>, ICacheNeedle<T>, IObserver<T>
     {
         private const int INT_MaxProbingHint = 4;
 
@@ -116,16 +116,11 @@ namespace Theraot.Threading
         {
             get
             {
-                T target;
-                if (TryGetValue(Thread.CurrentThread, out target))
-                {
-                    return target;
-                }
-                return default(T);
+                return ValueForDebugDisplay;
             }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {
             if (Interlocked.CompareExchange(ref _disposing, 1, 0) == 0)
@@ -181,7 +176,7 @@ namespace Theraot.Threading
             Value = value;
         }
 
-        void IPromise.Wait()
+        void IWaitablePromise.Wait()
         {
             GC.KeepAlive(Value);
         }
@@ -236,6 +231,15 @@ namespace Theraot.Threading
                 throw new ObjectDisposedException(GetType().FullName);
             }
             _slots.Set(thread, new ReadOnlyStructNeedle<T>(value));
+        }
+
+        internal T ValueForDebugDisplay
+        {
+            get
+            {
+                T target;
+                return TryGetValue(Thread.CurrentThread, out target) ? target : default(T);
+            }
         }
     }
 }

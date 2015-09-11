@@ -215,8 +215,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="System\Collections\Concurrent\CollectionStressTestHelper.cs" />
     <Compile Include="System\Collections\Concurrent\ConcurrentDictionaryTestsEx.cs" />
     <Compile Include="System\Collections\Concurrent\ConcurrentDictionaryTests.cs" />
+    <Compile Include="System\Collections\Concurrent\ConcurrentQueueTests.cs" />
     <Compile Include="System\Collections\ObjectModel\ObservableCollectionTest.cs" />
     <Compile Include="System\Diagnostics\Contracts\AssertTests.cs" />
     <Compile Include="System\Diagnostics\Contracts\RequireTests.cs" />
@@ -260,15 +262,19 @@
     <Compile Include="System\Runtime\ExceptionServices\ExceptionDispatchInfoTestEx.cs" />
     <Compile Include="System\Threading\CancellationTokenSourceTestEx.cs" />
     <Compile Include="System\Threading\ReaderWriterLockSlimTest.cs" />
+    <Compile Include="System\Threading\Tasks\MinimalTaskTests.cs" />
     <Compile Include="Theraot\Collections\ExtensionsTest.cs" />
     <Compile Include="Theraot\Collections\ProgressiveLookupTestEx.cs" />
     <Compile Include="Theraot\Collections\ProgressiveLookupTest.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Theraot\Collections\ProgressorTestEx.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\FixesSizeQueueTest.cs" />
     <Compile Include="Theraot\Core\PrimeHelperTest.cs" />
     <Compile Include="Theraot\Core\NumericHelperTest.cs" />
     <Compile Include="Theraot\Threading\Needles\LockableNeedleTest.cs" />
     <Compile Include="Theraot\Threading\Needles\WorkTest.cs" />
+    <Compile Include="Theraot\Threading\ReentryGuardTests.cs" />
     <Compile Include="throwback.cs">
       <DependentUpon>throwback.tt</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -359,7 +365,5 @@
       <Name>Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="System\Threading\Tasks\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

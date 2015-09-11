@@ -1,4 +1,4 @@
-// AtomicBooleanValue.cs
+﻿// AtomicBoolean.cs
 //
 // Copyright (c) 2008 Jérémie "Garuma" Laval
 //
@@ -20,13 +20,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#if FAT
+// Needed for NET30
 
 using System.Runtime.CompilerServices;
+using System.Threading;
 
-namespace System.Threading
+namespace Theraot.Threading
 {
-    public struct AtomicBooleanValue
+    public class AtomicBoolean
     {
         private const int INT_Set = 1;
         private const int INT_UnSet = 0;
@@ -44,52 +45,52 @@ namespace System.Threading
             }
         }
 
-        public static implicit operator AtomicBooleanValue(bool value)
+        public static implicit operator AtomicBoolean(bool value)
         {
             return FromValue(value);
         }
 
-        public static explicit operator bool(AtomicBooleanValue atomicBooleanValue)
+        public static explicit operator bool(AtomicBoolean atomicBoolean)
         {
-            return atomicBooleanValue.Value;
+            return atomicBoolean.Value;
         }
 
-        public static bool operator ==(AtomicBooleanValue left, AtomicBooleanValue right)
+        public static bool operator ==(AtomicBoolean left, AtomicBoolean right)
         {
-            return left.Equals(right);
+            return ReferenceEquals(left, null) ? ReferenceEquals(right, null) : left.Equals(right);
         }
 
-        public static bool operator !=(AtomicBooleanValue left, AtomicBooleanValue right)
+        public static bool operator !=(AtomicBoolean left, AtomicBoolean right)
         {
-            return !left.Equals(right);
+            return ReferenceEquals(left, null) ? !ReferenceEquals(right, null) : !left.Equals(right);
         }
 
-        public static AtomicBooleanValue FromValue(bool value)
+        public static AtomicBoolean FromValue(bool value)
         {
-            return new AtomicBooleanValue { Value = value };
+            return new AtomicBoolean { Value = value };
         }
 
         public bool CompareAndExchange(bool expected, bool newVal)
         {
-            int newTemp = newVal ? INT_Set : INT_UnSet;
-            int expectedTemp = expected ? INT_Set : INT_UnSet;
+            var newTemp = newVal ? INT_Set : INT_UnSet;
+            var expectedTemp = expected ? INT_Set : INT_UnSet;
 
             return Interlocked.CompareExchange(ref _flag, newTemp, expectedTemp) == expectedTemp;
         }
 
-        public bool Equals(AtomicBooleanValue obj)
+        public bool Equals(AtomicBoolean obj)
         {
             return _flag == obj._flag;
         }
 
         public override bool Equals(object obj)
         {
-            return obj is AtomicBooleanValue && Equals((AtomicBooleanValue)obj);
+            return obj is AtomicBoolean && Equals((AtomicBoolean)obj);
         }
 
         public bool Exchange(bool newVal)
         {
-            int newTemp = newVal ? INT_Set : INT_UnSet;
+            var newTemp = newVal ? INT_Set : INT_UnSet;
             return Interlocked.Exchange(ref _flag, newTemp) == INT_Set;
         }
 
@@ -109,5 +110,3 @@ namespace System.Threading
         }
     }
 }
-
-#endif

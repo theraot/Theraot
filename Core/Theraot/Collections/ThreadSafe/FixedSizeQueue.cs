@@ -34,6 +34,18 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="FixedSizeQueue{T}" /> class.
+        /// </summary>
+        public FixedSizeQueue(IEnumerable<T> source)
+        {
+            _indexDequeue = 0;
+            _entries = new Bucket<T>(source);
+            _capacity = _entries.Capacity;
+            _indexEnqueue = _entries.Count;
+            _preCount = _indexEnqueue;
+        }
+
+        /// <summary>
         /// Gets the capacity.
         /// </summary>
         public int Capacity
@@ -133,8 +145,8 @@ namespace Theraot.Collections.ThreadSafe
         public bool TryPeek(out T item)
         {
             item = default(T);
-            int index = Interlocked.Add(ref _indexEnqueue, 0);
-            return index < _capacity && index > 0 && _entries.TryGet(index, out item);
+            int index = Interlocked.Add(ref _indexDequeue, 0);
+            return index < _capacity && index > 0 && _entries.TryGetInternal(index, out item);
         }
 
         /// <summary>
@@ -152,7 +164,7 @@ namespace Theraot.Collections.ThreadSafe
                 if (preCount >= 0)
                 {
                     var index = (Interlocked.Increment(ref _indexDequeue) - 1) & (_capacity - 1);
-                    if (_entries.RemoveAt(index, out item))
+                    if (_entries.RemoveAtInternal(index, out item))
                     {
                         return true;
                     }

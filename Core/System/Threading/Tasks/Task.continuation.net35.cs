@@ -3,7 +3,7 @@
 
 namespace System.Threading.Tasks
 {
-    public partial class Task : IDisposable, IAsyncResult
+    public partial class Task
     {
         /// <summary>
         /// Runs all of the continuations, as appropriate.

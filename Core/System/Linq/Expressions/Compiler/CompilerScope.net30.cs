@@ -492,7 +492,6 @@ namespace System.Linq.Expressions.Compiler
                 return block.Variables;
             }
             return new[] { ((CatchBlock)scope).Variable };
-            return new ParameterExpression[0];
         }
 
         private string CurrentLambdaName

@@ -173,6 +173,7 @@ namespace System.Linq.Expressions.Interpreter
     /// <summary>
     /// The re-throw instrcution will throw this exception
     /// </summary>
+    [Serializable]
     internal sealed class RethrowException : Exception
     {
     }

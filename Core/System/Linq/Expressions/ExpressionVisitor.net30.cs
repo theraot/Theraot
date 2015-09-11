@@ -1,35 +1,21 @@
-#if NET20 || NET30
+#if NET20 || NET30 || NET35
 
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Runtime.CompilerServices;
-using System.Reflection;
 using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
-    /// <summary>
-    /// Represents a visitor or rewriter for expression trees.
-    /// </summary>
-    /// <remarks>
-    /// This class is designed to be inherited to create more specialized
-    /// classes whose functionality requires traversing, examining or copying
-    /// an expression tree.
-    /// </remarks>
-    public abstract class ExpressionVisitor
-    {
-        /// <summary>
-        /// Initializes a new instance of <see cref="ExpressionVisitor"/>.
-        /// </summary>
-        protected ExpressionVisitor()
-        {
-        }
+#if NET35
+    // Code by Matt Warren from "LINQ: Building an IQueryable Provider - Part II"
 
+    public abstract partial class ExpressionVisitor
+    {
         /// <summary>
         /// Dispatches the expression to one of the more specialized visit methods in this class.
         /// </summary>
@@ -38,150 +24,460 @@ namespace System.Linq.Expressions
         /// otherwise, returns the original expression.</returns>
         public virtual Expression Visit(Expression node)
         {
-            if (node != null)
+            if (node == null)
+                return null;
+            switch (node.NodeType)
             {
-                return node.Accept(this);
+                case ExpressionType.Negate:
+                case ExpressionType.NegateChecked:
+                case ExpressionType.Not:
+                case ExpressionType.Convert:
+                case ExpressionType.ConvertChecked:
+                case ExpressionType.ArrayLength:
+                case ExpressionType.Quote:
+                case ExpressionType.TypeAs:
+                    return VisitUnary((UnaryExpression)node);
+                case ExpressionType.Add:
+                case ExpressionType.AddChecked:
+                case ExpressionType.Subtract:
+                case ExpressionType.SubtractChecked:
+                case ExpressionType.Multiply:
+                case ExpressionType.MultiplyChecked:
+                case ExpressionType.Divide:
+                case ExpressionType.Modulo:
+                case ExpressionType.And:
+                case ExpressionType.AndAlso:
+                case ExpressionType.Or:
+                case ExpressionType.OrElse:
+                case ExpressionType.LessThan:
+                case ExpressionType.LessThanOrEqual:
+                case ExpressionType.GreaterThan:
+                case ExpressionType.GreaterThanOrEqual:
+                case ExpressionType.Equal:
+                case ExpressionType.NotEqual:
+                case ExpressionType.Coalesce:
+                case ExpressionType.ArrayIndex:
+                case ExpressionType.RightShift:
+                case ExpressionType.LeftShift:
+                case ExpressionType.ExclusiveOr:
+                    return VisitBinary((BinaryExpression)node);
+                case ExpressionType.TypeIs:
+                    return VisitTypeBinary((TypeBinaryExpression)node);
+                case ExpressionType.Conditional:
+                    return VisitConditional((ConditionalExpression)node);
+                case ExpressionType.Constant:
+                    return VisitConstant((ConstantExpression)node);
+                case ExpressionType.Parameter:
+                    return VisitParameter((ParameterExpression)node);
+                case ExpressionType.MemberAccess:
+                    return VisitMember((MemberExpression)node);
+                case ExpressionType.Call:
+                    return VisitMethodCall((MethodCallExpression)node);
+                case ExpressionType.Lambda:
+                    return VisitLambda((LambdaExpression)node);
+                case ExpressionType.New:
+                    return VisitNew((NewExpression)node);
+                case ExpressionType.NewArrayInit:
+                case ExpressionType.NewArrayBounds:
+                    return VisitNewArray((NewArrayExpression)node);
+                case ExpressionType.Invoke:
+                    return VisitInvocation((InvocationExpression)node);
+                case ExpressionType.MemberInit:
+                    return VisitMemberInit((MemberInitExpression)node);
+                case ExpressionType.ListInit:
+                    return VisitListInit((ListInitExpression)node);
+                default:
+                    throw new Exception(string.Format("Unhandled expression type: '{0}'", node.NodeType));
             }
-            return null;
         }
 
         /// <summary>
-        /// Dispatches the list of expressions to one of the more specialized visit methods in this class.
+        /// Visits the children of the <see cref="BinaryExpression" />.
         /// </summary>
-        /// <param name="nodes">The expressions to visit.</param>
-        /// <returns>The modified expression list, if any of the elements were modified;
-        /// otherwise, returns the original expression list.</returns>
-        public ReadOnlyCollection<Expression> Visit(ReadOnlyCollection<Expression> nodes)
-        {
-            Expression[] newNodes = null;
-            for (int i = 0, n = nodes.Count; i < n; i++)
-            {
-                Expression node = Visit(nodes[i]);
-
-                if (newNodes != null)
-                {
-                    newNodes[i] = node;
-                }
-                else if (!object.ReferenceEquals(node, nodes[i]))
-                {
-                    newNodes = new Expression[n];
-                    for (int j = 0; j < i; j++)
-                    {
-                        newNodes[j] = nodes[j];
-                    }
-                    newNodes[i] = node;
-                }
-            }
-            if (newNodes == null)
-            {
-                return nodes;
-            }
-            return new TrueReadOnlyCollection<Expression>(newNodes);
-        }
-
-        private Expression[] VisitArguments(IArgumentProvider nodes)
-        {
-            return ExpressionVisitorUtils.VisitArguments(this, nodes);
-        }
-
-        /// <summary>
-        /// Visits all nodes in the collection using a specified element visitor.
-        /// </summary>
-        /// <typeparam name="T">The type of the nodes.</typeparam>
-        /// <param name="nodes">The nodes to visit.</param>
-        /// <param name="elementVisitor">A delegate that visits a single element,
-        /// optionally replacing it with a new element.</param>
-        /// <returns>The modified node list, if any of the elements were modified;
-        /// otherwise, returns the original node list.</returns>
-        public static ReadOnlyCollection<T> Visit<T>(ReadOnlyCollection<T> nodes, Func<T, T> elementVisitor)
-        {
-            T[] newNodes = null;
-            for (int i = 0, n = nodes.Count; i < n; i++)
-            {
-                T node = elementVisitor(nodes[i]);
-                if (newNodes != null)
-                {
-                    newNodes[i] = node;
-                }
-                else if (!object.ReferenceEquals(node, nodes[i]))
-                {
-                    newNodes = new T[n];
-                    for (int j = 0; j < i; j++)
-                    {
-                        newNodes[j] = nodes[j];
-                    }
-                    newNodes[i] = node;
-                }
-            }
-            if (newNodes == null)
-            {
-                return nodes;
-            }
-            return new TrueReadOnlyCollection<T>(newNodes);
-        }
-
-        /// <summary>
-        /// Visits an expression, casting the result back to the original expression type.
-        /// </summary>
-        /// <typeparam name="T">The type of the expression.</typeparam>
         /// <param name="node">The expression to visit.</param>
-        /// <param name="callerName">The name of the calling method; used to report to report a better error message.</param>
         /// <returns>The modified expression, if it or any subexpression was modified;
         /// otherwise, returns the original expression.</returns>
-        /// <exception cref="InvalidOperationException">The visit method for this node returned a different type.</exception>
-        public T VisitAndConvert<T>(T node, string callerName) where T : Expression
+        protected internal virtual Expression VisitBinary(BinaryExpression node)
         {
-            if (node == null)
+            var left = Visit(node.Left);
+            var conversion = VisitAndConvert(node.Conversion, "VisitBinary");
+            var right = Visit(node.Right);
+            if (left == node.Left && right == node.Right && conversion == node.Conversion)
             {
-                return null;
+                return node;
             }
-            node = Visit(node) as T;
-            if (node == null)
+            if (node.NodeType == ExpressionType.Coalesce && node.Conversion != null)
             {
-                throw Error.MustRewriteToSameNode(callerName, typeof(T), callerName);
+                return Expression.Coalesce(left, right, conversion);
+            }
+            return Expression.MakeBinary(node.NodeType, left, right, node.IsLiftedToNull, node.Method);
+        }
+
+        /// <summary>
+        /// Visits the children of the <see cref="ConditionalExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>The modified expression, if it or any subexpression was modified;
+        /// otherwise, returns the original expression.</returns>
+        protected internal virtual Expression VisitConditional(ConditionalExpression node)
+        {
+            var test = Visit(node.Test);
+            var ifTrue = Visit(node.IfTrue);
+            var ifFalse = Visit(node.IfFalse);
+            if (test != node.Test || ifTrue != node.IfTrue || ifFalse != node.IfFalse)
+            {
+                return Expression.Condition(test, ifTrue, ifFalse);
             }
             return node;
         }
 
         /// <summary>
-        /// Visits an expression, casting the result back to the original expression type.
+        /// Visits the children of the <see cref="InvocationExpression" />.
         /// </summary>
-        /// <typeparam name="T">The type of the expression.</typeparam>
-        /// <param name="nodes">The expression to visit.</param>
-        /// <param name="callerName">The name of the calling method; used to report to report a better error message.</param>
+        /// <param name="node">The expression to visit.</param>
         /// <returns>The modified expression, if it or any subexpression was modified;
         /// otherwise, returns the original expression.</returns>
-        /// <exception cref="InvalidOperationException">The visit method for this node returned a different type.</exception>
-        public ReadOnlyCollection<T> VisitAndConvert<T>(ReadOnlyCollection<T> nodes, string callerName) where T : Expression
+        protected internal virtual Expression VisitInvocation(InvocationExpression node)
         {
-            T[] newNodes = null;
-            for (int i = 0, n = nodes.Count; i < n; i++)
+            var args = VisitExpressionList(node.Arguments);
+            var expr = Visit(node.Expression);
+            if (args != node.Arguments || expr != node.Expression)
             {
-                T node = Visit(nodes[i]) as T;
-                if (node == null)
-                {
-                    throw Error.MustRewriteToSameNode(callerName, typeof(T), callerName);
-                }
+                return Expression.Invoke(expr, args);
+            }
+            return node;
+        }
 
-                if (newNodes != null)
+        protected virtual ReadOnlyCollection<Expression> VisitExpressionList(ReadOnlyCollection<Expression> original)
+        {
+            List<Expression> list = null;
+            for (int i = 0, n = original.Count; i < n; i++)
+            {
+                Expression p = Visit(original[i]);
+                if (list != null)
                 {
-                    newNodes[i] = node;
+                    list.Add(p);
                 }
-                else if (!object.ReferenceEquals(node, nodes[i]))
+                else if (p != original[i])
                 {
-                    newNodes = new T[n];
+                    list = new List<Expression>(n);
+                    for (var j = 0; j < i; j++)
+                    {
+                        list.Add(original[j]);
+                    }
+                    list.Add(p);
+                }
+            }
+            if (list != null)
+            {
+                return list.AsReadOnly();
+            }
+            return original;
+        }
+
+        /// <summary>
+        /// Visits the children of the <see cref="LambdaExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>The modified expression, if it or any subexpression was modified;
+        /// otherwise, returns the original expression.</returns>
+        protected internal virtual Expression VisitLambda(LambdaExpression node)
+        {
+            var body = Visit(node.Body);
+            if (body != node.Body)
+            {
+                return Expression.Lambda(node.Type, body, node.Parameters);
+            }
+            return node;
+        }
+
+        /// <summary>
+        /// Visits the children of the <see cref="MemberExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>The modified expression, if it or any subexpression was modified;
+        /// otherwise, returns the original expression.</returns>
+        protected internal virtual Expression VisitMember(MemberExpression node)
+        {
+            var exp = Visit(node.Expression);
+            if (exp != node.Expression)
+            {
+                return Expression.MakeMemberAccess(exp, node.Member);
+            }
+            return node;
+        }
+
+        /// <summary>
+        /// Visits the children of the <see cref="MethodCallExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>The modified expression, if it or any subexpression was modified;
+        /// otherwise, returns the original expression.</returns>
+        protected internal virtual Expression VisitMethodCall(MethodCallExpression node)
+        {
+            var obj = Visit(node.Object);
+            var args = VisitExpressionList(node.Arguments);
+            if (obj != node.Object || args != node.Arguments)
+            {
+                return Expression.Call(obj, node.Method, args);
+            }
+            return node;
+        }
+
+        /// <summary>
+        /// Visits the children of the <see cref="NewArrayExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>The modified expression, if it or any subexpression was modified;
+        /// otherwise, returns the original expression.</returns>
+        protected internal virtual Expression VisitNewArray(NewArrayExpression node)
+        {
+            var exprs = VisitExpressionList(node.Expressions);
+            if (exprs != node.Expressions)
+            {
+                if (node.NodeType == ExpressionType.NewArrayInit)
+                {
+                    return Expression.NewArrayInit(node.Type.GetElementType(), exprs);
+                }
+                return Expression.NewArrayBounds(node.Type.GetElementType(), exprs);
+            }
+            return node;
+        }
+
+        /// <summary>
+        /// Visits the children of the <see cref="NewExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>The modified expression, if it or any subexpression was modified;
+        /// otherwise, returns the original expression.</returns>
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+        protected internal virtual Expression VisitNew(NewExpression node)
+        {
+            var args = VisitExpressionList(node.Arguments);
+            if (args != node.Arguments)
+            {
+                if (node.Members != null)
+                {
+                    return Expression.New(node.Constructor, args, node.Members);
+                }
+                return Expression.New(node.Constructor, args);
+            }
+            return node;
+        }
+
+        /// <summary>
+        /// Visits the children of the <see cref="TypeBinaryExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>The modified expression, if it or any subexpression was modified;
+        /// otherwise, returns the original expression.</returns>
+        protected internal virtual Expression VisitTypeBinary(TypeBinaryExpression node)
+        {
+            var expr = Visit(node.Expression);
+            if (expr != node.Expression)
+            {
+                return Expression.TypeIs(expr, node.TypeOperand);
+            }
+            return node;
+        }
+
+        /// <summary>
+        /// Visits the children of the <see cref="UnaryExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>The modified expression, if it or any subexpression was modified;
+        /// otherwise, returns the original expression.</returns>
+        protected internal virtual Expression VisitUnary(UnaryExpression node)
+        {
+            var operand = Visit(node.Operand);
+            if (operand != node.Operand)
+            {
+                return Expression.MakeUnary(node.NodeType, operand, node.Type, node.Method);
+            }
+            return node;
+        }
+
+        /// <summary>
+        /// Visits the children of the <see cref="MemberInitExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>The modified expression, if it or any subexpression was modified;
+        /// otherwise, returns the original expression.</returns>
+        protected internal virtual Expression VisitMemberInit(MemberInitExpression node)
+        {
+            var n = (NewExpression)VisitNew(node.NewExpression);
+            var bindings = VisitBindingList(node.Bindings);
+            if (n != node.NewExpression || bindings != node.Bindings)
+            {
+                return Expression.MemberInit(n, bindings);
+            }
+            return node;
+        }
+
+        protected virtual IEnumerable<MemberBinding> VisitBindingList(ReadOnlyCollection<MemberBinding> original)
+        {
+            List<MemberBinding> list = null;
+            for (int i = 0, n = original.Count; i < n; i++)
+            {
+                MemberBinding b = VisitBinding(original[i]);
+                if (list != null)
+                {
+                    list.Add(b);
+                }
+                else if (b != original[i])
+                {
+                   list = new List<MemberBinding>(n);
                     for (int j = 0; j < i; j++)
                     {
-                        newNodes[j] = nodes[j];
+                        list.Add(original[j]);
                     }
-                    newNodes[i] = node;
+                    list.Add(b);
                 }
             }
-            if (newNodes == null)
+            if (list != null)
             {
-                return nodes;
+                return list;
             }
-            return new TrueReadOnlyCollection<T>(newNodes);
+            return original;
+        }
+
+        protected virtual MemberBinding VisitBinding(MemberBinding binding)
+        {
+            switch (binding.BindingType)
+            {
+                case MemberBindingType.Assignment:
+                    return VisitMemberAssignment((MemberAssignment)binding);
+                case MemberBindingType.MemberBinding:
+                    return VisitMemberMemberBinding((MemberMemberBinding)binding);
+                case MemberBindingType.ListBinding:
+                    return VisitMemberListBinding((MemberListBinding)binding);
+                default:
+                    throw new Exception(string.Format("Unhandled binding type '{0}'", binding.BindingType));
+            }
+        }
+
+        /// <summary>
+        /// Visits the children of the <see cref="ListInitExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>The modified expression, if it or any subexpression was modified;
+        /// otherwise, returns the original expression.</returns>
+        protected internal virtual Expression VisitListInit(ListInitExpression node)
+        {
+            var n = (NewExpression)VisitNew(node.NewExpression);
+            var initializers = VisitElementInitializerList(node.Initializers);
+            if (n != node.NewExpression || initializers != node.Initializers)
+            {
+                return Expression.ListInit(n, initializers);
+            }
+            return node;
+        }
+
+        protected virtual IEnumerable<ElementInit> VisitElementInitializerList(ReadOnlyCollection<ElementInit> original)
+        {
+            List<ElementInit> list = null;
+            for (int i = 0, n = original.Count; i < n; i++)
+            {
+                var init = VisitElementInit(original[i]);
+                if (list != null)
+                {
+                    list.Add(init);
+                }
+                else if (init != original[i])
+                {
+                    list = new List<ElementInit>(n);
+                    for (int j = 0; j < i; j++)
+                    {
+                        list.Add(original[j]);
+                    }
+                    list.Add(init);
+                }
+            }
+            if (list != null)
+            {
+                return list;
+            }
+            return original;
+        }
+
+        /// <summary>
+        /// Visits the children of the <see cref="ElementInit" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>The modified expression, if it or any subexpression was modified;
+        /// otherwise, returns the original expression.</returns>
+        protected virtual ElementInit VisitElementInit(ElementInit node)
+        {
+            var arguments = VisitExpressionList(node.Arguments);
+            if (arguments != node.Arguments)
+            {
+                return Expression.ElementInit(node.AddMethod, arguments);
+            }
+            return node;
+        }
+
+        /// <summary>
+        /// Visits the children of the <see cref="MemberAssignment" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>The modified expression, if it or any subexpression was modified;
+        /// otherwise, returns the original expression.</returns>
+        protected virtual MemberAssignment VisitMemberAssignment(MemberAssignment node)
+        {
+            var e = Visit(node.Expression);
+            if (e != node.Expression)
+            {
+                return Expression.Bind(node.Member, e);
+            }
+            return node;
+        }
+
+        /// <summary>
+        /// Visits the children of the <see cref="MemberMemberBinding" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>The modified expression, if it or any subexpression was modified;
+        /// otherwise, returns the original expression.</returns>
+        protected virtual MemberMemberBinding VisitMemberMemberBinding(MemberMemberBinding node)
+        {
+            var bindings = VisitBindingList(node.Bindings);
+            if (bindings != node.Bindings)
+            {
+                return Expression.MemberBind(node.Member, bindings);
+            }
+            return node;
+        }
+
+        /// <summary>
+        /// Visits the children of the <see cref="MemberListBinding" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>The modified expression, if it or any subexpression was modified;
+        /// otherwise, returns the original expression.</returns>
+        protected virtual MemberListBinding VisitMemberListBinding(MemberListBinding node)
+        {
+            var initializers = VisitElementInitializerList(node.Initializers);
+            if (initializers != node.Initializers)
+            {
+                return Expression.ListBind(node.Member, initializers);
+            }
+            return node;
+        }
+    }
+#else
+    public abstract partial class ExpressionVisitor
+    {
+        /// <summary>
+        /// Dispatches the expression to one of the more specialized visit methods in this class.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>The modified expression, if it or any subexpression was modified;
+        /// otherwise, returns the original expression.</returns>
+        public virtual Expression Visit(Expression node)
+        {
+            if (node == null)
+                return null;
+            return node.Accept(this);
         }
 
         /// <summary>
@@ -259,17 +555,6 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Visits the <see cref="ConstantExpression" />.
-        /// </summary>
-        /// <param name="node">The expression to visit.</param>
-        /// <returns>The modified expression, if it or any subexpression was modified;
-        /// otherwise, returns the original expression.</returns>
-        protected internal virtual Expression VisitConstant(ConstantExpression node)
-        {
-            return node;
-        }
-
-        /// <summary>
         /// Visits the <see cref="DebugInfoExpression" />.
         /// </summary>
         /// <param name="node">The expression to visit.</param>
@@ -319,7 +604,7 @@ namespace System.Linq.Expressions
             return node.Update(VisitLabelTarget(node.Target), Visit(node.Value));
         }
 
-        /// <summary>
+            /// <summary>
         /// Visits the children of the <see cref="InvocationExpression" />.
         /// </summary>
         /// <param name="node">The expression to visit.</param>
@@ -333,19 +618,7 @@ namespace System.Linq.Expressions
             {
                 return node;
             }
-
             return node.Rewrite(e, a);
-        }
-
-        /// <summary>
-        /// Visits the <see cref="LabelTarget" />.
-        /// </summary>
-        /// <param name="node">The expression to visit.</param>
-        /// <returns>The modified expression, if it or any subexpression was modified;
-        /// otherwise, returns the original expression.</returns>
-        protected virtual LabelTarget VisitLabelTarget(LabelTarget node)
-        {
-            return node;
         }
 
         /// <summary>
@@ -359,19 +632,7 @@ namespace System.Linq.Expressions
             return node.Update(VisitLabelTarget(node.Target), Visit(node.DefaultValue));
         }
 
-        /// <summary>
-        /// Visits the children of the <see cref="Expression&lt;T&gt;" />.
-        /// </summary>
-        /// <typeparam name="T">The type of the delegate.</typeparam>
-        /// <param name="node">The expression to visit.</param>
-        /// <returns>The modified expression, if it or any subexpression was modified;
-        /// otherwise, returns the original expression.</returns>
-        protected internal virtual Expression VisitLambda<T>(Expression<T> node)
-        {
-            return VisitLambda((LambdaExpression)node);
-        }
-
-        /// <summary>
+                /// <summary>
         /// Visits the children of the <see cref="LambdaExpression" />.
         /// </summary>
         /// <typeparam name="T">The type of the delegate.</typeparam>
@@ -458,21 +719,10 @@ namespace System.Linq.Expressions
         /// <param name="node">The expression to visit.</param>
         /// <returns>The modified expression, if it or any subexpression was modified;
         /// otherwise, returns the original expression.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
         protected internal virtual Expression VisitNew(NewExpression node)
         {
             return node.Update(Visit(node.Arguments));
-        }
-
-        /// <summary>
-        /// Visits the <see cref="ParameterExpression" />.
-        /// </summary>
-        /// <param name="node">The expression to visit.</param>
-        /// <returns>The modified expression, if it or any subexpression was modified;
-        /// otherwise, returns the original expression.</returns>
-        protected internal virtual Expression VisitParameter(ParameterExpression node)
-        {
-            return node;
         }
 
         /// <summary>
@@ -604,27 +854,6 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Visits the children of the <see cref="MemberBinding" />.
-        /// </summary>
-        /// <param name="node">The expression to visit.</param>
-        /// <returns>The modified expression, if it or any subexpression was modified;
-        /// otherwise, returns the original expression.</returns>
-        protected virtual MemberBinding VisitMemberBinding(MemberBinding node)
-        {
-            switch (node.BindingType)
-            {
-                case MemberBindingType.Assignment:
-                    return VisitMemberAssignment((MemberAssignment)node);
-                case MemberBindingType.MemberBinding:
-                    return VisitMemberMemberBinding((MemberMemberBinding)node);
-                case MemberBindingType.ListBinding:
-                    return VisitMemberListBinding((MemberListBinding)node);
-                default:
-                    throw Error.UnhandledBindingType(node.BindingType);
-            }
-        }
-
-        /// <summary>
         /// Visits the children of the <see cref="MemberAssignment" />.
         /// </summary>
         /// <param name="node">The expression to visit.</param>
@@ -657,6 +886,242 @@ namespace System.Linq.Expressions
             return node.Update(Visit(node.Initializers, VisitElementInit));
         }
 
+        // We wouldn't need this if switch didn't infer the method.
+        private static SwitchExpression ValidateSwitch(SwitchExpression before, SwitchExpression after)
+        {
+            // If we did not have a method, we don't want to bind to one,
+            // it might not be the right thing.
+            if (before.Comparison == null && after.Comparison != null)
+            {
+                throw Error.MustRewriteWithoutMethod(after.Comparison, "VisitSwitch");
+            }
+            return after;
+        }
+    }
+#endif
+
+    /// <summary>
+    /// Represents a visitor or rewriter for expression trees.
+    /// </summary>
+    /// <remarks>
+    /// This class is designed to be inherited to create more specialized
+    /// classes whose functionality requires traversing, examining or copying
+    /// an expression tree.
+    /// </remarks>
+    public abstract partial class ExpressionVisitor
+    {
+        /// <summary>
+        /// Initializes a new instance of <see cref="ExpressionVisitor"/>.
+        /// </summary>
+        protected ExpressionVisitor()
+        {
+            // Empty
+        }
+
+        /// <summary>
+        /// Dispatches the list of expressions to one of the more specialized visit methods in this class.
+        /// </summary>
+        /// <param name="nodes">The expressions to visit.</param>
+        /// <returns>The modified expression list, if any of the elements were modified;
+        /// otherwise, returns the original expression list.</returns>
+        public ReadOnlyCollection<Expression> Visit(ReadOnlyCollection<Expression> nodes)
+        {
+            Expression[] newNodes = null;
+            for (int i = 0, n = nodes.Count; i < n; i++)
+            {
+                Expression node = Visit(nodes[i]);
+
+                if (newNodes != null)
+                {
+                    newNodes[i] = node;
+                }
+                else if (!ReferenceEquals(node, nodes[i]))
+                {
+                    newNodes = new Expression[n];
+                    for (int j = 0; j < i; j++)
+                    {
+                        newNodes[j] = nodes[j];
+                    }
+                    newNodes[i] = node;
+                }
+            }
+            if (newNodes == null)
+            {
+                return nodes;
+            }
+            return new TrueReadOnlyCollection<Expression>(newNodes);
+        }
+
+        private Expression[] VisitArguments(IArgumentProvider nodes)
+        {
+            return ExpressionVisitorUtils.VisitArguments(this, nodes);
+        }
+
+        /// <summary>
+        /// Visits all nodes in the collection using a specified element visitor.
+        /// </summary>
+        /// <typeparam name="T">The type of the nodes.</typeparam>
+        /// <param name="nodes">The nodes to visit.</param>
+        /// <param name="elementVisitor">A delegate that visits a single element,
+        /// optionally replacing it with a new element.</param>
+        /// <returns>The modified node list, if any of the elements were modified;
+        /// otherwise, returns the original node list.</returns>
+        public static ReadOnlyCollection<T> Visit<T>(ReadOnlyCollection<T> nodes, Func<T, T> elementVisitor)
+        {
+            T[] newNodes = null;
+            for (int i = 0, n = nodes.Count; i < n; i++)
+            {
+                T node = elementVisitor(nodes[i]);
+                if (newNodes != null)
+                {
+                    newNodes[i] = node;
+                }
+                else if (!ReferenceEquals(node, nodes[i]))
+                {
+                    newNodes = new T[n];
+                    for (int j = 0; j < i; j++)
+                    {
+                        newNodes[j] = nodes[j];
+                    }
+                    newNodes[i] = node;
+                }
+            }
+            if (newNodes == null)
+            {
+                return nodes;
+            }
+            return new TrueReadOnlyCollection<T>(newNodes);
+        }
+
+        /// <summary>
+        /// Visits an expression, casting the result back to the original expression type.
+        /// </summary>
+        /// <typeparam name="T">The type of the expression.</typeparam>
+        /// <param name="node">The expression to visit.</param>
+        /// <param name="callerName">The name of the calling method; used to report to report a better error message.</param>
+        /// <returns>The modified expression, if it or any subexpression was modified;
+        /// otherwise, returns the original expression.</returns>
+        /// <exception cref="InvalidOperationException">The visit method for this node returned a different type.</exception>
+        public T VisitAndConvert<T>(T node, string callerName) where T : Expression
+        {
+            if (node == null)
+            {
+                return null;
+            }
+            node = Visit(node) as T;
+            if (node == null)
+            {
+                throw Error.MustRewriteToSameNode(callerName, typeof(T), callerName);
+            }
+            return node;
+        }
+
+        /// <summary>
+        /// Visits an expression, casting the result back to the original expression type.
+        /// </summary>
+        /// <typeparam name="T">The type of the expression.</typeparam>
+        /// <param name="nodes">The expression to visit.</param>
+        /// <param name="callerName">The name of the calling method; used to report to report a better error message.</param>
+        /// <returns>The modified expression, if it or any subexpression was modified;
+        /// otherwise, returns the original expression.</returns>
+        /// <exception cref="InvalidOperationException">The visit method for this node returned a different type.</exception>
+        public ReadOnlyCollection<T> VisitAndConvert<T>(ReadOnlyCollection<T> nodes, string callerName) where T : Expression
+        {
+            T[] newNodes = null;
+            for (int i = 0, n = nodes.Count; i < n; i++)
+            {
+                T node = Visit(nodes[i]) as T;
+                if (node == null)
+                {
+                    throw Error.MustRewriteToSameNode(callerName, typeof(T), callerName);
+                }
+
+                if (newNodes != null)
+                {
+                    newNodes[i] = node;
+                }
+                else if (!ReferenceEquals(node, nodes[i]))
+                {
+                    newNodes = new T[n];
+                    for (int j = 0; j < i; j++)
+                    {
+                        newNodes[j] = nodes[j];
+                    }
+                    newNodes[i] = node;
+                }
+            }
+            if (newNodes == null)
+            {
+                return nodes;
+            }
+            return new TrueReadOnlyCollection<T>(newNodes);
+        }
+
+        /// <summary>
+        /// Visits the <see cref="ConstantExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>The modified expression, if it or any subexpression was modified;
+        /// otherwise, returns the original expression.</returns>
+        protected internal virtual Expression VisitConstant(ConstantExpression node)
+        {
+            return node;
+        }
+
+        /// <summary>
+        /// Visits the <see cref="LabelTarget" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>The modified expression, if it or any subexpression was modified;
+        /// otherwise, returns the original expression.</returns>
+        protected virtual LabelTarget VisitLabelTarget(LabelTarget node)
+        {
+            return node;
+        }
+
+        /// <summary>
+        /// Visits the children of the <see cref="Expression&lt;T&gt;" />.
+        /// </summary>
+        /// <typeparam name="T">The type of the delegate.</typeparam>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>The modified expression, if it or any subexpression was modified;
+        /// otherwise, returns the original expression.</returns>
+        protected internal virtual Expression VisitLambda<T>(Expression<T> node)
+        {
+            return VisitLambda((LambdaExpression)node);
+        }
+
+        /// <summary>
+        /// Visits the <see cref="ParameterExpression" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>The modified expression, if it or any subexpression was modified;
+        /// otherwise, returns the original expression.</returns>
+        protected internal virtual Expression VisitParameter(ParameterExpression node)
+        {
+            return node;
+        }
+
+        /// <summary>
+        /// Visits the children of the <see cref="MemberBinding" />.
+        /// </summary>
+        /// <param name="node">The expression to visit.</param>
+        /// <returns>The modified expression, if it or any subexpression was modified;
+        /// otherwise, returns the original expression.</returns>
+        protected virtual MemberBinding VisitMemberBinding(MemberBinding node)
+        {
+            switch (node.BindingType)
+            {
+                case MemberBindingType.Assignment:
+                    return VisitMemberAssignment((MemberAssignment)node);
+                case MemberBindingType.MemberBinding:
+                    return VisitMemberMemberBinding((MemberMemberBinding)node);
+                case MemberBindingType.ListBinding:
+                    return VisitMemberListBinding((MemberListBinding)node);
+                default:
+                    throw Error.UnhandledBindingType(node.BindingType);
+            }
+        }
 
         //
         // Prevent some common cases of invalid rewrites.
@@ -695,18 +1160,6 @@ namespace System.Linq.Expressions
 
                 ValidateChildType(before.Left.Type, after.Left.Type, "VisitBinary");
                 ValidateChildType(before.Right.Type, after.Right.Type, "VisitBinary");
-            }
-            return after;
-        }
-
-        // We wouldn't need this if switch didn't infer the method.
-        private static SwitchExpression ValidateSwitch(SwitchExpression before, SwitchExpression after)
-        {
-            // If we did not have a method, we don't want to bind to one,
-            // it might not be the right thing.
-            if (before.Comparison == null && after.Comparison != null)
-            {
-                throw Error.MustRewriteWithoutMethod(after.Comparison, "VisitSwitch");
             }
             return after;
         }

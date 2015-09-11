@@ -7,8 +7,8 @@ using Theraot.Core;
 namespace Theraot.Threading.Needles
 {
     [Serializable]
-    [global::System.Diagnostics.DebuggerNonUserCode]
-    public class Needle<T> : INeedle<T>, IEquatable<Needle<T>>, IRecyclableNeedle<T>
+    [System.Diagnostics.DebuggerNonUserCode]
+    public class Needle<T> : IEquatable<Needle<T>>, IRecyclableNeedle<T>
     {
         private readonly int _hashCode;
         private INeedle<T> _target; // Can be null
@@ -96,10 +96,10 @@ namespace Theraot.Threading.Needles
 
         public override bool Equals(object obj)
         {
-            var _obj = obj as Needle<T>;
-            if (!ReferenceEquals(null, _obj))
+            var needle = obj as Needle<T>;
+            if (!ReferenceEquals(null, needle))
             {
-                return EqualsExtracted(this, _obj);
+                return EqualsExtracted(this, needle);
             }
             return _target.Equals(obj);
         }
@@ -107,9 +107,9 @@ namespace Theraot.Threading.Needles
         public bool Equals(Needle<T> other)
         {
             var target = _target;
-            if (ReferenceEquals(target, null))
+            if (target == null)
             {
-                return ReferenceEquals(other._target, null);
+                return other._target == null;
             }
             return EqualsExtracted(this, other);
         }

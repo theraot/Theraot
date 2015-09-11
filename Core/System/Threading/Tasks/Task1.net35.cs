@@ -5,12 +5,13 @@ using Theraot.Core;
 
 namespace System.Threading.Tasks
 {
-    public partial class Task<TResult> : Task
+    public class Task<TResult> : Task
     {
-        private IErsatz<TResult> _erzatz;
+        private readonly IErsatz<TResult> _erzatz;
 
         public TResult Result
         {
+            [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "Microsoft's Design")]
             get
             {
                 Wait();
@@ -18,7 +19,7 @@ namespace System.Threading.Tasks
                 {
                     throw Exception;
                 }
-                else if (IsCanceled)
+                if (IsCanceled)
                 {
                     throw new AggregateException((Exception)new TaskCanceledException(this));
                 }
