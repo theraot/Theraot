@@ -82,11 +82,11 @@ namespace Tests.Theraot.Threading.Needles
             //Nullable
             var b = new LazyNeedle<int?>();
             Assert.IsFalse(b.IsAlive);
-            Assert.Throws(typeof(NullReferenceException), () => GC.KeepAlive(b.Value));
+            Assert.AreEqual(b.Value, null);
             //Object
             var c = new LazyNeedle<int?>();
             Assert.IsFalse(c.IsAlive);
-            Assert.Throws(typeof(NullReferenceException), () => GC.KeepAlive(c.Value));
+            Assert.AreEqual(c.Value, null);
         }
 
         [Test]

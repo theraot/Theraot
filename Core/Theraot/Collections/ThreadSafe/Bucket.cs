@@ -31,6 +31,29 @@ namespace Theraot.Collections.ThreadSafe
             _capacity = _entries.Length;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Bucket{T}" /> class.
+        /// </summary>
+        public Bucket(IEnumerable<T> source)
+        {
+            ICollection<T> collection = source as ICollection<T>;
+            _entries = ArrayReservoir<object>.GetArray(collection == null ? 64 : collection.Count);
+            _capacity = _entries.Length;
+            foreach (var item in source)
+            {
+                if (_count == _capacity)
+                {
+                    _capacity <<= 1;
+                    var old = _entries;
+                    _entries = ArrayReservoir<object>.GetArray(_capacity);
+                    Array.Copy(old, 0, _entries, 0, _count);
+                    ArrayReservoir<object>.DonateArray(old);
+                }
+                _entries[_count] = (object)item ?? BucketHelper.Null;
+                _count++;
+            }
+        }
+
         ~Bucket()
         {
             if (!AppDomain.CurrentDomain.IsFinalizingForUnload())
@@ -233,22 +256,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
             }
-            object _previous;
-            if (RemoveAtPrivate(index, out _previous))
-            {
-                Interlocked.Decrement(ref _count);
-                if (ReferenceEquals(_previous, BucketHelper.Null))
-                {
-                    previous = default(T);
-                }
-                else
-                {
-                    previous = (T)_previous;
-                }
-                return true;
-            }
-            previous = default(T);
-            return false;
+            return RemoveAtInternal(index, out previous);
         }
 
         /// <summary>
@@ -358,6 +366,26 @@ namespace Theraot.Collections.ThreadSafe
                 Interlocked.Increment(ref _count);
                 return true;
             }
+            return false;
+        }
+
+        internal bool RemoveAtInternal(int index, out T previous)
+        {
+            object _previous;
+            if (RemoveAtPrivate(index, out _previous))
+            {
+                Interlocked.Decrement(ref _count);
+                if (ReferenceEquals(_previous, BucketHelper.Null))
+                {
+                    previous = default(T);
+                }
+                else
+                {
+                    previous = (T)_previous;
+                }
+                return true;
+            }
+            previous = default(T);
             return false;
         }
 

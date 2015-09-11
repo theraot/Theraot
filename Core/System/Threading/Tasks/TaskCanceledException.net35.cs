@@ -1,5 +1,4 @@
-﻿#if FAT
-#if NET20 || NET30 || NET35
+﻿#if NET20 || NET30 || NET35
 
 // ==++==
 //
@@ -65,7 +64,7 @@ namespace System.Threading.Tasks
         /// </summary>
         /// <param name="task">A task that has been canceled.</param>
         public TaskCanceledException(Task task) :
-            base("A task was canceled", task != null ? task._cancellationToken : new CancellationToken())
+            base("A task was canceled", task != null ? task.Token : new CancellationToken())
         {
             m_canceledTask = task;
         }
@@ -97,5 +96,4 @@ namespace System.Threading.Tasks
 
 }
 
-#endif
 #endif

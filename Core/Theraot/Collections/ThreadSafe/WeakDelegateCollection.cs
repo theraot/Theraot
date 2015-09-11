@@ -2,13 +2,12 @@
 
 using System;
 using System.Reflection;
-using Theraot.Core;
 using Theraot.Threading;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Collections.ThreadSafe
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public sealed class WeakDelegateCollection : WeakCollection<Delegate, WeakDelegateNeedle>
     {
         private readonly Action<object[]> _invoke;
@@ -55,13 +54,19 @@ namespace Theraot.Collections.ThreadSafe
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "By Design")]
         public void Add(MethodInfo method, object target)
         {
-            Check.NotNullArgument(method, "method");
+            if (method == null)
+            {
+                throw new ArgumentNullException("method");
+            }
             Add(new WeakDelegateNeedle(method, target)); // Since it is a new object, it should not fail
         }
 
         public bool Contains(MethodInfo method, object target)
         {
-            Check.NotNullArgument(method, "method");
+            if (method == null)
+            {
+                throw new ArgumentNullException("method");
+            }
             return Contains(item => item.Equals(method, target));
         }
 
@@ -72,8 +77,11 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool Remove(MethodInfo method, object target)
         {
-            Check.NotNullArgument(method, "method");
-            foreach (var item in RemoveWhereEnumerable(_item => _item.Equals(method, target)))
+            if (method == null)
+            {
+                throw new ArgumentNullException("method");
+            }
+            foreach (var item in RemoveWhereEnumerable(item => item.Equals(method, target)))
             {
                 GC.KeepAlive(item);
                 return true;

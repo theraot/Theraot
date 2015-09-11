@@ -250,14 +250,14 @@ namespace Theraot.Collections.ThreadSafe
             return result;
         }
 
-        internal bool TryGetCheckSet(uint index, Func<object> itemFactory, Predicate<object> check, out bool isNew)
+        internal bool TryGetCheckSet(uint index, Func<object> itemFactory, Func<object, object> itemUpdateFactory, out bool isNew)
         {
             // Get the target branches
             int resultCount;
             var branches = Map(index, out resultCount);
             // ---
             var branch = branches[resultCount - 1];
-            var result = branch.PrivateTryGetCheckSet(index, itemFactory, check, out isNew); // true means value was set
+            var result = branch.PrivateTryGetCheckSet(index, itemFactory, itemUpdateFactory, out isNew); // true means value was set
             Leave(branches, resultCount);
             return result;
         }
@@ -453,6 +453,30 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
+        private bool PrivateInsert(uint index, Func<object> itemFactory, out object previous, out object stored)
+        {
+            Interlocked.Increment(ref _useCount); // We are most likely to add - overstatimate count
+            var subindex = GetSubindex(index);
+            previous = Thread.VolatileRead(ref _entries[subindex]);
+            if (previous == null)
+            {
+                var result = itemFactory();
+                previous = Interlocked.CompareExchange(ref _entries[subindex], result ?? BucketHelper.Null, null);
+                if (previous == null)
+                {
+                    stored = result;
+                    return true;
+                }
+            }
+            if (previous == BucketHelper.Null)
+            {
+                previous = null;
+            }
+            stored = previous;
+            Interlocked.Decrement(ref _useCount); // We did not add after all
+            return false;
+        }
+
         private bool PrivateInsertOrUpdate(uint index, object item, Func<object, object> itemUpdateFactory, Predicate<object> check, out object stored, out bool isNew)
         {
             object previous;
@@ -482,10 +506,9 @@ namespace Theraot.Collections.ThreadSafe
 
         private bool PrivateInsertOrUpdate(uint index, Func<object> itemFactory, Func<object, object> itemUpdateFactory, Predicate<object> check, out object stored, out bool isNew)
         {
-            var addResult = itemFactory();
             object previous;
             // NOTICE this method is a while loop, it may starve
-            while (!PrivateInsert(index, addResult, out previous))
+            while (!PrivateInsert(index, itemFactory, out previous, out stored))
             {
                 isNew = false;
                 if (check(previous))
@@ -504,7 +527,6 @@ namespace Theraot.Collections.ThreadSafe
                 }
             }
             isNew = true;
-            stored = addResult;
             return true;
         }
 
@@ -698,16 +720,18 @@ namespace Theraot.Collections.ThreadSafe
             return false; // false means value was not set
         }
 
-        private bool PrivateTryGetCheckSet(uint index, Func<object> itemFactory, Predicate<object> check, out bool isNew)
+        private bool PrivateTryGetCheckSet(uint index, Func<object> itemFactory, Func<object, object> itemUpdateFactory, out bool isNew)
         {
             Interlocked.Increment(ref _useCount); // We are most likely to add - overstatimate count
             isNew = false;
             var subindex = GetSubindex(index);
             var found = Interlocked.CompareExchange(ref _entries[subindex], null, null);
+            object result;
             if (found == null)
             {
                 // -- Not found TryAdd
-                var previous = Interlocked.CompareExchange(ref _entries[subindex], itemFactory() ?? BucketHelper.Null, null);
+                result = itemFactory();
+                var previous = Interlocked.CompareExchange(ref _entries[subindex], result ?? BucketHelper.Null, null);
                 if (previous == null)
                 {
                     isNew = true;
@@ -721,22 +745,19 @@ namespace Theraot.Collections.ThreadSafe
                 found = null;
             }
             // -- Found
-            bool checkResult;
             try
             {
-                checkResult = check(found);
+                result = itemUpdateFactory(found);
             }
             finally
             {
                 Interlocked.Decrement(ref _useCount); // We did not add after all
             }
-            if (checkResult)
             {
-                // -- Passed
                 // This works under the presumption that check will result true to whatever value may have replaced found...
                 // That's why we don't use CompareExchange, but simply Exchange instead
                 // And also that's why this method is internal, we cannot guarantee the presumption outside internal code.
-                var previous = Interlocked.Exchange(ref _entries[subindex], itemFactory() ?? BucketHelper.Null);
+                var previous = Interlocked.Exchange(ref _entries[subindex], result ?? BucketHelper.Null);
                 if (previous == null)
                 {
                     isNew = true;
@@ -747,7 +768,6 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 return true; // true means value was set
             }
-            return false; // false means value was not set
         }
 
         private bool PrivateTryGetOrInsert(uint index, object item, out object stored)
@@ -773,12 +793,16 @@ namespace Theraot.Collections.ThreadSafe
         {
             Interlocked.Increment(ref _useCount); // We are most likely to add - overstatimate count
             var subindex = GetSubindex(index);
-            var result = itemFactory();
-            var previous = Interlocked.CompareExchange(ref _entries[subindex], result ?? BucketHelper.Null, null);
+            var previous = Thread.VolatileRead(ref _entries[subindex]);
             if (previous == null)
             {
-                stored = result;
-                return true;
+                var result = itemFactory();
+                previous = Interlocked.CompareExchange(ref _entries[subindex], result ?? BucketHelper.Null, null);
+                if (previous == null)
+                {
+                    stored = result;
+                    return true;
+                }
             }
             if (previous == BucketHelper.Null)
             {

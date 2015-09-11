@@ -1,9 +1,8 @@
-#if FAT
 #if NET20 || NET30 || NET35
 
 namespace System.Threading.Tasks
 {
-    public partial class Task : IDisposable, IAsyncResult
+    public partial class Task
     {
         public static Task Run(Action action)
         {
@@ -36,7 +35,7 @@ namespace System.Threading.Tasks
                         {
                             throw task.Exception;
                         }
-                        else if (task.IsCanceled)
+                        if (task.IsCanceled)
                         {
                             throw new TaskCanceledException(task);
                         }
@@ -62,7 +61,7 @@ namespace System.Threading.Tasks
                         {
                             throw task.Exception;
                         }
-                        else if (task.IsCanceled)
+                        if (task.IsCanceled)
                         {
                             throw new TaskCanceledException(task);
                         }
@@ -115,5 +114,4 @@ namespace System.Threading.Tasks
     }
 }
 
-#endif
 #endif

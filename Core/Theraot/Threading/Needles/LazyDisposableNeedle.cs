@@ -7,12 +7,12 @@ using Theraot.Core;
 namespace Theraot.Threading.Needles
 {
     [Serializable]
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public partial class LazyDisposableNeedle<T> : LazyNeedle<T>
         where T : IDisposable
     {
-        public LazyDisposableNeedle(Func<T> function)
-            : base(function)
+        public LazyDisposableNeedle(Func<T> valueFactory)
+            : base(valueFactory)
         {
             //Empty
         }
@@ -25,7 +25,7 @@ namespace Theraot.Threading.Needles
 
         public override void Initialize()
         {
-            base.Initialize(() => UnDispose());
+            Initialize(() => UnDispose());
         }
 
         public void Reinitialize()
@@ -37,38 +37,33 @@ namespace Theraot.Threading.Needles
         protected override void Initialize(Action beforeInitialize)
         {
             base.Initialize
-            (
-                () =>
-                {
-                    try
+                (
+                    () =>
                     {
-                        var waitHandle = WaitHandle.Value;
-                        if (!WaitHandle.IsAlive)
+                        try
                         {
-                            WaitHandle.Value = new System.Threading.ManualResetEventSlim(false);
-                            GC.KeepAlive(waitHandle);
+                            var waitHandle = WaitHandle.Value;
+                            if (!WaitHandle.IsAlive)
+                            {
+                                WaitHandle.Value = new System.Threading.ManualResetEventSlim(false);
+                                GC.KeepAlive(waitHandle);
+                            }
+                            beforeInitialize.SafeInvoke();
                         }
-                        beforeInitialize.SafeInvoke();
+                        finally
+                        {
+                            UnDispose();
+                        }
                     }
-                    finally
-                    {
-                        UnDispose();
-                    }
-                }
-            );
+                );
         }
 
         private void OnDispose()
         {
             var target = Value;
             target.Dispose();
-            var waitHandle = WaitHandle.Value;
-            if (WaitHandle.IsAlive)
-            {
-                waitHandle.Dispose();
-            }
-            WaitHandle.Free();
-            SetTargetValue(default(T));
+            Free();
+            ReleaseWaitHandle(false);
         }
     }
 }

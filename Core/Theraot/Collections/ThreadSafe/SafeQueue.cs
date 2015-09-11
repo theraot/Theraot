@@ -27,13 +27,23 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="SafeQueue{T}" /> class.
+        /// </summary>
+        public SafeQueue(IEnumerable<T> source)
+        {
+            _root = new Node(source);
+            _count = _root.Queue.Count;
+            _tail = _root;
+        }
+
+        /// <summary>
         /// Gets the number of items actually contained.
         /// </summary>
         public int Count
         {
             get
             {
-                return _count;
+                return Thread.VolatileRead(ref _count);
             }
         }
 
@@ -50,16 +60,9 @@ namespace Theraot.Collections.ThreadSafe
             }
             else
             {
-                var neo = new Node();
-                var found = Interlocked.CompareExchange(ref _tail.Next, neo, null);
-                if (found == null)
-                {
-                    _tail = neo;
-                }
-                else
-                {
-                    _tail = found;
-                }
+                var created = new Node();
+                var found = Interlocked.CompareExchange(ref _tail.Next, created, null);
+                _tail = found ?? created;
                 goto loop;
             }
         }
@@ -97,7 +100,6 @@ namespace Theraot.Collections.ThreadSafe
             {
                 if (_root.Queue.TryPeek(out item))
                 {
-                    Interlocked.Decrement(ref _count);
                     return true;
                 }
                 if (root.Next != null)
@@ -160,6 +162,11 @@ namespace Theraot.Collections.ThreadSafe
             public Node()
             {
                 Queue = new FixedSizeQueue<T>(64);
+            }
+
+            public Node(IEnumerable<T> source)
+            {
+                Queue = new FixedSizeQueue<T>(source);
             }
         }
     }

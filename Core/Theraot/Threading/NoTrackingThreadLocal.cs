@@ -9,8 +9,8 @@ using Theraot.Threading.Needles;
 namespace Theraot.Threading
 {
     [System.Diagnostics.DebuggerDisplay("IsValueCreated={IsValueCreated}, Value={ValueForDebugDisplay}")]
-    [global::System.Diagnostics.DebuggerNonUserCode]
-    public sealed class NoTrackingThreadLocal<T> : IDisposable, IThreadLocal<T>, IPromise<T>, ICacheNeedle<T>, IObserver<T>
+    [System.Diagnostics.DebuggerNonUserCode]
+    public sealed class NoTrackingThreadLocal<T> : IDisposable, IThreadLocal<T>, IWaitablePromise<T>, ICacheNeedle<T>, IObserver<T>
     {
         private int _disposing;
         private LocalDataStoreSlot _slot;
@@ -40,10 +40,7 @@ namespace Theraot.Threading
                 {
                     throw new ObjectDisposedException(GetType().FullName);
                 }
-                else
-                {
-                    return Thread.GetData(_slot) is ReadOnlyStructNeedle<T>;
-                }
+                return Thread.GetData(_slot) is ReadOnlyStructNeedle<T>;
             }
         }
 
@@ -55,33 +52,27 @@ namespace Theraot.Threading
                 {
                     throw new ObjectDisposedException(GetType().FullName);
                 }
-                else
+                var bundle = Thread.GetData(_slot);
+                var needle = bundle as INeedle<T>;
+                if (needle == null)
                 {
-                    var bundle = Thread.GetData(_slot);
-                    var needle = bundle as INeedle<T>;
-                    if (needle == null)
+                    try
                     {
-                        try
-                        {
-                            Thread.SetData(_slot, ThreadLocalHelper<T>.RecursionGuardNeedle);
-                            T result = _valueFactory.Invoke();
-                            Thread.SetData(_slot, new ReadOnlyStructNeedle<T>(result));
-                            return result;
-                        }
-                        catch (Exception exception)
-                        {
-                            if (!ReferenceEquals(exception, ThreadLocalHelper.RecursionGuardException))
-                            {
-                                Thread.SetData(_slot, new ExceptionStructNeedle<T>(exception));
-                            }
-                            throw;
-                        }
+                        Thread.SetData(_slot, ThreadLocalHelper<T>.RecursionGuardNeedle);
+                        T result = _valueFactory.Invoke();
+                        Thread.SetData(_slot, new ReadOnlyStructNeedle<T>(result));
+                        return result;
                     }
-                    else
+                    catch (Exception exception)
                     {
-                        return needle.Value;
+                        if (!ReferenceEquals(exception, ThreadLocalHelper.RecursionGuardException))
+                        {
+                            Thread.SetData(_slot, new ExceptionStructNeedle<T>(exception));
+                        }
+                        throw;
                     }
                 }
+                return needle.Value;
             }
             set
             {
@@ -89,10 +80,7 @@ namespace Theraot.Threading
                 {
                     throw new ObjectDisposedException(GetType().FullName);
                 }
-                else
-                {
-                    Thread.SetData(_slot, new ReadOnlyStructNeedle<T>(value));
-                }
+                Thread.SetData(_slot, new ReadOnlyStructNeedle<T>(value));
             }
         }
 
@@ -140,12 +128,7 @@ namespace Theraot.Threading
         {
             get
             {
-                T target;
-                if (TryGetValue(out target))
-                {
-                    return target;
-                }
-                return default(T);
+                return ValueForDebugDisplay;
             }
         }
 
@@ -157,7 +140,7 @@ namespace Theraot.Threading
             }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {
             if (Interlocked.CompareExchange(ref _disposing, 1, 0) == 0)
@@ -190,11 +173,8 @@ namespace Theraot.Threading
                 target = default(T);
                 return false;
             }
-            else
-            {
-                target = container.Value;
-                return true;
-            }
+            target = container.Value;
+            return true;
         }
 
         void IObserver<T>.OnCompleted()
@@ -208,10 +188,7 @@ namespace Theraot.Threading
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
-            else
-            {
-                Thread.SetData(_slot, new ExceptionStructNeedle<T>(error));
-            }
+            Thread.SetData(_slot, new ExceptionStructNeedle<T>(error));
         }
 
         void IObserver<T>.OnNext(T value)
@@ -219,9 +196,18 @@ namespace Theraot.Threading
             Value = value;
         }
 
-        void IPromise.Wait()
+        void IWaitablePromise.Wait()
         {
             GC.KeepAlive(Value);
+        }
+
+        internal T ValueForDebugDisplay
+        {
+            get
+            {
+                T target;
+                return TryGetValue(out target) ? target : default(T);
+            }
         }
     }
 }

@@ -1,4 +1,3 @@
-#if FAT
 #if NET20 || NET30 || NET35
 
 namespace System.Threading.Tasks
@@ -133,5 +132,4 @@ namespace System.Threading.Tasks
     }
 }
 
-#endif
 #endif

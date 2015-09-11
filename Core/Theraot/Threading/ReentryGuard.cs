@@ -1,7 +1,7 @@
 ﻿// Needed for Workaround
 
 using System;
-using System.Collections.Generic;
+using Theraot.Collections.ThreadSafe;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
@@ -9,23 +9,19 @@ namespace Theraot.Threading
     /// <summary>
     /// Represents a context to execute operation without reentry.
     /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public sealed class ReentryGuard
     {
-        private StructNeedle<NoTrackingThreadLocal<Tuple<Queue<Action>, Guard>>> _workQueue;
+        private readonly StructNeedle<NoTrackingThreadLocal<bool>> _flag;
+        private readonly SafeQueue<Action> _workQueue;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReentryGuard" /> class.
         /// </summary>
         public ReentryGuard()
         {
-            _workQueue = new StructNeedle<NoTrackingThreadLocal<Tuple<Queue<Action>, Guard>>>
-                (
-                    new NoTrackingThreadLocal<Tuple<Queue<Action>, Guard>>
-                    (
-                        () => new Tuple<Queue<Action>, Guard>(new Queue<Action>(), new Guard())
-                    )
-                );
+            _workQueue = new SafeQueue<Action>();
+            _flag = new StructNeedle<NoTrackingThreadLocal<bool>>(new NoTrackingThreadLocal<bool>());
         }
 
         /// <summary>
@@ -35,8 +31,7 @@ namespace Theraot.Threading
         {
             get
             {
-                var local = _workQueue.Value.Value;
-                return local.Item2.IsTaken;
+                return _flag.Value.Value;
             }
         }
 
@@ -47,9 +42,8 @@ namespace Theraot.Threading
         /// <returns>Returns a promise to finish the execution.</returns>
         public IPromise Execute(Action operation)
         {
-            var local = _workQueue.Value.Value;
-            var result = AddExecution(operation, local);
-            ExecutePending(local);
+            var result = AddExecution(operation, _workQueue);
+            ExecutePending(_workQueue, _flag.Value);
             return result;
         }
 
@@ -61,51 +55,49 @@ namespace Theraot.Threading
         /// <returns>Returns a promise to finish the execution.</returns>
         public IPromise<T> Execute<T>(Func<T> operation)
         {
-            var local = _workQueue.Value.Value;
-            var result = AddExecution(operation, local);
-            ExecutePending(local);
+            var result = AddExecution(operation, _workQueue);
+            ExecutePending(_workQueue, _flag.Value);
             return result;
         }
 
-        private static IPromise AddExecution(Action action, Tuple<Queue<Action>, Guard> local)
+        private static IPromise AddExecution(Action action, SafeQueue<Action> queue)
         {
-            PromiseNeedle.Promised promised;
-            // TODO: waiting on the returned promise will cause the thread to lock - replace with Tasks
-            var result = new PromiseNeedle(out promised, false);
-            local.Item1.Enqueue
+            var promised = new Promise(false);
+            var result = new ReadOnlyPromise(promised, false);
+            queue.Add
             (
                 () =>
                 {
                     try
                     {
+
                         action.Invoke();
-                        promised.OnCompleted();
+                        promised.SetCompleted();
                     }
                     catch (Exception exception)
                     {
-                        promised.OnError(exception);
+                        promised.SetError(exception);
                     }
                 }
             );
             return result;
         }
 
-        private static IPromise<T> AddExecution<T>(Func<T> action, Tuple<Queue<Action>, Guard> local)
+        private static IPromise<T> AddExecution<T>(Func<T> action, SafeQueue<Action> queue)
         {
-            PromiseNeedle<T>.Promised promised;
-            // TODO: waiting on the returned promise will cause the thread to lock - replace with Tasks
-            var result = new PromiseNeedle<T>(out promised, false);
-            local.Item1.Enqueue
+            var promised = new PromiseNeedle<T>(false);
+            var result = new ReadOnlyPromiseNeedle<T>(promised, false);
+            queue.Add
             (
                 () =>
                 {
                     try
                     {
-                        promised.OnNext(action.Invoke());
+                        promised.Value = action.Invoke();
                     }
                     catch (Exception exception)
                     {
-                        promised.OnError(exception);
+                        promised.SetError(exception);
                     }
                 }
             );
@@ -113,29 +105,20 @@ namespace Theraot.Threading
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "By Design")]
-        private static void ExecutePending(Tuple<Queue<Action>, Guard> local)
+        private static void ExecutePending(SafeQueue<Action> queue, NoTrackingThreadLocal<bool> flag)
         {
-            var guard = local.Item2;
-            var queue = local.Item1;
-            while (queue.Count > 0)
+            if (flag.Value)
             {
-                if (guard.TryEnter())
-                {
-                    try
-                    {
-                        var action = queue.Dequeue();
-                        action.Invoke();
-                    }
-                    finally
-                    {
-                        guard.Dispose();
-                    }
-                }
-                else
-                {
-                    break;
-                }
+                // called from inside this method - skip
+                return;
             }
+            flag.Value = true;
+            Action action;
+            while (queue.TryTake(out action))
+            {
+                action.Invoke();
+            }
+            flag.Value = false;
         }
     }
 }

@@ -8,8 +8,7 @@ namespace Theraot.Threading.Needles
     {
         private int _status;
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
+        [System.Diagnostics.DebuggerNonUserCode]
         ~LazyDisposableNeedle()
         {
             try
@@ -24,14 +23,10 @@ namespace Theraot.Threading.Needles
 
         public bool IsDisposed
         {
-            [global::System.Diagnostics.DebuggerNonUserCode]
-            get
-            {
-                return _status == -1;
-            }
+            [System.Diagnostics.DebuggerNonUserCode] get { return _status == -1; }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {
             try
@@ -44,7 +39,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         public void DisposedConditional(Action whenDisposed, Action whenNotDisposed)
         {
             if (_status == -1)
@@ -80,7 +75,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         public TReturn DisposedConditional<TReturn>(Func<TReturn> whenDisposed, Func<TReturn> whenNotDisposed)
         {
             if (_status == -1)
@@ -89,47 +84,32 @@ namespace Theraot.Threading.Needles
                 {
                     return default(TReturn);
                 }
-                else
-                {
-                    return whenDisposed.Invoke();
-                }
+                return whenDisposed.Invoke();
             }
-            else
+            if (whenNotDisposed == null)
             {
-                if (whenNotDisposed == null)
+                return default(TReturn);
+            }
+            if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
+            {
+                try
                 {
-                    return default(TReturn);
+                    return whenNotDisposed.Invoke();
                 }
-                else
+                finally
                 {
-                    if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
-                    {
-                        try
-                        {
-                            return whenNotDisposed.Invoke();
-                        }
-                        finally
-                        {
-                            System.Threading.Interlocked.Decrement(ref _status);
-                        }
-                    }
-                    else
-                    {
-                        if (whenDisposed == null)
-                        {
-                            return default(TReturn);
-                        }
-                        else
-                        {
-                            return whenDisposed.Invoke();
-                        }
-                    }
+                    System.Threading.Interlocked.Decrement(ref _status);
                 }
             }
+            if (whenDisposed == null)
+            {
+                return default(TReturn);
+            }
+            return whenDisposed.Invoke();
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
-        protected virtual void Dispose(bool disposeManagedResources)
+        [System.Diagnostics.DebuggerNonUserCode]
+        internal void Dispose(bool disposeManagedResources)
         {
             try
             {
@@ -148,51 +128,24 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
-        protected void ProtectedCheckDisposed(string exceptionMessegeWhenDisposed)
-        {
-            if (IsDisposed)
-            {
-                throw new ObjectDisposedException(exceptionMessegeWhenDisposed);
-            }
-        }
-
-        protected bool TakeDisposalExecution()
+        private bool TakeDisposalExecution()
         {
             if (_status == -1)
             {
                 return false;
             }
-            else
-            {
-                return ThreadingHelper.SpinWaitSetUnless(ref _status, -1, 0, -1);
-            }
+            return ThreadingHelper.SpinWaitSetUnless(ref _status, -1, 0, -1);
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
-        protected void ThrowDisposedexception()
-        {
-            throw new ObjectDisposedException(GetType().FullName);
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCode]
-        protected TReturn ThrowDisposedexception<TReturn>()
-        {
-            throw new ObjectDisposedException(GetType().FullName);
-        }
-
-        [global::System.Diagnostics.DebuggerNonUserCode]
-        protected bool UnDispose()
+        [System.Diagnostics.DebuggerNonUserCode]
+        private bool UnDispose()
         {
             if (System.Threading.Thread.VolatileRead(ref _status) == -1)
             {
                 System.Threading.Thread.VolatileWrite(ref _status, 0);
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
     }
 }
