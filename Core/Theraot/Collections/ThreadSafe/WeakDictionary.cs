@@ -10,7 +10,7 @@ using Theraot.Threading.Needles;
 namespace Theraot.Collections.ThreadSafe
 {
     // TODO: this is actually a Weak Key dictionary useful to extend objects, there could also be Weak Value dictionaries useful for caches, and fully weak dictionary useful for the combination.
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
     public class WeakDictionary<TKey, TValue, TNeedle> : IDictionary<TKey, TValue>
         where TKey : class
@@ -142,7 +142,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
         bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
         {
             get
@@ -349,11 +349,11 @@ namespace Theraot.Collections.ThreadSafe
             var displaced = _wrapped.ClearEnumerable();
             foreach (var item in displaced)
             {
-                TKey key;
-                if (PrivateTryGetValue(item.Key, out key))
+                TKey foundKey;
+                if (PrivateTryGetValue(item.Key, out foundKey))
                 {
                     var value = item.Value;
-                    yield return new KeyValuePair<TKey, TValue>(key, value);
+                    yield return new KeyValuePair<TKey, TValue>(foundKey, value);
                     NeedleReservoir<TKey, TNeedle>.DonateNeedle(item.Key);
                 }
             }
@@ -373,10 +373,10 @@ namespace Theraot.Collections.ThreadSafe
                     _keyComparer.GetHashCode(key),
                     input =>
                     {
-                        TKey _key;
-                        if (PrivateTryGetValue(input, out _key))
+                        TKey foundKey;
+                        if (PrivateTryGetValue(input, out foundKey))
                         {
-                            return _keyComparer.Equals(_key, key);
+                            return _keyComparer.Equals(foundKey, key);
                         }
                         return false;
                     }
@@ -402,10 +402,10 @@ namespace Theraot.Collections.ThreadSafe
                     hashCode,
                     input =>
                     {
-                        TKey _key;
-                        if (PrivateTryGetValue(input, out _key))
+                        TKey foundKey;
+                        if (PrivateTryGetValue(input, out foundKey))
                         {
-                            return keyCheck(_key);
+                            return keyCheck(foundKey);
                         }
                         return false;
                     }
@@ -436,10 +436,10 @@ namespace Theraot.Collections.ThreadSafe
                     hashCode,
                     input =>
                     {
-                        TKey _key;
-                        if (PrivateTryGetValue(input, out _key))
+                        TKey foundKey;
+                        if (PrivateTryGetValue(input, out foundKey))
                         {
-                            return keyCheck(_key);
+                            return keyCheck(foundKey);
                         }
                         return false;
                     },
@@ -483,10 +483,10 @@ namespace Theraot.Collections.ThreadSafe
             // No risk of dead needles here
             foreach (var pair in _wrapped)
             {
-                TKey _key;
-                if (PrivateTryGetValue(pair.Key, out _key))
+                TKey foundKey;
+                if (PrivateTryGetValue(pair.Key, out foundKey))
                 {
-                    yield return new KeyValuePair<TKey, TValue>(_key, pair.Value);
+                    yield return new KeyValuePair<TKey, TValue>(foundKey, pair.Value);
                 }
             }
         }
@@ -532,11 +532,11 @@ namespace Theraot.Collections.ThreadSafe
             var result = new List<KeyValuePair<TKey, TValue>>(_wrapped.Count);
             foreach (var pair in _wrapped)
             {
-                TKey key;
-                if (PrivateTryGetValue(pair.Key, out key))
+                TKey foundKey;
+                if (PrivateTryGetValue(pair.Key, out foundKey))
                 {
                     var value = pair.Value;
-                    result.Add(new KeyValuePair<TKey, TValue>(key, value));
+                    result.Add(new KeyValuePair<TKey, TValue>(foundKey, value));
                 }
             }
             return result;
@@ -558,10 +558,10 @@ namespace Theraot.Collections.ThreadSafe
                     _keyComparer.GetHashCode(key),
                     input =>
                     {
-                        TKey _key;
-                        if (PrivateTryGetValue(input, out _key))
+                        TKey foundKey;
+                        if (PrivateTryGetValue(input, out foundKey))
                         {
-                            return _keyComparer.Equals(_key, key);
+                            return _keyComparer.Equals(foundKey, key);
                         }
                         return false;
                     },
@@ -585,10 +585,10 @@ namespace Theraot.Collections.ThreadSafe
                     _keyComparer.GetHashCode(key),
                     input =>
                     {
-                        TKey _key;
-                        if (PrivateTryGetValue(input, out _key))
+                        TKey foundKey;
+                        if (PrivateTryGetValue(input, out foundKey))
                         {
-                            return _keyComparer.Equals(_key, key);
+                            return _keyComparer.Equals(foundKey, key);
                         }
                         return false;
                     },
@@ -611,10 +611,10 @@ namespace Theraot.Collections.ThreadSafe
                     _keyComparer.GetHashCode(key),
                     input =>
                     {
-                        TKey _key;
-                        if (PrivateTryGetValue(input, out _key))
+                        TKey foundKey;
+                        if (PrivateTryGetValue(input, out foundKey))
                         {
-                            return _keyComparer.Equals(_key, key);
+                            return _keyComparer.Equals(foundKey, key);
                         }
                         return false;
                     },
@@ -642,10 +642,10 @@ namespace Theraot.Collections.ThreadSafe
                     hashCode,
                     input =>
                     {
-                        TKey _key;
-                        if (PrivateTryGetValue(input, out _key))
+                        TKey foundKey;
+                        if (PrivateTryGetValue(input, out foundKey))
                         {
-                            return keyCheck.Invoke(_key);
+                            return keyCheck.Invoke(foundKey);
                         }
                         return false;
                     },
@@ -678,10 +678,10 @@ namespace Theraot.Collections.ThreadSafe
                     hashCode,
                     input =>
                     {
-                        TKey _key;
-                        if (PrivateTryGetValue(input, out _key))
+                        TKey foundKey;
+                        if (PrivateTryGetValue(input, out foundKey))
                         {
-                            return keyCheck.Invoke(_key);
+                            return keyCheck.Invoke(foundKey);
                         }
                         return false;
                     },
@@ -715,10 +715,10 @@ namespace Theraot.Collections.ThreadSafe
                 (
                     input =>
                     {
-                        TKey _key;
-                        if (PrivateTryGetValue(input, out _key))
+                        TKey foundKey;
+                        if (PrivateTryGetValue(input, out foundKey))
                         {
-                            return keyCheck.Invoke(_key);
+                            return keyCheck.Invoke(foundKey);
                         }
                         return false;
                     }
@@ -745,10 +745,10 @@ namespace Theraot.Collections.ThreadSafe
                 (
                     input =>
                     {
-                        TKey _key;
-                        if (PrivateTryGetValue(input, out _key))
+                        TKey foundKey;
+                        if (PrivateTryGetValue(input, out foundKey))
                         {
-                            return keyCheck.Invoke(_key);
+                            return keyCheck.Invoke(foundKey);
                         }
                         return false;
                     }
@@ -848,7 +848,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             // No risk of dead needles here
             var needle = PrivateGetNeedle(key);
-            KeyValuePair<TNeedle, TValue> _stored;
+            KeyValuePair<TNeedle, TValue> storedPair;
             Predicate<TNeedle> check = found =>
             {
                 TKey foundKey;
@@ -864,12 +864,12 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 return true;
             };
-            var result = _wrapped.TryAdd(needle, check, value, out _stored);
+            var result = _wrapped.TryAdd(needle, check, value, out storedPair);
             if (!result)
             {
                 NeedleReservoir<TKey, TNeedle>.DonateNeedle(needle);
             }
-            stored = new KeyValuePair<TKey, TValue>(key, _stored.Value);
+            stored = new KeyValuePair<TKey, TValue>(key, storedPair.Value);
             return result;
         }
 
@@ -995,23 +995,23 @@ namespace Theraot.Collections.ThreadSafe
                 (
                     input =>
                     {
-                        TKey key;
-                        if (PrivateTryGetValue(input, out key))
+                        TKey foundKey;
+                        if (PrivateTryGetValue(input, out foundKey))
                         {
-                            return keyCheck(key);
+                            return keyCheck(foundKey);
                         }
                         return false;
                     }
                 );
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Use AddNew")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Use AddNew")]
         void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
         {
             AddNew(key, value);
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Use AddNew")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Use AddNew")]
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
         {
             // No risk of dead needles here
@@ -1024,10 +1024,10 @@ namespace Theraot.Collections.ThreadSafe
             TValue found;
             Predicate<TNeedle> check = input =>
             {
-                TKey _key;
-                if (PrivateTryGetValue(input, out _key))
+                TKey foundKey;
+                if (PrivateTryGetValue(input, out foundKey))
                 {
-                    return _keyComparer.Equals(_key, item.Key);
+                    return _keyComparer.Equals(foundKey, item.Key);
                 }
                 return false;
             };
@@ -1045,10 +1045,10 @@ namespace Theraot.Collections.ThreadSafe
             // No risk of dead needles here
             Predicate<TNeedle> check = input =>
             {
-                TKey _key;
-                if (PrivateTryGetValue(input, out _key))
+                TKey foundKey;
+                if (PrivateTryGetValue(input, out foundKey))
                 {
-                    return _keyComparer.Equals(_key, item.Key);
+                    return _keyComparer.Equals(foundKey, item.Key);
                 }
                 return false;
             };
@@ -1083,10 +1083,10 @@ namespace Theraot.Collections.ThreadSafe
                         needle,
                         input =>
                         {
-                            TKey _key;
-                            if (PrivateTryGetValue(input, out _key))
+                            TKey foundKey;
+                            if (PrivateTryGetValue(input, out foundKey))
                             {
-                                return keyOverwriteCheck(_key);
+                                return keyOverwriteCheck(foundKey);
                             }
                             return true;
                         },
@@ -1111,10 +1111,10 @@ namespace Theraot.Collections.ThreadSafe
                         needle,
                         input =>
                         {
-                            TKey _key;
-                            if (PrivateTryGetValue(input, out _key))
+                            TKey foundKey;
+                            if (PrivateTryGetValue(input, out foundKey))
                             {
-                                return keyOverwriteCheck(_key);
+                                return keyOverwriteCheck(foundKey);
                             }
                             return true;
                         },
@@ -1143,10 +1143,10 @@ namespace Theraot.Collections.ThreadSafe
                     needle,
                     input =>
                     {
-                        TKey _key;
-                        if (PrivateTryGetValue(input, out _key))
+                        TKey foundKey;
+                        if (PrivateTryGetValue(input, out foundKey))
                         {
-                            return keyOverwriteCheck(_key);
+                            return keyOverwriteCheck(foundKey);
                         }
                         return true;
                     },
@@ -1170,10 +1170,10 @@ namespace Theraot.Collections.ThreadSafe
                     needle,
                     input =>
                     {
-                        TKey _key;
-                        if (PrivateTryGetValue(input, out _key))
+                        TKey foundKey;
+                        if (PrivateTryGetValue(input, out foundKey))
                         {
-                            return keyOverwriteCheck(_key);
+                            return keyOverwriteCheck(foundKey);
                         }
                         return true;
                     },
@@ -1202,10 +1202,10 @@ namespace Theraot.Collections.ThreadSafe
                         needle,
                         input =>
                         {
-                            TKey _key;
-                            if (PrivateTryGetValue(input, out _key))
+                            TKey foundKey;
+                            if (PrivateTryGetValue(input, out foundKey))
                             {
-                                return keyOverwriteCheck(_key);
+                                return keyOverwriteCheck(foundKey);
                             }
                             return true;
                         },
@@ -1230,10 +1230,10 @@ namespace Theraot.Collections.ThreadSafe
                         needle,
                         input =>
                         {
-                            TKey _key;
-                            if (PrivateTryGetValue(input, out _key))
+                            TKey foundKey;
+                            if (PrivateTryGetValue(input, out foundKey))
                             {
-                                return keyOverwriteCheck(_key);
+                                return keyOverwriteCheck(foundKey);
                             }
                             return true;
                         },
@@ -1258,9 +1258,9 @@ namespace Theraot.Collections.ThreadSafe
             return NeedleReservoir<TKey, TNeedle>.GetNeedle(key);
         }
 
-        private static bool PrivateTryGetValue(TNeedle needle, out TKey _key)
+        private static bool PrivateTryGetValue(TNeedle needle, out TKey foundKey)
         {
-            return needle.TryGetValue(out _key);
+            return needle.TryGetValue(out foundKey);
         }
 
         private void GarbageCollected(object sender, EventArgs e)

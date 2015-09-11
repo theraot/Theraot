@@ -6,8 +6,8 @@ using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
-    [System.Serializable]
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [Serializable]
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ReadOnlyNeedle<T> : IReadOnlyNeedle<T>, IEquatable<ReadOnlyNeedle<T>>
     {
         private readonly INeedle<T> _target;
@@ -66,15 +66,7 @@ namespace Theraot.Threading.Needles
 
         public override bool Equals(object obj)
         {
-            var _obj = obj as ReadOnlyNeedle<T>;
-            if (!ReferenceEquals(null, _obj))
-            {
-                return EqualsExtracted(this, _obj);
-            }
-            else
-            {
-                return _target.Equals(obj);
-            }
+            return (obj is ReadOnlyNeedle<T>) ? EqualsExtracted(this, (ReadOnlyNeedle<T>) obj) : _target.Equals(obj);
         }
 
         public bool Equals(ReadOnlyNeedle<T> other)
@@ -98,10 +90,7 @@ namespace Theraot.Threading.Needles
             {
                 return ReferenceEquals(right, null);
             }
-            else
-            {
-                return left._target.Equals(right._target);
-            }
+            return left._target.Equals(right._target);
         }
 
         private static bool NotEqualsExtracted(ReadOnlyNeedle<T> left, ReadOnlyNeedle<T> right)
@@ -110,10 +99,7 @@ namespace Theraot.Threading.Needles
             {
                 return !ReferenceEquals(right, null);
             }
-            else
-            {
-                return !left._target.Equals(right._target);
-            }
+            return !left._target.Equals(right._target);
         }
     }
 }

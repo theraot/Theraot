@@ -47,6 +47,7 @@ namespace System.Collections.Concurrent
 
         bool ICollection.IsSynchronized
         {
+            [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns False")]
             get
             {
                 return false;
@@ -55,6 +56,7 @@ namespace System.Collections.Concurrent
 
         object ICollection.SyncRoot
         {
+            [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
             get
             {
                 throw new NotSupportedException();
@@ -88,12 +90,14 @@ namespace System.Collections.Concurrent
             return GetEnumerator();
         }
 
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Microsoft's Design")]
         bool IProducerConsumerCollection<T>.TryAdd(T item)
         {
             _wrapped.Add(item);
             return true;
         }
 
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Microsoft's Design")]
         bool IProducerConsumerCollection<T>.TryTake(out T item)
         {
             return _wrapped.TryTake(out item);

@@ -268,11 +268,13 @@
     <Compile Include="Theraot\Collections\ProgressiveLookupTest.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Theraot\Collections\ProgressorTestEx.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\FixesSizeQueueTest.cs" />
     <Compile Include="Theraot\Core\PrimeHelperTest.cs" />
     <Compile Include="Theraot\Core\NumericHelperTest.cs" />
     <Compile Include="Theraot\Threading\Needles\LockableNeedleTest.cs" />
     <Compile Include="Theraot\Threading\Needles\WorkTest.cs" />
+    <Compile Include="Theraot\Threading\ReentryGuardTests.cs" />
     <Compile Include="throwback.cs">
       <DependentUpon>throwback.tt</DependentUpon>
       <AutoGen>True</AutoGen>

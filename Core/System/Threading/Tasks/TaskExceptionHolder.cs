@@ -71,6 +71,7 @@ namespace System.Threading.Tasks
         /// <summary>
         /// A finalizer that repropagates unhandled exceptions.
         /// </summary>
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "Microsoft's Design")]
         ~TaskExceptionHolder()
         {
             // Raise unhandled exceptions only when we know that neither the process or nor the appdomain is being torn down.

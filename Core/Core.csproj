@@ -372,9 +372,9 @@
     <Compile Include="System\Threading\Tasks\TaskSchedulerException.net35.cs" />
     <Compile Include="System\Threading\Tasks\ThreadPoolTaskScheduler.net35.cs" />
     <Compile Include="System\Threading\Tasks\UnobservedTaskExceptionEventArgs.net35.cs" />
-    <Compile Include="Theraot\Collections\ActionObserver.cs" />
     <Compile Include="Theraot\Collections\ConversionSet.cs" />
     <Compile Include="Theraot\Collections\ConvertedObserver.cs" />
+    <Compile Include="Theraot\Collections\CustomObserver.cs" />
     <Compile Include="Theraot\Collections\EmptyCollection.cs" />
     <Compile Include="Theraot\Collections\EmptyList.cs" />
     <Compile Include="Theraot\Collections\EmptySet.cs" />
@@ -487,7 +487,7 @@
       <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="Theraot\Core\AggregateExceptionHelper.cs" />
-    <Compile Include="Theraot\Core\AtomicBoolean.cs" />
+    <Compile Include="Theraot\Threading\AtomicBoolean.cs" />
     <Compile Include="Theraot\Core\CancellationTokenHelper.cs" />
     <Compile Include="Theraot\Core\Check.cs" />
     <Compile Include="Theraot\Core\CloneHelper.cs" />
@@ -574,7 +574,6 @@
     <Compile Include="Theraot\Threading\DisposableExtensions.cs" />
     <Compile Include="Theraot\Threading\GCMonitor.internal.cs" />
     <Compile Include="Theraot\Threading\GCMonitor.cs" />
-    <Compile Include="Theraot\Threading\Guard.cs" />
     <Compile Include="Theraot\Threading\IExtendedDisposable.cs" />
     <Compile Include="Theraot\Threading\IReadWriteLock.cs" />
     <Compile Include="Theraot\Threading\IThreadLocal.cs" />
@@ -600,11 +599,13 @@
     <Compile Include="Theraot\Threading\Needles\Needle.cs" />
     <Compile Include="Theraot\Threading\Needles\NeedleHelper.cs" />
     <Compile Include="Theraot\Threading\Needles\NotNull.cs" />
-    <Compile Include="Theraot\Threading\Needles\PromiseNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\Promise.cs" />
     <Compile Include="Theraot\Threading\Needles\PromiseNeedle1.cs" />
     <Compile Include="Theraot\Threading\Needles\ReadOnlyDisposableNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\ReadOnlyDisposableNeedle.disposable.cs" />
     <Compile Include="Theraot\Threading\Needles\ReadOnlyNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\ReadOnlyPromise.cs" />
+    <Compile Include="Theraot\Threading\Needles\ReadOnlyPromiseNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\ReadOnlyStructNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\StructNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\Transact.cs" />
@@ -783,7 +784,7 @@
     <Compile Include="System\Runtime\CompilerServices\ContractHelper.net40.cs" />
     <Compile Include="System\Diagnostics\Contracts\Internal\ContractHelper.net35.cs" />
     <Compile Include="System\Diagnostics\Contracts\ContractException.net40.cs" />
-    <Compile Include="Theraot\Core\AtomicBooleanValue.cs" />
+    <Compile Include="Theraot\Threading\AtomicBooleanValue.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
