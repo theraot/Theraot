@@ -942,7 +942,7 @@ namespace System.Linq.Expressions
             }
             else
             {
-                if (instance == null) throw new ArgumentException(Strings.OnlyStaticMethodsHaveNullInstance, "method");
+                if (instance == null) throw new ArgumentNullException(Strings.OnlyStaticMethodsHaveNullInstance, "method");
                 RequiresCanRead(instance, "instance");
                 ValidateCallInstanceType(instance.Type, method);
             }
