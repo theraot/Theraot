@@ -483,11 +483,17 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void Run()
         {
-            bool ranOnDefaultScheduler = false;
-            var t = Task.Run(delegate { ranOnDefaultScheduler = Thread.CurrentThread.IsThreadPoolThread; });
+            var expectedScheduler = TaskScheduler.Current;
+            TaskScheduler foundScheduler = null;
+            var t = Task.Run(() =>
+            {
+                foundScheduler = TaskScheduler.Current;
+                Console.WriteLine("Task Scheduler: {0}", TaskScheduler.Current);
+                Console.WriteLine("IsThreadPoolThread: {0}", Thread.CurrentThread.IsThreadPoolThread);
+            });
             Assert.AreEqual(TaskCreationOptions.DenyChildAttach, t.CreationOptions, "#1");
             t.Wait();
-            Assert.IsTrue(ranOnDefaultScheduler, "#2");
+            Assert.AreEqual(expectedScheduler, foundScheduler);
         }
 
         [Test]
