@@ -11,7 +11,7 @@ namespace Theraot.Threading.Needles
     public class LazyNeedle<T> : PromiseNeedle<T>, IEquatable<LazyNeedle<T>>
     {
         [NonSerialized]
-        private Thread _initializerThread;
+        private Thread _runnerThread;
 
         private Func<T> _valueFactory;
 
@@ -34,7 +34,7 @@ namespace Theraot.Threading.Needles
         }
 
         public LazyNeedle(Func<T> valueFactory, bool cacheExceptions)
-           : base(false)
+            : base(false)
         {
             _valueFactory = Check.NotNullArgument(valueFactory, "valueFactory");
             if (cacheExceptions)
@@ -68,6 +68,14 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        protected Thread RunnerThread
+        {
+            get
+            {
+                return _runnerThread;
+            }
+        }
+
         public override bool Equals(object obj)
         {
             return !ReferenceEquals(null, obj as LazyNeedle<T>) && base.Equals(obj);
@@ -85,7 +93,7 @@ namespace Theraot.Threading.Needles
 
         public virtual void Initialize()
         {
-            if (_initializerThread == Thread.CurrentThread)
+            if (_runnerThread == Thread.CurrentThread)
             {
                 throw new InvalidOperationException();
             }
@@ -107,7 +115,7 @@ namespace Theraot.Threading.Needles
 
         public override void Wait()
         {
-            if (_initializerThread == Thread.CurrentThread)
+            if (_runnerThread == Thread.CurrentThread)
             {
                 throw new InvalidOperationException();
             }
@@ -116,7 +124,7 @@ namespace Theraot.Threading.Needles
 
         public override void Wait(CancellationToken cancellationToken)
         {
-            if (_initializerThread == Thread.CurrentThread)
+            if (_runnerThread == Thread.CurrentThread)
             {
                 throw new InvalidOperationException();
             }
@@ -125,7 +133,7 @@ namespace Theraot.Threading.Needles
 
         public override void Wait(int milliseconds)
         {
-            if (_initializerThread == Thread.CurrentThread)
+            if (_runnerThread == Thread.CurrentThread)
             {
                 throw new InvalidOperationException();
             }
@@ -134,7 +142,7 @@ namespace Theraot.Threading.Needles
 
         public override void Wait(TimeSpan timeout)
         {
-            if (_initializerThread == Thread.CurrentThread)
+            if (_runnerThread == Thread.CurrentThread)
             {
                 throw new InvalidOperationException();
             }
@@ -143,7 +151,7 @@ namespace Theraot.Threading.Needles
 
         public override void Wait(int milliseconds, CancellationToken cancellationToken)
         {
-            if (_initializerThread == Thread.CurrentThread)
+            if (_runnerThread == Thread.CurrentThread)
             {
                 throw new InvalidOperationException();
             }
@@ -152,7 +160,7 @@ namespace Theraot.Threading.Needles
 
         public override void Wait(TimeSpan timeout, CancellationToken cancellationToken)
         {
-            if (_initializerThread == Thread.CurrentThread)
+            if (_runnerThread == Thread.CurrentThread)
             {
                 throw new InvalidOperationException();
             }
@@ -165,7 +173,7 @@ namespace Theraot.Threading.Needles
             {
                 throw new ArgumentNullException("beforeInitialize");
             }
-            if (_initializerThread == Thread.CurrentThread)
+            if (_runnerThread == Thread.CurrentThread)
             {
                 throw new InvalidOperationException();
             }
@@ -189,7 +197,7 @@ namespace Theraot.Threading.Needles
 
         private void InitializeExtracted(Func<T> valueFactory)
         {
-            _initializerThread = Thread.CurrentThread;
+            _runnerThread = Thread.CurrentThread;
             try
             {
                 base.Value = valueFactory.Invoke();
@@ -202,7 +210,7 @@ namespace Theraot.Threading.Needles
             }
             finally
             {
-                _initializerThread = null;
+                _runnerThread = null;
             }
         }
     }
