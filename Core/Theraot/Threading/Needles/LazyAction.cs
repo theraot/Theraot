@@ -8,63 +8,43 @@ namespace Theraot.Threading.Needles
 {
     [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
-    public class LazyNeedle<T> : PromiseNeedle<T>, IEquatable<LazyNeedle<T>>
+    public class LazyAction : Promise
     {
         [NonSerialized]
         private Thread _runnerThread;
 
-        private Func<T> _valueFactory;
+        private Action _action;
 
-        public LazyNeedle()
+        public LazyAction()
             : base(true)
         {
-            _valueFactory = null;
+            _action = null;
         }
 
-        public LazyNeedle(T target)
-            : base(target)
-        {
-            _valueFactory = null;
-        }
-
-        public LazyNeedle(Func<T> valueFactory)
+        public LazyAction(Action action)
             : base(false)
         {
-            _valueFactory = Check.NotNullArgument(valueFactory, "valueFactory");
+            _action = Check.NotNullArgument(action, "action");
         }
 
-        public LazyNeedle(Func<T> valueFactory, bool cacheExceptions)
-            : base(false)
+        public LazyAction(Action action, bool cacheExceptions)
+           : base(false)
         {
-            _valueFactory = Check.NotNullArgument(valueFactory, "valueFactory");
+            _action = Check.NotNullArgument(action, "action");
             if (cacheExceptions)
             {
-                _valueFactory = () =>
+                _action = () =>
                 {
                     try
                     {
-                        return valueFactory.Invoke();
+                        action.Invoke();
                     }
                     catch (Exception exc)
                     {
-                        _valueFactory = FuncHelper.GetThrowFunc<T>(exc);
+                        _action = ActionHelper.GetThrowAction(exc);
                         throw;
                     }
                 };
-            }
-        }
-
-        public override T Value
-        {
-            get
-            {
-                Initialize();
-                return base.Value;
-            }
-            set
-            {
-                base.Value = value;
-                ReleaseValueFactory();
             }
         }
 
@@ -76,41 +56,26 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public override bool Equals(object obj)
-        {
-            return !ReferenceEquals(null, obj as LazyNeedle<T>) && base.Equals(obj);
-        }
-
-        public bool Equals(LazyNeedle<T> other)
-        {
-            return !ReferenceEquals(other, null) && base.Equals(other);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
-        public virtual void Initialize()
+        public virtual void Execute()
         {
             if (_runnerThread == Thread.CurrentThread)
             {
                 throw new InvalidOperationException();
             }
-            var valueFactory = Interlocked.Exchange(ref _valueFactory, null);
-            if (valueFactory == null)
+            var action = Interlocked.Exchange(ref _action, null);
+            if (action == null)
             {
                 base.Wait();
             }
             else
             {
-                InitializeExtracted(valueFactory);
+                ExecuteExtracted(action);
             }
         }
 
-        public void ReleaseValueFactory()
+        public void ReleaseAction()
         {
-            ThreadingHelper.VolatileWrite(ref _valueFactory, null);
+            ThreadingHelper.VolatileWrite(ref _action, null);
         }
 
         public override void Wait()
@@ -167,7 +132,7 @@ namespace Theraot.Threading.Needles
             base.Wait(timeout, cancellationToken);
         }
 
-        protected virtual void Initialize(Action beforeInitialize)
+        protected virtual void Execute(Action beforeInitialize)
         {
             if (beforeInitialize == null)
             {
@@ -177,7 +142,7 @@ namespace Theraot.Threading.Needles
             {
                 throw new InvalidOperationException();
             }
-            var valueFactory = Interlocked.Exchange(ref _valueFactory, null);
+            var valueFactory = Interlocked.Exchange(ref _action, null);
             if (valueFactory == null)
             {
                 base.Wait();
@@ -190,21 +155,21 @@ namespace Theraot.Threading.Needles
                 }
                 finally
                 {
-                    InitializeExtracted(valueFactory);
+                    ExecuteExtracted(valueFactory);
                 }
             }
         }
 
-        private void InitializeExtracted(Func<T> valueFactory)
+        private void ExecuteExtracted(Action action)
         {
             _runnerThread = Thread.CurrentThread;
             try
             {
-                base.Value = valueFactory.Invoke();
+                action.Invoke();
             }
             catch (Exception exception)
             {
-                Interlocked.CompareExchange(ref _valueFactory, valueFactory, null);
+                Interlocked.CompareExchange(ref _action, action, null);
                 SetError(exception);
                 throw;
             }
