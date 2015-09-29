@@ -593,6 +593,7 @@
     <Compile Include="Theraot\Threading\Needles\IRecyclableNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\LazyDisposableNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\LazyDisposableNeedle.disposable.cs" />
+    <Compile Include="Theraot\Threading\Needles\LazyAction.cs" />
     <Compile Include="Theraot\Threading\Needles\LazyNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\LockableContext.cs" />
     <Compile Include="Theraot\Threading\Needles\LockableSlot.cs" />
