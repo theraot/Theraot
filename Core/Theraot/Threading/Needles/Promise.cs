@@ -79,15 +79,49 @@ namespace Theraot.Threading.Needles
 
         public virtual void Free()
         {
-            if (_waitHandle.IsAlive)
-            {
-                _waitHandle.Value.Reset();
-            }
-            else
+            var waitHandle = _waitHandle.Value;
+            if (waitHandle == null)
             {
                 _waitHandle.Value = new ManualResetEventSlim(false);
             }
+            else
+            {
+                waitHandle.Reset();
+            }
             _exception = null;
+        }
+
+        public virtual void Free(Action beforeFree)
+        {
+            if (beforeFree == null)
+            {
+                throw new ArgumentNullException("beforeFree");
+            }
+            var waitHandle = _waitHandle.Value;
+            if (waitHandle == null || waitHandle.IsSet)
+            {
+                try
+                {
+                    beforeFree();
+                }
+                finally
+                {
+                    if (waitHandle == null)
+                    {
+                        _waitHandle.Value = new ManualResetEventSlim(false);
+                    }
+                    else
+                    {
+                        waitHandle.Reset();
+                    }
+                    _exception = null;
+                }
+            }
+            else
+            {
+                waitHandle.Reset();
+                _exception = null;
+            }
         }
 
         public override int GetHashCode()
