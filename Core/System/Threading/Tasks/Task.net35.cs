@@ -391,11 +391,6 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentOutOfRangeException("milliseconds");
             }
-            if (milliseconds == -1)
-            {
-                Wait();
-                return true;
-            }
             var start = ThreadingHelper.TicksNow();
             while (true)
             {
@@ -407,9 +402,12 @@ namespace System.Threading.Tasks
                 {
                     return true;
                 }
-                if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) >= milliseconds)
+                if (milliseconds != -1)
                 {
-                    return IsCompleted;
+                    if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) >= milliseconds)
+                    {
+                        return IsCompleted;
+                    }
                 }
             }
         }
