@@ -85,7 +85,19 @@ namespace Theraot.Threading.Needles
 
         public virtual void Initialize()
         {
-            InitializeExtracted();
+            if (_initializerThread == Thread.CurrentThread)
+            {
+                throw new InvalidOperationException();
+            }
+            var valueFactory = Interlocked.Exchange(ref _valueFactory, null);
+            if (valueFactory == null)
+            {
+                base.Wait();
+            }
+            else
+            {
+                InitializeExtracted(valueFactory);
+            }
         }
 
         public void ReleaseValueFactory()
@@ -102,13 +114,67 @@ namespace Theraot.Threading.Needles
             base.Wait();
         }
 
+        public override void Wait(CancellationToken cancellationToken)
+        {
+            if (_initializerThread == Thread.CurrentThread)
+            {
+                throw new InvalidOperationException();
+            }
+            base.Wait(cancellationToken);
+        }
+
+        public override void Wait(int milliseconds)
+        {
+            if (_initializerThread == Thread.CurrentThread)
+            {
+                throw new InvalidOperationException();
+            }
+            base.Wait(milliseconds);
+        }
+
+        public override void Wait(TimeSpan timeout)
+        {
+            if (_initializerThread == Thread.CurrentThread)
+            {
+                throw new InvalidOperationException();
+            }
+            base.Wait(timeout);
+        }
+
+        public override void Wait(int milliseconds, CancellationToken cancellationToken)
+        {
+            if (_initializerThread == Thread.CurrentThread)
+            {
+                throw new InvalidOperationException();
+            }
+            base.Wait(milliseconds, cancellationToken);
+        }
+
+        public override void Wait(TimeSpan timeout, CancellationToken cancellationToken)
+        {
+            if (_initializerThread == Thread.CurrentThread)
+            {
+                throw new InvalidOperationException();
+            }
+            base.Wait(timeout, cancellationToken);
+        }
+
         protected virtual void Initialize(Action beforeInitialize)
         {
             if (beforeInitialize == null)
             {
                 throw new ArgumentNullException("beforeInitialize");
             }
-            if (ThreadingHelper.VolatileRead(ref _valueFactory) != null)
+            if (_initializerThread == Thread.CurrentThread)
+            {
+                throw new InvalidOperationException();
+            }
+            var valueFactory = Interlocked.Exchange(ref _valueFactory, null);
+            if (valueFactory == null)
+            {
+                base.Wait();
+            }
+            else
             {
                 try
                 {
@@ -116,44 +182,27 @@ namespace Theraot.Threading.Needles
                 }
                 finally
                 {
-                    InitializeExtracted();
+                    InitializeExtracted(valueFactory);
                 }
             }
         }
 
-        private void InitializeExtracted()
+        private void InitializeExtracted(Func<T> valueFactory)
         {
-            back:
-            var valueFactory = Interlocked.Exchange(ref _valueFactory, null);
-            if (valueFactory == null)
+            _initializerThread = Thread.CurrentThread;
+            try
             {
-                if (_initializerThread == Thread.CurrentThread)
-                {
-                    throw new InvalidOperationException();
-                }
-                base.Wait();
-                if (ThreadingHelper.VolatileRead(ref _valueFactory) != null)
-                {
-                    goto back;
-                }
+                base.Value = valueFactory.Invoke();
             }
-            else
+            catch (Exception exception)
             {
-                _initializerThread = Thread.CurrentThread;
-                try
-                {
-                    base.Value = valueFactory.Invoke();
-                }
-                catch (Exception exception)
-                {
-                    Interlocked.CompareExchange(ref _valueFactory, valueFactory, null);
-                    SetError(exception);
-                    throw;
-                }
-                finally
-                {
-                    _initializerThread = null;
-                }
+                Interlocked.CompareExchange(ref _valueFactory, valueFactory, null);
+                SetError(exception);
+                throw;
+            }
+            finally
+            {
+                _initializerThread = null;
             }
         }
     }
