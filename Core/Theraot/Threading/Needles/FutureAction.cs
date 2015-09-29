@@ -7,19 +7,19 @@ namespace Theraot.Threading.Needles
 {
     [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
-    public class FutureNeedle<T> : LazyNeedle<T>
+    public class FutureAction : LazyAction
     {
         private readonly Action<Action> _schedule;
         private int _status;
 
-        public FutureNeedle(Func<T> valueFactory)
-            : base(valueFactory)
+        public FutureAction(Action action)
+            : base(action)
         {
             _schedule = Schedule;
         }
 
-        public FutureNeedle(Func<T> valueFactory, bool autoSchedule)
-            : base(valueFactory)
+        public FutureAction(Action action, bool autoSchedule)
+            : base(action)
         {
             _schedule = Schedule;
             if (autoSchedule)
@@ -28,14 +28,14 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public FutureNeedle(Action<Action> schedule, Func<T> valueFactory)
-            : base(valueFactory)
+        public FutureAction(Action<Action> schedule, Action action)
+            : base(action)
         {
             _schedule = schedule;
         }
 
-        public FutureNeedle(Action<Action> schedule, Func<T> valueFactory, bool autoSchedule)
-            : base(valueFactory)
+        public FutureAction(Action<Action> schedule, Action action, bool autoSchedule)
+            : base(action)
         {
             _schedule = schedule;
             if (autoSchedule)
@@ -44,7 +44,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        public override void Initialize()
+        public override void Execute()
         {
             if (Interlocked.CompareExchange(ref _status, 1, 0) != 0)
             {
@@ -52,11 +52,11 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                base.Initialize();
+                base.Execute();
             }
         }
 
-        protected override void Initialize(Action beforeInitialize)
+        protected override void Execute(Action beforeInitialize)
         {
             if (Interlocked.CompareExchange(ref _status, 1, 0) != 0)
             {
@@ -64,7 +64,7 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                base.Initialize(beforeInitialize);
+                base.Execute(beforeInitialize);
             }
         }
 
@@ -74,13 +74,13 @@ namespace Theraot.Threading.Needles
             {
                 return false;
             }
-            _schedule(base.Initialize);
+            _schedule(base.Execute);
             return true;
         }
 
         public override void Wait()
         {
-            Initialize();
+            Execute();
         }
 
         public override void Wait(CancellationToken cancellationToken)
@@ -91,7 +91,7 @@ namespace Theraot.Threading.Needles
             }
             else
             {
-                base.Initialize();
+                base.Execute();
             }
         }
 
@@ -104,7 +104,7 @@ namespace Theraot.Threading.Needles
             else
             {
                 var start = ThreadingHelper.TicksNow();
-                base.Initialize();
+                base.Execute();
                 milliseconds = milliseconds - (int)ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
                 if (milliseconds > 0)
                 {
@@ -127,7 +127,7 @@ namespace Theraot.Threading.Needles
             else
             {
                 var start = ThreadingHelper.TicksNow();
-                base.Initialize();
+                base.Execute();
                 milliseconds = milliseconds - (int)ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
                 if (milliseconds > 0)
                 {
