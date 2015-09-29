@@ -625,7 +625,6 @@
     <Compile Include="Theraot\Threading\RuntimeUniqueIdProdiver.cs" />
     <Compile Include="Theraot\Threading\Needles\LockableNeedle.cs" />
     <Compile Include="Theraot\Threading\SimpleReentryGuard.cs" />
-    <Compile Include="Theraot\Threading\SingleTimeExecution.cs" />
     <Compile Include="Theraot\Threading\ThreadingHelper.cs" />
     <Compile Include="Theraot\Threading\ThreadingHelper.extra.cs" />
     <Compile Include="Theraot\Threading\ThreadingHelper.SpinWait.cs">
