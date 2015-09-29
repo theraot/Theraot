@@ -17,7 +17,6 @@ namespace System.Threading.Tasks
         private readonly int _id;
         private readonly Task _parent;
         private object _action;
-        private ExecutionContext _capturedContext;
         private int _isDisposed = 0;
         private TaskScheduler _scheduler;
         private object _state;
@@ -392,11 +391,6 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentOutOfRangeException("milliseconds");
             }
-            if (milliseconds == -1)
-            {
-                Wait();
-                return true;
-            }
             var start = ThreadingHelper.TicksNow();
             while (true)
             {
@@ -408,9 +402,12 @@ namespace System.Threading.Tasks
                 {
                     return true;
                 }
-                if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) >= milliseconds)
+                if (milliseconds != -1)
                 {
-                    return IsCompleted;
+                    if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) >= milliseconds)
+                    {
+                        return IsCompleted;
+                    }
                 }
             }
         }

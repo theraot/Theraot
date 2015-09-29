@@ -15,9 +15,6 @@ namespace System.Threading.Tasks
         private readonly static Predicate<Task> _isExceptionObservedByParentPredicate = (t => t.IsExceptionObservedByParent);
         private readonly static Action<object> _taskCancelCallback = (TaskCancelCallback);
 
-        [SecurityCritical]
-        private static ContextCallback _executionContextCallback;
-
         private int _cancellationAcknowledged;
         private StrongBox<CancellationTokenRegistration> _cancellationRegistration;
         private int _cancellationRequested;
@@ -470,20 +467,6 @@ namespace System.Threading.Tasks
             }
         }
 
-        [SecurityCritical]
-        private static void ExecutionContextCallback(object obj)
-        {
-            var task = obj as Task;
-            if (task == null)
-            {
-                Contract.Assert(false, "expected a task object");
-            }
-            else
-            {
-                task.Execute();
-            }
-        }
-
         private static void TaskCancelCallback(object obj)
         {
             var task = obj as Task;
@@ -586,22 +569,8 @@ namespace System.Threading.Tasks
                 // place the current task into TLS.
                 _current = this;
 
-                ExecutionContext ec = _capturedContext;
-                if (ec == null)
-                {
-                    // No context, just run the task directly.
-                    Execute();
-                }
-                else
-                {
-                    // Run the task.  We need a simple shim that converts the
-                    // object back into a Task object, so that we can Execute it.
+                Execute();
 
-                    // Lazily initialize the callback delegate; benign ----
-                    var callback = _executionContextCallback;
-                    if (callback == null) _executionContextCallback = callback = ExecutionContextCallback;
-                    ExecutionContext.Run(ec, callback, this);
-                }
                 Finish(true);
             }
             finally
