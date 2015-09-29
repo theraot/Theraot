@@ -17,7 +17,6 @@ namespace System.Threading.Tasks
         private readonly int _id;
         private readonly Task _parent;
         private object _action;
-        private ExecutionContext _capturedContext;
         private int _isDisposed = 0;
         private TaskScheduler _scheduler;
         private object _state;
