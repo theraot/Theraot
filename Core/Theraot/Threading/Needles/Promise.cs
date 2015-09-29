@@ -133,6 +133,91 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        public virtual void Wait(CancellationToken cancellationToken)
+        {
+            var waitHandle = _waitHandle.Value;
+            if (waitHandle != null)
+            {
+                try
+                {
+                    waitHandle.Wait(cancellationToken);
+                }
+                catch (ObjectDisposedException exception)
+                {
+                    // Came late to the party, initialization was done
+                    GC.KeepAlive(exception);
+                }
+            }
+        }
+
+        public virtual void Wait(int milliseconds)
+        {
+            var waitHandle = _waitHandle.Value;
+            if (waitHandle != null)
+            {
+                try
+                {
+                    waitHandle.Wait(milliseconds);
+                }
+                catch (ObjectDisposedException exception)
+                {
+                    // Came late to the party, initialization was done
+                    GC.KeepAlive(exception);
+                }
+            }
+        }
+
+        public virtual void Wait(TimeSpan timeout)
+        {
+            var waitHandle = _waitHandle.Value;
+            if (waitHandle != null)
+            {
+                try
+                {
+                    waitHandle.Wait(timeout);
+                }
+                catch (ObjectDisposedException exception)
+                {
+                    // Came late to the party, initialization was done
+                    GC.KeepAlive(exception);
+                }
+            }
+        }
+
+        public virtual void Wait(int milliseconds, CancellationToken cancellationToken)
+        {
+            var waitHandle = _waitHandle.Value;
+            if (waitHandle != null)
+            {
+                try
+                {
+                    waitHandle.Wait(milliseconds, cancellationToken);
+                }
+                catch (ObjectDisposedException exception)
+                {
+                    // Came late to the party, initialization was done
+                    GC.KeepAlive(exception);
+                }
+            }
+        }
+
+        public virtual void Wait(TimeSpan timeout, CancellationToken cancellationToken)
+        {
+            var waitHandle = _waitHandle.Value;
+            if (waitHandle != null)
+            {
+                try
+                {
+                    waitHandle.Wait(timeout, cancellationToken);
+                }
+                catch (ObjectDisposedException exception)
+                {
+                    // Came late to the party, initialization was done
+                    GC.KeepAlive(exception);
+                }
+            }
+        }
+
         protected void ReleaseWaitHandle(bool done)
         {
             var waitHandle = _waitHandle.Value;
