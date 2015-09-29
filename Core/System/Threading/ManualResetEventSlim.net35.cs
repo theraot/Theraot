@@ -205,6 +205,20 @@ namespace System.Threading
             }
         }
 
+        public void Wait(CancellationToken cancellationToken)
+        {
+            if (Thread.VolatileRead(ref _state) == -1)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
+            else
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                WaitExtracted(cancellationToken);
+            }
+        }
+
         public bool Wait(TimeSpan timeout)
         {
             if (Thread.VolatileRead(ref _state) == -1)
@@ -233,7 +247,7 @@ namespace System.Threading
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", Justification = "False Positive")]
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", Justification = "False Positive")]
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
