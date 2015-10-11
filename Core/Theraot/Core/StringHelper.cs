@@ -1067,7 +1067,7 @@ namespace Theraot.Core
 #endif
         }
 
-        public static string Join<T>(string separator, params object[] values)
+        public static string Join(string separator, params object[] values)
         {
 #if NET20 || NET30 || NET35
             if (values == null)
