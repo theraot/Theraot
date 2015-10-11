@@ -148,122 +148,122 @@ namespace Theraot.Core
 
         public static string End(this string text, int characterCount)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            int length = _text.Length;
+            if (text == null)
+            {
+                throw new ArgumentNullException("text");
+            }
+            int length = text.Length;
             if (length < characterCount)
             {
-                return _text;
+                return text;
             }
-            else
-            {
-                return _text.Substring(length - characterCount);
-            }
+            return text.Substring(length - characterCount);
         }
 
         public static string EnsureEnd(this string text, string end)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            if (!_text.EndsWith(end, false, CultureInfo.CurrentCulture))
+            if (text == null)
             {
-                return _text.Append(end);
+                throw new ArgumentNullException("text");
             }
-            else
+            if (!text.EndsWith(end, false, CultureInfo.CurrentCulture))
             {
-                return _text;
+                return text.Append(end);
             }
+            return text;
         }
 
         public static string EnsureEnd(this string text, string end, bool ignoreCase, CultureInfo culture)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            if (!_text.EndsWith(end, ignoreCase, culture))
+            if (text == null)
             {
-                return _text.Append(end);
+                throw new ArgumentNullException("text");
             }
-            else
+            if (!text.EndsWith(end, ignoreCase, culture))
             {
-                return _text;
+                return text.Append(end);
             }
+            return text;
         }
 
         public static string EnsureEnd(this string text, string end, StringComparison comparisonType)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            if (!_text.EndsWith(end, comparisonType))
+            if (text == null)
             {
-                return _text.Append(end);
+                throw new ArgumentNullException("text");
             }
-            else
+            if (!text.EndsWith(end, comparisonType))
             {
-                return _text;
+                return text.Append(end);
             }
+            return text;
         }
 
         public static string EnsureStart(this string text, string start)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            if (!_text.StartsWith(start, false, CultureInfo.CurrentCulture))
+            if (text == null)
             {
-                return start.Append(_text);
+                throw new ArgumentNullException("text");
             }
-            else
+            if (!text.StartsWith(start, false, CultureInfo.CurrentCulture))
             {
-                return _text;
+                return start.Append(text);
             }
+            return text;
         }
 
         public static string EnsureStart(this string text, string start, bool ignoreCase, CultureInfo culture)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            if (!_text.StartsWith(start, ignoreCase, culture))
+            if (text == null)
             {
-                return start.Append(_text);
+                throw new ArgumentNullException("text");
             }
-            else
+            if (!text.StartsWith(start, ignoreCase, culture))
             {
-                return _text;
+                return start.Append(text);
             }
+            return text;
         }
 
         public static string EnsureStart(this string text, string start, StringComparison comparisonType)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            if (!_text.StartsWith(start, comparisonType))
+            if (text == null)
             {
-                return start.Append(_text);
+                throw new ArgumentNullException("text");
             }
-            else
+            if (!text.StartsWith(start, comparisonType))
             {
-                return _text;
+                return start.Append(text);
             }
+            return text;
         }
 
         public static string ExceptEnd(this string text, int characterCount)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            int length = _text.Length;
+            if (text == null)
+            {
+                throw new ArgumentNullException("text");
+            }
+            int length = text.Length;
             if (length < characterCount)
             {
                 return string.Empty;
             }
-            else
-            {
-                return _text.Substring(0, length - characterCount);
-            }
+            return text.Substring(0, length - characterCount);
         }
 
         public static string ExceptStart(this string text, int characterCount)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            int length = _text.Length;
+            if (text == null)
+            {
+                throw new ArgumentNullException("text");
+            }
+            int length = text.Length;
             if (length < characterCount)
             {
                 return string.Empty;
             }
-            else
-            {
-                return _text.Substring(characterCount);
-            }
+            return text.Substring(characterCount);
         }
 
         public static string Implode(string separator, params object[] values)
@@ -725,86 +725,104 @@ namespace Theraot.Core
 
         public static string NeglectEnd(this string text, string end)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            var _end = Check.NotNullArgument(end, "end");
-            if (_text.EndsWith(_end, false, CultureInfo.CurrentCulture))
+            if (text == null)
             {
-                return _text.ExceptEnd(_end.Length);
+                throw new ArgumentNullException("text");
             }
-            else
+            if (end == null)
             {
-                return _text;
+                throw new ArgumentNullException("end");
             }
+            if (text.EndsWith(end, false, CultureInfo.CurrentCulture))
+            {
+                return text.ExceptEnd(end.Length);
+            }
+            return text;
         }
 
         public static string NeglectEnd(this string text, string end, bool ignoreCase, CultureInfo culture)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            var _end = Check.NotNullArgument(end, "end");
-            if (_text.EndsWith(_end, ignoreCase, culture))
+            if (text == null)
             {
-                return _text.ExceptEnd(_end.Length);
+                throw new ArgumentNullException("text");
             }
-            else
+            if (end == null)
             {
-                return _text;
+                throw new ArgumentNullException("end");
             }
+            if (text.EndsWith(end, ignoreCase, culture))
+            {
+                return text.ExceptEnd(end.Length);
+            }
+            return text;
         }
 
         public static string NeglectEnd(this string text, string end, StringComparison comparisonType)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            var _end = Check.NotNullArgument(end, "end");
-            if (_text.EndsWith(_end, comparisonType))
+            if (text == null)
             {
-                return _text.ExceptEnd(_end.Length);
+                throw new ArgumentNullException("text");
             }
-            else
+            if (end == null)
             {
-                return _text;
+                throw new ArgumentNullException("end");
             }
+            if (text.EndsWith(end, comparisonType))
+            {
+                return text.ExceptEnd(end.Length);
+            }
+            return text;
         }
 
         public static string NeglectStart(this string text, string start)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            var _start = Check.NotNullArgument(start, "start");
-            if (_text.StartsWith(_start, false, CultureInfo.CurrentCulture))
+            if (text == null)
             {
-                return _text.ExceptStart(_start.Length);
+                throw new ArgumentNullException("text");
             }
-            else
+            if (start == null)
             {
-                return _text;
+                throw new ArgumentNullException("start");
             }
+            if (text.StartsWith(start, false, CultureInfo.CurrentCulture))
+            {
+                return text.ExceptStart(start.Length);
+            }
+            return text;
         }
 
         public static string NeglectStart(this string text, string start, bool ignoreCase, CultureInfo culture)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            var _start = Check.NotNullArgument(start, "start");
-            if (_text.StartsWith(_start, ignoreCase, culture))
+            if (text == null)
             {
-                return _text.ExceptStart(_start.Length);
+                throw new ArgumentNullException("text");
             }
-            else
+            if (start == null)
             {
-                return _text;
+                throw new ArgumentNullException("start");
             }
+            if (text.StartsWith(start, ignoreCase, culture))
+            {
+                return text.ExceptStart(start.Length);
+            }
+            return text;
         }
 
         public static string NeglectStart(this string text, string start, StringComparison comparisonType)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            var _start = Check.NotNullArgument(start, "start");
-            if (_text.StartsWith(_start, comparisonType))
+            if (text == null)
             {
-                return _text.ExceptStart(_start.Length);
+                throw new ArgumentNullException("text");
             }
-            else
+            if (start == null)
             {
-                return _text;
+                throw new ArgumentNullException("start");
             }
+            if (text.StartsWith(start, comparisonType))
+            {
+                return text.ExceptStart(start.Length);
+            }
+            return text;
         }
 
         public static string Safe(this string text)
@@ -821,16 +839,16 @@ namespace Theraot.Core
 
         public static string Start(this string text, int characterCount)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            int length = _text.Length;
+            if (text == null)
+            {
+                throw new ArgumentNullException("text");
+            }
+            int length = text.Length;
             if (length < characterCount)
             {
-                return _text;
+                return text;
             }
-            else
-            {
-                return _text.Substring(0, characterCount);
-            }
+            return text.Substring(0, characterCount);
         }
 
         private static string ConcatExtracted(object[] array, int startIndex, int count)
