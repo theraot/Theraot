@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace Theraot.Core
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public static partial class StringHelper
     {
         public static string Append(this string text, string value)
@@ -408,15 +408,12 @@ namespace Theraot.Core
             {
                 return Concat(values);
             }
-            else
+            var stringList = new List<string>();
+            foreach (var item in values)
             {
-                var stringList = new List<string>();
-                foreach (var item in values)
-                {
-                    stringList.Add(item);
-                }
-                return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
+                stringList.Add(item);
             }
+            return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
         }
 
         public static string Implode<T>(string separator, IEnumerable<T> values)
@@ -429,15 +426,12 @@ namespace Theraot.Core
             {
                 return Concat(values);
             }
-            else
+            var stringList = new List<string>();
+            foreach (var item in values)
             {
-                var stringList = new List<string>();
-                foreach (var item in values)
-                {
-                    stringList.Add(item.ToString());
-                }
-                return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
+                stringList.Add(item.ToString());
             }
+            return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
         }
 
         public static string Implode<T>(string separator, IEnumerable<T> values, Converter<T, string> converter)
@@ -454,15 +448,12 @@ namespace Theraot.Core
             {
                 return Concat(values, converter);
             }
-            else
+            var stringList = new List<string>();
+            foreach (var item in values)
             {
-                var stringList = new List<string>();
-                foreach (var item in values)
-                {
-                    stringList.Add(item.ToString());
-                }
-                return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
+                stringList.Add(item.ToString());
             }
+            return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
         }
 
         public static string Implode(string separator, IEnumerable<string> values, string start, string end)
@@ -475,30 +466,24 @@ namespace Theraot.Core
             {
                 return Concat(values);
             }
-            else
+            var stringList = new List<string>();
+            foreach (var item in values)
             {
-                var stringList = new List<string>();
-                foreach (var item in values)
-                {
-                    stringList.Add(item);
-                }
-                if (stringList.Count > 0)
-                {
-                    if (start == null)
-                    {
-                        start = string.Empty;
-                    }
-                    if (end == null)
-                    {
-                        end = string.Empty;
-                    }
-                    return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
-                }
-                else
-                {
-                    return string.Empty;
-                }
+                stringList.Add(item);
             }
+            if (stringList.Count > 0)
+            {
+                if (start == null)
+                {
+                    start = string.Empty;
+                }
+                if (end == null)
+                {
+                    end = string.Empty;
+                }
+                return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
+            }
+            return string.Empty;
         }
 
         public static string Implode<T>(string separator, IEnumerable<T> values, string start, string end)
@@ -511,30 +496,24 @@ namespace Theraot.Core
             {
                 return Concat(values);
             }
-            else
+            var stringList = new List<string>();
+            foreach (var item in values)
             {
-                var stringList = new List<string>();
-                foreach (var item in values)
-                {
-                    stringList.Add(item.ToString());
-                }
-                if (stringList.Count > 0)
-                {
-                    if (start == null)
-                    {
-                        start = string.Empty;
-                    }
-                    if (end == null)
-                    {
-                        end = string.Empty;
-                    }
-                    return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
-                }
-                else
-                {
-                    return string.Empty;
-                }
+                stringList.Add(item.ToString());
             }
+            if (stringList.Count > 0)
+            {
+                if (start == null)
+                {
+                    start = string.Empty;
+                }
+                if (end == null)
+                {
+                    end = string.Empty;
+                }
+                return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
+            }
+            return string.Empty;
         }
 
         public static string Implode<T>(string separator, IEnumerable<T> values, Converter<T, string> converter, string start, string end)
@@ -551,30 +530,24 @@ namespace Theraot.Core
             {
                 return Concat(values, converter);
             }
-            else
+            var stringList = new List<string>();
+            foreach (var item in values)
             {
-                var stringList = new List<string>();
-                foreach (var item in values)
-                {
-                    stringList.Add(item.ToString());
-                }
-                if (stringList.Count > 0)
-                {
-                    if (start == null)
-                    {
-                        start = string.Empty;
-                    }
-                    if (end == null)
-                    {
-                        end = string.Empty;
-                    }
-                    return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
-                }
-                else
-                {
-                    return string.Empty;
-                }
+                stringList.Add(item.ToString());
             }
+            if (stringList.Count > 0)
+            {
+                if (start == null)
+                {
+                    start = string.Empty;
+                }
+                if (end == null)
+                {
+                    end = string.Empty;
+                }
+                return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
+            }
+            return string.Empty;
         }
 
         public static bool Like(this string text, Regex regex, int startAt)
@@ -831,10 +804,7 @@ namespace Theraot.Core
             {
                 return string.Empty;
             }
-            else
-            {
-                return text;
-            }
+            return text;
         }
 
         public static string Start(this string text, int characterCount)
@@ -890,16 +860,13 @@ namespace Theraot.Core
             {
                 return string.Empty;
             }
-            else
+            var result = new StringBuilder(length);
+            for (int index = startIndex; index < maxIndex; index++)
             {
-                var result = new StringBuilder(length);
-                for (int index = startIndex; index < maxIndex; index++)
-                {
-                    var item = array[index];
-                    result.Append(item);
-                }
-                return result.ToString();
+                var item = array[index];
+                result.Append(item);
             }
+            return result.ToString();
         }
 
         private static string ImplodeExtracted(string separator, object[] array, int startIndex, int count)
@@ -943,25 +910,22 @@ namespace Theraot.Core
             {
                 return string.Empty;
             }
-            else
+            var result = new StringBuilder(length);
+            bool first = true;
+            for (int index = startIndex; index < maxIndex; index++)
             {
-                var result = new StringBuilder(length);
-                bool first = true;
-                for (int index = startIndex; index < maxIndex; index++)
+                var item = array[index];
+                if (first)
                 {
-                    var item = array[index];
-                    if (first)
-                    {
-                        first = false;
-                    }
-                    else
-                    {
-                        result.Append(separator);
-                    }
-                    result.Append(item);
+                    first = false;
                 }
-                return result.ToString();
+                else
+                {
+                    result.Append(separator);
+                }
+                result.Append(item);
             }
+            return result.ToString();
         }
     }
 
