@@ -718,7 +718,7 @@
     <Compile Include="System\Runtime\CompilerServices\ExecutionScope.net30.cs" />
     <Compile Include="System\Runtime\CompilerServices\ExtensionAttribute.net30.cs" />
     <Compile Include="System\Runtime\CompilerServices\StrongBox.net30.cs" />
-    <Compile Include="System\Threading\AggregateException.net35.cs" />
+    <Compile Include="System\AggregateException.net35.cs" />
     <Compile Include="System\Threading\ManualResetEventSlim.net35.cs" />
     <Compile Include="System\Threading\Tasks\TaskCreationOption.net35.cs" />
     <Compile Include="System\Threading\Tasks\TaskStatus.net35.cs" />
