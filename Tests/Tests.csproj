@@ -274,6 +274,7 @@
     <Compile Include="Theraot\Core\NumericHelperTest.cs" />
     <Compile Include="Theraot\Threading\Needles\LockableNeedleTest.cs" />
     <Compile Include="Theraot\Threading\Needles\WorkTest.cs" />
+    <Compile Include="Theraot\Threading\PathHelperTest.cs" />
     <Compile Include="Theraot\Threading\ReentryGuardTests.cs" />
     <Compile Include="throwback.cs">
       <DependentUpon>throwback.tt</DependentUpon>
