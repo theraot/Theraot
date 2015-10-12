@@ -205,6 +205,30 @@ namespace Tests.Theraot.Threading
             Assert.AreEqual("", PathHelper.Combine("", "", "", "", ""), "#A4");
         }
 
+        [Test]
+        public void Combine_Extra()
+        {
+            var source = new [] {"test", "/test", "\\test"};
+            var start = @"C:\test";
+            // tested this on Linux and Windows using Path.Combine...
+            foreach (var combination in source)
+            {
+                var result = PathHelper.Combine(start, combination);
+                if
+                (
+                    combination.StartsWith(Path.DirectorySeparatorChar.ToString())
+                    || combination.StartsWith(Path.AltDirectorySeparatorChar.ToString())
+                )
+                {
+                    Assert.AreEqual(combination, result);
+                }
+                else
+                {
+                    Assert.AreEqual(string.Join(Path.DirectorySeparatorChar.ToString(), new [] { start , combination }), result);
+                }
+            }
+        }
+
         private string Concat(string sep, params string[] parms)
         {
             return String.Join(sep, parms);
