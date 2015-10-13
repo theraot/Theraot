@@ -488,6 +488,7 @@
     </Compile>
     <Compile Include="Theraot\Core\AggregateExceptionHelper.cs" />
     <Compile Include="Theraot\Core\EnvironmentHelper.cs" />
+    <Compile Include="Theraot\Core\IntPtrHelper.cs" />
     <Compile Include="Theraot\Core\PathHelper.cs" />
     <Compile Include="Theraot\Threading\AtomicBoolean.cs" />
     <Compile Include="Theraot\Core\CancellationTokenHelper.cs" />
