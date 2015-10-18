@@ -6,7 +6,7 @@ using Theraot.Core;
 
 namespace Theraot.Threading
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public static partial class ThreadingHelper
     {
         internal const int INT_SleepCountHint = 10;

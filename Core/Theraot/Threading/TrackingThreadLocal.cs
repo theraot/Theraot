@@ -11,7 +11,7 @@ using Theraot.Threading.Needles;
 namespace Theraot.Threading
 {
     [System.Diagnostics.DebuggerDisplay("IsValueCreated={IsValueCreated}, Value={ValueForDebugDisplay}")]
-    public sealed class TrackingThreadLocal<T> : IDisposable, IThreadLocal<T>, IWaitablePromise<T>, ICacheNeedle<T>, IObserver<T>
+    public sealed class TrackingThreadLocal<T> : IThreadLocal<T>, IWaitablePromise<T>, ICacheNeedle<T>, IObserver<T>
     {
         private const int INT_MaxProbingHint = 4;
 

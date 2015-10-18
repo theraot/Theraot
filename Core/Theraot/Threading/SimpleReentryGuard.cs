@@ -8,7 +8,7 @@ namespace Theraot.Threading
     /// <summary>
     /// Represents a context to execute operation without reentry.
     /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public sealed class SimpleReentryGuard : IDisposable
     {
         private StructNeedle<TrackingThreadLocal<int>> _guards;
