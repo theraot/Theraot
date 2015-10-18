@@ -1,4 +1,6 @@
-﻿namespace Theraot.Core
+﻿#if FAT
+
+namespace Theraot.Core
 {
     public static class CharHelper
     {
@@ -16,3 +18,5 @@
         }
     }
 }
+
+#endif
