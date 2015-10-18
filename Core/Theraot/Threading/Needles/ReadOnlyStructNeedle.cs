@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace Theraot.Threading.Needles
 {
     [Serializable]
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public struct ReadOnlyStructNeedle<T> : INeedle<T>, IEquatable<ReadOnlyStructNeedle<T>>
     {
         private readonly T _target;

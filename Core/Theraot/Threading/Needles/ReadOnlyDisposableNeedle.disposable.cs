@@ -4,20 +4,20 @@ using System;
 
 namespace Theraot.Threading.Needles
 {
-    public sealed partial class ReadOnlyDisposableNeedle<T> : IDisposable, IExtendedDisposable
+    public sealed partial class ReadOnlyDisposableNeedle<T> : IExtendedDisposable
     {
         private int _status;
 
         public bool IsDisposed
         {
-            [global::System.Diagnostics.DebuggerNonUserCode]
+            [System.Diagnostics.DebuggerNonUserCode]
             get
             {
                 return _status == -1;
             }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {
             if (TakeDisposalExecution())
@@ -26,7 +26,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         public void DisposedConditional(Action whenDisposed, Action whenNotDisposed)
         {
             if (_status == -1)
@@ -62,7 +62,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         public TReturn DisposedConditional<TReturn>(Func<TReturn> whenDisposed, Func<TReturn> whenNotDisposed)
         {
             if (_status == -1)

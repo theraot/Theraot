@@ -6,7 +6,7 @@ using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public sealed class WeakDelegateNeedle : WeakNeedle<Delegate>, IEquatable<Delegate>, IEquatable<WeakDelegateNeedle>
     {
         public WeakDelegateNeedle(Delegate handler)
@@ -102,7 +102,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1007:UseGenericsWhereAppropriate", Justification = "Generic Version Is Available")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1007:UseGenericsWhereAppropriate", Justification = "Generic Version Is Available")]
         public bool TryInvoke(object[] args, out object result)
         {
             var value = Value;

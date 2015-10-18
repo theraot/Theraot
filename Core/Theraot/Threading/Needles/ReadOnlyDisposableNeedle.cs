@@ -5,7 +5,7 @@ using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public sealed partial class ReadOnlyDisposableNeedle<T> : IReadOnlyNeedle<T>
     {
         private readonly int _hashCode;

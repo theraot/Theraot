@@ -1,12 +1,11 @@
 // Needed for NET40
 
 using System;
-using System.Threading;
 
 namespace Theraot.Threading.Needles
 {
     [Serializable]
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public struct ExceptionStructNeedle<T> : INeedle<T>, IEquatable<ExceptionStructNeedle<T>>
     {
         private readonly Exception _exception;

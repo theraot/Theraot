@@ -5,8 +5,8 @@ using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
-    [global::System.ComponentModel.ImmutableObject(true)]
+    [System.Diagnostics.DebuggerNonUserCode]
+    [System.ComponentModel.ImmutableObject(true)]
     public sealed class DefaultNeedle<T> : IReadOnlyNeedle<T>
     {
         private static readonly DefaultNeedle<T> _instance = new DefaultNeedle<T>();
@@ -16,7 +16,7 @@ namespace Theraot.Threading.Needles
             //Empty
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes", Justification = "By Design")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes", Justification = "By Design")]
         public static DefaultNeedle<T> Instance
         {
             get
@@ -46,13 +46,13 @@ namespace Theraot.Threading.Needles
             return Check.NotNullArgument(needle, "needle").Value;
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
         public static bool operator !=(DefaultNeedle<T> left, DefaultNeedle<T> right)
         {
             return false;
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
         public static bool operator ==(DefaultNeedle<T> left, DefaultNeedle<T> right)
         {
             return true;

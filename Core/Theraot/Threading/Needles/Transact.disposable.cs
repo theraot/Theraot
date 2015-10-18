@@ -8,8 +8,8 @@ namespace Theraot.Threading.Needles
     {
         private int _status;
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
+        [System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
         ~Transact()
         {
             try
@@ -30,7 +30,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {
             try
@@ -43,7 +43,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         private void Dispose(bool disposeManagedResources)
         {
             if (TakeDisposalExecution())
