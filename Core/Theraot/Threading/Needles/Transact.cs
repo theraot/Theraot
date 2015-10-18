@@ -41,7 +41,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return ReferenceEquals(_parentTransaction, null);
+                return _parentTransaction == null;
             }
         }
 
@@ -80,14 +80,9 @@ namespace Theraot.Threading.Needles
                             return true;
                         }
                         Thread.MemoryBarrier();
-                        if (!CheckCapture())
+                        if (!CheckCapture() || !CheckValue())
                         {
                             //the resources has been claimed by another thread
-                            return false;
-                        }
-                        if (!CheckValue())
-                        {
-                            //the resources has been modified by another thread
                             return false;
                         }
                         var written = false;
@@ -159,6 +154,7 @@ namespace Theraot.Threading.Needles
 
         private bool CheckCapture()
         {
+            // Keep foreach loop
             foreach (var resource in _readLog)
             {
                 if (!resource.Key.CheckCapture())
@@ -171,6 +167,7 @@ namespace Theraot.Threading.Needles
 
         private bool CheckValue()
         {
+            // Keep foreach loop
             foreach (var resource in _readLog)
             {
                 if (!resource.Key.CheckValue())
