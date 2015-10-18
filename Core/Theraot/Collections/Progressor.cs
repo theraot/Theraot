@@ -82,6 +82,28 @@ namespace Theraot.Collections
             );
             _proxy = new ProxyObservable<T>();
 
+            TryTake<T> tryTakeReplacement = (out T value) =>
+            {
+                Interlocked.Increment(ref control);
+                try
+                {
+                    if (buffer.TryTake(out value) || wrapped.TryTake(out value))
+                    {
+                        _proxy.OnNext(value);
+                        return true;
+                    }
+                    else
+                    {
+                        _done = wrapped._done;
+                        return false;
+                    }
+                }
+                finally
+                {
+                    Interlocked.Decrement(ref control);
+                }
+            };
+
             _tryTake = (out T value) =>
             {
                 value = default(T);
@@ -107,27 +129,7 @@ namespace Theraot.Collections
                 }
                 if (Interlocked.CompareExchange(ref guard, 2, 1) == 1)
                 {
-                    _tryTake = (out T _value) =>
-                    {
-                        Interlocked.Increment(ref control);
-                        try
-                        {
-                            if (buffer.TryTake(out _value) || wrapped.TryTake(out _value))
-                            {
-                                _proxy.OnNext(_value);
-                                return true;
-                            }
-                            else
-                            {
-                                _done = wrapped._done;
-                                return false;
-                            }
-                        }
-                        finally
-                        {
-                            Interlocked.Decrement(ref control);
-                        }
-                    };
+                    _tryTake = tryTakeReplacement;
                     Thread.VolatileWrite(ref guard, 3);
                 }
                 else
@@ -146,6 +148,13 @@ namespace Theraot.Collections
             int index = -1;
 
             _proxy = new ProxyObservable<T>();
+
+            TryTake<T> tryTakeReplacement = (out T value) =>
+            {
+                value = default(T);
+                return false;
+            };
+
             _tryTake = (out T value) =>
             {
                 value = default(T);
@@ -162,11 +171,7 @@ namespace Theraot.Collections
                 }
                 if (Interlocked.CompareExchange(ref guard, 2, 1) == 1)
                 {
-                    _tryTake = (out T _value) =>
-                    {
-                        _value = default(T);
-                        return false;
-                    };
+                    _tryTake = tryTakeReplacement;
                 }
                 return false;
             };
@@ -195,6 +200,28 @@ namespace Theraot.Collections
             );
             _proxy = new ProxyObservable<T>();
 
+            TryTake<T> tryTakeReplacement = (out T value) =>
+            {
+                Interlocked.Increment(ref control);
+                try
+                {
+                    if (buffer.TryTake(out value) || wrapped.TryTake(out value))
+                    {
+                        _proxy.OnNext(value);
+                        return true;
+                    }
+                    else
+                    {
+                        _done = wrapped._done;
+                        return false;
+                    }
+                }
+                finally
+                {
+                    Interlocked.Decrement(ref control);
+                }
+            };
+
             _tryTake = (out T value) =>
             {
                 if (Thread.VolatileRead(ref guard) == 0)
@@ -210,27 +237,7 @@ namespace Theraot.Collections
                 }
                 if (Interlocked.CompareExchange(ref guard, 2, 1) == 1)
                 {
-                    _tryTake = (out T _value) =>
-                    {
-                        Interlocked.Increment(ref control);
-                        try
-                        {
-                            if (buffer.TryTake(out _value) || wrapped.TryTake(out _value))
-                            {
-                                _proxy.OnNext(_value);
-                                return true;
-                            }
-                            else
-                            {
-                                _done = wrapped._done;
-                                return false;
-                            }
-                        }
-                        finally
-                        {
-                            Interlocked.Decrement(ref control);
-                        }
-                    };
+                    _tryTake = tryTakeReplacement;
                     Thread.VolatileWrite(ref guard, 3);
                 }
                 else
@@ -248,6 +255,13 @@ namespace Theraot.Collections
             int guard = 0;
 
             _proxy = new ProxyObservable<T>();
+
+            TryTake<T> tryTakeReplacement = (out T value) =>
+            {
+                value = default(T);
+                return false;
+            };
+
             _tryTake = (out T value) =>
             {
                 value = default(T);
@@ -273,11 +287,7 @@ namespace Theraot.Collections
                 }
                 if (Interlocked.CompareExchange(ref guard, 2, 1) == 1)
                 {
-                    _tryTake = (out T _value) =>
-                    {
-                        _value = default(T);
-                        return false;
-                    };
+                    _tryTake = tryTakeReplacement;
                 }
                 return false;
             };
