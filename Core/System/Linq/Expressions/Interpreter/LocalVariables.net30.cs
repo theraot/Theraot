@@ -3,11 +3,9 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
 namespace System.Linq.Expressions.Interpreter
@@ -129,14 +127,10 @@ namespace System.Linq.Expressions.Interpreter
 
         private int _localCount, _maxLocalCount;
 
-        internal LocalVariables()
-        {
-        }
-
         public LocalDefinition DefineLocal(ParameterExpression variable, int start)
         {
             LocalVariable result = new LocalVariable(_localCount++, false, false);
-            _maxLocalCount = System.Math.Max(_localCount, _maxLocalCount);
+            _maxLocalCount = Math.Max(_localCount, _maxLocalCount);
 
             VariableScope existing, newScope;
             if (_variables.TryGetValue(variable, out existing))

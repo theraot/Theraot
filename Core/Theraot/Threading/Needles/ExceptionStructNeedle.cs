@@ -77,10 +77,7 @@ namespace Theraot.Threading.Needles
             {
                 return EqualsExtracted(this, (ExceptionStructNeedle<T>)obj);
             }
-            else
-            {
-                return obj is Exception && obj.Equals(_exception);
-            }
+            return obj is Exception && obj.Equals(_exception);
         }
 
         public bool Equals(ExceptionStructNeedle<T> other)
@@ -99,38 +96,29 @@ namespace Theraot.Threading.Needles
             {
                 return string.Format("<Exception: {0}>", _exception);
             }
-            else
-            {
-                return "<Dead Needle>";
-            }
+            return "<Dead Needle>";
         }
 
         private static bool EqualsExtracted(ExceptionStructNeedle<T> left, ExceptionStructNeedle<T> right)
         {
-            var _left = left._exception;
-            var _right = right._exception;
-            if (ReferenceEquals(_left, null))
+            var leftException = left._exception;
+            var rightException = right._exception;
+            if (ReferenceEquals(leftException, null))
             {
-                return ReferenceEquals(_right, null);
+                return ReferenceEquals(rightException, null);
             }
-            else
-            {
-                return _left.Equals(_right);
-            }
+            return leftException.Equals(rightException);
         }
 
         private static bool NotEqualsExtracted(ExceptionStructNeedle<T> left, ExceptionStructNeedle<T> right)
         {
-            var _left = left._exception;
-            var _right = right._exception;
-            if (ReferenceEquals(_left, null))
+            var leftException = left._exception;
+            var rightException = right._exception;
+            if (ReferenceEquals(leftException, null))
             {
-                return !ReferenceEquals(_right, null);
+                return !ReferenceEquals(rightException, null);
             }
-            else
-            {
-                return !_left.Equals(_right);
-            }
+            return !leftException.Equals(rightException);
         }
     }
 }

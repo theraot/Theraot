@@ -81,13 +81,13 @@ namespace Theraot.Threading
 
         public override bool Equals(object obj)
         {
-            var needleLock = obj as NeedleLock<T>;
-            if (needleLock == null)
+            var needle = obj as NeedleLock<T>;
+            if (needle == null)
             {
                 Thread.MemoryBarrier();
                 return _target.Equals(obj);
             }
-            return EqualsExtracted(this, needleLock);
+            return EqualsExtracted(this, needle);
         }
 
         public bool Equals(NeedleLock<T> other)

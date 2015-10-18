@@ -30,10 +30,7 @@ namespace Theraot.Threading.Needles
                 {
                     return value.Method;
                 }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
         }
 
@@ -49,10 +46,7 @@ namespace Theraot.Threading.Needles
             {
                 return value.Method.Equals(method) && ReferenceEquals(value.Target, target);
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         public bool Equals(WeakDelegateNeedle other)
@@ -61,26 +55,17 @@ namespace Theraot.Threading.Needles
             {
                 return false;
             }
-            else
+            var value = Value;
+            if (IsAlive)
             {
-                var value = Value;
-                if (IsAlive)
+                var otherValue = other.Value;
+                if (other.IsAlive)
                 {
-                    var otherValue = other.Value;
-                    if (other.IsAlive)
-                    {
-                        return value.Method.Equals(otherValue.Method) && ReferenceEquals(value.Target, otherValue.Target);
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return value.Method.Equals(otherValue.Method) && ReferenceEquals(value.Target, otherValue.Target);
                 }
-                else
-                {
-                    return !other.IsAlive;
-                }
+                return false;
             }
+            return !other.IsAlive;
         }
 
         public void Invoke(object[] args)
@@ -96,10 +81,7 @@ namespace Theraot.Threading.Needles
                 value.DynamicInvoke(args); // Throws TargetInvocationException
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1007:UseGenericsWhereAppropriate", Justification = "Generic Version Is Available")]
@@ -111,11 +93,8 @@ namespace Theraot.Threading.Needles
                 result = value.DynamicInvoke(args);
                 return true;
             }
-            else
-            {
-                result = null;
-                return false;
-            }
+            result = null;
+            return false;
         }
 
         public bool TryInvoke<TResult>(object[] args, out TResult result)
@@ -126,11 +105,8 @@ namespace Theraot.Threading.Needles
                 result = (TResult)value.DynamicInvoke(args);
                 return true;
             }
-            else
-            {
-                result = default(TResult);
-                return false;
-            }
+            result = default(TResult);
+            return false;
         }
 
         private static Delegate BuildDelegate(MethodInfo methodInfo, object target)
@@ -139,32 +115,20 @@ namespace Theraot.Threading.Needles
             {
                 throw new ArgumentNullException("methodInfo");
             }
-            else
+            if (methodInfo.IsStatic != ReferenceEquals(null, target))
             {
-                if (methodInfo.IsStatic != ReferenceEquals(null, target))
+                if (ReferenceEquals(target, null))
                 {
-                    if (ReferenceEquals(target, null))
-                    {
-                        throw new ArgumentNullException("target", "target is null and the method is not static.");
-                    }
-                    else
-                    {
-                        throw new ArgumentException("target is not null and the method is static", "target");
-                    }
+                    throw new ArgumentNullException("target", "target is null and the method is not static.");
                 }
-                else
-                {
-                    var type = methodInfo.DeclaringType;
-                    if (ReferenceEquals(type, null))
-                    {
-                        throw new ArgumentException("methodInfo.DeclaringType is null", "methodInfo");
-                    }
-                    else
-                    {
-                        return Delegate.CreateDelegate(type, target, methodInfo);
-                    }
-                }
+                throw new ArgumentException("target is not null and the method is static", "target");
             }
+            var type = methodInfo.DeclaringType;
+            if (ReferenceEquals(type, null))
+            {
+                throw new ArgumentException("methodInfo.DeclaringType is null", "methodInfo");
+            }
+            return Delegate.CreateDelegate(type, target, methodInfo);
         }
     }
 }

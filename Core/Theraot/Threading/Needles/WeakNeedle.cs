@@ -166,24 +166,18 @@ namespace Theraot.Threading.Needles
 
         public sealed override bool Equals(object obj)
         {
-            var _obj = obj as WeakNeedle<T>;
-            if (!ReferenceEquals(null, _obj))
+            var needle = obj as WeakNeedle<T>;
+            if (needle != null)
             {
-                return EqualsExtractedExtracted(this, _obj);
+                return EqualsExtractedExtracted(this, needle);
             }
-            else
+            var value = obj as T;
+            if (value != null)
             {
-                var __obj = obj as T;
-                if (__obj == null)
-                {
-                    return false;
-                }
-                else
-                {
-                    var target = Value;
-                    return IsAlive && EqualityComparer<T>.Default.Equals(target, __obj);
-                }
+                var target = Value;
+                return IsAlive && EqualityComparer<T>.Default.Equals(target, value);
             }
+            return false;
         }
 
         public bool Equals(WeakNeedle<T> other)
@@ -259,16 +253,13 @@ namespace Theraot.Threading.Needles
 
         private static bool EqualsExtractedExtracted(WeakNeedle<T> left, WeakNeedle<T> right)
         {
-            var _left = left.Value;
+            var leftValue = left.Value;
             if (left.IsAlive)
             {
-                var _right = right.Value;
-                return right.IsAlive && EqualityComparer<T>.Default.Equals(_left, _right);
+                var rightValue = right.Value;
+                return right.IsAlive && EqualityComparer<T>.Default.Equals(leftValue, rightValue);
             }
-            else
-            {
-                return !right.IsAlive;
-            }
+            return !right.IsAlive;
         }
 
         private static bool NotEqualsExtracted(WeakNeedle<T> left, WeakNeedle<T> right)
@@ -285,16 +276,13 @@ namespace Theraot.Threading.Needles
 
         private static bool NotEqualsExtractedExtracted(WeakNeedle<T> left, WeakNeedle<T> right)
         {
-            var _left = left.Value;
+            var leftValue = left.Value;
             if (left.IsAlive)
             {
-                var _right = right.Value;
-                return !right.IsAlive || !EqualityComparer<T>.Default.Equals(_left, _right);
+                var rightValue = right.Value;
+                return !right.IsAlive || !EqualityComparer<T>.Default.Equals(leftValue, rightValue);
             }
-            else
-            {
-                return right.IsAlive;
-            }
+            return right.IsAlive;
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]

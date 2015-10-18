@@ -51,10 +51,7 @@ namespace Theraot.Threading
                 {
                     return Equals((UniqueId)obj);
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
 
             public override int GetHashCode()
