@@ -6,7 +6,7 @@ using Theraot.Core;
 
 namespace Theraot.Threading
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public static class DisposableExtensions
     {
         public static void DisposableSafeWith<T>(this T disposable, Action<T> action)

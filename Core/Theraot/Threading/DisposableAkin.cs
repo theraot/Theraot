@@ -8,7 +8,7 @@ using Theraot.Core;
 
 namespace Theraot.Threading
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public sealed class DisposableAkin : CriticalFinalizerObject, IDisposable
     {
         private Action _release;
@@ -20,7 +20,7 @@ namespace Theraot.Threading
             _release = Check.NotNullArgument(release, "release");
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
         ~DisposableAkin()
         {
             try
@@ -43,7 +43,7 @@ namespace Theraot.Threading
 
         public bool IsDisposed
         {
-            [global::System.Diagnostics.DebuggerNonUserCode]
+            [System.Diagnostics.DebuggerNonUserCode]
             get
             {
                 return _thread == null;
@@ -100,7 +100,7 @@ namespace Theraot.Threading
             }
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2004:RemoveCallsToGCKeepAlive", Justification = "By Design")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2004:RemoveCallsToGCKeepAlive", Justification = "By Design")]
         private void Dispose(bool disposeManagedResources)
         {
             if
