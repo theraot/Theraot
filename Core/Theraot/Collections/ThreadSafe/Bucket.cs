@@ -36,7 +36,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public Bucket(IEnumerable<T> source)
         {
-            ICollection<T> collection = source as ICollection<T>;
+            var collection = source as ICollection<T>;
             _entries = ArrayReservoir<object>.GetArray(collection == null ? 64 : collection.Count);
             _capacity = _entries.Length;
             foreach (var item in source)
@@ -232,8 +232,8 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
             }
-            object _previous;
-            if (RemoveAtPrivate(index, out _previous))
+            object found;
+            if (RemoveAtPrivate(index, out found))
             {
                 Interlocked.Decrement(ref _count);
                 return true;
@@ -324,44 +324,44 @@ namespace Theraot.Collections.ThreadSafe
         internal bool ExchangeInternal(int index, T item, out T previous)
         {
             previous = default(T);
-            object _previous;
-            ExchangePrivate(index, item, out _previous);
-            if (_previous == null)
+            object found;
+            ExchangePrivate(index, item, out found);
+            if (found == null)
             {
                 Interlocked.Increment(ref _count);
                 return true;
             }
-            if (!ReferenceEquals(_previous, BucketHelper.Null))
+            if (!ReferenceEquals(found, BucketHelper.Null))
             {
-                previous = (T)_previous;
+                previous = (T)found;
             }
             return false;
         }
 
         internal bool InsertInternal(int index, T item, out T previous)
         {
-            object _previous;
-            if (InsertPrivate(index, item, out _previous))
+            object found;
+            if (InsertPrivate(index, item, out found))
             {
                 previous = default(T);
                 Interlocked.Increment(ref _count);
                 return true;
             }
-            if (ReferenceEquals(_previous, BucketHelper.Null))
+            if (ReferenceEquals(found, BucketHelper.Null))
             {
                 previous = default(T);
             }
             else
             {
-                previous = (T)_previous;
+                previous = (T)found;
             }
             return false;
         }
 
         internal bool InsertInternal(int index, T item)
         {
-            object _previous;
-            if (InsertPrivate(index, item, out _previous))
+            object found;
+            if (InsertPrivate(index, item, out found))
             {
                 Interlocked.Increment(ref _count);
                 return true;
@@ -371,17 +371,17 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool RemoveAtInternal(int index, out T previous)
         {
-            object _previous;
-            if (RemoveAtPrivate(index, out _previous))
+            object found;
+            if (RemoveAtPrivate(index, out found))
             {
                 Interlocked.Decrement(ref _count);
-                if (ReferenceEquals(_previous, BucketHelper.Null))
+                if (ReferenceEquals(found, BucketHelper.Null))
                 {
                     previous = default(T);
                 }
                 else
                 {
-                    previous = (T)_previous;
+                    previous = (T)found;
                 }
                 return true;
             }
