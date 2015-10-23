@@ -8,8 +8,8 @@ namespace Theraot.Threading.Needles
     {
         private int _status;
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
+        [System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
         ~WeakNeedle()
         {
             try
@@ -24,14 +24,14 @@ namespace Theraot.Threading.Needles
 
         public bool IsDisposed
         {
-            [global::System.Diagnostics.DebuggerNonUserCode]
+            [System.Diagnostics.DebuggerNonUserCode]
             get
             {
                 return _status == -1;
             }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {
             try
@@ -44,7 +44,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         public void DisposedConditional(Action whenDisposed, Action whenNotDisposed)
         {
             if (_status == -1)
@@ -80,7 +80,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         public TReturn DisposedConditional<TReturn>(Func<TReturn> whenDisposed, Func<TReturn> whenNotDisposed)
         {
             if (_status == -1)
@@ -128,7 +128,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         protected virtual void Dispose(bool disposeManagedResources)
         {
             try
@@ -155,7 +155,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         protected void ProtectedCheckDisposed(string exceptionMessegeWhenDisposed)
         {
             if (IsDisposed)
@@ -176,19 +176,19 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         protected void ThrowDisposedexception()
         {
             throw new ObjectDisposedException(GetType().FullName);
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         protected TReturn ThrowDisposedexception<TReturn>()
         {
             throw new ObjectDisposedException(GetType().FullName);
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         protected bool UnDispose()
         {
             if (System.Threading.Thread.VolatileRead(ref _status) == -1)

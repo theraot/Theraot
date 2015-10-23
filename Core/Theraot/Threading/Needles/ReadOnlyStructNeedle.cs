@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace Theraot.Threading.Needles
 {
     [Serializable]
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public struct ReadOnlyStructNeedle<T> : INeedle<T>, IEquatable<ReadOnlyStructNeedle<T>>
     {
         private readonly T _target;
@@ -32,7 +32,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return !ReferenceEquals(_target, null);
+                return _target != null;
             }
         }
 
@@ -70,25 +70,13 @@ namespace Theraot.Threading.Needles
             {
                 return EqualsExtracted(this, (ReadOnlyStructNeedle<T>)obj);
             }
-            else
+            // Keep the "is" operator
+            if (obj is T)
             {
-                // Keep the "is" operator
-                if (obj is T)
-                {
-                    if (IsAlive)
-                    {
-                        return EqualityComparer<T>.Default.Equals(_target, (T)obj);
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    return false;
-                }
+                var target = _target;
+                return IsAlive && EqualityComparer<T>.Default.Equals(target, (T)obj);
             }
+            return false;
         }
 
         public bool Equals(ReadOnlyStructNeedle<T> other)
@@ -107,38 +95,29 @@ namespace Theraot.Threading.Needles
             {
                 return _target.ToString();
             }
-            else
-            {
-                return "<Dead Needle>";
-            }
+            return "<Dead Needle>";
         }
 
         private static bool EqualsExtracted(ReadOnlyStructNeedle<T> left, ReadOnlyStructNeedle<T> right)
         {
-            var _left = left._target;
+            var leftValue = left._target;
             if (left.IsAlive)
             {
-                var _right = right._target;
-                return right.IsAlive && EqualityComparer<T>.Default.Equals(_left, _right);
+                var rightValue = right._target;
+                return right.IsAlive && EqualityComparer<T>.Default.Equals(leftValue, rightValue);
             }
-            else
-            {
-                return !right.IsAlive;
-            }
+            return !right.IsAlive;
         }
 
         private static bool NotEqualsExtracted(ReadOnlyStructNeedle<T> left, ReadOnlyStructNeedle<T> right)
         {
-            var _left = left._target;
+            var leftValue = left._target;
             if (left.IsAlive)
             {
-                var _right = right._target;
-                return !right.IsAlive || !EqualityComparer<T>.Default.Equals(_left, _right);
+                var rightValue = right._target;
+                return !right.IsAlive || !EqualityComparer<T>.Default.Equals(leftValue, rightValue);
             }
-            else
-            {
-                return right.IsAlive;
-            }
+            return right.IsAlive;
         }
     }
 }

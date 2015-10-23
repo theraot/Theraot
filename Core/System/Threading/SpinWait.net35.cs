@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using Theraot.Core;
+
 #if NET20 || NET30 || NET35
 
 namespace System.Threading
@@ -40,7 +42,7 @@ namespace System.Threading
         {
             get
             {
-                return Theraot.Threading.ThreadingHelper.IsSingleCPU || _count % Theraot.Threading.ThreadingHelper.INT_SleepCountHint == 0;
+                return EnvironmentHelper.IsSingleCPU || _count % Theraot.Threading.ThreadingHelper.INT_SleepCountHint == 0;
             }
         }
 

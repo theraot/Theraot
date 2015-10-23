@@ -11,11 +11,11 @@ namespace Theraot.Threading
         private static class Internal
         {
             private static readonly WeakDelegateCollection _collectedEventHandlers;
-            private static readonly WaitCallback work;
+            private static readonly WaitCallback _work;
 
             static Internal()
             {
-                work = _ => RaiseCollected();
+                _work = _ => RaiseCollected();
                 _collectedEventHandlers = new WeakDelegateCollection(false, false, INT_MaxProbingHint);
             }
 
@@ -29,7 +29,7 @@ namespace Theraot.Threading
 
             public static void Invoke()
             {
-                ThreadPool.QueueUserWorkItem(work);
+                ThreadPool.QueueUserWorkItem(_work);
             }
 
             private static void RaiseCollected()

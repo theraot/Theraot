@@ -8,7 +8,7 @@ using Theraot.Core;
 
 namespace Theraot.Threading
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public sealed class DisposableAkin : CriticalFinalizerObject, IDisposable
     {
         private Action _release;
@@ -16,11 +16,19 @@ namespace Theraot.Threading
 
         private DisposableAkin(Action release, Thread thread)
         {
-            _thread = Check.NotNullArgument(thread, "thread");
-            _release = Check.NotNullArgument(release, "release");
+            if (release == null)
+            {
+                throw new ArgumentNullException("release");
+            }
+            if (thread == null)
+            {
+                throw new ArgumentNullException("thread");
+            }
+            _release = release;
+            _thread = thread;
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
         ~DisposableAkin()
         {
             try
@@ -43,7 +51,7 @@ namespace Theraot.Threading
 
         public bool IsDisposed
         {
-            [global::System.Diagnostics.DebuggerNonUserCode]
+            [System.Diagnostics.DebuggerNonUserCode]
             get
             {
                 return _thread == null;
@@ -62,10 +70,13 @@ namespace Theraot.Threading
 
         public bool Dispose(Func<bool> condition)
         {
-            var _condition = Check.NotNullArgument(condition, "condition");
+            if (condition == null)
+            {
+                throw new ArgumentNullException("condition");
+            }
             if (ReferenceEquals(Interlocked.CompareExchange(ref _thread, null, Thread.CurrentThread), Thread.CurrentThread))
             {
-                if (_condition.Invoke())
+                if (condition.Invoke())
                 {
                     try
                     {
@@ -77,15 +88,9 @@ namespace Theraot.Threading
                         _release = null;
                     }
                 }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
                 return false;
             }
+            return false;
         }
 
         public void Dispose()
@@ -100,7 +105,7 @@ namespace Theraot.Threading
             }
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2004:RemoveCallsToGCKeepAlive", Justification = "By Design")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2004:RemoveCallsToGCKeepAlive", Justification = "By Design")]
         private void Dispose(bool disposeManagedResources)
         {
             if

@@ -4,7 +4,7 @@ using System;
 
 namespace Theraot.Threading
 {
-    public sealed class ReadWriteLock : Theraot.Threading.IReadWriteLock, IDisposable
+    public sealed class ReadWriteLock : IReadWriteLock
     {
         private readonly IReadWriteLock _wrapped;
 

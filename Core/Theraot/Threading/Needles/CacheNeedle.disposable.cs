@@ -1,12 +1,10 @@
 ﻿#if FAT
 
-using System;
-
 namespace Theraot.Threading.Needles
 {
-    public partial class CacheNeedle<T> : IDisposable, IExtendedDisposable
+    public partial class CacheNeedle<T>
     {
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         protected override void Dispose(bool disposeManagedResources)
         {
             if (TakeDisposalExecution())

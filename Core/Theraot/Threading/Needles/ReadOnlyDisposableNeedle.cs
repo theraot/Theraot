@@ -5,7 +5,7 @@ using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public sealed partial class ReadOnlyDisposableNeedle<T> : IReadOnlyNeedle<T>
     {
         private readonly int _hashCode;
@@ -57,17 +57,11 @@ namespace Theraot.Threading.Needles
             {
                 return false;
             }
-            else
+            if (left == null || right == null)
             {
-                if (left == null || right == null)
-                {
-                    return true;
-                }
-                else
-                {
-                    return !EqualityComparer<T>.Default.Equals(left._target, right._target);
-                }
+                return true;
             }
+            return !EqualityComparer<T>.Default.Equals(left._target, right._target);
         }
 
         public static bool operator ==(ReadOnlyDisposableNeedle<T> left, ReadOnlyDisposableNeedle<T> right)
@@ -76,38 +70,26 @@ namespace Theraot.Threading.Needles
             {
                 return true;
             }
-            else
+            if (left == null || right == null)
             {
-                if (left == null || right == null)
-                {
-                    return false;
-                }
-                else
-                {
-                    return EqualityComparer<T>.Default.Equals(left._target, right._target);
-                }
+                return false;
             }
+            return EqualityComparer<T>.Default.Equals(left._target, right._target);
         }
 
         public override bool Equals(object obj)
         {
-            var _obj = obj as ReadOnlyDisposableNeedle<T>;
-            if (_obj != null)
+            var needle = obj as ReadOnlyDisposableNeedle<T>;
+            if (needle != null)
             {
-                return EqualityComparer<T>.Default.Equals(_target, _obj._target);
+                return EqualityComparer<T>.Default.Equals(_target, needle._target);
             }
-            else
+            // Keep the "is" operator
+            if (obj is T)
             {
-                // Keep the "is" operator
-                if (obj is T)
-                {
-                    return EqualityComparer<T>.Default.Equals(_target, (T)obj);
-                }
-                else
-                {
-                    return false;
-                }
+                return EqualityComparer<T>.Default.Equals(_target, (T)obj);
             }
+            return false;
         }
 
         public bool Equals(ReadOnlyDisposableNeedle<T> other)
@@ -127,10 +109,7 @@ namespace Theraot.Threading.Needles
             {
                 return target.ToString();
             }
-            else
-            {
-                return "<Dead Needle>";
-            }
+            return "<Dead Needle>";
         }
 
         private void Kill()

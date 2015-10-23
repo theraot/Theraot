@@ -390,10 +390,7 @@ namespace System.Numerics
                 var other = (Complex)obj;
                 return _real.Equals(other._real) && _imaginary.Equals(other._imaginary);
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         public override int GetHashCode()
