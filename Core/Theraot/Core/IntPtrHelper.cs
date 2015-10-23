@@ -6,6 +6,7 @@ namespace Theraot.Core
     {
         public static IntPtr Add(IntPtr pointer, int offset)
         {
+#if NET20 || NET30 || NET35
             switch (IntPtr.Size)
             {
                 case 4:
@@ -15,10 +16,14 @@ namespace Theraot.Core
                 default:
                     throw new NotSupportedException("Not supported platform");
             }
+#else
+            return IntPtr.Add(pointer, offset);
+#endif
         }
 
-        public static IntPtr Substract(IntPtr pointer, int offset)
+        public static IntPtr Subtract(IntPtr pointer, int offset)
         {
+#if NET20 || NET30 || NET35
             switch (IntPtr.Size)
             {
                 case 4:
@@ -28,14 +33,18 @@ namespace Theraot.Core
                 default:
                     throw new NotSupportedException("Not supported platform");
             }
+#else
+            return IntPtr.Subtract(pointer, offset);
+#endif
         }
     }
 
     public static class UIntPtrHelper
     {
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static UIntPtr Add(UIntPtr pointer, int offset)
         {
+#if NET20 || NET30 || NET35
             switch (UIntPtr.Size)
             {
                 case 4:
@@ -45,11 +54,15 @@ namespace Theraot.Core
                 default:
                     throw new NotSupportedException("Not supported platform");
             }
+#else
+            return UIntPtr.Add(pointer, offset);
+#endif
         }
 
-        [CLSCompliantAttribute(false)]
-        public static UIntPtr Substract(UIntPtr pointer, int offset)
+        [CLSCompliant(false)]
+        public static UIntPtr Subtract(UIntPtr pointer, int offset)
         {
+#if NET20 || NET30 || NET35
             switch (UIntPtr.Size)
             {
                 case 4:
@@ -59,6 +72,9 @@ namespace Theraot.Core
                 default:
                     throw new NotSupportedException("Not supported platform");
             }
+#else
+            return UIntPtr.Subtract(pointer, offset);
+#endif
         }
     }
 }
