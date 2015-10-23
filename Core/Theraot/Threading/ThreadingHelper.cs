@@ -2,14 +2,14 @@
 
 using System;
 using System.Threading;
+using Theraot.Core;
 
 namespace Theraot.Threading
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public static partial class ThreadingHelper
     {
         internal const int INT_SleepCountHint = 10;
-        internal static readonly bool IsSingleCPU = Environment.ProcessorCount == 1;
         private const int INT_MaxTime = 200;
 
         public static T VolatileRead<T>(ref T address)
@@ -36,7 +36,7 @@ namespace Theraot.Threading
         internal static void SpinOnce(ref int count)
         {
             count++;
-            if (IsSingleCPU || count % INT_SleepCountHint == 0)
+            if (EnvironmentHelper.IsSingleCPU || count % INT_SleepCountHint == 0)
             {
                 Thread.Sleep(0);
             }

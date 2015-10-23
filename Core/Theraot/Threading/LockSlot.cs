@@ -43,7 +43,7 @@ namespace Theraot.Threading
         {
             get
             {
-                return !ReferenceEquals(_target, null);
+                return _target != null;
             }
         }
 

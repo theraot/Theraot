@@ -6,10 +6,9 @@ using System.Threading;
 
 namespace Theraot.Threading
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public static partial class GCMonitor
     {
-        private const int INT_CapacityHint = 1024;
         private const int INT_MaxProbingHint = 128;
         private const int INT_StatusFinished = 1;
         private const int INT_StatusNotReady = -2;
@@ -35,7 +34,7 @@ namespace Theraot.Threading
                 }
                 catch
                 {
-                    if (object.ReferenceEquals(value, null))
+                    if (ReferenceEquals(value, null))
                     {
                         return;
                     }
@@ -52,7 +51,7 @@ namespace Theraot.Threading
                     }
                     catch
                     {
-                        if (object.ReferenceEquals(value, null))
+                        if (ReferenceEquals(value, null))
                         {
                             return;
                         }
@@ -91,7 +90,7 @@ namespace Theraot.Threading
             Thread.VolatileWrite(ref _status, INT_StatusFinished);
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         private sealed class GCProbe : CriticalFinalizerObject
         {
             ~GCProbe()

@@ -19,7 +19,10 @@ namespace Theraot.Collections
 
         public Progressor(Progressor<T> wrapped)
         {
-            Check.NotNullArgument(wrapped, "wrapped");
+            if (wrapped == null)
+            {
+                throw new ArgumentNullException("wrapped");
+            }
 
             int control = 0;
 
@@ -62,8 +65,19 @@ namespace Theraot.Collections
 
         public Progressor(IEnumerable<T> preface, Progressor<T> wrapped)
         {
-            Check.NotNullArgument(wrapped, "wrapped");
-            var enumerator = Check.CheckArgument(Check.NotNullArgument(preface, "preface").GetEnumerator(), arg => arg != null, "preface.GetEnumerator()");
+            if (wrapped == null)
+            {
+                throw new ArgumentNullException("wrapped");
+            }
+            if (preface == null)
+            {
+                throw new ArgumentNullException("preface");
+            }
+            var enumerator = preface.GetEnumerator();
+            if (enumerator == null)
+            {
+                throw new ArgumentException("preface.GetEnumerator()");
+            }
 
             int control = 0;
             int guard = 0;
@@ -81,6 +95,28 @@ namespace Theraot.Collections
                 }
             );
             _proxy = new ProxyObservable<T>();
+
+            TryTake<T> tryTakeReplacement = (out T value) =>
+            {
+                Interlocked.Increment(ref control);
+                try
+                {
+                    if (buffer.TryTake(out value) || wrapped.TryTake(out value))
+                    {
+                        _proxy.OnNext(value);
+                        return true;
+                    }
+                    else
+                    {
+                        _done = wrapped._done;
+                        return false;
+                    }
+                }
+                finally
+                {
+                    Interlocked.Decrement(ref control);
+                }
+            };
 
             _tryTake = (out T value) =>
             {
@@ -107,27 +143,7 @@ namespace Theraot.Collections
                 }
                 if (Interlocked.CompareExchange(ref guard, 2, 1) == 1)
                 {
-                    _tryTake = (out T _value) =>
-                    {
-                        Interlocked.Increment(ref control);
-                        try
-                        {
-                            if (buffer.TryTake(out _value) || wrapped.TryTake(out _value))
-                            {
-                                _proxy.OnNext(_value);
-                                return true;
-                            }
-                            else
-                            {
-                                _done = wrapped._done;
-                                return false;
-                            }
-                        }
-                        finally
-                        {
-                            Interlocked.Decrement(ref control);
-                        }
-                    };
+                    _tryTake = tryTakeReplacement;
                     Thread.VolatileWrite(ref guard, 3);
                 }
                 else
@@ -140,12 +156,22 @@ namespace Theraot.Collections
 
         public Progressor(T[] wrapped)
         {
-            Check.NotNullArgument(wrapped, "wrapped");
+            if (wrapped == null)
+            {
+                throw new ArgumentNullException("wrapped");
+            }
 
             int guard = 0;
             int index = -1;
 
             _proxy = new ProxyObservable<T>();
+
+            TryTake<T> tryTakeReplacement = (out T value) =>
+            {
+                value = default(T);
+                return false;
+            };
+
             _tryTake = (out T value) =>
             {
                 value = default(T);
@@ -162,11 +188,7 @@ namespace Theraot.Collections
                 }
                 if (Interlocked.CompareExchange(ref guard, 2, 1) == 1)
                 {
-                    _tryTake = (out T _value) =>
-                    {
-                        _value = default(T);
-                        return false;
-                    };
+                    _tryTake = tryTakeReplacement;
                 }
                 return false;
             };
@@ -174,8 +196,14 @@ namespace Theraot.Collections
 
         public Progressor(T[] preface, Progressor<T> wrapped)
         {
-            Check.NotNullArgument(wrapped, "wrapped");
-            Check.NotNullArgument(preface, "preface");
+            if (wrapped == null)
+            {
+                throw new ArgumentNullException("wrapped");
+            }
+            if (preface == null)
+            {
+                throw new ArgumentNullException("preface");
+            }
 
             int control = 0;
             int guard = 0;
@@ -195,6 +223,28 @@ namespace Theraot.Collections
             );
             _proxy = new ProxyObservable<T>();
 
+            TryTake<T> tryTakeReplacement = (out T value) =>
+            {
+                Interlocked.Increment(ref control);
+                try
+                {
+                    if (buffer.TryTake(out value) || wrapped.TryTake(out value))
+                    {
+                        _proxy.OnNext(value);
+                        return true;
+                    }
+                    else
+                    {
+                        _done = wrapped._done;
+                        return false;
+                    }
+                }
+                finally
+                {
+                    Interlocked.Decrement(ref control);
+                }
+            };
+
             _tryTake = (out T value) =>
             {
                 if (Thread.VolatileRead(ref guard) == 0)
@@ -210,27 +260,7 @@ namespace Theraot.Collections
                 }
                 if (Interlocked.CompareExchange(ref guard, 2, 1) == 1)
                 {
-                    _tryTake = (out T _value) =>
-                    {
-                        Interlocked.Increment(ref control);
-                        try
-                        {
-                            if (buffer.TryTake(out _value) || wrapped.TryTake(out _value))
-                            {
-                                _proxy.OnNext(_value);
-                                return true;
-                            }
-                            else
-                            {
-                                _done = wrapped._done;
-                                return false;
-                            }
-                        }
-                        finally
-                        {
-                            Interlocked.Decrement(ref control);
-                        }
-                    };
+                    _tryTake = tryTakeReplacement;
                     Thread.VolatileWrite(ref guard, 3);
                 }
                 else
@@ -243,11 +273,26 @@ namespace Theraot.Collections
 
         public Progressor(IEnumerable<T> wrapped)
         {
-            var enumerator = Check.CheckArgument(Check.NotNullArgument(wrapped, "wrapped").GetEnumerator(), arg => arg != null, "wrapped.GetEnumerator()");
+            if (wrapped == null)
+            {
+                throw new ArgumentNullException("wrapped");
+            }
+            var enumerator = wrapped.GetEnumerator();
+            if (enumerator == null)
+            {
+                throw new ArgumentException("wrapped.GetEnumerator()");
+            }
 
             int guard = 0;
 
             _proxy = new ProxyObservable<T>();
+
+            TryTake<T> tryTakeReplacement = (out T value) =>
+            {
+                value = default(T);
+                return false;
+            };
+
             _tryTake = (out T value) =>
             {
                 value = default(T);
@@ -273,11 +318,7 @@ namespace Theraot.Collections
                 }
                 if (Interlocked.CompareExchange(ref guard, 2, 1) == 1)
                 {
-                    _tryTake = (out T _value) =>
-                    {
-                        _value = default(T);
-                        return false;
-                    };
+                    _tryTake = tryTakeReplacement;
                 }
                 return false;
             };
@@ -285,7 +326,10 @@ namespace Theraot.Collections
 
         public Progressor(TryTake<T> tryTake, bool doneOnFalse)
         {
-            Check.NotNullArgument(tryTake, "tryTake");
+            if (tryTake == null)
+            {
+                throw new ArgumentNullException("tryTake");
+            }
             _proxy = new ProxyObservable<T>();
             _tryTake = (out T value) =>
             {
@@ -301,7 +345,10 @@ namespace Theraot.Collections
 
         public Progressor(TryTake<T> tryTake, Func<bool> isDone)
         {
-            Check.NotNullArgument(tryTake, "tryTake");
+            if (tryTake == null)
+            {
+                throw new ArgumentNullException("tryTake");
+            }
             _proxy = new ProxyObservable<T>();
             _tryTake = (out T value) =>
             {
@@ -357,8 +404,14 @@ namespace Theraot.Collections
 
         public static Progressor<T> CreateConverted<TInput>(Progressor<TInput> wrapped, Converter<TInput, T> converter)
         {
-            Check.NotNullArgument(wrapped, "wrapped");
-            Check.NotNullArgument(converter, "converter");
+            if (wrapped == null)
+            {
+                throw new ArgumentNullException("wrapped");
+            }
+            if (converter == null)
+            {
+                throw new ArgumentNullException("converter");
+            }
 
             int control = 0;
 
@@ -414,8 +467,14 @@ namespace Theraot.Collections
 
         public static Progressor<T> CreatedFiltered(Progressor<T> wrapped, Predicate<T> filter)
         {
-            Check.NotNullArgument(wrapped, "wrapped");
-            Check.NotNullArgument(filter, "filter");
+            if (wrapped == null)
+            {
+                throw new ArgumentNullException("wrapped");
+            }
+            if (filter == null)
+            {
+                throw new ArgumentNullException("filter");
+            }
 
             int control = 0;
 
@@ -477,9 +536,18 @@ namespace Theraot.Collections
 
         public static Progressor<T> CreatedFilteredConverted<TInput>(Progressor<TInput> wrapped, Predicate<TInput> filter, Converter<TInput, T> converter)
         {
-            Check.NotNullArgument(wrapped, "wrapped");
-            Check.NotNullArgument(filter, "filter");
-            Check.NotNullArgument(converter, "converter");
+            if (wrapped == null)
+            {
+                throw new ArgumentNullException("wrapped");
+            }
+            if (filter == null)
+            {
+                throw new ArgumentNullException("filter");
+            }
+            if (converter == null)
+            {
+                throw new ArgumentNullException("converter");
+            }
 
             int control = 0;
 
@@ -543,7 +611,10 @@ namespace Theraot.Collections
 
         public static Progressor<T> CreateDistinct(Progressor<T> wrapped)
         {
-            Check.NotNullArgument(wrapped, "wrapped");
+            if (wrapped == null)
+            {
+                throw new ArgumentNullException("wrapped");
+            }
 
             int control = 0;
 
@@ -611,7 +682,7 @@ namespace Theraot.Collections
 
         public IEnumerable<T> AsEnumerable()
         {
-            // After enumerating, check if the Progressor is closed.
+            // After enumerating - the consumer of this method must check if the Progressor is closed.
             T item;
             while (_tryTake(out item))
             {
@@ -653,13 +724,16 @@ namespace Theraot.Collections
             return false;
         }
 
-        public IEnumerable<T> While(Predicate<T> predicate)
+        public IEnumerable<T> While(Predicate<T> condition)
         {
-            var _condition = Check.NotNullArgument(predicate, "condition");
+            if (condition == null)
+            {
+                throw new ArgumentNullException("condition");
+            }
             T item;
             while (_tryTake(out item))
             {
-                if (_condition(item))
+                if (condition(item))
                 {
                     yield return item;
                 }
@@ -672,11 +746,14 @@ namespace Theraot.Collections
 
         public IEnumerable<T> While(Func<bool> condition)
         {
-            var _condition = Check.NotNullArgument(condition, "condition");
+            if (condition == null)
+            {
+                throw new ArgumentNullException("condition");
+            }
             T item;
             while (_tryTake(out item))
             {
-                if (_condition())
+                if (condition())
                 {
                     yield return item;
                 }

@@ -7,9 +7,9 @@ using System.Runtime.Serialization;
 using System.Security;
 using Theraot.Core;
 
-namespace System.Threading
+namespace System
 {
-    [SerializableAttribute]
+    [Serializable]
     [DebuggerDisplay("Count = {InnerExceptions.Count}")]
     public class AggregateException : Exception
     {

@@ -487,6 +487,11 @@
       <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="Theraot\Core\AggregateExceptionHelper.cs" />
+    <Compile Include="Theraot\Core\CharHelper.cs" />
+    <Compile Include="Theraot\Core\EnvironmentHelper.cs" />
+    <Compile Include="Theraot\Core\IntPtrHelper.cs" />
+    <Compile Include="Theraot\Core\NumericHelper.checks.cs" />
+    <Compile Include="Theraot\Core\PathHelper.cs" />
     <Compile Include="Theraot\Threading\AtomicBoolean.cs" />
     <Compile Include="Theraot\Core\CancellationTokenHelper.cs" />
     <Compile Include="Theraot\Core\Check.cs" />
@@ -718,7 +723,7 @@
     <Compile Include="System\Runtime\CompilerServices\ExecutionScope.net30.cs" />
     <Compile Include="System\Runtime\CompilerServices\ExtensionAttribute.net30.cs" />
     <Compile Include="System\Runtime\CompilerServices\StrongBox.net30.cs" />
-    <Compile Include="System\Threading\AggregateException.net35.cs" />
+    <Compile Include="System\AggregateException.net35.cs" />
     <Compile Include="System\Threading\ManualResetEventSlim.net35.cs" />
     <Compile Include="System\Threading\Tasks\TaskCreationOption.net35.cs" />
     <Compile Include="System\Threading\Tasks\TaskStatus.net35.cs" />

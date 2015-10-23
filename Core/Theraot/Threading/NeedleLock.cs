@@ -46,7 +46,7 @@ namespace Theraot.Threading
         {
             get
             {
-                return !ReferenceEquals(_target, null);
+                return _target != null;
             }
         }
 
@@ -81,13 +81,13 @@ namespace Theraot.Threading
 
         public override bool Equals(object obj)
         {
-            var _obj = obj as NeedleLock<T>;
-            if (ReferenceEquals(null, _obj))
+            var needle = obj as NeedleLock<T>;
+            if (needle == null)
             {
                 Thread.MemoryBarrier();
                 return _target.Equals(obj);
             }
-            return EqualsExtracted(this, _obj);
+            return EqualsExtracted(this, needle);
         }
 
         public bool Equals(NeedleLock<T> other)
