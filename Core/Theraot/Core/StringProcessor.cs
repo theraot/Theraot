@@ -825,40 +825,6 @@ namespace Theraot.Core
         }
 
         /// <summary>
-        /// Checks if the next characters from underlying string matches any of the input strings, if so advances the character position by the length of the string.
-        /// </summary>
-        /// <remarks>The strings are tested in the order they are provided. Sorting the strings from longer to shorter is suggested.</remarks>
-        /// <param name="targets">The list of string to check against.</param>
-        /// <returns><c>true</c>if the target was found; otherwise <c>false</c>.</returns>
-        /// <exception cref="ArgumentNullException">The targets collection is null.</exception>
-        /// <exception cref="ArgumentException">Found nulls in the targets collection.</exception>
-        public bool Skip(IEnumerable<string> targets)
-        {
-            if (targets == null)
-            {
-                throw new ArgumentNullException("targets", "The targets collection is null.");
-            }
-            foreach (var target in targets)
-            {
-                if (target == null)
-                {
-                    throw new ArgumentException("Found nulls in the targets collection.", "targets");
-                }
-                var length = target.Length;
-                if (_position + length <= _length)
-                {
-                    var result = _string.Substring(_position, length);
-                    if (result == target)
-                    {
-                        _position += length;
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        /// <summary>
         /// Reads the underlying string advancing the current position until afterwards the provided string is found or (if Greedy) to the start of the string is reached.
         /// </summary>
         /// <param name="target">The string to look for.</param>
