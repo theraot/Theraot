@@ -340,7 +340,11 @@
     <Compile Include="System\Linq\Expressions\UnaryExpression.net30.cs" />
     <Compile Include="System\Linq\IQueryable.net30.cs" />
     <Compile Include="System\Numerics\BigInteger.net35.cs" />
+    <Compile Include="System\Numerics\BigIntegerBuilder.cs" />
+    <Compile Include="System\Numerics\BigInteger.string.cs" />
+    <Compile Include="System\Numerics\BigNumberBuffer.cs" />
     <Compile Include="System\Numerics\NumericsHelpers.cs" />
+    <Compile Include="System\Numerics\ReverseStringBuilder.cs" />
     <Compile Include="System\Runtime\CompilerServices\Closure.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\ConditionalWeakTable.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\ICriticalNotifyCompletion.net40.cs" />
