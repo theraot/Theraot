@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Needed for Workaround
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Theraot.Collections;
