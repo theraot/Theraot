@@ -16,6 +16,7 @@ namespace System.Threading.Tasks
         protected object Action;
         private static int _lastId;
         private readonly TaskCreationOptions _creationOptions;
+        private readonly InternalTaskOptions _internalOptions;
         private readonly int _id;
         private readonly Task _parent;
         private int _isDisposed = 0;
@@ -23,39 +24,73 @@ namespace System.Threading.Tasks
         private int _status;
         private StructNeedle<ManualResetEventSlim> _waitHandle;
 
+        internal ExecutionContext CapturedContext { get; set; }
+
         public Task(Action action)
-            : this(action, null, default(CancellationToken), TaskCreationOptions.None, TaskScheduler.Default)
+            : this(action, null, null, default(CancellationToken), TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
         {
             // Empty
         }
 
         public Task(Action action, CancellationToken cancellationToken)
-            : this(action, null, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default)
+            : this(action, null, null, cancellationToken, TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
         {
             // Empty
         }
 
         public Task(Action action, TaskCreationOptions creationOptions)
-            : this(action, null, default(CancellationToken), creationOptions, TaskScheduler.Default)
+            : this(action, null, null, default(CancellationToken), creationOptions, InternalTaskOptions.None, TaskScheduler.Default)
         {
             // Empty
         }
 
         public Task(Action action, CancellationToken cancellationToken, TaskCreationOptions creationOptions)
-            : this(action, null, cancellationToken, creationOptions, TaskScheduler.Default)
+            : this(action, null, null, cancellationToken, creationOptions, InternalTaskOptions.None, TaskScheduler.Default)
         {
             // Empty
         }
 
-        internal Task(object action, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
+        internal Task(Action<object> action, object state, Task parent, CancellationToken cancellationToken, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions, TaskScheduler scheduler)
+            : this((Delegate)action, state, parent, cancellationToken, creationOptions, internalOptions, scheduler)
         {
-            if (ReferenceEquals(action, null))
+            CapturedContext = ExecutionContext.Capture();
+        }
+
+        internal Task(Action action, Task parent, CancellationToken cancellationToken, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions, TaskScheduler scheduler)
+            : this(action, null, parent, cancellationToken, creationOptions, internalOptions, scheduler)
+        {
+            CapturedContext = ExecutionContext.Capture();
+        }
+
+        /// <summary>
+        /// An internal constructor used by the factory methods on task and its descendent(s).
+        /// This variant does not capture the ExecutionContext; it is up to the caller to do that.
+        /// </summary>
+        /// <param name="action">An action to execute.</param>
+        /// <param name="state">Optional state to pass to the action.</param>
+        /// <param name="parent">Parent of Task.</param>
+        /// <param name="cancellationToken">A CancellationToken for the task.</param>
+        /// <param name="scheduler">A task scheduler under which the task will run.</param>
+        /// <param name="creationOptions">Options to control its execution.</param>
+        /// <param name="internalOptions">Internal options to control its execution</param>
+        private Task(Delegate action, object state, Task parent, CancellationToken cancellationToken, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions, TaskScheduler scheduler)
+        {
+            if (action == null)
             {
                 throw new ArgumentNullException("action");
             }
             if (ReferenceEquals(scheduler, null))
             {
                 throw new ArgumentNullException("scheduler");
+            }
+            Contract.EndContractBlock();
+            // This is readonly, and so must be set in the constructor
+            // Keep a link to your parent if: (A) You are attached, or (B) you are self-replicating.
+            if (((creationOptions & TaskCreationOptions.AttachedToParent) != 0) ||
+                ((internalOptions & InternalTaskOptions.SelfReplicating) != 0)
+                )
+            {
+                _parent = parent;
             }
             _id = Interlocked.Increment(ref _lastId) - 1;
             _status = (int)TaskStatus.Created;
@@ -71,11 +106,43 @@ namespace System.Threading.Tasks
             State = state;
             _scheduler = scheduler;
             _waitHandle = new ManualResetEventSlim(false);
-            // TODO validate creationOptions
+            if ((creationOptions &
+                    ~(TaskCreationOptions.AttachedToParent |
+                      TaskCreationOptions.LongRunning |
+                      TaskCreationOptions.DenyChildAttach |
+                      TaskCreationOptions.HideScheduler |
+                      TaskCreationOptions.PreferFairness |
+                      TaskCreationOptions.RunContinuationsAsynchronously)) != 0)
+            {
+                throw new ArgumentOutOfRangeException("creationOptions");
+            }
+            // Throw exception if the user specifies both LongRunning and SelfReplicating
+            if (((creationOptions & TaskCreationOptions.LongRunning) != 0) &&
+                ((internalOptions & InternalTaskOptions.SelfReplicating) != 0))
+            {
+                throw new InvalidOperationException("An attempt was made to create a LongRunning SelfReplicating task.");
+            }
+            if ((Action == null) || ((internalOptions & InternalTaskOptions.ContinuationTask) != 0))
+            {
+                // For continuation tasks or TaskCompletionSource.Tasks, begin life in the 
+                // WaitingForActivation state rather than the Created state.
+                _status = (int)TaskStatus.WaitingForActivation;
+            }
             _creationOptions = creationOptions;
+            _internalOptions = internalOptions;
+            // if we have a non-null cancellationToken, allocate the contingent properties to save it
+            // we need to do this as the very last thing in the construction path, because the CT registration could modify m_stateFlags
             if (cancellationToken.CanBeCanceled)
             {
                 AssignCancellationToken(cancellationToken);
+            }
+            // Now is the time to add the new task to the children list 
+            // of the creating task if the options call for it.
+            // We can safely call the creator task's AddNewChild() method to register it, 
+            // because at this point we are already on its thread of execution.
+            if (_parent != null && ((creationOptions & TaskCreationOptions.AttachedToParent) != 0) && ((_parent.CreationOptions & TaskCreationOptions.DenyChildAttach) == 0))
+            {
+                _parent.AddNewChild();
             }
         }
 
@@ -101,7 +168,7 @@ namespace System.Threading.Tasks
         {
             get
             {
-                return TaskFactory._defaultInstance;
+                return TaskFactory.DefaultInstance;
             }
         }
 

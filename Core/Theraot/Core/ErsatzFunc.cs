@@ -11,17 +11,19 @@ namespace Theraot.Core
             get;
         }
 
-        object InvokeAction();
+        Action InvokeAction();
     }
 
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ErsatzFunc<TReturn>: IErsatz<TReturn>
     {
         private readonly Func<TReturn> _target;
         private TReturn _result;
+        
 
         public ErsatzFunc(Func<TReturn> target)
         {
+            
             _result = default(TReturn);
             _target = target ?? FuncHelper.GetDefaultFunc<TReturn>();
         }
@@ -34,25 +36,27 @@ namespace Theraot.Core
             }
         }
 
+        Action IErsatz<TReturn>.InvokeAction()
+        {
+            return Invoke;
+        }
+
         public void Invoke()
         {
             _result = _target.Invoke();
         }
-
-        object IErsatz<TReturn>.InvokeAction()
-        {
-            return new Action(Invoke);
-        }
     }
 
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ErsatzFunc<T, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T, TReturn> _target;
         private TReturn _result;
+        private readonly T _obj;
 
         public ErsatzFunc(Func<T, TReturn> target, T obj)
         {
+            _obj = obj;
             _result = default(TReturn);
             _target = target ?? FuncHelper.GetDefaultFunc<T, TReturn>();
         }
@@ -65,25 +69,29 @@ namespace Theraot.Core
             }
         }
 
+        Action IErsatz<TReturn>.InvokeAction()
+        {
+            return () => Invoke(_obj);
+        }
+
         public void Invoke(T obj)
         {
             _result = _target.Invoke(obj);
         }
-
-        object IErsatz<TReturn>.InvokeAction()
-        {
-            return new Action<T>(Invoke);
-        }
     }
 
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ErsatzFunc<T1, T2, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, TReturn> _target;
         private TReturn _result;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
 
         public ErsatzFunc(Func<T1, T2, TReturn> target, T1 arg1, T2 arg2)
         {
+            _arg1 = arg1;
+            _arg2 = arg2;
             _result = default(TReturn);
             _target = target ?? FuncHelper.GetDefaultFunc<T1, T2, TReturn>();
         }
@@ -96,25 +104,31 @@ namespace Theraot.Core
             }
         }
 
+        Action IErsatz<TReturn>.InvokeAction()
+        {
+            return () => Invoke(_arg1,_arg2);
+        }
+
         public void Invoke(T1 arg1, T2 arg2)
         {
             _result = _target.Invoke(arg1, arg2);
         }
-
-        object IErsatz<TReturn>.InvokeAction()
-        {
-            return new Action<T1, T2>(Invoke);
-        }
     }
 
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ErsatzFunc<T1, T2, T3, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, TReturn> _target;
         private TReturn _result;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
 
         public ErsatzFunc(Func<T1, T2, T3, TReturn> target, T1 arg1, T2 arg2, T3 arg3)
         {
+            _arg1 = arg1;
+            _arg2 = arg2;
+            _arg3 = arg3;
             _result = default(TReturn);
             _target = target ?? FuncHelper.GetDefaultFunc<T1, T2, T3, TReturn>();
         }
@@ -127,25 +141,33 @@ namespace Theraot.Core
             }
         }
 
+        Action IErsatz<TReturn>.InvokeAction()
+        {
+            return () => Invoke(_arg1,_arg2,_arg3);
+        }
+
         public void Invoke(T1 arg1, T2 arg2, T3 arg3)
         {
             _result = _target.Invoke(arg1, arg2, arg3);
         }
-
-        object IErsatz<TReturn>.InvokeAction()
-        {
-            return new Action<T1, T2, T3>(Invoke);
-        }
     }
 
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ErsatzFunc<T1, T2, T3, T4, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, T4, TReturn> _target;
         private TReturn _result;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
 
         public ErsatzFunc(Func<T1, T2, T3, T4, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
         {
+            _arg1 = arg1;
+            _arg2 = arg2;
+            _arg3 = arg3;
+            _arg4 = arg4;
             _result = default(TReturn);
             _target = target ?? FuncHelper.GetDefaultFunc<T1, T2, T3, T4, TReturn>();
         }
@@ -158,25 +180,35 @@ namespace Theraot.Core
             }
         }
 
+        Action IErsatz<TReturn>.InvokeAction()
+        {
+            return () => Invoke(_arg1,_arg2,_arg3,_arg4);
+        }
+
         public void Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4)
         {
             _result = _target.Invoke(arg1, arg2, arg3, arg4);
         }
-
-        object IErsatz<TReturn>.InvokeAction()
-        {
-            return new Action<T1, T2, T3, T4>(Invoke);
-        }
     }
 
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ErsatzFunc<T1, T2, T3, T4, T5, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, TReturn> _target;
         private TReturn _result;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
 
         public ErsatzFunc(Func<T1, T2, T3, T4, T5, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
         {
+            _arg1 = arg1;
+            _arg2 = arg2;
+            _arg3 = arg3;
+            _arg4 = arg4;
+            _arg5 = arg5;
             _result = default(TReturn);
             _target = target ?? FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, TReturn>();
         }
@@ -189,25 +221,37 @@ namespace Theraot.Core
             }
         }
 
+        Action IErsatz<TReturn>.InvokeAction()
+        {
+            return () => Invoke(_arg1,_arg2,_arg3,_arg4,_arg5);
+        }
+
         public void Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
         {
             _result = _target.Invoke(arg1, arg2, arg3, arg4, arg5);
         }
-
-        object IErsatz<TReturn>.InvokeAction()
-        {
-            return new Action<T1, T2, T3, T4, T5>(Invoke);
-        }
     }
 
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ErsatzFunc<T1, T2, T3, T4, T5, T6, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, TReturn> _target;
         private TReturn _result;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
 
         public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
         {
+            _arg1 = arg1;
+            _arg2 = arg2;
+            _arg3 = arg3;
+            _arg4 = arg4;
+            _arg5 = arg5;
+            _arg6 = arg6;
             _result = default(TReturn);
             _target = target ?? FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, TReturn>();
         }
@@ -220,25 +264,39 @@ namespace Theraot.Core
             }
         }
 
+        Action IErsatz<TReturn>.InvokeAction()
+        {
+            return () => Invoke(_arg1,_arg2,_arg3,_arg4,_arg5,_arg6);
+        }
+
         public void Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
         {
             _result = _target.Invoke(arg1, arg2, arg3, arg4, arg5, arg6);
         }
-
-        object IErsatz<TReturn>.InvokeAction()
-        {
-            return new Action<T1, T2, T3, T4, T5, T6>(Invoke);
-        }
     }
 
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, TReturn> _target;
         private TReturn _result;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
 
         public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
         {
+            _arg1 = arg1;
+            _arg2 = arg2;
+            _arg3 = arg3;
+            _arg4 = arg4;
+            _arg5 = arg5;
+            _arg6 = arg6;
+            _arg7 = arg7;
             _result = default(TReturn);
             _target = target ?? FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, TReturn>();
         }
@@ -251,25 +309,41 @@ namespace Theraot.Core
             }
         }
 
+        Action IErsatz<TReturn>.InvokeAction()
+        {
+            return () => Invoke(_arg1,_arg2,_arg3,_arg4,_arg5,_arg6,_arg7);
+        }
+
         public void Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
         {
             _result = _target.Invoke(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
         }
-
-        object IErsatz<TReturn>.InvokeAction()
-        {
-            return new Action<T1, T2, T3, T4, T5, T6, T7>(Invoke);
-        }
     }
 
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> _target;
         private TReturn _result;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
 
         public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)
         {
+            _arg1 = arg1;
+            _arg2 = arg2;
+            _arg3 = arg3;
+            _arg4 = arg4;
+            _arg5 = arg5;
+            _arg6 = arg6;
+            _arg7 = arg7;
+            _arg8 = arg8;
             _result = default(TReturn);
             _target = target ?? FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, TReturn>();
         }
@@ -282,25 +356,43 @@ namespace Theraot.Core
             }
         }
 
+        Action IErsatz<TReturn>.InvokeAction()
+        {
+            return () => Invoke(_arg1,_arg2,_arg3,_arg4,_arg5,_arg6,_arg7,_arg8);
+        }
+
         public void Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)
         {
             _result = _target.Invoke(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
         }
-
-        object IErsatz<TReturn>.InvokeAction()
-        {
-            return new Action<T1, T2, T3, T4, T5, T6, T7, T8>(Invoke);
-        }
     }
 
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> _target;
         private TReturn _result;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
+        private readonly T9 _arg9;
 
         public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)
         {
+            _arg1 = arg1;
+            _arg2 = arg2;
+            _arg3 = arg3;
+            _arg4 = arg4;
+            _arg5 = arg5;
+            _arg6 = arg6;
+            _arg7 = arg7;
+            _arg8 = arg8;
+            _arg9 = arg9;
             _result = default(TReturn);
             _target = target ?? FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn>();
         }
@@ -313,25 +405,45 @@ namespace Theraot.Core
             }
         }
 
+        Action IErsatz<TReturn>.InvokeAction()
+        {
+            return () => Invoke(_arg1,_arg2,_arg3,_arg4,_arg5,_arg6,_arg7,_arg8,_arg9);
+        }
+
         public void Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)
         {
             _result = _target.Invoke(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
         }
-
-        object IErsatz<TReturn>.InvokeAction()
-        {
-            return new Action<T1, T2, T3, T4, T5, T6, T7, T8, T9>(Invoke);
-        }
     }
 
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> _target;
         private TReturn _result;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
+        private readonly T9 _arg9;
+        private readonly T10 _arg10;
 
         public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10)
         {
+            _arg1 = arg1;
+            _arg2 = arg2;
+            _arg3 = arg3;
+            _arg4 = arg4;
+            _arg5 = arg5;
+            _arg6 = arg6;
+            _arg7 = arg7;
+            _arg8 = arg8;
+            _arg9 = arg9;
+            _arg10 = arg10;
             _result = default(TReturn);
             _target = target ?? FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn>();
         }
@@ -344,25 +456,47 @@ namespace Theraot.Core
             }
         }
 
+        Action IErsatz<TReturn>.InvokeAction()
+        {
+            return () => Invoke(_arg1,_arg2,_arg3,_arg4,_arg5,_arg6,_arg7,_arg8,_arg9,_arg10);
+        }
+
         public void Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10)
         {
             _result = _target.Invoke(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
         }
-
-        object IErsatz<TReturn>.InvokeAction()
-        {
-            return new Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(Invoke);
-        }
     }
 
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> _target;
         private TReturn _result;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
+        private readonly T9 _arg9;
+        private readonly T10 _arg10;
+        private readonly T11 _arg11;
 
         public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11)
         {
+            _arg1 = arg1;
+            _arg2 = arg2;
+            _arg3 = arg3;
+            _arg4 = arg4;
+            _arg5 = arg5;
+            _arg6 = arg6;
+            _arg7 = arg7;
+            _arg8 = arg8;
+            _arg9 = arg9;
+            _arg10 = arg10;
+            _arg11 = arg11;
             _result = default(TReturn);
             _target = target ?? FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn>();
         }
@@ -375,25 +509,49 @@ namespace Theraot.Core
             }
         }
 
+        Action IErsatz<TReturn>.InvokeAction()
+        {
+            return () => Invoke(_arg1,_arg2,_arg3,_arg4,_arg5,_arg6,_arg7,_arg8,_arg9,_arg10,_arg11);
+        }
+
         public void Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11)
         {
             _result = _target.Invoke(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11);
         }
-
-        object IErsatz<TReturn>.InvokeAction()
-        {
-            return new Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(Invoke);
-        }
     }
 
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> _target;
         private TReturn _result;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
+        private readonly T9 _arg9;
+        private readonly T10 _arg10;
+        private readonly T11 _arg11;
+        private readonly T12 _arg12;
 
         public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12)
         {
+            _arg1 = arg1;
+            _arg2 = arg2;
+            _arg3 = arg3;
+            _arg4 = arg4;
+            _arg5 = arg5;
+            _arg6 = arg6;
+            _arg7 = arg7;
+            _arg8 = arg8;
+            _arg9 = arg9;
+            _arg10 = arg10;
+            _arg11 = arg11;
+            _arg12 = arg12;
             _result = default(TReturn);
             _target = target ?? FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn>();
         }
@@ -406,25 +564,51 @@ namespace Theraot.Core
             }
         }
 
+        Action IErsatz<TReturn>.InvokeAction()
+        {
+            return () => Invoke(_arg1,_arg2,_arg3,_arg4,_arg5,_arg6,_arg7,_arg8,_arg9,_arg10,_arg11,_arg12);
+        }
+
         public void Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12)
         {
             _result = _target.Invoke(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
         }
-
-        object IErsatz<TReturn>.InvokeAction()
-        {
-            return new Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(Invoke);
-        }
     }
 
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> _target;
         private TReturn _result;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
+        private readonly T9 _arg9;
+        private readonly T10 _arg10;
+        private readonly T11 _arg11;
+        private readonly T12 _arg12;
+        private readonly T13 _arg13;
 
         public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13)
         {
+            _arg1 = arg1;
+            _arg2 = arg2;
+            _arg3 = arg3;
+            _arg4 = arg4;
+            _arg5 = arg5;
+            _arg6 = arg6;
+            _arg7 = arg7;
+            _arg8 = arg8;
+            _arg9 = arg9;
+            _arg10 = arg10;
+            _arg11 = arg11;
+            _arg12 = arg12;
+            _arg13 = arg13;
             _result = default(TReturn);
             _target = target ?? FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn>();
         }
@@ -437,25 +621,53 @@ namespace Theraot.Core
             }
         }
 
+        Action IErsatz<TReturn>.InvokeAction()
+        {
+            return () => Invoke(_arg1,_arg2,_arg3,_arg4,_arg5,_arg6,_arg7,_arg8,_arg9,_arg10,_arg11,_arg12,_arg13);
+        }
+
         public void Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13)
         {
             _result = _target.Invoke(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13);
         }
-
-        object IErsatz<TReturn>.InvokeAction()
-        {
-            return new Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(Invoke);
-        }
     }
 
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> _target;
         private TReturn _result;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
+        private readonly T9 _arg9;
+        private readonly T10 _arg10;
+        private readonly T11 _arg11;
+        private readonly T12 _arg12;
+        private readonly T13 _arg13;
+        private readonly T14 _arg14;
 
         public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14)
         {
+            _arg1 = arg1;
+            _arg2 = arg2;
+            _arg3 = arg3;
+            _arg4 = arg4;
+            _arg5 = arg5;
+            _arg6 = arg6;
+            _arg7 = arg7;
+            _arg8 = arg8;
+            _arg9 = arg9;
+            _arg10 = arg10;
+            _arg11 = arg11;
+            _arg12 = arg12;
+            _arg13 = arg13;
+            _arg14 = arg14;
             _result = default(TReturn);
             _target = target ?? FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn>();
         }
@@ -468,25 +680,55 @@ namespace Theraot.Core
             }
         }
 
+        Action IErsatz<TReturn>.InvokeAction()
+        {
+            return () => Invoke(_arg1,_arg2,_arg3,_arg4,_arg5,_arg6,_arg7,_arg8,_arg9,_arg10,_arg11,_arg12,_arg13,_arg14);
+        }
+
         public void Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14)
         {
             _result = _target.Invoke(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14);
         }
-
-        object IErsatz<TReturn>.InvokeAction()
-        {
-            return new Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(Invoke);
-        }
     }
 
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> _target;
         private TReturn _result;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
+        private readonly T9 _arg9;
+        private readonly T10 _arg10;
+        private readonly T11 _arg11;
+        private readonly T12 _arg12;
+        private readonly T13 _arg13;
+        private readonly T14 _arg14;
+        private readonly T15 _arg15;
 
         public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15)
         {
+            _arg1 = arg1;
+            _arg2 = arg2;
+            _arg3 = arg3;
+            _arg4 = arg4;
+            _arg5 = arg5;
+            _arg6 = arg6;
+            _arg7 = arg7;
+            _arg8 = arg8;
+            _arg9 = arg9;
+            _arg10 = arg10;
+            _arg11 = arg11;
+            _arg12 = arg12;
+            _arg13 = arg13;
+            _arg14 = arg14;
+            _arg15 = arg15;
             _result = default(TReturn);
             _target = target ?? FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn>();
         }
@@ -499,25 +741,57 @@ namespace Theraot.Core
             }
         }
 
+        Action IErsatz<TReturn>.InvokeAction()
+        {
+            return () => Invoke(_arg1,_arg2,_arg3,_arg4,_arg5,_arg6,_arg7,_arg8,_arg9,_arg10,_arg11,_arg12,_arg13,_arg14,_arg15);
+        }
+
         public void Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15)
         {
             _result = _target.Invoke(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15);
         }
-
-        object IErsatz<TReturn>.InvokeAction()
-        {
-            return new Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(Invoke);
-        }
     }
 
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> _target;
         private TReturn _result;
+        private readonly T1 _arg1;
+        private readonly T2 _arg2;
+        private readonly T3 _arg3;
+        private readonly T4 _arg4;
+        private readonly T5 _arg5;
+        private readonly T6 _arg6;
+        private readonly T7 _arg7;
+        private readonly T8 _arg8;
+        private readonly T9 _arg9;
+        private readonly T10 _arg10;
+        private readonly T11 _arg11;
+        private readonly T12 _arg12;
+        private readonly T13 _arg13;
+        private readonly T14 _arg14;
+        private readonly T15 _arg15;
+        private readonly T16 _arg16;
 
         public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15, T16 arg16)
         {
+            _arg1 = arg1;
+            _arg2 = arg2;
+            _arg3 = arg3;
+            _arg4 = arg4;
+            _arg5 = arg5;
+            _arg6 = arg6;
+            _arg7 = arg7;
+            _arg8 = arg8;
+            _arg9 = arg9;
+            _arg10 = arg10;
+            _arg11 = arg11;
+            _arg12 = arg12;
+            _arg13 = arg13;
+            _arg14 = arg14;
+            _arg15 = arg15;
+            _arg16 = arg16;
             _result = default(TReturn);
             _target = target ?? FuncHelper.GetDefaultFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn>();
         }
@@ -530,14 +804,14 @@ namespace Theraot.Core
             }
         }
 
+        Action IErsatz<TReturn>.InvokeAction()
+        {
+            return () => Invoke(_arg1,_arg2,_arg3,_arg4,_arg5,_arg6,_arg7,_arg8,_arg9,_arg10,_arg11,_arg12,_arg13,_arg14,_arg15,_arg16);
+        }
+
         public void Invoke(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15, T16 arg16)
         {
             _result = _target.Invoke(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, arg15, arg16);
-        }
-
-        object IErsatz<TReturn>.InvokeAction()
-        {
-            return new Action<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>(Invoke);
         }
     }
 }
