@@ -24,6 +24,10 @@ namespace System.Threading.Tasks
         public static Task Run(Func<Task> action)
         {
             // TODO: change to continue with and promise task?
+            if (action == null)
+            {
+                throw new ArgumentNullException();
+            }
             var result = new Task
                 (
                     () =>
@@ -50,13 +54,17 @@ namespace System.Threading.Tasks
         public static Task Run(Func<Task> action, CancellationToken cancellationToken)
         {
             // TODO: change to continue with and promise task?
+            if (action == null)
+            {
+                throw new ArgumentNullException();
+            }
             var result = new Task
                 (
                     () =>
                     {
                         var task = action();
                         task.InternalStart(task.Scheduler);
-                        task.Wait();
+                        task.Wait(cancellationToken);
                         if (task.IsFaulted)
                         {
                             throw task.Exception;
@@ -96,6 +104,10 @@ namespace System.Threading.Tasks
         public static Task<TResult> Run<TResult>(Func<Task<TResult>> function)
         {
             // TODO: change to continue with and promise task?
+            if (function == null)
+            {
+                throw new ArgumentNullException();
+            }
             var result = new Task<TResult>(() => function().Result, CancellationToken.None, TaskCreationOptions.DenyChildAttach);
             result.Start();
             return result;
@@ -104,6 +116,10 @@ namespace System.Threading.Tasks
         public static Task<TResult> Run<TResult>(Func<Task<TResult>> function, CancellationToken cancellationToken)
         {
             // TODO: change to continue with and promise task?
+            if (function == null)
+            {
+                throw new ArgumentNullException();
+            }
             var result = new Task<TResult>(() => function().Result, cancellationToken, TaskCreationOptions.DenyChildAttach);
             if (!cancellationToken.IsCancellationRequested)
             {
