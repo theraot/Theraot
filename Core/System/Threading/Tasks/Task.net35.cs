@@ -10,16 +10,16 @@ namespace System.Threading.Tasks
     public partial class Task : IDisposable, IAsyncResult
     {
         [ThreadStatic]
-        private static Task _current;
+        internal static Task Current;
 
+        protected readonly object State;
+        protected object Action;
         private static int _lastId;
         private readonly TaskCreationOptions _creationOptions;
         private readonly int _id;
         private readonly Task _parent;
-        private object _action;
         private int _isDisposed = 0;
         private TaskScheduler _scheduler;
-        private object _state;
         private int _status;
         private StructNeedle<ManualResetEventSlim> _waitHandle;
 
@@ -67,8 +67,8 @@ namespace System.Threading.Tasks
                     _parent.AddNewChild();
                 }
             }
-            _action = action;
-            _state = state;
+            Action = action;
+            State = state;
             _scheduler = scheduler;
             _waitHandle = new ManualResetEventSlim(false);
             // TODO validate creationOptions
@@ -88,7 +88,7 @@ namespace System.Threading.Tasks
         {
             get
             {
-                var current = _current;
+                var current = Current;
                 if (current != null)
                 {
                     return current.Id;
@@ -109,7 +109,7 @@ namespace System.Threading.Tasks
         {
             get
             {
-                return _state;
+                return State;
             }
         }
 
@@ -207,13 +207,7 @@ namespace System.Threading.Tasks
             }
         }
 
-        internal static Task Current
-        {
-            get
-            {
-                return _current;
-            }
-        }
+        internal CancellationToken CancellationToken { get; set; }
 
         internal TaskScheduler Scheduler
         {
@@ -222,8 +216,6 @@ namespace System.Threading.Tasks
                 return _scheduler;
             }
         }
-
-        internal CancellationToken Token { get; set; }
 
         private bool IsScheduled
         {
@@ -252,70 +244,6 @@ namespace System.Threading.Tasks
             }
             _scheduler = scheduler;
             PrivateRunSynchronously();
-        }
-
-        private void PrivateRunSynchronously()
-        {
-            if (Thread.VolatileRead(ref _isDisposed) == 1)
-            {
-                throw new ObjectDisposedException(GetType().FullName);
-            }
-
-            // TODO: Do not Run Synchronously Continuation Tasks: InvalidOperationException("RunSynchronously may not be called on a continuation task.");
-            // TODO: Do not Run Synchronously Promise Tasks: InvalidOperationException("RunSynchronously may not be called on a task not bound to a delegate, such as the task returned from an asynchronous method.");
-
-            // Can't call this method on a task that has already completed
-            if (IsCompleted)
-            {
-                throw new InvalidOperationException("RunSynchronously may not be called on a task that has already completed.");
-            }
-
-            if (IsScheduled)
-            {
-                throw new InvalidOperationException("RunSynchronously may not be called on a task that was already started.");
-            }
-
-            // Make sure that Task only gets started once.  Or else throw an exception.
-            if (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingForActivation, (int)TaskStatus.Created) != (int)TaskStatus.Created)
-            {
-                throw new InvalidOperationException("RunSynchronously may not be called on a task that was already started.");
-            }
-
-            try
-            {
-                Schedule(_scheduler);
-                while (!IsCompleted)
-                {
-                    _scheduler.RunAndWait(this, false);
-                }
-            }
-            catch (Exception exception)
-            {
-                if (exception is ThreadAbortException)
-                {
-                    throw;
-                }
-
-                // Record the exception, marking ourselves as Completed/Faulted.
-                var taskSchedulerException = new TaskSchedulerException(exception);
-                AddException(taskSchedulerException);
-                Finish(false);
-
-                const string assertFailure = "Task.PrivateRunSynchronously(): Expected _exceptionsHolder to exist and to have faults recorded.";
-                if (_exceptionsHolder != null)
-                {
-                    Contract.Assert(_exceptionsHolder.ContainsFaultList, assertFailure);
-                    _exceptionsHolder.MarkAsHandled(false);
-                }
-                else
-                {
-                    Contract.Assert(false, assertFailure);
-                }
-
-                // And re-throw.
-                throw taskSchedulerException;
-                // We had a problem with waiting or this is a thread abort.  Just re-throw.
-            }
         }
 
         public void Start()
@@ -477,7 +405,7 @@ namespace System.Threading.Tasks
             }
             if (!IsCanceled)
             {
-                if (Token.IsCancellationRequested)
+                if (CancellationToken.IsCancellationRequested)
                 {
                     Thread.VolatileWrite(ref _status, (int)TaskStatus.Canceled);
                     SetCompleted();
@@ -494,8 +422,8 @@ namespace System.Threading.Tasks
         internal bool InternalCancel(bool cancelNonExecutingOnly)
         {
             // TODO: Promise tasks support?
-            bool popSucceeded = false;
-            bool cancelSucceeded = false;
+            var popSucceeded = false;
+            var cancelSucceeded = false;
             TaskSchedulerException taskSchedulerException = null;
 
             RecordInternalCancellationRequest();
@@ -565,6 +493,20 @@ namespace System.Threading.Tasks
             }
         }
 
+        internal bool TryStart()
+        {
+            if (Thread.VolatileRead(ref _isDisposed) == 1)
+            {
+                return false;
+            }
+            if (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingForActivation, (int)TaskStatus.Created) != (int)TaskStatus.Created)
+            {
+                return false;
+            }
+            Schedule(_scheduler);
+            return true;
+        }
+
         [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "Microsoft's Design")]
         protected virtual void Dispose(bool disposing)
         {
@@ -586,6 +528,70 @@ namespace System.Threading.Tasks
                 }
             }
             Thread.VolatileWrite(ref _isDisposed, 1);
+        }
+
+        private void PrivateRunSynchronously()
+        {
+            if (Thread.VolatileRead(ref _isDisposed) == 1)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
+
+            // TODO: Do not Run Synchronously Continuation Tasks: InvalidOperationException("RunSynchronously may not be called on a continuation task.");
+            // TODO: Do not Run Synchronously Promise Tasks: InvalidOperationException("RunSynchronously may not be called on a task not bound to a delegate, such as the task returned from an asynchronous method.");
+
+            // Can't call this method on a task that has already completed
+            if (IsCompleted)
+            {
+                throw new InvalidOperationException("RunSynchronously may not be called on a task that has already completed.");
+            }
+
+            if (IsScheduled)
+            {
+                throw new InvalidOperationException("RunSynchronously may not be called on a task that was already started.");
+            }
+
+            // Make sure that Task only gets started once.  Or else throw an exception.
+            if (Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingForActivation, (int)TaskStatus.Created) != (int)TaskStatus.Created)
+            {
+                throw new InvalidOperationException("RunSynchronously may not be called on a task that was already started.");
+            }
+
+            try
+            {
+                Schedule(_scheduler);
+                while (!IsCompleted)
+                {
+                    _scheduler.RunAndWait(this, false);
+                }
+            }
+            catch (Exception exception)
+            {
+                if (exception is ThreadAbortException)
+                {
+                    throw;
+                }
+
+                // Record the exception, marking ourselves as Completed/Faulted.
+                var taskSchedulerException = new TaskSchedulerException(exception);
+                AddException(taskSchedulerException);
+                Finish(false);
+
+                const string AssertFailure = "Task.PrivateRunSynchronously(): Expected _exceptionsHolder to exist and to have faults recorded.";
+                if (_exceptionsHolder != null)
+                {
+                    Contract.Assert(_exceptionsHolder.ContainsFaultList, AssertFailure);
+                    _exceptionsHolder.MarkAsHandled(false);
+                }
+                else
+                {
+                    Contract.Assert(false, AssertFailure);
+                }
+
+                // And re-throw.
+                throw taskSchedulerException;
+                // We had a problem with waiting or this is a thread abort.  Just re-throw.
+            }
         }
 
         private void Schedule(TaskScheduler scheduler)
@@ -618,19 +624,20 @@ namespace System.Threading.Tasks
             // TaskStatus.Canceled (6) -> not ok
             // TaskStatus.Faulted (7) -> -> ok if preventDoubleExecution = false
             var count = 0;
-        retry:
-            var lastValue = Thread.VolatileRead(ref _status);
-            if ((preventDoubleExecution && lastValue >= 3) || lastValue == 6)
+            while (true)
             {
-                return false;
+                var lastValue = Thread.VolatileRead(ref _status);
+                if ((preventDoubleExecution && lastValue >= 3) || lastValue == 6)
+                {
+                    return false;
+                }
+                var tmp = Interlocked.CompareExchange(ref _status, 3, lastValue);
+                if (tmp == lastValue)
+                {
+                    return true;
+                }
+                ThreadingHelper.SpinOnce(ref count);
             }
-            var tmp = Interlocked.CompareExchange(ref _status, 3, lastValue);
-            if (tmp == lastValue)
-            {
-                return true;
-            }
-            ThreadingHelper.SpinOnce(ref count);
-            goto retry;
         }
     }
 }

@@ -82,7 +82,7 @@ namespace System.Threading.Tasks
                 // be racing with the code segment at the bottom of Finish() that prunes the exceptional child array.
                 lock (tmp)
                 {
-                    foreach (Task task in tmp)
+                    foreach (var task in tmp)
                     {
                         // Ensure any exceptions thrown by children are added to the parent.
                         // In doing this, we are implicitly marking children as being "handled".
@@ -126,8 +126,9 @@ namespace System.Threading.Tasks
                 {
                     _cancellationRegistration.Value.Dispose();
                 }
-                catch (ObjectDisposedException)
+                catch (ObjectDisposedException exception)
                 {
+                    GC.KeepAlive(exception);
                     // Empty
                 }
                 _cancellationRegistration = null;
@@ -138,7 +139,7 @@ namespace System.Threading.Tasks
         // We need to subtract that child from m_completionCountdown, or the parent will never complete.
         internal void DisregardChild()
         {
-            Contract.Assert(_current == this, "Task.DisregardChild(): Called from an external context");
+            Contract.Assert(Current == this, "Task.DisregardChild(): Called from an external context");
             Contract.Assert(Thread.VolatileRead(ref _completionCountdown) >= 2, "Task.DisregardChild(): Expected parent count to be >= 2");
             Interlocked.Decrement(ref _completionCountdown);
         }
@@ -215,20 +216,9 @@ namespace System.Threading.Tasks
             return null;
         }
 
-        /// <summary>
-        /// Signals completion of this particular task.
-        ///
-        /// The bUserDelegateExecuted parameter indicates whether this Finish() call comes following the
-        /// full execution of the user delegate.
-        ///
-        /// If bUserDelegateExecuted is false, it mean user delegate wasn't invoked at all (either due to
-        /// a cancellation request, or because this task is a promise style Task). In this case, the steps
-        /// involving child tasks (i.e. WaitForChildren) will be skipped.
-        ///
-        /// </summary>
-        internal void Finish(bool bUserDelegateExecuted)
+        internal void Finish(bool userDelegateExecuted)
         {
-            if (!bUserDelegateExecuted)
+            if (!userDelegateExecuted)
             {
                 // delegate didn't execute => no children. We can safely call the remaining finish stages
                 FinishStageTwo();
@@ -272,7 +262,7 @@ namespace System.Threading.Tasks
         // And this method should be called at most once per task.
         internal void FinishStageThree()
         {
-            _action = null;
+            Action = null;
             // Notify parent if this was an attached task
             if (_parent != null && ((_parent._creationOptions & TaskCreationOptions.DenyChildAttach) == 0) && (_creationOptions & TaskCreationOptions.AttachedToParent) != 0)
             {
@@ -380,25 +370,22 @@ namespace System.Threading.Tasks
         internal virtual void InnerInvoke()
         {
             // Invoke the delegate
-            Contract.Assert(_action != null, "Null action in InnerInvoke()");
-            var action = _action as Action;
+            Contract.Assert(Action != null, "Null action in InnerInvoke()");
+            var action = Action as Action;
             if (action != null)
             {
                 action.Invoke();
                 return;
             }
-            var actionWithState = _action as Action<object>;
+            var actionWithState = Action as Action<object>;
             if (actionWithState != null)
             {
-                actionWithState(_state);
+                actionWithState(State);
                 return;
             }
             Contract.Assert(false, "Invalid m_action in Task");
         }
 
-        /// <summary>
-        /// This is called by children of this task when they are completed.
-        /// </summary>
         internal void ProcessChildCompletion(Task childTask)
         {
             Contract.Requires(childTask != null);
@@ -419,7 +406,7 @@ namespace System.Threading.Tasks
                 // multiple times for the same task.  In that case, AddExceptionsFromChildren() could be nulling m_exceptionalChildren
                 // out at the same time that we're processing it, resulting in a NullReferenceException here.  We'll protect
                 // ourselves by caching m_exceptionChildren in a local variable.
-                List<Task> tmp = ThreadingHelper.VolatileRead(ref _exceptionalChildren);
+                var tmp = ThreadingHelper.VolatileRead(ref _exceptionalChildren);
                 if (tmp != null)
                 {
                     lock (tmp)
@@ -461,7 +448,7 @@ namespace System.Threading.Tasks
         /// </summary>
         internal void UpdateExceptionObservedStatus()
         {
-            if ((_parent != null) && ((_creationOptions & TaskCreationOptions.AttachedToParent) != 0) && ((_parent._creationOptions & TaskCreationOptions.DenyChildAttach) == 0) && _current == _parent)
+            if ((_parent != null) && ((_creationOptions & TaskCreationOptions.AttachedToParent) != 0) && ((_parent._creationOptions & TaskCreationOptions.DenyChildAttach) == 0) && Current == _parent)
             {
                 Thread.VolatileWrite(ref _exceptionObservedByParent, 1);
             }
@@ -482,13 +469,9 @@ namespace System.Threading.Tasks
             }
         }
 
-        /// <summary>
-        /// Handles everything needed for associating a CancellationToken with a task which is being constructed.
-        /// This method is meant to be be called either from the TaskConstructorCore or from ContinueWithCore.
-        /// </summary>
         private void AssignCancellationToken(CancellationToken cancellationToken)
         {
-            Token = cancellationToken;
+            CancellationToken = cancellationToken;
             try
             {
                 cancellationToken.ThrowIfSourceDisposed();
@@ -517,7 +500,7 @@ namespace System.Threading.Tasks
                     }
                 }
             }
-            catch
+            catch (Exception)
             {
                 // If we have an exception related to our CancellationToken, then we need to subtract ourselves
                 // from our parent before throwing it.
@@ -563,11 +546,11 @@ namespace System.Threading.Tasks
         private void ExecuteWithThreadLocal()
         {
             // Remember the current task so we can restore it after running, and then
-            Task previousTask = _current;
+            var previousTask = Current;
             try
             {
                 // place the current task into TLS.
-                _current = this;
+                Current = this;
 
                 Execute();
 
@@ -575,7 +558,7 @@ namespace System.Threading.Tasks
             }
             finally
             {
-                _current = previousTask;
+                Current = previousTask;
             }
         }
 
@@ -588,8 +571,8 @@ namespace System.Threading.Tasks
         {
             Contract.Requires(unhandledException != null);
 
-            NewOperationCanceledException exceptionAsOce = unhandledException as NewOperationCanceledException;
-            if (exceptionAsOce != null && IsCancellationRequested && Token == exceptionAsOce.CancellationToken)
+            var exceptionAsOce = unhandledException as NewOperationCanceledException;
+            if (exceptionAsOce != null && IsCancellationRequested && CancellationToken == exceptionAsOce.CancellationToken)
             {
                 // All conditions are satisfied for us to go into canceled state in Finish().
                 // Mark the acknowledgement.  The exception is also stored to enable it to be
@@ -619,7 +602,7 @@ namespace System.Threading.Tasks
         private void AddNewChild()
         {
             // TODO: Self Replicating
-            Contract.Assert(_current == this, "Task.AddNewChild(): Called from an external context");
+            Contract.Assert(Current == this, "Task.AddNewChild(): Called from an external context");
 
             if (_completionCountdown == 1)
             {
@@ -684,7 +667,7 @@ namespace System.Threading.Tasks
             if (exceptionsHolder == null)
             {
                 // This is the only time we write to _exceptionsHolder
-                TaskExceptionHolder holder = new TaskExceptionHolder(this);
+                var holder = new TaskExceptionHolder(this);
                 exceptionsHolder = Interlocked.CompareExchange(ref _exceptionsHolder, holder, null);
                 if (exceptionsHolder == null)
                 {
