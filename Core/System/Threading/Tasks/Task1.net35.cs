@@ -6,7 +6,7 @@ namespace System.Threading.Tasks
 {
     public class Task<TResult> : Task
     {
-        private readonly IErsatz<TResult> _erzatz;
+        private readonly IErsatz<TResult> _ersatz;
 
         public TResult Result
         {
@@ -20,40 +20,40 @@ namespace System.Threading.Tasks
                 }
                 if (IsCanceled)
                 {
-                    throw new AggregateException((Exception)new TaskCanceledException(this));
+                    throw new AggregateException(new TaskCanceledException(this));
                 }
-                return _erzatz.Result;
+                return _ersatz.Result;
             }
         }
 
-        private Task(IErsatz<TResult> erzatz)
-            : base(erzatz.InvokeAction(), null, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default)
+        private Task(IErsatz<TResult> ersatz)
+            : base(ersatz.InvokeAction(), null, CancellationToken.None, TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
         {
-            _erzatz = erzatz;
+            _ersatz = ersatz;
         }
 
-        private Task(IErsatz<TResult> erzatz, CancellationToken cancellationToken)
-            : base(erzatz.InvokeAction(), null, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default)
+        private Task(IErsatz<TResult> ersatz, CancellationToken cancellationToken)
+            : base(ersatz.InvokeAction(), null, cancellationToken, TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
         {
-            _erzatz = erzatz;
+            _ersatz = ersatz;
         }
 
-        private Task(IErsatz<TResult> erzatz, TaskCreationOptions creationOptions)
-            : base(erzatz.InvokeAction(), null, CancellationToken.None, creationOptions, TaskScheduler.Default)
+        private Task(IErsatz<TResult> ersatz, TaskCreationOptions creationOptions)
+            : base(ersatz.InvokeAction(), null, CancellationToken.None, creationOptions, InternalTaskOptions.None, TaskScheduler.Default)
         {
-            _erzatz = erzatz;
+            _ersatz = ersatz;
         }
 
-        private Task(IErsatz<TResult> erzatz, CancellationToken cancellationToken, TaskCreationOptions creationOptions)
-            : base(erzatz.InvokeAction(), null, cancellationToken, creationOptions, TaskScheduler.Default)
+        private Task(IErsatz<TResult> ersatz, CancellationToken cancellationToken, TaskCreationOptions creationOptions)
+            : base(ersatz.InvokeAction(), null, cancellationToken, creationOptions, InternalTaskOptions.None, TaskScheduler.Default)
         {
-            _erzatz = erzatz;
+            _ersatz = ersatz;
         }
 
-        private Task(IErsatz<TResult> erzatz, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
-            : base(erzatz.InvokeAction(), state, cancellationToken, creationOptions, scheduler)
+        private Task(IErsatz<TResult> ersatz, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
+            : base(ersatz.InvokeAction(), null, cancellationToken, creationOptions, InternalTaskOptions.None, scheduler)
         {
-            _erzatz = erzatz;
+            _ersatz = ersatz;
         }
 
         public Task(Func<TResult> function)
@@ -80,14 +80,14 @@ namespace System.Threading.Tasks
             // Empty
         }
 
-        internal Task(Func<TResult> function, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
-            : this(new ErsatzFunc<TResult>(function), state, cancellationToken, creationOptions, scheduler)
+        internal Task(Func<TResult> function, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
+            : this(new ErsatzFunc<TResult>(function), cancellationToken, creationOptions, scheduler)
         {
             // Empty
         }
 
         internal Task(Func<object, TResult> function, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
-            : this(new ErsatzFunc<object, TResult>(function, state), state, cancellationToken, creationOptions, scheduler)
+            : this(new ErsatzFunc<object, TResult>(function, state), cancellationToken, creationOptions, scheduler)
         {
             // Empty
         }
