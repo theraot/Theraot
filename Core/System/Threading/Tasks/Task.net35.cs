@@ -379,38 +379,29 @@ namespace System.Threading.Tasks
 
         public void Wait(CancellationToken cancellationToken)
         {
-            try
+            cancellationToken.ThrowIfCancellationRequested();
+            GC.KeepAlive(cancellationToken.WaitHandle);
+            while (true)
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                GC.KeepAlive(cancellationToken.WaitHandle);
-                while (true)
+                switch (Status)
                 {
-                    switch (Status)
-                    {
-                        case TaskStatus.Created:
-                        case TaskStatus.WaitingForActivation:
-                            // _scheduler.TryExecuteTaskInline(this, false);
-                            break;
-                        case TaskStatus.WaitingToRun:
-                            _scheduler.TryExecuteTaskInline(this, true);
-                            break;
-                        case TaskStatus.Running:
-                        case TaskStatus.WaitingForChildrenToComplete:
-                            cancellationToken.ThrowIfCancellationRequested();
-                            GC.KeepAlive(cancellationToken.WaitHandle);
-                            break;
-                        case TaskStatus.RanToCompletion:
-                        case TaskStatus.Canceled:
-                        case TaskStatus.Faulted:
-                            return;
-                    }
+                    case TaskStatus.Created:
+                    case TaskStatus.WaitingForActivation:
+                        // _scheduler.TryExecuteTaskInline(this, false);
+                        break;
+                    case TaskStatus.WaitingToRun:
+                        _scheduler.TryExecuteTaskInline(this, true);
+                        break;
+                    case TaskStatus.Running:
+                    case TaskStatus.WaitingForChildrenToComplete:
+                        cancellationToken.ThrowIfCancellationRequested();
+                        GC.KeepAlive(cancellationToken.WaitHandle);
+                        break;
+                    case TaskStatus.RanToCompletion:
+                    case TaskStatus.Canceled:
+                    case TaskStatus.Faulted:
+                        return;
                 }
-            }
-            catch (ObjectDisposedException) { throw; }
-            catch (AggregateException) { throw; }
-            catch (Exception exception)
-            {
-                throw new AggregateException(exception);
             }
         }
 
@@ -437,48 +428,33 @@ namespace System.Threading.Tasks
                 return true;
             }
             var start = ThreadingHelper.TicksNow();
-            try
+            cancellationToken.ThrowIfCancellationRequested();
+            GC.KeepAlive(cancellationToken.WaitHandle);
+            do
             {
+                switch (Status)
+                {
+                    case TaskStatus.Created:
+                    case TaskStatus.WaitingForActivation:
+                        // This is a great opportunity to inline, but we are not going to because Microsoft doesn't.
+                        // _scheduler.TryExecuteTaskInline(this, false);
+                        break;
+                    case TaskStatus.WaitingToRun:
+                        _scheduler.TryExecuteTaskInline(this, true);
+                        break;
+                    case TaskStatus.Running:
+                    case TaskStatus.WaitingForChildrenToComplete:
+                        // TODO: block and use continuation to release the block, so this thread is not spin waiting.
+                        break;
+                    case TaskStatus.RanToCompletion:
+                    case TaskStatus.Canceled:
+                    case TaskStatus.Faulted:
+                        return true;
+                }
                 cancellationToken.ThrowIfCancellationRequested();
                 GC.KeepAlive(cancellationToken.WaitHandle);
-                do
-                {
-                    switch (Status)
-                    {
-                        case TaskStatus.Created:
-                        case TaskStatus.WaitingForActivation:
-                            // This is a great opportunity to inline, but we are not going to because Microsoft doesn't.
-                            // _scheduler.TryExecuteTaskInline(this, false);
-                            break;
-                        case TaskStatus.WaitingToRun:
-                            _scheduler.TryExecuteTaskInline(this, true);
-                            break;
-                        case TaskStatus.Running:
-                        case TaskStatus.WaitingForChildrenToComplete:
-                            // TODO: block and use continuation to release the block, so this thread is not spin waiting.
-                            break;
-                        case TaskStatus.RanToCompletion:
-                        case TaskStatus.Canceled:
-                        case TaskStatus.Faulted:
-                            return true;
-                    }
-                    cancellationToken.ThrowIfCancellationRequested();
-                    GC.KeepAlive(cancellationToken.WaitHandle);
-                } while (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < milliseconds);
-                return false;
-            }
-            catch (ObjectDisposedException)
-            {
-                throw;
-            }
-            catch (AggregateException)
-            {
-                throw;
-            }
-            catch (Exception exception)
-            {
-                throw new AggregateException(exception);
-            }
+            } while (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < milliseconds);
+            return false;
         }
 
         internal bool ExecuteEntry(bool preventDoubleExecution)
