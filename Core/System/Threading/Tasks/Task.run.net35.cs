@@ -16,7 +16,7 @@ namespace System.Threading.Tasks
             var result = new Task(action, cancellationToken, TaskCreationOptions.DenyChildAttach);
             if (!cancellationToken.IsCancellationRequested)
             {
-                result.InternalStart(result.Scheduler);
+                result.Start(result.Scheduler, false);
             }
             return result;
         }
@@ -33,7 +33,7 @@ namespace System.Threading.Tasks
                     () =>
                     {
                         var task = action();
-                        task.InternalStart(task.Scheduler);
+                        task.Start(task.Scheduler, false);
                         task.Wait();
                         if (task.IsFaulted)
                         {
@@ -63,7 +63,7 @@ namespace System.Threading.Tasks
                     () =>
                     {
                         var task = action();
-                        task.InternalStart(task.Scheduler);
+                        task.Start(task.Scheduler, false);
                         task.Wait(cancellationToken);
                         if (task.IsFaulted)
                         {
@@ -79,7 +79,7 @@ namespace System.Threading.Tasks
                 );
             if (!cancellationToken.IsCancellationRequested)
             {
-                result.InternalStart(result.Scheduler);
+                result.Start(result.Scheduler, false);
             }
             return result;
         }
@@ -96,7 +96,7 @@ namespace System.Threading.Tasks
             var result = new Task<TResult>(function, cancellationToken, TaskCreationOptions.DenyChildAttach);
             if (!cancellationToken.IsCancellationRequested)
             {
-                result.InternalStart(result.Scheduler);
+                result.Start(result.Scheduler, false);
             }
             return result;
         }
@@ -123,7 +123,7 @@ namespace System.Threading.Tasks
             var result = new Task<TResult>(() => function().Result, cancellationToken, TaskCreationOptions.DenyChildAttach);
             if (!cancellationToken.IsCancellationRequested)
             {
-                result.InternalStart(result.Scheduler);
+                result.Start(result.Scheduler, false);
             }
             return result;
         }

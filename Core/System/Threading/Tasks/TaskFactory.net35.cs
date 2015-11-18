@@ -34,14 +34,14 @@ namespace System.Threading.Tasks
 
         public Task StartNew(Action action, TaskCreationOptions creationOptions)
         {
-            var result = new Task(action, null, CancellationToken.None, creationOptions, InternalTaskOptions.None, _scheduler);
+            var result = new Task(action, Task.InternalCurrentIfAttached(creationOptions), CancellationToken.None, creationOptions, InternalTaskOptions.None, _scheduler);
             result.Start();
             return result;
         }
 
         public Task StartNew(Action action, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
-            var result = new Task(action, null, cancellationToken, creationOptions, InternalTaskOptions.None, scheduler);
+            var result = new Task(action, Task.InternalCurrentIfAttached(creationOptions), cancellationToken, creationOptions, InternalTaskOptions.None, scheduler);
             result.Start();
             return result;
         }
@@ -62,14 +62,14 @@ namespace System.Threading.Tasks
 
         public Task StartNew(Action<object> action, object state, TaskCreationOptions creationOptions)
         {
-            var result = new Task(action, state, null, CancellationToken.None, creationOptions, InternalTaskOptions.None, _scheduler);
+            var result = new Task(action, state, Task.InternalCurrentIfAttached(creationOptions), CancellationToken.None, creationOptions, InternalTaskOptions.None, _scheduler);
             result.Start();
             return result;
         }
 
         public Task StartNew(Action<object> action, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
-            var result = new Task(action, state, null, cancellationToken, creationOptions, InternalTaskOptions.None, scheduler);
+            var result = new Task(action, state, Task.InternalCurrentIfAttached(creationOptions), cancellationToken, creationOptions, InternalTaskOptions.None, scheduler);
             result.Start();
             return result;
         }
