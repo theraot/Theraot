@@ -296,11 +296,6 @@
     <Compile Include="Theraot\Threading\Needles\WorkTest.cs" />
     <Compile Include="Theraot\Threading\PathHelperTest.cs" />
     <Compile Include="Theraot\Threading\ReentryGuardTests.cs" />
-    <Compile Include="throwback.cs">
-      <DependentUpon>throwback.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="ParallelTestHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="System\AggregateExceptionTests.cs" />
@@ -360,10 +355,6 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="throwback.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>throwback.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
