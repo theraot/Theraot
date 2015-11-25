@@ -208,6 +208,10 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("path");
             }
+            if (path == string.Empty)
+            {
+                return false;
+            }
             return path.ContainsAny(Path.GetInvalidPathChars());
         }
 
