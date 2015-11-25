@@ -875,12 +875,12 @@ namespace Theraot.Core
 
         internal static ConstructorInfo GetConstructor(this Type type, Type[] argTypes)
         {
-            return GetConstructor(type, BindingFlags.Static | BindingFlags.Public, null, argTypes, null);
+            return GetConstructor(type, BindingFlags.Static | BindingFlags.Public, argTypes, null);
         }
 
-        internal static ConstructorInfo GetConstructor(this Type type, BindingFlags flags, object binder, Type[] argTypes, object[] modifier)
+        internal static ConstructorInfo GetConstructor(this Type type, BindingFlags flags, Type[] argTypes, object[] modifier)
         {
-            foreach (var ctor in type.GetConstructors())
+            foreach (var ctor in type.GetConstructors(flags))
             {
                 var parameters = ctor.GetParameters();
                 if (parameters.Length == argTypes.Length)
