@@ -261,50 +261,20 @@ namespace System.Threading.Tasks
             FinishStageThree();
         }
 
-        /// <summary>
-        /// Special purpose Finish() entry point to be used when the task delegate throws a ThreadAbortedException
-        /// This makes a note in the state flags so that we avoid any costly synchronous operations in the finish codepath
-        /// such as inlined continuations
-        /// 
-        /// Assumes ThreadAbortException was added to this task's exception holder.
-        /// This should always be true except for the case of non-root self replicating task copies.
-        /// </summary>
-        /// <param name="delegateRan">Whether the delegate was executed.</param>
-        internal void FinishThreadAbortedTaskWithException(bool delegateRan)
+        internal void FinishThreadAbortedTask(bool exceptionAdded, bool delegateRan)
         {
             if (Interlocked.CompareExchange(ref _threadAbortedmanaged, 1, 0) == 0)
             {
                 var exceptionsHolder = ThreadingHelper.VolatileRead(ref _exceptionsHolder);
-                if (exceptionsHolder != null)
+                if (exceptionsHolder == null)
+                {
+                    return;
+                }
+                if (exceptionAdded)
                 {
                     exceptionsHolder.MarkAsHandled(false);
-                    Finish(delegateRan);
                 }
-                else
-                {
-                    Contract.Assert(false, "FinishThreadAbortedTask() called on a task whose exception holder wasn't initialized");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Special purpose Finish() entry point to be used when the task delegate throws a ThreadAbortedException
-        /// This makes a note in the state flags so that we avoid any costly synchronous operations in the finish codepath
-        /// such as inlined continuations
-        /// 
-        /// Assumes ThreadAbortException was NOT added to this task's exception holder.
-        /// This should always be true except for the case of non-root self replicating task copies.
-        /// </summary>
-        /// <param name="delegateRan">Whether the delegate was executed.</param>
-        internal void FinishThreadAbortedTaskWithoutException(bool delegateRan)
-        {
-            if (Interlocked.CompareExchange(ref _threadAbortedmanaged, 1, 0) == 0)
-            {
-                var exceptionsHolder = ThreadingHelper.VolatileRead(ref _exceptionsHolder);
-                if (exceptionsHolder != null)
-                {
-                    Finish(delegateRan);
-                }
+                Finish(delegateRan);
             }
         }
 
@@ -318,7 +288,7 @@ namespace System.Threading.Tasks
             var action = Action as Action;
             if (action != null)
             {
-                action.Invoke();
+                action();
                 return;
             }
             var actionWithState = Action as Action<object>;
@@ -327,7 +297,7 @@ namespace System.Threading.Tasks
                 actionWithState(State);
                 return;
             }
-            Contract.Assert(false, "Invalid m_action in Task");
+            Contract.Assert(false, "Invalid Action in Task");
         }
 
         internal void ProcessChildCompletion(Task childTask)
@@ -416,20 +386,18 @@ namespace System.Threading.Tasks
             var task = obj as Task;
             if (task == null)
             {
-                Contract.Assert(false,
-                    "targetTask should have been non-null, with the supplied argument being a task or a tuple containing one");
+                Contract.Assert(false, "targetTask should have been non-null, with the supplied argument being a task or a tuple containing one");
             }
             else
             {
-                task.CancelContinuations();
                 task.InternalCancel(false);
             }
         }
 
         /// <summary>
-        /// Internal function that will be called by a new child task to add itself to 
+        /// Internal function that will be called by a new child task to add itself to
         /// the children list of the parent (this).
-        /// 
+        ///
         /// Since a child task can only be created from the thread executing the action delegate
         /// of this task, reentrancy is neither required nor supported. This should not be called from
         /// anywhere other than the task construction/initialization codepaths.
@@ -442,7 +410,7 @@ namespace System.Threading.Tasks
             {
                 // A count of 1 indicates so far there was only the parent, and this is the first child task
                 // Single kid => no fuss about who else is accessing the count. Let's save ourselves 100 cycles
-                // We exclude self replicating root tasks from this optimization, because further child creation can take place on 
+                // We exclude self replicating root tasks from this optimization, because further child creation can take place on
                 // other cores and with bad enough timing this write may not be visible to them.
                 _completionCountdown++;
             }
@@ -517,7 +485,7 @@ namespace System.Threading.Tasks
                 // This is a ThreadAbortException and it will be rethrown from this catch clause, causing us to
                 // skip the regular Finish codepath. In order not to leave the task unfinished, we now call
                 // FinishThreadAbortedTask here.
-                FinishThreadAbortedTaskWithException(true);
+                FinishThreadAbortedTask(true, true);
             }
             catch (Exception exn)
             {
@@ -573,7 +541,7 @@ namespace System.Threading.Tasks
             //
             // -- Task<TResult>.TrySetException(): The lock allows the
             //    task to be set to Faulted state, and all exceptions to
-            //    be recorded, in one atomic action.  
+            //    be recorded, in one atomic action.
             //
             // -- Task.Exception_get(): The lock ensures that Task<TResult>.TrySetException()
             //    is allowed to complete its operation before Task.Exception_get()
@@ -604,7 +572,7 @@ namespace System.Threading.Tasks
             Exception canceledException = null;
             if (includeTaskCanceledExceptions && IsCanceled)
             {
-                // Backcompat: 
+                // Backcompat:
                 // Ideally we'd just use the cached OCE from this.GetCancellationExceptionDispatchInfo()
                 // here.  However, that would result in a potentially breaking change from .NET 4, which
                 // has the code here that throws a new exception instead of the original, and the EDI
@@ -628,6 +596,7 @@ namespace System.Threading.Tasks
 
             return null;
         }
+
         /// <summary>
         /// Performs whatever handling is necessary for an unhandled exception. Normally
         /// this just entails adding the exception to the holder object.

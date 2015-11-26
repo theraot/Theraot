@@ -19,12 +19,12 @@ namespace Theraot.Core
                     mantissa = -mantissa;
                     sign = -sign;
                 }
-                var _mantissa = (ulong)mantissa;
-                return System.Numerics.NumericsHelpers.GetDoubleFromParts(sign, exponent, _mantissa);
+                var tmpMantissa = (ulong)mantissa;
+                return System.Numerics.NumericsHelpers.GetDoubleFromParts(sign, exponent, tmpMantissa);
             }
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static double BuildDouble(int sign, ulong mantissa, int exponent)
         {
             return System.Numerics.NumericsHelpers.GetDoubleFromParts(sign, exponent, mantissa);
@@ -35,7 +35,7 @@ namespace Theraot.Core
             return unchecked((long)((ulong)(uint)hi << 32 | (uint)lo));
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static long BuildInt64(uint hi, uint lo)
         {
             return unchecked((long)((ulong)hi << 32 | lo));
@@ -46,13 +46,13 @@ namespace Theraot.Core
             return (float)BuildDouble(sign, mantissa, exponent);
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static float BuildSingle(int sign, uint mantissa, int exponent)
         {
             return (float)BuildDouble(sign, mantissa, exponent);
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static ulong BuildUInt64(uint hi, uint lo)
         {
             return (ulong)hi << 32 | lo;
@@ -67,13 +67,32 @@ namespace Theraot.Core
             }
         }
 
-        [CLSCompliantAttribute(false)]
+        public static void GetParts(int value, out short lo, out short hi)
+        {
+            unchecked
+            {
+                lo = (short)value;
+                hi = (short)(value >> 16);
+            }
+        }
+
+        [CLSCompliant(false)]
         public static void GetParts(ulong value, out uint lo, out uint hi)
         {
             unchecked
             {
                 lo = (uint)value;
                 hi = (uint)(value >> 32);
+            }
+        }
+
+        [CLSCompliant(false)]
+        public static void GetParts(uint value, out ushort lo, out ushort hi)
+        {
+            unchecked
+            {
+                lo = (ushort)value;
+                hi = (ushort)(value >> 16);
             }
         }
 
@@ -88,14 +107,13 @@ namespace Theraot.Core
             }
             else
             {
-                int bits = SingleAsInt32(value);
+                var bits = SingleAsInt32(value);
                 sign = (bits < 0) ? -1 : 1;
                 exponent = (bits >> 23) & 0xff;
                 if (exponent == 2047)
                 {
                     finite = false;
                     mantissa = 0;
-                    return;
                 }
                 else
                 {
@@ -131,9 +149,9 @@ namespace Theraot.Core
 
         public static void GetParts(double value, out int sign, out long mantissa, out int exponent, out bool finite)
         {
-            ulong _mantissa;
-            System.Numerics.NumericsHelpers.GetDoubleParts(value, out sign, out exponent, out _mantissa, out finite);
-            mantissa = (long)_mantissa;
+            ulong tmpMantissa;
+            System.Numerics.NumericsHelpers.GetDoubleParts(value, out sign, out exponent, out tmpMantissa, out finite);
+            mantissa = (long)tmpMantissa;
         }
     }
 }
