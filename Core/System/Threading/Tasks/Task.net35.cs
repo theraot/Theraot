@@ -368,7 +368,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException("scheduler");
             }
-            if ((_internalOptions & InternalTaskOptions.ContinuationTask) != 0)
+                        if ((_internalOptions & InternalTaskOptions.ContinuationTask) != 0)
             {
                 throw new InvalidOperationException("Start may not be called on a continuation task.");
             }
@@ -540,9 +540,9 @@ namespace System.Threading.Tasks
                 if (!popSucceeded && requiresAtomicStartTransition)
                 {
                     status = Interlocked.CompareExchange(ref _status, (int) TaskStatus.Canceled, (int) TaskStatus.Created);
-                    cancelSucceeded = status == (int)TaskStatus.WaitingToRun;
+                    cancelSucceeded = status == (int)TaskStatus.Created;
                     status = Interlocked.CompareExchange(ref _status, (int) TaskStatus.Canceled, (int) TaskStatus.WaitingForActivation);
-                    cancelSucceeded = cancelSucceeded || status == (int)TaskStatus.WaitingToRun;
+                    cancelSucceeded = cancelSucceeded || status == (int)TaskStatus.WaitingForActivation;
                     status = Interlocked.CompareExchange(ref _status, (int) TaskStatus.Canceled, (int) TaskStatus.WaitingToRun);
                     cancelSucceeded = cancelSucceeded || status == (int)TaskStatus.WaitingToRun;
                 }
@@ -550,7 +550,8 @@ namespace System.Threading.Tasks
             if (Thread.VolatileRead(ref _status) >= (int)TaskStatus.Running && !cancelNonExecutingOnly)
             {
                 // We are going to pretend that the cancel call came after the task finished running, but we may still set to cancel on TaskStatus.WaitingForChildrenToComplete
-                cancelSucceeded = cancelSucceeded || Interlocked.CompareExchange(ref _status, (int)TaskStatus.Canceled, (int)TaskStatus.WaitingForChildrenToComplete) == (int)TaskStatus.WaitingForChildrenToComplete;
+                status = Interlocked.CompareExchange(ref _status, (int) TaskStatus.Canceled, (int) TaskStatus.WaitingForChildrenToComplete);
+                cancelSucceeded = cancelSucceeded || status == (int)TaskStatus.WaitingForChildrenToComplete;
             }
             if (cancelSucceeded)
             {
