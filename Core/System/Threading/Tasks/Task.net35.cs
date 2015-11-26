@@ -529,9 +529,12 @@ namespace System.Threading.Tasks
                 }
                 if (!popSucceeded && requiresAtomicStartTransition)
                 {
-                    cancelSucceeded = Interlocked.CompareExchange(ref _status, (int)TaskStatus.Canceled, (int)TaskStatus.Created) == (int)TaskStatus.WaitingToRun;
-                    cancelSucceeded = cancelSucceeded || Interlocked.CompareExchange(ref _status, (int)TaskStatus.Canceled, (int)TaskStatus.WaitingForActivation) == (int)TaskStatus.WaitingToRun;
-                    cancelSucceeded = cancelSucceeded || Interlocked.CompareExchange(ref _status, (int)TaskStatus.Canceled, (int)TaskStatus.WaitingToRun) == (int)TaskStatus.WaitingToRun;
+                    status = Interlocked.CompareExchange(ref _status, (int) TaskStatus.Canceled, (int) TaskStatus.Created);
+                    cancelSucceeded = status == (int)TaskStatus.WaitingToRun;
+                    status = Interlocked.CompareExchange(ref _status, (int) TaskStatus.Canceled, (int) TaskStatus.WaitingForActivation);
+                    cancelSucceeded = cancelSucceeded || status == (int)TaskStatus.WaitingToRun;
+                    status = Interlocked.CompareExchange(ref _status, (int) TaskStatus.Canceled, (int) TaskStatus.WaitingToRun);
+                    cancelSucceeded = cancelSucceeded || status == (int)TaskStatus.WaitingToRun;
                 }
             }
             if (Thread.VolatileRead(ref _status) >= (int)TaskStatus.Running && !cancelNonExecutingOnly)
@@ -628,8 +631,8 @@ namespace System.Threading.Tasks
         private bool PrivateStart(TaskScheduler scheduler, bool inline, bool throwSchedulerExceptions)
         {
             Scheduler = scheduler;
-            var result = Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingForActivation, (int)TaskStatus.Created) == (int)TaskStatus.Created;
-            if (!result)
+            var result = Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingForActivation, (int)TaskStatus.Created);
+            if (result != (int)TaskStatus.Created && result != (int)TaskStatus.WaitingForActivation)
             {
                 return false;
             }
