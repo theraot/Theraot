@@ -39,7 +39,7 @@ namespace MonoTests.System.Linq.Expressions
 			Expression.Quote (null);
 		}
 
-#if NET20 || NET30 || NET35
+#if NET35
 		[Test]
 		public void QuoteConstant ()
 		{

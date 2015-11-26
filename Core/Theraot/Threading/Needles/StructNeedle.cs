@@ -66,12 +66,12 @@ namespace Theraot.Threading.Needles
                 return EqualsExtracted(this, (StructNeedle<T>)obj);
             }
             // Keep the "is" operator
-            if (!(obj is T))
+            if (obj is T)
             {
-                return false;
+                var target = _target;
+                return IsAlive && EqualityComparer<T>.Default.Equals(target, (T) obj);
             }
-            var target = _target;
-            return IsAlive && EqualityComparer<T>.Default.Equals(target, (T)obj);
+            return false;
         }
 
         public bool Equals(StructNeedle<T> other)

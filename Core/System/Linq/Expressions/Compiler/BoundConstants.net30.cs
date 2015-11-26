@@ -5,7 +5,6 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Dynamic.Utils;
@@ -43,9 +42,10 @@ namespace System.Linq.Expressions.Compiler
             }
             public bool Equals(TypedConstant other)
             {
-                return object.ReferenceEquals(Value, other.Value) && Type.Equals(other.Type);
+                // Note: Type.Equals compares the underlaying CLR type.
+                return ReferenceEquals(Value, other.Value) && Type.Equals(other.Type);
             }
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2231:OverloadOperatorEqualsOnOverridingValueTypeEquals")]
+            [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2231:OverloadOperatorEqualsOnOverridingValueTypeEquals")]
             public override bool Equals(object obj)
             {
                 return (obj is TypedConstant) && Equals((TypedConstant)obj);

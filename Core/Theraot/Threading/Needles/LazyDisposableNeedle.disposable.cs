@@ -4,7 +4,7 @@ using System;
 
 namespace Theraot.Threading.Needles
 {
-    public partial class LazyDisposableNeedle<T> : IDisposable, IExtendedDisposable
+    public partial class LazyDisposableNeedle<T> : IExtendedDisposable
     {
         private int _status;
 

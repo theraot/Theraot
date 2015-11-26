@@ -340,7 +340,11 @@
     <Compile Include="System\Linq\Expressions\UnaryExpression.net30.cs" />
     <Compile Include="System\Linq\IQueryable.net30.cs" />
     <Compile Include="System\Numerics\BigInteger.net35.cs" />
+    <Compile Include="System\Numerics\BigIntegerBuilder.cs" />
+    <Compile Include="System\Numerics\BigInteger.string.cs" />
+    <Compile Include="System\Numerics\BigNumberBuffer.cs" />
     <Compile Include="System\Numerics\NumericsHelpers.cs" />
+    <Compile Include="System\Numerics\ReverseStringBuilder.cs" />
     <Compile Include="System\Runtime\CompilerServices\Closure.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\ConditionalWeakTable.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\ICriticalNotifyCompletion.net40.cs" />
@@ -498,6 +502,12 @@
       <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="Theraot\Core\AggregateExceptionHelper.cs" />
+    <Compile Include="Theraot\Core\CharHelper.cs" />
+    <Compile Include="Theraot\Core\EnvironmentHelper.cs" />
+    <Compile Include="Theraot\Core\IntPtrHelper.cs" />
+    <Compile Include="Theraot\Core\NumericHelper.checks.cs" />
+    <Compile Include="Theraot\Core\PathHelper.cs" />
+    <Compile Include="Theraot\Core\StringProcessor.cs" />
     <Compile Include="Theraot\Threading\AtomicBoolean.cs" />
     <Compile Include="Theraot\Core\CancellationTokenHelper.cs" />
     <Compile Include="Theraot\Core\Check.cs" />
@@ -640,11 +650,7 @@
     <Compile Include="Theraot\Threading\SimpleReentryGuard.cs" />
     <Compile Include="Theraot\Threading\ThreadingHelper.cs" />
     <Compile Include="Theraot\Threading\ThreadingHelper.extra.cs" />
-    <Compile Include="Theraot\Threading\ThreadingHelper.SpinWait.cs">
-      <DependentUpon>ThreadingHelper.SpinWait.tt</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
+    <Compile Include="Theraot\Threading\ThreadingHelper.SpinWait.cs" />
     <Compile Include="Theraot\Threading\ThreadLocalHelper.cs" />
     <Compile Include="Theraot\Threading\ThreadLocalHelper1.cs" />
     <Compile Include="Theraot\Threading\TrackingThreadLocal.cs" />
@@ -729,7 +735,7 @@
     <Compile Include="System\Runtime\CompilerServices\ExecutionScope.net30.cs" />
     <Compile Include="System\Runtime\CompilerServices\ExtensionAttribute.net30.cs" />
     <Compile Include="System\Runtime\CompilerServices\StrongBox.net30.cs" />
-    <Compile Include="System\Threading\AggregateException.net35.cs" />
+    <Compile Include="System\AggregateException.net35.cs" />
     <Compile Include="System\Threading\ManualResetEventSlim.net35.cs" />
     <Compile Include="System\Threading\Tasks\TaskCreationOption.net35.cs" />
     <Compile Include="System\Threading\Tasks\TaskStatus.net35.cs" />
@@ -785,10 +791,6 @@
     <None Include="Theraot\Core\TypeHelper.ConstructorHelper.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>TypeHelper.ConstructorHelper.cs</LastGenOutput>
-    </None>
-    <None Include="Theraot\Threading\ThreadingHelper.SpinWait.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ThreadingHelper.SpinWait.cs</LastGenOutput>
     </None>
     <Compile Include="System\Diagnostics\Contracts\ContractFailureKind.net35.cs" />
     <Compile Include="System\Diagnostics\Contracts\ContractFailedEventArgs.net35.cs" />

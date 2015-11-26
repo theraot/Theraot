@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace Theraot.Core
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public static partial class StringHelper
     {
         public static string Append(this string text, string value)
@@ -148,122 +148,122 @@ namespace Theraot.Core
 
         public static string End(this string text, int characterCount)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            int length = _text.Length;
+            if (text == null)
+            {
+                throw new ArgumentNullException("text");
+            }
+            int length = text.Length;
             if (length < characterCount)
             {
-                return _text;
+                return text;
             }
-            else
-            {
-                return _text.Substring(length - characterCount);
-            }
+            return text.Substring(length - characterCount);
         }
 
         public static string EnsureEnd(this string text, string end)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            if (!_text.EndsWith(end, false, CultureInfo.CurrentCulture))
+            if (text == null)
             {
-                return _text.Append(end);
+                throw new ArgumentNullException("text");
             }
-            else
+            if (!text.EndsWith(end, false, CultureInfo.CurrentCulture))
             {
-                return _text;
+                return text.Append(end);
             }
+            return text;
         }
 
         public static string EnsureEnd(this string text, string end, bool ignoreCase, CultureInfo culture)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            if (!_text.EndsWith(end, ignoreCase, culture))
+            if (text == null)
             {
-                return _text.Append(end);
+                throw new ArgumentNullException("text");
             }
-            else
+            if (!text.EndsWith(end, ignoreCase, culture))
             {
-                return _text;
+                return text.Append(end);
             }
+            return text;
         }
 
         public static string EnsureEnd(this string text, string end, StringComparison comparisonType)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            if (!_text.EndsWith(end, comparisonType))
+            if (text == null)
             {
-                return _text.Append(end);
+                throw new ArgumentNullException("text");
             }
-            else
+            if (!text.EndsWith(end, comparisonType))
             {
-                return _text;
+                return text.Append(end);
             }
+            return text;
         }
 
         public static string EnsureStart(this string text, string start)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            if (!_text.StartsWith(start, false, CultureInfo.CurrentCulture))
+            if (text == null)
             {
-                return start.Append(_text);
+                throw new ArgumentNullException("text");
             }
-            else
+            if (!text.StartsWith(start, false, CultureInfo.CurrentCulture))
             {
-                return _text;
+                return start.Append(text);
             }
+            return text;
         }
 
         public static string EnsureStart(this string text, string start, bool ignoreCase, CultureInfo culture)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            if (!_text.StartsWith(start, ignoreCase, culture))
+            if (text == null)
             {
-                return start.Append(_text);
+                throw new ArgumentNullException("text");
             }
-            else
+            if (!text.StartsWith(start, ignoreCase, culture))
             {
-                return _text;
+                return start.Append(text);
             }
+            return text;
         }
 
         public static string EnsureStart(this string text, string start, StringComparison comparisonType)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            if (!_text.StartsWith(start, comparisonType))
+            if (text == null)
             {
-                return start.Append(_text);
+                throw new ArgumentNullException("text");
             }
-            else
+            if (!text.StartsWith(start, comparisonType))
             {
-                return _text;
+                return start.Append(text);
             }
+            return text;
         }
 
         public static string ExceptEnd(this string text, int characterCount)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            int length = _text.Length;
+            if (text == null)
+            {
+                throw new ArgumentNullException("text");
+            }
+            int length = text.Length;
             if (length < characterCount)
             {
                 return string.Empty;
             }
-            else
-            {
-                return _text.Substring(0, length - characterCount);
-            }
+            return text.Substring(0, length - characterCount);
         }
 
         public static string ExceptStart(this string text, int characterCount)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            int length = _text.Length;
+            if (text == null)
+            {
+                throw new ArgumentNullException("text");
+            }
+            int length = text.Length;
             if (length < characterCount)
             {
                 return string.Empty;
             }
-            else
-            {
-                return _text.Substring(characterCount);
-            }
+            return text.Substring(characterCount);
         }
 
         public static string Implode(string separator, params object[] values)
@@ -408,15 +408,12 @@ namespace Theraot.Core
             {
                 return Concat(values);
             }
-            else
+            var stringList = new List<string>();
+            foreach (var item in values)
             {
-                var stringList = new List<string>();
-                foreach (var item in values)
-                {
-                    stringList.Add(item);
-                }
-                return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
+                stringList.Add(item);
             }
+            return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
         }
 
         public static string Implode<T>(string separator, IEnumerable<T> values)
@@ -429,15 +426,12 @@ namespace Theraot.Core
             {
                 return Concat(values);
             }
-            else
+            var stringList = new List<string>();
+            foreach (var item in values)
             {
-                var stringList = new List<string>();
-                foreach (var item in values)
-                {
-                    stringList.Add(item.ToString());
-                }
-                return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
+                stringList.Add(item.ToString());
             }
+            return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
         }
 
         public static string Implode<T>(string separator, IEnumerable<T> values, Converter<T, string> converter)
@@ -454,15 +448,12 @@ namespace Theraot.Core
             {
                 return Concat(values, converter);
             }
-            else
+            var stringList = new List<string>();
+            foreach (var item in values)
             {
-                var stringList = new List<string>();
-                foreach (var item in values)
-                {
-                    stringList.Add(item.ToString());
-                }
-                return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
+                stringList.Add(item.ToString());
             }
+            return ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count);
         }
 
         public static string Implode(string separator, IEnumerable<string> values, string start, string end)
@@ -475,30 +466,24 @@ namespace Theraot.Core
             {
                 return Concat(values);
             }
-            else
+            var stringList = new List<string>();
+            foreach (var item in values)
             {
-                var stringList = new List<string>();
-                foreach (var item in values)
-                {
-                    stringList.Add(item);
-                }
-                if (stringList.Count > 0)
-                {
-                    if (start == null)
-                    {
-                        start = string.Empty;
-                    }
-                    if (end == null)
-                    {
-                        end = string.Empty;
-                    }
-                    return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
-                }
-                else
-                {
-                    return string.Empty;
-                }
+                stringList.Add(item);
             }
+            if (stringList.Count > 0)
+            {
+                if (start == null)
+                {
+                    start = string.Empty;
+                }
+                if (end == null)
+                {
+                    end = string.Empty;
+                }
+                return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
+            }
+            return string.Empty;
         }
 
         public static string Implode<T>(string separator, IEnumerable<T> values, string start, string end)
@@ -511,30 +496,24 @@ namespace Theraot.Core
             {
                 return Concat(values);
             }
-            else
+            var stringList = new List<string>();
+            foreach (var item in values)
             {
-                var stringList = new List<string>();
-                foreach (var item in values)
-                {
-                    stringList.Add(item.ToString());
-                }
-                if (stringList.Count > 0)
-                {
-                    if (start == null)
-                    {
-                        start = string.Empty;
-                    }
-                    if (end == null)
-                    {
-                        end = string.Empty;
-                    }
-                    return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
-                }
-                else
-                {
-                    return string.Empty;
-                }
+                stringList.Add(item.ToString());
             }
+            if (stringList.Count > 0)
+            {
+                if (start == null)
+                {
+                    start = string.Empty;
+                }
+                if (end == null)
+                {
+                    end = string.Empty;
+                }
+                return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
+            }
+            return string.Empty;
         }
 
         public static string Implode<T>(string separator, IEnumerable<T> values, Converter<T, string> converter, string start, string end)
@@ -551,30 +530,24 @@ namespace Theraot.Core
             {
                 return Concat(values, converter);
             }
-            else
+            var stringList = new List<string>();
+            foreach (var item in values)
             {
-                var stringList = new List<string>();
-                foreach (var item in values)
-                {
-                    stringList.Add(item.ToString());
-                }
-                if (stringList.Count > 0)
-                {
-                    if (start == null)
-                    {
-                        start = string.Empty;
-                    }
-                    if (end == null)
-                    {
-                        end = string.Empty;
-                    }
-                    return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
-                }
-                else
-                {
-                    return string.Empty;
-                }
+                stringList.Add(item.ToString());
             }
+            if (stringList.Count > 0)
+            {
+                if (start == null)
+                {
+                    start = string.Empty;
+                }
+                if (end == null)
+                {
+                    end = string.Empty;
+                }
+                return start + ImplodeExtracted(separator, stringList.ToArray(), 0, stringList.Count) + end;
+            }
+            return string.Empty;
         }
 
         public static bool Like(this string text, Regex regex, int startAt)
@@ -725,86 +698,104 @@ namespace Theraot.Core
 
         public static string NeglectEnd(this string text, string end)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            var _end = Check.NotNullArgument(end, "end");
-            if (_text.EndsWith(_end, false, CultureInfo.CurrentCulture))
+            if (text == null)
             {
-                return _text.ExceptEnd(_end.Length);
+                throw new ArgumentNullException("text");
             }
-            else
+            if (end == null)
             {
-                return _text;
+                throw new ArgumentNullException("end");
             }
+            if (text.EndsWith(end, false, CultureInfo.CurrentCulture))
+            {
+                return text.ExceptEnd(end.Length);
+            }
+            return text;
         }
 
         public static string NeglectEnd(this string text, string end, bool ignoreCase, CultureInfo culture)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            var _end = Check.NotNullArgument(end, "end");
-            if (_text.EndsWith(_end, ignoreCase, culture))
+            if (text == null)
             {
-                return _text.ExceptEnd(_end.Length);
+                throw new ArgumentNullException("text");
             }
-            else
+            if (end == null)
             {
-                return _text;
+                throw new ArgumentNullException("end");
             }
+            if (text.EndsWith(end, ignoreCase, culture))
+            {
+                return text.ExceptEnd(end.Length);
+            }
+            return text;
         }
 
         public static string NeglectEnd(this string text, string end, StringComparison comparisonType)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            var _end = Check.NotNullArgument(end, "end");
-            if (_text.EndsWith(_end, comparisonType))
+            if (text == null)
             {
-                return _text.ExceptEnd(_end.Length);
+                throw new ArgumentNullException("text");
             }
-            else
+            if (end == null)
             {
-                return _text;
+                throw new ArgumentNullException("end");
             }
+            if (text.EndsWith(end, comparisonType))
+            {
+                return text.ExceptEnd(end.Length);
+            }
+            return text;
         }
 
         public static string NeglectStart(this string text, string start)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            var _start = Check.NotNullArgument(start, "start");
-            if (_text.StartsWith(_start, false, CultureInfo.CurrentCulture))
+            if (text == null)
             {
-                return _text.ExceptStart(_start.Length);
+                throw new ArgumentNullException("text");
             }
-            else
+            if (start == null)
             {
-                return _text;
+                throw new ArgumentNullException("start");
             }
+            if (text.StartsWith(start, false, CultureInfo.CurrentCulture))
+            {
+                return text.ExceptStart(start.Length);
+            }
+            return text;
         }
 
         public static string NeglectStart(this string text, string start, bool ignoreCase, CultureInfo culture)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            var _start = Check.NotNullArgument(start, "start");
-            if (_text.StartsWith(_start, ignoreCase, culture))
+            if (text == null)
             {
-                return _text.ExceptStart(_start.Length);
+                throw new ArgumentNullException("text");
             }
-            else
+            if (start == null)
             {
-                return _text;
+                throw new ArgumentNullException("start");
             }
+            if (text.StartsWith(start, ignoreCase, culture))
+            {
+                return text.ExceptStart(start.Length);
+            }
+            return text;
         }
 
         public static string NeglectStart(this string text, string start, StringComparison comparisonType)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            var _start = Check.NotNullArgument(start, "start");
-            if (_text.StartsWith(_start, comparisonType))
+            if (text == null)
             {
-                return _text.ExceptStart(_start.Length);
+                throw new ArgumentNullException("text");
             }
-            else
+            if (start == null)
             {
-                return _text;
+                throw new ArgumentNullException("start");
             }
+            if (text.StartsWith(start, comparisonType))
+            {
+                return text.ExceptStart(start.Length);
+            }
+            return text;
         }
 
         public static string Safe(this string text)
@@ -813,24 +804,21 @@ namespace Theraot.Core
             {
                 return string.Empty;
             }
-            else
-            {
-                return text;
-            }
+            return text;
         }
 
         public static string Start(this string text, int characterCount)
         {
-            var _text = Check.NotNullArgument(text, "text");
-            int length = _text.Length;
+            if (text == null)
+            {
+                throw new ArgumentNullException("text");
+            }
+            int length = text.Length;
             if (length < characterCount)
             {
-                return _text;
+                return text;
             }
-            else
-            {
-                return _text.Substring(0, characterCount);
-            }
+            return text.Substring(0, characterCount);
         }
 
         private static string ConcatExtracted(object[] array, int startIndex, int count)
@@ -872,16 +860,13 @@ namespace Theraot.Core
             {
                 return string.Empty;
             }
-            else
+            var result = new StringBuilder(length);
+            for (int index = startIndex; index < maxIndex; index++)
             {
-                var result = new StringBuilder(length);
-                for (int index = startIndex; index < maxIndex; index++)
-                {
-                    var item = array[index];
-                    result.Append(item);
-                }
-                return result.ToString();
+                var item = array[index];
+                result.Append(item);
             }
+            return result.ToString();
         }
 
         private static string ImplodeExtracted(string separator, object[] array, int startIndex, int count)
@@ -925,25 +910,22 @@ namespace Theraot.Core
             {
                 return string.Empty;
             }
-            else
+            var result = new StringBuilder(length);
+            bool first = true;
+            for (int index = startIndex; index < maxIndex; index++)
             {
-                var result = new StringBuilder(length);
-                bool first = true;
-                for (int index = startIndex; index < maxIndex; index++)
+                var item = array[index];
+                if (first)
                 {
-                    var item = array[index];
-                    if (first)
-                    {
-                        first = false;
-                    }
-                    else
-                    {
-                        result.Append(separator);
-                    }
-                    result.Append(item);
+                    first = false;
                 }
-                return result.ToString();
+                else
+                {
+                    result.Append(separator);
+                }
+                result.Append(item);
             }
+            return result.ToString();
         }
     }
 
@@ -1067,7 +1049,7 @@ namespace Theraot.Core
 #endif
         }
 
-        public static string Join<T>(string separator, object[] values)
+        public static string Join(string separator, params object[] values)
         {
 #if NET20 || NET30 || NET35
             if (values == null)
@@ -1094,7 +1076,7 @@ namespace Theraot.Core
 #endif
         }
 
-        public static string Join(string separator, string[] values)
+        public static string Join(string separator, params string[] values)
         {
             return string.Join(separator, values);
         }

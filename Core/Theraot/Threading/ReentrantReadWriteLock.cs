@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace Theraot.Threading
 {
-    internal sealed partial class ReentrantReadWriteLock : Theraot.Threading.IReadWriteLock
+    internal sealed partial class ReentrantReadWriteLock : IReadWriteLock
     {
         private NoTrackingThreadLocal<int> _currentReadingCount = new NoTrackingThreadLocal<int>(() => 0);
         private int _edge;
@@ -385,12 +385,12 @@ namespace Theraot.Threading
         }
     }
 
-    internal sealed partial class ReentrantReadWriteLock : IDisposable, IExtendedDisposable
+    internal sealed partial class ReentrantReadWriteLock : IExtendedDisposable
     {
         private int _status;
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
+        [System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
         ~ReentrantReadWriteLock()
         {
             try
@@ -405,14 +405,14 @@ namespace Theraot.Threading
 
         public bool IsDisposed
         {
-            [global::System.Diagnostics.DebuggerNonUserCode]
+            [System.Diagnostics.DebuggerNonUserCode]
             get
             {
                 return _status == -1;
             }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {
             try
@@ -425,7 +425,7 @@ namespace Theraot.Threading
             }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         public void DisposedConditional(Action whenDisposed, Action whenNotDisposed)
         {
             if (_status == -1)
@@ -447,7 +447,7 @@ namespace Theraot.Threading
                         }
                         finally
                         {
-                            System.Threading.Interlocked.Decrement(ref _status);
+                            Interlocked.Decrement(ref _status);
                         }
                     }
                     else
@@ -461,7 +461,7 @@ namespace Theraot.Threading
             }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         public TReturn DisposedConditional<TReturn>(Func<TReturn> whenDisposed, Func<TReturn> whenNotDisposed)
         {
             if (_status == -1)
@@ -491,7 +491,7 @@ namespace Theraot.Threading
                         }
                         finally
                         {
-                            System.Threading.Interlocked.Decrement(ref _status);
+                            Interlocked.Decrement(ref _status);
                         }
                     }
                     else
@@ -509,8 +509,8 @@ namespace Theraot.Threading
             }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2004:RemoveCallsToGCKeepAlive", Justification = "By Design")]
+        [System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2004:RemoveCallsToGCKeepAlive", Justification = "By Design")]
         private void Dispose(bool disposeManagedResources)
         {
             if (TakeDisposalExecution())

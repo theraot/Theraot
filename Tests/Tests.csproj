@@ -25,6 +25,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <LangVersion>5</LangVersion>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -35,6 +36,7 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET20|AnyCPU'">
     <Optimize>False</Optimize>
@@ -47,6 +49,7 @@
     <LangVersion>default</LangVersion>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET30|AnyCPU'">
     <Optimize>False</Optimize>
@@ -59,6 +62,7 @@
     <LangVersion>default</LangVersion>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET35|AnyCPU'">
     <Optimize>False</Optimize>
@@ -71,6 +75,7 @@
     <LangVersion>default</LangVersion>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET40|AnyCPU'">
     <Optimize>False</Optimize>
@@ -83,6 +88,7 @@
     <LangVersion>default</LangVersion>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET45|AnyCPU'">
     <Optimize>False</Optimize>
@@ -95,6 +101,7 @@
     <LangVersion>default</LangVersion>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET20|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -105,6 +112,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <LangVersion>default</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET30|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -115,6 +123,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
     <LangVersion>default</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -125,6 +134,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <LangVersion>default</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -135,6 +145,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <LangVersion>default</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET45|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -145,6 +156,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <LangVersion>default</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET20_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -155,6 +167,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <LangVersion>default</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET30_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -165,6 +178,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
     <LangVersion>default</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -175,6 +189,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <LangVersion>default</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -185,6 +200,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <LangVersion>default</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET45_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -195,6 +211,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <LangVersion>default</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <DefineConstants Condition=" !$(DefineConstants.Contains(';NET')) ">$(DefineConstants);$(TargetFrameworkVersion.Replace("v", "NET").Replace(".", ""))</DefineConstants>
@@ -223,6 +240,7 @@
     <Compile Include="System\Diagnostics\Contracts\AssertTests.cs" />
     <Compile Include="System\Diagnostics\Contracts\RequireTests.cs" />
     <Compile Include="System\Diagnostics\Contracts\Utilities.cs" />
+    <Compile Include="System\IntPtrTest.cs" />
     <Compile Include="System\Linq\LookupTestEx.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTest.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTest_Add.cs" />
@@ -258,6 +276,8 @@
     <Compile Include="System\Linq\Expressions\ExpressionTest_RightShift.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTest_Subtract.cs" />
     <Compile Include="System\Linq\Expressions\ExpressionTest_SubtractChecked.cs" />
+    <Compile Include="System\Numerics\BigIntegerTestEx.cs" />
+    <Compile Include="System\Numerics\BigIntegerTest.cs" />
     <Compile Include="System\Runtime\CompilationServices\ConditionalWeakTableTest.cs" />
     <Compile Include="System\Runtime\ExceptionServices\ExceptionDispatchInfoTestEx.cs" />
     <Compile Include="System\Threading\CancellationTokenSourceTestEx.cs" />
@@ -275,12 +295,8 @@
     <Compile Include="Theraot\Core\NumericHelperTest.cs" />
     <Compile Include="Theraot\Threading\Needles\LockableNeedleTest.cs" />
     <Compile Include="Theraot\Threading\Needles\WorkTest.cs" />
+    <Compile Include="Theraot\Threading\PathHelperTest.cs" />
     <Compile Include="Theraot\Threading\ReentryGuardTests.cs" />
-    <Compile Include="throwback.cs">
-      <DependentUpon>throwback.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="ParallelTestHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="System\AggregateExceptionTests.cs" />
@@ -340,10 +356,6 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="throwback.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>throwback.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

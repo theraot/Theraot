@@ -3,16 +3,18 @@
 using System;
 using System.Collections.Generic;
 
-using Theraot.Core;
-
 namespace Theraot.Collections
 {
     public static partial class Extensions
     {
-        public static TItem TakeAndReturn<TItem>(this IDropPoint<TItem> dropPoint)
+        public static T TakeAndReturn<T>(this IDropPoint<T> dropPoint)
         {
-            TItem item;
-            if (Check.NotNullArgument(dropPoint, "dropPoint").TryTake(out item))
+            if (dropPoint == null)
+            {
+                throw new ArgumentNullException("dropPoint");
+            }
+            T item;
+            if (dropPoint.TryTake(out item))
             {
                 return item;
             }
@@ -22,20 +24,30 @@ namespace Theraot.Collections
             }
         }
 
-        public static bool TryTakeAndIgnore<TItem>(this IDropPoint<TItem> dropPoint)
+        public static bool TryTakeAndIgnore<T>(this IDropPoint<T> dropPoint)
         {
-            TItem item;
-            return Check.NotNullArgument(dropPoint, "dropPoint").TryTake(out item);
+            if (dropPoint == null)
+            {
+                throw new ArgumentNullException("dropPoint");
+            }
+            T item;
+            return dropPoint.TryTake(out item);
         }
 
-        public static bool TryTakeUntil<TItem>(this IDropPoint<TItem> dropPoint, Predicate<TItem> check, out TItem item)
+        public static bool TryTakeUntil<T>(this IDropPoint<T> dropPoint, Predicate<T> check, out T item)
         {
-            var _check = Check.NotNullArgument(check, "check");
-            var _dropPoint = Check.NotNullArgument(dropPoint, "dropPoint");
-            back:
-            if (_dropPoint.TryTake(out item))
+            if (check == null)
             {
-                if (_check(item))
+                throw new ArgumentNullException("check");
+            }
+            if (dropPoint == null)
+            {
+                throw new ArgumentNullException("dropPoint");
+            }
+            back:
+            if (dropPoint.TryTake(out item))
+            {
+                if (check(item))
                 {
                     return true;
                 }
@@ -50,22 +62,31 @@ namespace Theraot.Collections
             }
         }
 
-        public static bool TryTakeUntil<TItem>(this IDropPoint<TItem> dropPoint, Predicate<TItem> check, ICollection<TItem> trail)
+        public static bool TryTakeUntil<T>(this IDropPoint<T> dropPoint, Predicate<T> check, ICollection<T> trail)
         {
-            var _check = Check.NotNullArgument(check, "check");
-            var _dropPoint = Check.NotNullArgument(dropPoint, "dropPoint");
-            var _trail = Check.NotNullArgument(trail, "trail");
-            TItem item;
-            back:
-            if (_dropPoint.TryTake(out item))
+            if (check == null)
             {
-                if (_check(item))
+                throw new ArgumentNullException("check");
+            }
+            if (dropPoint == null)
+            {
+                throw new ArgumentNullException("dropPoint");
+            }
+            if (trail == null)
+            {
+                throw new ArgumentNullException("trail");
+            }
+            T item;
+            back:
+            if (dropPoint.TryTake(out item))
+            {
+                if (check(item))
                 {
                     return true;
                 }
                 else
                 {
-                    _trail.Add(item);
+                    trail.Add(item);
                     goto back;
                 }
             }

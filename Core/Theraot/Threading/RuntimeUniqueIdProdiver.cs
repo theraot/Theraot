@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace Theraot.Threading
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public sealed class RuntimeUniqueIdProdiver
     {
         private int _id;
@@ -51,10 +51,7 @@ namespace Theraot.Threading
                 {
                     return Equals((UniqueId)obj);
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
 
             public override int GetHashCode()

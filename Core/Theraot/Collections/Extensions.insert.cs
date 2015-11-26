@@ -7,36 +7,36 @@ namespace Theraot.Collections
 {
     public static partial class Extensions
     {
-        public static void InsertRange<TItem, TCollection>(this TCollection collection, int index, TItem item)
-            where TCollection : class, IList<TItem>
+        public static void InsertRange<T, TCollection>(this TCollection source, int index, T item)
+            where TCollection : class, IList<T>
         {
-            if (collection == null)
+            if (source == null)
             {
-                throw new ArgumentNullException("collection");
+                throw new ArgumentNullException("source");
             }
-            collection.Insert(index, item);
+            source.Insert(index, item);
         }
 
-        public static void InsertRange<TItem, TCollection>(this TCollection collection, int index, Func<TItem> item)
-            where TCollection : class, IList<TItem>
+        public static void InsertRange<T, TCollection>(this TCollection source, int index, Func<T> item)
+            where TCollection : class, IList<T>
         {
-            if (collection == null)
+            if (source == null)
             {
-                throw new ArgumentNullException("collection");
+                throw new ArgumentNullException("source");
             }
             if (item == null)
             {
                 throw new ArgumentNullException("item");
             }
-            collection.Insert(index, item());
+            source.Insert(index, item());
         }
 
-        public static int InsertRange<TItem, TCollection>(this TCollection collection, int index, IEnumerable<TItem> items)
-            where TCollection : class, IList<TItem>
+        public static int InsertRange<T, TCollection>(this TCollection source, int index, IEnumerable<T> items)
+            where TCollection : class, IList<T>
         {
-            if (collection == null)
+            if (source == null)
             {
-                throw new ArgumentNullException("collection");
+                throw new ArgumentNullException("source");
             }
             if (items == null)
             {
@@ -45,7 +45,7 @@ namespace Theraot.Collections
             var initialIndex = index;
             foreach (var item in items)
             {
-                collection.Insert(initialIndex, item);
+                source.Insert(initialIndex, item);
                 checked
                 {
                     index++;
@@ -54,12 +54,12 @@ namespace Theraot.Collections
             return index - initialIndex;
         }
 
-        public static int InsertRange<TItem, TCollection>(this TCollection collection, int index, IEnumerable<Func<TItem>> items)
-            where TCollection : class, IList<TItem>
+        public static int InsertRange<T, TCollection>(this TCollection source, int index, IEnumerable<Func<T>> items)
+            where TCollection : class, IList<T>
         {
-            if (collection == null)
+            if (source == null)
             {
-                throw new ArgumentNullException("collection");
+                throw new ArgumentNullException("source");
             }
             if (items == null)
             {
@@ -68,7 +68,7 @@ namespace Theraot.Collections
             var initialIndex = index;
             foreach (var item in items)
             {
-                collection.Insert(initialIndex, item());
+                source.Insert(initialIndex, item());
                 checked
                 {
                     index++;
