@@ -343,6 +343,11 @@ namespace System.Threading.Tasks
             {
                 throw new InvalidOperationException("Start may not be called on a task that has completed.");
             }
+            if ((_internalOptions & InternalTaskOptions.ContinuationTask) != 0)
+            {
+                throw new InvalidOperationException("Start may not be called on a continuation task.");
+            }
+            // TODO: Start may not be called on a promise-style task.
             if (Thread.VolatileRead(ref _isDisposed) == 1)
             {
                 throw new ObjectDisposedException(GetType().FullName);
@@ -363,6 +368,11 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException("scheduler");
             }
+            if ((_internalOptions & InternalTaskOptions.ContinuationTask) != 0)
+            {
+                throw new InvalidOperationException("Start may not be called on a continuation task.");
+            }
+            // TODO: Start may not be called on a promise-style task.
             if (Thread.VolatileRead(ref _isDisposed) == 1)
             {
                 throw new ObjectDisposedException(GetType().FullName);
