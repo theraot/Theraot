@@ -123,7 +123,7 @@ namespace System.Threading.Tasks
             {
                 throw new InvalidOperationException("An attempt was made to create a LongRunning SelfReplicating task.");
             }
-            if ((action == null) || ((internalOptions & InternalTaskOptions.ContinuationTask) != 0))
+            if ((internalOptions & InternalTaskOptions.ContinuationTask) != 0)
             {
                 // For continuation tasks or TaskCompletionSource.Tasks, begin life in the
                 // WaitingForActivation state rather than the Created state.
@@ -135,7 +135,7 @@ namespace System.Threading.Tasks
             // we need to do this as the very last thing in the construction path, because the CT registration could modify m_stateFlags
             if (cancellationToken.CanBeCanceled)
             {
-                AssignCancellationToken(cancellationToken);
+                AssignCancellationToken(cancellationToken, null, null);
             }
         }
 

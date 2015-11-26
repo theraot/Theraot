@@ -421,24 +421,18 @@ namespace System.Threading.Tasks
             }
         }
 
-        private void AssignCancellationToken(CancellationToken cancellationToken)
+        private void AssignCancellationToken(CancellationToken cancellationToken, Task antecedent, TaskContinuation continuation)
         {
             CancellationToken = cancellationToken;
             try
             {
                 cancellationToken.ThrowIfSourceDisposed();
-
                 // If an unstarted task has a valid CancellationToken that gets signalled while the task is still not queued
                 // we need to proactively cancel it, because it may never execute to transition itself.
                 // The only way to accomplish this is to register a callback on the CT.
                 // We exclude Promise tasks from this, because TaskCompletionSource needs to fully control the inner tasks's lifetime (i.e. not allow external cancellations)
 
-                // Translation notes:
-                // unstarted task (... that) is still not queued means a task on TaskStatus.Created or TaskStatus.WaitingForActivation
-                // TODO: No support for promise tasks yet
-
-                var status = Thread.VolatileRead(ref _status);
-                if (status == (int)TaskStatus.Created || status == (int)TaskStatus.WaitingForActivation)
+                if ((_internalOptions & (InternalTaskOptions.QueuedByRuntime | InternalTaskOptions.PromiseTask | InternalTaskOptions.LazyCancellation)) == 0)
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
@@ -448,7 +442,20 @@ namespace System.Threading.Tasks
                     else
                     {
                         // Regular path for an uncanceled cancellationToken
-                        _cancellationRegistration = new StrongBox<CancellationTokenRegistration>(cancellationToken.Register(_taskCancelCallback, this, false));
+                        CancellationTokenRegistration registration;
+                        if (antecedent == null)
+                        {
+                            // if no antecedent was specified, use this task's reference as the cancellation state object
+                            registration = cancellationToken.Register(_taskCancelCallback, this);
+                        }
+                        else
+                        {
+                            // If an antecedent was specified, pack this task, its antecedent and the TaskContinuation together as a tuple 
+                            // and use it as the cancellation state object. This will be unpacked in the cancellation callback so that 
+                            // antecedent.RemoveCancellation(continuation) can be invoked.
+                            registration = cancellationToken.Register(_taskCancelCallback, new Tuple<Task, Task, TaskContinuation>(this, antecedent, continuation));
+                        }
+                        _cancellationRegistration = new StrongBox<CancellationTokenRegistration>(registration);
                     }
                 }
             }
