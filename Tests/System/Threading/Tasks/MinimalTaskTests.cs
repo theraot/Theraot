@@ -38,66 +38,6 @@ namespace MonoTests.System.Threading.Tasks
     [TestFixture]
     public class MinimalTaskTests
     {
-        class MockScheduler : TaskScheduler
-        {
-            public event Action<Task, bool> TryExecuteTaskInlineHandler;
-
-            protected override IEnumerable<Task> GetScheduledTasks()
-            {
-                throw new NotImplementedException();
-            }
-
-            protected override void QueueTask(Task task)
-            {
-                return;
-            }
-
-            protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
-            {
-                if (TryExecuteTaskInlineHandler != null)
-                    TryExecuteTaskInlineHandler(task, taskWasPreviouslyQueued);
-
-                return base.TryExecuteTask(task);
-            }
-        }
-
-        class NonInlineableScheduler : TaskScheduler
-        {
-            protected override IEnumerable<Task> GetScheduledTasks()
-            {
-                throw new NotImplementedException();
-            }
-
-            protected override void QueueTask(Task task)
-            {
-                if (!base.TryExecuteTask(task))
-                    throw new ApplicationException();
-            }
-
-            protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
-            {
-                return false;
-            }
-        }
-
-        class ExceptionScheduler : TaskScheduler
-        {
-            protected override IEnumerable<Task> GetScheduledTasks()
-            {
-                throw new ApplicationException("1");
-            }
-
-            protected override void QueueTask(Task task)
-            {
-                throw new ApplicationException("2");
-            }
-
-            protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
-            {
-                throw new ApplicationException("3");
-            }
-        }
-
         [Test]
         public void CancelBeforeStart()
         {
