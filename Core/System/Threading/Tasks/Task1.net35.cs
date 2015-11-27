@@ -14,14 +14,7 @@ namespace System.Threading.Tasks
             [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "Microsoft's Design")]
             get
             {
-                try
-                {
-                    Wait();
-                }
-                catch(NewOperationCanceledException)
-                {
-                    throw new AggregateException(new TaskCanceledException(this));
-                }
+                Wait();
                 if (IsFaulted)
                 {
                     throw Exception;

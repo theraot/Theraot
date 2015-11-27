@@ -368,7 +368,7 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException("scheduler");
             }
-                        if ((_internalOptions & InternalTaskOptions.ContinuationTask) != 0)
+            if ((_internalOptions & InternalTaskOptions.ContinuationTask) != 0)
             {
                 throw new InvalidOperationException("Start may not be called on a continuation task.");
             }
@@ -390,8 +390,7 @@ namespace System.Threading.Tasks
 
         public void Wait(CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
+            CancellationCheck(cancellationToken);
             while (true)
             {
                 switch (Status)
@@ -407,8 +406,7 @@ namespace System.Threading.Tasks
 
                     case TaskStatus.Running:
                     case TaskStatus.WaitingForChildrenToComplete:
-                        cancellationToken.ThrowIfCancellationRequested();
-                        GC.KeepAlive(cancellationToken.WaitHandle);
+                        CancellationCheck(cancellationToken);
                         break;
 
                     case TaskStatus.RanToCompletion:
@@ -442,8 +440,7 @@ namespace System.Threading.Tasks
                 return true;
             }
             var start = ThreadingHelper.TicksNow();
-            cancellationToken.ThrowIfCancellationRequested();
-            GC.KeepAlive(cancellationToken.WaitHandle);
+            CancellationCheck(cancellationToken);
             do
             {
                 switch (Status)
@@ -468,8 +465,7 @@ namespace System.Threading.Tasks
                     case TaskStatus.Faulted:
                         return true;
                 }
-                cancellationToken.ThrowIfCancellationRequested();
-                GC.KeepAlive(cancellationToken.WaitHandle);
+                CancellationCheck(cancellationToken);
             } while (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < milliseconds);
             return false;
         }
@@ -539,18 +535,18 @@ namespace System.Threading.Tasks
                 }
                 if (!popSucceeded && requiresAtomicStartTransition)
                 {
-                    status = Interlocked.CompareExchange(ref _status, (int) TaskStatus.Canceled, (int) TaskStatus.Created);
+                    status = Interlocked.CompareExchange(ref _status, (int)TaskStatus.Canceled, (int)TaskStatus.Created);
                     cancelSucceeded = status == (int)TaskStatus.Created;
-                    status = Interlocked.CompareExchange(ref _status, (int) TaskStatus.Canceled, (int) TaskStatus.WaitingForActivation);
+                    status = Interlocked.CompareExchange(ref _status, (int)TaskStatus.Canceled, (int)TaskStatus.WaitingForActivation);
                     cancelSucceeded = cancelSucceeded || status == (int)TaskStatus.WaitingForActivation;
-                    status = Interlocked.CompareExchange(ref _status, (int) TaskStatus.Canceled, (int) TaskStatus.WaitingToRun);
+                    status = Interlocked.CompareExchange(ref _status, (int)TaskStatus.Canceled, (int)TaskStatus.WaitingToRun);
                     cancelSucceeded = cancelSucceeded || status == (int)TaskStatus.WaitingToRun;
                 }
             }
             if (Thread.VolatileRead(ref _status) >= (int)TaskStatus.Running && !cancelNonExecutingOnly)
             {
                 // We are going to pretend that the cancel call came after the task finished running, but we may still set to cancel on TaskStatus.WaitingForChildrenToComplete
-                status = Interlocked.CompareExchange(ref _status, (int) TaskStatus.Canceled, (int) TaskStatus.WaitingForChildrenToComplete);
+                status = Interlocked.CompareExchange(ref _status, (int)TaskStatus.Canceled, (int)TaskStatus.WaitingForChildrenToComplete);
                 cancelSucceeded = cancelSucceeded || status == (int)TaskStatus.WaitingForChildrenToComplete;
             }
             if (cancelSucceeded)
@@ -613,6 +609,19 @@ namespace System.Threading.Tasks
                 }
             }
             Thread.VolatileWrite(ref _isDisposed, 1);
+        }
+
+        private void CancellationCheck(CancellationToken cancellationToken)
+        {
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                GC.KeepAlive(cancellationToken.WaitHandle);
+            }
+            catch (NewOperationCanceledException)
+            {
+                throw new AggregateException(new TaskCanceledException(this));
+            }
         }
 
         private void PrivateRunSynchronously(TaskScheduler scheduler)
