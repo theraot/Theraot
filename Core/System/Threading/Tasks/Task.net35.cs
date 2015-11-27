@@ -385,7 +385,7 @@ namespace System.Threading.Tasks
 
         public void Wait()
         {
-            Wait(CancellationToken.None);
+            Wait(CancellationToken);
         }
 
         public void Wait(CancellationToken cancellationToken)
@@ -421,13 +421,13 @@ namespace System.Threading.Tasks
 
         public bool Wait(int milliseconds)
         {
-            return Wait(milliseconds, CancellationToken.None);
+            return Wait(milliseconds, CancellationToken);
         }
 
         public bool Wait(TimeSpan timeout)
         {
             var milliseconds = (int)timeout.TotalMilliseconds;
-            return Wait(milliseconds, CancellationToken.None);
+            return Wait(milliseconds, CancellationToken);
         }
 
         public bool Wait(int milliseconds, CancellationToken cancellationToken)
@@ -661,7 +661,7 @@ namespace System.Threading.Tasks
                 }
                 else
                 {
-                    Wait(CancellationToken.None);
+                    Wait(CancellationToken);
                 }
             }
             catch (ThreadAbortException exception)
