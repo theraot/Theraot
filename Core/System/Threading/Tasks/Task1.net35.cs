@@ -1,4 +1,5 @@
 using System.Diagnostics.Contracts;
+using Theraot.Core;
 
 #if NET20 || NET30 || NET35
 
@@ -13,7 +14,14 @@ namespace System.Threading.Tasks
             [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "Microsoft's Design")]
             get
             {
-                Wait();
+                try
+                {
+                    Wait();
+                }
+                catch(NewOperationCanceledException)
+                {
+                    throw new AggregateException(new TaskCanceledException(this));
+                }
                 if (IsFaulted)
                 {
                     throw Exception;
