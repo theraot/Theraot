@@ -386,12 +386,18 @@ namespace System.Threading.Tasks
             var task = obj as Task;
             if (task == null)
             {
-                Contract.Assert(false, "targetTask should have been non-null, with the supplied argument being a task or a tuple containing one");
+                var tuple = obj as Tuple<Task, Task, TaskContinuation>;
+                if (tuple == null)
+                {
+                    Contract.Assert(false, "task should have been non-null");
+                    return;
+                }
+                task = tuple.Item1;
+                var antecedent = tuple.Item2;
+                var continuation = tuple.Item3;
+                antecedent.RemoveContinuation(continuation);
             }
-            else
-            {
-                task.InternalCancel(false);
-            }
+            task.InternalCancel(false);
         }
 
         /// <summary>
