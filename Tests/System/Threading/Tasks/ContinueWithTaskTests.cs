@@ -372,6 +372,7 @@ namespace MonoTests.System.Threading.Tasks
             Assert.AreEqual("Success", result);
         }
 
+#if NET20 || NET30 || NET35 || NET45
         [Test]
         public void ContinuationOnBrokenScheduler()
         {
@@ -454,6 +455,8 @@ namespace MonoTests.System.Threading.Tasks
             Assert.AreEqual('d', d.Result, "#3r");
         }
 
+#endif
+
         [Test]
         public void ContinueWith_CustomScheduleRejected()
         {
@@ -463,6 +466,8 @@ namespace MonoTests.System.Threading.Tasks
 
             Assert.IsTrue(t.Wait(5000));
         }
+
+#if NET20 || NET30 || NET35 || NET45
 
         [Test]
         public void LazyCancelationTest()
@@ -502,6 +507,8 @@ namespace MonoTests.System.Threading.Tasks
             Assert.AreEqual(TaskStatus.RanToCompletion, child.Status, "#3");
             Assert.AreEqual(TaskStatus.Canceled, inner.Status, "#4");
         }
+
+#endif
 
         [Test]
         [Category("NotWorking")]
