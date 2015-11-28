@@ -1,29 +1,43 @@
 ﻿// Needed for NET40
 
+using System;
 using System.Collections.Generic;
-
-using Theraot.Core;
 
 namespace Theraot.Collections
 {
     public static partial class Extensions
     {
-        public static int AddRange<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> items)
+        public static int AddRange<T>(this ICollection<T> collection, IEnumerable<T> items)
         {
-            int count = 0;
-            var _collection = Check.NotNullArgument(collection, "collection");
-            foreach (var item in Check.NotNullArgument(items, "items"))
+            if (collection == null)
             {
-                _collection.Add(item);
+                throw new ArgumentNullException("collection");
+            }
+            if (items == null)
+            {
+                throw new ArgumentNullException("items");
+            }
+            var count = 0;
+            foreach (var item in items)
+            {
+                collection.Add(item);
                 count++;
             }
             return count;
         }
 
-        public static IEnumerable<TItem> AddRangeEnumerable<TItem>(this ICollection<TItem> collection, IEnumerable<TItem> items)
+        public static IEnumerable<T> AddRangeEnumerable<T>(this ICollection<T> collection, IEnumerable<T> items)
         {
-            var _collection = Check.NotNullArgument(collection, "collection");
-            foreach (var item in Check.NotNullArgument(items, "items"))
+            if (collection == null)
+            {
+                throw new ArgumentNullException("collection");
+            }
+            if (items == null)
+            {
+                throw new ArgumentNullException("items");
+            }
+            var _collection = collection;
+            foreach (var item in items)
             {
                 _collection.Add(item);
                 yield return item;

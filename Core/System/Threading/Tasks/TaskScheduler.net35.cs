@@ -70,15 +70,11 @@ namespace System.Threading.Tasks
             // Empty
         }
 
-        internal void RunAndWait(Task task, bool taskWasPreviouslyQueued)
-        {
-            TryExecuteTaskInline(task, taskWasPreviouslyQueued);
-        }
-
         protected internal abstract void QueueTask(Task task);
 
         protected internal virtual bool TryDequeue(Task task)
         {
+            GC.KeepAlive(task);
             return false;
         }
 
@@ -93,7 +89,7 @@ namespace System.Threading.Tasks
             return task.ExecuteEntry(true);
         }
 
-        protected abstract bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued);
+        protected internal abstract bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued);
     }
 }
 

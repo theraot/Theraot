@@ -42,27 +42,29 @@ namespace Theraot.Threading.Needles
         public void Dispose()
         {
             var lockslot = Interlocked.Exchange(ref _lockSlot, null);
-            if (lockslot != null)
+            if (lockslot == null)
             {
-                var context = Interlocked.Exchange(ref _context, null);
-                if (context != null)
-                {
-                    context.Slot = _parent;
-                }
-                var needleLocks = Interlocked.Exchange(ref _needleLocks, null);
-                if (needleLocks != null)
-                {
-                    foreach (var needleLock in needleLocks)
-                    {
-                        needleLock.Uncapture(lockslot);
-                        needleLock.Release();
-                    }
-                    needleLocks.Clear();
-                }
-                lockslot.Close();
-                Thread.MemoryBarrier();
-                _parent = null;
+                return;
             }
+            var context = Interlocked.Exchange(ref _context, null);
+            if (context != null)
+            {
+                context.Slot = _parent;
+            }
+            var needleLocks = Interlocked.Exchange(ref _needleLocks, null);
+            if (needleLocks != null)
+            {
+                foreach (var needleLock in needleLocks)
+                {
+                    needleLock.Uncapture(lockslot);
+                    needleLock.Release();
+                }
+                needleLocks.Clear();
+            }
+            lockslot.Close();
+            Thread.MemoryBarrier();
+            _parent = null;
+            GC.SuppressFinalize(this);
         }
 
         internal void Add(NeedleLock<Thread> pin)

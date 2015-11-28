@@ -2,18 +2,25 @@
 
 using System;
 using System.Collections.Generic;
-using Theraot.Core;
 
 namespace Theraot.Collections
 {
     public static partial class Extensions
     {
-        public static ICollection<TItem> AsCollection<TItem>(IEnumerable<TItem> collection)
+        public static ICollection<T> AsCollection<T>(IEnumerable<T> source)
         {
-            var _result = collection as ICollection<TItem>;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (source is string && typeof(T) == typeof(char))
+            {
+                return (ICollection<T>)(object)(source as string).ToCharArray();
+            }
+            var _result = source as ICollection<T>;
             if (_result == null)
             {
-                return new ProgressiveCollection<TItem>(collection);
+                return new ProgressiveCollection<T>(source);
             }
             else
             {
@@ -21,17 +28,21 @@ namespace Theraot.Collections
             }
         }
 
-        public static ICollection<TItem> AsDistinctCollection<TItem>(IEnumerable<TItem> collection)
+        public static ICollection<T> AsDistinctCollection<T>(IEnumerable<T> source)
         {
             // Workaround for .NET 3.5 when all you want is Contains and no duplicates
 #if NET35
-            var _resultHashSet = collection as HashSet<TItem>;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var _resultHashSet = source as HashSet<T>;
             if (_resultHashSet == null)
             {
-                var _resultISet = collection as ISet<TItem>;
+                var _resultISet = source as ISet<T>;
                 if (_resultISet == null)
                 {
-                    return new ProgressiveSet<TItem>(collection);
+                    return new ProgressiveSet<T>(source);
                 }
                 else
                 {
@@ -43,16 +54,16 @@ namespace Theraot.Collections
                 return _resultHashSet;
             }
 #else
-            return AsSet(collection);
+            return AsSet(source);
 #endif
         }
 
-        public static IList<TItem> AsList<TItem>(IEnumerable<TItem> collection)
+        public static IList<T> AsList<T>(IEnumerable<T> source)
         {
-            var _result = collection as IList<TItem>;
+            var _result = source as IList<T>;
             if (_result == null)
             {
-                return new ProgressiveList<TItem>(collection);
+                return new ProgressiveList<T>(source);
             }
             else
             {
@@ -60,13 +71,17 @@ namespace Theraot.Collections
             }
         }
 
-        public static ISet<TItem> AsSet<TItem>(IEnumerable<TItem> collection)
+        public static ISet<T> AsSet<T>(IEnumerable<T> source)
         {
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
             // Remember that On .NET 3.5 HashSet is not an ISet
-            var _resultISet = collection as ISet<TItem>;
+            var _resultISet = source as ISet<T>;
             if (_resultISet == null)
             {
-                return new ProgressiveSet<TItem>(collection);
+                return new ProgressiveSet<T>(source);
             }
             else
             {
@@ -74,24 +89,24 @@ namespace Theraot.Collections
             }
         }
 
-        public static IEnumerable<T> AsUnaryEnumerable<T>(this T target)
+        public static IEnumerable<T> AsUnaryEnumerable<T>(this T source)
         {
-            yield return target;
+            yield return source;
         }
 
-        public static IList<T> AsUnaryList<T>(this T target)
+        public static IList<T> AsUnaryList<T>(this T source)
         {
             return new ProgressiveList<T>
                    (
-                       AsUnaryEnumerable(target)
+                       AsUnaryEnumerable(source)
                    );
         }
 
-        public static ISet<T> AsUnarySet<T>(this T target)
+        public static ISet<T> AsUnarySet<T>(this T source)
         {
             return new ProgressiveSet<T>
                    (
-                       AsUnaryEnumerable(target)
+                       AsUnaryEnumerable(source)
                    );
         }
 
@@ -105,10 +120,14 @@ namespace Theraot.Collections
             {
                 return true;
             }
-            var collection = source as ICollection<TSource>;
-            if (collection == null)
+            if (source is string && typeof(TSource) == typeof(char))
             {
-                int result = 0;
+                return (source as string).Length >= count;
+            }
+            var sourceAsCollection = source as ICollection<TSource>;
+            if (sourceAsCollection == null)
+            {
+                var result = 0;
                 using (var item = source.GetEnumerator())
                 {
                     while (item.MoveNext())
@@ -125,54 +144,72 @@ namespace Theraot.Collections
                 }
                 return false;
             }
-            return collection.Count >= count;
+            return sourceAsCollection.Count >= count;
         }
 
-        public static IEnumerable<T> SkipItems<T>(this IEnumerable<T> target, int skipCount)
+        public static IEnumerable<T> SkipItems<T>(this IEnumerable<T> source, int skipCount)
         {
-            return SkipItemsExtracted(Check.NotNullArgument(target, "target"), skipCount);
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            return SkipItemsExtracted(source, skipCount);
         }
 
-        public static IEnumerable<T> SkipItems<T>(this IEnumerable<T> target, Predicate<T> predicateCount, int skipCount)
+        public static IEnumerable<T> SkipItems<T>(this IEnumerable<T> source, Predicate<T> predicateCount, int skipCount)
         {
-            var _target = Check.NotNullArgument(target, "target");
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
             if (predicateCount == null)
             {
-                return SkipItemsExtracted(_target, skipCount);
+                return SkipItemsExtracted(source, skipCount);
             }
             else
             {
-                return SkipItemsExtracted(_target, predicateCount, skipCount);
+                return SkipItemsExtracted(source, predicateCount, skipCount);
             }
         }
 
-        public static IEnumerable<T> StepItems<T>(this IEnumerable<T> target, int stepCount)
+        public static IEnumerable<T> StepItems<T>(this IEnumerable<T> source, int stepCount)
         {
-            return StepItemsExtracted(Check.NotNullArgument(target, "target"), stepCount);
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            return StepItemsExtracted(source, stepCount);
         }
 
-        public static IEnumerable<T> TakeItems<T>(this IEnumerable<T> target, int takeCount)
+        public static IEnumerable<T> TakeItems<T>(this IEnumerable<T> source, int takeCount)
         {
-            return TakeItemsExtracted(Check.NotNullArgument(target, "target"), takeCount);
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            return TakeItemsExtracted(source, takeCount);
         }
 
-        public static IEnumerable<T> TakeItems<T>(this IEnumerable<T> target, Predicate<T> predicateCount, int takeCount)
+        public static IEnumerable<T> TakeItems<T>(this IEnumerable<T> source, Predicate<T> predicateCount, int takeCount)
         {
-            var _target = Check.NotNullArgument(target, "target");
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
             if (predicateCount == null)
             {
-                return TakeItemsExtracted(_target, takeCount);
+                return TakeItemsExtracted(source, takeCount);
             }
             else
             {
-                return TakeItemsExtracted(_target, predicateCount, takeCount);
+                return TakeItemsExtracted(source, predicateCount, takeCount);
             }
         }
 
-        private static IEnumerable<T> SkipItemsExtracted<T>(IEnumerable<T> target, int skipCount)
+        private static IEnumerable<T> SkipItemsExtracted<T>(IEnumerable<T> source, int skipCount)
         {
-            int count = 0;
-            foreach (var item in target)
+            var count = 0;
+            foreach (var item in source)
             {
                 if (count < skipCount)
                 {
@@ -185,10 +222,10 @@ namespace Theraot.Collections
             }
         }
 
-        private static IEnumerable<T> SkipItemsExtracted<T>(IEnumerable<T> target, Predicate<T> predicateCount, int skipCount)
+        private static IEnumerable<T> SkipItemsExtracted<T>(IEnumerable<T> source, Predicate<T> predicateCount, int skipCount)
         {
-            int count = 0;
-            foreach (var item in target)
+            var count = 0;
+            foreach (var item in source)
             {
                 if (count < skipCount)
                 {
@@ -204,10 +241,10 @@ namespace Theraot.Collections
             }
         }
 
-        private static IEnumerable<T> StepItemsExtracted<T>(this IEnumerable<T> target, int stepCount)
+        private static IEnumerable<T> StepItemsExtracted<T>(this IEnumerable<T> source, int stepCount)
         {
-            int count = 0;
-            foreach (var item in target)
+            var count = 0;
+            foreach (var item in source)
             {
                 if (count % stepCount == 0)
                 {
@@ -221,10 +258,10 @@ namespace Theraot.Collections
             }
         }
 
-        private static IEnumerable<T> TakeItemsExtracted<T>(IEnumerable<T> target, int takeCount)
+        private static IEnumerable<T> TakeItemsExtracted<T>(IEnumerable<T> source, int takeCount)
         {
-            int count = 0;
-            foreach (var item in target)
+            var count = 0;
+            foreach (var item in source)
             {
                 if (count == takeCount)
                 {
@@ -238,10 +275,10 @@ namespace Theraot.Collections
             }
         }
 
-        private static IEnumerable<T> TakeItemsExtracted<T>(IEnumerable<T> target, Predicate<T> predicateCount, int takeCount)
+        private static IEnumerable<T> TakeItemsExtracted<T>(IEnumerable<T> source, Predicate<T> predicateCount, int takeCount)
         {
-            int count = 0;
-            foreach (var item in target)
+            var count = 0;
+            foreach (var item in source)
             {
                 if (count == takeCount)
                 {

@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Needed for Workaround
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Theraot.Collections;
@@ -205,6 +207,10 @@ namespace Theraot.Core
             if (path == null)
             {
                 throw new ArgumentNullException("path");
+            }
+            if (path == string.Empty)
+            {
+                return false;
             }
             return path.ContainsAny(Path.GetInvalidPathChars());
         }

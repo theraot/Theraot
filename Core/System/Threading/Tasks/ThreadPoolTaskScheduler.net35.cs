@@ -18,7 +18,6 @@
 using System.Security;
 using System.Diagnostics.Contracts;
 using System.Collections.Generic;
-using Theraot.Collections.ThreadSafe;
 
 namespace System.Threading.Tasks
 {
@@ -76,16 +75,8 @@ namespace System.Threading.Tasks
             }
         }
 
-        /// <summary>
-        /// This internal function will do this:
-        ///   (1) If the task had previously been queued, attempt to pop it and return false if that fails.
-        ///   (2) Propagate the return value from Task.ExecuteEntry() back to the caller.
-        /// 
-        /// IMPORTANT NOTE: TryExecuteTaskInline will NOT throw task exceptions itself. Any wait code path using this function needs
-        /// to account for exceptions that need to be propagated, and throw themselves accordingly.
-        /// </summary>
         [SecurityCritical]
-        protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
+        protected internal override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
         {
             if ((task.CreationOptions & TaskCreationOptions.LongRunning) != 0)
             {

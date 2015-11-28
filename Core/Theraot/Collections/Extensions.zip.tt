@@ -17,11 +17,20 @@ namespace Theraot.Collections
         public static IEnumerable<TReturn> Zip<T1, T2, TReturn>(IEnumerable<T1> first, IEnumerable<T2> second, Func<T1, T2, TReturn> resultSelector)
 #endif
         {
-            var _1 = Check.NotNullArgument(first, "arg1");
-            var _2 = Check.NotNullArgument(second, "arg2");
-            var _result = Check.NotNullArgument(resultSelector, "resultSelector");
-            using (var enumerator1 = _1.GetEnumerator())
-            using (var enumerator2 = _2.GetEnumerator())
+            if (first == null)
+            {
+                throw new ArgumentNullException("first");
+            }
+            if (second == null)
+            {
+                throw new ArgumentNullException("second");
+            }
+            if (resultSelector == null)
+            {
+                throw new ArgumentNullException("resultSelector");
+            }
+            using (var enumerator1 = first.GetEnumerator())
+            using (var enumerator2 = second.GetEnumerator())
             {
                 while
                 (
@@ -29,7 +38,7 @@ namespace Theraot.Collections
                     && enumerator2.MoveNext()
                 )
                 {
-                    yield return _result
+                    yield return resultSelector
                     (
                         enumerator1.Current,
                         enumerator2.Current
@@ -46,14 +55,20 @@ namespace Theraot.Collections
 <#
         for (var subindice = 1; subindice <= indice; subindice++)
         {#>
-            var _<#=subindice#> = Check.NotNullArgument(arg<#=subindice#>, "arg<#=subindice#>");
+            if (arg<#=subindice#> == null)
+            {
+                throw new ArgumentNullException("arg<#=subindice#>");
+            }
 <#
         }#>
-            var _result = Check.NotNullArgument(resultSelector, "resultSelector");
+            if (resultSelector == null)
+            {
+                throw new ArgumentNullException("resultSelector");
+            }
 <#
         for (var subindice = 1; subindice <= indice; subindice++)
         {#>
-            using (var enumerator<#=subindice#> = _<#=subindice#>.GetEnumerator())
+            using (var enumerator<#=subindice#> = arg<#=subindice#>.GetEnumerator())
 <#
         }#>
             {
@@ -67,7 +82,7 @@ namespace Theraot.Collections
         }#>
                 )
                 {
-                    yield return _result
+                    yield return resultSelector
                     (
 <#
         for (var subindice = 1; subindice <= indice; subindice++)

@@ -1,12 +1,13 @@
-#if NET20 || NET30 || NET35
-
+using System.Diagnostics.Contracts;
 using Theraot.Core;
+
+#if NET20 || NET30 || NET35
 
 namespace System.Threading.Tasks
 {
     public class Task<TResult> : Task
     {
-        private readonly IErsatz<TResult> _erzatz;
+        protected TResult ProtectedResult;
 
         public TResult Result
         {
@@ -20,74 +21,67 @@ namespace System.Threading.Tasks
                 }
                 if (IsCanceled)
                 {
-                    throw new AggregateException((Exception)new TaskCanceledException(this));
+                    throw new AggregateException(new TaskCanceledException(this));
                 }
-                return _erzatz.Result;
+                return ProtectedResult;
             }
         }
 
-        private Task(IErsatz<TResult> erzatz)
-            : base(erzatz.InvokeAction(), null, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default)
+        internal override void InnerInvoke()
         {
-            _erzatz = erzatz;
-        }
-
-        private Task(IErsatz<TResult> erzatz, CancellationToken cancellationToken)
-            : base(erzatz.InvokeAction(), null, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default)
-        {
-            _erzatz = erzatz;
-        }
-
-        private Task(IErsatz<TResult> erzatz, TaskCreationOptions creationOptions)
-            : base(erzatz.InvokeAction(), null, CancellationToken.None, creationOptions, TaskScheduler.Default)
-        {
-            _erzatz = erzatz;
-        }
-
-        private Task(IErsatz<TResult> erzatz, CancellationToken cancellationToken, TaskCreationOptions creationOptions)
-            : base(erzatz.InvokeAction(), null, cancellationToken, creationOptions, TaskScheduler.Default)
-        {
-            _erzatz = erzatz;
-        }
-
-        private Task(IErsatz<TResult> erzatz, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
-            : base(erzatz.InvokeAction(), state, cancellationToken, creationOptions, scheduler)
-        {
-            _erzatz = erzatz;
+            var action = Action as Func<TResult>;
+            if (action != null)
+            {
+                ProtectedResult = action();
+                return;
+            }
+            var withState = Action as Func<object, TResult>;
+            if (withState != null)
+            {
+                ProtectedResult = withState(State);
+                return;
+            }
+            Contract.Assert(false, "Invalid Action in Task");
         }
 
         public Task(Func<TResult> function)
-            : this(new ErsatzFunc<TResult>(function))
+            : base(function, null, null, default(CancellationToken), TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
         {
             // Empty
         }
 
         public Task(Func<TResult> function, CancellationToken cancellationToken)
-            : this(new ErsatzFunc<TResult>(function), cancellationToken)
+            : base(function, null, null, cancellationToken, TaskCreationOptions.None, InternalTaskOptions.None, TaskScheduler.Default)
         {
             // Empty
         }
 
         public Task(Func<TResult> function, TaskCreationOptions creationOptions)
-            : this(new ErsatzFunc<TResult>(function), creationOptions)
+            : base(function, null, null, default(CancellationToken), creationOptions, InternalTaskOptions.None, TaskScheduler.Default)
         {
             // Empty
         }
 
         public Task(Func<TResult> function, CancellationToken cancellationToken, TaskCreationOptions creationOptions)
-            : this(new ErsatzFunc<TResult>(function), cancellationToken, creationOptions)
+            : base(function, null, null, cancellationToken, creationOptions, InternalTaskOptions.None, TaskScheduler.Default)
         {
             // Empty
         }
 
-        internal Task(Func<TResult> function, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
-            : this(new ErsatzFunc<TResult>(function), state, cancellationToken, creationOptions, scheduler)
+        internal Task(Func<TResult> function, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
+            : base(function, null, null, cancellationToken, creationOptions, InternalTaskOptions.None, scheduler)
         {
             // Empty
         }
 
         internal Task(Func<object, TResult> function, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
-            : this(new ErsatzFunc<object, TResult>(function, state), state, cancellationToken, creationOptions, scheduler)
+            : base(function, state, null, cancellationToken, creationOptions, InternalTaskOptions.None, scheduler)
+        {
+            // Empty
+        }
+
+        internal Task(Delegate function, object state, Task parent, CancellationToken cancellationToken, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions, TaskScheduler scheduler)
+            : base(function, state, parent, cancellationToken, creationOptions, internalOptions, scheduler)
         {
             // Empty
         }

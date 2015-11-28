@@ -12,13 +12,19 @@ namespace Theraot.Collections
     {
         public static int Max(this IEnumerable<int> source, IComparer<int> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
-            var max = int.MinValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                if (_comparer.Compare(element, max) > 0)
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            var found = false;
+            var max = int.MinValue;
+            foreach (var element in source)
+            {
+                if (comparer.Compare(element, max) > 0)
                 {
                     max = element;
                 }
@@ -36,13 +42,19 @@ namespace Theraot.Collections
 
         public static long Max(this IEnumerable<long> source, IComparer<long> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
-            var max = long.MinValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                if (_comparer.Compare(element, max) > 0)
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            var found = false;
+            var max = long.MinValue;
+            foreach (var element in source)
+            {
+                if (comparer.Compare(element, max) > 0)
                 {
                     max = element;
                 }
@@ -60,13 +72,19 @@ namespace Theraot.Collections
 
         public static double Max(this IEnumerable<double> source, IComparer<double> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
-            var max = double.MinValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                if (_comparer.Compare(element, max) > 0)
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            var found = false;
+            var max = double.MinValue;
+            foreach (var element in source)
+            {
+                if (comparer.Compare(element, max) > 0)
                 {
                     max = element;
                 }
@@ -84,13 +102,19 @@ namespace Theraot.Collections
 
         public static float Max(this IEnumerable<float> source, IComparer<float> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
-            var max = float.MinValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                if (_comparer.Compare(element, max) > 0)
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            var found = false;
+            var max = float.MinValue;
+            foreach (var element in source)
+            {
+                if (comparer.Compare(element, max) > 0)
                 {
                     max = element;
                 }
@@ -108,13 +132,19 @@ namespace Theraot.Collections
 
         public static decimal Max(this IEnumerable<decimal> source, IComparer<decimal> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
-            var max = decimal.MinValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                if (_comparer.Compare(element, max) > 0)
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            var found = false;
+            var max = decimal.MinValue;
+            foreach (var element in source)
+            {
+                if (comparer.Compare(element, max) > 0)
                 {
                     max = element;
                 }
@@ -132,16 +162,22 @@ namespace Theraot.Collections
 
         public static int? Max(this IEnumerable<int?> source, IComparer<int> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            var found = false;
             var max = int.MinValue;
 
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 if (element.HasValue)
                 {
-                    if (_comparer.Compare(element.Value, max) > 0)
+                    if (comparer.Compare(element.Value, max) > 0)
                     {
                         max = element.Value;
                     }
@@ -160,15 +196,21 @@ namespace Theraot.Collections
 
         public static long? Max(this IEnumerable<long?> source, IComparer<long> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            var found = false;
             var max = long.MinValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 if (element.HasValue)
                 {
-                    if (_comparer.Compare(element.Value, max) > 0)
+                    if (comparer.Compare(element.Value, max) > 0)
                     {
                         max = element.Value;
                     }
@@ -187,15 +229,21 @@ namespace Theraot.Collections
 
         public static double? Max(this IEnumerable<double?> source, IComparer<double> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            var found = false;
             var max = double.MinValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 if (element.HasValue)
                 {
-                    if (_comparer.Compare(element.Value, max) > 0)
+                    if (comparer.Compare(element.Value, max) > 0)
                     {
                         max = element.Value;
                     }
@@ -214,15 +262,21 @@ namespace Theraot.Collections
 
         public static float? Max(this IEnumerable<float?> source, IComparer<float> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            var found = false;
             var max = float.MinValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 if (element.HasValue)
                 {
-                    if (_comparer.Compare(element.Value, max) > 0)
+                    if (comparer.Compare(element.Value, max) > 0)
                     {
                         max = element.Value;
                     }
@@ -241,15 +295,21 @@ namespace Theraot.Collections
 
         public static decimal? Max(this IEnumerable<decimal?> source, IComparer<decimal> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            var found = false;
             var max = decimal.MinValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 if (element.HasValue)
                 {
-                    if (_comparer.Compare(element.Value, max) > 0)
+                    if (comparer.Compare(element.Value, max) > 0)
                     {
                         max = element.Value;
                     }
@@ -268,16 +328,22 @@ namespace Theraot.Collections
 
         public static TSource Max<TSource>(this IEnumerable<TSource> source, IComparer<TSource> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            TSource max = default(TSource);
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            var max = default(TSource);
             if (typeof(TSource).CanBeNull())
             {
-                foreach (var element in _source)
+                foreach (var element in source)
                 {
                     if (element != null)
                     {
-                        if (max == null || _comparer.Compare(element, max) > 0)
+                        if (max == null || comparer.Compare(element, max) > 0)
                         {
                             max = element;
                         }
@@ -287,12 +353,12 @@ namespace Theraot.Collections
             }
             else
             {
-                bool found = false;
-                foreach (var element in _source)
+                var found = false;
+                foreach (var element in source)
                 {
                     if (found)
                     {
-                        if (_comparer.Compare(element, max) > 0)
+                        if (comparer.Compare(element, max) > 0)
                         {
                             max = element;
                         }
@@ -316,15 +382,24 @@ namespace Theraot.Collections
 
         public static int Max<TSource>(this IEnumerable<TSource> source, Func<TSource, int> selector, IComparer<int> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            var max = int.MinValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                var _element = _selector.Invoke(element);
-                if (_comparer.Compare(_element, max) > 0)
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            var max = int.MinValue;
+            foreach (var element in source)
+            {
+                var _element = selector.Invoke(element);
+                if (comparer.Compare(_element, max) > 0)
                 {
                     max = _element;
                 }
@@ -342,15 +417,24 @@ namespace Theraot.Collections
 
         public static long Max<TSource>(this IEnumerable<TSource> source, Func<TSource, long> selector, IComparer<long> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            var max = long.MinValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                var _element = _selector.Invoke(element);
-                if (_comparer.Compare(_element, max) > 0)
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            var max = long.MinValue;
+            foreach (var element in source)
+            {
+                var _element = selector.Invoke(element);
+                if (comparer.Compare(_element, max) > 0)
                 {
                     max = _element;
                 }
@@ -368,15 +452,24 @@ namespace Theraot.Collections
 
         public static double Max<TSource>(this IEnumerable<TSource> source, Func<TSource, double> selector, IComparer<double> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            var max = double.MinValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                var _element = _selector.Invoke(element);
-                if (_comparer.Compare(_element, max) > 0)
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            var max = double.MinValue;
+            foreach (var element in source)
+            {
+                var _element = selector.Invoke(element);
+                if (comparer.Compare(_element, max) > 0)
                 {
                     max = _element;
                 }
@@ -394,15 +487,24 @@ namespace Theraot.Collections
 
         public static float Max<TSource>(this IEnumerable<TSource> source, Func<TSource, float> selector, IComparer<float> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            var max = float.MinValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                var _element = _selector.Invoke(element);
-                if (_comparer.Compare(_element, max) > 0)
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            var max = float.MinValue;
+            foreach (var element in source)
+            {
+                var _element = selector.Invoke(element);
+                if (comparer.Compare(_element, max) > 0)
                 {
                     max = _element;
                 }
@@ -420,15 +522,24 @@ namespace Theraot.Collections
 
         public static decimal Max<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal> selector, IComparer<decimal> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            var max = decimal.MinValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                var _element = _selector.Invoke(element);
-                if (_comparer.Compare(_element, max) > 0)
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            var max = decimal.MinValue;
+            foreach (var element in source)
+            {
+                var _element = selector.Invoke(element);
+                if (comparer.Compare(_element, max) > 0)
                 {
                     max = _element;
                 }
@@ -446,17 +557,26 @@ namespace Theraot.Collections
 
         public static int? Max<TSource>(this IEnumerable<TSource> source, Func<TSource, int?> selector, IComparer<int> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            int? max = null;
-            foreach (var element in _source)
+            if (source == null)
             {
-                int? item = _selector(element);
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            int? max = null;
+            foreach (var element in source)
+            {
+                int? item = selector(element);
                 if (max.HasValue)
                 {
-                    if (item.HasValue && _comparer.Compare(item.Value, max.Value) > 0)
+                    if (item.HasValue && comparer.Compare(item.Value, max.Value) > 0)
                     {
                         max = item;
                     }
@@ -479,17 +599,26 @@ namespace Theraot.Collections
 
         public static long? Max<TSource>(this IEnumerable<TSource> source, Func<TSource, long?> selector, IComparer<long> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            long? max = null;
-            foreach (var element in _source)
+            if (source == null)
             {
-                long? item = _selector(element);
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            long? max = null;
+            foreach (var element in source)
+            {
+                long? item = selector(element);
                 if (max.HasValue)
                 {
-                    if (item.HasValue && _comparer.Compare(item.Value, max.Value) > 0)
+                    if (item.HasValue && comparer.Compare(item.Value, max.Value) > 0)
                     {
                         max = item;
                     }
@@ -512,17 +641,26 @@ namespace Theraot.Collections
 
         public static double? Max<TSource>(this IEnumerable<TSource> source, Func<TSource, double?> selector, IComparer<double> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            double? max = null;
-            foreach (var element in _source)
+            if (source == null)
             {
-                double? item = _selector(element);
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            double? max = null;
+            foreach (var element in source)
+            {
+                double? item = selector(element);
                 if (max.HasValue)
                 {
-                    if (item.HasValue && _comparer.Compare(item.Value, max.Value) > 0)
+                    if (item.HasValue && comparer.Compare(item.Value, max.Value) > 0)
                     {
                         max = item;
                     }
@@ -545,17 +683,26 @@ namespace Theraot.Collections
 
         public static float? Max<TSource>(this IEnumerable<TSource> source, Func<TSource, float?> selector, IComparer<float> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            float? max = null;
-            foreach (var element in _source)
+            if (source == null)
             {
-                float? item = _selector(element);
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            float? max = null;
+            foreach (var element in source)
+            {
+                float? item = selector(element);
                 if (max.HasValue)
                 {
-                    if (item.HasValue && _comparer.Compare(item.Value, max.Value) > 0)
+                    if (item.HasValue && comparer.Compare(item.Value, max.Value) > 0)
                     {
                         max = item;
                     }
@@ -578,17 +725,26 @@ namespace Theraot.Collections
 
         public static decimal? Max<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal?> selector, IComparer<decimal> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            decimal? max = null;
-            foreach (var element in _source)
+            if (source == null)
             {
-                decimal? item = _selector(element);
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            decimal? max = null;
+            foreach (var element in source)
+            {
+                decimal? item = selector(element);
                 if (max.HasValue)
                 {
-                    if (item.HasValue && _comparer.Compare(item.Value, max.Value) > 0)
+                    if (item.HasValue && comparer.Compare(item.Value, max.Value) > 0)
                     {
                         max = item;
                     }
@@ -611,22 +767,37 @@ namespace Theraot.Collections
 
         public static TResult Max<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector, Comparer<TResult> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            Func<TSource, int, TResult> __selector = (item, i) => _selector(item);
-            return Max(_source.Select(__selector), _comparer);
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            Func<TSource, int, TResult> _selector = (item, i) => selector(item);
+            return Max(source.Select(_selector), comparer);
         }
 
         public static int Min(this IEnumerable<int> source, IComparer<int> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
-            var min = int.MinValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                if (_comparer.Compare(min, element) > 0)
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            var found = false;
+            var min = int.MinValue;
+            foreach (var element in source)
+            {
+                if (comparer.Compare(min, element) > 0)
                 {
                     min = element;
                 }
@@ -644,13 +815,19 @@ namespace Theraot.Collections
 
         public static long Min(this IEnumerable<long> source, IComparer<long> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
-            var min = long.MinValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                if (_comparer.Compare(min, element) > 0)
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            var found = false;
+            var min = long.MinValue;
+            foreach (var element in source)
+            {
+                if (comparer.Compare(min, element) > 0)
                 {
                     min = element;
                 }
@@ -668,13 +845,19 @@ namespace Theraot.Collections
 
         public static double Min(this IEnumerable<double> source, IComparer<double> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
-            var min = double.MinValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                if (_comparer.Compare(min, element) > 0)
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            var found = false;
+            var min = double.MinValue;
+            foreach (var element in source)
+            {
+                if (comparer.Compare(min, element) > 0)
                 {
                     min = element;
                 }
@@ -692,13 +875,19 @@ namespace Theraot.Collections
 
         public static float Min(this IEnumerable<float> source, IComparer<float> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
-            var min = float.MinValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                if (_comparer.Compare(min, element) > 0)
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            var found = false;
+            var min = float.MinValue;
+            foreach (var element in source)
+            {
+                if (comparer.Compare(min, element) > 0)
                 {
                     min = element;
                 }
@@ -716,13 +905,19 @@ namespace Theraot.Collections
 
         public static decimal Min(this IEnumerable<decimal> source, IComparer<decimal> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
-            var min = decimal.MinValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                if (_comparer.Compare(min, element) > 0)
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            var found = false;
+            var min = decimal.MinValue;
+            foreach (var element in source)
+            {
+                if (comparer.Compare(min, element) > 0)
                 {
                     min = element;
                 }
@@ -740,16 +935,22 @@ namespace Theraot.Collections
 
         public static int? Min(this IEnumerable<int?> source, IComparer<int> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            var found = false;
             var min = int.MinValue;
 
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 if (element.HasValue)
                 {
-                    if (_comparer.Compare(min, element.Value) > 0)
+                    if (comparer.Compare(min, element.Value) > 0)
                     {
                         min = element.Value;
                     }
@@ -768,15 +969,21 @@ namespace Theraot.Collections
 
         public static long? Min(this IEnumerable<long?> source, IComparer<long> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            var found = false;
             var min = long.MinValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 if (element.HasValue)
                 {
-                    if (_comparer.Compare(min, element.Value) > 0)
+                    if (comparer.Compare(min, element.Value) > 0)
                     {
                         min = element.Value;
                     }
@@ -795,15 +1002,21 @@ namespace Theraot.Collections
 
         public static double? Min(this IEnumerable<double?> source, IComparer<double> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            var found = false;
             var min = double.MinValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 if (element.HasValue)
                 {
-                    if (_comparer.Compare(min, element.Value) > 0)
+                    if (comparer.Compare(min, element.Value) > 0)
                     {
                         min = element.Value;
                     }
@@ -822,15 +1035,21 @@ namespace Theraot.Collections
 
         public static float? Min(this IEnumerable<float?> source, IComparer<float> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            var found = false;
             var min = float.MinValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 if (element.HasValue)
                 {
-                    if (_comparer.Compare(min, element.Value) > 0)
+                    if (comparer.Compare(min, element.Value) > 0)
                     {
                         min = element.Value;
                     }
@@ -849,15 +1068,21 @@ namespace Theraot.Collections
 
         public static decimal? Min(this IEnumerable<decimal?> source, IComparer<decimal> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            var found = false;
             var min = decimal.MinValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 if (element.HasValue)
                 {
-                    if (_comparer.Compare(min, element.Value) > 0)
+                    if (comparer.Compare(min, element.Value) > 0)
                     {
                         min = element.Value;
                     }
@@ -876,16 +1101,22 @@ namespace Theraot.Collections
 
         public static TSource Min<TSource>(this IEnumerable<TSource> source, IComparer<TSource> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
             TSource min = default(TSource);
             if (typeof(TSource).CanBeNull())
             {
-                foreach (var element in _source)
+                foreach (var element in source)
                 {
                     if (element != null)
                     {
-                        if (min == null || _comparer.Compare(min, element) > 0)
+                        if (min == null || comparer.Compare(min, element) > 0)
                         {
                             min = element;
                         }
@@ -895,12 +1126,12 @@ namespace Theraot.Collections
             }
             else
             {
-                bool found = false;
-                foreach (var element in _source)
+                var found = false;
+                foreach (var element in source)
                 {
                     if (found)
                     {
-                        if (_comparer.Compare(min, element) > 0)
+                        if (comparer.Compare(min, element) > 0)
                         {
                             min = element;
                         }
@@ -924,15 +1155,24 @@ namespace Theraot.Collections
 
         public static int Min<TSource>(this IEnumerable<TSource> source, Func<TSource, int> selector, IComparer<int> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            var min = int.MinValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                var _element = _selector.Invoke(element);
-                if (_comparer.Compare(min, _element) > 0)
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            var min = int.MinValue;
+            foreach (var element in source)
+            {
+                var _element = selector.Invoke(element);
+                if (comparer.Compare(min, _element) > 0)
                 {
                     min = _element;
                 }
@@ -950,15 +1190,24 @@ namespace Theraot.Collections
 
         public static long Min<TSource>(this IEnumerable<TSource> source, Func<TSource, long> selector, IComparer<long> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            var min = long.MinValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                var _element = _selector.Invoke(element);
-                if (_comparer.Compare(min, _element) > 0)
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            var min = long.MinValue;
+            foreach (var element in source)
+            {
+                var _element = selector.Invoke(element);
+                if (comparer.Compare(min, _element) > 0)
                 {
                     min = _element;
                 }
@@ -976,15 +1225,24 @@ namespace Theraot.Collections
 
         public static double Min<TSource>(this IEnumerable<TSource> source, Func<TSource, double> selector, IComparer<double> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            var min = double.MinValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                var _element = _selector.Invoke(element);
-                if (_comparer.Compare(min, _element) > 0)
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            var min = double.MinValue;
+            foreach (var element in source)
+            {
+                var _element = selector.Invoke(element);
+                if (comparer.Compare(min, _element) > 0)
                 {
                     min = _element;
                 }
@@ -1002,15 +1260,24 @@ namespace Theraot.Collections
 
         public static float Min<TSource>(this IEnumerable<TSource> source, Func<TSource, float> selector, IComparer<float> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            var min = float.MinValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                var _element = _selector.Invoke(element);
-                if (_comparer.Compare(min, _element) > 0)
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            var min = float.MinValue;
+            foreach (var element in source)
+            {
+                var _element = selector.Invoke(element);
+                if (comparer.Compare(min, _element) > 0)
                 {
                     min = _element;
                 }
@@ -1028,15 +1295,24 @@ namespace Theraot.Collections
 
         public static decimal Min<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal> selector, IComparer<decimal> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            var min = decimal.MinValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                var _element = _selector.Invoke(element);
-                if (_comparer.Compare(min, _element) > 0)
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            var min = decimal.MinValue;
+            foreach (var element in source)
+            {
+                var _element = selector.Invoke(element);
+                if (comparer.Compare(min, _element) > 0)
                 {
                     min = _element;
                 }
@@ -1054,17 +1330,26 @@ namespace Theraot.Collections
 
         public static int? Min<TSource>(this IEnumerable<TSource> source, Func<TSource, int?> selector, IComparer<int> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            int? min = null;
-            foreach (var element in _source)
+            if (source == null)
             {
-                int? item = _selector(element);
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            int? min = null;
+            foreach (var element in source)
+            {
+                int? item = selector(element);
                 if (min.HasValue)
                 {
-                    if (item.HasValue && _comparer.Compare(min.Value, item.Value) > 0)
+                    if (item.HasValue && comparer.Compare(min.Value, item.Value) > 0)
                     {
                         min = item;
                     }
@@ -1087,17 +1372,26 @@ namespace Theraot.Collections
 
         public static long? Min<TSource>(this IEnumerable<TSource> source, Func<TSource, long?> selector, IComparer<long> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            long? min = null;
-            foreach (var element in _source)
+            if (source == null)
             {
-                long? item = _selector(element);
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            long? min = null;
+            foreach (var element in source)
+            {
+                long? item = selector(element);
                 if (min.HasValue)
                 {
-                    if (item.HasValue && _comparer.Compare(min.Value, item.Value) > 0)
+                    if (item.HasValue && comparer.Compare(min.Value, item.Value) > 0)
                     {
                         min = item;
                     }
@@ -1120,17 +1414,26 @@ namespace Theraot.Collections
 
         public static double? Min<TSource>(this IEnumerable<TSource> source, Func<TSource, double?> selector, IComparer<double> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            double? min = null;
-            foreach (var element in _source)
+            if (source == null)
             {
-                double? item = _selector(element);
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            double? min = null;
+            foreach (var element in source)
+            {
+                double? item = selector(element);
                 if (min.HasValue)
                 {
-                    if (item.HasValue && _comparer.Compare(min.Value, item.Value) > 0)
+                    if (item.HasValue && comparer.Compare(min.Value, item.Value) > 0)
                     {
                         min = item;
                     }
@@ -1153,17 +1456,26 @@ namespace Theraot.Collections
 
         public static float? Min<TSource>(this IEnumerable<TSource> source, Func<TSource, float?> selector, IComparer<float> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            float? min = null;
-            foreach (var element in _source)
+            if (source == null)
             {
-                float? item = _selector(element);
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            float? min = null;
+            foreach (var element in source)
+            {
+                float? item = selector(element);
                 if (min.HasValue)
                 {
-                    if (item.HasValue && _comparer.Compare(min.Value, item.Value) > 0)
+                    if (item.HasValue && comparer.Compare(min.Value, item.Value) > 0)
                     {
                         min = item;
                     }
@@ -1186,17 +1498,26 @@ namespace Theraot.Collections
 
         public static decimal? Min<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal?> selector, IComparer<decimal> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            decimal? min = null;
-            foreach (var element in _source)
+            if (source == null)
             {
-                decimal? item = _selector(element);
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            decimal? min = null;
+            foreach (var element in source)
+            {
+                decimal? item = selector(element);
                 if (min.HasValue)
                 {
-                    if (item.HasValue && _comparer.Compare(min.Value, item.Value) > 0)
+                    if (item.HasValue && comparer.Compare(min.Value, item.Value) > 0)
                     {
                         min = item;
                     }
@@ -1219,11 +1540,20 @@ namespace Theraot.Collections
 
         public static TResult Min<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector, Comparer<TResult> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            Func<TSource, int, TResult> __selector = (item, i) => _selector(item);
-            return Min(_source.Select(__selector), _comparer);
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            Func<TSource, int, TResult> _selector = (item, i) => selector(item);
+            return Min(source.Select(_selector), comparer);
         }
     }
 }
