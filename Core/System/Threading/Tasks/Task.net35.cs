@@ -421,19 +421,26 @@ namespace System.Threading.Tasks
                 CancellationCheck(cancellationToken);
                 switch (Status)
                 {
-                    case TaskStatus.Created:
-                    case TaskStatus.WaitingForActivation:
-                        // This is a great opportunity to inline, but we are not going to because Microsoft doesn't.
-                        // _scheduler.TryExecuteTaskInline(this, false);
-                        break;
-
                     case TaskStatus.WaitingToRun:
                         Scheduler.TryExecuteTaskInline(this, true);
                         break;
 
+                    case TaskStatus.Created:
+                    case TaskStatus.WaitingForActivation:
                     case TaskStatus.Running:
                     case TaskStatus.WaitingForChildrenToComplete:
-                        // TODO: block and use continuation to release the block, so this thread is not spin waiting.
+                        var waitHandle = _waitHandle.Value;
+                        if (_waitHandle.IsAlive)
+                        {
+                            waitHandle.Wait
+                                (
+                                    TimeSpan.FromMilliseconds
+                                    (
+                                        milliseconds - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start)
+                                    ),
+                                    cancellationToken
+                                );
+                        }
                         break;
 
                     case TaskStatus.RanToCompletion:
@@ -678,18 +685,19 @@ namespace System.Threading.Tasks
                 CancellationCheck(cancellationToken);
                 switch (Status)
                 {
-                    case TaskStatus.Created:
-                    case TaskStatus.WaitingForActivation:
-                        // _scheduler.TryExecuteTaskInline(this, false);
-                        break;
-
                     case TaskStatus.WaitingToRun:
                         Scheduler.TryExecuteTaskInline(this, true);
                         break;
 
+                    case TaskStatus.Created:
+                    case TaskStatus.WaitingForActivation:
                     case TaskStatus.Running:
                     case TaskStatus.WaitingForChildrenToComplete:
-                        // TODO: block and use continuation to release the block, so this thread is not spin waiting.
+                        var waitHandle = _waitHandle.Value;
+                        if (_waitHandle.IsAlive)
+                        {
+                            waitHandle.Wait(cancellationToken);
+                        }
                         break;
 
                     case TaskStatus.RanToCompletion:
