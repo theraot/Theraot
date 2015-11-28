@@ -11,8 +11,8 @@ namespace System.Threading.Tasks
 {
     public partial class Task
     {
-        private readonly static Predicate<Task> _isExceptionObservedByParentPredicate = (t => t.IsExceptionObservedByParent);
-        private readonly static Action<object> _taskCancelCallback = (TaskCancelCallback);
+        private static readonly Predicate<Task> _isExceptionObservedByParentPredicate = (t => t.IsExceptionObservedByParent);
+        private static readonly Action<object> _taskCancelCallback = (TaskCancelCallback);
 
         private int _cancellationAcknowledged;
         private StrongBox<CancellationTokenRegistration> _cancellationRegistration;
@@ -349,6 +349,17 @@ namespace System.Threading.Tasks
             Thread.VolatileWrite(ref _cancellationAcknowledged, 1);
         }
 
+        internal void ThrowIfExceptional(bool includeTaskCanceledExceptions)
+        {
+            Contract.Requires(IsCompleted, "ThrowIfExceptional(): Expected IsCompleted == true");
+            Exception exception = GetExceptions(includeTaskCanceledExceptions);
+            if (exception != null)
+            {
+                UpdateExceptionObservedStatus();
+                throw exception;
+            }
+        }
+
         /// <summary>
         /// Checks whether this is an attached task, and whether we are being called by the parent task.
         /// And sets the TASK_STATE_EXCEPTIONOBSERVEDBYPARENT status flag based on that.
@@ -456,8 +467,8 @@ namespace System.Threading.Tasks
                         }
                         else
                         {
-                            // If an antecedent was specified, pack this task, its antecedent and the TaskContinuation together as a tuple 
-                            // and use it as the cancellation state object. This will be unpacked in the cancellation callback so that 
+                            // If an antecedent was specified, pack this task, its antecedent and the TaskContinuation together as a tuple
+                            // and use it as the cancellation state object. This will be unpacked in the cancellation callback so that
                             // antecedent.RemoveCancellation(continuation) can be invoked.
                             registration = cancellationToken.Register(_taskCancelCallback, new Tuple<Task, Task, TaskContinuation>(this, antecedent, continuation));
                         }

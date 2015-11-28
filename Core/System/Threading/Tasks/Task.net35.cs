@@ -390,31 +390,7 @@ namespace System.Threading.Tasks
 
         public void Wait(CancellationToken cancellationToken)
         {
-            CancellationCheck(cancellationToken);
-            while (true)
-            {
-                switch (Status)
-                {
-                    case TaskStatus.Created:
-                    case TaskStatus.WaitingForActivation:
-                        // _scheduler.TryExecuteTaskInline(this, false);
-                        break;
-
-                    case TaskStatus.WaitingToRun:
-                        Scheduler.TryExecuteTaskInline(this, true);
-                        break;
-
-                    case TaskStatus.Running:
-                    case TaskStatus.WaitingForChildrenToComplete:
-                        CancellationCheck(cancellationToken);
-                        break;
-
-                    case TaskStatus.RanToCompletion:
-                    case TaskStatus.Canceled:
-                    case TaskStatus.Faulted:
-                        return;
-                }
-            }
+            PrivateWait(cancellationToken, true);
         }
 
         public bool Wait(int milliseconds)
@@ -440,9 +416,9 @@ namespace System.Threading.Tasks
                 return true;
             }
             var start = ThreadingHelper.TicksNow();
-            CancellationCheck(cancellationToken);
             do
             {
+                CancellationCheck(cancellationToken);
                 switch (Status)
                 {
                     case TaskStatus.Created:
@@ -462,10 +438,12 @@ namespace System.Threading.Tasks
 
                     case TaskStatus.RanToCompletion:
                     case TaskStatus.Canceled:
+                        return true;
+
                     case TaskStatus.Faulted:
+                        ThrowIfExceptional(true);
                         return true;
                 }
-                CancellationCheck(cancellationToken);
             } while (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < milliseconds);
             return false;
         }
@@ -670,7 +648,7 @@ namespace System.Threading.Tasks
                 }
                 else
                 {
-                    Wait(CancellationToken);
+                    PrivateWait(CancellationToken, false);
                 }
             }
             catch (ThreadAbortException exception)
@@ -691,6 +669,41 @@ namespace System.Threading.Tasks
                 }
             }
             return true;
+        }
+
+        private void PrivateWait(CancellationToken cancellationToken, bool throwIfExceptional)
+        {
+            while (true)
+            {
+                CancellationCheck(cancellationToken);
+                switch (Status)
+                {
+                    case TaskStatus.Created:
+                    case TaskStatus.WaitingForActivation:
+                        // _scheduler.TryExecuteTaskInline(this, false);
+                        break;
+
+                    case TaskStatus.WaitingToRun:
+                        Scheduler.TryExecuteTaskInline(this, true);
+                        break;
+
+                    case TaskStatus.Running:
+                    case TaskStatus.WaitingForChildrenToComplete:
+                        // TODO: block and use continuation to release the block, so this thread is not spin waiting.
+                        break;
+
+                    case TaskStatus.RanToCompletion:
+                    case TaskStatus.Canceled:
+                        return;
+
+                    case TaskStatus.Faulted:
+                        if (throwIfExceptional)
+                        {
+                            ThrowIfExceptional(true);
+                        }
+                        return;
+                }
+            }
         }
 
         private void RecordException(TaskSchedulerException taskSchedulerException)
