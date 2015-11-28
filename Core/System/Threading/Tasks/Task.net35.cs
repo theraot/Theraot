@@ -727,10 +727,10 @@ namespace System.Threading.Tasks
 
         private void SetCompleted()
         {
-            var handle = _waitHandle.Value;
+            var waitHandle = _waitHandle.Value;
             if (_waitHandle.IsAlive)
             {
-                handle.Set();
+                waitHandle.Set();
             }
         }
 
