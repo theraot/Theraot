@@ -53,7 +53,7 @@ namespace System.Threading.Tasks
             {
                 // Since we are under lock, it is technically no longer necessary
                 // to make a copy.  It is done here for convenience.
-                EventHandler<UnobservedTaskExceptionEventArgs> handler = _unobservedTaskException;
+                var handler = _unobservedTaskException;
                 if (handler != null)
                 {
                     handler(sender, ueea);

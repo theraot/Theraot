@@ -58,6 +58,12 @@ namespace System.Threading.Tasks
         /// </summary>
         LazyCancellation = 0x20,
 
+        /// <summary>
+        /// Forces continuations added to the current task to be executed asynchronously.
+        /// This option has precedence over TaskContinuationOptions.ExecuteSynchronously
+        /// </summary>
+        RunContinuationsAsynchronously = 0x40,
+
         // These are specific to continuations
 
         /// <summary>

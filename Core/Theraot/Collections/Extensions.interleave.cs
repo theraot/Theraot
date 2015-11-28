@@ -13,11 +13,17 @@ namespace Theraot.Collections
     {
         public static IEnumerable<T> Interleave<T>(IEnumerable<T> arg1, IEnumerable<T> arg2)
         {
-            var _1 = Check.NotNullArgument(arg1, "arg1");
-            var _2 = Check.NotNullArgument(arg2, "arg2");
+            if (arg1 == null)
+            {
+                throw new ArgumentNullException("arg1");
+            }
+            if (arg2 == null)
+            {
+                throw new ArgumentNullException("arg2");
+            }
             var ok = true;
-            using (var enumerator1 = _1.GetEnumerator())
-            using (var enumerator2 = _2.GetEnumerator())
+            using (var enumerator1 = arg1.GetEnumerator())
+            using (var enumerator2 = arg2.GetEnumerator())
             {
                 while (ok)
                 {
@@ -38,13 +44,22 @@ namespace Theraot.Collections
 
         public static IEnumerable<T> Interleave<T>(IEnumerable<T> arg1, IEnumerable<T> arg2, IEnumerable<T> arg3)
         {
-            var _1 = Check.NotNullArgument(arg1, "arg1");
-            var _2 = Check.NotNullArgument(arg2, "arg2");
-            var _3 = Check.NotNullArgument(arg3, "arg3");
+            if (arg1 == null)
+            {
+                throw new ArgumentNullException("arg1");
+            }
+            if (arg2 == null)
+            {
+                throw new ArgumentNullException("arg2");
+            }
+            if (arg3 == null)
+            {
+                throw new ArgumentNullException("arg3");
+            }
             var ok = true;
-            using (var enumerator1 = _1.GetEnumerator())
-            using (var enumerator2 = _2.GetEnumerator())
-            using (var enumerator3 = _3.GetEnumerator())
+            using (var enumerator1 = arg1.GetEnumerator())
+            using (var enumerator2 = arg2.GetEnumerator())
+            using (var enumerator3 = arg3.GetEnumerator())
             {
                 while (ok)
                 {
@@ -70,15 +85,27 @@ namespace Theraot.Collections
 
         public static IEnumerable<T> Interleave<T>(IEnumerable<T> arg1, IEnumerable<T> arg2, IEnumerable<T> arg3, IEnumerable<T> arg4)
         {
-            var _1 = Check.NotNullArgument(arg1, "arg1");
-            var _2 = Check.NotNullArgument(arg2, "arg2");
-            var _3 = Check.NotNullArgument(arg3, "arg3");
-            var _4 = Check.NotNullArgument(arg4, "arg4");
+            if (arg1 == null)
+            {
+                throw new ArgumentNullException("arg1");
+            }
+            if (arg2 == null)
+            {
+                throw new ArgumentNullException("arg2");
+            }
+            if (arg3 == null)
+            {
+                throw new ArgumentNullException("arg3");
+            }
+            if (arg4 == null)
+            {
+                throw new ArgumentNullException("arg4");
+            }
             var ok = true;
-            using (var enumerator1 = _1.GetEnumerator())
-            using (var enumerator2 = _2.GetEnumerator())
-            using (var enumerator3 = _3.GetEnumerator())
-            using (var enumerator4 = _4.GetEnumerator())
+            using (var enumerator1 = arg1.GetEnumerator())
+            using (var enumerator2 = arg2.GetEnumerator())
+            using (var enumerator3 = arg3.GetEnumerator())
+            using (var enumerator4 = arg4.GetEnumerator())
             {
                 while (ok)
                 {
@@ -109,17 +136,32 @@ namespace Theraot.Collections
 
         public static IEnumerable<T> Interleave<T>(IEnumerable<T> arg1, IEnumerable<T> arg2, IEnumerable<T> arg3, IEnumerable<T> arg4, IEnumerable<T> arg5)
         {
-            var _1 = Check.NotNullArgument(arg1, "arg1");
-            var _2 = Check.NotNullArgument(arg2, "arg2");
-            var _3 = Check.NotNullArgument(arg3, "arg3");
-            var _4 = Check.NotNullArgument(arg4, "arg4");
-            var _5 = Check.NotNullArgument(arg5, "arg5");
+            if (arg1 == null)
+            {
+                throw new ArgumentNullException("arg1");
+            }
+            if (arg2 == null)
+            {
+                throw new ArgumentNullException("arg2");
+            }
+            if (arg3 == null)
+            {
+                throw new ArgumentNullException("arg3");
+            }
+            if (arg4 == null)
+            {
+                throw new ArgumentNullException("arg4");
+            }
+            if (arg5 == null)
+            {
+                throw new ArgumentNullException("arg5");
+            }
             var ok = true;
-            using (var enumerator1 = _1.GetEnumerator())
-            using (var enumerator2 = _2.GetEnumerator())
-            using (var enumerator3 = _3.GetEnumerator())
-            using (var enumerator4 = _4.GetEnumerator())
-            using (var enumerator5 = _5.GetEnumerator())
+            using (var enumerator1 = arg1.GetEnumerator())
+            using (var enumerator2 = arg2.GetEnumerator())
+            using (var enumerator3 = arg3.GetEnumerator())
+            using (var enumerator4 = arg4.GetEnumerator())
+            using (var enumerator5 = arg5.GetEnumerator())
             {
                 while (ok)
                 {
@@ -155,19 +197,37 @@ namespace Theraot.Collections
 
         public static IEnumerable<T> Interleave<T>(IEnumerable<T> arg1, IEnumerable<T> arg2, IEnumerable<T> arg3, IEnumerable<T> arg4, IEnumerable<T> arg5, IEnumerable<T> arg6)
         {
-            var _1 = Check.NotNullArgument(arg1, "arg1");
-            var _2 = Check.NotNullArgument(arg2, "arg2");
-            var _3 = Check.NotNullArgument(arg3, "arg3");
-            var _4 = Check.NotNullArgument(arg4, "arg4");
-            var _5 = Check.NotNullArgument(arg5, "arg5");
-            var _6 = Check.NotNullArgument(arg6, "arg6");
+            if (arg1 == null)
+            {
+                throw new ArgumentNullException("arg1");
+            }
+            if (arg2 == null)
+            {
+                throw new ArgumentNullException("arg2");
+            }
+            if (arg3 == null)
+            {
+                throw new ArgumentNullException("arg3");
+            }
+            if (arg4 == null)
+            {
+                throw new ArgumentNullException("arg4");
+            }
+            if (arg5 == null)
+            {
+                throw new ArgumentNullException("arg5");
+            }
+            if (arg6 == null)
+            {
+                throw new ArgumentNullException("arg6");
+            }
             var ok = true;
-            using (var enumerator1 = _1.GetEnumerator())
-            using (var enumerator2 = _2.GetEnumerator())
-            using (var enumerator3 = _3.GetEnumerator())
-            using (var enumerator4 = _4.GetEnumerator())
-            using (var enumerator5 = _5.GetEnumerator())
-            using (var enumerator6 = _6.GetEnumerator())
+            using (var enumerator1 = arg1.GetEnumerator())
+            using (var enumerator2 = arg2.GetEnumerator())
+            using (var enumerator3 = arg3.GetEnumerator())
+            using (var enumerator4 = arg4.GetEnumerator())
+            using (var enumerator5 = arg5.GetEnumerator())
+            using (var enumerator6 = arg6.GetEnumerator())
             {
                 while (ok)
                 {
@@ -208,21 +268,42 @@ namespace Theraot.Collections
 
         public static IEnumerable<T> Interleave<T>(IEnumerable<T> arg1, IEnumerable<T> arg2, IEnumerable<T> arg3, IEnumerable<T> arg4, IEnumerable<T> arg5, IEnumerable<T> arg6, IEnumerable<T> arg7)
         {
-            var _1 = Check.NotNullArgument(arg1, "arg1");
-            var _2 = Check.NotNullArgument(arg2, "arg2");
-            var _3 = Check.NotNullArgument(arg3, "arg3");
-            var _4 = Check.NotNullArgument(arg4, "arg4");
-            var _5 = Check.NotNullArgument(arg5, "arg5");
-            var _6 = Check.NotNullArgument(arg6, "arg6");
-            var _7 = Check.NotNullArgument(arg7, "arg7");
+            if (arg1 == null)
+            {
+                throw new ArgumentNullException("arg1");
+            }
+            if (arg2 == null)
+            {
+                throw new ArgumentNullException("arg2");
+            }
+            if (arg3 == null)
+            {
+                throw new ArgumentNullException("arg3");
+            }
+            if (arg4 == null)
+            {
+                throw new ArgumentNullException("arg4");
+            }
+            if (arg5 == null)
+            {
+                throw new ArgumentNullException("arg5");
+            }
+            if (arg6 == null)
+            {
+                throw new ArgumentNullException("arg6");
+            }
+            if (arg7 == null)
+            {
+                throw new ArgumentNullException("arg7");
+            }
             var ok = true;
-            using (var enumerator1 = _1.GetEnumerator())
-            using (var enumerator2 = _2.GetEnumerator())
-            using (var enumerator3 = _3.GetEnumerator())
-            using (var enumerator4 = _4.GetEnumerator())
-            using (var enumerator5 = _5.GetEnumerator())
-            using (var enumerator6 = _6.GetEnumerator())
-            using (var enumerator7 = _7.GetEnumerator())
+            using (var enumerator1 = arg1.GetEnumerator())
+            using (var enumerator2 = arg2.GetEnumerator())
+            using (var enumerator3 = arg3.GetEnumerator())
+            using (var enumerator4 = arg4.GetEnumerator())
+            using (var enumerator5 = arg5.GetEnumerator())
+            using (var enumerator6 = arg6.GetEnumerator())
+            using (var enumerator7 = arg7.GetEnumerator())
             {
                 while (ok)
                 {
@@ -268,23 +349,47 @@ namespace Theraot.Collections
 
         public static IEnumerable<T> Interleave<T>(IEnumerable<T> arg1, IEnumerable<T> arg2, IEnumerable<T> arg3, IEnumerable<T> arg4, IEnumerable<T> arg5, IEnumerable<T> arg6, IEnumerable<T> arg7, IEnumerable<T> arg8)
         {
-            var _1 = Check.NotNullArgument(arg1, "arg1");
-            var _2 = Check.NotNullArgument(arg2, "arg2");
-            var _3 = Check.NotNullArgument(arg3, "arg3");
-            var _4 = Check.NotNullArgument(arg4, "arg4");
-            var _5 = Check.NotNullArgument(arg5, "arg5");
-            var _6 = Check.NotNullArgument(arg6, "arg6");
-            var _7 = Check.NotNullArgument(arg7, "arg7");
-            var _8 = Check.NotNullArgument(arg8, "arg8");
+            if (arg1 == null)
+            {
+                throw new ArgumentNullException("arg1");
+            }
+            if (arg2 == null)
+            {
+                throw new ArgumentNullException("arg2");
+            }
+            if (arg3 == null)
+            {
+                throw new ArgumentNullException("arg3");
+            }
+            if (arg4 == null)
+            {
+                throw new ArgumentNullException("arg4");
+            }
+            if (arg5 == null)
+            {
+                throw new ArgumentNullException("arg5");
+            }
+            if (arg6 == null)
+            {
+                throw new ArgumentNullException("arg6");
+            }
+            if (arg7 == null)
+            {
+                throw new ArgumentNullException("arg7");
+            }
+            if (arg8 == null)
+            {
+                throw new ArgumentNullException("arg8");
+            }
             var ok = true;
-            using (var enumerator1 = _1.GetEnumerator())
-            using (var enumerator2 = _2.GetEnumerator())
-            using (var enumerator3 = _3.GetEnumerator())
-            using (var enumerator4 = _4.GetEnumerator())
-            using (var enumerator5 = _5.GetEnumerator())
-            using (var enumerator6 = _6.GetEnumerator())
-            using (var enumerator7 = _7.GetEnumerator())
-            using (var enumerator8 = _8.GetEnumerator())
+            using (var enumerator1 = arg1.GetEnumerator())
+            using (var enumerator2 = arg2.GetEnumerator())
+            using (var enumerator3 = arg3.GetEnumerator())
+            using (var enumerator4 = arg4.GetEnumerator())
+            using (var enumerator5 = arg5.GetEnumerator())
+            using (var enumerator6 = arg6.GetEnumerator())
+            using (var enumerator7 = arg7.GetEnumerator())
+            using (var enumerator8 = arg8.GetEnumerator())
             {
                 while (ok)
                 {
@@ -335,25 +440,52 @@ namespace Theraot.Collections
 
         public static IEnumerable<T> Interleave<T>(IEnumerable<T> arg1, IEnumerable<T> arg2, IEnumerable<T> arg3, IEnumerable<T> arg4, IEnumerable<T> arg5, IEnumerable<T> arg6, IEnumerable<T> arg7, IEnumerable<T> arg8, IEnumerable<T> arg9)
         {
-            var _1 = Check.NotNullArgument(arg1, "arg1");
-            var _2 = Check.NotNullArgument(arg2, "arg2");
-            var _3 = Check.NotNullArgument(arg3, "arg3");
-            var _4 = Check.NotNullArgument(arg4, "arg4");
-            var _5 = Check.NotNullArgument(arg5, "arg5");
-            var _6 = Check.NotNullArgument(arg6, "arg6");
-            var _7 = Check.NotNullArgument(arg7, "arg7");
-            var _8 = Check.NotNullArgument(arg8, "arg8");
-            var _9 = Check.NotNullArgument(arg9, "arg9");
+            if (arg1 == null)
+            {
+                throw new ArgumentNullException("arg1");
+            }
+            if (arg2 == null)
+            {
+                throw new ArgumentNullException("arg2");
+            }
+            if (arg3 == null)
+            {
+                throw new ArgumentNullException("arg3");
+            }
+            if (arg4 == null)
+            {
+                throw new ArgumentNullException("arg4");
+            }
+            if (arg5 == null)
+            {
+                throw new ArgumentNullException("arg5");
+            }
+            if (arg6 == null)
+            {
+                throw new ArgumentNullException("arg6");
+            }
+            if (arg7 == null)
+            {
+                throw new ArgumentNullException("arg7");
+            }
+            if (arg8 == null)
+            {
+                throw new ArgumentNullException("arg8");
+            }
+            if (arg9 == null)
+            {
+                throw new ArgumentNullException("arg9");
+            }
             var ok = true;
-            using (var enumerator1 = _1.GetEnumerator())
-            using (var enumerator2 = _2.GetEnumerator())
-            using (var enumerator3 = _3.GetEnumerator())
-            using (var enumerator4 = _4.GetEnumerator())
-            using (var enumerator5 = _5.GetEnumerator())
-            using (var enumerator6 = _6.GetEnumerator())
-            using (var enumerator7 = _7.GetEnumerator())
-            using (var enumerator8 = _8.GetEnumerator())
-            using (var enumerator9 = _9.GetEnumerator())
+            using (var enumerator1 = arg1.GetEnumerator())
+            using (var enumerator2 = arg2.GetEnumerator())
+            using (var enumerator3 = arg3.GetEnumerator())
+            using (var enumerator4 = arg4.GetEnumerator())
+            using (var enumerator5 = arg5.GetEnumerator())
+            using (var enumerator6 = arg6.GetEnumerator())
+            using (var enumerator7 = arg7.GetEnumerator())
+            using (var enumerator8 = arg8.GetEnumerator())
+            using (var enumerator9 = arg9.GetEnumerator())
             {
                 while (ok)
                 {
@@ -409,27 +541,57 @@ namespace Theraot.Collections
 
         public static IEnumerable<T> Interleave<T>(IEnumerable<T> arg1, IEnumerable<T> arg2, IEnumerable<T> arg3, IEnumerable<T> arg4, IEnumerable<T> arg5, IEnumerable<T> arg6, IEnumerable<T> arg7, IEnumerable<T> arg8, IEnumerable<T> arg9, IEnumerable<T> arg10)
         {
-            var _1 = Check.NotNullArgument(arg1, "arg1");
-            var _2 = Check.NotNullArgument(arg2, "arg2");
-            var _3 = Check.NotNullArgument(arg3, "arg3");
-            var _4 = Check.NotNullArgument(arg4, "arg4");
-            var _5 = Check.NotNullArgument(arg5, "arg5");
-            var _6 = Check.NotNullArgument(arg6, "arg6");
-            var _7 = Check.NotNullArgument(arg7, "arg7");
-            var _8 = Check.NotNullArgument(arg8, "arg8");
-            var _9 = Check.NotNullArgument(arg9, "arg9");
-            var _10 = Check.NotNullArgument(arg10, "arg10");
+            if (arg1 == null)
+            {
+                throw new ArgumentNullException("arg1");
+            }
+            if (arg2 == null)
+            {
+                throw new ArgumentNullException("arg2");
+            }
+            if (arg3 == null)
+            {
+                throw new ArgumentNullException("arg3");
+            }
+            if (arg4 == null)
+            {
+                throw new ArgumentNullException("arg4");
+            }
+            if (arg5 == null)
+            {
+                throw new ArgumentNullException("arg5");
+            }
+            if (arg6 == null)
+            {
+                throw new ArgumentNullException("arg6");
+            }
+            if (arg7 == null)
+            {
+                throw new ArgumentNullException("arg7");
+            }
+            if (arg8 == null)
+            {
+                throw new ArgumentNullException("arg8");
+            }
+            if (arg9 == null)
+            {
+                throw new ArgumentNullException("arg9");
+            }
+            if (arg10 == null)
+            {
+                throw new ArgumentNullException("arg10");
+            }
             var ok = true;
-            using (var enumerator1 = _1.GetEnumerator())
-            using (var enumerator2 = _2.GetEnumerator())
-            using (var enumerator3 = _3.GetEnumerator())
-            using (var enumerator4 = _4.GetEnumerator())
-            using (var enumerator5 = _5.GetEnumerator())
-            using (var enumerator6 = _6.GetEnumerator())
-            using (var enumerator7 = _7.GetEnumerator())
-            using (var enumerator8 = _8.GetEnumerator())
-            using (var enumerator9 = _9.GetEnumerator())
-            using (var enumerator10 = _10.GetEnumerator())
+            using (var enumerator1 = arg1.GetEnumerator())
+            using (var enumerator2 = arg2.GetEnumerator())
+            using (var enumerator3 = arg3.GetEnumerator())
+            using (var enumerator4 = arg4.GetEnumerator())
+            using (var enumerator5 = arg5.GetEnumerator())
+            using (var enumerator6 = arg6.GetEnumerator())
+            using (var enumerator7 = arg7.GetEnumerator())
+            using (var enumerator8 = arg8.GetEnumerator())
+            using (var enumerator9 = arg9.GetEnumerator())
+            using (var enumerator10 = arg10.GetEnumerator())
             {
                 while (ok)
                 {
@@ -490,29 +652,62 @@ namespace Theraot.Collections
 
         public static IEnumerable<T> Interleave<T>(IEnumerable<T> arg1, IEnumerable<T> arg2, IEnumerable<T> arg3, IEnumerable<T> arg4, IEnumerable<T> arg5, IEnumerable<T> arg6, IEnumerable<T> arg7, IEnumerable<T> arg8, IEnumerable<T> arg9, IEnumerable<T> arg10, IEnumerable<T> arg11)
         {
-            var _1 = Check.NotNullArgument(arg1, "arg1");
-            var _2 = Check.NotNullArgument(arg2, "arg2");
-            var _3 = Check.NotNullArgument(arg3, "arg3");
-            var _4 = Check.NotNullArgument(arg4, "arg4");
-            var _5 = Check.NotNullArgument(arg5, "arg5");
-            var _6 = Check.NotNullArgument(arg6, "arg6");
-            var _7 = Check.NotNullArgument(arg7, "arg7");
-            var _8 = Check.NotNullArgument(arg8, "arg8");
-            var _9 = Check.NotNullArgument(arg9, "arg9");
-            var _10 = Check.NotNullArgument(arg10, "arg10");
-            var _11 = Check.NotNullArgument(arg11, "arg11");
+            if (arg1 == null)
+            {
+                throw new ArgumentNullException("arg1");
+            }
+            if (arg2 == null)
+            {
+                throw new ArgumentNullException("arg2");
+            }
+            if (arg3 == null)
+            {
+                throw new ArgumentNullException("arg3");
+            }
+            if (arg4 == null)
+            {
+                throw new ArgumentNullException("arg4");
+            }
+            if (arg5 == null)
+            {
+                throw new ArgumentNullException("arg5");
+            }
+            if (arg6 == null)
+            {
+                throw new ArgumentNullException("arg6");
+            }
+            if (arg7 == null)
+            {
+                throw new ArgumentNullException("arg7");
+            }
+            if (arg8 == null)
+            {
+                throw new ArgumentNullException("arg8");
+            }
+            if (arg9 == null)
+            {
+                throw new ArgumentNullException("arg9");
+            }
+            if (arg10 == null)
+            {
+                throw new ArgumentNullException("arg10");
+            }
+            if (arg11 == null)
+            {
+                throw new ArgumentNullException("arg11");
+            }
             var ok = true;
-            using (var enumerator1 = _1.GetEnumerator())
-            using (var enumerator2 = _2.GetEnumerator())
-            using (var enumerator3 = _3.GetEnumerator())
-            using (var enumerator4 = _4.GetEnumerator())
-            using (var enumerator5 = _5.GetEnumerator())
-            using (var enumerator6 = _6.GetEnumerator())
-            using (var enumerator7 = _7.GetEnumerator())
-            using (var enumerator8 = _8.GetEnumerator())
-            using (var enumerator9 = _9.GetEnumerator())
-            using (var enumerator10 = _10.GetEnumerator())
-            using (var enumerator11 = _11.GetEnumerator())
+            using (var enumerator1 = arg1.GetEnumerator())
+            using (var enumerator2 = arg2.GetEnumerator())
+            using (var enumerator3 = arg3.GetEnumerator())
+            using (var enumerator4 = arg4.GetEnumerator())
+            using (var enumerator5 = arg5.GetEnumerator())
+            using (var enumerator6 = arg6.GetEnumerator())
+            using (var enumerator7 = arg7.GetEnumerator())
+            using (var enumerator8 = arg8.GetEnumerator())
+            using (var enumerator9 = arg9.GetEnumerator())
+            using (var enumerator10 = arg10.GetEnumerator())
+            using (var enumerator11 = arg11.GetEnumerator())
             {
                 while (ok)
                 {
@@ -578,31 +773,67 @@ namespace Theraot.Collections
 
         public static IEnumerable<T> Interleave<T>(IEnumerable<T> arg1, IEnumerable<T> arg2, IEnumerable<T> arg3, IEnumerable<T> arg4, IEnumerable<T> arg5, IEnumerable<T> arg6, IEnumerable<T> arg7, IEnumerable<T> arg8, IEnumerable<T> arg9, IEnumerable<T> arg10, IEnumerable<T> arg11, IEnumerable<T> arg12)
         {
-            var _1 = Check.NotNullArgument(arg1, "arg1");
-            var _2 = Check.NotNullArgument(arg2, "arg2");
-            var _3 = Check.NotNullArgument(arg3, "arg3");
-            var _4 = Check.NotNullArgument(arg4, "arg4");
-            var _5 = Check.NotNullArgument(arg5, "arg5");
-            var _6 = Check.NotNullArgument(arg6, "arg6");
-            var _7 = Check.NotNullArgument(arg7, "arg7");
-            var _8 = Check.NotNullArgument(arg8, "arg8");
-            var _9 = Check.NotNullArgument(arg9, "arg9");
-            var _10 = Check.NotNullArgument(arg10, "arg10");
-            var _11 = Check.NotNullArgument(arg11, "arg11");
-            var _12 = Check.NotNullArgument(arg12, "arg12");
+            if (arg1 == null)
+            {
+                throw new ArgumentNullException("arg1");
+            }
+            if (arg2 == null)
+            {
+                throw new ArgumentNullException("arg2");
+            }
+            if (arg3 == null)
+            {
+                throw new ArgumentNullException("arg3");
+            }
+            if (arg4 == null)
+            {
+                throw new ArgumentNullException("arg4");
+            }
+            if (arg5 == null)
+            {
+                throw new ArgumentNullException("arg5");
+            }
+            if (arg6 == null)
+            {
+                throw new ArgumentNullException("arg6");
+            }
+            if (arg7 == null)
+            {
+                throw new ArgumentNullException("arg7");
+            }
+            if (arg8 == null)
+            {
+                throw new ArgumentNullException("arg8");
+            }
+            if (arg9 == null)
+            {
+                throw new ArgumentNullException("arg9");
+            }
+            if (arg10 == null)
+            {
+                throw new ArgumentNullException("arg10");
+            }
+            if (arg11 == null)
+            {
+                throw new ArgumentNullException("arg11");
+            }
+            if (arg12 == null)
+            {
+                throw new ArgumentNullException("arg12");
+            }
             var ok = true;
-            using (var enumerator1 = _1.GetEnumerator())
-            using (var enumerator2 = _2.GetEnumerator())
-            using (var enumerator3 = _3.GetEnumerator())
-            using (var enumerator4 = _4.GetEnumerator())
-            using (var enumerator5 = _5.GetEnumerator())
-            using (var enumerator6 = _6.GetEnumerator())
-            using (var enumerator7 = _7.GetEnumerator())
-            using (var enumerator8 = _8.GetEnumerator())
-            using (var enumerator9 = _9.GetEnumerator())
-            using (var enumerator10 = _10.GetEnumerator())
-            using (var enumerator11 = _11.GetEnumerator())
-            using (var enumerator12 = _12.GetEnumerator())
+            using (var enumerator1 = arg1.GetEnumerator())
+            using (var enumerator2 = arg2.GetEnumerator())
+            using (var enumerator3 = arg3.GetEnumerator())
+            using (var enumerator4 = arg4.GetEnumerator())
+            using (var enumerator5 = arg5.GetEnumerator())
+            using (var enumerator6 = arg6.GetEnumerator())
+            using (var enumerator7 = arg7.GetEnumerator())
+            using (var enumerator8 = arg8.GetEnumerator())
+            using (var enumerator9 = arg9.GetEnumerator())
+            using (var enumerator10 = arg10.GetEnumerator())
+            using (var enumerator11 = arg11.GetEnumerator())
+            using (var enumerator12 = arg12.GetEnumerator())
             {
                 while (ok)
                 {
@@ -673,33 +904,72 @@ namespace Theraot.Collections
 
         public static IEnumerable<T> Interleave<T>(IEnumerable<T> arg1, IEnumerable<T> arg2, IEnumerable<T> arg3, IEnumerable<T> arg4, IEnumerable<T> arg5, IEnumerable<T> arg6, IEnumerable<T> arg7, IEnumerable<T> arg8, IEnumerable<T> arg9, IEnumerable<T> arg10, IEnumerable<T> arg11, IEnumerable<T> arg12, IEnumerable<T> arg13)
         {
-            var _1 = Check.NotNullArgument(arg1, "arg1");
-            var _2 = Check.NotNullArgument(arg2, "arg2");
-            var _3 = Check.NotNullArgument(arg3, "arg3");
-            var _4 = Check.NotNullArgument(arg4, "arg4");
-            var _5 = Check.NotNullArgument(arg5, "arg5");
-            var _6 = Check.NotNullArgument(arg6, "arg6");
-            var _7 = Check.NotNullArgument(arg7, "arg7");
-            var _8 = Check.NotNullArgument(arg8, "arg8");
-            var _9 = Check.NotNullArgument(arg9, "arg9");
-            var _10 = Check.NotNullArgument(arg10, "arg10");
-            var _11 = Check.NotNullArgument(arg11, "arg11");
-            var _12 = Check.NotNullArgument(arg12, "arg12");
-            var _13 = Check.NotNullArgument(arg13, "arg13");
+            if (arg1 == null)
+            {
+                throw new ArgumentNullException("arg1");
+            }
+            if (arg2 == null)
+            {
+                throw new ArgumentNullException("arg2");
+            }
+            if (arg3 == null)
+            {
+                throw new ArgumentNullException("arg3");
+            }
+            if (arg4 == null)
+            {
+                throw new ArgumentNullException("arg4");
+            }
+            if (arg5 == null)
+            {
+                throw new ArgumentNullException("arg5");
+            }
+            if (arg6 == null)
+            {
+                throw new ArgumentNullException("arg6");
+            }
+            if (arg7 == null)
+            {
+                throw new ArgumentNullException("arg7");
+            }
+            if (arg8 == null)
+            {
+                throw new ArgumentNullException("arg8");
+            }
+            if (arg9 == null)
+            {
+                throw new ArgumentNullException("arg9");
+            }
+            if (arg10 == null)
+            {
+                throw new ArgumentNullException("arg10");
+            }
+            if (arg11 == null)
+            {
+                throw new ArgumentNullException("arg11");
+            }
+            if (arg12 == null)
+            {
+                throw new ArgumentNullException("arg12");
+            }
+            if (arg13 == null)
+            {
+                throw new ArgumentNullException("arg13");
+            }
             var ok = true;
-            using (var enumerator1 = _1.GetEnumerator())
-            using (var enumerator2 = _2.GetEnumerator())
-            using (var enumerator3 = _3.GetEnumerator())
-            using (var enumerator4 = _4.GetEnumerator())
-            using (var enumerator5 = _5.GetEnumerator())
-            using (var enumerator6 = _6.GetEnumerator())
-            using (var enumerator7 = _7.GetEnumerator())
-            using (var enumerator8 = _8.GetEnumerator())
-            using (var enumerator9 = _9.GetEnumerator())
-            using (var enumerator10 = _10.GetEnumerator())
-            using (var enumerator11 = _11.GetEnumerator())
-            using (var enumerator12 = _12.GetEnumerator())
-            using (var enumerator13 = _13.GetEnumerator())
+            using (var enumerator1 = arg1.GetEnumerator())
+            using (var enumerator2 = arg2.GetEnumerator())
+            using (var enumerator3 = arg3.GetEnumerator())
+            using (var enumerator4 = arg4.GetEnumerator())
+            using (var enumerator5 = arg5.GetEnumerator())
+            using (var enumerator6 = arg6.GetEnumerator())
+            using (var enumerator7 = arg7.GetEnumerator())
+            using (var enumerator8 = arg8.GetEnumerator())
+            using (var enumerator9 = arg9.GetEnumerator())
+            using (var enumerator10 = arg10.GetEnumerator())
+            using (var enumerator11 = arg11.GetEnumerator())
+            using (var enumerator12 = arg12.GetEnumerator())
+            using (var enumerator13 = arg13.GetEnumerator())
             {
                 while (ok)
                 {
@@ -775,35 +1045,77 @@ namespace Theraot.Collections
 
         public static IEnumerable<T> Interleave<T>(IEnumerable<T> arg1, IEnumerable<T> arg2, IEnumerable<T> arg3, IEnumerable<T> arg4, IEnumerable<T> arg5, IEnumerable<T> arg6, IEnumerable<T> arg7, IEnumerable<T> arg8, IEnumerable<T> arg9, IEnumerable<T> arg10, IEnumerable<T> arg11, IEnumerable<T> arg12, IEnumerable<T> arg13, IEnumerable<T> arg14)
         {
-            var _1 = Check.NotNullArgument(arg1, "arg1");
-            var _2 = Check.NotNullArgument(arg2, "arg2");
-            var _3 = Check.NotNullArgument(arg3, "arg3");
-            var _4 = Check.NotNullArgument(arg4, "arg4");
-            var _5 = Check.NotNullArgument(arg5, "arg5");
-            var _6 = Check.NotNullArgument(arg6, "arg6");
-            var _7 = Check.NotNullArgument(arg7, "arg7");
-            var _8 = Check.NotNullArgument(arg8, "arg8");
-            var _9 = Check.NotNullArgument(arg9, "arg9");
-            var _10 = Check.NotNullArgument(arg10, "arg10");
-            var _11 = Check.NotNullArgument(arg11, "arg11");
-            var _12 = Check.NotNullArgument(arg12, "arg12");
-            var _13 = Check.NotNullArgument(arg13, "arg13");
-            var _14 = Check.NotNullArgument(arg14, "arg14");
+            if (arg1 == null)
+            {
+                throw new ArgumentNullException("arg1");
+            }
+            if (arg2 == null)
+            {
+                throw new ArgumentNullException("arg2");
+            }
+            if (arg3 == null)
+            {
+                throw new ArgumentNullException("arg3");
+            }
+            if (arg4 == null)
+            {
+                throw new ArgumentNullException("arg4");
+            }
+            if (arg5 == null)
+            {
+                throw new ArgumentNullException("arg5");
+            }
+            if (arg6 == null)
+            {
+                throw new ArgumentNullException("arg6");
+            }
+            if (arg7 == null)
+            {
+                throw new ArgumentNullException("arg7");
+            }
+            if (arg8 == null)
+            {
+                throw new ArgumentNullException("arg8");
+            }
+            if (arg9 == null)
+            {
+                throw new ArgumentNullException("arg9");
+            }
+            if (arg10 == null)
+            {
+                throw new ArgumentNullException("arg10");
+            }
+            if (arg11 == null)
+            {
+                throw new ArgumentNullException("arg11");
+            }
+            if (arg12 == null)
+            {
+                throw new ArgumentNullException("arg12");
+            }
+            if (arg13 == null)
+            {
+                throw new ArgumentNullException("arg13");
+            }
+            if (arg14 == null)
+            {
+                throw new ArgumentNullException("arg14");
+            }
             var ok = true;
-            using (var enumerator1 = _1.GetEnumerator())
-            using (var enumerator2 = _2.GetEnumerator())
-            using (var enumerator3 = _3.GetEnumerator())
-            using (var enumerator4 = _4.GetEnumerator())
-            using (var enumerator5 = _5.GetEnumerator())
-            using (var enumerator6 = _6.GetEnumerator())
-            using (var enumerator7 = _7.GetEnumerator())
-            using (var enumerator8 = _8.GetEnumerator())
-            using (var enumerator9 = _9.GetEnumerator())
-            using (var enumerator10 = _10.GetEnumerator())
-            using (var enumerator11 = _11.GetEnumerator())
-            using (var enumerator12 = _12.GetEnumerator())
-            using (var enumerator13 = _13.GetEnumerator())
-            using (var enumerator14 = _14.GetEnumerator())
+            using (var enumerator1 = arg1.GetEnumerator())
+            using (var enumerator2 = arg2.GetEnumerator())
+            using (var enumerator3 = arg3.GetEnumerator())
+            using (var enumerator4 = arg4.GetEnumerator())
+            using (var enumerator5 = arg5.GetEnumerator())
+            using (var enumerator6 = arg6.GetEnumerator())
+            using (var enumerator7 = arg7.GetEnumerator())
+            using (var enumerator8 = arg8.GetEnumerator())
+            using (var enumerator9 = arg9.GetEnumerator())
+            using (var enumerator10 = arg10.GetEnumerator())
+            using (var enumerator11 = arg11.GetEnumerator())
+            using (var enumerator12 = arg12.GetEnumerator())
+            using (var enumerator13 = arg13.GetEnumerator())
+            using (var enumerator14 = arg14.GetEnumerator())
             {
                 while (ok)
                 {
@@ -884,37 +1196,82 @@ namespace Theraot.Collections
 
         public static IEnumerable<T> Interleave<T>(IEnumerable<T> arg1, IEnumerable<T> arg2, IEnumerable<T> arg3, IEnumerable<T> arg4, IEnumerable<T> arg5, IEnumerable<T> arg6, IEnumerable<T> arg7, IEnumerable<T> arg8, IEnumerable<T> arg9, IEnumerable<T> arg10, IEnumerable<T> arg11, IEnumerable<T> arg12, IEnumerable<T> arg13, IEnumerable<T> arg14, IEnumerable<T> arg15)
         {
-            var _1 = Check.NotNullArgument(arg1, "arg1");
-            var _2 = Check.NotNullArgument(arg2, "arg2");
-            var _3 = Check.NotNullArgument(arg3, "arg3");
-            var _4 = Check.NotNullArgument(arg4, "arg4");
-            var _5 = Check.NotNullArgument(arg5, "arg5");
-            var _6 = Check.NotNullArgument(arg6, "arg6");
-            var _7 = Check.NotNullArgument(arg7, "arg7");
-            var _8 = Check.NotNullArgument(arg8, "arg8");
-            var _9 = Check.NotNullArgument(arg9, "arg9");
-            var _10 = Check.NotNullArgument(arg10, "arg10");
-            var _11 = Check.NotNullArgument(arg11, "arg11");
-            var _12 = Check.NotNullArgument(arg12, "arg12");
-            var _13 = Check.NotNullArgument(arg13, "arg13");
-            var _14 = Check.NotNullArgument(arg14, "arg14");
-            var _15 = Check.NotNullArgument(arg15, "arg15");
+            if (arg1 == null)
+            {
+                throw new ArgumentNullException("arg1");
+            }
+            if (arg2 == null)
+            {
+                throw new ArgumentNullException("arg2");
+            }
+            if (arg3 == null)
+            {
+                throw new ArgumentNullException("arg3");
+            }
+            if (arg4 == null)
+            {
+                throw new ArgumentNullException("arg4");
+            }
+            if (arg5 == null)
+            {
+                throw new ArgumentNullException("arg5");
+            }
+            if (arg6 == null)
+            {
+                throw new ArgumentNullException("arg6");
+            }
+            if (arg7 == null)
+            {
+                throw new ArgumentNullException("arg7");
+            }
+            if (arg8 == null)
+            {
+                throw new ArgumentNullException("arg8");
+            }
+            if (arg9 == null)
+            {
+                throw new ArgumentNullException("arg9");
+            }
+            if (arg10 == null)
+            {
+                throw new ArgumentNullException("arg10");
+            }
+            if (arg11 == null)
+            {
+                throw new ArgumentNullException("arg11");
+            }
+            if (arg12 == null)
+            {
+                throw new ArgumentNullException("arg12");
+            }
+            if (arg13 == null)
+            {
+                throw new ArgumentNullException("arg13");
+            }
+            if (arg14 == null)
+            {
+                throw new ArgumentNullException("arg14");
+            }
+            if (arg15 == null)
+            {
+                throw new ArgumentNullException("arg15");
+            }
             var ok = true;
-            using (var enumerator1 = _1.GetEnumerator())
-            using (var enumerator2 = _2.GetEnumerator())
-            using (var enumerator3 = _3.GetEnumerator())
-            using (var enumerator4 = _4.GetEnumerator())
-            using (var enumerator5 = _5.GetEnumerator())
-            using (var enumerator6 = _6.GetEnumerator())
-            using (var enumerator7 = _7.GetEnumerator())
-            using (var enumerator8 = _8.GetEnumerator())
-            using (var enumerator9 = _9.GetEnumerator())
-            using (var enumerator10 = _10.GetEnumerator())
-            using (var enumerator11 = _11.GetEnumerator())
-            using (var enumerator12 = _12.GetEnumerator())
-            using (var enumerator13 = _13.GetEnumerator())
-            using (var enumerator14 = _14.GetEnumerator())
-            using (var enumerator15 = _15.GetEnumerator())
+            using (var enumerator1 = arg1.GetEnumerator())
+            using (var enumerator2 = arg2.GetEnumerator())
+            using (var enumerator3 = arg3.GetEnumerator())
+            using (var enumerator4 = arg4.GetEnumerator())
+            using (var enumerator5 = arg5.GetEnumerator())
+            using (var enumerator6 = arg6.GetEnumerator())
+            using (var enumerator7 = arg7.GetEnumerator())
+            using (var enumerator8 = arg8.GetEnumerator())
+            using (var enumerator9 = arg9.GetEnumerator())
+            using (var enumerator10 = arg10.GetEnumerator())
+            using (var enumerator11 = arg11.GetEnumerator())
+            using (var enumerator12 = arg12.GetEnumerator())
+            using (var enumerator13 = arg13.GetEnumerator())
+            using (var enumerator14 = arg14.GetEnumerator())
+            using (var enumerator15 = arg15.GetEnumerator())
             {
                 while (ok)
                 {
@@ -1000,39 +1357,87 @@ namespace Theraot.Collections
 
         public static IEnumerable<T> Interleave<T>(IEnumerable<T> arg1, IEnumerable<T> arg2, IEnumerable<T> arg3, IEnumerable<T> arg4, IEnumerable<T> arg5, IEnumerable<T> arg6, IEnumerable<T> arg7, IEnumerable<T> arg8, IEnumerable<T> arg9, IEnumerable<T> arg10, IEnumerable<T> arg11, IEnumerable<T> arg12, IEnumerable<T> arg13, IEnumerable<T> arg14, IEnumerable<T> arg15, IEnumerable<T> arg16)
         {
-            var _1 = Check.NotNullArgument(arg1, "arg1");
-            var _2 = Check.NotNullArgument(arg2, "arg2");
-            var _3 = Check.NotNullArgument(arg3, "arg3");
-            var _4 = Check.NotNullArgument(arg4, "arg4");
-            var _5 = Check.NotNullArgument(arg5, "arg5");
-            var _6 = Check.NotNullArgument(arg6, "arg6");
-            var _7 = Check.NotNullArgument(arg7, "arg7");
-            var _8 = Check.NotNullArgument(arg8, "arg8");
-            var _9 = Check.NotNullArgument(arg9, "arg9");
-            var _10 = Check.NotNullArgument(arg10, "arg10");
-            var _11 = Check.NotNullArgument(arg11, "arg11");
-            var _12 = Check.NotNullArgument(arg12, "arg12");
-            var _13 = Check.NotNullArgument(arg13, "arg13");
-            var _14 = Check.NotNullArgument(arg14, "arg14");
-            var _15 = Check.NotNullArgument(arg15, "arg15");
-            var _16 = Check.NotNullArgument(arg16, "arg16");
+            if (arg1 == null)
+            {
+                throw new ArgumentNullException("arg1");
+            }
+            if (arg2 == null)
+            {
+                throw new ArgumentNullException("arg2");
+            }
+            if (arg3 == null)
+            {
+                throw new ArgumentNullException("arg3");
+            }
+            if (arg4 == null)
+            {
+                throw new ArgumentNullException("arg4");
+            }
+            if (arg5 == null)
+            {
+                throw new ArgumentNullException("arg5");
+            }
+            if (arg6 == null)
+            {
+                throw new ArgumentNullException("arg6");
+            }
+            if (arg7 == null)
+            {
+                throw new ArgumentNullException("arg7");
+            }
+            if (arg8 == null)
+            {
+                throw new ArgumentNullException("arg8");
+            }
+            if (arg9 == null)
+            {
+                throw new ArgumentNullException("arg9");
+            }
+            if (arg10 == null)
+            {
+                throw new ArgumentNullException("arg10");
+            }
+            if (arg11 == null)
+            {
+                throw new ArgumentNullException("arg11");
+            }
+            if (arg12 == null)
+            {
+                throw new ArgumentNullException("arg12");
+            }
+            if (arg13 == null)
+            {
+                throw new ArgumentNullException("arg13");
+            }
+            if (arg14 == null)
+            {
+                throw new ArgumentNullException("arg14");
+            }
+            if (arg15 == null)
+            {
+                throw new ArgumentNullException("arg15");
+            }
+            if (arg16 == null)
+            {
+                throw new ArgumentNullException("arg16");
+            }
             var ok = true;
-            using (var enumerator1 = _1.GetEnumerator())
-            using (var enumerator2 = _2.GetEnumerator())
-            using (var enumerator3 = _3.GetEnumerator())
-            using (var enumerator4 = _4.GetEnumerator())
-            using (var enumerator5 = _5.GetEnumerator())
-            using (var enumerator6 = _6.GetEnumerator())
-            using (var enumerator7 = _7.GetEnumerator())
-            using (var enumerator8 = _8.GetEnumerator())
-            using (var enumerator9 = _9.GetEnumerator())
-            using (var enumerator10 = _10.GetEnumerator())
-            using (var enumerator11 = _11.GetEnumerator())
-            using (var enumerator12 = _12.GetEnumerator())
-            using (var enumerator13 = _13.GetEnumerator())
-            using (var enumerator14 = _14.GetEnumerator())
-            using (var enumerator15 = _15.GetEnumerator())
-            using (var enumerator16 = _16.GetEnumerator())
+            using (var enumerator1 = arg1.GetEnumerator())
+            using (var enumerator2 = arg2.GetEnumerator())
+            using (var enumerator3 = arg3.GetEnumerator())
+            using (var enumerator4 = arg4.GetEnumerator())
+            using (var enumerator5 = arg5.GetEnumerator())
+            using (var enumerator6 = arg6.GetEnumerator())
+            using (var enumerator7 = arg7.GetEnumerator())
+            using (var enumerator8 = arg8.GetEnumerator())
+            using (var enumerator9 = arg9.GetEnumerator())
+            using (var enumerator10 = arg10.GetEnumerator())
+            using (var enumerator11 = arg11.GetEnumerator())
+            using (var enumerator12 = arg12.GetEnumerator())
+            using (var enumerator13 = arg13.GetEnumerator())
+            using (var enumerator14 = arg14.GetEnumerator())
+            using (var enumerator15 = arg15.GetEnumerator())
+            using (var enumerator16 = arg16.GetEnumerator())
             {
                 while (ok)
                 {

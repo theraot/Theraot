@@ -171,12 +171,12 @@ namespace Theraot.Threading.Needles
             {
                 throw new InvalidOperationException();
             }
-            var handle = _waitHandle.Value;
-            if (handle != null)
+            var waitHandle = _waitHandle.Value;
+            if (waitHandle != null)
             {
                 try
                 {
-                    handle.Wait();
+                    waitHandle.Wait();
                 }
                 catch (ObjectDisposedException exception)
                 {
@@ -212,8 +212,8 @@ namespace Theraot.Threading.Needles
                 {
                     throw new InvalidOperationException();
                 }
-                var handle = _waitHandle.Value;
-                if (handle != null)
+                var waitHandle = _waitHandle.Value;
+                if (waitHandle != null)
                 {
                     try
                     {

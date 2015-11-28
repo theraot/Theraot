@@ -65,12 +65,12 @@ namespace Theraot.Collections
         {
             var groups = new Dictionary<TKey, List<TSource>>(comparer);
             var nullList = new List<TSource>();
-            int counter = 0;
-            int nullCounter = -1;
+            var counter = 0;
+            var nullCounter = -1;
 
             foreach (TSource element in source)
             {
-                TKey key = keySelector(element);
+                var key = keySelector(element);
                 if (ReferenceEquals(key, null))
                 {
                     nullList.Add(element);
@@ -117,13 +117,13 @@ namespace Theraot.Collections
         {
             var groups = new Dictionary<TKey, List<TElement>>(comparer);
             var nullList = new List<TElement>();
-            int counter = 0;
-            int nullCounter = -1;
+            var counter = 0;
+            var nullCounter = -1;
 
             foreach (TSource item in source)
             {
-                TKey key = keySelector(item);
-                TElement element = elementSelector(item);
+                var key = keySelector(item);
+                var element = elementSelector(item);
                 if (ReferenceEquals(key, null))
                 {
                     nullList.Add(element);
@@ -168,7 +168,7 @@ namespace Theraot.Collections
 
         private static IEnumerable<TResult> CreateGroupByIterator<TSource, TKey, TElement, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, Func<TKey, IEnumerable<TElement>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
         {
-            IEnumerable<IGrouping<TKey, TElement>> groups = GroupProgressiveBy(source, keySelector, elementSelector, comparer);
+            var groups = GroupProgressiveBy(source, keySelector, elementSelector, comparer);
 
             foreach (IGrouping<TKey, TElement> group in groups)
             {
@@ -178,7 +178,7 @@ namespace Theraot.Collections
 
         private static IEnumerable<TResult> CreateGroupByIterator<TSource, TKey, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TKey, IEnumerable<TSource>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
         {
-            IEnumerable<IGrouping<TKey, TSource>> groups = GroupProgressiveBy(source, keySelector, comparer);
+            var groups = GroupProgressiveBy(source, keySelector, comparer);
 
             foreach (IGrouping<TKey, TSource> group in groups)
             {

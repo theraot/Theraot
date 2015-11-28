@@ -3,7 +3,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
-using System.Runtime.ExceptionServices;
 using System.Security;
 using Theraot.Core;
 using Theraot.Threading;
@@ -12,8 +11,8 @@ namespace System.Threading.Tasks
 {
     public partial class Task
     {
-        private readonly static Predicate<Task> _isExceptionObservedByParentPredicate = (t => t.IsExceptionObservedByParent);
-        private readonly static Action<object> _taskCancelCallback = (TaskCancelCallback);
+        private static readonly Predicate<Task> _isExceptionObservedByParentPredicate = (t => t.IsExceptionObservedByParent);
+        private static readonly Action<object> _taskCancelCallback = (TaskCancelCallback);
 
         private int _cancellationAcknowledged;
         private StrongBox<CancellationTokenRegistration> _cancellationRegistration;
@@ -52,6 +51,14 @@ namespace System.Threading.Tasks
             }
         }
 
+        internal bool IsChildReplica
+        {
+            get
+            {
+                return (_internalOptions & InternalTaskOptions.ChildReplica) != 0;
+            }
+        }
+
         /// <summary>
         /// Checks whether the TASK_STATE_EXCEPTIONOBSERVEDBYPARENT status flag is set,
         /// This will only be used by the implicit wait to prevent double throws
@@ -61,6 +68,15 @@ namespace System.Threading.Tasks
             get
             {
                 return Thread.VolatileRead(ref _exceptionObservedByParent) == 1;
+            }
+        }
+
+        internal bool IsSelfReplicatingRoot
+        {
+            get
+            {
+                // Return true if self-replicating bit is set and child replica bit is not set
+                return (_internalOptions & (InternalTaskOptions.SelfReplicating | InternalTaskOptions.ChildReplica)) == InternalTaskOptions.SelfReplicating;
             }
         }
 
@@ -82,7 +98,7 @@ namespace System.Threading.Tasks
                 // be racing with the code segment at the bottom of Finish() that prunes the exceptional child array.
                 lock (tmp)
                 {
-                    foreach (Task task in tmp)
+                    foreach (var task in tmp)
                     {
                         // Ensure any exceptions thrown by children are added to the parent.
                         // In doing this, we are implicitly marking children as being "handled".
@@ -126,8 +142,9 @@ namespace System.Threading.Tasks
                 {
                     _cancellationRegistration.Value.Dispose();
                 }
-                catch (ObjectDisposedException)
+                catch (ObjectDisposedException exception)
                 {
+                    GC.KeepAlive(exception);
                     // Empty
                 }
                 _cancellationRegistration = null;
@@ -138,97 +155,14 @@ namespace System.Threading.Tasks
         // We need to subtract that child from m_completionCountdown, or the parent will never complete.
         internal void DisregardChild()
         {
-            Contract.Assert(_current == this, "Task.DisregardChild(): Called from an external context");
+            Contract.Assert(Current == this, "Task.DisregardChild(): Called from an external context");
             Contract.Assert(Thread.VolatileRead(ref _completionCountdown) >= 2, "Task.DisregardChild(): Expected parent count to be >= 2");
             Interlocked.Decrement(ref _completionCountdown);
         }
 
-        /// <summary>
-        /// Returns a list of exceptions by aggregating the holder's contents. Or null if
-        /// no exceptions have been thrown.
-        /// </summary>
-        /// <param name="includeTaskCanceledExceptions">Whether to include a TCE if cancelled.</param>
-        /// <returns>An aggregate exception, or null if no exceptions have been caught.</returns>
-        private AggregateException GetExceptions(bool includeTaskCanceledExceptions)
+        internal void Finish(bool userDelegateExecuted)
         {
-            //
-            // WARNING: The Task/Task<TResult>/TaskCompletionSource classes
-            // have all been carefully crafted to insure that GetExceptions()
-            // is never called while AddException() is being called.  There
-            // are locks taken on m_contingentProperties in several places:
-            //
-            // -- Task<TResult>.TrySetException(): The lock allows the
-            //    task to be set to Faulted state, and all exceptions to
-            //    be recorded, in one atomic action.  
-            //
-            // -- Task.Exception_get(): The lock ensures that Task<TResult>.TrySetException()
-            //    is allowed to complete its operation before Task.Exception_get()
-            //    can access GetExceptions().
-            //
-            // -- Task.ThrowIfExceptional(): The lock insures that Wait() will
-            //    not attempt to call GetExceptions() while Task<TResult>.TrySetException()
-            //    is in the process of calling AddException().
-            //
-            // For "regular" tasks, we effectively keep AddException() and GetException()
-            // from being called concurrently by the way that the state flows.  Until
-            // a Task is marked Faulted, Task.Exception_get() returns null.  And
-            // a Task is not marked Faulted until it and all of its children have
-            // completed, which means that all exceptions have been recorded.
-            //
-            // It might be a lot easier to follow all of this if we just required
-            // that all calls to GetExceptions() and AddExceptions() were made
-            // under a lock on m_contingentProperties.  But that would also
-            // increase our lock occupancy time and the frequency with which we
-            // would need to take the lock.
-            //
-            // If you add a call to GetExceptions() anywhere in the code,
-            // please continue to maintain the invariant that it can't be
-            // called when AddException() is being called.
-            //
-
-            // We'll lazily create a TCE if the task has been canceled.
-            Exception canceledException = null;
-            if (includeTaskCanceledExceptions && IsCanceled)
-            {
-                // Backcompat: 
-                // Ideally we'd just use the cached OCE from this.GetCancellationExceptionDispatchInfo()
-                // here.  However, that would result in a potentially breaking change from .NET 4, which
-                // has the code here that throws a new exception instead of the original, and the EDI
-                // may not contain a TCE, but an OCE or any OCE-derived type, which would mean we'd be
-                // propagating an exception of a different type.
-                canceledException = new TaskCanceledException(this);
-            }
-
-            var exceptionsHolder = ThreadingHelper.VolatileRead(ref _exceptionsHolder);
-            if (exceptionsHolder != null && exceptionsHolder.ContainsFaultList)
-            {
-                // No need to lock around this, as other logic prevents the consumption of exceptions
-                // before they have been completely processed.
-                return _exceptionsHolder.CreateExceptionObject(false, canceledException);
-            }
-            if (canceledException != null)
-            {
-                // No exceptions, but there was a cancelation. Aggregate and return it.
-                return new AggregateException(canceledException);
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// Signals completion of this particular task.
-        ///
-        /// The bUserDelegateExecuted parameter indicates whether this Finish() call comes following the
-        /// full execution of the user delegate.
-        ///
-        /// If bUserDelegateExecuted is false, it mean user delegate wasn't invoked at all (either due to
-        /// a cancellation request, or because this task is a promise style Task). In this case, the steps
-        /// involving child tasks (i.e. WaitForChildren) will be skipped.
-        ///
-        /// </summary>
-        internal void Finish(bool bUserDelegateExecuted)
-        {
-            if (!bUserDelegateExecuted)
+            if (!userDelegateExecuted)
             {
                 // delegate didn't execute => no children. We can safely call the remaining finish stages
                 FinishStageTwo();
@@ -238,7 +172,7 @@ namespace System.Threading.Tasks
                 // Reaching this sub clause means there may be remaining active children,
                 // and we could be racing with one of them to call FinishStageTwo().
                 // So whoever does the final Interlocked.Dec is responsible to finish.
-                if (Interlocked.Decrement(ref _completionCountdown) == 0)
+                if ((_completionCountdown == 1 && !IsSelfReplicatingRoot) || Interlocked.Decrement(ref _completionCountdown) == 0)
                 {
                     FinishStageTwo();
                 }
@@ -272,7 +206,7 @@ namespace System.Threading.Tasks
         // And this method should be called at most once per task.
         internal void FinishStageThree()
         {
-            _action = null;
+            Action = null;
             // Notify parent if this was an attached task
             if (_parent != null && ((_parent._creationOptions & TaskCreationOptions.DenyChildAttach) == 0) && (_creationOptions & TaskCreationOptions.AttachedToParent) != 0)
             {
@@ -327,50 +261,20 @@ namespace System.Threading.Tasks
             FinishStageThree();
         }
 
-        /// <summary>
-        /// Special purpose Finish() entry point to be used when the task delegate throws a ThreadAbortedException
-        /// This makes a note in the state flags so that we avoid any costly synchronous operations in the finish codepath
-        /// such as inlined continuations
-        /// 
-        /// Assumes ThreadAbortException was added to this task's exception holder.
-        /// This should always be true except for the case of non-root self replicating task copies.
-        /// </summary>
-        /// <param name="delegateRan">Whether the delegate was executed.</param>
-        internal void FinishThreadAbortedTaskWithException(bool delegateRan)
+        internal void FinishThreadAbortedTask(bool exceptionAdded, bool delegateRan)
         {
             if (Interlocked.CompareExchange(ref _threadAbortedmanaged, 1, 0) == 0)
             {
                 var exceptionsHolder = ThreadingHelper.VolatileRead(ref _exceptionsHolder);
-                if (exceptionsHolder != null)
+                if (exceptionsHolder == null)
+                {
+                    return;
+                }
+                if (exceptionAdded)
                 {
                     exceptionsHolder.MarkAsHandled(false);
-                    Finish(delegateRan);
                 }
-                else
-                {
-                    Contract.Assert(false, "FinishThreadAbortedTask() called on a task whose exception holder wasn't initialized");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Special purpose Finish() entry point to be used when the task delegate throws a ThreadAbortedException
-        /// This makes a note in the state flags so that we avoid any costly synchronous operations in the finish codepath
-        /// such as inlined continuations
-        /// 
-        /// Assumes ThreadAbortException was NOT added to this task's exception holder.
-        /// This should always be true except for the case of non-root self replicating task copies.
-        /// </summary>
-        /// <param name="delegateRan">Whether the delegate was executed.</param>
-        internal void FinishThreadAbortedTaskWithoutException(bool delegateRan)
-        {
-            if (Interlocked.CompareExchange(ref _threadAbortedmanaged, 1, 0) == 0)
-            {
-                var exceptionsHolder = ThreadingHelper.VolatileRead(ref _exceptionsHolder);
-                if (exceptionsHolder != null)
-                {
-                    Finish(delegateRan);
-                }
+                Finish(delegateRan);
             }
         }
 
@@ -380,25 +284,22 @@ namespace System.Threading.Tasks
         internal virtual void InnerInvoke()
         {
             // Invoke the delegate
-            Contract.Assert(_action != null, "Null action in InnerInvoke()");
-            var action = _action as Action;
+            Contract.Assert(Action != null, "Null action in InnerInvoke()");
+            var action = Action as Action;
             if (action != null)
             {
-                action.Invoke();
+                action();
                 return;
             }
-            var actionWithState = _action as Action<object>;
+            var actionWithState = Action as Action<object>;
             if (actionWithState != null)
             {
-                actionWithState(_state);
+                actionWithState(State);
                 return;
             }
-            Contract.Assert(false, "Invalid m_action in Task");
+            Contract.Assert(false, "Invalid Action in Task");
         }
 
-        /// <summary>
-        /// This is called by children of this task when they are completed.
-        /// </summary>
         internal void ProcessChildCompletion(Task childTask)
         {
             Contract.Requires(childTask != null);
@@ -419,7 +320,7 @@ namespace System.Threading.Tasks
                 // multiple times for the same task.  In that case, AddExceptionsFromChildren() could be nulling m_exceptionalChildren
                 // out at the same time that we're processing it, resulting in a NullReferenceException here.  We'll protect
                 // ourselves by caching m_exceptionChildren in a local variable.
-                List<Task> tmp = ThreadingHelper.VolatileRead(ref _exceptionalChildren);
+                var tmp = ThreadingHelper.VolatileRead(ref _exceptionalChildren);
                 if (tmp != null)
                 {
                     lock (tmp)
@@ -448,6 +349,17 @@ namespace System.Threading.Tasks
             Thread.VolatileWrite(ref _cancellationAcknowledged, 1);
         }
 
+        internal void ThrowIfExceptional(bool includeTaskCanceledExceptions)
+        {
+            Contract.Requires(IsCompleted, "ThrowIfExceptional(): Expected IsCompleted == true");
+            Exception exception = GetExceptions(includeTaskCanceledExceptions);
+            if (exception != null)
+            {
+                UpdateExceptionObservedStatus();
+                throw exception;
+            }
+        }
+
         /// <summary>
         /// Checks whether this is an attached task, and whether we are being called by the parent task.
         /// And sets the TASK_STATE_EXCEPTIONOBSERVEDBYPARENT status flag based on that.
@@ -461,9 +373,22 @@ namespace System.Threading.Tasks
         /// </summary>
         internal void UpdateExceptionObservedStatus()
         {
-            if ((_parent != null) && ((_creationOptions & TaskCreationOptions.AttachedToParent) != 0) && ((_parent._creationOptions & TaskCreationOptions.DenyChildAttach) == 0) && _current == _parent)
+            if ((_parent != null) && ((_creationOptions & TaskCreationOptions.AttachedToParent) != 0) && ((_parent._creationOptions & TaskCreationOptions.DenyChildAttach) == 0) && Current == _parent)
             {
                 Thread.VolatileWrite(ref _exceptionObservedByParent, 1);
+            }
+        }
+
+        private static void ExecutionContextCallback(object obj)
+        {
+            var task = obj as Task;
+            if (task == null)
+            {
+                Contract.Assert(false, "expected a task object");
+            }
+            else
+            {
+                task.Execute();
             }
         }
 
@@ -472,38 +397,59 @@ namespace System.Threading.Tasks
             var task = obj as Task;
             if (task == null)
             {
-                Contract.Assert(false,
-                    "targetTask should have been non-null, with the supplied argument being a task or a tuple containing one");
+                var tuple = obj as Tuple<Task, Task, TaskContinuation>;
+                if (tuple == null)
+                {
+                    Contract.Assert(false, "task should have been non-null");
+                    return;
+                }
+                task = tuple.Item1;
+                var antecedent = tuple.Item2;
+                var continuation = tuple.Item3;
+                antecedent.RemoveContinuation(continuation);
             }
-            else
-            {
-                task.CancelContinuations();
-                task.InternalCancel(false);
-            }
+            task.InternalCancel(false);
         }
 
         /// <summary>
-        /// Handles everything needed for associating a CancellationToken with a task which is being constructed.
-        /// This method is meant to be be called either from the TaskConstructorCore or from ContinueWithCore.
+        /// Internal function that will be called by a new child task to add itself to
+        /// the children list of the parent (this).
+        ///
+        /// Since a child task can only be created from the thread executing the action delegate
+        /// of this task, reentrancy is neither required nor supported. This should not be called from
+        /// anywhere other than the task construction/initialization codepaths.
         /// </summary>
-        private void AssignCancellationToken(CancellationToken cancellationToken)
+        private void AddNewChild()
         {
-            Token = cancellationToken;
+            Contract.Assert(Current == this || IsSelfReplicatingRoot, "Task.AddNewChild(): Called from an external context");
+
+            if (_completionCountdown == 1 && !IsSelfReplicatingRoot)
+            {
+                // A count of 1 indicates so far there was only the parent, and this is the first child task
+                // Single kid => no fuss about who else is accessing the count. Let's save ourselves 100 cycles
+                // We exclude self replicating root tasks from this optimization, because further child creation can take place on
+                // other cores and with bad enough timing this write may not be visible to them.
+                _completionCountdown++;
+            }
+            else
+            {
+                // otherwise do it safely
+                Interlocked.Increment(ref _completionCountdown);
+            }
+        }
+
+        private void AssignCancellationToken(CancellationToken cancellationToken, Task antecedent, TaskContinuation continuation)
+        {
+            CancellationToken = cancellationToken;
             try
             {
                 cancellationToken.ThrowIfSourceDisposed();
-
                 // If an unstarted task has a valid CancellationToken that gets signalled while the task is still not queued
                 // we need to proactively cancel it, because it may never execute to transition itself.
                 // The only way to accomplish this is to register a callback on the CT.
                 // We exclude Promise tasks from this, because TaskCompletionSource needs to fully control the inner tasks's lifetime (i.e. not allow external cancellations)
 
-                // Translation notes:
-                // unstarted task (... that) is still not queued means a task on TaskStatus.Created or TaskStatus.WaitingForActivation
-                // TODO: No support for promise tasks yet
-
-                var status = Thread.VolatileRead(ref _status);
-                if (status == (int)TaskStatus.Created || status == (int)TaskStatus.WaitingForActivation)
+                if ((_internalOptions & (InternalTaskOptions.QueuedByRuntime | InternalTaskOptions.PromiseTask | InternalTaskOptions.LazyCancellation)) == 0)
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
@@ -513,11 +459,24 @@ namespace System.Threading.Tasks
                     else
                     {
                         // Regular path for an uncanceled cancellationToken
-                        _cancellationRegistration = new StrongBox<CancellationTokenRegistration>(cancellationToken.Register(_taskCancelCallback, this, false));
+                        CancellationTokenRegistration registration;
+                        if (antecedent == null)
+                        {
+                            // if no antecedent was specified, use this task's reference as the cancellation state object
+                            registration = cancellationToken.Register(_taskCancelCallback, this);
+                        }
+                        else
+                        {
+                            // If an antecedent was specified, pack this task, its antecedent and the TaskContinuation together as a tuple
+                            // and use it as the cancellation state object. This will be unpacked in the cancellation callback so that
+                            // antecedent.RemoveCancellation(continuation) can be invoked.
+                            registration = cancellationToken.Register(_taskCancelCallback, new Tuple<Task, Task, TaskContinuation>(this, antecedent, continuation));
+                        }
+                        _cancellationRegistration = new StrongBox<CancellationTokenRegistration>(registration);
                     }
                 }
             }
-            catch
+            catch (Exception)
             {
                 // If we have an exception related to our CancellationToken, then we need to subtract ourselves
                 // from our parent before throwing it.
@@ -550,7 +509,7 @@ namespace System.Threading.Tasks
                 // This is a ThreadAbortException and it will be rethrown from this catch clause, causing us to
                 // skip the regular Finish codepath. In order not to leave the task unfinished, we now call
                 // FinishThreadAbortedTask here.
-                FinishThreadAbortedTaskWithException(true);
+                FinishThreadAbortedTask(true, true);
             }
             catch (Exception exn)
             {
@@ -563,20 +522,103 @@ namespace System.Threading.Tasks
         private void ExecuteWithThreadLocal()
         {
             // Remember the current task so we can restore it after running, and then
-            Task previousTask = _current;
+            var previousTask = Current;
             try
             {
                 // place the current task into TLS.
-                _current = this;
-
-                Execute();
+                Current = this;
+                var executionContext = CapturedContext;
+                if (executionContext == null)
+                {
+                    Execute();
+                }
+                else
+                {
+                    if (IsSelfReplicatingRoot || IsChildReplica)
+                    {
+                        CapturedContext = executionContext.CreateCopy();
+                    }
+                    ExecutionContext.Run(executionContext, ExecutionContextCallback, this);
+                }
 
                 Finish(true);
             }
             finally
             {
-                _current = previousTask;
+                Current = previousTask;
             }
+        }
+
+        /// <summary>
+        /// Returns a list of exceptions by aggregating the holder's contents. Or null if
+        /// no exceptions have been thrown.
+        /// </summary>
+        /// <param name="includeTaskCanceledExceptions">Whether to include a TCE if cancelled.</param>
+        /// <returns>An aggregate exception, or null if no exceptions have been caught.</returns>
+        private AggregateException GetExceptions(bool includeTaskCanceledExceptions)
+        {
+            //
+            // WARNING: The Task/Task<TResult>/TaskCompletionSource classes
+            // have all been carefully crafted to insure that GetExceptions()
+            // is never called while AddException() is being called.  There
+            // are locks taken on m_contingentProperties in several places:
+            //
+            // -- Task<TResult>.TrySetException(): The lock allows the
+            //    task to be set to Faulted state, and all exceptions to
+            //    be recorded, in one atomic action.
+            //
+            // -- Task.Exception_get(): The lock ensures that Task<TResult>.TrySetException()
+            //    is allowed to complete its operation before Task.Exception_get()
+            //    can access GetExceptions().
+            //
+            // -- Task.ThrowIfExceptional(): The lock insures that Wait() will
+            //    not attempt to call GetExceptions() while Task<TResult>.TrySetException()
+            //    is in the process of calling AddException().
+            //
+            // For "regular" tasks, we effectively keep AddException() and GetException()
+            // from being called concurrently by the way that the state flows.  Until
+            // a Task is marked Faulted, Task.Exception_get() returns null.  And
+            // a Task is not marked Faulted until it and all of its children have
+            // completed, which means that all exceptions have been recorded.
+            //
+            // It might be a lot easier to follow all of this if we just required
+            // that all calls to GetExceptions() and AddExceptions() were made
+            // under a lock on m_contingentProperties.  But that would also
+            // increase our lock occupancy time and the frequency with which we
+            // would need to take the lock.
+            //
+            // If you add a call to GetExceptions() anywhere in the code,
+            // please continue to maintain the invariant that it can't be
+            // called when AddException() is being called.
+            //
+
+            // We'll lazily create a TCE if the task has been canceled.
+            Exception canceledException = null;
+            if (includeTaskCanceledExceptions && IsCanceled)
+            {
+                // Backcompat:
+                // Ideally we'd just use the cached OCE from this.GetCancellationExceptionDispatchInfo()
+                // here.  However, that would result in a potentially breaking change from .NET 4, which
+                // has the code here that throws a new exception instead of the original, and the EDI
+                // may not contain a TCE, but an OCE or any OCE-derived type, which would mean we'd be
+                // propagating an exception of a different type.
+                canceledException = new TaskCanceledException(this);
+            }
+
+            var exceptionsHolder = ThreadingHelper.VolatileRead(ref _exceptionsHolder);
+            if (exceptionsHolder != null && exceptionsHolder.ContainsFaultList)
+            {
+                // No need to lock around this, as other logic prevents the consumption of exceptions
+                // before they have been completely processed.
+                return _exceptionsHolder.CreateExceptionObject(false, canceledException);
+            }
+            if (canceledException != null)
+            {
+                // No exceptions, but there was a cancelation. Aggregate and return it.
+                return new AggregateException(canceledException);
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -588,8 +630,8 @@ namespace System.Threading.Tasks
         {
             Contract.Requires(unhandledException != null);
 
-            NewOperationCanceledException exceptionAsOce = unhandledException as NewOperationCanceledException;
-            if (exceptionAsOce != null && IsCancellationRequested && Token == exceptionAsOce.CancellationToken)
+            var exceptionAsOce = unhandledException as NewOperationCanceledException;
+            if (exceptionAsOce != null && IsCancellationRequested && CancellationToken == exceptionAsOce.CancellationToken)
             {
                 // All conditions are satisfied for us to go into canceled state in Finish().
                 // Mark the acknowledgement.  The exception is also stored to enable it to be
@@ -607,44 +649,10 @@ namespace System.Threading.Tasks
                 AddException(unhandledException);
             }
         }
-
-        /// <summary>
-        /// Internal function that will be called by a new child task to add itself to 
-        /// the children list of the parent (this).
-        /// 
-        /// Since a child task can only be created from the thread executing the action delegate
-        /// of this task, reentrancy is neither required nor supported. This should not be called from
-        /// anywhere other than the task construction/initialization codepaths.
-        /// </summary>
-        private void AddNewChild()
-        {
-            // TODO: Self Replicating
-            Contract.Assert(_current == this, "Task.AddNewChild(): Called from an external context");
-
-            if (_completionCountdown == 1)
-            {
-                // A count of 1 indicates so far there was only the parent, and this is the first child task
-                // Single kid => no fuss about who else is accessing the count. Let's save ourselves 100 cycles
-                // We exclude self replicating root tasks from this optimization, because further child creation can take place on 
-                // other cores and with bad enough timing this write may not be visible to them.
-                _completionCountdown++;
-            }
-            else
-            {
-                // otherwise do it safely
-                Interlocked.Increment(ref _completionCountdown);
-            }
-        }
     }
 
     public partial class Task
     {
-        private void AddException(object exceptionObject)
-        {
-            Contract.Requires(exceptionObject != null, "Task.AddException: Expected a non-null exception object");
-            AddException(exceptionObject, representsCancellation: false);
-        }
-
         /// <summary>
         /// Adds an exception to the list of exceptions this task has thrown.
         /// </summary>
@@ -653,25 +661,6 @@ namespace System.Threading.Tasks
         internal void AddException(object exceptionObject, bool representsCancellation)
         {
             Contract.Requires(exceptionObject != null, "Task.AddException: Expected a non-null exception object");
-
-#if DEBUG
-            var eoAsException = exceptionObject as Exception;
-            var eoAsEnumerableException = exceptionObject as IEnumerable<Exception>;
-            var eoAsEdi = exceptionObject as ExceptionDispatchInfo;
-            var eoAsEnumerableEdi = exceptionObject as IEnumerable<ExceptionDispatchInfo>;
-
-            Contract.Assert(
-                eoAsException != null || eoAsEnumerableException != null || eoAsEdi != null || eoAsEnumerableEdi != null,
-                "Task.AddException: Expected an Exception, ExceptionDispatchInfo, or an IEnumerable<> of one of those");
-
-            var eoAsOce = exceptionObject as OperationCanceledException;
-
-            Contract.Assert(
-                !representsCancellation ||
-                eoAsOce != null ||
-                (eoAsEdi != null && eoAsEdi.SourceException is OperationCanceledException),
-                "representsCancellation should be true only if an OCE was provided.");
-#endif
 
             //
             // WARNING: A great deal of care went into ensuring that
@@ -684,7 +673,7 @@ namespace System.Threading.Tasks
             if (exceptionsHolder == null)
             {
                 // This is the only time we write to _exceptionsHolder
-                TaskExceptionHolder holder = new TaskExceptionHolder(this);
+                var holder = new TaskExceptionHolder(this);
                 exceptionsHolder = Interlocked.CompareExchange(ref _exceptionsHolder, holder, null);
                 if (exceptionsHolder == null)
                 {
@@ -702,6 +691,12 @@ namespace System.Threading.Tasks
             {
                 exceptionsHolder.Add(exceptionObject, representsCancellation);
             }
+        }
+
+        private void AddException(object exceptionObject)
+        {
+            Contract.Requires(exceptionObject != null, "Task.AddException: Expected a non-null exception object");
+            AddException(exceptionObject, representsCancellation: false);
         }
     }
 }
