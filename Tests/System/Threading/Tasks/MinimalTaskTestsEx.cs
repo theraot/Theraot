@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Runtime.Serialization;
 using NUnit.Framework;
@@ -54,7 +53,11 @@ namespace MonoTests.System.Threading.Tasks
                     Assert.IsTrue(ex.InnerException is OtherException);
                     Assert.IsTrue(((AggregateException)ex).InnerExceptions.Count == 2);
                     Assert.IsTrue(((AggregateException)ex).InnerExceptions[0] is OtherException);
-                    Assert.IsTrue(((AggregateException)ex).InnerExceptions[1] is CustomException);
+                    var aggregateException = ((AggregateException)ex).InnerExceptions[1] as AggregateException;
+                    Assert.IsTrue(aggregateException != null);
+                    Assert.IsTrue(aggregateException.InnerException is CustomException);
+                    Assert.IsTrue(aggregateException.InnerExceptions.Count == 1);
+                    Assert.IsTrue(aggregateException.InnerExceptions[0] is CustomException);
                 }
             }
         }

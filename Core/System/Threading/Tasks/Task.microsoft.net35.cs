@@ -11,8 +11,8 @@ namespace System.Threading.Tasks
 {
     public partial class Task
     {
-        private readonly static Predicate<Task> _isExceptionObservedByParentPredicate = (t => t.IsExceptionObservedByParent);
-        private readonly static Action<object> _taskCancelCallback = (TaskCancelCallback);
+        private static readonly Predicate<Task> _isExceptionObservedByParentPredicate = (t => t.IsExceptionObservedByParent);
+        private static readonly Action<object> _taskCancelCallback = (TaskCancelCallback);
 
         private int _cancellationAcknowledged;
         private StrongBox<CancellationTokenRegistration> _cancellationRegistration;
@@ -349,6 +349,17 @@ namespace System.Threading.Tasks
             Thread.VolatileWrite(ref _cancellationAcknowledged, 1);
         }
 
+        internal void ThrowIfExceptional(bool includeTaskCanceledExceptions)
+        {
+            Contract.Requires(IsCompleted, "ThrowIfExceptional(): Expected IsCompleted == true");
+            Exception exception = GetExceptions(includeTaskCanceledExceptions);
+            if (exception != null)
+            {
+                UpdateExceptionObservedStatus();
+                throw exception;
+            }
+        }
+
         /// <summary>
         /// Checks whether this is an attached task, and whether we are being called by the parent task.
         /// And sets the TASK_STATE_EXCEPTIONOBSERVEDBYPARENT status flag based on that.
@@ -386,12 +397,18 @@ namespace System.Threading.Tasks
             var task = obj as Task;
             if (task == null)
             {
-                Contract.Assert(false, "targetTask should have been non-null, with the supplied argument being a task or a tuple containing one");
+                var tuple = obj as Tuple<Task, Task, TaskContinuation>;
+                if (tuple == null)
+                {
+                    Contract.Assert(false, "task should have been non-null");
+                    return;
+                }
+                task = tuple.Item1;
+                var antecedent = tuple.Item2;
+                var continuation = tuple.Item3;
+                antecedent.RemoveContinuation(continuation);
             }
-            else
-            {
-                task.InternalCancel(false);
-            }
+            task.InternalCancel(false);
         }
 
         /// <summary>
@@ -421,24 +438,18 @@ namespace System.Threading.Tasks
             }
         }
 
-        private void AssignCancellationToken(CancellationToken cancellationToken)
+        private void AssignCancellationToken(CancellationToken cancellationToken, Task antecedent, TaskContinuation continuation)
         {
             CancellationToken = cancellationToken;
             try
             {
                 cancellationToken.ThrowIfSourceDisposed();
-
                 // If an unstarted task has a valid CancellationToken that gets signalled while the task is still not queued
                 // we need to proactively cancel it, because it may never execute to transition itself.
                 // The only way to accomplish this is to register a callback on the CT.
                 // We exclude Promise tasks from this, because TaskCompletionSource needs to fully control the inner tasks's lifetime (i.e. not allow external cancellations)
 
-                // Translation notes:
-                // unstarted task (... that) is still not queued means a task on TaskStatus.Created or TaskStatus.WaitingForActivation
-                // TODO: No support for promise tasks yet
-
-                var status = Thread.VolatileRead(ref _status);
-                if (status == (int)TaskStatus.Created || status == (int)TaskStatus.WaitingForActivation)
+                if ((_internalOptions & (InternalTaskOptions.QueuedByRuntime | InternalTaskOptions.PromiseTask | InternalTaskOptions.LazyCancellation)) == 0)
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {
@@ -448,7 +459,20 @@ namespace System.Threading.Tasks
                     else
                     {
                         // Regular path for an uncanceled cancellationToken
-                        _cancellationRegistration = new StrongBox<CancellationTokenRegistration>(cancellationToken.Register(_taskCancelCallback, this, false));
+                        CancellationTokenRegistration registration;
+                        if (antecedent == null)
+                        {
+                            // if no antecedent was specified, use this task's reference as the cancellation state object
+                            registration = cancellationToken.Register(_taskCancelCallback, this);
+                        }
+                        else
+                        {
+                            // If an antecedent was specified, pack this task, its antecedent and the TaskContinuation together as a tuple
+                            // and use it as the cancellation state object. This will be unpacked in the cancellation callback so that
+                            // antecedent.RemoveCancellation(continuation) can be invoked.
+                            registration = cancellationToken.Register(_taskCancelCallback, new Tuple<Task, Task, TaskContinuation>(this, antecedent, continuation));
+                        }
+                        _cancellationRegistration = new StrongBox<CancellationTokenRegistration>(registration);
                     }
                 }
             }
