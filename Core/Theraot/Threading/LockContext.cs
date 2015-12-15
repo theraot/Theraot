@@ -48,7 +48,7 @@ namespace Theraot.Threading
             }
             if (_slots.Count < _slots.Capacity)
             {
-                int index = Interlocked.Increment(ref _index) & (_capacity - 1);
+                var index = Interlocked.Increment(ref _index) & (_capacity - 1);
                 slot = _slots.Get(index);
                 return true;
             }

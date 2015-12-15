@@ -24,7 +24,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException("wrapped");
             }
 
-            int control = 0;
+            var control = 0;
 
             Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0;
             var buffer = new SafeQueue<T>();
@@ -79,8 +79,8 @@ namespace Theraot.Collections
                 throw new ArgumentException("preface.GetEnumerator()");
             }
 
-            int control = 0;
-            int guard = 0;
+            var control = 0;
+            var guard = 0;
 
             Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0;
             var buffer = new SafeQueue<T>();
@@ -150,7 +150,8 @@ namespace Theraot.Collections
                 {
                     ThreadingHelper.SpinWaitUntil(ref guard, 3);
                 }
-                return _tryTake(out value);
+                var tryTake = _tryTake;
+                return tryTake(out value);
             };
         }
 
@@ -161,8 +162,8 @@ namespace Theraot.Collections
                 throw new ArgumentNullException("wrapped");
             }
 
-            int guard = 0;
-            int index = -1;
+            var guard = 0;
+            var index = -1;
 
             _proxy = new ProxyObservable<T>();
 
@@ -205,9 +206,9 @@ namespace Theraot.Collections
                 throw new ArgumentNullException("preface");
             }
 
-            int control = 0;
-            int guard = 0;
-            int index = -1;
+            var control = 0;
+            var guard = 0;
+            var index = -1;
 
             Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0;
             var buffer = new SafeQueue<T>();
@@ -267,7 +268,8 @@ namespace Theraot.Collections
                 {
                     ThreadingHelper.SpinWaitUntil(ref guard, 3);
                 }
-                return _tryTake(out value);
+                var tryTake = _tryTake;
+                return tryTake(out value);
             };
         }
 
@@ -283,7 +285,7 @@ namespace Theraot.Collections
                 throw new ArgumentException("wrapped.GetEnumerator()");
             }
 
-            int guard = 0;
+            var guard = 0;
 
             _proxy = new ProxyObservable<T>();
 
@@ -333,6 +335,7 @@ namespace Theraot.Collections
             _proxy = new ProxyObservable<T>();
             _tryTake = (out T value) =>
             {
+                // This is not an overridable method, and it is not being called on the constructor.
                 if (tryTake(out value))
                 {
                     _proxy.OnNext(value);
@@ -352,6 +355,7 @@ namespace Theraot.Collections
             _proxy = new ProxyObservable<T>();
             _tryTake = (out T value) =>
             {
+                // This is not an overridable method, and it is not being called on the constructor.
                 if (tryTake(out value))
                 {
                     _proxy.OnNext(value);
@@ -413,7 +417,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException("converter");
             }
 
-            int control = 0;
+            var control = 0;
 
             Predicate<TInput> newFilter = item => Thread.VolatileRead(ref control) == 0;
             var buffer = new SafeQueue<T>();
@@ -476,7 +480,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException("filter");
             }
 
-            int control = 0;
+            var control = 0;
 
             Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0 && filter(item);
             var buffer = new SafeQueue<T>();
@@ -549,7 +553,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException("converter");
             }
 
-            int control = 0;
+            var control = 0;
 
             Predicate<TInput> newFilter = item => Thread.VolatileRead(ref control) == 0 && filter(item);
             var buffer = new SafeQueue<T>();
@@ -616,7 +620,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException("wrapped");
             }
 
-            int control = 0;
+            var control = 0;
 
             var buffer = new SafeDictionary<T, bool>();
             Predicate<T> newFilter = item => Thread.VolatileRead(ref control) == 0;
@@ -683,10 +687,18 @@ namespace Theraot.Collections
         public IEnumerable<T> AsEnumerable()
         {
             // After enumerating - the consumer of this method must check if the Progressor is closed.
-            T item;
-            while (_tryTake(out item))
+            while (true)
             {
-                yield return item;
+                T item;
+                var tryTake = _tryTake;
+                if (tryTake(out item))
+                {
+                    yield return item;
+                }
+                else
+                {
+                    break;
+                }
             }
         }
 
@@ -730,10 +742,11 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("condition");
             }
-            T item;
-            while (_tryTake(out item))
+            while (true)
             {
-                if (condition(item))
+                T item;
+                var tryTake = _tryTake;
+                if (tryTake(out item) && condition(item))
                 {
                     yield return item;
                 }
@@ -750,10 +763,11 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("condition");
             }
-            T item;
-            while (_tryTake(out item))
+            while (true)
             {
-                if (condition())
+                T item;
+                var tryTake = _tryTake;
+                if (tryTake(out item) && condition())
                 {
                     yield return item;
                 }

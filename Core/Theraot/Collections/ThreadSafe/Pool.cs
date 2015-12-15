@@ -35,7 +35,8 @@ namespace Theraot.Collections.ThreadSafe
             {
                 try
                 {
-                    _recycler(entry);
+                    var recycler = _recycler;
+                    recycler(entry);
                     _entries.Add(entry);
                     return true;
                 }

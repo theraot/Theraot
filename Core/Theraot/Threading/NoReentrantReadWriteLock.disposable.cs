@@ -1,16 +1,17 @@
-﻿// Needed for Workaround
+#if FAT
 
 using System;
+using System.Threading;
 
-namespace Theraot.Threading.Needles
+namespace Theraot.Threading
 {
-    public partial class WeakNeedle<T>
+    internal sealed partial class NoReentrantReadWriteLock : IExtendedDisposable
     {
         private int _status;
 
         [System.Diagnostics.DebuggerNonUserCode]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
-        ~WeakNeedle()
+        ~NoReentrantReadWriteLock()
         {
             try
             {
@@ -49,14 +50,14 @@ namespace Theraot.Threading.Needles
         {
             if (_status == -1)
             {
-                if (whenDisposed != null)
+                if (!ReferenceEquals(whenDisposed, null))
                 {
                     whenDisposed.Invoke();
                 }
             }
             else
             {
-                if (whenNotDisposed != null)
+                if (!ReferenceEquals(whenNotDisposed, null))
                 {
                     if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
                     {
@@ -66,12 +67,12 @@ namespace Theraot.Threading.Needles
                         }
                         finally
                         {
-                            System.Threading.Interlocked.Decrement(ref _status);
+                            Interlocked.Decrement(ref _status);
                         }
                     }
                     else
                     {
-                        if (whenDisposed != null)
+                        if (!ReferenceEquals(whenDisposed, null))
                         {
                             whenDisposed.Invoke();
                         }
@@ -85,13 +86,13 @@ namespace Theraot.Threading.Needles
         {
             if (_status == -1)
             {
-                if (whenDisposed == null)
+                if (ReferenceEquals(whenDisposed, null))
                 {
                     return default(TReturn);
                 }
                 return whenDisposed.Invoke();
             }
-            if (whenNotDisposed == null)
+            if (ReferenceEquals(whenNotDisposed, null))
             {
                 return default(TReturn);
             }
@@ -103,10 +104,10 @@ namespace Theraot.Threading.Needles
                 }
                 finally
                 {
-                    System.Threading.Interlocked.Decrement(ref _status);
+                    Interlocked.Decrement(ref _status);
                 }
             }
-            if (whenDisposed == null)
+            if (ReferenceEquals(whenDisposed, null))
             {
                 return default(TReturn);
             }
@@ -114,42 +115,28 @@ namespace Theraot.Threading.Needles
         }
 
         [System.Diagnostics.DebuggerNonUserCode]
-        protected virtual void Dispose(bool disposeManagedResources)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2004:RemoveCallsToGCKeepAlive", Justification = "By Design")]
+        private void Dispose(bool disposeManagedResources)
         {
-            try
+            if (TakeDisposalExecution())
             {
-                if (TakeDisposalExecution())
+                try
                 {
-                    try
+                    if (disposeManagedResources)
                     {
-                        if (disposeManagedResources)
-                        {
-                            ReportManagedDisposal();
-                        }
-                    }
-                    finally
-                    {
-                        ReleaseExtracted();
+                        _freeToRead.Dispose();
+                        _freeToWrite.Dispose();
                     }
                 }
-            }
-            catch (Exception exception)
-            {
-                // Pokemon - fields may be partially collected.
-                GC.KeepAlive(exception);
-            }
-        }
-
-        [System.Diagnostics.DebuggerNonUserCode]
-        protected void ProtectedCheckDisposed(string exceptionMessegeWhenDisposed)
-        {
-            if (IsDisposed)
-            {
-                throw new ObjectDisposedException(exceptionMessegeWhenDisposed);
+                finally
+                {
+                    _freeToRead = null;
+                    _freeToWrite = null;
+                }
             }
         }
 
-        protected bool TakeDisposalExecution()
+        private bool TakeDisposalExecution()
         {
             if (_status == -1)
             {
@@ -157,28 +144,7 @@ namespace Theraot.Threading.Needles
             }
             return ThreadingHelper.SpinWaitSetUnless(ref _status, -1, 0, -1);
         }
-
-        [System.Diagnostics.DebuggerNonUserCode]
-        protected void ThrowDisposedexception()
-        {
-            throw new ObjectDisposedException(GetType().FullName);
-        }
-
-        [System.Diagnostics.DebuggerNonUserCode]
-        protected TReturn ThrowDisposedexception<TReturn>()
-        {
-            throw new ObjectDisposedException(GetType().FullName);
-        }
-
-        [System.Diagnostics.DebuggerNonUserCode]
-        protected bool UnDispose()
-        {
-            if (System.Threading.Thread.VolatileRead(ref _status) == -1)
-            {
-                System.Threading.Thread.VolatileWrite(ref _status, 0);
-                return true;
-            }
-            return false;
-        }
     }
 }
+
+#endif

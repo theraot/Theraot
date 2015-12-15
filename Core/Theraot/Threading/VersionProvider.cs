@@ -10,7 +10,7 @@ namespace Theraot.Threading
         private Target _target;
         private Advancer _tryAdvance;
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", Justification = "By Design")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", Justification = "By Design")]
         public VersionProvider(out Action nextVersion)
         {
             _target = new Target(out _tryAdvance);
@@ -48,7 +48,7 @@ namespace Theraot.Threading
             return new VersionToken(this);
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "By Design")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Justification = "By Design")]
         public struct VersionToken : IComparable<VersionToken>
         {
             private long _number;

@@ -2,8 +2,6 @@
 
 using System;
 
-using Theraot.Core;
-
 namespace Theraot.Collections
 {
     [Serializable]
@@ -11,13 +9,25 @@ namespace Theraot.Collections
     {
         private readonly Converter<TInput, TOutput> _converter;
         private readonly IObserver<TOutput> _observer;
-        private readonly Predicate<TInput> filter;
+        private readonly Predicate<TInput> _filter;
 
         public FilteredConvertedObserver(IObserver<TOutput> observer, Predicate<TInput> filter, Converter<TInput, TOutput> converter)
         {
-            _observer = Check.NotNullArgument(observer, "observer");
-            _converter = Check.NotNullArgument(converter, "converter");
-            this.filter = Check.NotNullArgument(filter, "filter");
+            if (observer == null)
+            {
+                throw new ArgumentNullException("observer");
+            }
+            if (converter == null)
+            {
+                throw new ArgumentNullException("converter");
+            }
+            if (filter == null)
+            {
+                throw new ArgumentNullException("filter");
+            }
+            _observer = observer;
+            _converter = converter;
+            _filter = filter;
         }
 
         public void OnCompleted()
@@ -32,6 +42,7 @@ namespace Theraot.Collections
 
         public void OnNext(TInput value)
         {
+            var filter = _filter;
             if (filter(value))
             {
                 _observer.OnNext(_converter.Invoke(value));

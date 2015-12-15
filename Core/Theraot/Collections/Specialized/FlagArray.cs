@@ -10,7 +10,7 @@ using Theraot.Threading;
 namespace Theraot.Collections.Specialized
 {
     [Serializable]
-    public sealed partial class FlagArray : ICollection<bool>, IEnumerable<bool>, IList<bool>, ICloneable
+    public sealed partial class FlagArray
     {
         private readonly IReadOnlyCollection<bool> _asReadOnly;
         private readonly int _length;
@@ -22,13 +22,10 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException("prototype", "prototype is null.");
             }
-            else
-            {
-                _length = prototype._length;
-                _entries = ArrayReservoir<int>.GetArray(GetLength(_length));
-                prototype._entries.CopyTo(_entries, 0);
-                _asReadOnly = new ExtendedReadOnlyCollection<bool>(this);
-            }
+            _length = prototype._length;
+            _entries = ArrayReservoir<int>.GetArray(GetLength(_length));
+            prototype._entries.CopyTo(_entries, 0);
+            _asReadOnly = new ExtendedReadOnlyCollection<bool>(this);
         }
 
         public FlagArray(int length)
@@ -37,12 +34,9 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentOutOfRangeException("length", "length < 0");
             }
-            else
-            {
-                _length = length;
-                _entries = ArrayReservoir<int>.GetArray(GetLength(_length));
-                _asReadOnly = new ExtendedReadOnlyCollection<bool>(this);
-            }
+            _length = length;
+            _entries = ArrayReservoir<int>.GetArray(GetLength(_length));
+            _asReadOnly = new ExtendedReadOnlyCollection<bool>(this);
         }
 
         public FlagArray(int length, bool defaultValue)
@@ -74,7 +68,7 @@ namespace Theraot.Collections.Specialized
         {
             get
             {
-                int count = 0;
+                var count = 0;
                 foreach (var entry in _entries)
                 {
                     if (entry == 0)
@@ -116,23 +110,23 @@ namespace Theraot.Collections.Specialized
         {
             get
             {
-                var _index = index >> 5;
+                var entryIndex = index >> 5;
                 var bit = index & 31;
                 var mask = 1 << bit;
-                return GetBit(_index, mask);
+                return GetBit(entryIndex, mask);
             }
             set
             {
-                var _index = index >> 5;
+                var entryIndex = index >> 5;
                 var bit = index & 31;
                 var mask = 1 << bit;
                 if (value)
                 {
-                    SetBit(_index, mask);
+                    SetBit(entryIndex, mask);
                 }
                 else
                 {
-                    UnsetBit(_index, mask);
+                    UnsetBit(entryIndex, mask);
                 }
             }
         }
@@ -144,9 +138,9 @@ namespace Theraot.Collections.Specialized
 
         public bool Contains(bool item)
         {
-            int count = 0;
-            int newcount = 0;
-            int check = item ? 0 : -1;
+            var count = 0;
+            var newcount = 0;
+            var check = item ? 0 : -1;
             foreach (var entry in _entries)
             {
                 newcount += 32;
@@ -202,7 +196,7 @@ namespace Theraot.Collections.Specialized
 
         public IEnumerator<bool> GetEnumerator()
         {
-            int count = 0;
+            var count = 0;
             foreach (var entry in _entries)
             {
                 foreach (var bit in entry.BitsBinary())
@@ -259,10 +253,10 @@ namespace Theraot.Collections.Specialized
 
         private void Fill(bool value)
         {
-            int _value = value ? unchecked((int)0xffffffff) : 0;
-            for (int index = 0; index < _length; index++)
+            var entryValue = value ? unchecked((int)0xffffffff) : 0;
+            for (var index = 0; index < _length; index++)
             {
-                _entries[index] = _value;
+                _entries[index] = entryValue;
             }
         }
 
@@ -285,7 +279,7 @@ namespace Theraot.Collections.Specialized
         private void SetBit(int index, int mask)
         {
             again:
-            int readed = Thread.VolatileRead(ref _entries[index]);
+            var readed = Thread.VolatileRead(ref _entries[index]);
             if ((readed & mask) == 0)
             {
                 if (Interlocked.CompareExchange(ref _entries[index], readed | mask, readed) != readed)
@@ -298,7 +292,7 @@ namespace Theraot.Collections.Specialized
         private void UnsetBit(int index, int mask)
         {
             again:
-            int readed = Thread.VolatileRead(ref _entries[index]);
+            var readed = Thread.VolatileRead(ref _entries[index]);
             if ((readed & mask) != 0)
             {
                 if (Interlocked.CompareExchange(ref _entries[index], readed & ~mask, readed) != readed)
@@ -309,7 +303,7 @@ namespace Theraot.Collections.Specialized
         }
     }
 
-    public sealed partial class FlagArray : ICollection<bool>, IEnumerable<bool>, IList<bool>
+    public sealed partial class FlagArray : IList<bool>
 #if FAT
         , IExtendedCollection<bool>, ICloneable<FlagArray>
 #endif

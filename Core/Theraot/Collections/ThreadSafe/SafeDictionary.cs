@@ -826,7 +826,7 @@ namespace Theraot.Collections.ThreadSafe
             var created = new KeyValuePair<TKey, TValue>(key, newValue);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
-                bool keyMatch = false;
+                var keyMatch = false;
                 ExtendProbingIfNeeded(attempts);
                 Predicate<KeyValuePair<TKey, TValue>> check = found =>
                 {
@@ -851,7 +851,7 @@ namespace Theraot.Collections.ThreadSafe
             var created = new KeyValuePair<TKey, TValue>(key, newValue);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
-                bool keyMatch = false;
+                var keyMatch = false;
                 ExtendProbingIfNeeded(attempts);
                 Predicate<KeyValuePair<TKey, TValue>> check = found =>
                 {
@@ -902,7 +902,7 @@ namespace Theraot.Collections.ThreadSafe
 
         bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
         {
-            int hashCode = _keyComparer.GetHashCode(item.Key);
+            var hashCode = _keyComparer.GetHashCode(item.Key);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 KeyValuePair<TKey, TValue> found;
@@ -928,7 +928,7 @@ namespace Theraot.Collections.ThreadSafe
 
         bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
         {
-            int hashCode = _keyComparer.GetHashCode(item.Key);
+            var hashCode = _keyComparer.GetHashCode(item.Key);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 var done = false;
@@ -982,7 +982,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         // This is the item that has been stored with the key
                         // Throw to abort overwrite
-                        throw new ArgumentException("An item with the same key has already been added", "key");
+                        throw new ArgumentException("An item with the same key has already been added", "key"); // This exception will buble up to the context where "key" is an argument.
                     }
                     // This is not the key, overwrite?
                     return keyOverwriteCheck(foundPair.Key);
@@ -1082,7 +1082,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         // This is the item that has been stored with the key
                         // Throw to abort overwrite
-                        throw new ArgumentException("An item with the same key has already been added", "key");
+                        throw new ArgumentException("An item with the same key has already been added", "key"); // This exception will buble up to the context where "key" is an argument.
                     }
                     // This is not the key, overwrite?
                     return keyOverwriteCheck(foundPair.Key);
@@ -1123,7 +1123,7 @@ namespace Theraot.Collections.ThreadSafe
                         // This is the item that has been stored with the key
                         value = foundPair.Value;
                         // Throw to abort overwrite
-                        throw new ArgumentException("An item with the same key has already been added", "key");
+                        throw new ArgumentException("An item with the same key has already been added", "key"); // This exception will buble up to the context where "key" is an argument.
                     }
                     // This is not the key, overwrite?
                     return keyOverwriteCheck(foundPair.Key);
@@ -1381,7 +1381,7 @@ namespace Theraot.Collections.ThreadSafe
             var attempts = 0;
             while (true)
             {
-                KeyValuePair<TKey, TValue> foundPair = created;
+                var foundPair = created;
                 ExtendProbingIfNeeded(attempts);
                 Predicate<object> check = found =>
                 {
@@ -1390,7 +1390,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         // This is the item that has been stored with the key
                         // Throw to abort overwrite
-                        throw new ArgumentException("An item with the same key has already been added", "key");
+                        throw new ArgumentException("An item with the same key has already been added", "key"); // This exception will buble up to the context where "key" is an argument.
                     }
                     // This is not the key, overwrite?
                     return keyOverwriteCheck(foundPair.Key);
@@ -1423,7 +1423,7 @@ namespace Theraot.Collections.ThreadSafe
             var attempts = 0;
             while (true)
             {
-                TValue value = default(TValue);
+                var value = default(TValue);
                 ExtendProbingIfNeeded(attempts);
                 Func<object> itemFactory = () => new KeyValuePair<TKey, TValue>(key, value = addValueFactory());
                 Func<object, object> itemUpdateFactory = found =>
@@ -1434,7 +1434,7 @@ namespace Theraot.Collections.ThreadSafe
                         // This is the item that has been stored with the key
                         value = foundPair.Value;
                         // Throw to abort overwrite
-                        throw new ArgumentException("An item with the same key has already been added", "key");
+                        throw new ArgumentException("An item with the same key has already been added", "key"); // This exception will buble up to the context where "key" is an argument.
                     }
                     value = updateValueFactory(foundPair.Key, foundPair.Value);
                     return new KeyValuePair<TKey, TValue>(key, value);

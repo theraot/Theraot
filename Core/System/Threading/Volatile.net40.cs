@@ -8,7 +8,7 @@ namespace System.Threading
     {
         public static bool Read(ref bool location)
         {
-            bool flag = location;
+            var flag = location;
             Thread.MemoryBarrier();
             return flag;
         }
@@ -86,6 +86,7 @@ namespace System.Threading
 
         public static void Write(ref bool location, bool value)
         {
+            GC.KeepAlive(location);
             Thread.MemoryBarrier();
             location = value;
         }

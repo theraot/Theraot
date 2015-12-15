@@ -94,6 +94,7 @@ namespace Theraot.Core
                     }
                     catch
                     {
+                        // Regardless of what exception it is
                         branches.Dispose();
                         throw;
                     }
@@ -142,6 +143,7 @@ namespace Theraot.Core
                     }
                     catch
                     {
+                        // Regardless of what exception it is
                         branches.Dispose();
                         throw;
                     }
@@ -189,6 +191,7 @@ namespace Theraot.Core
                     }
                     catch
                     {
+                        // Regardless of what exception it is
                         branches.Dispose();
                         throw;
                     }
@@ -233,6 +236,7 @@ namespace Theraot.Core
                     }
                     catch
                     {
+                        // Regardless of what exception it is
                         branches.Dispose();
                         throw;
                     }
@@ -345,6 +349,7 @@ namespace Theraot.Core
                     }
                     catch
                     {
+                        // Regardless of what exception it is
                         branches.Dispose();
                         throw;
                     }
@@ -393,6 +398,7 @@ namespace Theraot.Core
                     }
                     catch
                     {
+                        // Regardless of what exception it is
                         branches.Dispose();
                         throw;
                     }
@@ -437,6 +443,7 @@ namespace Theraot.Core
                     }
                     catch
                     {
+                        // Regardless of what exception it is
                         branches.Dispose();
                         throw;
                     }
@@ -481,6 +488,7 @@ namespace Theraot.Core
                     }
                     catch
                     {
+                        // Regardless of what exception it is
                         branches.Dispose();
                         throw;
                     }

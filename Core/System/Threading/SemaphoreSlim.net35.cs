@@ -4,10 +4,10 @@ using Theraot.Threading;
 
 namespace System.Threading
 {
-    [System.Diagnostics.DebuggerDisplayAttribute("Current Count = {CurrentCount}")]
+    [Diagnostics.DebuggerDisplayAttribute("Current Count = {CurrentCount}")]
     public class SemaphoreSlim : IDisposable
     {
-        private readonly ManualResetEventSlim _event;
+        private ManualResetEventSlim _event;
         private readonly int _maxCount;
         private int _count;
         private bool _disposed;
@@ -24,16 +24,13 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException("initialCount", "initialCount < 0 || initialCount > maxCount");
             }
-            else if (maxCount <= 0)
+            if (maxCount <= 0)
             {
                 throw new ArgumentOutOfRangeException("initialCount", "maxCount < 0");
             }
-            else
-            {
-                _maxCount = maxCount;
-                _count = maxCount - initialCount;
-                _event = new ManualResetEventSlim(initialCount > 0);
-            }
+            _maxCount = maxCount;
+            _count = maxCount - initialCount;
+            _event = new ManualResetEventSlim(initialCount > 0);
         }
 
         public WaitHandle AvailableWaitHandle
@@ -70,19 +67,13 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException("releaseCount", "releaseCount is less than 1");
             }
-            else
+            int oldValue;
+            if (ThreadingHelper.SpinWaitRelativeExchangeUnlessNegative(ref _count, -releaseCount, out oldValue))
             {
-                int oldValue;
-                if (ThreadingHelper.SpinWaitRelativeExchangeUnlessNegative(ref _count, -releaseCount, out oldValue))
-                {
-                    _event.Set();
-                    return oldValue;
-                }
-                else
-                {
-                    throw new SemaphoreFullException();
-                }
+                _event.Set();
+                return oldValue;
             }
+            throw new SemaphoreFullException();
         }
 
         public void Wait()
@@ -118,39 +109,30 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException("millisecondsTimeout");
             }
-            else
+            cancellationToken.ThrowIfCancellationRequested();
+            GC.KeepAlive(cancellationToken.WaitHandle);
+            if (millisecondsTimeout == -1)
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                GC.KeepAlive(cancellationToken.WaitHandle);
-                if (millisecondsTimeout == -1)
+                ThreadingHelper.SpinWaitRelativeSet(ref _count, 1);
+                return true;
+            }
+            var start = ThreadingHelper.TicksNow();
+            var remaining = millisecondsTimeout;
+            retry:
+            if (_event.Wait(remaining, cancellationToken))
+            {
+                var result = Thread.VolatileRead(ref _count) + 1;
+                if (Interlocked.CompareExchange(ref _count, result, _count) == _count)
                 {
-                    ThreadingHelper.SpinWaitRelativeSet(ref _count, 1);
                     return true;
                 }
-                else
+                remaining = (int)(millisecondsTimeout - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start));
+                if (remaining > 0)
                 {
-                    var start = ThreadingHelper.TicksNow();
-                    var remaining = millisecondsTimeout;
-                    retry:
-                    if (_event.Wait(remaining, cancellationToken))
-                    {
-                        var result = Thread.VolatileRead(ref _count) + 1;
-                        if (Interlocked.CompareExchange(ref _count, result, _count) == _count)
-                        {
-                            return true;
-                        }
-                        else
-                        {
-                            remaining = (int)(millisecondsTimeout - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start));
-                            if (remaining > 0)
-                            {
-                                goto retry;
-                            }
-                        }
-                    }
-                    return false;
+                    goto retry;
                 }
             }
+            return false;
         }
 
         //public Task WaitAsync()
@@ -191,8 +173,10 @@ namespace System.Threading
 
         protected virtual void Dispose(bool disposing)
         {
-            _event.Dispose();
+            // This is a protected method, the parameter should be kept
             _disposed = true;
+            _event.Dispose();
+            _event = null;
         }
 
         private void CheckDisposed()

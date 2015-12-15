@@ -61,12 +61,26 @@ namespace Theraot.Collections.Specialized
         public void CopyTo(TValue[] array, int arrayIndex)
         {
             Extensions.CanCopyTo(_wrapped.Count, array, arrayIndex);
-            _wrapped.ConvertProgressive(pair => _converter(pair.Value)).CopyTo(array, arrayIndex);
+            _wrapped.ConvertProgressive
+                (
+                    pair =>
+                    {
+                        var converter = _converter;
+                        return converter(pair.Value);
+                    }
+                ).CopyTo(array, arrayIndex);
         }
 
         public IEnumerator<TValue> GetEnumerator()
         {
-            return _wrapped.ConvertProgressive(pair => _converter(pair.Value)).GetEnumerator();
+            return _wrapped.ConvertProgressive
+                (
+                    pair =>
+                    {
+                        var converter = _converter;
+                        return converter(pair.Value);
+                    }
+                ).GetEnumerator();
         }
 
         void ICollection.CopyTo(Array array, int index)
@@ -86,7 +100,14 @@ namespace Theraot.Collections.Specialized
 
         bool ICollection<TValue>.Contains(TValue item)
         {
-            return _wrapped.Where(pair => EqualityComparer<TValue>.Default.Equals(item, _converter(pair.Value))).HasAtLeast(1);
+            return _wrapped.Where
+                (
+                    pair =>
+                    {
+                        var converter = _converter;
+                        return EqualityComparer<TValue>.Default.Equals(item, converter(pair.Value));
+                    }
+                ).HasAtLeast(1);
         }
 
         bool ICollection<TValue>.Remove(TValue item)
@@ -94,7 +115,7 @@ namespace Theraot.Collections.Specialized
             throw new NotSupportedException();
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }

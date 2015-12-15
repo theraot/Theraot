@@ -32,11 +32,8 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException("spinCount");
             }
-            else
-            {
-                _spinCount = spinCount;
-                _state = initialState ? 1 : 0;
-            }
+            _spinCount = spinCount;
+            _state = initialState ? 1 : 0;
         }
 
         public bool IsSet
@@ -47,18 +44,12 @@ namespace System.Threading
                 {
                     return false;
                 }
-                else
+                if (Thread.VolatileRead(ref _requested) != 0)
                 {
-                    if (Thread.VolatileRead(ref _requested) != 0)
-                    {
-                        var handle = RetrieveWaitHandle();
-                        return handle.WaitOne(0);
-                    }
-                    else
-                    {
-                        return Thread.VolatileRead(ref _state) != 0;
-                    }
+                    var handle = RetrieveWaitHandle();
+                    return handle.WaitOne(0);
                 }
+                return Thread.VolatileRead(ref _state) != 0;
             }
         }
 
@@ -78,10 +69,7 @@ namespace System.Threading
                 {
                     throw new ObjectDisposedException(GetType().FullName);
                 }
-                else
-                {
-                    return RetrieveWaitHandle();
-                }
+                return RetrieveWaitHandle();
             }
         }
 
@@ -97,14 +85,11 @@ namespace System.Threading
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
-            else
+            Thread.VolatileWrite(ref _state, 0);
+            if (Thread.VolatileRead(ref _requested) != 0)
             {
-                Thread.VolatileWrite(ref _state, 0);
-                if (Thread.VolatileRead(ref _requested) != 0)
-                {
-                    var handle = RetrieveWaitHandle();
-                    handle.Reset();
-                }
+                var handle = RetrieveWaitHandle();
+                handle.Reset();
             }
         }
 
@@ -131,26 +116,20 @@ namespace System.Threading
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
-            else
+            int count = 0;
+            if (!IsSet)
             {
-                int count = 0;
+                var start = ThreadingHelper.TicksNow();
+                retry:
                 if (!IsSet)
                 {
-                    var start = ThreadingHelper.TicksNow();
-                    retry:
-                    if (!IsSet)
+                    if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < INT_LongTimeOutHint)
                     {
-                        if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < INT_LongTimeOutHint)
-                        {
-                            ThreadingHelper.SpinOnce(ref count);
-                            goto retry;
-                        }
-                        else
-                        {
-                            var handle = RetrieveWaitHandle();
-                            handle.WaitOne();
-                        }
+                        ThreadingHelper.SpinOnce(ref count);
+                        goto retry;
                     }
+                    var handle = RetrieveWaitHandle();
+                    handle.WaitOne();
                 }
             }
         }
@@ -161,22 +140,16 @@ namespace System.Threading
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
-            else
+            if (millisecondsTimeout < -1)
             {
-                if (millisecondsTimeout < -1)
-                {
-                    throw new ArgumentOutOfRangeException("millisecondsTimeout");
-                }
-                else if (millisecondsTimeout == -1)
-                {
-                    Wait();
-                    return true;
-                }
-                else
-                {
-                    return WaitExtracted(millisecondsTimeout);
-                }
+                throw new ArgumentOutOfRangeException("millisecondsTimeout");
             }
+            if (millisecondsTimeout == -1)
+            {
+                Wait();
+                return true;
+            }
+            return WaitExtracted(millisecondsTimeout);
         }
 
         public bool Wait(int millisecondsTimeout, CancellationToken cancellationToken)
@@ -185,24 +158,18 @@ namespace System.Threading
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
-            else
+            cancellationToken.ThrowIfCancellationRequested();
+            GC.KeepAlive(cancellationToken.WaitHandle);
+            if (millisecondsTimeout < -1)
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                GC.KeepAlive(cancellationToken.WaitHandle);
-                if (millisecondsTimeout < -1)
-                {
-                    throw new ArgumentOutOfRangeException("millisecondsTimeout");
-                }
-                else if (millisecondsTimeout == -1)
-                {
-                    WaitExtracted(cancellationToken);
-                    return true;
-                }
-                else
-                {
-                    return WaitExtracted(millisecondsTimeout, cancellationToken);
-                }
+                throw new ArgumentOutOfRangeException("millisecondsTimeout");
             }
+            if (millisecondsTimeout == -1)
+            {
+                WaitExtracted(cancellationToken);
+                return true;
+            }
+            return WaitExtracted(millisecondsTimeout, cancellationToken);
         }
 
         public void Wait(CancellationToken cancellationToken)
@@ -211,12 +178,9 @@ namespace System.Threading
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
-            else
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                GC.KeepAlive(cancellationToken.WaitHandle);
-                WaitExtracted(cancellationToken);
-            }
+            cancellationToken.ThrowIfCancellationRequested();
+            GC.KeepAlive(cancellationToken.WaitHandle);
+            WaitExtracted(cancellationToken);
         }
 
         public bool Wait(TimeSpan timeout)
@@ -225,11 +189,8 @@ namespace System.Threading
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
-            else
-            {
-                var milliseconds = timeout.TotalMilliseconds;
-                return WaitExtracted((int)milliseconds);
-            }
+            var milliseconds = timeout.TotalMilliseconds;
+            return WaitExtracted((int)milliseconds);
         }
 
         public bool Wait(TimeSpan timeout, CancellationToken cancellationToken)
@@ -238,13 +199,10 @@ namespace System.Threading
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
-            else
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                GC.KeepAlive(cancellationToken.WaitHandle);
-                var milliseconds = timeout.TotalMilliseconds;
-                return WaitExtracted((int)milliseconds, cancellationToken);
-            }
+            cancellationToken.ThrowIfCancellationRequested();
+            GC.KeepAlive(cancellationToken.WaitHandle);
+            var milliseconds = timeout.TotalMilliseconds;
+            return WaitExtracted((int)milliseconds, cancellationToken);
         }
 
         [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", Justification = "False Positive")]
@@ -286,57 +244,40 @@ namespace System.Threading
             {
                 return true;
             }
-            else
+            if (millisecondsTimeout > INT_LongTimeOutHint)
             {
-                if (millisecondsTimeout > INT_LongTimeOutHint)
+                retry_longTimeout:
+                if (IsSet)
                 {
-                    retry_longTimeout:
-                    if (IsSet)
+                    return true;
+                }
+                if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < millisecondsTimeout)
+                {
+                    if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < INT_LongTimeOutHint)
                     {
-                        return true;
+                        ThreadingHelper.SpinOnce(ref count);
+                        goto retry_longTimeout;
                     }
-                    else
+                    var handle = RetrieveWaitHandle();
+                    var remaining = (int)(millisecondsTimeout - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start));
+                    if (remaining > 0)
                     {
-                        var elapsed = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
-                        if (elapsed < millisecondsTimeout)
-                        {
-                            if (elapsed < INT_LongTimeOutHint)
-                            {
-                                ThreadingHelper.SpinOnce(ref count);
-                                goto retry_longTimeout;
-                            }
-                            else
-                            {
-                                var handle = RetrieveWaitHandle();
-                                var remaining = (int)(millisecondsTimeout - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start));
-                                if (remaining > 0)
-                                {
-                                    return handle.WaitOne(remaining);
-                                }
-                            }
-                        }
-                        return false;
+                        return handle.WaitOne(remaining);
                     }
                 }
-                else
-                {
-                    retry_shortTimeout:
-                    if (IsSet)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        var elapsed = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
-                        if (elapsed < millisecondsTimeout)
-                        {
-                            ThreadingHelper.SpinOnce(ref count);
-                            goto retry_shortTimeout;
-                        }
-                        return false;
-                    }
-                }
+                return false;
             }
+            retry_shortTimeout:
+            if (IsSet)
+            {
+                return true;
+            }
+            if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < millisecondsTimeout)
+            {
+                ThreadingHelper.SpinOnce(ref count);
+                goto retry_shortTimeout;
+            }
+            return false;
         }
 
         private bool WaitExtracted(int millisecondsTimeout, CancellationToken cancellationToken)
@@ -347,42 +288,33 @@ namespace System.Threading
             {
                 return true;
             }
-            else
+            retry:
+            if (IsSet)
             {
-                retry:
-                if (IsSet)
+                return true;
+            }
+            cancellationToken.ThrowIfCancellationRequested();
+            if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < millisecondsTimeout)
+            {
+                GC.KeepAlive(cancellationToken.WaitHandle);
+                if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < INT_LongTimeOutHint)
                 {
-                    return true;
+                    ThreadingHelper.SpinOnce(ref count);
+                    goto retry;
                 }
-                else
+                var handle = RetrieveWaitHandle();
+                var remaining = (int)(millisecondsTimeout - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start));
+                if (remaining > 0)
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < millisecondsTimeout)
+                    if (handle.WaitOne(remaining))
                     {
-                        GC.KeepAlive(cancellationToken.WaitHandle);
-                        if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < INT_LongTimeOutHint)
-                        {
-                            ThreadingHelper.SpinOnce(ref count);
-                            goto retry;
-                        }
-                        else
-                        {
-                            var handle = RetrieveWaitHandle();
-                            var remaining = (int)(millisecondsTimeout - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start));
-                            if (remaining > 0)
-                            {
-                                if (handle.WaitOne(remaining))
-                                {
-                                    cancellationToken.ThrowIfCancellationRequested();
-                                    return true;
-                                }
-                            }
-                        }
+                        cancellationToken.ThrowIfCancellationRequested();
+                        return true;
                     }
-                    cancellationToken.ThrowIfCancellationRequested();
-                    return false;
                 }
             }
+            cancellationToken.ThrowIfCancellationRequested();
+            return false;
         }
 
         private void WaitExtracted(CancellationToken cancellationToken)
@@ -401,11 +333,8 @@ namespace System.Threading
                         ThreadingHelper.SpinOnce(ref count);
                         goto retry;
                     }
-                    else
-                    {
-                        var handle = RetrieveWaitHandle();
-                        handle.WaitOne();
-                    }
+                    var handle = RetrieveWaitHandle();
+                    handle.WaitOne();
                 }
             }
         }

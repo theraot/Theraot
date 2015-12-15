@@ -74,33 +74,30 @@ namespace System
             return ((IStructuralEquatable)this).GetHashCode(EqualityComparer<object>.Default);
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Microsoft's Design")]
-        int System.Collections.IStructuralComparable.CompareTo(object other, IComparer comparer)
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Microsoft's Design")]
+        int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
             return CompareTo(other, comparer);
         }
 
-        bool System.Collections.IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
+        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
             var tuple = other as Tuple<T1, T2, T3, T4, T5>;
             if (tuple == null)
             {
                 return false;
             }
-            else
-            {
-                return
-                    comparer.Equals(_item1, tuple._item1) &&
-                    comparer.Equals(_item2, tuple._item2) &&
-                    comparer.Equals(_item3, tuple._item3) &&
-                    comparer.Equals(_item4, tuple._item4) &&
-                    comparer.Equals(_item5, tuple._item5);
-            }
+            return
+                comparer.Equals(_item1, tuple._item1) &&
+                comparer.Equals(_item2, tuple._item2) &&
+                comparer.Equals(_item3, tuple._item3) &&
+                comparer.Equals(_item4, tuple._item4) &&
+                comparer.Equals(_item5, tuple._item5);
         }
 
-        int System.Collections.IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
+        int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
         {
-            int hash = comparer.GetHashCode(_item1);
+            var hash = comparer.GetHashCode(_item1);
             hash = (hash << 5) - hash + comparer.GetHashCode(_item2);
             hash = (hash << 5) - hash + comparer.GetHashCode(_item3);
             hash = (hash << 5) - hash + comparer.GetHashCode(_item4);
@@ -108,8 +105,8 @@ namespace System
             return hash;
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Microsoft's Design")]
-        int System.IComparable.CompareTo(object obj)
+        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Microsoft's Design")]
+        int IComparable.CompareTo(object obj)
         {
             return CompareTo(obj, Comparer<object>.Default);
         }
@@ -125,35 +122,29 @@ namespace System
             {
                 return 1;
             }
-            else
+            var tuple = other as Tuple<T1, T2, T3, T4, T5>;
+            if (tuple == null)
             {
-                var tuple = other as Tuple<T1, T2, T3, T4, T5>;
-                if (tuple == null)
-                {
-                    throw new ArgumentException("other");
-                }
-                else
-                {
-                    int result = comparer.Compare(_item1, tuple._item1);
-                    if (result == 0)
-                    {
-                        result = comparer.Compare(_item2, tuple._item2);
-                    }
-                    if (result == 0)
-                    {
-                        result = comparer.Compare(_item3, tuple._item3);
-                    }
-                    if (result == 0)
-                    {
-                        result = comparer.Compare(_item4, tuple._item4);
-                    }
-                    if (result == 0)
-                    {
-                        result = comparer.Compare(_item5, tuple._item5);
-                    }
-                    return result;
-                }
+                throw new ArgumentException("other");
             }
+            var result = comparer.Compare(_item1, tuple._item1);
+            if (result == 0)
+            {
+                result = comparer.Compare(_item2, tuple._item2);
+            }
+            if (result == 0)
+            {
+                result = comparer.Compare(_item3, tuple._item3);
+            }
+            if (result == 0)
+            {
+                result = comparer.Compare(_item4, tuple._item4);
+            }
+            if (result == 0)
+            {
+                result = comparer.Compare(_item5, tuple._item5);
+            }
+            return result;
         }
     }
 }

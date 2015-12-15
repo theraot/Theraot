@@ -15,27 +15,24 @@ namespace Theraot.Core
             {
                 return StructCloner.Instance;
             }
-            else if (type.IsImplementationOf(typeof(ICloneable<T>)))
+            if (type.IsImplementationOf(typeof(ICloneable<T>)))
             {
                 return GenericCloner.Instance;
             }
-            else if (type.IsImplementationOf(typeof(ICloneable)))
+            if (type.IsImplementationOf(typeof(ICloneable)))
             {
                 return Cloner.Instance;
             }
-            else if (type.IsSerializable)
+            if (type.IsSerializable)
             {
                 return SerializerCloner.Instance;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         private class Cloner : ICloner<T>
         {
-            private static readonly ICloner<T> _instance = new Cloner();
+            private static readonly ICloner<T> _instance = new Cloner(); // We need a cloner per T type.
 
             private Cloner()
             {
@@ -60,7 +57,7 @@ namespace Theraot.Core
 
         private class GenericCloner : ICloner<T>
         {
-            private static readonly ICloner<T> _instance = new GenericCloner();
+            private static readonly ICloner<T> _instance = new GenericCloner(); // We need a cloner per T type.
 
             private GenericCloner()
             {
@@ -85,7 +82,7 @@ namespace Theraot.Core
 
         private class SerializerCloner : ICloner<T>
         {
-            private static readonly ICloner<T> _instance = new SerializerCloner();
+            private static readonly ICloner<T> _instance = new SerializerCloner(); // We need a cloner per T type.
 
             private SerializerCloner()
             {
@@ -114,7 +111,7 @@ namespace Theraot.Core
 
         private class StructCloner : ICloner<T>
         {
-            private static readonly ICloner<T> _instance = new StructCloner();
+            private static readonly ICloner<T> _instance = new StructCloner(); // We need a cloner per T type.
 
             private StructCloner()
             {

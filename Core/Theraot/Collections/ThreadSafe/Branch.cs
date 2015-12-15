@@ -312,7 +312,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private static void Leave(Branch[] branches, int resultCount)
         {
-            for (int index = 0; index < resultCount; index++)
+            for (var index = 0; index < resultCount; index++)
             {
                 var branch = branches[index];
                 Interlocked.Decrement(ref branch._useCount);
@@ -486,7 +486,7 @@ namespace Theraot.Collections.ThreadSafe
                 isNew = false;
                 if (check(previous))
                 {
-                    object result = itemUpdateFactory(previous);
+                    var result = itemUpdateFactory(previous);
                     if (PrivateTryUpdate(index, result, previous))
                     {
                         stored = result;
@@ -513,7 +513,7 @@ namespace Theraot.Collections.ThreadSafe
                 isNew = false;
                 if (check(previous))
                 {
-                    object result = itemUpdateFactory(previous);
+                    var result = itemUpdateFactory(previous);
                     if (PrivateTryUpdate(index, result, previous))
                     {
                         stored = result;
@@ -639,7 +639,7 @@ namespace Theraot.Collections.ThreadSafe
                 return false; // false means no value found
             }
             // -- Found
-            bool checkResult = check(found);
+            var checkResult = check(found);
             try
             {
                 if (checkResult)

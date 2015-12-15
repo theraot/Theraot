@@ -76,9 +76,10 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
             private static bool FallacyFunc(T obj)
             {
+                GC.KeepAlive(obj);
                 return false;
             }
         }
@@ -100,9 +101,10 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
             private static bool TautologyFunc(T obj)
             {
+                GC.KeepAlive(obj);
                 return true;
             }
         }
