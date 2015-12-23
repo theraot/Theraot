@@ -345,7 +345,10 @@ namespace System.Threading.Tasks
             {
                 throw new InvalidOperationException("Start may not be called on a continuation task.");
             }
-            // TODO: Start may not be called on a promise-style task.
+            if ((_internalOptions & InternalTaskOptions.PromiseTask) != 0)
+            {
+                throw new InvalidOperationException("Start may not be called on a promise-style task.");
+            }
             if (Thread.VolatileRead(ref _isDisposed) == 1)
             {
                 throw new ObjectDisposedException(GetType().FullName);
@@ -370,7 +373,10 @@ namespace System.Threading.Tasks
             {
                 throw new InvalidOperationException("Start may not be called on a continuation task.");
             }
-            // TODO: Start may not be called on a promise-style task.
+            if ((_internalOptions & InternalTaskOptions.PromiseTask) != 0)
+            {
+                throw new InvalidOperationException("Start may not be called on a promise-style task.");
+            }
             if (Thread.VolatileRead(ref _isDisposed) == 1)
             {
                 throw new ObjectDisposedException(GetType().FullName);
