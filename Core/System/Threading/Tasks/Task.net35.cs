@@ -1,5 +1,3 @@
-#if NET20 || NET30 || NET35
-
 using System.Diagnostics.Contracts;
 using Theraot.Core;
 using Theraot.Threading;
@@ -471,7 +469,7 @@ namespace System.Threading.Tasks
                 if (CancellationToken.IsCancellationRequested)
                 {
                     Thread.VolatileWrite(ref _status, (int)TaskStatus.Canceled);
-                    SetCompleted();
+                    MarkCompleted();
                     FinishStageThree();
                 }
                 else
@@ -536,7 +534,7 @@ namespace System.Threading.Tasks
             }
             if (cancelSucceeded)
             {
-                SetCompleted();
+                MarkCompleted();
                 FinishStageThree();
             }
             if (taskSchedulerException != null)
@@ -544,6 +542,15 @@ namespace System.Threading.Tasks
                 throw taskSchedulerException;
             }
             return cancelSucceeded;
+        }
+
+        internal void MarkCompleted()
+        {
+            var waitHandle = _waitHandle.Value;
+            if (_waitHandle.IsAlive)
+            {
+                waitHandle.Set();
+            }
         }
 
         internal void Start(TaskScheduler scheduler, bool inline)
@@ -733,15 +740,6 @@ namespace System.Threading.Tasks
             }
         }
 
-        private void SetCompleted()
-        {
-            var waitHandle = _waitHandle.Value;
-            if (_waitHandle.IsAlive)
-            {
-                waitHandle.Set();
-            }
-        }
-
         private bool SetRunning(bool preventDoubleExecution)
         {
             // For this method to be called the Task must have been scheduled,
@@ -772,5 +770,3 @@ namespace System.Threading.Tasks
         }
     }
 }
-
-#endif

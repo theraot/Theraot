@@ -41,7 +41,7 @@ namespace System.Threading.Tasks
 
         private static void LongRunningThreadWork(object obj)
         {
-            Task task = obj as Task;
+            var task = obj as Task;
             if (task != null)
             {
                 task.ExecuteEntry(false);

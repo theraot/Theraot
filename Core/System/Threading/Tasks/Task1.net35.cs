@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using Theraot.Core;
 
@@ -5,7 +6,7 @@ using Theraot.Core;
 
 namespace System.Threading.Tasks
 {
-    public class Task<TResult> : Task
+    public partial class Task<TResult> : Task
     {
         protected TResult ProtectedResult;
 

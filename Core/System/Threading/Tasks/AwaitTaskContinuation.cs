@@ -108,7 +108,7 @@ namespace System.Threading.Tasks
             // If there's no execution context, just invoke the delegate.
             if (_capturedContext == null)
             {
-                Action();
+                Action.Invoke();
             }
             // If there is an execution context, get the cached delegate and run the action under the context.
             else
@@ -130,7 +130,7 @@ namespace System.Threading.Tasks
             // inline the fast path
             if (_capturedContext == null)
             {
-                Action();
+                Action.Invoke();
             }
             else
             {
