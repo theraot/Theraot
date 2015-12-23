@@ -23,7 +23,6 @@ namespace System.Threading.Tasks
 
         public static Task Run(Func<Task> action)
         {
-            // TODO: change to continue with and promise task?
             if (action == null)
             {
                 throw new ArgumentNullException();
@@ -53,7 +52,6 @@ namespace System.Threading.Tasks
 
         public static Task Run(Func<Task> action, CancellationToken cancellationToken)
         {
-            // TODO: change to continue with and promise task?
             if (action == null)
             {
                 throw new ArgumentNullException();
@@ -103,7 +101,6 @@ namespace System.Threading.Tasks
 
         public static Task<TResult> Run<TResult>(Func<Task<TResult>> function)
         {
-            // TODO: change to continue with and promise task?
             if (function == null)
             {
                 throw new ArgumentNullException();
@@ -115,7 +112,6 @@ namespace System.Threading.Tasks
 
         public static Task<TResult> Run<TResult>(Func<Task<TResult>> function, CancellationToken cancellationToken)
         {
-            // TODO: change to continue with and promise task?
             if (function == null)
             {
                 throw new ArgumentNullException();

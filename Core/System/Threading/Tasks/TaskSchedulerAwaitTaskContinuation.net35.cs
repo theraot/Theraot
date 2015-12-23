@@ -15,7 +15,6 @@ namespace System.Threading.Tasks
         /// <param name="scheduler">The task scheduler with which to invoke the action.  Must not be null.</param>
         /// <param name="action">The action to invoke. Must not be null.</param>
         /// <param name="flowExecutionContext">Whether to capture and restore ExecutionContext.</param>
-        /// <param name="stackMark">The captured stack mark.</param>
         [SecurityCritical]
         internal TaskSchedulerAwaitTaskContinuation(TaskScheduler scheduler, Action action, bool flowExecutionContext)
             : base(action, flowExecutionContext)
@@ -46,11 +45,22 @@ namespace System.Threading.Tasks
 
                 // Create the continuation task task. If we're allowed to inline, try to do so.  
                 // The target scheduler may still deny us from executing on this thread, in which case this'll be queued.
-                var task = CreateTask(state => {
-                                                   try { ((Action)state)(); }
-                                                   catch (Exception exc) { ThrowAsyncIfNecessary(exc); }
-                }, Action, _scheduler);
-
+                var task = CreateTask
+                    (
+                        state =>
+                        {
+                            try
+                            {
+                                ((Action) state)();
+                            }
+                            catch (Exception exc)
+                            {
+                                ThrowAsyncIfNecessary(exc);
+                            }
+                        },
+                        Action,
+                        _scheduler
+                    );
                 if (inlineIfPossible)
                 {
                     InlineIfPossibleOrElseQueue(task);

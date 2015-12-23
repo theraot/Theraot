@@ -118,7 +118,7 @@ namespace System.Threading.Tasks
             // Now, if we are still unobserved and we're configured to crash on unobserved, throw the exception.
             // We need to publish the event above even if we're not going to crash, hence
             // why this check doesn't come at the beginning of the method.
-            if (_failFastOnUnobservedException && !ueea.m_observed)
+            if (_failFastOnUnobservedException && !ueea.Observed)
             {
                 throw exceptionToThrow;
             }
