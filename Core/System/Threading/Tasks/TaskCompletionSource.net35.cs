@@ -1,4 +1,6 @@
-﻿// ==++==
+﻿#if NET20 || NET30 || NET35
+
+// ==++==
 //
 //   Copyright (c) Microsoft Corporation.  All rights reserved.
 // 
@@ -16,9 +18,6 @@
 
 using System.Collections.Generic;
 using System.Security.Permissions;
-
-// Disable the "reference to volatile field not treated as volatile" error.
-#pragma warning disable 0420
 
 namespace System.Threading.Tasks
 {
@@ -374,3 +373,5 @@ namespace System.Threading.Tasks
         }
     }
 }
+
+#endif

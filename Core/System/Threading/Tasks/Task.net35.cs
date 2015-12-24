@@ -1,3 +1,5 @@
+#if NET20 || NET30 || NET35
+
 using System.Diagnostics.Contracts;
 using Theraot.Core;
 using Theraot.Threading;
@@ -776,3 +778,5 @@ namespace System.Threading.Tasks
         }
     }
 }
+
+#endif
