@@ -373,6 +373,7 @@
     <Compile Include="System\Threading\IThreadPoolWorkItem.cs" />
     <Compile Include="System\Threading\Tasks\StandardTaskContinuation.cs" />
     <Compile Include="System\Threading\Tasks\SynchronizationContextAwaitTaskContinuation.cs" />
+    <Compile Include="System\Threading\Tasks\Task.delay.net35.cs" />
     <Compile Include="System\Threading\Tasks\Task.promise.net35.cs" />
     <Compile Include="System\Threading\Tasks\Task.microsoft.net35.cs" />
     <Compile Include="System\Threading\Tasks\Task.continuation.net35.cs" />
