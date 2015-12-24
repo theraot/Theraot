@@ -14,6 +14,31 @@ namespace System.Threading.Tasks
             _internalOptions = InternalTaskOptions.PromiseTask;
         }
 
+        internal Task(CancellationToken token)
+        {
+            _internalOptions = InternalTaskOptions.PromiseTask;
+            CancellationToken = token;
+            if (token.IsCancellationRequested)
+            {
+                _status = (int)TaskStatus.Canceled;
+                _cancellationRequested = 1;
+                _cancellationAcknowledged = 1;
+            }
+            else
+            {
+                token.Register
+                (
+                    () =>
+                    {
+                        RecordInternalCancellationRequest();
+                        _status = (int)TaskStatus.Canceled;
+                        MarkCompleted();
+                        FinishStageThree();
+                    }
+                );
+            }
+        }
+
         internal Task(object state, TaskCreationOptions creationOptions)
         {
             if ((creationOptions & ~(TaskCreationOptions.AttachedToParent | TaskCreationOptions.RunContinuationsAsynchronously)) != 0)
@@ -135,6 +160,12 @@ namespace System.Threading.Tasks
     public partial class Task<TResult>
     {
         internal Task()
+        {
+            // Empty
+        }
+
+        internal Task(CancellationToken token)
+            : base(token)
         {
             // Empty
         }

@@ -1,5 +1,7 @@
 #if NET20 || NET30 || NET35
 
+using System.Threading.Tasks;
+using Theraot.Collections.ThreadSafe;
 using Theraot.Threading;
 
 namespace System.Threading
@@ -7,6 +9,7 @@ namespace System.Threading
     [Diagnostics.DebuggerDisplayAttribute("Current Count = {CurrentCount}")]
     public class SemaphoreSlim : IDisposable
     {
+        private SafeQueue<TaskCompletionSource<bool>> _asyncWaiters;
         private ManualResetEventSlim _event;
         private readonly int _maxCount;
         private int _count;
@@ -26,11 +29,12 @@ namespace System.Threading
             }
             if (maxCount <= 0)
             {
-                throw new ArgumentOutOfRangeException("initialCount", "maxCount < 0");
+                throw new ArgumentOutOfRangeException("initialCount", "maxCount <= 0");
             }
             _maxCount = maxCount;
+            _asyncWaiters = new SafeQueue<TaskCompletionSource<bool>>();
             _count = maxCount - initialCount;
-            _event = new ManualResetEventSlim(initialCount > 0);
+            _event = new ManualResetEventSlim(_count < maxCount);
         }
 
         public WaitHandle AvailableWaitHandle
@@ -70,10 +74,37 @@ namespace System.Threading
             int oldValue;
             if (ThreadingHelper.SpinWaitRelativeExchangeUnlessNegative(ref _count, -releaseCount, out oldValue))
             {
-                _event.Set();
+                Awake();
                 return oldValue;
             }
             throw new SemaphoreFullException();
+        }
+
+        private void Awake()
+        {
+            // Call this to notify that there is room in the semaphore
+            // Allow sync waiters to proceed
+            _event.Set();
+            while (Thread.VolatileRead(ref _count) < _maxCount)
+            {
+                TaskCompletionSource<bool> waiter;
+                if (_asyncWaiters.TryTake(out waiter))
+                {
+                    if (waiter.Task.IsCompleted)
+                    {
+                        // Skip - either cancelled or timed out
+                        continue;
+                    }
+                    if (TryEnter())
+                    {
+                        waiter.SetResult(true);
+                    }
+                    else
+                    {
+                        _asyncWaiters.Add(waiter);
+                    }
+                }
+            }
         }
 
         public void Wait()
@@ -118,64 +149,145 @@ namespace System.Threading
             }
             var start = ThreadingHelper.TicksNow();
             var remaining = millisecondsTimeout;
-            retry:
-            if (_event.Wait(remaining, cancellationToken))
+            while(_event.Wait(remaining, cancellationToken))
             {
-                var result = Thread.VolatileRead(ref _count) + 1;
-                if (Interlocked.CompareExchange(ref _count, result, _count) == _count)
+                // The thread is not allowed here unless there is room in the semaphore
+                if (TryEnter())
                 {
                     return true;
                 }
                 remaining = (int)(millisecondsTimeout - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start));
-                if (remaining > 0)
+                if (remaining <= 0)
                 {
-                    goto retry;
+                    break;
                 }
+            }
+            // Time out
+            return false;
+        }
+
+        private bool TryEnter()
+        {
+            // Should only be called when there is room in the semaphore
+            // No check is done to verify that
+            var result = Thread.VolatileRead(ref _count) + 1;
+            if (Interlocked.CompareExchange(ref _count, result, _count) == _count)
+            {
+                // It may be the case that there is no longer room in the semaphore because we just took one slot
+                if (Thread.VolatileRead(ref _count) == _maxCount)
+                {
+                    // Cause sync waitets to halt
+                    _event.Reset();
+                    // It is possible that another thread has just released more slots and called _event.Set() and we have just undone it...
+                    // Check if that is the case
+                    if (Thread.VolatileRead(ref _count) < _maxCount)
+                    {
+                        // Allow sync waiters to proceed
+                        _event.Set();
+                    }
+                }
+                return true;
             }
             return false;
         }
 
-        //public Task WaitAsync()
-        //{
-        //    //TODO Task
-        //    throw new NotImplementedException();
-        //}
+        public Task WaitAsync()
+        {
+            CheckDisposed();
+            var source = new TaskCompletionSource<bool>();
+            _asyncWaiters.Add(source);
+            return source.Task;
+        }
 
-        //public Task WaitAsync(CancellationToken cancellationToken)
-        //{
-        //    //TODO Task
-        //    throw new NotImplementedException();
-        //}
+        public Task WaitAsync(CancellationToken cancellationToken)
+        {
+            CheckDisposed();
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return new Task<bool>(cancellationToken);
+            }
+            var source = new TaskCompletionSource<bool>();
+            cancellationToken.Register(() => source.SetCanceled());
+            _asyncWaiters.Add(source);
+            return source.Task;
+        }
 
-        //public Task<bool> WaitAsync(int millisecondsTimeout)
-        //{
-        //    //TODO Task
-        //    throw new NotImplementedException();
-        //}
+        public Task<bool> WaitAsync(int millisecondsTimeout)
+        {
+            CheckDisposed();
+            var source = new TaskCompletionSource<bool>();
+            GC.KeepAlive
+            (
+                new Theraot.Core.Threading.Timeout(() => source.SetResult(false), millisecondsTimeout)
+                {
+                    Rooted = true
+                }
+            );
+            _asyncWaiters.Add(source);
+            return source.Task;
+        }
 
-        //public Task<bool> WaitAsync(TimeSpan timeout)
-        //{
-        //    //TODO Task
-        //    throw new NotImplementedException();
-        //}
+        public Task<bool> WaitAsync(TimeSpan timeout)
+        {
+            CheckDisposed();
+            var source = new TaskCompletionSource<bool>();
+            GC.KeepAlive
+            (
+                new Theraot.Core.Threading.Timeout(() => source.SetResult(false), timeout)
+                {
+                    Rooted = true
+                }
+            );
+            _asyncWaiters.Add(source);
+            return source.Task;
+        }
 
-        //public Task<bool> WaitAsync(int millisecondsTimeout, CancellationToken cancellationToken)
-        //{
-        //    //TODO Task
-        //    throw new NotImplementedException();
-        //}
+        public Task<bool> WaitAsync(int millisecondsTimeout, CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return new Task<bool>(cancellationToken);
+            }
+            CheckDisposed();
+            var source = new TaskCompletionSource<bool>();
+            GC.KeepAlive
+            (
+                new Theraot.Core.Threading.Timeout(() => source.SetResult(false), millisecondsTimeout, cancellationToken)
+                {
+                    Rooted = true
+                }
+            );
+            cancellationToken.Register(() => source.SetCanceled());
+            _asyncWaiters.Add(source);
+            return source.Task;
+        }
 
-        //public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken)
-        //{
-        //    //TODO Task
-        //    throw new NotImplementedException();
-        //}
+        public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return new Task<bool>(cancellationToken);
+            }
+            CheckDisposed();
+            var source = new TaskCompletionSource<bool>();
+            GC.KeepAlive
+            (
+                new Theraot.Core.Threading.Timeout(() => source.SetResult(false), timeout, cancellationToken)
+                {
+                    Rooted = true
+                }
+            );
+            cancellationToken.Register(() => source.SetCanceled());
+            _asyncWaiters.Add(source);
+            return source.Task;
+        }
 
         protected virtual void Dispose(bool disposing)
         {
             // This is a protected method, the parameter should be kept
             _disposed = true;
             _event.Dispose();
+            _asyncWaiters = null;
             _event = null;
         }
 
