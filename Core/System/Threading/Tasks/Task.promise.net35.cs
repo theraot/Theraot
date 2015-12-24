@@ -8,9 +8,9 @@ namespace System.Threading.Tasks
 {
     public partial class Task
     {
-        internal Task(InternalTaskOptions internalTaskOptions)
+        internal Task(TaskStatus taskStatus, InternalTaskOptions internalTaskOptions)
         {
-            _status = (int)TaskStatus.Created;
+            _status = (int)taskStatus;
             _internalOptions = internalTaskOptions;
         }
 
@@ -40,9 +40,10 @@ namespace System.Threading.Tasks
 
         public static Task FromCancellation(CancellationToken token)
         {
-            var result = new Task(InternalTaskOptions.PromiseTask)
+            var result = new Task(TaskStatus.WaitingForActivation, InternalTaskOptions.PromiseTask)
             {
-                CancellationToken = token
+                CancellationToken = token,
+                Scheduler = TaskScheduler.Default
             };
             if (token.IsCancellationRequested)
             {
@@ -156,18 +157,17 @@ namespace System.Threading.Tasks
 
         private static Task CreateCompletedTask()
         {
-            return new Task(InternalTaskOptions.DoNotDispose)
+            return new Task(TaskStatus.RanToCompletion, InternalTaskOptions.DoNotDispose)
             {
-                CancellationToken = default(CancellationToken),
-                _status = (int)TaskStatus.RanToCompletion
+                CancellationToken = default(CancellationToken)
             };
         }
     }
 
     public partial class Task<TResult>
     {
-        internal Task(InternalTaskOptions internalTaskOptions)
-            : base(internalTaskOptions)
+        internal Task(TaskStatus taskStatus, InternalTaskOptions internalTaskOptions)
+            : base(taskStatus, internalTaskOptions)
         {
             // Empty
         }
@@ -185,9 +185,10 @@ namespace System.Threading.Tasks
 
         public new static Task<TResult> FromCancellation(CancellationToken token)
         {
-            var result = new Task<TResult>(InternalTaskOptions.PromiseTask)
+            var result = new Task<TResult>(TaskStatus.WaitingForActivation, InternalTaskOptions.PromiseTask)
             {
-                CancellationToken = token
+                CancellationToken = token,
+                Scheduler = TaskScheduler.Default
             };
             if (token.IsCancellationRequested)
             {
