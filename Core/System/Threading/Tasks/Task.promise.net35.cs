@@ -8,35 +8,16 @@ namespace System.Threading.Tasks
 {
     public partial class Task
     {
+        internal Task(InternalTaskOptions internalTaskOptions)
+        {
+            _status = (int)TaskStatus.Created;
+            _internalOptions = internalTaskOptions;
+        }
+
         internal Task()
         {
             _status = (int)TaskStatus.WaitingForActivation;
             _internalOptions = InternalTaskOptions.PromiseTask;
-        }
-
-        internal Task(CancellationToken token)
-        {
-            _internalOptions = InternalTaskOptions.PromiseTask;
-            CancellationToken = token;
-            if (token.IsCancellationRequested)
-            {
-                _status = (int)TaskStatus.Canceled;
-                _cancellationRequested = 1;
-                _cancellationAcknowledged = 1;
-            }
-            else
-            {
-                token.Register
-                (
-                    () =>
-                    {
-                        RecordInternalCancellationRequest();
-                        _status = (int)TaskStatus.Canceled;
-                        MarkCompleted();
-                        FinishStageThree();
-                    }
-                );
-            }
         }
 
         internal Task(object state, TaskCreationOptions creationOptions)
@@ -57,33 +38,21 @@ namespace System.Threading.Tasks
             Scheduler = TaskScheduler.Default;
         }
 
-        internal bool TrySetException(Exception exception)
+        public static Task FromCancellation(CancellationToken token)
         {
-            AddException(exception);
-            var status = Interlocked.CompareExchange(ref _status, (int)TaskStatus.Faulted, (int)TaskStatus.WaitingForActivation);
-            var succeeded = status == (int)TaskStatus.WaitingForActivation;
-            if (succeeded)
+            var result = new Task(InternalTaskOptions.PromiseTask)
             {
-                MarkCompleted();
-                FinishStageThree();
-            }
-            return succeeded;
-        }
-
-        internal bool TrySetException(IEnumerable<Exception> exceptions)
-        {
-            foreach (var exception in exceptions)
+                CancellationToken = token
+            };
+            if (token.IsCancellationRequested)
             {
-                AddException(exception);
+                result.InternalCancel(false);
             }
-            var status = Interlocked.CompareExchange(ref _status, (int)TaskStatus.Faulted, (int)TaskStatus.WaitingForActivation);
-            var succeeded = status == (int)TaskStatus.WaitingForActivation;
-            if (succeeded)
+            else if (token.CanBeCanceled)
             {
-                MarkCompleted();
-                FinishStageThree();
+                token.Register(() => result.InternalCancel(false));
             }
-            return succeeded;
+            return result;
         }
 
         internal bool SetCompleted(bool preventDoubleExecution)
@@ -155,25 +124,80 @@ namespace System.Threading.Tasks
                 throw;
             }
         }
+
+        internal bool TrySetException(Exception exception)
+        {
+            AddException(exception);
+            var status = Interlocked.CompareExchange(ref _status, (int)TaskStatus.Faulted, (int)TaskStatus.WaitingForActivation);
+            var succeeded = status == (int)TaskStatus.WaitingForActivation;
+            if (succeeded)
+            {
+                MarkCompleted();
+                FinishStageThree();
+            }
+            return succeeded;
+        }
+
+        internal bool TrySetException(IEnumerable<Exception> exceptions)
+        {
+            foreach (var exception in exceptions)
+            {
+                AddException(exception);
+            }
+            var status = Interlocked.CompareExchange(ref _status, (int)TaskStatus.Faulted, (int)TaskStatus.WaitingForActivation);
+            var succeeded = status == (int)TaskStatus.WaitingForActivation;
+            if (succeeded)
+            {
+                MarkCompleted();
+                FinishStageThree();
+            }
+            return succeeded;
+        }
+
+        private static Task CreateCompletedTask()
+        {
+            return new Task(InternalTaskOptions.DoNotDispose)
+            {
+                CancellationToken = default(CancellationToken),
+                _status = (int)TaskStatus.RanToCompletion
+            };
+        }
     }
 
     public partial class Task<TResult>
     {
+        internal Task(InternalTaskOptions internalTaskOptions)
+            : base(internalTaskOptions)
+        {
+            // Empty
+        }
+
         internal Task()
         {
             // Empty
         }
 
-        internal Task(CancellationToken token)
-            : base(token)
+        internal Task(object state, TaskCreationOptions creationOptions)
+            : base(state, creationOptions)
         {
             // Empty
         }
 
-        internal Task(object state, TaskCreationOptions creationOptions)
-            : base (state, creationOptions)
+        public new static Task<TResult> FromCancellation(CancellationToken token)
         {
-            // Empty
+            var result = new Task<TResult>(InternalTaskOptions.PromiseTask)
+            {
+                CancellationToken = token
+            };
+            if (token.IsCancellationRequested)
+            {
+                result.InternalCancel(false);
+            }
+            else if (token.CanBeCanceled)
+            {
+                token.Register(() => result.InternalCancel(false));
+            }
+            return result;
         }
 
         internal bool TrySetResult(TResult result)

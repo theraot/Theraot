@@ -204,7 +204,7 @@ namespace System.Threading
             CheckDisposed();
             if (cancellationToken.IsCancellationRequested)
             {
-                return new Task<bool>(cancellationToken);
+                return Task.FromCancellation(cancellationToken);
             }
             var source = new TaskCompletionSource<bool>();
             cancellationToken.Register(() => source.SetCanceled());
@@ -246,7 +246,7 @@ namespace System.Threading
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return new Task<bool>(cancellationToken);
+                return Task<bool>.FromCancellation(cancellationToken);
             }
             CheckDisposed();
             var source = new TaskCompletionSource<bool>();
@@ -266,7 +266,7 @@ namespace System.Threading
         {
             if (cancellationToken.IsCancellationRequested)
             {
-                return new Task<bool>(cancellationToken);
+                return Task<bool>.FromCancellation(cancellationToken);
             }
             CheckDisposed();
             var source = new TaskCompletionSource<bool>();
