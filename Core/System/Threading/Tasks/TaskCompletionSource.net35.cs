@@ -76,6 +76,7 @@ namespace System.Threading.Tasks
         public TaskCompletionSource(TaskCreationOptions creationOptions)
             : this(null, creationOptions)
         {
+            // Empty
         }
 
         /// <summary>
@@ -87,6 +88,7 @@ namespace System.Threading.Tasks
         public TaskCompletionSource(object state)
             : this(state, TaskCreationOptions.None)
         {
+            // Empty
         }
 
         /// <summary>

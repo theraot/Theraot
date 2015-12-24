@@ -116,7 +116,7 @@ namespace System.Threading
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
-            int count = 0;
+            var count = 0;
             if (!IsSet)
             {
                 var start = ThreadingHelper.TicksNow();
@@ -238,7 +238,7 @@ namespace System.Threading
 
         private bool WaitExtracted(int millisecondsTimeout)
         {
-            int count = 0;
+            var count = 0;
             var start = ThreadingHelper.TicksNow();
             if (IsSet)
             {
@@ -282,7 +282,7 @@ namespace System.Threading
 
         private bool WaitExtracted(int millisecondsTimeout, CancellationToken cancellationToken)
         {
-            int count = 0;
+            var count = 0;
             var start = ThreadingHelper.TicksNow();
             if (IsSet)
             {
@@ -319,7 +319,7 @@ namespace System.Threading
 
         private void WaitExtracted(CancellationToken cancellationToken)
         {
-            int count = 0;
+            var count = 0;
             var start = ThreadingHelper.TicksNow();
             if (!IsSet)
             {
