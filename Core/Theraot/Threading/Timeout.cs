@@ -5,7 +5,7 @@ using Theraot.Threading.Needles;
 
 namespace Theraot.Core.Threading
 {
-    public class Timeout : IDisposable, IPromise
+    public class Timeout : IPromise
     {
         private static readonly HashSet<Timeout> _root;
 
@@ -46,7 +46,7 @@ namespace Theraot.Core.Threading
             {
                 _callback = callback;
                 _wrapped = new Timer(Callback, null, dueTime, System.Threading.Timeout.Infinite);
-                token.Register(Dispose);
+                token.Register(Cancel);
             }
             _hashcode = unchecked((int)DateTime.Now.Ticks);
         }
@@ -65,7 +65,7 @@ namespace Theraot.Core.Threading
 
         ~Timeout()
         {
-            Dispose();
+            Cancel();
         }
 
         Exception IPromise.Exception
@@ -134,7 +134,7 @@ namespace Theraot.Core.Threading
             Change((long)dueTime.TotalMilliseconds);
         }
 
-        public void Dispose()
+        public void Cancel()
         {
             var wrapped = Interlocked.Exchange(ref _wrapped, null);
             if (wrapped != null)
@@ -165,7 +165,7 @@ namespace Theraot.Core.Threading
             GC.KeepAlive(state);
             _callback.Invoke();
             _completed = true;
-            Dispose();
+            Cancel();
         }
     }
 }
