@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Theraot.Threading.Needles;
 
-namespace Theraot.Core.Threading
+namespace Theraot.Threading
 {
     public class Timeout : IPromise
     {

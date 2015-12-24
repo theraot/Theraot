@@ -218,7 +218,7 @@ namespace System.Threading
             var source = new TaskCompletionSource<bool>();
             GC.KeepAlive
             (
-                new Theraot.Core.Threading.Timeout(() => source.SetResult(false), millisecondsTimeout)
+                new Theraot.Threading.Timeout(() => source.SetResult(false), millisecondsTimeout)
                 {
                     Rooted = true
                 }
@@ -233,7 +233,7 @@ namespace System.Threading
             var source = new TaskCompletionSource<bool>();
             GC.KeepAlive
             (
-                new Theraot.Core.Threading.Timeout(() => source.SetResult(false), timeout)
+                new Theraot.Threading.Timeout(() => source.SetResult(false), timeout)
                 {
                     Rooted = true
                 }
@@ -252,7 +252,7 @@ namespace System.Threading
             var source = new TaskCompletionSource<bool>();
             GC.KeepAlive
             (
-                new Theraot.Core.Threading.Timeout(() => source.SetResult(false), millisecondsTimeout, cancellationToken)
+                new Theraot.Threading.Timeout(() => source.SetResult(false), millisecondsTimeout, cancellationToken)
                 {
                     Rooted = true
                 }
@@ -272,7 +272,7 @@ namespace System.Threading
             var source = new TaskCompletionSource<bool>();
             GC.KeepAlive
             (
-                new Theraot.Core.Threading.Timeout(() => source.SetResult(false), timeout, cancellationToken)
+                new Theraot.Threading.Timeout(() => source.SetResult(false), timeout, cancellationToken)
                 {
                     Rooted = true
                 }
