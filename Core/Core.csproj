@@ -649,6 +649,7 @@
     <Compile Include="Theraot\Threading\ReentrantReadWriteLock.disposable.cs" />
     <Compile Include="Theraot\Threading\ReentrantReadWriteLock.cs" />
     <Compile Include="Theraot\Threading\ReentryGuard.cs" />
+    <Compile Include="Theraot\Threading\Timeout.cs" />
     <Compile Include="Theraot\Threading\RuntimeUniqueIdProdiver.cs" />
     <Compile Include="Theraot\Threading\Needles\LockableNeedle.cs" />
     <Compile Include="Theraot\Threading\SimpleReentryGuard.cs" />
