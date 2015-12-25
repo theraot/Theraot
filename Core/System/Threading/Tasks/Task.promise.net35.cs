@@ -1,7 +1,9 @@
 #if NET20 || NET30 || NET35
 
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using Theraot.Threading;
 
 namespace System.Threading.Tasks
@@ -115,7 +117,9 @@ namespace System.Threading.Tasks
             {
                 // If we have an exception related to our CancellationToken, then we need to subtract ourselves
                 // from our parent before throwing it.
-                if ((_parent != null)
+                if
+                (
+                    (_parent != null)
                     && ((_creationOptions & TaskCreationOptions.AttachedToParent) != 0)
                     && ((_parent._creationOptions & TaskCreationOptions.DenyChildAttach) == 0)
                 )
@@ -125,6 +129,42 @@ namespace System.Threading.Tasks
                 throw;
             }
         }
+
+        internal bool TrySetCanceled(CancellationToken tokenToRecord, object cancellationException)
+        {
+            Contract.Assert(Action == null, "Task<T>.TrySetCanceled(): non-null m_action");
+            /*var ceAsEdi = cancellationException as ExceptionDispatchInfo;
+            Contract.Assert(
+                cancellationException == null ||
+                cancellationException is OperationCanceledException ||
+                (ceAsEdi != null && ceAsEdi.SourceException is OperationCanceledException),
+                "Expected null or an OperationCanceledException");
+            */
+            var returnValue = false;
+            // "Reserve" the completion for this task, while making sure that: (1) No prior reservation
+            // has been made, (2) The result has not already been set, (3) An exception has not previously 
+            // been recorded, and (4) Cancellation has not been requested.
+            //
+            // If the reservation is successful, then record the cancellation and finish completion processing.
+            //
+            // Note: I had to access static Task variables through Task<object>
+            // instead of Task, because I have a property named Task and that
+            // was confusing the compiler.  
+            Contract.Assert(IsPromiseTask, "Task.RecordInternalCancellationRequest(CancellationToken) only valid for promise-style task");
+            Contract.Assert(CancellationToken == default(CancellationToken));
+            // Store the supplied cancellation token as this task's token.
+            // Waiting on this task will then result in an OperationCanceledException containing this token.
+            if (tokenToRecord != default(CancellationToken))
+            {
+                CancellationToken = tokenToRecord;
+            }
+            if (InternalCancel(false))
+            {
+                returnValue = true;
+            }
+            return returnValue;
+        }
+
 
         internal bool TrySetException(Exception exception)
         {
@@ -140,6 +180,22 @@ namespace System.Threading.Tasks
         }
 
         internal bool TrySetException(IEnumerable<Exception> exceptions)
+        {
+            foreach (var exception in exceptions)
+            {
+                AddException(exception);
+            }
+            var status = Interlocked.CompareExchange(ref _status, (int)TaskStatus.Faulted, (int)TaskStatus.WaitingForActivation);
+            var succeeded = status == (int)TaskStatus.WaitingForActivation;
+            if (succeeded)
+            {
+                MarkCompleted();
+                FinishStageThree();
+            }
+            return succeeded;
+        }
+
+        internal bool TrySetException(IEnumerable<ExceptionDispatchInfo> exceptions)
         {
             foreach (var exception in exceptions)
             {
@@ -199,6 +255,15 @@ namespace System.Threading.Tasks
                 token.Register(() => result.InternalCancel(false));
             }
             return result;
+        }
+
+        public static Task<TResult> FromResult(TResult result)
+        {
+            return new Task<TResult>(TaskStatus.RanToCompletion, InternalTaskOptions.DoNotDispose)
+            {
+                CancellationToken = default(CancellationToken),
+                ProtectedResult = result
+            };
         }
 
         internal bool TrySetResult(TResult result)
