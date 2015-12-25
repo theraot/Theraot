@@ -711,31 +711,7 @@ namespace System.Threading.Tasks
             }
             if (signaledTaskIndex == -1 && tasks.Length != 0)
             {
-                var firstCompleted = new CompleteOnInvokePromise(tasks); // Leaked
-                //--
-                var numTasks = tasks.Length;
-                for (var taskIndex = 0; taskIndex < numTasks; taskIndex++)
-                {
-                    var task = tasks[taskIndex];
-                    // If a task has already completed, complete the promise.
-                    if (task.IsCompleted)
-                    {
-                        firstCompleted.Invoke(task);
-                        signaledTaskIndex = taskIndex;
-                        break;
-                    }
-                    // Otherwise, add the completion action and keep going.
-                    task.AddTaskContinuation(firstCompleted, false);
-                }
-                //--
-                if (signaledTaskIndex == -1)
-                {
-                    var waitCompleted = firstCompleted.Wait(millisecondsTimeout, cancellationToken);
-                    if (waitCompleted)
-                    {
-                        signaledTaskIndex = Array.IndexOf(tasks, firstCompleted.Result);
-                    }
-                }
+                PrivateWaitAny(tasks, millisecondsTimeout, cancellationToken, ref signaledTaskIndex);
             }
             // We need to prevent the tasks array from being GC'ed until we come out of the wait.
             // This is necessary so that the Parallel Debugger can traverse it during the long wait 
@@ -743,6 +719,40 @@ namespace System.Threading.Tasks
             GC.KeepAlive(tasks);
             // Return the index
             return signaledTaskIndex;
+        }
+
+        private static Task<Task> PrivateWaitAny(Task[] tasks, int millisecondsTimeout, CancellationToken cancellationToken, ref int signaledTaskIndex)
+        {
+            var firstCompleted = PrivateWhenAny(tasks, ref signaledTaskIndex);
+            if (signaledTaskIndex == -1)
+            {
+                var waitCompleted = firstCompleted.Wait(millisecondsTimeout, cancellationToken);
+                if (waitCompleted)
+                {
+                    signaledTaskIndex = Array.IndexOf(tasks, firstCompleted.Result);
+                }
+            }
+            return firstCompleted;
+        }
+
+        private static Task<Task> PrivateWhenAny(IList<Task> tasks, ref int signaledTaskIndex)
+        {
+            var firstCompleted = new CompleteOnInvokePromise(tasks);
+            for (var taskIndex = 0; taskIndex < tasks.Count; taskIndex++)
+            {
+                var task = tasks[taskIndex];
+                // If a task has already completed, complete the promise.
+                if (task.IsCompleted)
+                {
+                    firstCompleted.Invoke(task);
+                    signaledTaskIndex = taskIndex;
+                    break;
+                }
+                // Otherwise, add the completion action and keep going.
+                task.AddTaskContinuation(firstCompleted, false);
+            }
+            //--
+            return firstCompleted;
         }
 
         internal sealed class CompleteOnInvokePromise : Task<Task>, ITaskCompletionAction

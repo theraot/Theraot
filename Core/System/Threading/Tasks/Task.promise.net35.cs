@@ -1,3 +1,5 @@
+#if NET20 || NET30 || NET35
+
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
@@ -284,3 +286,5 @@ namespace System.Threading.Tasks
         }
     }
 }
+
+#endif

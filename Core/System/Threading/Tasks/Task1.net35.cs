@@ -1,6 +1,6 @@
-using System.Diagnostics.Contracts;
-
 #if NET20 || NET30 || NET35
+
+using System.Diagnostics.Contracts;
 
 namespace System.Threading.Tasks
 {
@@ -8,39 +8,9 @@ namespace System.Threading.Tasks
     {
         internal TResult InternalResult;
 
-        public TResult Result
+        static Task()
         {
-            [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "Microsoft's Design")]
-            get
-            {
-                Wait();
-                if (IsFaulted)
-                {
-                    throw Exception;
-                }
-                if (IsCanceled)
-                {
-                    throw new AggregateException(new TaskCanceledException(this));
-                }
-                return InternalResult;
-            }
-        }
-
-        internal override void InnerInvoke()
-        {
-            var action = Action as Func<TResult>;
-            if (action != null)
-            {
-                InternalResult = action();
-                return;
-            }
-            var withState = Action as Func<object, TResult>;
-            if (withState != null)
-            {
-                InternalResult = withState(State);
-                return;
-            }
-            Contract.Assert(false, "Invalid Action in Task");
+            ContinuationConvertion = done => (Task<TResult>)done.Result;
         }
 
         public Task(Func<TResult> function)
@@ -83,6 +53,43 @@ namespace System.Threading.Tasks
             : base(function, state, parent, cancellationToken, creationOptions, internalOptions, scheduler)
         {
             // Empty
+        }
+
+        public TResult Result
+        {
+            [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "Microsoft's Design")]
+            get
+            {
+                Wait();
+                if (IsFaulted)
+                {
+                    throw Exception;
+                }
+                if (IsCanceled)
+                {
+                    throw new AggregateException(new TaskCanceledException(this));
+                }
+                return InternalResult;
+            }
+        }
+
+        internal static Func<Task<Task>, Task<TResult>> ContinuationConvertion { get; private set; }
+
+        internal override void InnerInvoke()
+        {
+            var action = Action as Func<TResult>;
+            if (action != null)
+            {
+                InternalResult = action();
+                return;
+            }
+            var withState = Action as Func<object, TResult>;
+            if (withState != null)
+            {
+                InternalResult = withState(State);
+                return;
+            }
+            Contract.Assert(false, "Invalid Action in Task");
         }
     }
 }
