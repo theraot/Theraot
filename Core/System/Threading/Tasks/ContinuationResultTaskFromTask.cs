@@ -31,13 +31,13 @@ namespace System.Threading.Tasks
             var func = Action as Func<Task, TResult>;
             if (func != null)
             {
-                ProtectedResult = func(antecedent);
+                InternalResult = func(antecedent);
                 return;
             }
             var funcWithState = Action as Func<Task, object, TResult>;
             if (funcWithState != null)
             {
-                ProtectedResult = funcWithState(antecedent, State);
+                InternalResult = funcWithState(antecedent, State);
                 return;
             }
             Contract.Assert(false, "Invalid Action in ContinuationResultTaskFromTask");

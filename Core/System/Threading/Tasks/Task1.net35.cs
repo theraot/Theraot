@@ -6,7 +6,7 @@ namespace System.Threading.Tasks
 {
     public partial class Task<TResult> : Task
     {
-        protected TResult ProtectedResult;
+        internal TResult InternalResult;
 
         public TResult Result
         {
@@ -22,7 +22,7 @@ namespace System.Threading.Tasks
                 {
                     throw new AggregateException(new TaskCanceledException(this));
                 }
-                return ProtectedResult;
+                return InternalResult;
             }
         }
 
@@ -31,13 +31,13 @@ namespace System.Threading.Tasks
             var action = Action as Func<TResult>;
             if (action != null)
             {
-                ProtectedResult = action();
+                InternalResult = action();
                 return;
             }
             var withState = Action as Func<object, TResult>;
             if (withState != null)
             {
-                ProtectedResult = withState(State);
+                InternalResult = withState(State);
                 return;
             }
             Contract.Assert(false, "Invalid Action in Task");

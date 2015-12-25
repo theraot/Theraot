@@ -279,7 +279,7 @@ namespace System.Threading.Tasks
             // take shortcut if there are no tasks upon which to wait
             if (tasks.Length == 0)
             {
-                return Task<TResult[]>.FromResult(new TResult[0]);
+                return FromResult(new TResult[0]);
             }
             return new WhenAllPromise<TResult>(tasks);
         }
