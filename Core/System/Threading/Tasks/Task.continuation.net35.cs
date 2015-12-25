@@ -840,9 +840,9 @@ namespace System.Threading.Tasks
 
         // Record a continuation task or action.
         // Return true if and only if we successfully queued a continuation.
-        private bool AddTaskContinuation(object tc, bool addBeforeOthers)
+        private bool AddTaskContinuation(object continuationObject, bool addBeforeOthers)
         {
-            Contract.Requires(tc != null);
+            Contract.Requires(continuationObject != null);
             // Make sure that, if someone calls ContinueWith() right after waiting for the predecessor to complete,
             // we don't queue up a continuation.
             if (IsCompleted)
@@ -858,11 +858,11 @@ namespace System.Threading.Tasks
             {
                 if (addBeforeOthers)
                 {
-                    _continuations.Insert(0, tc);
+                    _continuations.Insert(0, continuationObject);
                 }
                 else
                 {
-                    _continuations.Add(tc);
+                    _continuations.Add(continuationObject);
                 }
             }
             return true;
