@@ -991,8 +991,6 @@ namespace System.Threading.Tasks
 
     public partial class Task<TResult>
     {
-        #region Action<Task<TResult>> continuations
-
         /// <summary>
         /// Creates a continuation that executes when the target <see cref="Task{TResult}"/> completes.
         /// </summary>
@@ -1142,48 +1140,10 @@ namespace System.Threading.Tasks
         /// has already been disposed.
         /// </exception>
         [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
-        public Task ContinueWith(Action<Task<TResult>> continuationAction, CancellationToken cancellationToken,
-                                 TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
+        public Task ContinueWith(Action<Task<TResult>> continuationAction, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
         {
             return ContinueWith(continuationAction, scheduler, cancellationToken, continuationOptions);
         }
-
-        // Same as the above overload, only with a stack mark.
-        internal Task ContinueWith(Action<Task<TResult>> continuationAction, TaskScheduler scheduler, CancellationToken cancellationToken,
-                                   TaskContinuationOptions continuationOptions)
-        {
-            if (continuationAction == null)
-            {
-                throw new ArgumentNullException("continuationAction");
-            }
-
-            if (scheduler == null)
-            {
-                throw new ArgumentNullException("scheduler");
-            }
-
-            TaskCreationOptions creationOptions;
-            InternalTaskOptions internalOptions;
-            CreationOptionsFromContinuationOptions(
-                continuationOptions,
-                out creationOptions,
-                out internalOptions);
-
-            Task continuationTask = new ContinuationTaskFromResultTask<TResult>(
-                this, continuationAction, null,
-                creationOptions, internalOptions
-            );
-
-            // Register the continuation.  If synchronous execution is requested, this may
-            // actually invoke the continuation before returning.
-            ContinueWithCore(continuationTask, scheduler, cancellationToken, continuationOptions);
-
-            return continuationTask;
-        }
-
-        #endregion Action<Task<TResult>> continuations
-
-        #region Action<Task<TResult>, Object> continuations
 
         /// <summary>
         /// Creates a continuation that executes when the target <see cref="Task{TResult}"/> completes.
@@ -1339,48 +1299,10 @@ namespace System.Threading.Tasks
         /// has already been disposed.
         /// </exception>
         [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
-        public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, CancellationToken cancellationToken,
-                                 TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
+        public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
         {
             return ContinueWith(continuationAction, state, scheduler, cancellationToken, continuationOptions);
         }
-
-        // Same as the above overload, only with a stack mark.
-        internal Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, TaskScheduler scheduler, CancellationToken cancellationToken,
-                                   TaskContinuationOptions continuationOptions)
-        {
-            if (continuationAction == null)
-            {
-                throw new ArgumentNullException("continuationAction");
-            }
-
-            if (scheduler == null)
-            {
-                throw new ArgumentNullException("scheduler");
-            }
-
-            TaskCreationOptions creationOptions;
-            InternalTaskOptions internalOptions;
-            CreationOptionsFromContinuationOptions(
-                continuationOptions,
-                out creationOptions,
-                out internalOptions);
-
-            Task continuationTask = new ContinuationTaskFromResultTask<TResult>(
-                this, continuationAction, state,
-                creationOptions, internalOptions
-            );
-
-            // Register the continuation.  If synchronous execution is requested, this may
-            // actually invoke the continuation before returning.
-            ContinueWithCore(continuationTask, scheduler, cancellationToken, continuationOptions);
-
-            return continuationTask;
-        }
-
-        #endregion Action<Task<TResult>, Object> continuations
-
-        #region Func<Task<TResult>,TNewResult> continuations
 
         /// <summary>
         /// Creates a continuation that executes when the target <see cref="Task{TResult}"/> completes.
@@ -1559,48 +1481,10 @@ namespace System.Threading.Tasks
         /// has already been disposed.
         /// </exception>
         [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
-        public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, CancellationToken cancellationToken,
-            TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
+        public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
         {
             return ContinueWith(continuationFunction, scheduler, cancellationToken, continuationOptions);
         }
-
-        // Same as the above overload, just with a stack mark.
-        internal Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, TaskScheduler scheduler,
-            CancellationToken cancellationToken, TaskContinuationOptions continuationOptions)
-        {
-            if (continuationFunction == null)
-            {
-                throw new ArgumentNullException("continuationFunction");
-            }
-
-            if (scheduler == null)
-            {
-                throw new ArgumentNullException("scheduler");
-            }
-
-            TaskCreationOptions creationOptions;
-            InternalTaskOptions internalOptions;
-            CreationOptionsFromContinuationOptions(
-                continuationOptions,
-                out creationOptions,
-                out internalOptions);
-
-            Task<TNewResult> continuationFuture = new ContinuationResultTaskFromResultTask<TResult, TNewResult>(
-                this, continuationFunction, null,
-                creationOptions, internalOptions
-            );
-
-            // Register the continuation.  If synchronous execution is requested, this may
-            // actually invoke the continuation before returning.
-            ContinueWithCore(continuationFuture, scheduler, cancellationToken, continuationOptions);
-
-            return continuationFuture;
-        }
-
-        #endregion Func<Task<TResult>,TNewResult> continuations
-
-        #region Func<Task<TResult>, Object,TNewResult> continuations
 
         /// <summary>
         /// Creates a continuation that executes when the target <see cref="Task{TResult}"/> completes.
@@ -1653,8 +1537,7 @@ namespace System.Threading.Tasks
         /// has already been disposed.
         /// </exception>
         [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
-        public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state,
-            CancellationToken cancellationToken)
+        public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state, CancellationToken cancellationToken)
         {
             return ContinueWith(continuationFunction, state, TaskScheduler.Current, cancellationToken, TaskContinuationOptions.None);
         }
@@ -1686,8 +1569,7 @@ namespace System.Threading.Tasks
         /// The <paramref name="scheduler"/> argument is null.
         /// </exception>
         [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
-        public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state,
-            TaskScheduler scheduler)
+        public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state, TaskScheduler scheduler)
         {
             return ContinueWith(continuationFunction, state, scheduler, default(CancellationToken), TaskContinuationOptions.None);
         }
@@ -1731,8 +1613,7 @@ namespace System.Threading.Tasks
         /// cref="T:System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
         [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
-        public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state,
-            TaskContinuationOptions continuationOptions)
+        public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state, TaskContinuationOptions continuationOptions)
         {
             return ContinueWith(continuationFunction, state, TaskScheduler.Current, default(CancellationToken), continuationOptions);
         }
@@ -1787,15 +1668,109 @@ namespace System.Threading.Tasks
         /// has already been disposed.
         /// </exception>
         [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
-        public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state,
-            CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
+        public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
         {
             return ContinueWith(continuationFunction, state, scheduler, cancellationToken, continuationOptions);
         }
 
+        // Same as the above overload, only with a stack mark.
+        internal Task ContinueWith(Action<Task<TResult>> continuationAction, TaskScheduler scheduler, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions)
+        {
+            if (continuationAction == null)
+            {
+                throw new ArgumentNullException("continuationAction");
+            }
+
+            if (scheduler == null)
+            {
+                throw new ArgumentNullException("scheduler");
+            }
+
+            TaskCreationOptions creationOptions;
+            InternalTaskOptions internalOptions;
+            CreationOptionsFromContinuationOptions(
+                continuationOptions,
+                out creationOptions,
+                out internalOptions);
+
+            Task continuationTask = new ContinuationTaskFromResultTask<TResult>(
+                this, continuationAction, null,
+                creationOptions, internalOptions
+            );
+
+            // Register the continuation.  If synchronous execution is requested, this may
+            // actually invoke the continuation before returning.
+            ContinueWithCore(continuationTask, scheduler, cancellationToken, continuationOptions);
+
+            return continuationTask;
+        }
+
+        // Same as the above overload, only with a stack mark.
+        internal Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, TaskScheduler scheduler, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions)
+        {
+            if (continuationAction == null)
+            {
+                throw new ArgumentNullException("continuationAction");
+            }
+
+            if (scheduler == null)
+            {
+                throw new ArgumentNullException("scheduler");
+            }
+
+            TaskCreationOptions creationOptions;
+            InternalTaskOptions internalOptions;
+            CreationOptionsFromContinuationOptions(
+                continuationOptions,
+                out creationOptions,
+                out internalOptions);
+
+            Task continuationTask = new ContinuationTaskFromResultTask<TResult>(
+                this, continuationAction, state,
+                creationOptions, internalOptions
+            );
+
+            // Register the continuation.  If synchronous execution is requested, this may
+            // actually invoke the continuation before returning.
+            ContinueWithCore(continuationTask, scheduler, cancellationToken, continuationOptions);
+
+            return continuationTask;
+        }
+
         // Same as the above overload, just with a stack mark.
-        internal Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state,
-            TaskScheduler scheduler, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions)
+        internal Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, TaskScheduler scheduler, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions)
+        {
+            if (continuationFunction == null)
+            {
+                throw new ArgumentNullException("continuationFunction");
+            }
+
+            if (scheduler == null)
+            {
+                throw new ArgumentNullException("scheduler");
+            }
+
+            TaskCreationOptions creationOptions;
+            InternalTaskOptions internalOptions;
+            CreationOptionsFromContinuationOptions(
+                continuationOptions,
+                out creationOptions,
+                out internalOptions);
+
+            Task<TNewResult> continuationFuture = new ContinuationResultTaskFromResultTask<TResult, TNewResult>(
+                this, continuationFunction, null,
+                creationOptions, internalOptions
+            );
+
+            // Register the continuation.  If synchronous execution is requested, this may
+            // actually invoke the continuation before returning.
+            ContinueWithCore(continuationFuture, scheduler, cancellationToken, continuationOptions);
+
+            return continuationFuture;
+        }
+
+        // Same as the above overload, just with a stack mark.
+        internal Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state, TaskScheduler scheduler, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions)
         {
             if (continuationFunction == null)
             {
@@ -1825,8 +1800,6 @@ namespace System.Threading.Tasks
 
             return continuationFuture;
         }
-
-        #endregion Func<Task<TResult>, Object,TNewResult> continuations
     }
 }
 
