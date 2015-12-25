@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
 
 namespace System.Threading.Tasks
 {
@@ -986,6 +987,846 @@ namespace System.Threading.Tasks
             ContinueWithCore(continuationTask, scheduler, cancellationToken, continuationOptions);
             return continuationTask;
         }
+    }
+
+    public partial class Task<TResult>
+    {
+        #region Action<Task<TResult>> continuations
+
+        /// <summary>
+        /// Creates a continuation that executes when the target <see cref="Task{TResult}"/> completes.
+        /// </summary>
+        /// <param name="continuationAction">
+        /// An action to run when the <see cref="Task{TResult}"/> completes. When run, the delegate will be
+        /// passed the completed task as an argument.
+        /// </param>
+        /// <returns>A new continuation <see cref="Task"/>.</returns>
+        /// <remarks>
+        /// The returned <see cref="Task"/> will not be scheduled for execution until the current task has
+        /// completed, whether it completes due to running to completion successfully, faulting due to an
+        /// unhandled exception, or exiting out early due to being canceled.
+        /// </remarks>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="continuationAction"/> argument is null.
+        /// </exception>
+        [MethodImpl(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        public Task ContinueWith(Action<Task<TResult>> continuationAction)
+        {
+            return ContinueWith(continuationAction, TaskScheduler.Current, default(CancellationToken), TaskContinuationOptions.None);
+        }
+
+        /// <summary>
+        /// Creates a continuation that executes when the target <see cref="Task{TResult}"/> completes.
+        /// </summary>
+        /// <param name="continuationAction">
+        /// An action to run when the <see cref="Task{TResult}"/> completes. When run, the delegate will be
+        /// passed the completed task as an argument.
+        /// </param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new continuation task.</param>
+        /// <returns>A new continuation <see cref="Task"/>.</returns>
+        /// <remarks>
+        /// The returned <see cref="Task"/> will not be scheduled for execution until the current task has
+        /// completed, whether it completes due to running to completion successfully, faulting due to an
+        /// unhandled exception, or exiting out early due to being canceled.
+        /// </remarks>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="continuationAction"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// has already been disposed.
+        /// </exception>
+        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        public Task ContinueWith(Action<Task<TResult>> continuationAction, CancellationToken cancellationToken)
+        {
+            return ContinueWith(continuationAction, TaskScheduler.Current, cancellationToken, TaskContinuationOptions.None);
+        }
+
+        /// <summary>
+        /// Creates a continuation that executes when the target <see cref="Task{TResult}"/> completes.
+        /// </summary>
+        /// <param name="continuationAction">
+        /// An action to run when the <see cref="Task{TResult}"/> completes. When run, the delegate will be
+        /// passed the completed task as an argument.
+        /// </param>
+        /// <param name="scheduler">
+        /// The <see cref="TaskScheduler"/> to associate with the continuation task and to use for its execution.
+        /// </param>
+        /// <returns>A new continuation <see cref="Task"/>.</returns>
+        /// <remarks>
+        /// The returned <see cref="Task"/> will not be scheduled for execution until the current task has
+        /// completed, whether it completes due to running to completion successfully, faulting due to an
+        /// unhandled exception, or exiting out early due to being canceled.
+        /// </remarks>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="continuationAction"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="scheduler"/> argument is null.
+        /// </exception>
+        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        public Task ContinueWith(Action<Task<TResult>> continuationAction, TaskScheduler scheduler)
+        {
+            return ContinueWith(continuationAction, scheduler, default(CancellationToken), TaskContinuationOptions.None);
+        }
+
+        /// <summary>
+        /// Creates a continuation that executes when the target <see cref="Task{TResult}"/> completes.
+        /// </summary>
+        /// <param name="continuationAction">
+        /// An action to run when the <see cref="Task{TResult}"/> completes. When run, the delegate will be
+        /// passed the completed task as an argument.
+        /// </param>
+        /// <param name="continuationOptions">
+        /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
+        /// as <see
+        /// cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see
+        /// cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// </param>
+        /// <returns>A new continuation <see cref="Task"/>.</returns>
+        /// <remarks>
+        /// The returned <see cref="Task"/> will not be scheduled for execution until the current task has
+        /// completed. If the continuation criteria specified through the <paramref
+        /// name="continuationOptions"/> parameter are not met, the continuation task will be canceled
+        /// instead of scheduled.
+        /// </remarks>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="continuationAction"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// The <paramref name="continuationOptions"/> argument specifies an invalid value for <see
+        /// cref="T:System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        /// </exception>
+        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        public Task ContinueWith(Action<Task<TResult>> continuationAction, TaskContinuationOptions continuationOptions)
+        {
+            return ContinueWith(continuationAction, TaskScheduler.Current, default(CancellationToken), continuationOptions);
+        }
+
+        /// <summary>
+        /// Creates a continuation that executes when the target <see cref="Task{TResult}"/> completes.
+        /// </summary>
+        /// <param name="continuationAction">
+        /// An action to run when the <see cref="Task{TResult}"/> completes. When run, the delegate will be
+        /// passed the completed task as an argument.
+        /// </param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new continuation task.</param>
+        /// <param name="continuationOptions">
+        /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
+        /// as <see
+        /// cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see
+        /// cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// </param>
+        /// <param name="scheduler">
+        /// The <see cref="TaskScheduler"/> to associate with the continuation task and to use for its
+        /// execution.
+        /// </param>
+        /// <returns>A new continuation <see cref="Task"/>.</returns>
+        /// <remarks>
+        /// The returned <see cref="Task"/> will not be scheduled for execution until the current task has
+        /// completed. If the criteria specified through the <paramref name="continuationOptions"/> parameter
+        /// are not met, the continuation task will be canceled instead of scheduled.
+        /// </remarks>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="continuationAction"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// The <paramref name="continuationOptions"/> argument specifies an invalid value for <see
+        /// cref="T:System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="scheduler"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// has already been disposed.
+        /// </exception>
+        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        public Task ContinueWith(Action<Task<TResult>> continuationAction, CancellationToken cancellationToken,
+                                 TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
+        {
+            return ContinueWith(continuationAction, scheduler, cancellationToken, continuationOptions);
+        }
+
+        // Same as the above overload, only with a stack mark.
+        internal Task ContinueWith(Action<Task<TResult>> continuationAction, TaskScheduler scheduler, CancellationToken cancellationToken,
+                                   TaskContinuationOptions continuationOptions)
+        {
+            if (continuationAction == null)
+            {
+                throw new ArgumentNullException("continuationAction");
+            }
+
+            if (scheduler == null)
+            {
+                throw new ArgumentNullException("scheduler");
+            }
+
+            TaskCreationOptions creationOptions;
+            InternalTaskOptions internalOptions;
+            CreationOptionsFromContinuationOptions(
+                continuationOptions,
+                out creationOptions,
+                out internalOptions);
+
+            Task continuationTask = new ContinuationTaskFromResultTask<TResult>(
+                this, continuationAction, null,
+                creationOptions, internalOptions
+            );
+
+            // Register the continuation.  If synchronous execution is requested, this may
+            // actually invoke the continuation before returning.
+            ContinueWithCore(continuationTask, scheduler, cancellationToken, continuationOptions);
+
+            return continuationTask;
+        }
+
+        #endregion Action<Task<TResult>> continuations
+
+        #region Action<Task<TResult>, Object> continuations
+
+        /// <summary>
+        /// Creates a continuation that executes when the target <see cref="Task{TResult}"/> completes.
+        /// </summary>
+        /// <param name="continuationAction">
+        /// An action to run when the <see cref="Task{TResult}"/> completes. When run, the delegate will be
+        /// passed the completed task and the caller-supplied state object as arguments.
+        /// </param>
+        /// <param name="state">An object representing data to be used by the continuation action.</param>
+        /// <returns>A new continuation <see cref="Task"/>.</returns>
+        /// <remarks>
+        /// The returned <see cref="Task"/> will not be scheduled for execution until the current task has
+        /// completed, whether it completes due to running to completion successfully, faulting due to an
+        /// unhandled exception, or exiting out early due to being canceled.
+        /// </remarks>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="continuationAction"/> argument is null.
+        /// </exception>
+        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state)
+        {
+            return ContinueWith(continuationAction, state, TaskScheduler.Current, default(CancellationToken), TaskContinuationOptions.None);
+        }
+
+        /// <summary>
+        /// Creates a continuation that executes when the target <see cref="Task{TResult}"/> completes.
+        /// </summary>
+        /// <param name="continuationAction">
+        /// An action to run when the <see cref="Task{TResult}"/> completes. When run, the delegate will be
+        /// passed the completed task and the caller-supplied state object as arguments.
+        /// </param>
+        /// <param name="state">An object representing data to be used by the continuation action.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new continuation task.</param>
+        /// <returns>A new continuation <see cref="Task"/>.</returns>
+        /// <remarks>
+        /// The returned <see cref="Task"/> will not be scheduled for execution until the current task has
+        /// completed, whether it completes due to running to completion successfully, faulting due to an
+        /// unhandled exception, or exiting out early due to being canceled.
+        /// </remarks>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="continuationAction"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// has already been disposed.
+        /// </exception>
+        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, CancellationToken cancellationToken)
+        {
+            return ContinueWith(continuationAction, state, TaskScheduler.Current, cancellationToken, TaskContinuationOptions.None);
+        }
+
+        /// <summary>
+        /// Creates a continuation that executes when the target <see cref="Task{TResult}"/> completes.
+        /// </summary>
+        /// <param name="continuationAction">
+        /// An action to run when the <see cref="Task{TResult}"/> completes. When run, the delegate will be
+        /// passed the completed task and the caller-supplied state object as arguments.
+        /// </param>
+        /// <param name="state">An object representing data to be used by the continuation action.</param>
+        /// <param name="scheduler">
+        /// The <see cref="TaskScheduler"/> to associate with the continuation task and to use for its execution.
+        /// </param>
+        /// <returns>A new continuation <see cref="Task"/>.</returns>
+        /// <remarks>
+        /// The returned <see cref="Task"/> will not be scheduled for execution until the current task has
+        /// completed, whether it completes due to running to completion successfully, faulting due to an
+        /// unhandled exception, or exiting out early due to being canceled.
+        /// </remarks>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="continuationAction"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="scheduler"/> argument is null.
+        /// </exception>
+        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, TaskScheduler scheduler)
+        {
+            return ContinueWith(continuationAction, state, scheduler, default(CancellationToken), TaskContinuationOptions.None);
+        }
+
+        /// <summary>
+        /// Creates a continuation that executes when the target <see cref="Task{TResult}"/> completes.
+        /// </summary>
+        /// <param name="continuationAction">
+        /// An action to run when the <see cref="Task{TResult}"/> completes. When run, the delegate will be
+        /// passed the completed task and the caller-supplied state object as arguments.
+        /// </param>
+        /// <param name="state">An object representing data to be used by the continuation action.</param>
+        /// <param name="continuationOptions">
+        /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
+        /// as <see
+        /// cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see
+        /// cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// </param>
+        /// <returns>A new continuation <see cref="Task"/>.</returns>
+        /// <remarks>
+        /// The returned <see cref="Task"/> will not be scheduled for execution until the current task has
+        /// completed. If the continuation criteria specified through the <paramref
+        /// name="continuationOptions"/> parameter are not met, the continuation task will be canceled
+        /// instead of scheduled.
+        /// </remarks>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="continuationAction"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// The <paramref name="continuationOptions"/> argument specifies an invalid value for <see
+        /// cref="T:System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        /// </exception>
+        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, TaskContinuationOptions continuationOptions)
+        {
+            return ContinueWith(continuationAction, state, TaskScheduler.Current, default(CancellationToken), continuationOptions);
+        }
+
+        /// <summary>
+        /// Creates a continuation that executes when the target <see cref="Task{TResult}"/> completes.
+        /// </summary>
+        /// <param name="continuationAction">
+        /// An action to run when the <see cref="Task{TResult}"/> completes. When run, the delegate will be
+        /// passed the completed task and the caller-supplied state object as arguments.
+        /// </param>
+        /// <param name="state">An object representing data to be used by the continuation action.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new continuation task.</param>
+        /// <param name="continuationOptions">
+        /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
+        /// as <see
+        /// cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see
+        /// cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// </param>
+        /// <param name="scheduler">
+        /// The <see cref="TaskScheduler"/> to associate with the continuation task and to use for its
+        /// execution.
+        /// </param>
+        /// <returns>A new continuation <see cref="Task"/>.</returns>
+        /// <remarks>
+        /// The returned <see cref="Task"/> will not be scheduled for execution until the current task has
+        /// completed. If the criteria specified through the <paramref name="continuationOptions"/> parameter
+        /// are not met, the continuation task will be canceled instead of scheduled.
+        /// </remarks>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="continuationAction"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// The <paramref name="continuationOptions"/> argument specifies an invalid value for <see
+        /// cref="T:System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="scheduler"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// has already been disposed.
+        /// </exception>
+        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        public Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, CancellationToken cancellationToken,
+                                 TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
+        {
+            return ContinueWith(continuationAction, state, scheduler, cancellationToken, continuationOptions);
+        }
+
+        // Same as the above overload, only with a stack mark.
+        internal Task ContinueWith(Action<Task<TResult>, object> continuationAction, object state, TaskScheduler scheduler, CancellationToken cancellationToken,
+                                   TaskContinuationOptions continuationOptions)
+        {
+            if (continuationAction == null)
+            {
+                throw new ArgumentNullException("continuationAction");
+            }
+
+            if (scheduler == null)
+            {
+                throw new ArgumentNullException("scheduler");
+            }
+
+            TaskCreationOptions creationOptions;
+            InternalTaskOptions internalOptions;
+            CreationOptionsFromContinuationOptions(
+                continuationOptions,
+                out creationOptions,
+                out internalOptions);
+
+            Task continuationTask = new ContinuationTaskFromResultTask<TResult>(
+                this, continuationAction, state,
+                creationOptions, internalOptions
+            );
+
+            // Register the continuation.  If synchronous execution is requested, this may
+            // actually invoke the continuation before returning.
+            ContinueWithCore(continuationTask, scheduler, cancellationToken, continuationOptions);
+
+            return continuationTask;
+        }
+
+        #endregion Action<Task<TResult>, Object> continuations
+
+        #region Func<Task<TResult>,TNewResult> continuations
+
+        /// <summary>
+        /// Creates a continuation that executes when the target <see cref="Task{TResult}"/> completes.
+        /// </summary>
+        /// <typeparam name="TNewResult">
+        /// The type of the result produced by the continuation.
+        /// </typeparam>
+        /// <param name="continuationFunction">
+        /// A function to run when the <see cref="Task{TResult}"/> completes. When run, the delegate will be
+        /// passed the completed task as an argument.
+        /// </param>
+        /// <returns>A new continuation <see cref="Task{TNewResult}"/>.</returns>
+        /// <remarks>
+        /// The returned <see cref="Task{TNewResult}"/> will not be scheduled for execution until the current
+        /// task has completed, whether it completes due to running to completion successfully, faulting due
+        /// to an unhandled exception, or exiting out early due to being canceled.
+        /// </remarks>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="continuationFunction"/> argument is null.
+        /// </exception>
+        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction)
+        {
+            return ContinueWith(continuationFunction, TaskScheduler.Current, default(CancellationToken), TaskContinuationOptions.None);
+        }
+
+        /// <summary>
+        /// Creates a continuation that executes when the target <see cref="Task{TResult}"/> completes.
+        /// </summary>
+        /// <typeparam name="TNewResult">
+        /// The type of the result produced by the continuation.
+        /// </typeparam>
+        /// <param name="continuationFunction">
+        /// A function to run when the <see cref="Task{TResult}"/> completes. When run, the delegate will be
+        /// passed the completed task as an argument.
+        /// </param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new task.</param>
+        /// <returns>A new continuation <see cref="Task{TNewResult}"/>.</returns>
+        /// <remarks>
+        /// The returned <see cref="Task{TNewResult}"/> will not be scheduled for execution until the current
+        /// task has completed, whether it completes due to running to completion successfully, faulting due
+        /// to an unhandled exception, or exiting out early due to being canceled.
+        /// </remarks>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="continuationFunction"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// has already been disposed.
+        /// </exception>
+        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, CancellationToken cancellationToken)
+        {
+            return ContinueWith(continuationFunction, TaskScheduler.Current, cancellationToken, TaskContinuationOptions.None);
+        }
+
+        /// <summary>
+        /// Creates a continuation that executes when the target <see cref="Task{TResult}"/> completes.
+        /// </summary>
+        /// <typeparam name="TNewResult">
+        /// The type of the result produced by the continuation.
+        /// </typeparam>
+        /// <param name="continuationFunction">
+        /// A function to run when the <see cref="Task{TResult}"/> completes.  When run, the delegate will be
+        /// passed the completed task as an argument.
+        /// </param>
+        /// <param name="scheduler">
+        /// The <see cref="TaskScheduler"/> to associate with the continuation task and to use for its execution.
+        /// </param>
+        /// <returns>A new continuation <see cref="Task{TNewResult}"/>.</returns>
+        /// <remarks>
+        /// The returned <see cref="Task{TNewResult}"/> will not be scheduled for execution until the current task has
+        /// completed, whether it completes due to running to completion successfully, faulting due to an
+        /// unhandled exception, or exiting out early due to being canceled.
+        /// </remarks>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="continuationFunction"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="scheduler"/> argument is null.
+        /// </exception>
+        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, TaskScheduler scheduler)
+        {
+            return ContinueWith(continuationFunction, scheduler, default(CancellationToken), TaskContinuationOptions.None);
+        }
+
+        /// <summary>
+        /// Creates a continuation that executes when the target <see cref="Task{TResult}"/> completes.
+        /// </summary>
+        /// <typeparam name="TNewResult">
+        /// The type of the result produced by the continuation.
+        /// </typeparam>
+        /// <param name="continuationFunction">
+        /// A function to run when the <see cref="Task{TResult}"/> completes. When run, the delegate will be
+        /// passed the completed task as an argument.
+        /// </param>
+        /// <param name="continuationOptions">
+        /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
+        /// as <see
+        /// cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see
+        /// cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// </param>
+        /// <returns>A new continuation <see cref="Task{TNewResult}"/>.</returns>
+        /// <remarks>
+        /// <para>
+        /// The returned <see cref="Task{TNewResult}"/> will not be scheduled for execution until the current
+        /// task has completed, whether it completes due to running to completion successfully, faulting due
+        /// to an unhandled exception, or exiting out early due to being canceled.
+        /// </para>
+        /// <para>
+        /// The <paramref name="continuationFunction"/>, when executed, should return a <see
+        /// cref="Task{TNewResult}"/>. This task's completion state will be transferred to the task returned
+        /// from the ContinueWith call.
+        /// </para>
+        /// </remarks>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="continuationFunction"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// The <paramref name="continuationOptions"/> argument specifies an invalid value for <see
+        /// cref="T:System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        /// </exception>
+        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, TaskContinuationOptions continuationOptions)
+        {
+            return ContinueWith(continuationFunction, TaskScheduler.Current, default(CancellationToken), continuationOptions);
+        }
+
+        /// <summary>
+        /// Creates a continuation that executes when the target <see cref="Task{TResult}"/> completes.
+        /// </summary>
+        /// <typeparam name="TNewResult">
+        /// The type of the result produced by the continuation.
+        /// </typeparam>
+        /// <param name="continuationFunction">
+        /// A function to run when the <see cref="Task{TResult}"/> completes. When run, the delegate will be passed as
+        /// an argument this completed task.
+        /// </param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new task.</param>
+        /// <param name="continuationOptions">
+        /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
+        /// as <see
+        /// cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see
+        /// cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// </param>
+        /// <param name="scheduler">
+        /// The <see cref="TaskScheduler"/> to associate with the continuation task and to use for its
+        /// execution.
+        /// </param>
+        /// <returns>A new continuation <see cref="Task{TNewResult}"/>.</returns>
+        /// <remarks>
+        /// <para>
+        /// The returned <see cref="Task{TNewResult}"/> will not be scheduled for execution until the current task has
+        /// completed, whether it completes due to running to completion successfully, faulting due to an
+        /// unhandled exception, or exiting out early due to being canceled.
+        /// </para>
+        /// <para>
+        /// The <paramref name="continuationFunction"/>, when executed, should return a <see cref="Task{TNewResult}"/>.
+        /// This task's completion state will be transferred to the task returned from the
+        /// ContinueWith call.
+        /// </para>
+        /// </remarks>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="continuationFunction"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// The <paramref name="continuationOptions"/> argument specifies an invalid value for <see
+        /// cref="T:System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="scheduler"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// has already been disposed.
+        /// </exception>
+        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, CancellationToken cancellationToken,
+            TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
+        {
+            return ContinueWith(continuationFunction, scheduler, cancellationToken, continuationOptions);
+        }
+
+        // Same as the above overload, just with a stack mark.
+        internal Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, TaskScheduler scheduler,
+            CancellationToken cancellationToken, TaskContinuationOptions continuationOptions)
+        {
+            if (continuationFunction == null)
+            {
+                throw new ArgumentNullException("continuationFunction");
+            }
+
+            if (scheduler == null)
+            {
+                throw new ArgumentNullException("scheduler");
+            }
+
+            TaskCreationOptions creationOptions;
+            InternalTaskOptions internalOptions;
+            CreationOptionsFromContinuationOptions(
+                continuationOptions,
+                out creationOptions,
+                out internalOptions);
+
+            Task<TNewResult> continuationFuture = new ContinuationResultTaskFromResultTask<TResult, TNewResult>(
+                this, continuationFunction, null,
+                creationOptions, internalOptions
+            );
+
+            // Register the continuation.  If synchronous execution is requested, this may
+            // actually invoke the continuation before returning.
+            ContinueWithCore(continuationFuture, scheduler, cancellationToken, continuationOptions);
+
+            return continuationFuture;
+        }
+
+        #endregion Func<Task<TResult>,TNewResult> continuations
+
+        #region Func<Task<TResult>, Object,TNewResult> continuations
+
+        /// <summary>
+        /// Creates a continuation that executes when the target <see cref="Task{TResult}"/> completes.
+        /// </summary>
+        /// <typeparam name="TNewResult">
+        /// The type of the result produced by the continuation.
+        /// </typeparam>
+        /// <param name="continuationFunction">
+        /// A function to run when the <see cref="Task{TResult}"/> completes. When run, the delegate will be
+        /// passed the completed task and the caller-supplied state object as arguments.
+        /// </param>
+        /// <param name="state">An object representing data to be used by the continuation function.</param>
+        /// <returns>A new continuation <see cref="Task{TNewResult}"/>.</returns>
+        /// <remarks>
+        /// The returned <see cref="Task{TNewResult}"/> will not be scheduled for execution until the current
+        /// task has completed, whether it completes due to running to completion successfully, faulting due
+        /// to an unhandled exception, or exiting out early due to being canceled.
+        /// </remarks>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="continuationFunction"/> argument is null.
+        /// </exception>
+        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state)
+        {
+            return ContinueWith(continuationFunction, state, TaskScheduler.Current, default(CancellationToken), TaskContinuationOptions.None);
+        }
+
+        /// <summary>
+        /// Creates a continuation that executes when the target <see cref="Task{TResult}"/> completes.
+        /// </summary>
+        /// <typeparam name="TNewResult">
+        /// The type of the result produced by the continuation.
+        /// </typeparam>
+        /// <param name="continuationFunction">
+        /// A function to run when the <see cref="Task{TResult}"/> completes. When run, the delegate will be
+        /// passed the completed task and the caller-supplied state object as arguments.
+        /// </param>
+        /// <param name="state">An object representing data to be used by the continuation function.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new task.</param>
+        /// <returns>A new continuation <see cref="Task{TNewResult}"/>.</returns>
+        /// <remarks>
+        /// The returned <see cref="Task{TNewResult}"/> will not be scheduled for execution until the current
+        /// task has completed, whether it completes due to running to completion successfully, faulting due
+        /// to an unhandled exception, or exiting out early due to being canceled.
+        /// </remarks>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="continuationFunction"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// has already been disposed.
+        /// </exception>
+        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state,
+            CancellationToken cancellationToken)
+        {
+            return ContinueWith(continuationFunction, state, TaskScheduler.Current, cancellationToken, TaskContinuationOptions.None);
+        }
+
+        /// <summary>
+        /// Creates a continuation that executes when the target <see cref="Task{TResult}"/> completes.
+        /// </summary>
+        /// <typeparam name="TNewResult">
+        /// The type of the result produced by the continuation.
+        /// </typeparam>
+        /// <param name="continuationFunction">
+        /// A function to run when the <see cref="Task{TResult}"/> completes.  When run, the delegate will be
+        /// passed the completed task and the caller-supplied state object as arguments.
+        /// </param>
+        /// <param name="state">An object representing data to be used by the continuation function.</param>
+        /// <param name="scheduler">
+        /// The <see cref="TaskScheduler"/> to associate with the continuation task and to use for its execution.
+        /// </param>
+        /// <returns>A new continuation <see cref="Task{TNewResult}"/>.</returns>
+        /// <remarks>
+        /// The returned <see cref="Task{TNewResult}"/> will not be scheduled for execution until the current task has
+        /// completed, whether it completes due to running to completion successfully, faulting due to an
+        /// unhandled exception, or exiting out early due to being canceled.
+        /// </remarks>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="continuationFunction"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="scheduler"/> argument is null.
+        /// </exception>
+        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state,
+            TaskScheduler scheduler)
+        {
+            return ContinueWith(continuationFunction, state, scheduler, default(CancellationToken), TaskContinuationOptions.None);
+        }
+
+        /// <summary>
+        /// Creates a continuation that executes when the target <see cref="Task{TResult}"/> completes.
+        /// </summary>
+        /// <typeparam name="TNewResult">
+        /// The type of the result produced by the continuation.
+        /// </typeparam>
+        /// <param name="continuationFunction">
+        /// A function to run when the <see cref="Task{TResult}"/> completes. When run, the delegate will be
+        /// passed the completed task and the caller-supplied state object as arguments.
+        /// </param>
+        /// <param name="state">An object representing data to be used by the continuation function.</param>
+        /// <param name="continuationOptions">
+        /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
+        /// as <see
+        /// cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see
+        /// cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// </param>
+        /// <returns>A new continuation <see cref="Task{TNewResult}"/>.</returns>
+        /// <remarks>
+        /// <para>
+        /// The returned <see cref="Task{TNewResult}"/> will not be scheduled for execution until the current
+        /// task has completed, whether it completes due to running to completion successfully, faulting due
+        /// to an unhandled exception, or exiting out early due to being canceled.
+        /// </para>
+        /// <para>
+        /// The <paramref name="continuationFunction"/>, when executed, should return a <see
+        /// cref="Task{TNewResult}"/>. This task's completion state will be transferred to the task returned
+        /// from the ContinueWith call.
+        /// </para>
+        /// </remarks>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="continuationFunction"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// The <paramref name="continuationOptions"/> argument specifies an invalid value for <see
+        /// cref="T:System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        /// </exception>
+        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state,
+            TaskContinuationOptions continuationOptions)
+        {
+            return ContinueWith(continuationFunction, state, TaskScheduler.Current, default(CancellationToken), continuationOptions);
+        }
+
+        /// <summary>
+        /// Creates a continuation that executes when the target <see cref="Task{TResult}"/> completes.
+        /// </summary>
+        /// <typeparam name="TNewResult">
+        /// The type of the result produced by the continuation.
+        /// </typeparam>
+        /// <param name="continuationFunction">
+        /// A function to run when the <see cref="Task{TResult}"/> completes. When run, the delegate will be
+        /// passed the completed task and the caller-supplied state object as arguments.
+        /// </param>
+        /// <param name="state">An object representing data to be used by the continuation function.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new task.</param>
+        /// <param name="continuationOptions">
+        /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
+        /// as <see
+        /// cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see
+        /// cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// </param>
+        /// <param name="scheduler">
+        /// The <see cref="TaskScheduler"/> to associate with the continuation task and to use for its
+        /// execution.
+        /// </param>
+        /// <returns>A new continuation <see cref="Task{TNewResult}"/>.</returns>
+        /// <remarks>
+        /// <para>
+        /// The returned <see cref="Task{TNewResult}"/> will not be scheduled for execution until the current task has
+        /// completed, whether it completes due to running to completion successfully, faulting due to an
+        /// unhandled exception, or exiting out early due to being canceled.
+        /// </para>
+        /// <para>
+        /// The <paramref name="continuationFunction"/>, when executed, should return a <see cref="Task{TNewResult}"/>.
+        /// This task's completion state will be transferred to the task returned from the
+        /// ContinueWith call.
+        /// </para>
+        /// </remarks>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="continuationFunction"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// The <paramref name="continuationOptions"/> argument specifies an invalid value for <see
+        /// cref="T:System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="scheduler"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// has already been disposed.
+        /// </exception>
+        [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
+        public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state,
+            CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
+        {
+            return ContinueWith(continuationFunction, state, scheduler, cancellationToken, continuationOptions);
+        }
+
+        // Same as the above overload, just with a stack mark.
+        internal Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state,
+            TaskScheduler scheduler, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions)
+        {
+            if (continuationFunction == null)
+            {
+                throw new ArgumentNullException("continuationFunction");
+            }
+
+            if (scheduler == null)
+            {
+                throw new ArgumentNullException("scheduler");
+            }
+
+            TaskCreationOptions creationOptions;
+            InternalTaskOptions internalOptions;
+            CreationOptionsFromContinuationOptions(
+                continuationOptions,
+                out creationOptions,
+                out internalOptions);
+
+            Task<TNewResult> continuationFuture = new ContinuationResultTaskFromResultTask<TResult, TNewResult>(
+                this, continuationFunction, state,
+                creationOptions, internalOptions
+            );
+
+            // Register the continuation.  If synchronous execution is requested, this may
+            // actually invoke the continuation before returning.
+            ContinueWithCore(continuationFuture, scheduler, cancellationToken, continuationOptions);
+
+            return continuationFuture;
+        }
+
+        #endregion Func<Task<TResult>, Object,TNewResult> continuations
     }
 }
 
