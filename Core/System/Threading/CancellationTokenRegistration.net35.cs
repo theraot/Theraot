@@ -77,6 +77,11 @@ namespace System.Threading
         {
             return _hashCode;
         }
+
+        internal bool Equals(int id, CancellationTokenSource source)
+        {
+            return _id == id && _source == source;
+        }
     }
 }
 
