@@ -334,7 +334,15 @@ namespace System.Threading
                         goto retry;
                     }
                     var handle = RetrieveWaitHandle();
-                    handle.WaitOne();
+                    WaitHandle.WaitAny
+                        (
+                            new[]
+                            {
+                                handle,
+                                cancellationToken.WaitHandle
+                            }
+                        );
+                    cancellationToken.ThrowIfCancellationRequested();
                 }
             }
         }
