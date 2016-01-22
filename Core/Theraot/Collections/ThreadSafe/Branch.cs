@@ -9,10 +9,14 @@ namespace Theraot.Collections.ThreadSafe
     [Serializable]
     internal class Branch : IEnumerable<object>
     {
+        private const int INT_BranchCacheSize = 16;
+        private const int INT_BranchPoolSize = 16;
         private const int INT_Capacity = 1 << INT_OffsetStep;
+        private const int INT_MaxOffset = 32;
         private const int INT_OffsetStep = 4;
-
+        private const int INT_Steps = INT_MaxOffset / INT_OffsetStep;
         private static readonly Pool<Branch> _branchPool;
+        private CircularBucket<Tuple<uint, Branch[]>> _branchCache;
         private object[] _buffer;
         private object[] _entries;
         private int _offset;
@@ -22,7 +26,13 @@ namespace Theraot.Collections.ThreadSafe
 
         static Branch()
         {
-            _branchPool = new Pool<Branch>(16, Recycle);
+            _branchPool = new Pool<Branch>(INT_BranchPoolSize, Recycle);
+        }
+
+        public Branch()
+            : this(INT_MaxOffset - INT_OffsetStep, null, 0)
+        {
+            _branchCache = new CircularBucket<Tuple<uint, Branch[]>>(INT_BranchCacheSize);
         }
 
         private Branch(int offset, Branch parent, int subindex)
@@ -32,6 +42,7 @@ namespace Theraot.Collections.ThreadSafe
             _subindex = subindex;
             _entries = ArrayReservoir<object>.GetArray(INT_Capacity);
             _buffer = ArrayReservoir<object>.GetArray(INT_Capacity);
+            _branchCache = null;
         }
 
         ~Branch()
@@ -43,30 +54,13 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public static Branch Create(int offset, Branch parent, int subindex)
-        {
-            Branch result;
-            if (_branchPool.TryGet(out result))
-            {
-                result._offset = offset;
-                result._parent = parent;
-                result._subindex = subindex;
-                result._entries = ArrayReservoir<object>.GetArray(INT_Capacity);
-                result._buffer = ArrayReservoir<object>.GetArray(INT_Capacity);
-                return result;
-            }
-            return new Branch(offset, parent, subindex);
-        }
-
         public bool Exchange(uint index, object item, out object previous)
         {
             // Get the target branches
-            int resultCount;
-            var branches = Map(index, out resultCount);
+            var branches = Map(index);
             // ---
-            var branch = branches[resultCount - 1];
+            var branch = branches[INT_Steps - 1];
             var result = branch.PrivateExchange(index, item, out previous);
-            Leave(branches, resultCount);
             return result;
         }
 
@@ -102,12 +96,10 @@ namespace Theraot.Collections.ThreadSafe
         public bool Insert(uint index, object item, out object previous)
         {
             // Get the target branches
-            int resultCount;
-            var branches = Map(index, out resultCount);
+            var branches = Map(index);
             // ---
-            var branch = branches[resultCount - 1];
+            var branch = branches[INT_Steps - 1];
             var result = branch.PrivateInsert(index, item, out previous);
-            Leave(branches, resultCount);
             return result;
             // if this returns true, the new item was inserted, so there was no previous item
             // if this returns false, something was inserted first... so we get the previous item
@@ -116,12 +108,10 @@ namespace Theraot.Collections.ThreadSafe
         public bool InsertOrUpdate(uint index, object item, Func<object, object> itemUpdateFactory, Predicate<object> check, out object previous, out bool isNew)
         {
             // Get the target branches
-            int resultCount;
-            var branches = Map(index, out resultCount);
+            var branches = Map(index);
             // ---
-            var branch = branches[resultCount - 1];
+            var branch = branches[INT_Steps - 1];
             var result = branch.PrivateInsertOrUpdate(index, item, itemUpdateFactory, check, out previous, out isNew);
-            Leave(branches, resultCount);
             return result;
             // if this returns true, the new item was inserted, so there was no previous item
             // if this returns false, something was inserted first... so we get the previous item
@@ -130,12 +120,10 @@ namespace Theraot.Collections.ThreadSafe
         public bool InsertOrUpdate(uint index, Func<object> itemFactory, Func<object, object> itemUpdateFactory, Predicate<object> check, out object stored, out bool isNew)
         {
             // Get the target branches
-            int resultCount;
-            var branches = Map(index, out resultCount);
+            var branches = Map(index);
             // ---
-            var branch = branches[resultCount - 1];
+            var branch = branches[INT_Steps - 1];
             var result = branch.PrivateInsertOrUpdate(index, itemFactory, itemUpdateFactory, check, out stored, out isNew);
-            Leave(branches, resultCount);
             return result;
             // if this returns true, the new item was inserted, so there was no previous item
             // if this returns false, something was inserted first... so we get the previous item
@@ -164,16 +152,19 @@ namespace Theraot.Collections.ThreadSafe
         public void Set(uint index, object value, out bool isNew)
         {
             // Get the target branches
-            int resultCount;
-            var branches = Map(index, out resultCount);
+            var branches = Map(index);
             // ---
-            var branch = branches[resultCount - 1];
+            var branch = branches[INT_Steps - 1];
             branch.PrivateSet(index, value, out isNew);
-            Leave(branches, resultCount);
             // if this returns true, the new item was inserted, so isNew is set to true
             // if this returns false, some other thread inserted first... so isNew is set to false
             // yet we pretend we inserted first and the value was replaced by the other thread
             // So we say the operation was a success regardless
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         public bool TryGet(uint index, out object value)
@@ -218,11 +209,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         internal bool TryGetCheckRemoveAt(uint index, Predicate<object> check, out object previous)
         {
             previous = null;
@@ -241,78 +227,82 @@ namespace Theraot.Collections.ThreadSafe
         internal bool TryGetCheckSet(uint index, object item, Predicate<object> check, out bool isNew)
         {
             // Get the target branches
-            int resultCount;
-            var branches = Map(index, out resultCount);
+            var branches = Map(index);
             // ---
-            var branch = branches[resultCount - 1];
+            var branch = branches[INT_Steps - 1];
             var result = branch.PrivateTryGetCheckSet(index, item, check, out isNew); // true means value was set
-            Leave(branches, resultCount);
             return result;
         }
 
         internal bool TryGetCheckSet(uint index, Func<object> itemFactory, Func<object, object> itemUpdateFactory, out bool isNew)
         {
             // Get the target branches
-            int resultCount;
-            var branches = Map(index, out resultCount);
+            var branches = Map(index);
             // ---
-            var branch = branches[resultCount - 1];
+            var branch = branches[INT_Steps - 1];
             var result = branch.PrivateTryGetCheckSet(index, itemFactory, itemUpdateFactory, out isNew); // true means value was set
-            Leave(branches, resultCount);
             return result;
         }
 
         internal bool TryGetOrInsert(uint index, object item, out object stored)
         {
             // Get the target branches
-            int resultCount;
-            var branches = Map(index, out resultCount);
+            var branches = Map(index);
             // ---
-            var branch = branches[resultCount - 1];
+            var branch = branches[INT_Steps - 1];
             var result = branch.PrivateTryGetOrInsert(index, item, out stored); // true means value was set
-            Leave(branches, resultCount);
             return result;
         }
 
         internal bool TryGetOrInsert(uint index, Func<object> itemFactory, out object stored)
         {
             // Get the target branches
-            int resultCount;
-            var branches = Map(index, out resultCount);
+            var branches = Map(index);
             // ---
-            var branch = branches[resultCount - 1];
+            var branch = branches[INT_Steps - 1];
             var result = branch.PrivateTryGetOrInsert(index, itemFactory, out stored); // true means value was set
-            Leave(branches, resultCount);
             return result;
         }
 
         internal bool TryUpdate(uint index, object item, object comparisonItem)
         {
             // Get the target branches
-            int resultCount;
-            var branches = Map(index, out resultCount);
+            var branches = Map(index);
             // ---
-            var branch = branches[resultCount - 1];
+            var branch = branches[INT_Steps - 1];
             var result = branch.PrivateTryUpdate(index, item, comparisonItem); // true means value was set
-            Leave(branches, resultCount);
             return result;
         }
 
         internal bool TryUpdate(uint index, object item, Predicate<object> check)
         {
             // Get the target branches
-            int resultCount;
-            var branches = Map(index, out resultCount);
+            var branches = Map(index);
             // ---
-            var branch = branches[resultCount - 1];
+            var branch = branches[INT_Steps - 1];
             var result = branch.PrivateTryUpdate(index, item, check); // true means value was set
-            Leave(branches, resultCount);
             return result;
         }
 
-        private static void Leave(Branch[] branches, int resultCount)
+        private static Branch Create(int offset, Branch parent, int subindex)
         {
-            for (var index = 0; index < resultCount; index++)
+            Branch result;
+            if (_branchPool.TryGet(out result))
+            {
+                result._offset = offset;
+                result._parent = parent;
+                result._subindex = subindex;
+                result._entries = ArrayReservoir<object>.GetArray(INT_Capacity);
+                result._buffer = ArrayReservoir<object>.GetArray(INT_Capacity);
+                result._branchCache = null;
+                return result;
+            }
+            return new Branch(offset, parent, subindex);
+        }
+
+        private static void Leave(Branch[] branches)
+        {
+            for (int index = 0; index < INT_Steps; index++)
             {
                 var branch = branches[index];
                 Interlocked.Decrement(ref branch._useCount);
@@ -324,6 +314,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             branch._entries = null;
             branch._buffer = null;
+            branch._branchCache = null;
             branch._useCount = 0;
             branch._parent = null;
         }
@@ -366,28 +357,38 @@ namespace Theraot.Collections.ThreadSafe
             return this;
         }
 
-        private Branch[] Map(uint index, out int resultCount)
+        private Branch[] Map(uint index)
         {
-            var result = ArrayReservoir<Branch>.GetArray(16);
+            // ---
+            var check = index & 0xFFFFFFF0;
+            foreach (var tuple in _branchCache)
+            {
+                if ((tuple.Item1 & check) == check)
+                {
+                    return tuple.Item2;
+                }
+            }
+            // ---
+
+            var result = ArrayReservoir<Branch>.GetArray(INT_Steps);
             var branch = this;
-            resultCount = 0;
+            var count = 0;
             while (true)
             {
                 Interlocked.Increment(ref branch._useCount);
-                result[resultCount] = branch;
-                resultCount++;
+                result[count] = branch;
+                count++;
                 // do we need a leaf?
                 if (branch._offset == 0)
                 {
-                    // It is not responsability of this method to handle leafs
+                    _branchCache.Add(new Tuple<uint, Branch[]>(check, result));
                     return result;
                 }
                 object found;
                 if (branch.PrivateTryGetBranch(index, out found))
                 {
                     // if found were null, PrivateTryGetBranch would have returned false
-                    // if found cannot be a leaf, because Leaf only appear on _offset == 0
-                    // only Branch and Leaf are inserted, ergo... found is Branch
+                    // found is Branch
                     branch = (Branch)found;
                     continue;
                 }
@@ -410,8 +411,7 @@ namespace Theraot.Collections.ThreadSafe
                 if (branch.PrivateTryGetBranch(index, out found))
                 {
                     // if found were null, PrivateTryGetBranch would have returned false
-                    // if found cannot be a leaf, because Leaf only appear on _offset == 0
-                    // only Branch and Leaf are inserted, ergo... found is Branch
+                    // found is Branch
                     branch = (Branch)found;
                     continue;
                 }
@@ -460,7 +460,7 @@ namespace Theraot.Collections.ThreadSafe
             previous = Thread.VolatileRead(ref _entries[subindex]);
             if (previous == null)
             {
-                var result = itemFactory();
+                var result = itemFactory.Invoke();
                 previous = Interlocked.CompareExchange(ref _entries[subindex], result ?? BucketHelper.Null, null);
                 if (previous == null)
                 {
@@ -486,7 +486,7 @@ namespace Theraot.Collections.ThreadSafe
                 isNew = false;
                 if (check(previous))
                 {
-                    var result = itemUpdateFactory(previous);
+                    var result = itemUpdateFactory.Invoke(previous);
                     if (PrivateTryUpdate(index, result, previous))
                     {
                         stored = result;
@@ -513,7 +513,7 @@ namespace Theraot.Collections.ThreadSafe
                 isNew = false;
                 if (check(previous))
                 {
-                    var result = itemUpdateFactory(previous);
+                    var result = itemUpdateFactory.Invoke(previous);
                     if (PrivateTryUpdate(index, result, previous))
                     {
                         stored = result;
@@ -730,7 +730,7 @@ namespace Theraot.Collections.ThreadSafe
             if (found == null)
             {
                 // -- Not found TryAdd
-                result = itemFactory();
+                result = itemFactory.Invoke();
                 var previous = Interlocked.CompareExchange(ref _entries[subindex], result ?? BucketHelper.Null, null);
                 if (previous == null)
                 {
@@ -747,7 +747,7 @@ namespace Theraot.Collections.ThreadSafe
             // -- Found
             try
             {
-                result = itemUpdateFactory(found);
+                result = itemUpdateFactory.Invoke(found);
             }
             finally
             {
@@ -796,7 +796,7 @@ namespace Theraot.Collections.ThreadSafe
             var previous = Thread.VolatileRead(ref _entries[subindex]);
             if (previous == null)
             {
-                var result = itemFactory();
+                var result = itemFactory.Invoke();
                 previous = Interlocked.CompareExchange(ref _entries[subindex], result ?? BucketHelper.Null, null);
                 if (previous == null)
                 {
@@ -846,6 +846,20 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
+        private void RemoveFromCache()
+        {
+            for (var index = 0; index < INT_BranchCacheSize; index++)
+            {
+                Tuple<uint, Branch[]> found;
+                if (_branchCache.TryGet(index, out found) && found.Item2[INT_Steps - 1] == this)
+                {
+                    _branchCache.RemoveAt(index, out found);
+                    Leave(found.Item2);
+                    return;
+                }
+            }
+        }
+
         private void Shrink()
         {
             if (
@@ -861,6 +875,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         var parent = _parent;
                         _branchPool.Donate(this);
+                        RemoveFromCache();
                         Interlocked.Decrement(ref parent._useCount);
                         parent.Shrink();
                     }
@@ -872,6 +887,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         var parent = _parent;
                         _branchPool.Donate(this);
+                        RemoveFromCache();
                         Interlocked.Decrement(ref parent._useCount);
                     }
                 }
