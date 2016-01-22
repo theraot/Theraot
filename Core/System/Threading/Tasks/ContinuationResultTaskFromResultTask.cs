@@ -9,7 +9,7 @@ namespace System.Threading.Tasks
         private Task<TAntecedentResult> _antecedent;
 
         public ContinuationResultTaskFromResultTask(Task<TAntecedentResult> antecedent, Delegate function, object state, TaskCreationOptions creationOptions, InternalTaskOptions internalOptions)
-            : base(function, state, InternalCurrentIfAttached(creationOptions), default(CancellationToken), creationOptions, internalOptions, null)
+            : base(function, state, InternalCurrentIfAttached(creationOptions), default(CancellationToken), creationOptions, internalOptions, TaskScheduler.Default)
         {
             Contract.Requires(function is Func<Task<TAntecedentResult>, TResult> || function is Func<Task<TAntecedentResult>, object, TResult>, "Invalid delegate type in ContinuationResultTaskFromResultTask");
             _antecedent = antecedent;

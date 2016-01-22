@@ -14,12 +14,14 @@ namespace System.Threading.Tasks
         {
             _status = (int)taskStatus;
             _internalOptions = internalTaskOptions;
+            Scheduler = TaskScheduler.Default;
         }
 
         internal Task()
         {
             _status = (int)TaskStatus.WaitingForActivation;
             _internalOptions = InternalTaskOptions.PromiseTask;
+            Scheduler = TaskScheduler.Default;
         }
 
         internal Task(object state, TaskCreationOptions creationOptions)

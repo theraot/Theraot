@@ -30,6 +30,7 @@
 
 using System.Collections.Generic;
 using Theraot.Collections.ThreadSafe;
+using Theraot.Core;
 
 namespace System.Threading
 {
@@ -226,11 +227,8 @@ namespace System.Threading
                 callbacks.TryAdd(tokenReg, callback);
                 // Check if the source was just cancelled and if so, it may be that it executed the callbacks except the one just added...
                 // So try to inline the callback
-                if (Thread.VolatileRead(ref _cancelRequested) == 1)
+                if (Thread.VolatileRead(ref _cancelRequested) == 1 && callbacks.Remove(tokenReg, out callback))
                 {
-                    // It may have been removed in the cancellation process, it it wasn't, remove it here.
-                    callbacks.Remove(tokenReg, out callback);
-                    // Run inline
                     callback();
                 }
             }
@@ -283,6 +281,29 @@ namespace System.Threading
             }
         }
 
+        private static void RunCallback(bool throwOnFirstException, Action callback, ref List<Exception> exceptions)
+        {
+            if (throwOnFirstException)
+            {
+                callback();
+            }
+            else
+            {
+                try
+                {
+                    callback();
+                }
+                catch (Exception exception)
+                {
+                    if (ReferenceEquals(exceptions, null))
+                    {
+                        exceptions = new List<Exception>();
+                    }
+                    exceptions.Add(exception);
+                }
+            }
+        }
+
         private void CancelExtracted(bool throwOnFirstException, SafeDictionary<CancellationTokenRegistration, Action> callbacks, bool ignoreDisposedException)
         {
             if (Interlocked.CompareExchange(ref _cancelRequested, 1, 0) == 0)
@@ -311,32 +332,20 @@ namespace System.Threading
                         var checkId = id;
                         if (callbacks.Remove(hashcode, registration => registration.Equals(checkId, this), out callback) && callback != null)
                         {
-                            if (throwOnFirstException)
-                            {
-                                callback();
-                            }
-                            else
-                            {
-                                try
-                                {
-                                    callback();
-                                }
-                                catch (Exception exception)
-                                {
-                                    if (ReferenceEquals(exceptions, null))
-                                    {
-                                        exceptions = new List<Exception>();
-                                    }
-                                    exceptions.Add(exception);
-                                }
-                            }
+                            RunCallback(throwOnFirstException, callback, ref exceptions);
                         }
                     } while (id-- != int.MinValue);
                 }
                 finally
                 {
-                    // Whatever was added after the cancellation process started, it should run inline in Register... get rid of it.
-                    callbacks.Clear();
+                    // Whatever was added after the cancellation process started, it should run inline in Register... if they don't, handle then here.
+                    foreach (
+                        var callback in
+                            callbacks.RemoveWhereKeyEnumerable(
+                                FuncHelper.GetTautologyPredicate<CancellationTokenRegistration>()))
+                    {
+                        RunCallback(throwOnFirstException, callback, ref exceptions);
+                    }
                 }
                 if (exceptions != null)
                 {

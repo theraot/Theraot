@@ -1680,28 +1680,29 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException("continuationAction");
             }
-
             if (scheduler == null)
             {
                 throw new ArgumentNullException("scheduler");
             }
-
             TaskCreationOptions creationOptions;
             InternalTaskOptions internalOptions;
-            CreationOptionsFromContinuationOptions(
+            CreationOptionsFromContinuationOptions
+            (
                 continuationOptions,
                 out creationOptions,
-                out internalOptions);
-
-            Task continuationTask = new ContinuationTaskFromResultTask<TResult>(
-                this, continuationAction, null,
-                creationOptions, internalOptions
+                out internalOptions
             );
-
+            Task continuationTask = new ContinuationTaskFromResultTask<TResult>
+            (
+                this,
+                continuationAction,
+                null,
+                creationOptions,
+                internalOptions
+            );
             // Register the continuation.  If synchronous execution is requested, this may
             // actually invoke the continuation before returning.
             ContinueWithCore(continuationTask, scheduler, cancellationToken, continuationOptions);
-
             return continuationTask;
         }
 
@@ -1717,23 +1718,25 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException("scheduler");
             }
-
             TaskCreationOptions creationOptions;
             InternalTaskOptions internalOptions;
-            CreationOptionsFromContinuationOptions(
+            CreationOptionsFromContinuationOptions
+            (
                 continuationOptions,
                 out creationOptions,
-                out internalOptions);
-
-            Task continuationTask = new ContinuationTaskFromResultTask<TResult>(
-                this, continuationAction, state,
-                creationOptions, internalOptions
+                out internalOptions
             );
-
+            Task continuationTask = new ContinuationTaskFromResultTask<TResult>
+            (
+                this,
+                continuationAction,
+                state,
+                creationOptions,
+                internalOptions
+            );
             // Register the continuation.  If synchronous execution is requested, this may
             // actually invoke the continuation before returning.
             ContinueWithCore(continuationTask, scheduler, cancellationToken, continuationOptions);
-
             return continuationTask;
         }
 

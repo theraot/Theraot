@@ -121,14 +121,50 @@ namespace System.Threading.Tasks
                 return CompletedTask;
             }
             var source = new TaskCompletionSource<bool>();
-            GC.KeepAlive
-                (
-                    new Theraot.Threading.Timeout(() => source.SetResult(true), millisecondsDelay, cancellationToken)
-                    {
-                        Rooted = true
-                    }
-                );
-            cancellationToken.Register(() => source.SetResult(false));
+            if (millisecondsDelay > 0)
+            {
+                GC.KeepAlive
+                    (
+                        new Theraot.Threading.Timeout
+                        (
+                            () =>
+                            {
+                                try
+                                {
+                                    source.SetResult(true);
+                                }
+                                catch (InvalidOperationException exception)
+                                {
+                                    // Already cancelled
+                                    GC.KeepAlive(exception);
+                                }
+                            },
+                            millisecondsDelay,
+                            cancellationToken
+                        )
+                        {
+                            Rooted = true
+                        }
+                    );
+            }
+            if (cancellationToken.CanBeCanceled)
+            {
+                cancellationToken.Register
+                    (
+                        () =>
+                        {
+                            try
+                            {
+                                source.SetCanceled();
+                            }
+                            catch (InvalidOperationException exception)
+                            {
+                                // Already timeout
+                                GC.KeepAlive(exception);
+                            }
+                        }
+                    );
+            }
             return source.Task;
         }
     }

@@ -118,7 +118,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentOutOfRangeException("creationOptions");
             }
             // Throw exception if the user specifies both LongRunning and SelfReplicating
-            if (((creationOptions & TaskCreationOptions.LongRunning) != 0) &&
+            if (((creationOptions & TaskCreationOptions.LongRunning) != 0) && 
                 ((internalOptions & InternalTaskOptions.SelfReplicating) != 0))
             {
                 throw new InvalidOperationException("An attempt was made to create a LongRunning SelfReplicating task.");
@@ -427,12 +427,12 @@ namespace System.Threading.Tasks
                 CancellationCheck(cancellationToken);
                 switch (Status)
                 {
-                    case TaskStatus.WaitingToRun:
+                    case TaskStatus.WaitingForActivation:
                         Scheduler.TryExecuteTaskInline(this, true);
                         break;
 
                     case TaskStatus.Created:
-                    case TaskStatus.WaitingForActivation:
+                    case TaskStatus.WaitingToRun:
                     case TaskStatus.Running:
                     case TaskStatus.WaitingForChildrenToComplete:
                         var waitHandle = _waitHandle.Value;
@@ -450,7 +450,10 @@ namespace System.Threading.Tasks
                         break;
 
                     case TaskStatus.RanToCompletion:
+                        return true;
+
                     case TaskStatus.Canceled:
+                        ThrowIfExceptional(true);
                         return true;
 
                     case TaskStatus.Faulted:

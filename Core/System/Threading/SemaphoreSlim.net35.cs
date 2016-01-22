@@ -272,12 +272,42 @@ namespace System.Threading
             var source = new TaskCompletionSource<bool>();
             GC.KeepAlive
             (
-                new Theraot.Threading.Timeout(() => source.SetResult(false), timeout, cancellationToken)
+                new Theraot.Threading.Timeout
+                (
+                    () =>
+                    {
+                        try
+                        {
+                            source.SetResult(false);
+                        }
+                        catch (InvalidOperationException exception)
+                        {
+                            // Already cancelled
+                            GC.KeepAlive(exception);
+                        }
+                    },
+                    timeout,
+                    cancellationToken
+                )
                 {
                     Rooted = true
                 }
             );
-            cancellationToken.Register(() => source.SetCanceled());
+            cancellationToken.Register
+                (
+                    () =>
+                    {
+                        try
+                        {
+                            source.SetCanceled();
+                        }
+                        catch (InvalidOperationException exception)
+                        {
+                            // Already timeout
+                            GC.KeepAlive(exception);
+                        }
+                    }
+                );
             _asyncWaiters.Add(source);
             return source.Task;
         }

@@ -306,11 +306,17 @@ namespace System.Threading
                 var remaining = (int)(millisecondsTimeout - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start));
                 if (remaining > 0)
                 {
-                    if (handle.WaitOne(remaining))
-                    {
-                        cancellationToken.ThrowIfCancellationRequested();
-                        return true;
-                    }
+                    WaitHandle.WaitAny
+                        (
+                            new[]
+                            {
+                                handle,
+                                cancellationToken.WaitHandle
+                            },
+                            remaining
+                        );
+                    cancellationToken.ThrowIfCancellationRequested();
+                    return handle.WaitOne(0);
                 }
             }
             cancellationToken.ThrowIfCancellationRequested();
