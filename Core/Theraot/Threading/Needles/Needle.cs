@@ -98,12 +98,20 @@ namespace Theraot.Threading.Needles
         public override bool Equals(object obj)
         {
             var needle = obj as Needle<T>;
-            if (!ReferenceEquals(null, needle))
+            if (needle != null)
             {
                 return EqualsExtracted(this, needle);
             }
-            // TODO: _target can be null
-            return _target.Equals(obj);
+            var target = _target;
+            if (ReferenceEquals(_target, null))
+            {
+                return ReferenceEquals(obj, null);
+            }
+            if (ReferenceEquals(obj, null))
+            {
+                return false;
+            }
+            return target.Equals(obj);
         }
 
         public bool Equals(Needle<T> other)
@@ -146,14 +154,19 @@ namespace Theraot.Threading.Needles
         {
             if (_target is StructNeedle<T>)
             {
-                // TODO: SetTargetError may have been called
-                _target.Value = value;
+                // This may throw NotSupportedException if SetTargetError has just executed
+                try
+                {
+                    _target.Value = value;
+                    return;
+                }
+                catch (NotSupportedException)
+                {
+                    // preventing return
+                }
             }
-            else
-            {
-                _target = new StructNeedle<T>(value);
-                Thread.MemoryBarrier();
-            }
+            _target = new StructNeedle<T>(value);
+            Thread.MemoryBarrier();
         }
 
         private static bool EqualsExtracted(Needle<T> left, Needle<T> right)
