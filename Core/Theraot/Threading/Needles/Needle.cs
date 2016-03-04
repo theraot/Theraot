@@ -11,7 +11,7 @@ namespace Theraot.Threading.Needles
     public class Needle<T> : IEquatable<Needle<T>>, IRecyclableNeedle<T>
     {
         private readonly int _hashCode;
-        private INeedle<T> _target; // Can be null
+        private INeedle<T> _target; // Can be null - set in SetTargetValue and SetTargetError
 
         public Needle()
         {
@@ -36,9 +36,10 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                if (_target is ExceptionStructNeedle<T>)
+                var target = _target;
+                if (target is ExceptionStructNeedle<T>)
                 {
-                    return ((ExceptionStructNeedle<T>)_target).Exception;
+                    return ((ExceptionStructNeedle<T>)target).Exception;
                 }
                 return null;
             }
@@ -97,11 +98,20 @@ namespace Theraot.Threading.Needles
         public override bool Equals(object obj)
         {
             var needle = obj as Needle<T>;
-            if (!ReferenceEquals(null, needle))
+            if (needle != null)
             {
                 return EqualsExtracted(this, needle);
             }
-            return _target.Equals(obj);
+            var target = _target;
+            if (ReferenceEquals(_target, null))
+            {
+                return ReferenceEquals(obj, null);
+            }
+            if (ReferenceEquals(obj, null))
+            {
+                return false;
+            }
+            return target.Equals(obj);
         }
 
         public bool Equals(Needle<T> other)
@@ -144,13 +154,19 @@ namespace Theraot.Threading.Needles
         {
             if (_target is StructNeedle<T>)
             {
-                _target.Value = value;
+                // This may throw NotSupportedException if SetTargetError has just executed
+                try
+                {
+                    _target.Value = value;
+                    return;
+                }
+                catch (NotSupportedException)
+                {
+                    // preventing return
+                }
             }
-            else
-            {
-                _target = new StructNeedle<T>(value);
-                Thread.MemoryBarrier();
-            }
+            _target = new StructNeedle<T>(value);
+            Thread.MemoryBarrier();
         }
 
         private static bool EqualsExtracted(Needle<T> left, Needle<T> right)
@@ -163,15 +179,17 @@ namespace Theraot.Threading.Needles
             {
                 return false;
             }
-            if (ReferenceEquals(left._target, null))
+            var leftTarget = left._target;
+            var rightTarget = right._target;
+            if (ReferenceEquals(leftTarget, null))
             {
-                return ReferenceEquals(right._target, null);
+                return ReferenceEquals(rightTarget, null);
             }
-            if (ReferenceEquals(right._target, null))
+            if (ReferenceEquals(rightTarget, null))
             {
                 return false;
             }
-            return left._target.Equals(right._target);
+            return leftTarget.Equals(rightTarget);
         }
 
         private static bool NotEqualsExtracted(Needle<T> left, Needle<T> right)
@@ -184,15 +202,17 @@ namespace Theraot.Threading.Needles
             {
                 return true;
             }
-            if (ReferenceEquals(left._target, null))
+            var leftTarget = left._target;
+            var rightTarget = right._target;
+            if (ReferenceEquals(leftTarget, null))
             {
-                return !ReferenceEquals(right._target, null);
+                return !ReferenceEquals(rightTarget, null);
             }
-            if (ReferenceEquals(right._target, null))
+            if (ReferenceEquals(rightTarget, null))
             {
                 return true;
             }
-            return !left._target.Equals(right._target);
+            return !leftTarget.Equals(rightTarget);
         }
     }
 }

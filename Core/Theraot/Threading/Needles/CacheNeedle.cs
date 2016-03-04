@@ -15,7 +15,7 @@ namespace Theraot.Threading.Needles
         [NonSerialized]
         private Thread _initializerThread;
 
-        private Func<T> _valueFactory;
+        private Func<T> _valueFactory; // Can be null
         private StructNeedle<ManualResetEventSlim> _waitHandle;
 
         public CacheNeedle(Func<T> valueFactory)
@@ -27,7 +27,11 @@ namespace Theraot.Threading.Needles
         public CacheNeedle(Func<T> valueFactory, bool trackResurrection)
             : base(default(T), trackResurrection)
         {
-            _valueFactory = Check.NotNullArgument(valueFactory, "valueFactory");
+            if (valueFactory == null)
+            {
+                throw new ArgumentNullException("valueFactory");
+            }
+            _valueFactory = valueFactory;
             _waitHandle = new StructNeedle<ManualResetEventSlim>(new ManualResetEventSlim(false));
         }
 
@@ -40,14 +44,22 @@ namespace Theraot.Threading.Needles
         public CacheNeedle(Func<T> valueFactory, T target, bool trackResurrection)
             : base(target, trackResurrection)
         {
-            _valueFactory = Check.NotNullArgument(valueFactory, "valueFactory");
+            if (valueFactory == null)
+            {
+                throw new ArgumentNullException("valueFactory");
+            }
+            _valueFactory = valueFactory;
             _waitHandle = new StructNeedle<ManualResetEventSlim>(new ManualResetEventSlim(false));
         }
 
         public CacheNeedle(Func<T> valueFactory, T target, bool trackResurrection, bool cacheExceptions)
             : base(target, trackResurrection)
         {
-            _valueFactory = Check.NotNullArgument(valueFactory, "valueFactory");
+            if (valueFactory == null)
+            {
+                throw new ArgumentNullException("valueFactory");
+            }
+            _valueFactory = valueFactory;
             if (cacheExceptions)
             {
                 _valueFactory = () =>
@@ -70,14 +82,14 @@ namespace Theraot.Threading.Needles
             : base(target)
         {
             _valueFactory = null;
-            _waitHandle = null;
+            _waitHandle = new StructNeedle<ManualResetEventSlim>(null);
         }
 
         public CacheNeedle()
             : base(default(T))
         {
             _valueFactory = null;
-            _waitHandle = null;
+            _waitHandle = new StructNeedle<ManualResetEventSlim>(null);
         }
 
         public T CachedTarget
@@ -188,17 +200,27 @@ namespace Theraot.Threading.Needles
 
         protected virtual void Initialize(Action beforeInitialize)
         {
-            var _beforeInitialize = Check.NotNullArgument(beforeInitialize, "beforeInitialize");
-            if (ThreadingHelper.VolatileRead(ref _valueFactory) != null)
+            if (beforeInitialize == null)
             {
-                try
-                {
-                    _beforeInitialize.Invoke();
-                }
-                finally
-                {
-                    InitializeExtracted();
-                }
+                throw new ArgumentNullException("beforeInitialize");
+            }
+            if (ThreadingHelper.VolatileRead(ref _valueFactory) == null)
+            {
+                // If unable to initialize do nothing
+                // This happens if
+                // - initialization is done
+                // - ReleaseValueFactory was called
+                // Even if ReleaseValueFactory was called before initialization,
+                // _target can still be set by SetTargetValue or the Value property
+                return;
+            }
+            try
+            {
+                beforeInitialize.Invoke();
+            }
+            finally
+            {
+                InitializeExtracted();
             }
         }
 
@@ -208,18 +230,24 @@ namespace Theraot.Threading.Needles
             var valueFactory = Interlocked.Exchange(ref _valueFactory, null);
             if (valueFactory == null)
             {
+                // Many threads may enter here
+                // Prevent reentry
                 if (_initializerThread == Thread.CurrentThread)
                 {
                     throw new InvalidOperationException();
                 }
                 var waitHandle = _waitHandle.Value;
+                // While _waitHandle.Value is not null it means that we have to wait initialization to complete
                 if (waitHandle != null)
                 {
                     try
                     {
-                        _waitHandle.Value.Wait();
+                        // Another thread may have called ReleaseWaitHandle just before the next instruction
+                        waitHandle.Wait();
+                        // Finished waiting...
                         if (ThreadingHelper.VolatileRead(ref _valueFactory) != null)
                         {
+                            // There was an error in the initialization, go back
                             goto back;
                         }
                         ReleaseWaitHandle();
@@ -233,16 +261,23 @@ namespace Theraot.Threading.Needles
             }
             else
             {
+                // Only one thread enters here
                 _initializerThread = Thread.CurrentThread;
                 try
                 {
+                    // Initialize from the value factory
                     SetTargetValue(valueFactory.Invoke());
+                    // Initialization done, let any wating thread go
                     ReleaseWaitHandle();
                 }
                 catch (Exception exception)
                 {
+                    // There was an error during initialization
+                    // Set error state
                     SetTargetError(exception);
+                    // Restore the valueFactory
                     Interlocked.CompareExchange(ref _valueFactory, valueFactory, null);
+                    // Let any waiting threads go, but don't get rid of the wait handle
                     _waitHandle.Value.Set();
                     throw;
                 }
@@ -258,7 +293,11 @@ namespace Theraot.Threading.Needles
             var waitHandle = _waitHandle.Value;
             if (!ReferenceEquals(waitHandle, null))
             {
+                // If another thread is currently waiting, awake it
                 waitHandle.Set();
+                // If another thread is about to wait
+                // Or if another thread started waiting just after the last instruction
+                // let it throw
                 waitHandle.Dispose();
             }
             _waitHandle.Value = null;

@@ -160,8 +160,7 @@ namespace Theraot.Collections.ThreadSafe
                 return previous;
                 // We don't donate because we didn't remove
             }
-            var needleFactory = _needleFactory;
-            var newNeedle = needleFactory(index);
+            var newNeedle = _needleFactory(index);
             if (_entries.InsertInternal(index, newNeedle, out found))
             {
                 return newNeedle.Value;
@@ -199,8 +198,7 @@ namespace Theraot.Collections.ThreadSafe
         public TNeedle GetNeedle(int index)
         {
             TNeedle found;
-            var needleFactory = _needleFactory;
-            var newNeedle = needleFactory(index);
+            var newNeedle = _needleFactory(index);
             if (_entries.Insert(index, newNeedle, out found))
             {
                 return newNeedle;
