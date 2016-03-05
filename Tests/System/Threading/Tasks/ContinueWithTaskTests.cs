@@ -169,7 +169,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void ContinueWithDifferentOptionsAreCanceledTest()
+        public void ContinueWithDifferentOptionsAreCanceledTest() // TODO: Potential threading problem
         {
             var mre = new ManualResetEventSlim();
             var task = Task.Factory.StartNew(() => mre.Wait(200));
@@ -374,7 +374,7 @@ namespace MonoTests.System.Threading.Tasks
 
 #if NET20 || NET30 || NET35 || NET45
         [Test]
-        public void ContinuationOnBrokenScheduler()
+        public void ContinuationOnBrokenScheduler() // TODO: Potential threading problem
         {
             var s = new ExceptionScheduler();
             Task t = new Task(delegate { });
