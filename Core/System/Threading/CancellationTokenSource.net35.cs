@@ -341,8 +341,7 @@ namespace System.Threading
                     // Whatever was added after the cancellation process started, it should run inline in Register... if they don't, handle then here.
                     foreach (
                         var callback in
-                            callbacks.RemoveWhereKeyEnumerable(
-                                FuncHelper.GetTautologyPredicate<CancellationTokenRegistration>()))
+                            callbacks.RemoveWhereKeyEnumerable(_ => true))
                     {
                         RunCallback(throwOnFirstException, callback, ref exceptions);
                     }
