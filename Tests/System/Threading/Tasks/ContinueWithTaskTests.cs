@@ -119,7 +119,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void ContinueWithOnFailedTestCase() // TODO: Failing test on .NET 2.0, .NET 3.0, .NET 3.5 - passing in .NET 4.0, .NET 4.5
+        public void ContinueWithOnFailedTestCase() // TODO: Failing test in .NET 2.0, .NET 3.0, .NET 3.5 - passing in .NET 4.0, .NET 4.5
         {
             ParallelTestHelper.Repeat(delegate {
                 bool result = false;
