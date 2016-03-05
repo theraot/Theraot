@@ -305,7 +305,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WaitAllTest() // TODO: Deathlock
+        public void WaitAllTest() // TODO: Deathlock in .NET 2.0, .NET 3.0, .NET 3.5 - passing in .NET 4.0, .NET 4.5
         {
             ParallelTestHelper.Repeat(delegate {
                 int achieved = 0;
@@ -2132,7 +2132,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void DenyChildAttachTest() // TODO: Failing test in .NET 4.0 - passing .NET 2.0, .NET 3.0, .NET 3.5, .NET 4.5
+        public void DenyChildAttachTest() // TODO: ???
         {
             var mre = new ManualResetEventSlim();
             Task nested = null;
