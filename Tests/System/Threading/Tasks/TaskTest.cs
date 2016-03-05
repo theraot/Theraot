@@ -163,7 +163,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WaitAnyTest() // TODO: Crashing test engine :/
+        public void WaitAnyTest()
         {
             ParallelTestHelper.Repeat(delegate {
                 int flag = 0;
@@ -196,7 +196,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WaitAny_Zero() // TODO: Crashing test engine :/
+        public void WaitAny_Zero()
         {
             Assert.AreEqual(-1, Task.WaitAny(new[] { new Task(delegate { }) }, 0), "#1");
             Assert.AreEqual(-1, Task.WaitAny(new[] { new Task(delegate { }) }, 20), "#1");
@@ -219,7 +219,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WaitAny_CancelledWithoutExecution() // TODO: Crashing test engine :/
+        public void WaitAny_CancelledWithoutExecution()
         {
             var cancelation = new CancellationTokenSource();
             var tasks = new Task[] {
@@ -240,7 +240,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WaitAny_OneException() // TODO: Crashing test engine :/
+        public void WaitAny_OneException()
         {
             var mre = new ManualResetEventSlim(false);
             var tasks = new Task[] {
@@ -285,7 +285,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WaitAny_ManyCanceled() // Failing test
+        public void WaitAny_ManyCanceled() // TODO: Failing test
         {
             var cancellation = new CancellationToken(true);
             var tasks = new[] {
@@ -745,7 +745,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void ContinueWithDifferentOptionsAreCanceledTest()
+        public void ContinueWithDifferentOptionsAreCanceledTest() // TODO: Failing test
         {
             var mre = new ManualResetEventSlim();
             var task = Task.Factory.StartNew(() => mre.Wait(200));
@@ -897,7 +897,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void DoubleWaitTest()
+        public void DoubleWaitTest() // TODO: Potential threading problem
         {
             ParallelTestHelper.Repeat(delegate {
                 var evt = new ManualResetEventSlim();
@@ -1184,7 +1184,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WhenChildTaskErrorIsThrownOnlyOnFaultedContinuationShouldExecute() // TODO: ???
+        public void WhenChildTaskErrorIsThrownOnlyOnFaultedContinuationShouldExecute() // TODO: ??? - Failing on a test engine, working on another
         {
             var continuationRan = false;
             var testTask = new Task(() =>
@@ -1308,7 +1308,7 @@ namespace MonoTests.System.Threading.Tasks
 
 #if NET20 || NET30 || NET35 || NET45
         [Test]
-        public void ContinuationOnBrokenScheduler() // TODO: ???
+        public void ContinuationOnBrokenScheduler() // TODO: ??? - Failing on a test engine, working on another
         {
             var s = new ExceptionScheduler();
             Task t = new Task(delegate { });
@@ -1360,7 +1360,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void Delay_Simple() // TODO: Crashing test engine :/
+        public void Delay_Simple() // TODO: Failing test
         {
             var t = Task.Delay(300);
             Assert.IsTrue(TaskStatus.WaitingForActivation == t.Status || TaskStatus.Running == t.Status, "#1");
@@ -1401,7 +1401,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void Delay_TimeManagement() // TODO: Crashing test engine :/
+        public void Delay_TimeManagement() // TODO: Failing test
         {
             var delay1 = Task.Delay(50);
             var delay2 = Task.Delay(25);
@@ -1502,7 +1502,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WhenAll_Cancelled() // TODO: Crashing test engine :/
+        public void WhenAll_Cancelled() // TODO: Failing test
         {
             var cancelation = new CancellationTokenSource();
             var tasks = new Task[] {
@@ -1528,7 +1528,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WhenAll_Faulted() // TODO: Crashing test engine :/
+        public void WhenAll_Faulted()
         {
             var tcs = new TaskCompletionSource<object>();
             tcs.SetException(new ApplicationException());
@@ -1563,7 +1563,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WhenAll() // TODO: Crashing test engine :/
+        public void WhenAll()
         {
             var t1 = new Task(delegate { });
             var t2 = new Task(delegate { t1.Start(); });
@@ -1621,7 +1621,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WhenAllResult_Cancelled() // TODO: Crashing test engine :/
+        public void WhenAllResult_Cancelled() // TODO: Failing test
         {
             var cancelation = new CancellationTokenSource();
             var tasks = new[] {
@@ -1656,7 +1656,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WhenAllResult() // TODO: Crashing test engine :/
+        public void WhenAllResult()
         {
             var t1 = new Task<string>(delegate { return "a"; });
             var t2 = new Task<string>(delegate { t1.Start(); return "b"; });
@@ -1813,7 +1813,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WhenAny() // TODO: Crashing test engine :/
+        public void WhenAny()
         {
             var t1 = new Task(delegate { });
             var t2 = new Task(delegate { t1.Start(); });
@@ -1953,7 +1953,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WhenAnyResult() // TODO: ???
+        public void WhenAnyResult() // TODO: ??? - Failing on a test engine, working on another
         {
             var t1 = new Task<byte>(delegate { return 3; });
             var t2 = new Task<byte>(delegate { t1.Start(); return 2; });

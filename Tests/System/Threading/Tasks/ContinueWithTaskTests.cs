@@ -426,7 +426,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void ContinueWith_StateValueGeneric()
+        public void ContinueWith_StateValueGeneric() // TODO: Failing test
         {
             var t = Task<int>.Factory.StartNew(l => {
                 Assert.AreEqual(1, l, "a-1");
@@ -491,7 +491,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void ChildTaskWithUnscheduledContinuationAttachedToParent() // Failing test
+        public void ChildTaskWithUnscheduledContinuationAttachedToParent()
         {
             Task inner = null;
             var child = Task.Factory.StartNew(() => {

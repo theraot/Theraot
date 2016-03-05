@@ -483,6 +483,11 @@ namespace System.Threading.Tasks
 
         internal bool ExecuteEntry(bool preventDoubleExecution)
         {
+            if ((_internalOptions & InternalTaskOptions.PromiseTask) != 0)
+            {
+                // Promise tasks don't execute
+                return false;
+            }
             if (!SetRunning(preventDoubleExecution))
             {
                 return false;
