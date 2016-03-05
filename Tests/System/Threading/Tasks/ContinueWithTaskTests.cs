@@ -119,7 +119,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void ContinueWithOnFailedTestCase() // TODO: Failing test
+        public void ContinueWithOnFailedTestCase() // TODO: Failing test on .NET 2.0, .NET 3.0, .NET 3.5 - passing in .NET 4.0, .NET 4.5
         {
             ParallelTestHelper.Repeat(delegate {
                 bool result = false;
@@ -169,7 +169,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void ContinueWithDifferentOptionsAreCanceledTest() // TODO: Potential threading problem
+        public void ContinueWithDifferentOptionsAreCanceledTest() // TODO: Potential threading problem - OK on .NET 4.0 and .NET 4.5
         {
             var mre = new ManualResetEventSlim();
             var task = Task.Factory.StartNew(() => mre.Wait(200));

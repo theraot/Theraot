@@ -316,7 +316,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WaitAll_ManyTasks() // TODO: Failing test
+        public void WaitAll_ManyTasks() // TODO: Failing test in .NET 2.0, .NET 3.0, .NET 3.5 - passing in .NET 4.0, .NET 4.5
         {
             for (int r = 0; r < 2000; ++r)
             {
@@ -412,7 +412,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WaitAll_Cancelled() // TODO: Failing test
+        public void WaitAll_Cancelled() // TODO: Failing test .NET 2.0, .NET 3.0, .NET 3.5 - passing in .NET 4.0, .NET 4.5
         {
             var cancelation = new CancellationTokenSource();
             var tasks = new Task[] {
@@ -449,7 +449,7 @@ namespace MonoTests.System.Threading.Tasks
 #endif
 
         [Test]
-        public void WaitAllExceptionThenCancelled() // TODO: Failing test
+        public void WaitAllExceptionThenCancelled() // TODO: Failing test .NET 2.0, .NET 3.0, .NET 3.5 - passing in .NET 4.0, .NET 4.5
         {
             var cancelation = new CancellationTokenSource();
             var tasks = new Task[] {
@@ -695,7 +695,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void ContinueWithOnFailedTestCase() // TODO: Failing test
+        public void ContinueWithOnFailedTestCase() // TODO: Failing test .NET 2.0, .NET 3.0, .NET 3.5 - passing in .NET 4.0, .NET 4.5
         {
             ParallelTestHelper.Repeat(delegate {
                 bool result = false;
@@ -1184,7 +1184,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WhenChildTaskErrorIsThrownOnlyOnFaultedContinuationShouldExecute() // TODO: Failing test
+        public void WhenChildTaskErrorIsThrownOnlyOnFaultedContinuationShouldExecute() // TODO: ???
         {
             var continuationRan = false;
             var testTask = new Task(() =>
@@ -1308,7 +1308,7 @@ namespace MonoTests.System.Threading.Tasks
 
 #if NET20 || NET30 || NET35 || NET45
         [Test]
-        public void ContinuationOnBrokenScheduler() // TODO: Failing test
+        public void ContinuationOnBrokenScheduler() // TODO: Failing test in .NET 4.0 - passing in .NET 2.0, .NET 3.0, .NET 3.5, .NET 4.5
         {
             var s = new ExceptionScheduler();
             Task t = new Task(delegate { });
@@ -1953,7 +1953,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WhenAnyResult() // TODO: Failing test
+        public void WhenAnyResult() // TODO: Failing test in .NET 4.0 - passing on .NET 2.0, .NET 3.0, .NET 3.5, .NET 4.5
         {
             var t1 = new Task<byte>(delegate { return 3; });
             var t2 = new Task<byte>(delegate { t1.Start(); return 2; });
@@ -2132,7 +2132,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void DenyChildAttachTest() // TODO: Failing test
+        public void DenyChildAttachTest() // TODO: Failing test in .NET 4.0 - passing .NET 2.0, .NET 3.0, .NET 3.5, .NET 4.5
         {
             var mre = new ManualResetEventSlim();
             Task nested = null;
