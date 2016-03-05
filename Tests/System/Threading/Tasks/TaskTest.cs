@@ -285,7 +285,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WaitAny_ManyCanceled() // TODO: Crashing test engine :/
+        public void WaitAny_ManyCanceled() // Failing test
         {
             var cancellation = new CancellationToken(true);
             var tasks = new[] {
@@ -897,7 +897,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void DoubleWaitTest() // TODO: Failing test
+        public void DoubleWaitTest()
         {
             ParallelTestHelper.Repeat(delegate {
                 var evt = new ManualResetEventSlim();
@@ -2163,7 +2163,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void HideSchedulerTest() // TODO: Failing test
+        public void HideSchedulerTest()
         {
             var mre = new ManualResetEventSlim();
             var ranOnDefault = false;
@@ -2202,7 +2202,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void ChildTaskWithUnscheduledContinuationAttachedToParent() // TODO: Failing test
+        public void ChildTaskWithUnscheduledContinuationAttachedToParent()
         {
             Task inner = null;
             var child = Task.Factory.StartNew(() => {

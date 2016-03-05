@@ -169,7 +169,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void ContinueWithDifferentOptionsAreCanceledTest() // TODO: Failing test
+        public void ContinueWithDifferentOptionsAreCanceledTest()
         {
             var mre = new ManualResetEventSlim();
             var task = Task.Factory.StartNew(() => mre.Wait(200));
@@ -374,7 +374,7 @@ namespace MonoTests.System.Threading.Tasks
 
 #if NET20 || NET30 || NET35 || NET45
         [Test]
-        public void ContinuationOnBrokenScheduler() // TODO: Failing test
+        public void ContinuationOnBrokenScheduler()
         {
             var s = new ExceptionScheduler();
             Task t = new Task(delegate { });

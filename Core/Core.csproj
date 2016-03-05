@@ -368,6 +368,7 @@
     <Compile Include="System\Threading\Tasks\ContinuationResultTaskFromTask.cs" />
     <Compile Include="System\Threading\Tasks\ContinuationTaskFromResultTask.cs" />
     <Compile Include="System\Threading\Tasks\ContinuationTaskFromTask.cs" />
+    <Compile Include="System\Threading\Tasks\IContinuationTask.cs" />
     <Compile Include="System\Threading\Tasks\InternalSpecialCancelException.cs" />
     <Compile Include="System\Threading\Tasks\InternalTaskOptions.cs" />
     <Compile Include="System\Threading\IThreadPoolWorkItem.cs" />

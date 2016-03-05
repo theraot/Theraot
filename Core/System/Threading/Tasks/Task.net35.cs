@@ -428,6 +428,18 @@ namespace System.Threading.Tasks
                 switch (Status)
                 {
                     case TaskStatus.WaitingForActivation:
+                        if (IsContinuationTask)
+                        {
+                            var antecedent = ((IContinuationTask) this).Antecedent;
+                            if (antecedent != null)
+                            {
+                                antecedent.Wait
+                                (
+                                    milliseconds - (int)ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start),
+                                    cancellationToken
+                                );
+                            }
+                        }
                         Scheduler.TryExecuteTaskInline(this, true);
                         break;
 
