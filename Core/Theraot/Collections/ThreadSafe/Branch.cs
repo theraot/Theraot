@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 
 namespace Theraot.Collections.ThreadSafe
@@ -330,7 +331,7 @@ namespace Theraot.Collections.ThreadSafe
             Interlocked.Increment(ref _useCount); // We are most likely to add - overstatimate count
             var offset = _offset - INT_OffsetStep;
             var subindex = GetSubindex(index);
-            var node = _entries[subindex];
+            var node = Interlocked.CompareExchange(ref _entries[subindex], null, null);
             // node can only be Branch or null
             if (node != null)
             {
@@ -354,7 +355,8 @@ namespace Theraot.Collections.ThreadSafe
                 return result as Branch;
             }
             Interlocked.Decrement(ref _useCount); // We did not add after all
-            return this;
+            // Returning what was found
+            return (Branch)found;
         }
 
         private Branch[] Map(uint index)
