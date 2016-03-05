@@ -53,7 +53,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void Cancel_ExceptionOrder()
+        public void Cancel_ExceptionOrder() // TODO: Failing test
         {
             var cts = new CancellationTokenSource();
 
@@ -379,7 +379,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void ReEntrantRegistrationTest()
+        public void ReEntrantRegistrationTest() // TODO: Failing test
         {
             bool unregister = false;
             bool register = false;

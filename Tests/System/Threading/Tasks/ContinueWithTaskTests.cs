@@ -119,7 +119,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void ContinueWithOnFailedTestCase()
+        public void ContinueWithOnFailedTestCase() // TODO: Failing test
         {
             ParallelTestHelper.Repeat(delegate {
                 bool result = false;
@@ -169,7 +169,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void ContinueWithDifferentOptionsAreCanceledTest()
+        public void ContinueWithDifferentOptionsAreCanceledTest() // TODO: Failing test
         {
             var mre = new ManualResetEventSlim();
             var task = Task.Factory.StartNew(() => mre.Wait(200));
@@ -374,7 +374,7 @@ namespace MonoTests.System.Threading.Tasks
 
 #if NET20 || NET30 || NET35 || NET45
         [Test]
-        public void ContinuationOnBrokenScheduler()
+        public void ContinuationOnBrokenScheduler() // TODO: Failing test
         {
             var s = new ExceptionScheduler();
             Task t = new Task(delegate { });
@@ -491,7 +491,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void ChildTaskWithUnscheduledContinuationAttachedToParent()
+        public void ChildTaskWithUnscheduledContinuationAttachedToParent() // Failing test
         {
             Task inner = null;
             var child = Task.Factory.StartNew(() => {
