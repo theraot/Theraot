@@ -30,7 +30,6 @@
 
 using System.Collections.Generic;
 using Theraot.Collections.ThreadSafe;
-using Theraot.Core;
 
 namespace System.Threading
 {
@@ -42,7 +41,7 @@ namespace System.Threading
         private readonly ManualResetEvent _handle;
         private SafeDictionary<CancellationTokenRegistration, Action> _callbacks;
         private int _cancelRequested;
-        private int _currentId = int.MinValue;
+        private int _currentId = int.MaxValue;
         private int _disposeRequested;
         private CancellationTokenRegistration[] _linkedTokens;
         private Timer _timer;
@@ -207,7 +206,7 @@ namespace System.Threading
         internal CancellationTokenRegistration Register(Action callback, bool useSynchronizationContext)
         {
             var callbacks = CheckDisposedGetCallbacks();
-            var tokenReg = new CancellationTokenRegistration(Interlocked.Increment(ref _currentId), this);
+            var tokenReg = new CancellationTokenRegistration(Interlocked.Decrement(ref _currentId), this);
             // If the source is already canceled run the callback inline.
             // if not, we try to add it to the queue and if it is currently being processed.
             // we try to execute it back ourselves to be sure the callback is ran.
@@ -325,16 +324,15 @@ namespace System.Threading
                 try
                 {
                     var id = _currentId;
-                    var hashcode = id.GetHashCode() ^ GetHashCode();
                     do
                     {
                         Action callback;
                         var checkId = id;
-                        if (callbacks.Remove(hashcode, registration => registration.Equals(checkId, this), out callback) && callback != null)
+                        if (callbacks.Remove(id, registration => registration.Equals(checkId, this), out callback) && callback != null)
                         {
                             RunCallback(throwOnFirstException, callback, ref exceptions);
                         }
-                    } while (id-- != int.MinValue);
+                    } while (id++ != int.MaxValue);
                 }
                 finally
                 {
