@@ -3,18 +3,14 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
+using Theraot.Threading;
 
 namespace System.Threading.Tasks
 {
-    internal interface ITaskCompletionAction
-    {
-        void Invoke(Task completingTask);
-    }
-
     public partial class Task
     {
         private List<object> _continuations;
-        private int _continuationsInitialized;
+        private int _continuationsStatus;
 
         /// <summary>
         /// Creates a continuation that executes when the target <see cref="Task"/> completes.
@@ -746,26 +742,30 @@ namespace System.Threading.Tasks
         /// </summary>
         internal void FinishContinuations()
         {
-            var continuations = _continuations;
-            if (Thread.VolatileRead(ref _continuationsInitialized) == 1 && continuations != null)
+            if (Interlocked.CompareExchange(ref _continuationsStatus, 2, 1) == 1)
             {
+                var continuations = _continuations;
+                if (continuations == null)
+                {
+                    return;
+                }
+                // Wait for any concurrent adds or removes to be retired
+                lock (continuations)
+                {
+                    _continuations = null;
+                    Thread.VolatileWrite(ref _continuationsStatus, 3);
+                }
+
                 // Skip synchronous execution of continuations if this task's thread was aborted
                 var canInlineContinuations =
-                    (
-                        Thread.VolatileRead(ref _threadAbortedmanaged) == 0
-                        && (Thread.CurrentThread.ThreadState != ThreadState.AbortRequested)
-                        && ((_creationOptions & TaskCreationOptions.RunContinuationsAsynchronously) == 0)
-                    );
+                    Thread.VolatileRead(ref _threadAbortedmanaged) == 0
+                    && (Thread.CurrentThread.ThreadState != ThreadState.AbortRequested)
+                    && ((_creationOptions & TaskCreationOptions.RunContinuationsAsynchronously) == 0);
 
                 //
                 // Begin processing of continuation list
                 //
 
-                // Wait for any concurrent adds or removes to be retired
-                lock (continuations)
-                {
-                    _continuations = null;
-                }
                 var continuationCount = continuations.Count;
 
                 // Fire the asynchronous continuations first ...
@@ -821,20 +821,25 @@ namespace System.Threading.Tasks
 
         internal void RemoveContinuation(object continuationObject) // could be TaskContinuation or Action<Task>
         {
-            var continuations = _continuations;
-            if (Thread.VolatileRead(ref _continuationsInitialized) == 1 && continuations != null)
+            List<object> continuations = null;
+            try
             {
-                lock (continuations)
+                continuations = GetContinuations();
+                if (continuations == null)
                 {
-                    if (_continuations != continuations)
-                    {
-                        return;
-                    }
-                    var index = continuations.IndexOf(continuationObject);
-                    if (index != -1)
-                    {
-                        continuations[index] = null;
-                    }
+                    return;
+                }
+                var index = continuations.IndexOf(continuationObject);
+                if (index != -1)
+                {
+                    continuations[index] = null;
+                }
+            }
+            finally
+            {
+                if (continuations != null)
+                {
+                    Monitor.Exit(continuations);
                 }
             }
         }
@@ -844,29 +849,98 @@ namespace System.Threading.Tasks
         private bool AddTaskContinuation(object continuationObject, bool addBeforeOthers)
         {
             Contract.Requires(continuationObject != null);
-            // Make sure that, if someone calls ContinueWith() right after waiting for the predecessor to complete,
-            // we don't queue up a continuation.
-            if (IsCompleted)
+            List<object> continuations = null;
+            try
             {
-                return false;
-            }
-            // Try to just jam tc into m_continuationObject
-            if (Interlocked.CompareExchange(ref _continuationsInitialized, 1, 0) == 0)
-            {
-                Interlocked.Exchange(ref _continuations, new List<object>());
-            }
-            lock (_continuations)
-            {
+                continuations = RetrieveContinuations();
+                if (continuations == null)
+                {
+                    return false;
+                }
                 if (addBeforeOthers)
                 {
-                    _continuations.Insert(0, continuationObject);
+                    continuations.Insert(0, continuationObject);
                 }
                 else
                 {
-                    _continuations.Add(continuationObject);
+                    continuations.Add(continuationObject);
+                }
+                return true;
+            }
+            finally
+            {
+                if (continuations != null)
+                {
+                    Monitor.Exit(continuations);
                 }
             }
-            return true;
+        }
+
+        private List<object> GetContinuations()
+        {
+            if (IsCompleted)
+            {
+                return null;
+            }
+            if (Thread.VolatileRead(ref _continuationsStatus) == 1)
+            {
+                // Initializing or initilized
+                var count = 0;
+                List<object> continuations;
+                while ((continuations = Interlocked.CompareExchange(ref _continuations, null, null)) == null)
+                {
+                    ThreadingHelper.SpinOnce(ref count);
+                }
+                Monitor.Enter(continuations);
+                return continuations;
+            }
+            return null;
+        }
+
+        private List<object> RetrieveContinuations()
+        {
+            if (IsCompleted)
+            {
+                return null;
+            }
+            var found = Thread.VolatileRead(ref _continuationsStatus);
+            List<object> continuations = null;
+            switch (found)
+            {
+                case 0:
+                    // Not initialized
+                    if (Interlocked.CompareExchange(ref _continuationsStatus, 1, 0) == 0)
+                    {
+                        continuations = new List<object>();
+                        Interlocked.Exchange(ref _continuations, continuations);
+                        goto default;
+                    }
+                    goto case 1;
+                case 1:
+                    // Initializing or initilized
+                    var count = 0;
+                    while ((continuations = Interlocked.CompareExchange(ref _continuations, null, null)) == null)
+                    {
+                        ThreadingHelper.SpinOnce(ref count);
+                    }
+                    goto default;
+                case 2:
+                    // Being taken for execution
+                    return null;
+                case 3:
+                    // Already taken for execution
+                    return null;
+                default:
+                    // The continuations may have already executed at this point
+                    Monitor.Enter(continuations);
+                    if (Thread.VolatileRead(ref _continuationsStatus) == 1)
+                    {
+                        return continuations;
+                    }
+                    // It is being taken or has already been taken for execution
+                    Interlocked.CompareExchange(ref _continuations, null, continuations);
+                    return null;
+            }
         }
 
         // Same as the above overload, just with a stack mark parameter.

@@ -76,7 +76,7 @@ namespace System.Threading.Tasks
         }
 
         [SecurityCritical]
-        protected internal override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
+        protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
         {
             if ((task.CreationOptions & TaskCreationOptions.LongRunning) != 0)
             {
@@ -98,7 +98,7 @@ namespace System.Threading.Tasks
         }
 
         [SecurityCritical]
-        protected internal override bool TryDequeue(Task task)
+        protected override bool TryDequeue(Task task)
         {
             throw new Theraot.Core.InternalSpecialCancelException("ThreadPool");
         }

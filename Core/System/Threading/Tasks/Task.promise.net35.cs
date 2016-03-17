@@ -141,30 +141,12 @@ namespace System.Threading.Tasks
             }
         }
 
-        internal bool TrySetCanceled(CancellationToken tokenToRecord, object cancellationException)
+        internal bool TrySetCanceledPromise(CancellationToken tokenToRecord)
         {
-            Contract.Assert(Action == null, "Task<T>.TrySetCanceled(): non-null m_action");
-            /*var ceAsEdi = cancellationException as ExceptionDispatchInfo;
-            Contract.Assert(
-                cancellationException == null ||
-                cancellationException is OperationCanceledException ||
-                (ceAsEdi != null && ceAsEdi.SourceException is OperationCanceledException),
-                "Expected null or an OperationCanceledException");
-            */
+            Contract.Assert(Action == null);
             var returnValue = false;
-            // "Reserve" the completion for this task, while making sure that: (1) No prior reservation
-            // has been made, (2) The result has not already been set, (3) An exception has not previously
-            // been recorded, and (4) Cancellation has not been requested.
-            //
-            // If the reservation is successful, then record the cancellation and finish completion processing.
-            //
-            // Note: I had to access static Task variables through Task<object>
-            // instead of Task, because I have a property named Task and that
-            // was confusing the compiler.
             Contract.Assert(IsPromiseTask, "Task.RecordInternalCancellationRequest(CancellationToken) only valid for promise-style task");
             Contract.Assert(CancellationToken == default(CancellationToken));
-            // Store the supplied cancellation token as this task's token.
-            // Waiting on this task will then result in an OperationCanceledException containing this token.
             if (tokenToRecord != default(CancellationToken))
             {
                 CancellationToken = tokenToRecord;

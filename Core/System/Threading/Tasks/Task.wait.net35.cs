@@ -280,7 +280,7 @@ namespace System.Threading.Tasks
             // If any of the waited-upon tasks end as Faulted or Canceled, set these to true.
             var exceptionSeen = false;
             var cancellationSeen = false;
-            var returnValue = true;
+            var allCompleted = true;
             // Collects incomplete tasks in "waitedOnTaskList"
             for (var taskIndex = tasks.Length - 1; taskIndex >= 0; taskIndex--)
             {
@@ -328,10 +328,10 @@ namespace System.Threading.Tasks
             if (waitedOnTaskList != null)
             {
                 // Block waiting for the tasks to complete.
-                returnValue = WaitAllBlockingCore(waitedOnTaskList, millisecondsTimeout, cancellationToken);
+                allCompleted = WaitAllBlockingCore(waitedOnTaskList, millisecondsTimeout, cancellationToken);
                 // If the wait didn't time out, ensure exceptions are propagated, and if a debugger is
                 // attached and one of these tasks requires it, that we notify the debugger of a wait completion.
-                if (returnValue)
+                if (allCompleted)
                 {
                     // Add any exceptions for this task to the collection, and if it's wait
                     // notification bit is set, store it to operate on at the end.
@@ -358,7 +358,7 @@ namespace System.Threading.Tasks
             }
             // Now that we're done and about to exit, if the wait completed and if we have 
             // any tasks with a notification bit set, signal the debugger if any requires it.
-            if (returnValue && notificationTasks != null)
+            if (allCompleted && notificationTasks != null)
             {
                 // Loop through each task tha that had its bit set, and notify the debugger
                 // about the first one that requires it.  The debugger will reset the bit
@@ -373,7 +373,7 @@ namespace System.Threading.Tasks
                 }
             }
             // If one or more threw exceptions, aggregate and throw them.
-            if (returnValue && (exceptionSeen || cancellationSeen))
+            if (allCompleted && (exceptionSeen || cancellationSeen))
             {
                 // If the WaitAll was canceled and tasks were canceled but not faulted, 
                 // prioritize throwing an OCE for canceling the WaitAll over throwing an 
@@ -392,7 +392,7 @@ namespace System.Threading.Tasks
                 Contract.Assert(exceptions != null, "Should have seen at least one exception");
                 throw new AggregateException(exceptions);
             }
-            return returnValue;
+            return allCompleted;
         }
 
         /// <summary>Adds an element to the list, initializing the list if it's null.</summary>
@@ -419,65 +419,28 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException("tasks");
             }
             Contract.Assert(tasks.Count > 0, "Expected at least one task");
-            var waitCompleted = false;
-            var mres = new SetOnCountdownMres(tasks.Count); // Leaked
+            bool waitCompleted;
+            ManualResetEventSlim mres = null;
+            WhenAllCore core = null;
             try
             {
-                foreach (var task in tasks)
-                {
-                    task.AddTaskContinuation(mres, addBeforeOthers: true);
-                }
+                mres = new ManualResetEventSlim(false);
+                core = new WhenAllCore(tasks, mres.Set);
                 waitCompleted = mres.Wait(millisecondsTimeout, cancellationToken);
             }
             finally
             {
-                if (!waitCompleted)
+                if (core != null)
                 {
-                    foreach (var task in tasks)
-                    {
-                        if (!task.IsCompleted)
-                        {
-                            task.RemoveContinuation(mres);
-                        }
-                    }
+                    core.Dispose();
+                    waitCompleted = core.IsDone;
                 }
-                // It's ok that we don't dispose of the MRES here, as we never
-                // access the MRES' WaitHandle, and thus no finalizable resources
-                // are actually created.  We don't always just Dispose it because
-                // a continuation that's accessing the MRES could still be executing.
+                if (mres != null)
+                {
+                    mres.Dispose();
+                }
             }
             return waitCompleted;
-        }
-
-        // A ManualResetEventSlim that will get Set after Invoke is called count times.
-        // This allows us to replace this logic:
-        //      var mres = new ManualResetEventSlim(tasks.Count);
-        //      Action<Task> completionAction = delegate { if(Interlocked.Decrement(ref count) == 0) mres.Set(); };
-        //      foreach(var task in tasks) task.AddCompletionAction(completionAction);
-        // with this logic:
-        //      var mres = new SetOnCountdownMres(tasks.Count);
-        //      foreach(var task in tasks) task.AddCompletionAction(mres);
-        // which saves a couple of allocations.
-        //
-        // Used in WaitAllBlockingCore (above).
-        private sealed class SetOnCountdownMres : ManualResetEventSlim, ITaskCompletionAction
-        {
-            private int _count;
-
-            internal SetOnCountdownMres(int count)
-            {
-                Contract.Assert(count > 0, "Expected count > 0");
-                _count = count;
-            }
-
-            public void Invoke(Task completingTask)
-            {
-                if (Interlocked.Decrement(ref _count) == 0)
-                {
-                    Set();
-                }
-                Contract.Assert(_count >= 0, "Count should never go below 0");
-            }
         }
 
         internal static void FastWaitAll(Task[] tasks)
@@ -753,47 +716,6 @@ namespace System.Threading.Tasks
             }
             //--
             return firstCompleted;
-        }
-
-        internal sealed class CompleteOnInvokePromise : Task<Task>, ITaskCompletionAction
-        {
-            private IList<Task> _tasks; // must track this for cleanup
-            private int _firstTaskAlreadyCompleted;
-
-            public CompleteOnInvokePromise(IList<Task> tasks)
-            {
-                Contract.Requires(tasks != null, "Expected non-null collection of tasks");
-                _tasks = tasks;
-            }
-
-            public void Invoke(Task completingTask)
-            {
-                if (Interlocked.CompareExchange(ref _firstTaskAlreadyCompleted, 1, 0) == 0)
-                {
-                    var success = TrySetResult(completingTask);
-                    Contract.Assert(success, "Only one task should have gotten to this point, and thus this must be successful.");
-
-                    // We need to remove continuations that may be left straggling on other tasks.
-                    // Otherwise, repeated calls to WhenAny using the same task could leak actions.
-                    // This may also help to avoided unnecessary invocations of this whenComplete delegate.
-                    // Note that we may be attempting to remove a continuation from a task that hasn't had it
-                    // added yet; while there's overhead there, the operation won't hurt anything.
-                    var tasks = _tasks;
-                    var numTasks = tasks.Count;
-                    for (var taskIndex = 0; taskIndex < numTasks; taskIndex++)
-                    {
-                        var task = tasks[taskIndex];
-                        if (task != null &&
-                            // if an element was erroneously nulled out concurrently, just skip it; worst case is we don't remove a continuation
-                            !task.IsCompleted)
-                        {
-                            task.RemoveContinuation(this);
-                        }
-                    }
-                    _tasks = null;
-
-                }
-            }
         }
     }
 }
