@@ -248,7 +248,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WaitingTest() // TODO: Crashing test engine :/
+        public void WaitingTest()
         {
             var tcs = new TaskCompletionSource<int>();
             var task = tcs.Task;

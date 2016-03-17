@@ -169,7 +169,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void ContinueWithDifferentOptionsAreCanceledTest() // TODO: Potential threading problem - OK on .NET 4.0 and .NET 4.5
+        public void ContinueWithDifferentOptionsAreCanceledTest()
         {
             var mre = new ManualResetEventSlim();
             var task = Task.Factory.StartNew(() => mre.Wait(200));
@@ -374,7 +374,7 @@ namespace MonoTests.System.Threading.Tasks
 
 #if NET20 || NET30 || NET35 || NET45
         [Test]
-        public void ContinuationOnBrokenScheduler() // TODO: Potential threading problem
+        public void ContinuationOnBrokenScheduler()
         {
             var s = new ExceptionScheduler();
             Task t = new Task(delegate { });
@@ -426,7 +426,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void ContinueWith_StateValueGeneric() // TODO: Failing test
+        public void ContinueWith_StateValueGeneric()
         {
             var t = Task<int>.Factory.StartNew(l => {
                 Assert.AreEqual(1, l, "a-1");
@@ -511,7 +511,6 @@ namespace MonoTests.System.Threading.Tasks
 #endif
 
         [Test]
-        [Category("NotWorking")]
         public void TaskContinuationChainLeak()
         {
             // Start cranking out tasks, starting each new task upon completion of and from inside the prior task.

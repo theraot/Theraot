@@ -285,7 +285,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WaitAny_ManyCanceled() // TODO: Failing test
+        public void WaitAny_ManyCanceled()
         {
             var cancellation = new CancellationToken(true);
             var tasks = new[] {
@@ -305,7 +305,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WaitAllTest() // TODO: Deathlock in .NET 2.0, .NET 3.0, .NET 3.5 - passing in .NET 4.0, .NET 4.5
+        public void WaitAllTest()
         {
             ParallelTestHelper.Repeat(delegate {
                 int achieved = 0;
@@ -316,7 +316,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WaitAll_ManyTasks() // TODO: Failing test in .NET 2.0, .NET 3.0, .NET 3.5 - passing in .NET 4.0, .NET 4.5
+        public void WaitAll_ManyTasks()
         {
             for (int r = 0; r < 2000; ++r)
             {
@@ -726,7 +726,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void ContinueWithChildren()
+        public void ContinueWithChildren() // TODO: Race condition
         {
             ParallelTestHelper.Repeat(delegate {
                 bool result = false;
@@ -745,7 +745,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void ContinueWithDifferentOptionsAreCanceledTest() // TODO: Failing test
+        public void ContinueWithDifferentOptionsAreCanceledTest() // TODO: ??? - Failing on a test engine, working on another
         {
             var mre = new ManualResetEventSlim();
             var task = Task.Factory.StartNew(() => mre.Wait(200));
@@ -791,7 +791,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WaitChildTestCase()
+        public void WaitChildTestCase() // TODO: Racing condition
         {
             ParallelTestHelper.Repeat(delegate {
                 bool r1 = false, r2 = false, r3 = false;
@@ -897,7 +897,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void DoubleWaitTest() // TODO: Potential threading problem
+        public void DoubleWaitTest()
         {
             ParallelTestHelper.Repeat(delegate {
                 var evt = new ManualResetEventSlim();
@@ -1068,7 +1068,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void UnobservedExceptionOnFinalizerThreadTest()
+        public void UnobservedExceptionOnFinalizerThreadTest() // TODO: Racing condition
         {
             bool wasCalled = false;
             TaskScheduler.UnobservedTaskException += (o, args) => {
@@ -1132,7 +1132,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void CanceledContinuationExecuteSynchronouslyTest()
+        public void CanceledContinuationExecuteSynchronouslyTest() // TODO: Racing condition
         {
             var source = new CancellationTokenSource();
             var token = source.Token;
@@ -1184,7 +1184,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WhenChildTaskErrorIsThrownOnlyOnFaultedContinuationShouldExecute() // TODO: ??? - Failing on a test engine, working on another
+        public void WhenChildTaskErrorIsThrownOnlyOnFaultedContinuationShouldExecute() // TODO: Racing condition
         {
             var continuationRan = false;
             var testTask = new Task(() =>
@@ -1360,7 +1360,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void Delay_Simple() // TODO: Failing test
+        public void Delay_Simple() // TODO: Racing condition
         {
             var t = Task.Delay(300);
             Assert.IsTrue(TaskStatus.WaitingForActivation == t.Status || TaskStatus.Running == t.Status, "#1");
@@ -1401,7 +1401,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void Delay_TimeManagement() // TODO: Failing test
+        public void Delay_TimeManagement() // TODO: Racing condition
         {
             var delay1 = Task.Delay(50);
             var delay2 = Task.Delay(25);
@@ -1502,7 +1502,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WhenAll_Cancelled() // TODO: Failing test
+        public void WhenAll_Cancelled()
         {
             var cancelation = new CancellationTokenSource();
             var tasks = new Task[] {
@@ -1518,8 +1518,8 @@ namespace MonoTests.System.Threading.Tasks
 
             try
             {
-                Assert.IsTrue(t.Wait(1000), "#2");
-                Assert.Fail("#2a");
+                var result = t.Wait(10000);
+                Assert.Fail("#2 " + result);
             }
             catch (AggregateException e)
             {
@@ -1621,7 +1621,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WhenAllResult_Cancelled() // TODO: Failing test
+        public void WhenAllResult_Cancelled()
         {
             var cancelation = new CancellationTokenSource();
             var tasks = new[] {
@@ -1953,7 +1953,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WhenAnyResult() // TODO: ??? - Failing on a test engine, working on another
+        public void WhenAnyResult() // TODO: Racing condition
         {
             var t1 = new Task<byte>(delegate { return 3; });
             var t2 = new Task<byte>(delegate { t1.Start(); return 2; });
@@ -1997,7 +1997,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void ContinueWith_StateValueGeneric()
+        public void ContinueWith_StateValueGeneric() // TODO: Racing condition
         {
             var t = Task<int>.Factory.StartNew(l => {
                 Assert.AreEqual(1, l, "a-1");
@@ -2080,7 +2080,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void Run()
+        public void Run() // TODO: Racing condition
         {
             bool ranOnDefaultScheduler = false;
             var t = Task.Run(delegate { ranOnDefaultScheduler = Thread.CurrentThread.IsThreadPoolThread; });
@@ -2132,7 +2132,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void DenyChildAttachTest() // TODO: ???
+        public void DenyChildAttachTest()
         {
             var mre = new ManualResetEventSlim();
             Task nested = null;
@@ -2220,7 +2220,6 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        [Category("NotWorking")]
         public void TaskContinuationChainLeak()
         {
             // Start cranking out tasks, starting each new task upon completion of and from inside the prior task.

@@ -53,7 +53,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void Cancel_ExceptionOrder() // TODO: Potential threading problem - OK on .NET 4.0 and .NET 4.5
+        public void Cancel_ExceptionOrder()
         {
             var cts = new CancellationTokenSource();
 
