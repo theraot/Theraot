@@ -290,6 +290,7 @@
     <Compile Include="System\Threading\Tasks\NonInlineableScheduler.cs" />
     <Compile Include="System\Threading\Tasks\TaskCompletionSourceTest.cs" />
     <Compile Include="System\Threading\Tasks\TaskContinuationChainLeakTester.cs" />
+    <Compile Include="System\Threading\Tasks\TaskTestEx.cs" />
     <Compile Include="System\Threading\Tasks\TaskTest.cs" />
     <Compile Include="Theraot\Collections\ExtensionsTest.cs" />
     <Compile Include="Theraot\Collections\ProgressiveLookupTestEx.cs" />
