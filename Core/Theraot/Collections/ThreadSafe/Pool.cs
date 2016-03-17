@@ -39,6 +39,10 @@ namespace Theraot.Collections.ThreadSafe
                     _entries.Add(entry);
                     return true;
                 }
+                catch (NullReferenceException exception)
+                {
+                    GC.KeepAlive(exception);
+                }
                 finally
                 {
                     PoolHelper.Leave(_id);
