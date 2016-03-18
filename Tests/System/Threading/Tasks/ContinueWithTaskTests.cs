@@ -171,7 +171,8 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        [Category("RaceCondition")] // TODO: Review
+        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
+        [Category("ThreadPool")]
         public void ContinueWithDifferentOptionsAreCanceledTest()
         {
             var mre = new ManualResetEventSlim();
@@ -379,7 +380,8 @@ namespace MonoTests.System.Threading.Tasks
 
 #if NET20 || NET30 || NET35 || NET45
         [Test]
-        [Category("RaceCondition")] // TODO: Review
+        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
+        [Category("ThreadPool")]
         public void ContinuationOnBrokenScheduler()
         {
             var s = new ExceptionScheduler();
