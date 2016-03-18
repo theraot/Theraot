@@ -264,6 +264,7 @@ namespace System.Threading.Tasks
         {
             get
             {
+                PromiseCheck();
                 return (TaskStatus)Thread.VolatileRead(ref _status);
             }
         }

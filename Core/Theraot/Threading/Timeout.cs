@@ -13,8 +13,11 @@ namespace Theraot.Threading
 
         private readonly int _hashcode;
         private Action _callback;
-        private bool _completed;
+        private int _completed;
+        private int _executed;
         private bool _rooted;
+        private long _start;
+        private long _targetTime;
         private Timer _wrapped;
 
         static Timeout()
@@ -29,7 +32,7 @@ namespace Theraot.Threading
                 throw new NullReferenceException("callback");
             }
             _callback = callback;
-            _wrapped = new Timer(Callback, null, dueTime, System.Threading.Timeout.Infinite);
+            Initialize(dueTime);
             _hashcode = unchecked((int)DateTime.Now.Ticks);
         }
 
@@ -39,6 +42,7 @@ namespace Theraot.Threading
             {
                 throw new NullReferenceException("callback");
             }
+            _start = ThreadingHelper.TicksNow();
             if (token.IsCancellationRequested)
             {
                 _callback = null;
@@ -47,7 +51,7 @@ namespace Theraot.Threading
             else
             {
                 _callback = callback;
-                _wrapped = new Timer(Callback, null, dueTime, System.Threading.Timeout.Infinite);
+                Initialize(dueTime);
                 token.Register(Cancel);
             }
             _hashcode = unchecked((int)DateTime.Now.Ticks);
@@ -90,7 +94,7 @@ namespace Theraot.Threading
         {
             get
             {
-                return _wrapped == null;
+                return Thread.VolatileRead(ref _completed) == 0 && _wrapped == null;
             }
         }
 
@@ -98,7 +102,7 @@ namespace Theraot.Threading
         {
             get
             {
-                return _completed;
+                return Thread.VolatileRead(ref _completed) == 1;
             }
         }
 
@@ -126,16 +130,6 @@ namespace Theraot.Threading
             }
         }
 
-        public void Change(long dueTime)
-        {
-            _wrapped.Change(dueTime, System.Threading.Timeout.Infinite);
-        }
-
-        public void Change(TimeSpan dueTime)
-        {
-            Change((long)dueTime.TotalMilliseconds);
-        }
-
         public void Cancel()
         {
             var wrapped = Interlocked.Exchange(ref _wrapped, null);
@@ -146,6 +140,27 @@ namespace Theraot.Threading
             _callback = null;
             _root.Remove(this);
             GC.SuppressFinalize(this);
+        }
+
+        public void Change(long dueTime)
+        {
+            Initialize(dueTime);
+        }
+
+        public void Change(TimeSpan dueTime)
+        {
+            Initialize((long)dueTime.TotalMilliseconds);
+        }
+
+        public long CheckRemaining()
+        {
+            var remaining = _targetTime - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
+            if (remaining <= 0)
+            {
+                Callback(null);
+                return 0;
+            }
+            return remaining;
         }
 
         public override bool Equals(object obj)
@@ -164,10 +179,32 @@ namespace Theraot.Threading
 
         private void Callback(object state)
         {
-            GC.KeepAlive(state);
-            _callback.Invoke();
-            _completed = true;
-            Cancel();
+            if (Interlocked.CompareExchange(ref _executed, 1, 0) == 0)
+            {
+                GC.KeepAlive(state);
+                _callback.Invoke();
+                Cancel();
+                Thread.VolatileWrite(ref _completed, 1);
+            }
+        }
+
+        private void Initialize(long dueTime)
+        {
+            if (Thread.VolatileRead(ref _executed) == 1)
+            {
+                ThreadingHelper.SpinWaitWhile(ref _completed, 1);
+                Thread.VolatileWrite(ref _executed, 0);
+            }
+            _start = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
+            _targetTime = _start + dueTime;
+            if (_wrapped == null)
+            {
+                _wrapped = new Timer(Callback, null, dueTime, System.Threading.Timeout.Infinite);
+            }
+            else
+            {
+                _wrapped.Change(dueTime, System.Threading.Timeout.Infinite);
+            }
         }
     }
 }

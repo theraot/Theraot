@@ -123,29 +123,28 @@ namespace System.Threading.Tasks
             var source = new TaskCompletionSource<bool>();
             if (millisecondsDelay > 0)
             {
-                GC.KeepAlive
-                    (
-                        new Theraot.Threading.Timeout
+                var timeout = 
+                    new Theraot.Threading.Timeout
                         (
-                            () =>
-                            {
-                                try
-                                {
-                                    source.SetResult(true);
-                                }
-                                catch (InvalidOperationException exception)
-                                {
-                                    // Already cancelled
-                                    GC.KeepAlive(exception);
-                                }
-                            },
-                            millisecondsDelay,
-                            cancellationToken
-                        )
+                        () =>
                         {
-                            Rooted = true
-                        }
-                    );
+                            try
+                            {
+                                source.SetResult(true);
+                            }
+                            catch (InvalidOperationException exception)
+                            {
+                                // Already cancelled
+                                GC.KeepAlive(exception);
+                            }
+                        },
+                        millisecondsDelay,
+                        cancellationToken
+                        )
+                    {
+                        Rooted = true
+                    };
+                source.Task.SetPromiseCheck(() => timeout.CheckRemaining());
             }
             if (cancellationToken.CanBeCanceled)
             {
