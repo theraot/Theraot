@@ -27,7 +27,6 @@
 #if NET_4_0
 
 using System;
-using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -169,6 +168,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
+        [Category("RaceCondition")] // TODO: Review
         public void ContinuationTest()
         {
             bool result = false;

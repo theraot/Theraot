@@ -33,6 +33,7 @@ namespace Tests.Theraot.Threading.Needles
         }
 
         [Test]
+        [Category("RaceToDeadLock")] // This test creates a race condition, that when resolved sequentially will be stuck
         public void ManualResetEventSlim_SetAfterDisposeTest()
         {
             ManualResetEventSlim mre = new ManualResetEventSlim();
@@ -110,6 +111,7 @@ namespace Tests.Theraot.Threading.Needles
         }
 
         [Test]
+        [Category("RaceToDeadLock")] // This test creates a race condition, that when resolved sequentially will be stuck
         public void Progressor_ThreadedUse()
         {
             var source = new Progressor<int>(new List<int>
@@ -155,6 +157,7 @@ namespace Tests.Theraot.Threading.Needles
 
 #if FAT
         [Test]
+        [Category("RaceToDeadLock")] // This test creates a race condition, that when resolved sequentially will be stuck
         public void Transact_RaceCondition()
         {
             var handle = new ManualResetEvent(false);
