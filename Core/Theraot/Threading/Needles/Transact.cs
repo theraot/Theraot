@@ -136,7 +136,7 @@ namespace Theraot.Threading.Needles
 
         private bool Capture()
         {
-            bool result = false;
+            var result = false;
             foreach (var resource1 in _writeLog)
             {
                 resource1.Key.Capture();

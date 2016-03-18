@@ -10,16 +10,23 @@ namespace System.Linq
     {
         public static TSource Aggregate<TSource>(this IEnumerable<TSource> source, Func<TSource, TSource, TSource> func)
         {
-            var _func = Check.NotNullArgument(func, "func");
-            IEnumerator<TSource> enumerator = Check.NotNullArgument(source, "source").GetEnumerator();
+            if (func == null)
+            {
+                throw new ArgumentNullException("func");
+            }
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var enumerator = source.GetEnumerator();
             using (enumerator)
             {
                 if (enumerator.MoveNext())
                 {
-                    TSource folded = enumerator.Current;
+                    var folded = enumerator.Current;
                     while (enumerator.MoveNext())
                     {
-                        folded = _func(folded, enumerator.Current);
+                        folded = func(folded, enumerator.Current);
                     }
                     return folded;
                 }
@@ -32,36 +39,60 @@ namespace System.Linq
 
         public static TAccumulate Aggregate<TSource, TAccumulate>(this IEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> func)
         {
-            var _func = Check.NotNullArgument(func, "func");
-            TAccumulate folded = seed;
-            foreach (TSource item in Check.NotNullArgument(source, "source"))
+            if (func == null)
             {
-                folded = _func(folded, item);
+                throw new ArgumentNullException("func");
+            }
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var folded = seed;
+            foreach (var item in source)
+            {
+                folded = func(folded, item);
             }
             return folded;
         }
 
         public static TResult Aggregate<TSource, TAccumulate, TResult>(this IEnumerable<TSource> source, TAccumulate seed, Func<TAccumulate, TSource, TAccumulate> func, Func<TAccumulate, TResult> resultSelector)
         {
-            var _resultSelector = Check.NotNullArgument(resultSelector, "resultSelector");
-            var _func = Check.NotNullArgument(func, "func");
-            var result = seed;
-            foreach (var item in Check.NotNullArgument(source, "source"))
+            if (resultSelector == null)
             {
-                result = _func(result, item);
+                throw new ArgumentNullException("resultSelector");
             }
-            return _resultSelector(result);
+            if (func == null)
+            {
+                throw new ArgumentNullException("func");
+            }
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var result = seed;
+            foreach (var item in source)
+            {
+                result = func(result, item);
+            }
+            return resultSelector(result);
         }
 
         public static bool All<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
-            var _predicate = Check.NotNullArgument(predicate, "predicate");
-            var enumerator = Check.NotNullArgument(source, "source").GetEnumerator();
+            if (predicate == null)
+            {
+                throw new ArgumentNullException("predicate");
+            }
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var enumerator = source.GetEnumerator();
             using (enumerator)
             {
                 while (enumerator.MoveNext())
                 {
-                    if (!_predicate(enumerator.Current))
+                    if (!predicate(enumerator.Current))
                     {
                         return false;
                     }
@@ -72,11 +103,14 @@ namespace System.Linq
 
         public static bool Any<TSource>(this IEnumerable<TSource> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var collection = _source as ICollection<TSource>;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var collection = source as ICollection<TSource>;
             if (collection == null)
             {
-                using (var enumerator = _source.GetEnumerator())
+                using (var enumerator = source.GetEnumerator())
                 {
                     return enumerator.MoveNext();
                 }
@@ -89,10 +123,17 @@ namespace System.Linq
 
         public static bool Any<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
-            var _predicate = Check.NotNullArgument(predicate, "predicate");
-            foreach (TSource item in Check.NotNullArgument(source, "source"))
+            if (predicate == null)
             {
-                if (_predicate(item))
+                throw new ArgumentNullException("predicate");
+            }
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            foreach (var item in source)
+            {
+                if (predicate(item))
                 {
                     return true;
                 }
@@ -107,19 +148,32 @@ namespace System.Linq
 
         public static IEnumerable<TResult> Cast<TResult>(this IEnumerable source)
         {
-            if (source is IEnumerable<TResult>)
+            if (source == null)
             {
-                return source as IEnumerable<TResult>;
+                throw new ArgumentNullException("source");
+            }
+            var enumerable = source as IEnumerable<TResult>;
+            if (enumerable != null)
+            {
+                return enumerable;
             }
             else
             {
-                return Enumerable.CastExtracted<TResult>(Check.NotNullArgument(source, "source"));
+                return CastExtracted<TResult>(source);
             }
         }
 
         public static IEnumerable<TSource> Concat<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second)
         {
-            return Enumerable.ConcatExtracted(Check.NotNullArgument(first, "firs"), Check.NotNullArgument(second, "second"));
+            if (first == null)
+            {
+                throw new ArgumentNullException("first");
+            }
+            if (second == null)
+            {
+                throw new ArgumentNullException("second");
+            }
+            return ConcatExtracted(first, second);
         }
 
         public static bool Contains<TSource>(this IEnumerable<TSource> source, TSource value)
@@ -129,9 +183,12 @@ namespace System.Linq
 
         public static bool Contains<TSource>(this IEnumerable<TSource> source, TSource value, IEqualityComparer<TSource> comparer)
         {
-            var _source = Check.NotNullArgument(source, "source");
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
             comparer = comparer ?? EqualityComparer<TSource>.Default;
-            foreach (var item in _source)
+            foreach (var item in source)
             {
                 if (comparer.Equals(item, value))
                 {
@@ -147,28 +204,25 @@ namespace System.Linq
             {
                 throw new ArgumentNullException("source");
             }
-            else
+            var collection = source as ICollection<TSource>;
+            if (collection == null)
             {
-                var collection = source as ICollection<TSource>;
-                if (collection == null)
+                var result = 0;
+                using (var item = source.GetEnumerator())
                 {
-                    int result = 0;
-                    using (var item = source.GetEnumerator())
+                    while (item.MoveNext())
                     {
-                        while (item.MoveNext())
+                        checked
                         {
-                            checked
-                            {
-                                result++;
-                            }
+                            result++;
                         }
                     }
-                    return result;
                 }
-                else
-                {
-                    return collection.Count;
-                }
+                return result;
+            }
+            else
+            {
+                return collection.Count;
             }
         }
 
@@ -179,13 +233,17 @@ namespace System.Linq
 
         public static IEnumerable<TSource> DefaultIfEmpty<TSource>(this IEnumerable<TSource> source)
         {
-            TSource item = default(TSource);
+            var item = default(TSource);
             return DefaultIfEmpty(source, item);
         }
 
         public static IEnumerable<TSource> DefaultIfEmpty<TSource>(this IEnumerable<TSource> source, TSource defaultValue)
         {
-            return Enumerable.DefaultIfEmptyExtracted(Check.NotNullArgument(source, "source"), defaultValue);
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            return DefaultIfEmptyExtracted(source, defaultValue);
         }
 
         public static IEnumerable<TSource> Distinct<TSource>(this IEnumerable<TSource> source)
@@ -195,19 +253,26 @@ namespace System.Linq
 
         public static IEnumerable<TSource> Distinct<TSource>(this IEnumerable<TSource> source, IEqualityComparer<TSource> comparer)
         {
-            return Enumerable.DistinctExtracted(Check.NotNullArgument(source, "source"), comparer);
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            return DistinctExtracted(source, comparer);
         }
 
         public static TSource ElementAt<TSource>(this IEnumerable<TSource> source, int index)
         {
-            var _source = Check.NotNullArgument(source, "source");
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
             if (index < 0)
             {
                 throw new ArgumentOutOfRangeException("index", index, "index < 0");
             }
             else
             {
-                var list = _source as IList<TSource>;
+                var list = source as IList<TSource>;
                 if (list != null)
                 {
                     return list[index];
@@ -217,8 +282,8 @@ namespace System.Linq
                 {
                     return readOnlyList[index];
                 }
-                long count = 0L;
-                foreach (var item in _source)
+                var count = 0L;
+                foreach (var item in source)
                 {
                     if (index == count)
                     {
@@ -232,14 +297,17 @@ namespace System.Linq
 
         public static TSource ElementAtOrDefault<TSource>(this IEnumerable<TSource> source, int index)
         {
-            var _source = Check.NotNullArgument(source, "source");
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
             if (index < 0)
             {
                 return default(TSource);
             }
             else
             {
-                var list = _source as IList<TSource>;
+                var list = source as IList<TSource>;
                 if (list != null)
                 {
                     if (index < list.Count)
@@ -263,8 +331,8 @@ namespace System.Linq
                         return default(TSource);
                     }
                 }
-                long count = 0L;
-                foreach (var item in _source)
+                var count = 0L;
+                foreach (var item in source)
                 {
                     if (index == count)
                     {
@@ -283,21 +351,40 @@ namespace System.Linq
 
         public static IEnumerable<TSource> Except<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second)
         {
-            return ExceptExtracted(Check.NotNullArgument(first, "first"), Check.NotNullArgument(second, "second"), null);
+            if (first == null)
+            {
+                throw new ArgumentNullException("first");
+            }
+            if (second == null)
+            {
+                throw new ArgumentNullException("second");
+            }
+            return ExceptExtracted(first, second, null);
         }
 
         public static IEnumerable<TSource> Except<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
         {
-            return ExceptExtracted(Check.NotNullArgument(first, "first"), Check.NotNullArgument(second, "second"), comparer);
+            if (first == null)
+            {
+                throw new ArgumentNullException("first");
+            }
+            if (second == null)
+            {
+                throw new ArgumentNullException("second");
+            }
+            return ExceptExtracted(first, second, comparer);
         }
 
         public static TSource First<TSource>(this IEnumerable<TSource> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var list = _source as IList<TSource>;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var list = source as IList<TSource>;
             if (list == null)
             {
-                using (var enumerator = _source.GetEnumerator())
+                using (var enumerator = source.GetEnumerator())
                 {
                     if (enumerator.MoveNext())
                     {
@@ -318,10 +405,17 @@ namespace System.Linq
 
         public static TSource First<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
-            var _predicate = Check.NotNullArgument(predicate, "predicate");
-            foreach (var item in Check.NotNullArgument(source, "source"))
+            if (predicate == null)
             {
-                if (_predicate(item))
+                throw new ArgumentNullException("predicate");
+            }
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            foreach (var item in source)
+            {
+                if (predicate(item))
                 {
                     return item;
                 }
@@ -331,7 +425,11 @@ namespace System.Linq
 
         public static TSource FirstOrDefault<TSource>(this IEnumerable<TSource> source)
         {
-            foreach (var item in Check.NotNullArgument(source, "source"))
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            foreach (var item in source)
             {
                 return item;
             }
@@ -345,12 +443,28 @@ namespace System.Linq
 
         public static IEnumerable<TSource> Intersect<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second)
         {
-            return IntersectExtracted(Check.NotNullArgument(first, "first"), Check.NotNullArgument(second, "second"), EqualityComparer<TSource>.Default);
+            if (first == null)
+            {
+                throw new ArgumentNullException("first");
+            }
+            if (second == null)
+            {
+                throw new ArgumentNullException("second");
+            }
+            return IntersectExtracted(first, second, EqualityComparer<TSource>.Default);
         }
 
         public static IEnumerable<TSource> Intersect<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
         {
-            return IntersectExtracted(Check.NotNullArgument(first, "first"), Check.NotNullArgument(second, "second"), comparer ?? EqualityComparer<TSource>.Default);
+            if (first == null)
+            {
+                throw new ArgumentNullException("first");
+            }
+            if (second == null)
+            {
+                throw new ArgumentNullException("second");
+            }
+            return IntersectExtracted(first, second, comparer ?? EqualityComparer<TSource>.Default);
         }
 
         public static TSource Last<TSource>(this IEnumerable<TSource> source)
@@ -359,50 +473,54 @@ namespace System.Linq
             {
                 throw new ArgumentNullException("source");
             }
+            var collection = source as ICollection<TSource>;
+            if (collection != null && collection.Count == 0)
+            {
+                throw new InvalidOperationException();
+            }
             else
             {
-                var collection = source as ICollection<TSource>;
-                if (collection != null && collection.Count == 0)
+                var list = source as IList<TSource>;
+                if (list == null)
                 {
-                    throw new InvalidOperationException();
-                }
-                else
-                {
-                    var list = source as IList<TSource>;
-                    if (list == null)
+                    var found = false;
+                    var result = default(TSource);
+                    foreach (var item in source)
                     {
-                        var found = false;
-                        var result = default(TSource);
-                        foreach (var item in source)
-                        {
-                            result = item;
-                            found = true;
-                        }
-                        if (found)
-                        {
-                            return result;
-                        }
-                        else
-                        {
-                            throw new InvalidOperationException();
-                        }
+                        result = item;
+                        found = true;
+                    }
+                    if (found)
+                    {
+                        return result;
                     }
                     else
                     {
-                        return list[list.Count - 1];
+                        throw new InvalidOperationException();
                     }
+                }
+                else
+                {
+                    return list[list.Count - 1];
                 }
             }
         }
 
         public static TSource Last<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
-            var _predicate = Check.NotNullArgument(predicate, "predicate");
+            if (predicate == null)
+            {
+                throw new ArgumentNullException("predicate");
+            }
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
             var found = false;
             var result = default(TSource);
-            foreach (var item in Check.NotNullArgument(source, "source"))
+            foreach (var item in source)
             {
-                if (!_predicate(item))
+                if (!predicate(item))
                 {
                     continue;
                 }
@@ -425,41 +543,45 @@ namespace System.Linq
             {
                 throw new ArgumentNullException("source");
             }
-            else
+            var list = source as IList<TSource>;
+            if (list == null)
             {
-                var list = source as IList<TSource>;
-                if (list == null)
+                var found = false;
+                var result = default(TSource);
+                foreach (var item in source)
                 {
-                    var found = false;
-                    var result = default(TSource);
-                    foreach (var item in source)
-                    {
-                        result = item;
-                        found = true;
-                    }
-                    if (found)
-                    {
-                        return result;
-                    }
-                    else
-                    {
-                        return default(TSource);
-                    }
+                    result = item;
+                    found = true;
+                }
+                if (found)
+                {
+                    return result;
                 }
                 else
                 {
-                    return list.Count > 0 ? list[list.Count - 1] : default(TSource);
+                    return default(TSource);
                 }
+            }
+            else
+            {
+                return list.Count > 0 ? list[list.Count - 1] : default(TSource);
             }
         }
 
         public static TSource LastOrDefault<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
-            var _predicate = Check.NotNullArgument(predicate, "predicate");
-            var result = default(TSource);
-            foreach (var item in Check.NotNullArgument(source, "source"))
+            if (predicate == null)
             {
-                if (!_predicate(item))
+                throw new ArgumentNullException("predicate");
+            }
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var result = default(TSource);
+            foreach (var item in source)
+            {
+                if (!predicate(item))
                 {
                     continue;
                 }
@@ -470,12 +592,15 @@ namespace System.Linq
 
         public static long LongCount<TSource>(this IEnumerable<TSource> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var array = _source as TSource[];
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var array = source as TSource[];
             if (array == null)
             {
                 long count = 0;
-                using (var item = _source.GetEnumerator())
+                using (var item = source.GetEnumerator())
                 {
                     while (item.MoveNext())
                     {
@@ -497,7 +622,11 @@ namespace System.Linq
 
         public static IEnumerable<TResult> OfType<TResult>(this IEnumerable source)
         {
-            return OfTypeExtracted<TResult>(Check.NotNullArgument(source, "source"));
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            return OfTypeExtracted<TResult>(source);
         }
 
         public static IOrderedEnumerable<TSource> OrderBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
@@ -530,13 +659,17 @@ namespace System.Linq
             }
             else
             {
-                return Enumerable.RepeatExtracted(element, count);
+                return RepeatExtracted(element, count);
             }
         }
 
         public static IEnumerable<TSource> Reverse<TSource>(this IEnumerable<TSource> source)
         {
-            return ReverseExtracted(Check.NotNullArgument(source, "source"));
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            return ReverseExtracted(source);
         }
 
         public static IEnumerable<TResult> Select<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector)
@@ -553,27 +686,75 @@ namespace System.Linq
 
         public static IEnumerable<TResult> Select<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, int, TResult> selector)
         {
-            return Enumerable.SelectExtracted(Check.NotNullArgument(source, "source"), Check.NotNullArgument(selector, "selector"));
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            return SelectExtracted(source, selector);
         }
 
         public static IEnumerable<TResult> SelectMany<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, IEnumerable<TResult>> selector)
         {
-            return SelectManyExtracted(Check.NotNullArgument(source, "source"), Check.NotNullArgument(selector, "selector"));
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            return SelectManyExtracted(source, selector);
         }
 
         public static IEnumerable<TResult> SelectMany<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, int, IEnumerable<TResult>> selector)
         {
-            return SelectManyExtracted(Check.NotNullArgument(source, "source"), Check.NotNullArgument(selector, "selector"));
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            return SelectManyExtracted(source, selector);
         }
 
         public static IEnumerable<TResult> SelectMany<TSource, TCollection, TResult>(this IEnumerable<TSource> source, Func<TSource, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
         {
-            return SelectManyExtracted(Check.NotNullArgument(source, "source"), Check.NotNullArgument(collectionSelector, "collectionSelector"), Check.NotNullArgument(resultSelector, "resultSelector"));
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (collectionSelector == null)
+            {
+                throw new ArgumentNullException("collectionSelector");
+            }
+            if (resultSelector == null)
+            {
+                throw new ArgumentNullException("resultSelector");
+            }
+            return SelectManyExtracted(source, collectionSelector, resultSelector);
         }
 
         public static IEnumerable<TResult> SelectMany<TSource, TCollection, TResult>(this IEnumerable<TSource> source, Func<TSource, int, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
         {
-            return SelectManyExtracted(Check.NotNullArgument(source, "source"), Check.NotNullArgument(collectionSelector, "collectionSelector"), Check.NotNullArgument(resultSelector, "resultSelector"));
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (collectionSelector == null)
+            {
+                throw new ArgumentNullException("collectionSelector");
+            }
+            if (resultSelector == null)
+            {
+                throw new ArgumentNullException("resultSelector");
+            }
+            return SelectManyExtracted(source, collectionSelector, resultSelector);
         }
 
         public static bool SequenceEqual<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second)
@@ -583,14 +764,26 @@ namespace System.Linq
 
         public static bool SequenceEqual<TSource>(this IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
         {
-            return SequenceEqualExtracted(Check.NotNullArgument(first, "first"), Check.NotNullArgument(second, "second"), comparer ?? EqualityComparer<TSource>.Default);
+            if (first == null)
+            {
+                throw new ArgumentNullException("first");
+            }
+            if (second == null)
+            {
+                throw new ArgumentNullException("second");
+            }
+            return SequenceEqualExtracted(first, second, comparer ?? EqualityComparer<TSource>.Default);
         }
 
         public static TSource Single<TSource>(this IEnumerable<TSource> source)
         {
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
             var found = false;
             var result = default(TSource);
-            foreach (var item in Check.NotNullArgument(source, "source"))
+            foreach (var item in source)
             {
                 if (found)
                 {
@@ -611,12 +804,19 @@ namespace System.Linq
 
         public static TSource Single<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
-            var _predicate = Check.NotNullArgument(predicate, "predicate");
+            if (predicate == null)
+            {
+                throw new ArgumentNullException("predicate");
+            }
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
             var found = false;
             var result = default(TSource);
-            foreach (var item in Check.NotNullArgument(source, "source"))
+            foreach (var item in source)
             {
-                if (!_predicate(item))
+                if (!predicate(item))
                 {
                     continue;
                 }
@@ -639,9 +839,13 @@ namespace System.Linq
 
         public static TSource SingleOrDefault<TSource>(this IEnumerable<TSource> source)
         {
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
             var found = false;
             var result = default(TSource);
-            foreach (var item in Check.NotNullArgument(source, "source"))
+            foreach (var item in source)
             {
                 if (found)
                 {
@@ -655,12 +859,19 @@ namespace System.Linq
 
         public static TSource SingleOrDefault<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
-            var _predicate = Check.NotNullArgument(predicate, "predicate");
+            if (predicate == null)
+            {
+                throw new ArgumentNullException("predicate");
+            }
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
             var found = false;
             var result = default(TSource);
-            foreach (var item in Check.NotNullArgument(source, "source"))
+            foreach (var item in source)
             {
-                if (!_predicate(item))
+                if (!predicate(item))
                 {
                     continue;
                 }
@@ -681,29 +892,55 @@ namespace System.Linq
 
         public static IEnumerable<TSource> SkipWhile<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
-            var _predicate = Check.NotNullArgument(predicate, "predicate");
-            return SkipWhile(source, (item, i) => _predicate(item));
+            if (predicate == null)
+            {
+                throw new ArgumentNullException("predicate");
+            }
+            return SkipWhile(source, (item, i) => predicate(item));
         }
 
         public static IEnumerable<TSource> SkipWhile<TSource>(this IEnumerable<TSource> source, Func<TSource, int, bool> predicate)
         {
-            return Enumerable.SkipWhileExtracted(Check.NotNullArgument(source, "source"), Check.NotNullArgument(predicate, "predicate"));
+            if (predicate == null)
+            {
+                throw new ArgumentNullException("predicate");
+            }
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            return SkipWhileExtracted(source, predicate);
         }
 
         public static IEnumerable<TSource> Take<TSource>(this IEnumerable<TSource> source, int count)
         {
-            return Check.NotNullArgument(source, "source").TakeWhileExtracted(count);
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            return source.TakeWhileExtracted(count);
         }
 
         public static IEnumerable<TSource> TakeWhile<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
-            var _predicate = Check.NotNullArgument(predicate, "predicate");
-            return TakeWhile(source, (item, i) => _predicate(item));
+            if (predicate == null)
+            {
+                throw new ArgumentNullException("predicate");
+            }
+            return TakeWhile(source, (item, i) => predicate(item));
         }
 
         public static IEnumerable<TSource> TakeWhile<TSource>(this IEnumerable<TSource> source, Func<TSource, int, bool> predicate)
         {
-            return Check.NotNullArgument(source, "source").TakeWhileExtracted(Check.NotNullArgument(predicate, "predicate"));
+            if (predicate == null)
+            {
+                throw new ArgumentNullException("predicate");
+            }
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            return source.TakeWhileExtracted(predicate);
         }
 
         public static IOrderedEnumerable<TSource> ThenBy<TSource, TKey>(this IOrderedEnumerable<TSource> source, Func<TSource, TKey> keySelector)
@@ -750,14 +987,23 @@ namespace System.Linq
 
         public static Dictionary<TKey, TElement> ToDictionary<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var _elementSelector = Check.NotNullArgument(elementSelector, "elementSelector");
-            var _keySelector = Check.NotNullArgument(keySelector, "keySelector");
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (elementSelector == null)
+            {
+                throw new ArgumentNullException("elementSelector");
+            }
+            if (keySelector == null)
+            {
+                throw new ArgumentNullException("keySelector");
+            }
             comparer = comparer ?? EqualityComparer<TKey>.Default;
             var result = new Dictionary<TKey, TElement>(comparer);
-            foreach (var item in _source)
+            foreach (var item in source)
             {
-                result.Add(_keySelector(item), _elementSelector(item));
+                result.Add(keySelector(item), elementSelector(item));
             }
             return result;
         }
@@ -774,7 +1020,11 @@ namespace System.Linq
 
         public static List<TSource> ToList<TSource>(this IEnumerable<TSource> source)
         {
-            return new List<TSource>(Check.NotNullArgument(source, "source"));
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            return new List<TSource>(source);
         }
 
         public static ILookup<TKey, TSource> ToLookup<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
@@ -809,18 +1059,29 @@ namespace System.Linq
 
         public static IEnumerable<TSource> Where<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate)
         {
-            var _predicate = Check.NotNullArgument(predicate, "predicate");
-            return Where(source, (item, i) => _predicate(item));
+            if (predicate == null)
+            {
+                throw new ArgumentNullException("predicate");
+            }
+            return Where(source, (item, i) => predicate(item));
         }
 
         public static IEnumerable<TSource> Where<TSource>(this IEnumerable<TSource> source, Func<TSource, int, bool> predicate)
         {
-            return Enumerable.WhereExtracted(Check.NotNullArgument(source, "source"), Check.NotNullArgument(predicate, "predicate"));
+            if (predicate == null)
+            {
+                throw new ArgumentNullException("predicate");
+            }
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            return WhereExtracted(source, predicate);
         }
 
         private static IEnumerable<TResult> CastExtracted<TResult>(IEnumerable source)
         {
-            foreach (object obj in source)
+            foreach (var obj in source)
             {
                 yield return (TResult)obj;
             }
@@ -828,7 +1089,7 @@ namespace System.Linq
 
         private static IEnumerable<TSource> ConcatExtracted<TSource>(IEnumerable<TSource> first, IEnumerable<TSource> second)
         {
-            foreach (TSource item in first)
+            foreach (var item in first)
             {
                 yield return item;
             }
@@ -837,7 +1098,7 @@ namespace System.Linq
             {
                 while (enumerator.MoveNext())
                 {
-                    TSource current = enumerator.Current;
+                    var current = enumerator.Current;
                     yield return current;
                 }
             }
@@ -869,7 +1130,7 @@ namespace System.Linq
         private static IEnumerable<TSource> DistinctExtracted<TSource>(IEnumerable<TSource> source, IEqualityComparer<TSource> comparer)
         {
             var found = new Dictionary<TSource, object>(comparer);
-            bool foundNull = false;
+            var foundNull = false;
             foreach (var item in source)
             {
                 if (ReferenceEquals(item, null))
@@ -908,7 +1169,7 @@ namespace System.Linq
         private static IEnumerable<TSource> IntersectExtracted<TSource>(IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
         {
             var items = new HashSet<TSource>(second, comparer);
-            foreach (TSource element in first)
+            foreach (var element in first)
             {
                 if (items.Remove(element))
                 {
@@ -919,7 +1180,7 @@ namespace System.Linq
 
         private static IEnumerable<TResult> OfTypeExtracted<TResult>(IEnumerable source)
         {
-            foreach (object item in source)
+            foreach (var item in source)
             {
                 if (item is TResult)
                 {
@@ -930,7 +1191,7 @@ namespace System.Linq
 
         private static IEnumerable<TResult> RepeatExtracted<TResult>(TResult element, int count)
         {
-            for (int index = 0; index < count; index++)
+            for (var index = 0; index < count; index++)
             {
                 yield return element;
             }
@@ -939,11 +1200,11 @@ namespace System.Linq
         private static IEnumerable<TSource> ReverseExtracted<TSource>(IEnumerable<TSource> source)
         {
             var stack = new Stack<TSource>();
-            foreach (TSource item in source)
+            foreach (var item in source)
             {
                 stack.Push(item);
             }
-            foreach (TSource item in stack)
+            foreach (var item in stack)
             {
                 yield return item;
             }
@@ -951,8 +1212,8 @@ namespace System.Linq
 
         private static IEnumerable<TResult> SelectExtracted<TSource, TResult>(IEnumerable<TSource> source, Func<TSource, int, TResult> selector)
         {
-            int count = 0;
-            foreach (TSource item in source)
+            var count = 0;
+            foreach (var item in source)
             {
                 yield return selector(item, count);
                 count++;
@@ -961,9 +1222,9 @@ namespace System.Linq
 
         private static IEnumerable<TResult> SelectManyExtracted<TSource, TResult>(IEnumerable<TSource> source, Func<TSource, IEnumerable<TResult>> selector)
         {
-            foreach (TSource key in source)
+            foreach (var key in source)
             {
-                foreach (TResult item in selector(key))
+                foreach (var item in selector(key))
                 {
                     yield return item;
                 }
@@ -972,10 +1233,10 @@ namespace System.Linq
 
         private static IEnumerable<TResult> SelectManyExtracted<TSource, TResult>(IEnumerable<TSource> source, Func<TSource, int, IEnumerable<TResult>> selector)
         {
-            int count = 0;
-            foreach (TSource key in source)
+            var count = 0;
+            foreach (var key in source)
             {
-                foreach (TResult item in selector(key, count))
+                foreach (var item in selector(key, count))
                 {
                     yield return item;
                 }
@@ -985,9 +1246,9 @@ namespace System.Linq
 
         private static IEnumerable<TResult> SelectManyExtracted<TSource, TCollection, TResult>(IEnumerable<TSource> source, Func<TSource, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
         {
-            foreach (TSource element in source)
+            foreach (var element in source)
             {
-                foreach (TCollection collection in collectionSelector(element))
+                foreach (var collection in collectionSelector(element))
                 {
                     yield return resultSelector(element, collection);
                 }
@@ -996,10 +1257,10 @@ namespace System.Linq
 
         private static IEnumerable<TResult> SelectManyExtracted<TSource, TCollection, TResult>(IEnumerable<TSource> source, Func<TSource, int, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
         {
-            int count = 0;
-            foreach (TSource element in source)
+            var count = 0;
+            foreach (var element in source)
             {
-                foreach (TCollection collection in collectionSelector(element, count))
+                foreach (var collection in collectionSelector(element, count))
                 {
                     yield return resultSelector(element, collection);
                 }
@@ -1009,29 +1270,29 @@ namespace System.Linq
 
         private static bool SequenceEqualExtracted<TSource>(IEnumerable<TSource> first, IEnumerable<TSource> second, IEqualityComparer<TSource> comparer)
         {
-            using (IEnumerator<TSource> first_enumerator = first.GetEnumerator(), second_enumerator = second.GetEnumerator())
+            using (IEnumerator<TSource> firstEnumerator = first.GetEnumerator(), secondEnumerator = second.GetEnumerator())
             {
-                while (first_enumerator.MoveNext())
+                while (firstEnumerator.MoveNext())
                 {
-                    if (!second_enumerator.MoveNext())
+                    if (!secondEnumerator.MoveNext())
                     {
                         return false;
                     }
-                    if (!comparer.Equals(first_enumerator.Current, second_enumerator.Current))
+                    if (!comparer.Equals(firstEnumerator.Current, secondEnumerator.Current))
                     {
                         return false;
                     }
                 }
-                return !second_enumerator.MoveNext();
+                return !secondEnumerator.MoveNext();
             }
         }
 
         private static IEnumerable<TSource> SkipWhileExtracted<TSource>(IEnumerable<TSource> source, Func<TSource, int, bool> predicate)
         {
-            IEnumerator<TSource> enumerator = source.GetEnumerator();
+            var enumerator = source.GetEnumerator();
             using (enumerator)
             {
-                int count = 0;
+                var count = 0;
                 while (enumerator.MoveNext())
                 {
                     if (!predicate(enumerator.Current, count))
@@ -1057,8 +1318,8 @@ namespace System.Linq
         {
             if (maxCount > 0)
             {
-                int count = 0;
-                foreach (TSource item in source)
+                var count = 0;
+                foreach (var item in source)
                 {
                     yield return item;
                     count++;
@@ -1072,8 +1333,8 @@ namespace System.Linq
 
         private static IEnumerable<TSource> TakeWhileExtracted<TSource>(this IEnumerable<TSource> source, Func<TSource, int, bool> predicate)
         {
-            int count = 0;
-            foreach (TSource item in source)
+            var count = 0;
+            foreach (var item in source)
             {
                 if (!predicate(item, count))
                 {
@@ -1086,8 +1347,8 @@ namespace System.Linq
 
         private static IEnumerable<TSource> WhereExtracted<TSource>(IEnumerable<TSource> source, Func<TSource, int, bool> predicate)
         {
-            int count = 0;
-            foreach (TSource item in source)
+            var count = 0;
+            foreach (var item in source)
             {
                 if (!predicate(item, count))
                 {
@@ -1100,22 +1361,31 @@ namespace System.Linq
 
         public static IEnumerable<TReturn> Zip<T1, T2, TReturn>(this IEnumerable<T1> first, IEnumerable<T2> second, Func<T1, T2, TReturn> resultSelector)
         {
-            var _1 = Check.NotNullArgument(first, "arg1");
-            var _2 = Check.NotNullArgument(second, "arg2");
-            var _result = Check.NotNullArgument(resultSelector, "resultSelector");
-            using (var enumerator1 = _1.GetEnumerator())
-            using (var enumerator2 = _2.GetEnumerator())
+            if (first == null)
+            {
+                throw new ArgumentNullException("first");
+            }
+            if (second == null)
+            {
+                throw new ArgumentNullException("second");
+            }
+            if (resultSelector == null)
+            {
+                throw new ArgumentNullException("resultSelector");
+            }
+            using (var enumeratorFirst = first.GetEnumerator())
+            using (var enumeratorSecond = second.GetEnumerator())
             {
                 while
                 (
-                    enumerator1.MoveNext()
-                    && enumerator2.MoveNext()
+                    enumeratorFirst.MoveNext()
+                    && enumeratorSecond.MoveNext()
                 )
                 {
-                    yield return _result
+                    yield return resultSelector
                     (
-                        enumerator1.Current,
-                        enumerator2.Current
+                        enumeratorFirst.Current,
+                        enumeratorSecond.Current
                     );
                 }
             }

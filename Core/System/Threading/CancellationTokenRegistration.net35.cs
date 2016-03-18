@@ -30,7 +30,6 @@ namespace System.Threading
 {
     public struct CancellationTokenRegistration : IDisposable, IEquatable<CancellationTokenRegistration>
     {
-        private readonly int _hashCode;
         private readonly int _id;
         private CancellationTokenSource _source;
 
@@ -38,7 +37,6 @@ namespace System.Threading
         {
             _id = id;
             _source = source;
-            _hashCode = _id.GetHashCode() ^ (_source == null ? 0 : _source.GetHashCode());
         }
 
         public static bool operator !=(CancellationTokenRegistration left, CancellationTokenRegistration right)
@@ -75,7 +73,12 @@ namespace System.Threading
 
         public override int GetHashCode()
         {
-            return _hashCode;
+            return _id;
+        }
+
+        internal bool Equals(int id, CancellationTokenSource source)
+        {
+            return _id == id && _source == source;
         }
     }
 }

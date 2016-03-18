@@ -23,7 +23,7 @@ namespace Theraot.Core
 
         public static void Enter(object obj, CancellationToken cancellationToken)
         {
-            int count = 0;
+            var count = 0;
             retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
@@ -73,12 +73,12 @@ namespace Theraot.Core
             {
                 throw new ArgumentOutOfRangeException("millisecondsTimeout");
             }
-            else if (millisecondsTimeout == -1)
+            if (millisecondsTimeout == -1)
             {
                 Enter(millisecondsTimeout, cancellationToken);
                 return true;
             }
-            int count = 0;
+            var count = 0;
             var start = ThreadingHelper.TicksNow();
             retry:
             cancellationToken.ThrowIfCancellationRequested();
@@ -87,18 +87,12 @@ namespace Theraot.Core
             {
                 return true;
             }
-            else
+            if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < millisecondsTimeout)
             {
-                if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < millisecondsTimeout)
-                {
-                    ThreadingHelper.SpinOnce(ref count);
-                    goto retry;
-                }
-                else
-                {
-                    return false;
-                }
+                ThreadingHelper.SpinOnce(ref count);
+                goto retry;
             }
+            return false;
         }
 
         public static void TryEnter(object obj, int millisecondsTimeout, ref bool taken, CancellationToken cancellationToken)
@@ -110,7 +104,7 @@ namespace Theraot.Core
         public static bool TryEnter(object obj, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            int count = 0;
+            var count = 0;
             var start = ThreadingHelper.TicksNow();
             retry:
             cancellationToken.ThrowIfCancellationRequested();
@@ -119,18 +113,12 @@ namespace Theraot.Core
             {
                 return true;
             }
-            else
+            if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < milliseconds)
             {
-                if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < milliseconds)
-                {
-                    ThreadingHelper.SpinOnce(ref count);
-                    goto retry;
-                }
-                else
-                {
-                    return false;
-                }
+                ThreadingHelper.SpinOnce(ref count);
+                goto retry;
             }
+            return false;
         }
 
         public static void TryEnter(object obj, TimeSpan timeout, ref bool taken, CancellationToken cancellationToken)

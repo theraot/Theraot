@@ -1,4 +1,4 @@
-﻿// Needed for NET35
+﻿// Needed for NET35 (TASK)
 
 using System;
 
@@ -49,14 +49,11 @@ namespace Theraot.Core
         {
             get
             {
-                if (object.ReferenceEquals(_token, null))
+                if (ReferenceEquals(_token, null))
                 {
                     return CancellationToken.None;
                 }
-                else
-                {
-                    return _token.Value;
-                }
+                return _token.Value;
             }
         }
 

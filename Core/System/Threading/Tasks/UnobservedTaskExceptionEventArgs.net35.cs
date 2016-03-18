@@ -15,7 +15,6 @@
 //
 
 using System;
-using System.Threading;
 
 /// <summary>
 /// Provides data for the event that is raised when a faulted <see cref="System.Threading.Tasks.Task"/>'s
@@ -29,31 +28,31 @@ using System.Threading;
 /// </remarks>
 public class UnobservedTaskExceptionEventArgs : EventArgs
 {
-    private AggregateException m_exception;
-    internal bool m_observed = false;
+    private readonly AggregateException _exception;
+    private bool _observed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UnobservedTaskExceptionEventArgs"/> class
     /// with the unobserved exception.
     /// </summary>
     /// <param name="exception">The Exception that has gone unobserved.</param>
-    public UnobservedTaskExceptionEventArgs(AggregateException exception) { m_exception = exception; }
+    public UnobservedTaskExceptionEventArgs(AggregateException exception) { _exception = exception; }
 
     /// <summary>
     /// Marks the <see cref="Exception"/> as "observed," thus preventing it
     /// from triggering exception escalation policy which, by default, terminates the process.
     /// </summary>
-    public void SetObserved() { m_observed = true; }
+    public void SetObserved() { _observed = true; }
 
     /// <summary>
     /// Gets whether this exception has been marked as "observed."
     /// </summary>
-    public bool Observed { get { return m_observed; } }
+    public bool Observed { get { return _observed; } }
 
     /// <summary>
     /// The Exception that went unobserved.
     /// </summary>
-    public AggregateException Exception { get { return m_exception; } }
+    public AggregateException Exception { get { return _exception; } }
 }
 
 #endif

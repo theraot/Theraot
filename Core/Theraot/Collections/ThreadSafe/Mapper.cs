@@ -18,7 +18,7 @@ namespace Theraot.Collections.ThreadSafe
         public Mapper()
         {
             _count = 0;
-            _root = Branch.Create(INT_MaxOffset - INT_OffsetStep, null, 0);
+            _root = new Branch();
         }
 
         /// <summary>

@@ -21,7 +21,7 @@ namespace Theraot.Core
             }
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         [global::System.Diagnostics.DebuggerNonUserCode]
         public static int Log2(uint number)
         {
@@ -53,7 +53,7 @@ namespace Theraot.Core
             }
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         [global::System.Diagnostics.DebuggerNonUserCode]
         public static int Log2(ulong number)
         {
@@ -91,7 +91,7 @@ namespace Theraot.Core
             }
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static uint NextPowerOf2(uint number)
         {
             number |= number >> 1;

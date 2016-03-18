@@ -1,4 +1,4 @@
-// Needed for NET35
+// Needed for NET35 (SortedSet, OrderedCollection)
 
 using System;
 using System.Collections.Generic;
@@ -60,10 +60,7 @@ namespace Theraot.Collections.Specialized
                 _count++;
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         public void Bound(TKey key, out AVLNode lower, out AVLNode upper)
@@ -77,23 +74,21 @@ namespace Theraot.Collections.Specialized
             _count = 0;
         }
 
-        public IEnumerator<AVLTree<TKey, TValue>.AVLNode> GetEnumerator()
+        public IEnumerator<AVLNode> GetEnumerator()
         {
             return AVLNode.EnumerateRoot(_root).GetEnumerator();
         }
 
-        public IEnumerable<AVLTree<TKey, TValue>.AVLNode> Range(TKey lower, TKey upper)
+        public IEnumerable<AVLNode> Range(TKey lower, TKey upper)
         {
             foreach (var item in AVLNode.EnumerateFrom(_root, lower, _comparison))
             {
-                if (_comparison(item.Key, upper) > 0)
+                var comparison = _comparison;
+                if (comparison(item.Key, upper) > 0)
                 {
                     break;
                 }
-                else
-                {
-                    yield return item;
-                }
+                yield return item;
             }
         }
 
@@ -104,10 +99,7 @@ namespace Theraot.Collections.Specialized
                 _count--;
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         public AVLNode Search(TKey key)

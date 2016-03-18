@@ -217,7 +217,6 @@ namespace MonoTests.System.Linq.Expressions
 		}
 
 		[Test]
-		[Category ("NotWorking")]
 		public void LambdaPassedAsDelegateUsingParentParameter ()
 		{
 			var a = Expression.Parameter (typeof (int), "a");

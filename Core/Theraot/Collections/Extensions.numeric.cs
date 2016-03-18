@@ -398,10 +398,10 @@ namespace Theraot.Collections
             var max = int.MinValue;
             foreach (var element in source)
             {
-                var _element = selector.Invoke(element);
-                if (comparer.Compare(_element, max) > 0)
+                var selectorResult = selector.Invoke(element);
+                if (comparer.Compare(selectorResult, max) > 0)
                 {
-                    max = _element;
+                    max = selectorResult;
                 }
                 found = true;
             }
@@ -433,10 +433,10 @@ namespace Theraot.Collections
             var max = long.MinValue;
             foreach (var element in source)
             {
-                var _element = selector.Invoke(element);
-                if (comparer.Compare(_element, max) > 0)
+                var selectorResult = selector.Invoke(element);
+                if (comparer.Compare(selectorResult, max) > 0)
                 {
-                    max = _element;
+                    max = selectorResult;
                 }
                 found = true;
             }
@@ -468,10 +468,10 @@ namespace Theraot.Collections
             var max = double.MinValue;
             foreach (var element in source)
             {
-                var _element = selector.Invoke(element);
-                if (comparer.Compare(_element, max) > 0)
+                var selectorResult = selector.Invoke(element);
+                if (comparer.Compare(selectorResult, max) > 0)
                 {
-                    max = _element;
+                    max = selectorResult;
                 }
                 found = true;
             }
@@ -503,10 +503,10 @@ namespace Theraot.Collections
             var max = float.MinValue;
             foreach (var element in source)
             {
-                var _element = selector.Invoke(element);
-                if (comparer.Compare(_element, max) > 0)
+                var selectorResult = selector.Invoke(element);
+                if (comparer.Compare(selectorResult, max) > 0)
                 {
-                    max = _element;
+                    max = selectorResult;
                 }
                 found = true;
             }
@@ -538,10 +538,10 @@ namespace Theraot.Collections
             var max = decimal.MinValue;
             foreach (var element in source)
             {
-                var _element = selector.Invoke(element);
-                if (comparer.Compare(_element, max) > 0)
+                var selectorResult = selector.Invoke(element);
+                if (comparer.Compare(selectorResult, max) > 0)
                 {
-                    max = _element;
+                    max = selectorResult;
                 }
                 found = true;
             }
@@ -779,8 +779,8 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("selector");
             }
-            Func<TSource, int, TResult> _selector = (item, i) => selector(item);
-            return Max(source.Select(_selector), comparer);
+            Func<TSource, int, TResult> selectorWrapper = (item, i) => selector(item);
+            return Max(source.Select(selectorWrapper), comparer);
         }
 
         public static int Min(this IEnumerable<int> source, IComparer<int> comparer)
@@ -1171,10 +1171,10 @@ namespace Theraot.Collections
             var min = int.MinValue;
             foreach (var element in source)
             {
-                var _element = selector.Invoke(element);
-                if (comparer.Compare(min, _element) > 0)
+                var selectorResult = selector.Invoke(element);
+                if (comparer.Compare(min, selectorResult) > 0)
                 {
-                    min = _element;
+                    min = selectorResult;
                 }
                 found = true;
             }
@@ -1206,10 +1206,10 @@ namespace Theraot.Collections
             var min = long.MinValue;
             foreach (var element in source)
             {
-                var _element = selector.Invoke(element);
-                if (comparer.Compare(min, _element) > 0)
+                var selectorResult = selector.Invoke(element);
+                if (comparer.Compare(min, selectorResult) > 0)
                 {
-                    min = _element;
+                    min = selectorResult;
                 }
                 found = true;
             }
@@ -1241,10 +1241,10 @@ namespace Theraot.Collections
             var min = double.MinValue;
             foreach (var element in source)
             {
-                var _element = selector.Invoke(element);
-                if (comparer.Compare(min, _element) > 0)
+                var selectorResult = selector.Invoke(element);
+                if (comparer.Compare(min, selectorResult) > 0)
                 {
-                    min = _element;
+                    min = selectorResult;
                 }
                 found = true;
             }
@@ -1276,10 +1276,10 @@ namespace Theraot.Collections
             var min = float.MinValue;
             foreach (var element in source)
             {
-                var _element = selector.Invoke(element);
-                if (comparer.Compare(min, _element) > 0)
+                var selectorResult = selector.Invoke(element);
+                if (comparer.Compare(min, selectorResult) > 0)
                 {
-                    min = _element;
+                    min = selectorResult;
                 }
                 found = true;
             }
@@ -1311,10 +1311,10 @@ namespace Theraot.Collections
             var min = decimal.MinValue;
             foreach (var element in source)
             {
-                var _element = selector.Invoke(element);
-                if (comparer.Compare(min, _element) > 0)
+                var selectorResult = selector.Invoke(element);
+                if (comparer.Compare(min, selectorResult) > 0)
                 {
-                    min = _element;
+                    min = selectorResult;
                 }
                 found = true;
             }
@@ -1552,8 +1552,8 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("selector");
             }
-            Func<TSource, int, TResult> _selector = (item, i) => selector(item);
-            return Min(source.Select(_selector), comparer);
+            Func<TSource, int, TResult> selectorWrapper = (item, i) => selector(item);
+            return Min(source.Select(selectorWrapper), comparer);
         }
     }
 }

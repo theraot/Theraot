@@ -35,9 +35,13 @@ namespace Theraot.Collections.ThreadSafe
             {
                 try
                 {
-                    _recycler(entry);
+                    _recycler.Invoke(entry);
                     _entries.Add(entry);
                     return true;
+                }
+                catch (NullReferenceException exception)
+                {
+                    GC.KeepAlive(exception);
                 }
                 finally
                 {

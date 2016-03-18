@@ -8,8 +8,8 @@ using Theraot.Threading;
 
 namespace System.Threading
 {
-    [HostProtectionAttribute(SecurityAction.LinkDemand, MayLeakOnAbort = true)]
-    [HostProtectionAttribute(SecurityAction.LinkDemand, Synchronization = true, ExternalThreading = true)]
+    [HostProtection(SecurityAction.LinkDemand, MayLeakOnAbort = true)]
+    [HostProtection(SecurityAction.LinkDemand, Synchronization = true, ExternalThreading = true)]
     public class ReaderWriterLockSlim : IDisposable
     {
         /* Position of each bit isn't really important 
@@ -17,7 +17,7 @@ namespace System.Threading
         */
         const int RwReadBit = 3;
 
-        /* These values are used to manipulate the corresponding flags in rwlock field
+        /* These values are used to manipulate the corresponding flags in _rwlock field
         */
         const int RwWait = 1;
         const int RwWaitUpgrade = 2;
@@ -31,12 +31,12 @@ namespace System.Threading
         * (which mean the lock is limited to 2^29 concurrent readers but since it's a high number there
         * is no overflow safe guard to remain simple).
         */
-        int rwlock;
+        private int _rwlock;
 
-        readonly LockRecursionPolicy recursionPolicy;
-        readonly bool noRecursion;
+        readonly LockRecursionPolicy _recursionPolicy;
+        readonly bool _noRecursion;
 
-        AtomicBoolean upgradableTaken = new AtomicBoolean();
+        readonly AtomicBoolean _upgradableTaken = new AtomicBoolean();
 
         /* These events are just here for the sake of having a CPU-efficient sleep
         * when the wait for acquiring the lock is too long
@@ -80,8 +80,8 @@ namespace System.Threading
 
         public ReaderWriterLockSlim(LockRecursionPolicy recursionPolicy)
         {
-            this.recursionPolicy = recursionPolicy;
-            this.noRecursion = recursionPolicy == LockRecursionPolicy.NoRecursion;
+            this._recursionPolicy = recursionPolicy;
+            this._noRecursion = recursionPolicy == LockRecursionPolicy.NoRecursion;
         }
 
         public void EnterReadLock()
@@ -91,13 +91,13 @@ namespace System.Threading
 
         public bool TryEnterReadLock(int millisecondsTimeout)
         {
-            bool dummy = false;
+            var dummy = false;
             return TryEnterReadLock(millisecondsTimeout, ref dummy);
         }
 
         bool TryEnterReadLock(int millisecondsTimeout, ref bool success)
         {
-            ThreadLockState ctstate = CurrentThreadState;
+            var ctstate = CurrentThreadState;
 
             if (CheckState(ctstate, millisecondsTimeout, LockState.Read))
             {
@@ -111,7 +111,7 @@ namespace System.Threading
             // Same idea when recursion is allowed and a write thread wants to
             // go for a Read too.
             if (ctstate.LockState.Has(LockState.Upgradable)
-                || (!noRecursion && ctstate.LockState.Has(LockState.Write)))
+                || (!_noRecursion && ctstate.LockState.Has(LockState.Write)))
             {
                 RuntimeHelpers.PrepareConstrainedRegions();
                 try
@@ -119,7 +119,7 @@ namespace System.Threading
                 }
                 finally
                 {
-                    Interlocked.Add(ref rwlock, RwRead);
+                    Interlocked.Add(ref _rwlock, RwRead);
                     ctstate.LockState |= LockState.Read;
                     ++ctstate.ReaderRecursiveCount;
                     success = true;
@@ -129,15 +129,15 @@ namespace System.Threading
             }
 
             ++numReadWaiters;
-            int val = 0;
-            long start = millisecondsTimeout == -1 ? 0 : sw.ElapsedMilliseconds;
+            var val = 0;
+            var start = millisecondsTimeout == -1 ? 0 : sw.ElapsedMilliseconds;
 
             do
             {
                 /* Check if a writer is present (RwWrite) or if there is someone waiting to
                 * acquire a writer lock in the queue (RwWait | RwWaitUpgrade).
                 */
-                if ((rwlock & (RwWrite | RwWait | RwWaitUpgrade)) > 0)
+                if ((_rwlock & (RwWrite | RwWait | RwWaitUpgrade)) > 0)
                 {
                     writerDoneEvent.Wait(ComputeTimeout(millisecondsTimeout, start));
                     continue;
@@ -153,7 +153,7 @@ namespace System.Threading
                 }
                 finally
                 {
-                    if (((val = Interlocked.Add(ref rwlock, RwRead)) & (RwWrite | RwWait | RwWaitUpgrade)) == 0)
+                    if (((val = Interlocked.Add(ref _rwlock, RwRead)) & (RwWrite | RwWait | RwWaitUpgrade)) == 0)
                     {
                         /* If we are the first reader, reset the event to let other threads
                         * sleep correctly if they try to acquire write lock
@@ -168,7 +168,7 @@ namespace System.Threading
                     }
                     else
                     {
-                        Interlocked.Add(ref rwlock, -RwRead);
+                        Interlocked.Add(ref _rwlock, -RwRead);
                     }
                 }
                 if (success)
@@ -194,7 +194,7 @@ namespace System.Threading
             }
             finally
             {
-                ThreadLockState ctstate = CurrentThreadState;
+                var ctstate = CurrentThreadState;
 
                 if (!ctstate.LockState.Has(LockState.Read))
                     throw new SynchronizationLockException("The current thread has not entered the lock in read mode");
@@ -202,7 +202,7 @@ namespace System.Threading
                 if (--ctstate.ReaderRecursiveCount == 0)
                 {
                     ctstate.LockState ^= LockState.Read;
-                    if (Interlocked.Add(ref rwlock, -RwRead) >> RwReadBit == 0)
+                    if (Interlocked.Add(ref _rwlock, -RwRead) >> RwReadBit == 0)
                         readerDoneEvent.Set();
                 }
             }
@@ -215,7 +215,7 @@ namespace System.Threading
 
         public bool TryEnterWriteLock(int millisecondsTimeout)
         {
-            ThreadLockState ctstate = CurrentThreadState;
+            var ctstate = CurrentThreadState;
 
             if (CheckState(ctstate, millisecondsTimeout, LockState.Write))
             {
@@ -224,9 +224,9 @@ namespace System.Threading
             }
 
             ++numWriteWaiters;
-            bool isUpgradable = ctstate.LockState.Has(LockState.Upgradable);
-            bool registered = false;
-            bool success = false;
+            var isUpgradable = ctstate.LockState.Has(LockState.Upgradable);
+            var registered = false;
+            var success = false;
 
             RuntimeHelpers.PrepareConstrainedRegions();
             try
@@ -236,26 +236,26 @@ namespace System.Threading
                 * our interest in the write lock to avoid other write wannabe process
                 * coming in the middle
                 */
-                if (isUpgradable && rwlock >= RwRead)
+                if (isUpgradable && _rwlock >= RwRead)
                 {
                     try
                     {
                     }
                     finally
                     {
-                        if (Interlocked.Add(ref rwlock, RwWaitUpgrade - RwRead) >> RwReadBit == 0)
+                        if (Interlocked.Add(ref _rwlock, RwWaitUpgrade - RwRead) >> RwReadBit == 0)
                             readerDoneEvent.Set();
                         registered = true;
                     }
                 }
 
-                int stateCheck = isUpgradable ? RwWaitUpgrade + RwWait : RwWait;
-                long start = millisecondsTimeout == -1 ? 0 : sw.ElapsedMilliseconds;
-                int registration = isUpgradable ? RwWaitUpgrade : RwWait;
+                var stateCheck = isUpgradable ? RwWaitUpgrade + RwWait : RwWait;
+                var start = millisecondsTimeout == -1 ? 0 : sw.ElapsedMilliseconds;
+                var registration = isUpgradable ? RwWaitUpgrade : RwWait;
 
                 do
                 {
-                    int state = rwlock;
+                    var state = _rwlock;
 
                     if (state <= stateCheck)
                     {
@@ -265,7 +265,7 @@ namespace System.Threading
                         finally
                         {
                             var toWrite = state + RwWrite - (registered ? registration : 0);
-                            if (Interlocked.CompareExchange(ref rwlock, toWrite, state) == state)
+                            if (Interlocked.CompareExchange(ref _rwlock, toWrite, state) == state)
                             {
                                 writerDoneEvent.Reset();
                                 ctstate.LockState ^= LockState.Write;
@@ -279,7 +279,7 @@ namespace System.Threading
                             return true;
                     }
 
-                    state = rwlock;
+                    state = _rwlock;
 
                     // We register our interest in taking the Write lock (if upgradeable it's already done)
                     if (!isUpgradable)
@@ -291,23 +291,23 @@ namespace System.Threading
                             }
                             finally
                             {
-                                if (Interlocked.CompareExchange(ref rwlock, state | RwWait, state) == state)
+                                if (Interlocked.CompareExchange(ref _rwlock, state | RwWait, state) == state)
                                     registered = true;
                             }
                             if (registered)
                                 break;
-                            state = rwlock;
+                            state = _rwlock;
                         }
                     }
 
 // Before falling to sleep
                     do
                     {
-                        if (rwlock <= stateCheck)
+                        if (_rwlock <= stateCheck)
                             break;
-                        if ((rwlock & RwWrite) != 0)
+                        if ((_rwlock & RwWrite) != 0)
                             writerDoneEvent.Wait(ComputeTimeout(millisecondsTimeout, start));
-                        else if ((rwlock >> RwReadBit) > 0)
+                        else if ((_rwlock >> RwReadBit) > 0)
                             readerDoneEvent.Wait(ComputeTimeout(millisecondsTimeout, start));
                     } while (millisecondsTimeout < 0 || (sw.ElapsedMilliseconds - start) < millisecondsTimeout);
                 } while (millisecondsTimeout < 0 || (sw.ElapsedMilliseconds - start) < millisecondsTimeout);
@@ -317,7 +317,7 @@ namespace System.Threading
             finally
             {
                 if (registered)
-                    Interlocked.Add(ref rwlock, isUpgradable ? -RwWaitUpgrade : -RwWait);
+                    Interlocked.Add(ref _rwlock, isUpgradable ? -RwWaitUpgrade : -RwWait);
             }
 
             return false;
@@ -336,17 +336,17 @@ namespace System.Threading
             }
             finally
             {
-                ThreadLockState ctstate = CurrentThreadState;
+                var ctstate = CurrentThreadState;
 
                 if (!ctstate.LockState.Has(LockState.Write))
                     throw new SynchronizationLockException("The current thread has not entered the lock in write mode");
 
                 if (--ctstate.WriterRecursiveCount == 0)
                 {
-                    bool isUpgradable = ctstate.LockState.Has(LockState.Upgradable);
+                    var isUpgradable = ctstate.LockState.Has(LockState.Upgradable);
                     ctstate.LockState ^= LockState.Write;
 
-                    int value = Interlocked.Add(ref rwlock, isUpgradable ? RwRead - RwWrite : -RwWrite);
+                    var value = Interlocked.Add(ref _rwlock, isUpgradable ? RwRead - RwWrite : -RwWrite);
                     writerDoneEvent.Set();
                     if (isUpgradable && value >> RwReadBit == 1)
                         readerDoneEvent.Reset();
@@ -365,7 +365,7 @@ namespace System.Threading
         //
         public bool TryEnterUpgradeableReadLock(int millisecondsTimeout)
         {
-            ThreadLockState ctstate = CurrentThreadState;
+            var ctstate = CurrentThreadState;
 
             if (CheckState(ctstate, millisecondsTimeout, LockState.Upgradable))
             {
@@ -377,9 +377,9 @@ namespace System.Threading
                 throw new LockRecursionException("The current thread has already entered read mode");
 
             ++numUpgradeWaiters;
-            long start = millisecondsTimeout == -1 ? 0 : sw.ElapsedMilliseconds;
-            bool taken = false;
-            bool success = false;
+            var start = millisecondsTimeout == -1 ? 0 : sw.ElapsedMilliseconds;
+            var taken = false;
+            var success = false;
 
             // We first try to obtain the upgradeable right
             try
@@ -391,7 +391,7 @@ namespace System.Threading
                     }
                     finally
                     {
-                        taken = upgradableTaken.TryRelaxedSet();
+                        taken = _upgradableTaken.TryRelaxedSet();
                     }
                     if (taken)
                         break;
@@ -423,7 +423,7 @@ namespace System.Threading
                     }
                     else
                     {
-                        upgradableTaken.Value = false;
+                        _upgradableTaken.Value = false;
                         upgradableEvent.Set();
                     }
                 }
@@ -432,9 +432,11 @@ namespace System.Threading
             }
             catch
             {
-// An async exception occured, if we had taken the upgradable mode, release it
+                // An async exception occured, if we had taken the upgradable mode, release it
                 if (taken && !success)
-                    upgradableTaken.Value = false;
+                {
+                    _upgradableTaken.Value = false;
+                }
             }
 
             return success;
@@ -453,18 +455,18 @@ namespace System.Threading
             }
             finally
             {
-                ThreadLockState ctstate = CurrentThreadState;
+                var ctstate = CurrentThreadState;
 
                 if (!ctstate.LockState.Has(LockState.Upgradable | LockState.Read))
                     throw new SynchronizationLockException("The current thread has not entered the lock in upgradable mode");
 
                 if (--ctstate.UpgradeableRecursiveCount == 0)
                 {
-                    upgradableTaken.Value = false;
+                    _upgradableTaken.Value = false;
                     upgradableEvent.Set();
 
                     ctstate.LockState &= ~LockState.Upgradable;
-                    if (Interlocked.Add(ref rwlock, -RwRead) >> RwReadBit == 0)
+                    if (Interlocked.Add(ref _rwlock, -RwRead) >> RwReadBit == 0)
                         readerDoneEvent.Set();
                 }
             }
@@ -501,7 +503,7 @@ namespace System.Threading
         {
             get
             {
-                return rwlock >= RwRead && CurrentThreadState.LockState.Has(LockState.Read);
+                return _rwlock >= RwRead && CurrentThreadState.LockState.Has(LockState.Read);
             }
         }
 
@@ -509,7 +511,7 @@ namespace System.Threading
         {
             get
             {
-                return (rwlock & RwWrite) > 0 && CurrentThreadState.LockState.Has(LockState.Write);
+                return (_rwlock & RwWrite) > 0 && CurrentThreadState.LockState.Has(LockState.Write);
             }
         }
 
@@ -517,7 +519,7 @@ namespace System.Threading
         {
             get
             {
-                return upgradableTaken.Value && CurrentThreadState.LockState.Has(LockState.Upgradable);
+                return _upgradableTaken.Value && CurrentThreadState.LockState.Has(LockState.Upgradable);
             }
         }
 
@@ -525,7 +527,7 @@ namespace System.Threading
         {
             get
             {
-                return (rwlock >> RwReadBit) - (upgradableTaken.Value ? 1 : 0);
+                return (_rwlock >> RwReadBit) - (_upgradableTaken.Value ? 1 : 0);
             }
         }
 
@@ -581,7 +583,7 @@ namespace System.Threading
         {
             get
             {
-                return recursionPolicy;
+                return _recursionPolicy;
             }
         }
 
@@ -589,13 +591,13 @@ namespace System.Threading
         {
             get
             {
-                int tid = Thread.CurrentThread.ManagedThreadId;
+                var tid = Thread.CurrentThread.ManagedThreadId;
 
-                return tid < fastStateCache.Length ? fastStateCache[tid] ?? (fastStateCache[tid] = new ThreadLockState()) : GetGlobalThreadState(tid);
+                return tid < fastStateCache.Length ? fastStateCache[tid] ?? (fastStateCache[tid] = new ThreadLockState()) : GetGlobalThreadState();
             }
         }
 
-        ThreadLockState GetGlobalThreadState(int tid)
+        private ThreadLockState GetGlobalThreadState()
         {
             if (currentThreadState == null)
                 Interlocked.CompareExchange(ref currentThreadState, new Dictionary<int, ThreadLockState>(), null);
@@ -616,12 +618,12 @@ namespace System.Threading
                 throw new ArgumentOutOfRangeException("millisecondsTimeout");
 
             // Detect and prevent recursion
-            LockState ctstate = state.LockState;
+            var ctstate = state.LockState;
 
-            if (ctstate != LockState.None && noRecursion && (!ctstate.Has(LockState.Upgradable) || validState == LockState.Upgradable))
+            if (ctstate != LockState.None && _noRecursion && (!ctstate.Has(LockState.Upgradable) || validState == LockState.Upgradable))
                 throw new LockRecursionException("The current thread has already a lock and recursion isn't supported");
 
-            if (noRecursion)
+            if (_noRecursion)
                 return false;
 
             // If we already had right lock state, just return
@@ -641,7 +643,7 @@ namespace System.Threading
             {
                 return checked((int)timeout.TotalMilliseconds);
             }
-            catch (System.OverflowException)
+            catch (OverflowException)
             {
                 throw new ArgumentOutOfRangeException("timeout");
             }

@@ -1,6 +1,7 @@
 #if FAT
 
 using System;
+using System.Threading;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
@@ -9,7 +10,7 @@ namespace Theraot.Threading
     /// Represents a context to execute operation without reentry.
     /// </summary>
     [System.Diagnostics.DebuggerNonUserCode]
-    public sealed class SimpleReentryGuard : IDisposable
+    public sealed class SimpleReentryGuard
     {
         private StructNeedle<TrackingThreadLocal<int>> _guards;
 
@@ -32,11 +33,15 @@ namespace Theraot.Threading
             }
         }
 
-        public void Dispose()
+        public static void EnsureCreated(ref SimpleReentryGuard guard)
         {
-            if (_guards.Value.Value > 0)
+            if (guard == null)
             {
-                _guards.Value.Value--;
+                var created = new SimpleReentryGuard();
+                if (Interlocked.Exchange(ref guard, created) != null)
+                {
+                    created.Leave();
+                }
             }
         }
 
@@ -90,6 +95,14 @@ namespace Theraot.Threading
             }
         }
 
+        public void Leave()
+        {
+            if (_guards.Value.Value > 0)
+            {
+                _guards.Value.Value--;
+            }
+        }
+
         public void ThrowIfReentrant()
         {
             if (_guards.Value.Value > 0)
@@ -98,14 +111,14 @@ namespace Theraot.Threading
             }
         }
 
-        public bool TryEnter()
+        public void TryEnter(out bool taken)
         {
+            taken = false;
             if (_guards.Value.Value == 0)
             {
                 _guards.Value.Value++;
-                return true;
+                taken = true;
             }
-            return false;
         }
     }
 }

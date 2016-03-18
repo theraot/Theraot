@@ -24,7 +24,7 @@ namespace Theraot.Core
             }
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static uint BinaryReverse(this uint value)
         {
             value = ((value & 0xaaaaaaaa) >> 1) | ((value & 0x55555555) << 1);
@@ -34,7 +34,7 @@ namespace Theraot.Core
             return (value >> 16) | (value << 16);
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static ulong BinaryReverse(this ulong value)
         {
             uint lo;
@@ -43,17 +43,17 @@ namespace Theraot.Core
             return BuildUInt64(BinaryReverse(lo), BinaryReverse(hi));
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static IEnumerable<sbyte> Bits(this sbyte value)
         {
             unchecked
             {
                 byte check = 1 << 7;
-                int log2 = 8;
-                var _value = (byte)value;
+                var log2 = 8;
+                var tmp = (byte)value;
                 do
                 {
-                    if ((_value & check) != 0)
+                    if ((tmp & check) != 0)
                     {
                         yield return (sbyte)check;
                     }
@@ -69,11 +69,11 @@ namespace Theraot.Core
             unchecked
             {
                 ushort check = 1 << 15;
-                int log2 = 16;
-                var _value = (ushort)value;
+                var log2 = 16;
+                var tmp = (ushort)value;
                 do
                 {
-                    if ((_value & check) != 0)
+                    if ((tmp & check) != 0)
                     {
                         yield return (short)check;
                     }
@@ -88,12 +88,12 @@ namespace Theraot.Core
         {
             unchecked
             {
-                uint check = (uint)1 << 31;
-                int log2 = 32;
-                var _value = (uint)value;
+                var check = (uint)1 << 31;
+                var log2 = 32;
+                var tmp = (uint)value;
                 do
                 {
-                    if ((_value & check) != 0)
+                    if ((tmp & check) != 0)
                     {
                         yield return (int)check;
                     }
@@ -108,12 +108,12 @@ namespace Theraot.Core
         {
             unchecked
             {
-                ulong check = (ulong)1 << 63;
-                int log2 = 64;
-                var _value = (ulong)value;
+                var check = (ulong)1 << 63;
+                var log2 = 64;
+                var tmp = (ulong)value;
                 do
                 {
-                    if ((_value & check) != 0)
+                    if ((tmp & check) != 0)
                     {
                         yield return (long)check;
                     }
@@ -129,7 +129,7 @@ namespace Theraot.Core
             unchecked
             {
                 byte check = 1 << 7;
-                int log2 = 8;
+                var log2 = 8;
                 do
                 {
                     if ((value & check) != 0)
@@ -143,13 +143,13 @@ namespace Theraot.Core
             }
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static IEnumerable<ushort> Bits(this ushort value)
         {
             unchecked
             {
                 ushort check = 1 << 15;
-                int log2 = 16;
+                var log2 = 16;
                 do
                 {
                     if ((value & check) != 0)
@@ -163,13 +163,13 @@ namespace Theraot.Core
             }
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static IEnumerable<uint> Bits(this uint value)
         {
             unchecked
             {
-                uint check = (uint)1 << 31;
-                int log2 = 32;
+                var check = (uint)1 << 31;
+                var log2 = 32;
                 do
                 {
                     if ((value & check) != 0)
@@ -183,13 +183,13 @@ namespace Theraot.Core
             }
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static IEnumerable<ulong> Bits(this ulong value)
         {
             unchecked
             {
-                ulong check = (ulong)1 << 63;
-                int log2 = 64;
+                var check = (ulong)1 << 63;
+                var log2 = 64;
                 do
                 {
                     if ((value & check) != 0)
@@ -203,17 +203,17 @@ namespace Theraot.Core
             }
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static IEnumerable<int> BitsBinary(this sbyte value)
         {
             unchecked
             {
                 byte check = 1 << 7;
-                int log2 = 8;
-                var _value = (byte)value;
+                var log2 = 8;
+                var tmp = (byte)value;
                 do
                 {
-                    if ((_value & check) != 0)
+                    if ((tmp & check) != 0)
                     {
                         yield return 1;
                     }
@@ -233,11 +233,11 @@ namespace Theraot.Core
             unchecked
             {
                 ushort check = 1 << 15;
-                int log2 = 16;
-                var _value = (ushort)value;
+                var log2 = 16;
+                var tmp = (ushort)value;
                 do
                 {
-                    if ((_value & check) != 0)
+                    if ((tmp & check) != 0)
                     {
                         yield return 1;
                     }
@@ -256,12 +256,12 @@ namespace Theraot.Core
         {
             unchecked
             {
-                uint check = (uint)1 << 31;
-                int log2 = 32;
-                var _value = (uint)value;
+                var check = (uint)1 << 31;
+                var log2 = 32;
+                var tmp = (uint)value;
                 do
                 {
-                    if ((_value & check) != 0)
+                    if ((tmp & check) != 0)
                     {
                         yield return 1;
                     }
@@ -280,12 +280,12 @@ namespace Theraot.Core
         {
             unchecked
             {
-                ulong check = (ulong)1 << 63;
-                int log2 = 64;
-                var _value = (ulong)value;
+                var check = (ulong)1 << 63;
+                var log2 = 64;
+                var tmp = (ulong)value;
                 do
                 {
-                    if ((_value & check) != 0)
+                    if ((tmp & check) != 0)
                     {
                         yield return 1;
                     }
@@ -305,7 +305,7 @@ namespace Theraot.Core
             unchecked
             {
                 byte check = 1 << 7;
-                int log2 = 8;
+                var log2 = 8;
                 do
                 {
                     if ((value & check) != 0)
@@ -323,13 +323,13 @@ namespace Theraot.Core
             }
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static IEnumerable<int> BitsBinary(this ushort value)
         {
             unchecked
             {
                 ushort check = 1 << 15;
-                int log2 = 16;
+                var log2 = 16;
                 do
                 {
                     if ((value & check) != 0)
@@ -347,13 +347,13 @@ namespace Theraot.Core
             }
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static IEnumerable<int> BitsBinary(this uint value)
         {
             unchecked
             {
-                uint check = (uint)1 << 31;
-                int log2 = 32;
+                var check = (uint)1 << 31;
+                var log2 = 32;
                 do
                 {
                     if ((value & check) != 0)
@@ -371,13 +371,13 @@ namespace Theraot.Core
             }
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static IEnumerable<int> BitsBinary(this ulong value)
         {
             unchecked
             {
-                ulong check = (ulong)1 << 63;
-                int log2 = 64;
+                var check = (ulong)1 << 63;
+                var log2 = 64;
                 do
                 {
                     if ((value & check) != 0)
@@ -395,17 +395,17 @@ namespace Theraot.Core
             }
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static IEnumerable<int> BitsLog2(this sbyte value)
         {
             unchecked
             {
                 byte check = 1 << 7;
-                int log2 = 8;
-                var _value = (byte)value;
+                var log2 = 8;
+                var tmp = (byte)value;
                 do
                 {
-                    if ((_value & check) != 0)
+                    if ((tmp & check) != 0)
                     {
                         yield return log2 - 1;
                     }
@@ -421,11 +421,11 @@ namespace Theraot.Core
             unchecked
             {
                 ushort check = 1 << 15;
-                int log2 = 16;
-                var _value = (ushort)value;
+                var log2 = 16;
+                var tmp = (ushort)value;
                 do
                 {
-                    if ((_value & check) != 0)
+                    if ((tmp & check) != 0)
                     {
                         yield return log2 - 1;
                     }
@@ -440,12 +440,12 @@ namespace Theraot.Core
         {
             unchecked
             {
-                uint check = (uint)1 << 31;
-                int log2 = 32;
-                var _value = (uint)value;
+                var check = (uint)1 << 31;
+                var log2 = 32;
+                var tmp = (uint)value;
                 do
                 {
-                    if ((_value & check) != 0)
+                    if ((tmp & check) != 0)
                     {
                         yield return log2 - 1;
                     }
@@ -460,12 +460,12 @@ namespace Theraot.Core
         {
             unchecked
             {
-                ulong check = (ulong)1 << 63;
-                int log2 = 64;
-                var _value = (ulong)value;
+                var check = (ulong)1 << 63;
+                var log2 = 64;
+                var tmp = (ulong)value;
                 do
                 {
-                    if ((_value & check) != 0)
+                    if ((tmp & check) != 0)
                     {
                         yield return log2 - 1;
                     }
@@ -481,7 +481,7 @@ namespace Theraot.Core
             unchecked
             {
                 byte check = 1 << 7;
-                int log2 = 8;
+                var log2 = 8;
                 do
                 {
                     if ((value & check) != 0)
@@ -495,13 +495,13 @@ namespace Theraot.Core
             }
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static IEnumerable<int> BitsLog2(this ushort value)
         {
             unchecked
             {
                 ushort check = 1 << 15;
-                int log2 = 16;
+                var log2 = 16;
                 do
                 {
                     if ((value & check) != 0)
@@ -515,13 +515,13 @@ namespace Theraot.Core
             }
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static IEnumerable<int> BitsLog2(this uint value)
         {
             unchecked
             {
-                uint check = (uint)1 << 31;
-                int log2 = 32;
+                var check = (uint)1 << 31;
+                var log2 = 32;
                 do
                 {
                     if ((value & check) != 0)
@@ -535,13 +535,13 @@ namespace Theraot.Core
             }
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static IEnumerable<int> BitsLog2(this ulong value)
         {
             unchecked
             {
-                ulong check = (ulong)1 << 63;
-                int log2 = 64;
+                var check = (ulong)1 << 63;
+                var log2 = 64;
                 do
                 {
                     if ((value & check) != 0)
@@ -560,7 +560,7 @@ namespace Theraot.Core
             return BitConverter.DoubleToInt64Bits(value);
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static ulong DoubleAsUInt64(double value)
         {
             unchecked
@@ -595,7 +595,7 @@ namespace Theraot.Core
             }
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static int LeadingZeroCount(this uint value)
         {
             value |= value >> 1;
@@ -606,7 +606,7 @@ namespace Theraot.Core
             return (sizeof(int) * 8) - PopulationCount(value);
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static int LeadingZeroCount(this ulong value)
         {
             value |= value >> 1;
@@ -620,7 +620,7 @@ namespace Theraot.Core
 
         // Gem from Hacker's Delight
         // Returns the number of bits set in @value
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static int PopulationCount(uint value)
         {
             value = value - ((value >> 1) & 0x55555555);
@@ -633,7 +633,7 @@ namespace Theraot.Core
 
         // Based on code by Zilong Tan on Ulib released under MIT license
         // Returns the number of bits set in @x
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static int PopulationCount(ulong value)
         {
             value -= (value >> 1) & 0x5555555555555555UL;
@@ -663,7 +663,7 @@ namespace Theraot.Core
             return BitConverter.ToInt32(BitConverter.GetBytes(value), 0);
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static uint SingleAsUInt32(float value)
         {
             unchecked
@@ -682,7 +682,7 @@ namespace Theraot.Core
             return ToStringBinary(BitConverter.ToInt32(BitConverter.GetBytes(value), 0));
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static string ToStringBinary(this sbyte value)
         {
             return StringHelper.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
@@ -708,19 +708,19 @@ namespace Theraot.Core
             return StringHelper.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static string ToStringBinary(this ushort value)
         {
             return StringHelper.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static string ToStringBinary(this uint value)
         {
             return StringHelper.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static string ToStringBinary(this ulong value)
         {
             return StringHelper.Concat(value.BitsBinary(), input => input.ToString(CultureInfo.InvariantCulture));
@@ -736,25 +736,25 @@ namespace Theraot.Core
             return LeadingZeroCount(BinaryReverse(value));
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static int TrailingZeroCount(this uint value)
         {
             return LeadingZeroCount(BinaryReverse(value));
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static int TrailingZeroCount(this ulong value)
         {
             return LeadingZeroCount(BinaryReverse(value));
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static float UInt32AsSingle(uint value)
         {
             return BitConverter.ToSingle(BitConverter.GetBytes(value), 0);
         }
 
-        [CLSCompliantAttribute(false)]
+        [CLSCompliant(false)]
         public static double UInt64AsDouble(ulong value)
         {
             unchecked

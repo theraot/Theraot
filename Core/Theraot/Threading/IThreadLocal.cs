@@ -1,4 +1,4 @@
-﻿// Needed for NET35
+﻿// Needed for NET35 (ThreadLocal)
 
 using System;
 using System.Collections.Generic;
