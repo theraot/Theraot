@@ -168,7 +168,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        [Category("RaceCondition")] // TODO: Review
+        [Category("RaceCondition")]
         public void ContinuationTest()
         {
             bool result = false;
