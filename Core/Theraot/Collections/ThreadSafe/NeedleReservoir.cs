@@ -1,4 +1,4 @@
-﻿// Needed for NET35
+﻿// Needed for NET35 (ConditionalWeakTable)
 
 using System;
 using Theraot.Threading.Needles;

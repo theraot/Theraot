@@ -36,6 +36,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 
 
@@ -222,6 +223,7 @@ namespace MonoTests.System.Runtime.CompilerServices
         }
 
         [Test]
+        [Category("GC")]
         public void Reachability()
         {
             if (GC.MaxGeneration == 0) /*Boehm doesn't handle ephemerons */
@@ -274,7 +276,8 @@ namespace MonoTests.System.Runtime.CompilerServices
         }
 
         [Test]
-        [Category("NotWorking")] // I doubt this is fixable
+        [Category("NotWorking")] // No ephemerons
+        [Category("GC")]
         public void InsertStress()
         {
             if (GC.MaxGeneration == 0) /*Boehm doesn't handle ephemerons */
@@ -330,7 +333,8 @@ namespace MonoTests.System.Runtime.CompilerServices
         }
 
         [Test]
-        [Category("NotWorking")] // I have reason to believe this is not fixable
+        [Category("NotWorking")] // No ephemerons
+        [Category("GC")]
         public void OldGenStress()
         {
             if (GC.MaxGeneration == 0) /*Boehm doesn't handle ephemerons */
@@ -488,6 +492,7 @@ namespace MonoTests.System.Runtime.CompilerServices
 
         [Test]
         [Category("NotDotNet")] // This fails in .net 4.0 too, so yeah
+        [Category("GC")]
         public void FinalizableObjectsThatRetainDeadKeys()
         {
             if (GC.MaxGeneration == 0) /*Boehm doesn't handle ephemerons */
@@ -513,6 +518,8 @@ namespace MonoTests.System.Runtime.CompilerServices
         }
 
         [Test]
+        [Category("GC")]
+        [Category("NotWorking")] // No ephemerons
         public void OldGenKeysMakeNewGenObjectsReachable()
         {
             if (GC.MaxGeneration == 0) /*Boehm doesn't handle ephemerons */

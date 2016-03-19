@@ -35,13 +35,13 @@ namespace System.Threading
 {
     public class CancellationTokenSource : IDisposable
     {
-        internal static readonly CancellationTokenSource CanceledSource = new CancellationTokenSource();
-        internal static readonly CancellationTokenSource NoneSource = new CancellationTokenSource();
+        internal static readonly CancellationTokenSource CanceledSource = new CancellationTokenSource(); // Leaked
+        internal static readonly CancellationTokenSource NoneSource = new CancellationTokenSource(); // Leaked
         private static readonly TimerCallback _timerCallback;
         private readonly ManualResetEvent _handle;
         private SafeDictionary<CancellationTokenRegistration, Action> _callbacks;
         private int _cancelRequested;
-        private int _currentId = int.MinValue;
+        private int _currentId = int.MaxValue;
         private int _disposeRequested;
         private CancellationTokenRegistration[] _linkedTokens;
         private Timer _timer;
@@ -55,7 +55,7 @@ namespace System.Threading
                 var callbacks = cancellationTokenSource._callbacks;
                 if (callbacks != null)
                 {
-                    cancellationTokenSource.CancelExtracted(false, callbacks);
+                    cancellationTokenSource.CancelExtracted(false, callbacks, true);
                 }
             };
         }
@@ -122,28 +122,22 @@ namespace System.Threading
             {
                 throw new ArgumentNullException("tokens");
             }
-            else
+            if (tokens.Length == 0)
             {
-                if (tokens.Length == 0)
+                throw new ArgumentException("Empty tokens array");
+            }
+            var src = new CancellationTokenSource();
+            Action action = src.SafeLinkedCancel;
+            var registrations = new List<CancellationTokenRegistration>(tokens.Length);
+            foreach (var token in tokens)
+            {
+                if (token.CanBeCanceled)
                 {
-                    throw new ArgumentException("Empty tokens array");
-                }
-                else
-                {
-                    var src = new CancellationTokenSource();
-                    Action action = src.SafeLinkedCancel;
-                    var registrations = new List<CancellationTokenRegistration>(tokens.Length);
-                    foreach (CancellationToken token in tokens)
-                    {
-                        if (token.CanBeCanceled)
-                        {
-                            registrations.Add(token.Register(action));
-                        }
-                    }
-                    src._linkedTokens = registrations.ToArray();
-                    return src;
+                    registrations.Add(token.Register(action));
                 }
             }
+            src._linkedTokens = registrations.ToArray();
+            return src;
         }
 
         public void Cancel()
@@ -151,11 +145,11 @@ namespace System.Threading
             Cancel(false);
         }
 
-        // If parameter is true we throw exception as soon as they appear otherwise we aggregate them
         public void Cancel(bool throwOnFirstException)
         {
+            // If throwOnFirstException is true we throw exception as soon as they appear otherwise we aggregate them
             var callbacks = CheckDisposedGetCallbacks();
-            CancelExtracted(throwOnFirstException, callbacks);
+            CancelExtracted(throwOnFirstException, callbacks, false);
         }
 
         public void CancelAfter(TimeSpan delay)
@@ -212,18 +206,26 @@ namespace System.Threading
         internal CancellationTokenRegistration Register(Action callback, bool useSynchronizationContext)
         {
             var callbacks = CheckDisposedGetCallbacks();
-            var tokenReg = new CancellationTokenRegistration(Interlocked.Increment(ref _currentId), this);
-            /* If the source is already canceled we execute the callback immediately
-             * if not, we try to add it to the queue and if it is currently being processed
-             * we try to execute it back ourselves to be sure the callback is ran
-             */
+            var tokenReg = new CancellationTokenRegistration(Interlocked.Decrement(ref _currentId), this);
+            // If the source is already canceled run the callback inline.
+            // if not, we try to add it to the queue and if it is currently being processed.
+            // we try to execute it back ourselves to be sure the callback is ran.
             if (Thread.VolatileRead(ref _cancelRequested) == 1)
             {
                 callback();
             }
             else
             {
+                // Capture execution contexts if the callback may not run inline.
+                if (useSynchronizationContext)
+                {
+                    var capturedSyncContext = SynchronizationContext.Current;
+                    var originalCallback = callback;
+                    callback = () => capturedSyncContext.Send(_ => originalCallback(), null);
+                }
                 callbacks.TryAdd(tokenReg, callback);
+                // Check if the source was just cancelled and if so, it may be that it executed the callbacks except the one just added...
+                // So try to inline the callback
                 if (Thread.VolatileRead(ref _cancelRequested) == 1 && callbacks.Remove(tokenReg, out callback))
                 {
                     callback();
@@ -278,46 +280,69 @@ namespace System.Threading
             }
         }
 
-        private void CancelExtracted(bool throwOnFirstException, SafeDictionary<CancellationTokenRegistration, Action> callbacks)
+        private static void RunCallback(bool throwOnFirstException, Action callback, ref List<Exception> exceptions)
+        {
+            if (throwOnFirstException)
+            {
+                callback();
+            }
+            else
+            {
+                try
+                {
+                    callback();
+                }
+                catch (Exception exception)
+                {
+                    if (ReferenceEquals(exceptions, null))
+                    {
+                        exceptions = new List<Exception>();
+                    }
+                    exceptions.Add(exception);
+                }
+            }
+        }
+
+        private void CancelExtracted(bool throwOnFirstException, SafeDictionary<CancellationTokenRegistration, Action> callbacks, bool ignoreDisposedException)
         {
             if (Interlocked.CompareExchange(ref _cancelRequested, 1, 0) == 0)
             {
-                _handle.Set();
+                try
+                {
+                    // The CancellationTokenSource may have been disposed jusst before this call
+                    _handle.Set();
+                }
+                catch (ObjectDisposedException)
+                {
+                    if (!ignoreDisposedException)
+                    {
+                        throw;
+                    }
+                }
                 UnregisterLinkedTokens();
                 List<Exception> exceptions = null;
                 try
                 {
-                    int id = _currentId;
+                    var id = _currentId;
                     do
                     {
                         Action callback;
-                        if (callbacks.Remove(new CancellationTokenRegistration(id, this), out callback) && callback != null)
+                        var checkId = id;
+                        if (callbacks.Remove(id, registration => registration.Equals(checkId, this), out callback) && callback != null)
                         {
-                            if (throwOnFirstException)
-                            {
-                                callback();
-                            }
-                            else
-                            {
-                                try
-                                {
-                                    callback();
-                                }
-                                catch (Exception exception)
-                                {
-                                    if (ReferenceEquals(exceptions, null))
-                                    {
-                                        exceptions = new List<Exception>();
-                                    }
-                                    exceptions.Add(exception);
-                                }
-                            }
+                            RunCallback(throwOnFirstException, callback, ref exceptions);
                         }
-                    } while (id-- != int.MinValue);
+                    } while (id++ != int.MaxValue);
                 }
                 finally
                 {
-                    callbacks.Clear();
+                    // Whatever was added after the cancellation process started, it should run inline in Register... if they don't, handle then here.
+                    foreach (
+                        var callback in
+                            callbacks.RemoveWhereKeyEnumerable(_ => true))
+                    {
+                        RunCallback(throwOnFirstException, callback, ref exceptions);
+                    }
                 }
                 if (exceptions != null)
                 {
@@ -328,14 +353,12 @@ namespace System.Threading
 
         private void SafeLinkedCancel()
         {
-            try
+            var callbacks = _callbacks;
+            if (callbacks == null || Thread.VolatileRead(ref _disposeRequested) == 1)
             {
-                Cancel();
+                return;
             }
-            catch (ObjectDisposedException)
-            {
-                //Empty
-            }
+            CancelExtracted(false, callbacks, true);
         }
 
         private void UnregisterLinkedTokens()

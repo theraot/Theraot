@@ -254,7 +254,7 @@ namespace System.Threading.Tasks
 
             // Set the completion event if it's been lazy allocated.
             // And if we made a cancellation registration, it's now unnecessary.
-            SetCompleted();
+            MarkCompleted();
             DeregisterCancellationCallback();
 
             // ready to run continuations and notify parent.

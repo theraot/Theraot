@@ -102,14 +102,14 @@ namespace Theraot.Core
 
         private static PropertyInfo GetProperty(Type type, Type equalityComparerType)
         {
-            Type[] genericTypeArguments = type.GetGenericArguments();
-            Type generticType = equalityComparerType.MakeGenericType(genericTypeArguments);
+            var genericTypeArguments = type.GetGenericArguments();
+            var generticType = equalityComparerType.MakeGenericType(genericTypeArguments);
             return generticType.GetProperty("Default", BindingFlags.Public | BindingFlags.Static);
         }
 
         private static PropertyInfo GetPropertyDelegated(Type type, Type equalityComparerType)
         {
-            Type generticType = equalityComparerType.MakeGenericType(type);
+            var generticType = equalityComparerType.MakeGenericType(type);
             return generticType.GetProperty("Default", BindingFlags.Public | BindingFlags.Static);
         }
     }

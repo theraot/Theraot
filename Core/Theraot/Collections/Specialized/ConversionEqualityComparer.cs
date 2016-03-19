@@ -1,4 +1,4 @@
-// Needed for NET35
+// Needed for NET35 (ConditionalWeakTable)
 
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using Theraot.Core;
 
 namespace Theraot.Collections.Specialized
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ConversionEqualityComparer<TInput, TOutput> : IEqualityComparer<TInput>
     {
         private readonly IEqualityComparer<TOutput> _comparer;

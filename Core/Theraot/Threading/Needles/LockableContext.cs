@@ -16,14 +16,6 @@ namespace Theraot.Threading.Needles
             _slots.Value = new TrackingThreadLocal<LockableSlot>();
         }
 
-        internal bool HasSlot
-        {
-            get
-            {
-                return ((IThreadLocal<LockableSlot>)_slots.Value).ValueForDebugDisplay != null;
-            }
-        }
-
         internal LockableSlot Slot
         {
             get
@@ -39,6 +31,11 @@ namespace Theraot.Threading.Needles
         public IDisposable Enter()
         {
             return new LockableSlot(this);
+        }
+
+        internal bool TryGetSlot(out LockableSlot slot)
+        {
+            return _slots.Value.TryGetValue(Thread.CurrentThread, out slot) && slot != null;
         }
     }
 }

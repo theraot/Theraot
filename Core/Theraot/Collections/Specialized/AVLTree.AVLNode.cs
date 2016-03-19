@@ -1,4 +1,4 @@
-// Needed for NET35
+// Needed for NET35 (SortedSet, OrderedCollection)
 
 using System;
 using System.Collections.Generic;
@@ -61,17 +61,11 @@ namespace Theraot.Collections.Specialized
                 {
                     throw new ArgumentNullException("comparer");
                 }
-                else
+                if (other == null)
                 {
-                    if (other == null)
-                    {
-                        return 1;
-                    }
-                    else
-                    {
-                        return comparer.Compare(_key, other._key);
-                    }
+                    return 1;
                 }
+                return comparer.Compare(_key, other._key);
             }
 
             internal static void Add(ref AVLNode node, TKey key, TValue value, Comparison<TKey> comparison)
@@ -93,10 +87,7 @@ namespace Theraot.Collections.Specialized
                     node = new AVLNode(key, value);
                     return true;
                 }
-                else
-                {
-                    return AddNonDuplicateExtracted(ref node, key, value, comparison);
-                }
+                return AddNonDuplicateExtracted(ref node, key, value, comparison);
             }
 
             internal static void Bound(AVLNode node, TKey key, Comparison<TKey> comparison, out AVLNode lower, out AVLNode upper)
@@ -105,7 +96,7 @@ namespace Theraot.Collections.Specialized
                 upper = null;
                 while (node != null)
                 {
-                    int compare = comparison.Invoke(key, node._key);
+                    var compare = comparison.Invoke(key, node._key);
                     if (compare <= 0)
                     {
                         upper = node;
@@ -118,14 +109,7 @@ namespace Theraot.Collections.Specialized
                     {
                         break;
                     }
-                    else if (compare > 0)
-                    {
-                        node = node._right;
-                    }
-                    else
-                    {
-                        node = node._left;
-                    }
+                    node = compare > 0 ? node._right : node._left;
                 }
             }
 
@@ -134,22 +118,19 @@ namespace Theraot.Collections.Specialized
                 var stack = new Stack<AVLNode>();
                 while (node != null)
                 {
-                    int compare = comparison.Invoke(key, node._key);
+                    var compare = comparison.Invoke(key, node._key);
                     if (compare == 0)
                     {
                         break;
                     }
+                    if (compare > 0)
+                    {
+                        node = node._right;
+                    }
                     else
                     {
-                        if (compare > 0)
-                        {
-                            node = node._right;
-                        }
-                        else
-                        {
-                            stack.Push(node);
-                            node = node._left;
-                        }
+                        stack.Push(node);
+                        node = node._left;
                     }
                 }
                 while (true)
@@ -202,109 +183,90 @@ namespace Theraot.Collections.Specialized
                 {
                     return false;
                 }
-                else
+                var compare = comparison(key, node._key);
+                if (compare == 0)
                 {
-                    int compare = comparison(key, node._key);
-                    if (compare == 0)
+                    if (node._right == null)
                     {
-                        if (node._right == null)
-                        {
-                            node = node._left;
-                        }
-                        else
-                        {
-                            if (node._left == null)
-                            {
-                                node = node._right;
-                            }
-                            else
-                            {
-                                var trunk = node._right;
-                                var successor = trunk;
-                                while (successor._left != null)
-                                {
-                                    trunk = successor;
-                                    successor = trunk._left;
-                                }
-                                if (ReferenceEquals(trunk, successor))
-                                {
-                                    node._right = successor._right;
-                                    if (successor._right != null)
-                                    {
-                                        node._balance--;
-                                    }
-                                }
-                                else
-                                {
-                                    trunk._left = successor._right;
-                                    if (successor._right != null)
-                                    {
-                                        trunk._balance++;
-                                    }
-                                }
-                                var tmpLeft = node._left;
-                                var tmpRight = node._right;
-                                var tmpBalance = node._balance;
-                                node = new AVLNode(successor._key, successor._value)
-                                {
-                                    _left = tmpLeft,
-                                    _right = tmpRight,
-                                    _balance = tmpBalance
-                                };
-                            }
-                        }
-                        if (node != null)
-                        {
-                            MakeBalanced(ref node);
-                        }
-                        return true;
-                    }
-                    else if (compare < 0)
-                    {
-                        if (Remove(ref node._left, key, comparison))
-                        {
-                            node._balance++;
-                            MakeBalanced(ref node);
-                            return true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
+                        node = node._left;
                     }
                     else
                     {
-                        if (Remove(ref node._right, key, comparison))
+                        if (node._left == null)
                         {
-                            node._balance--;
-                            MakeBalanced(ref node);
-                            return true;
+                            node = node._right;
                         }
                         else
                         {
-                            return false;
+                            var trunk = node._right;
+                            var successor = trunk;
+                            while (successor._left != null)
+                            {
+                                trunk = successor;
+                                successor = trunk._left;
+                            }
+                            if (ReferenceEquals(trunk, successor))
+                            {
+                                node._right = successor._right;
+                                if (successor._right != null)
+                                {
+                                    node._balance--;
+                                }
+                            }
+                            else
+                            {
+                                trunk._left = successor._right;
+                                if (successor._right != null)
+                                {
+                                    trunk._balance++;
+                                }
+                            }
+                            var tmpLeft = node._left;
+                            var tmpRight = node._right;
+                            var tmpBalance = node._balance;
+                            node = new AVLNode(successor._key, successor._value)
+                            {
+                                _left = tmpLeft,
+                                _right = tmpRight,
+                                _balance = tmpBalance
+                            };
                         }
                     }
+                    if (node != null)
+                    {
+                        MakeBalanced(ref node);
+                    }
+                    return true;
                 }
+                if (compare < 0)
+                {
+                    if (Remove(ref node._left, key, comparison))
+                    {
+                        node._balance++;
+                        MakeBalanced(ref node);
+                        return true;
+                    }
+                    return false;
+                }
+                if (Remove(ref node._right, key, comparison))
+                {
+                    node._balance--;
+                    MakeBalanced(ref node);
+                    return true;
+                }
+                return false;
             }
 
             internal static AVLNode Search(AVLNode node, TKey key, Comparison<TKey> comparison)
             {
                 while (node != null)
                 {
-                    int compare = comparison(key, node._key);
+                    var compare = comparison(key, node._key);
                     if (compare == 0)
                     {
                         break;
                     }
-                    else if (compare > 0)
-                    {
-                        node = node._right;
-                    }
-                    else
-                    {
-                        node = node._left;
-                    }
+                    node = compare > 0 ? node._right : node._left;
                 }
                 return node;
             }
@@ -314,7 +276,7 @@ namespace Theraot.Collections.Specialized
                 AVLNode result = null;
                 while (node != null)
                 {
-                    int compare = comparison.Invoke(key, node._key);
+                    var compare = comparison.Invoke(key, node._key);
                     if (compare >= 0)
                     {
                         result = node;
@@ -323,14 +285,7 @@ namespace Theraot.Collections.Specialized
                     {
                         break;
                     }
-                    else if (compare > 0)
-                    {
-                        node = node._right;
-                    }
-                    else
-                    {
-                        node = node._left;
-                    }
+                    node = compare > 0 ? node._right : node._left;
                 }
                 return result;
             }
@@ -340,7 +295,7 @@ namespace Theraot.Collections.Specialized
                 AVLNode result = null;
                 while (node != null)
                 {
-                    int compare = comparison.Invoke(key, node._key);
+                    var compare = comparison.Invoke(key, node._key);
                     if (compare <= 0)
                     {
                         result = node;
@@ -349,21 +304,14 @@ namespace Theraot.Collections.Specialized
                     {
                         break;
                     }
-                    else if (compare > 0)
-                    {
-                        node = node._right;
-                    }
-                    else
-                    {
-                        node = node._left;
-                    }
+                    node = compare > 0 ? node._right : node._left;
                 }
                 return result;
             }
 
             private static void AddExtracted(ref AVLNode node, TKey key, TValue value, Comparison<TKey> comparison)
             {
-                int comparisonResult = comparison(key, node._key);
+                var comparisonResult = comparison(key, node._key);
                 if (comparisonResult < 0)
                 {
                     if (node._left == null)
@@ -395,7 +343,7 @@ namespace Theraot.Collections.Specialized
 
             private static bool AddNonDuplicateExtracted(ref AVLNode node, TKey key, TValue value, Comparison<TKey> comparison)
             {
-                int comparisonResult = comparison(key, node._key);
+                var comparisonResult = comparison(key, node._key);
                 if (comparisonResult < 0)
                 {
                     if (node._left == null)
@@ -405,21 +353,15 @@ namespace Theraot.Collections.Specialized
                         MakeBalanced(ref node);
                         return true;
                     }
-                    else
+                    if (AddNonDuplicateExtracted(ref node._left, key, value, comparison))
                     {
-                        if (AddNonDuplicateExtracted(ref node._left, key, value, comparison))
-                        {
-                            node._balance--;
-                            MakeBalanced(ref node);
-                            return true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
+                        node._balance--;
+                        MakeBalanced(ref node);
+                        return true;
                     }
+                    return false;
                 }
-                else if (comparisonResult > 0)
+                if (comparisonResult > 0)
                 {
                     if (node._right == null)
                     {
@@ -428,24 +370,15 @@ namespace Theraot.Collections.Specialized
                         MakeBalanced(ref node);
                         return true;
                     }
-                    else
+                    if (AddNonDuplicateExtracted(ref node._right, key, value, comparison))
                     {
-                        if (AddNonDuplicateExtracted(ref node._right, key, value, comparison))
-                        {
-                            node._balance++;
-                            MakeBalanced(ref node);
-                            return true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
+                        node._balance++;
+                        MakeBalanced(ref node);
+                        return true;
                     }
-                }
-                else
-                {
                     return false;
                 }
+                return false;
             }
 
             private static void DoubleLeft(ref AVLNode node)

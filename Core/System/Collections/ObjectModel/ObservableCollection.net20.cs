@@ -3,7 +3,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using Theraot.Core;
 using Theraot.Threading;
 
 namespace System.Collections.ObjectModel
@@ -82,7 +81,7 @@ namespace System.Collections.ObjectModel
             CheckReentrancy();
             // While it is tempting to use monitor here, this class is not really meant to be thread-safe
             // Also, let it fail
-            T item = base[oldIndex];
+            var item = base[oldIndex];
             base.RemoveItem(oldIndex);
             base.InsertItem(newIndex, item);
             InvokePropertyChanged("Item[]");
@@ -106,7 +105,7 @@ namespace System.Collections.ObjectModel
             CheckReentrancy();
             // While it is tempting to use monitor here, this class is not really meant to be thread-safe
             // Also, let it fail
-            T oldItem = base[index];
+            var oldItem = base[index];
             base.SetItem(index, item);
             InvokePropertyChanged("Item[]");
             InvokeCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, item, oldItem, index));
@@ -146,20 +145,27 @@ namespace System.Collections.ObjectModel
             }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [Diagnostics.DebuggerNonUserCode]
         public sealed class ReentryBlockage : IDisposable
         {
             private readonly Action _release;
 
             public ReentryBlockage(Action release)
             {
-                _release = Check.NotNullArgument(release, "release");
+                if (release == null)
+                {
+                    throw new ArgumentNullException("release");
+                }
+                _release = release;
             }
 
             public bool Dispose(Func<bool> condition)
             {
-                var _condition = Check.NotNullArgument(condition, "condition");
-                if (_condition.Invoke())
+                if (condition == null)
+                {
+                    throw new ArgumentNullException("condition");
+                }
+                if (condition.Invoke())
                 {
                     _release.Invoke();
                     return true;
@@ -172,7 +178,7 @@ namespace System.Collections.ObjectModel
                 Dispose(true);
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2004:RemoveCallsToGCKeepAlive", Justification = "By Design")]
+            [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2004:RemoveCallsToGCKeepAlive", Justification = "By Design")]
             private void Dispose(bool disposeManagedResources)
             {
                 GC.KeepAlive(disposeManagedResources);

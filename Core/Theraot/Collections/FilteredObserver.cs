@@ -2,20 +2,26 @@
 
 using System;
 
-using Theraot.Core;
-
 namespace Theraot.Collections
 {
     [Serializable]
     public sealed class FilteredObserver<T> : IObserver<T>
     {
         private readonly IObserver<T> _observer;
-        private readonly Predicate<T> filter;
+        private readonly Predicate<T> _filter;
 
         public FilteredObserver(IObserver<T> observer, Predicate<T> filter)
         {
-            _observer = Check.NotNullArgument(observer, "observer");
-            this.filter = Check.NotNullArgument(filter, "filter");
+            if (observer == null)
+            {
+                throw new ArgumentNullException("observer");
+            }
+            if (filter == null)
+            {
+                throw new ArgumentNullException("filter");
+            }
+            _observer = observer;
+            _filter = filter;
         }
 
         public void OnCompleted()
@@ -30,6 +36,7 @@ namespace Theraot.Collections
 
         public void OnNext(T value)
         {
+            var filter = _filter;
             if (filter(value))
             {
                 _observer.OnNext(value);

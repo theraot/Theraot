@@ -8,7 +8,7 @@ using Theraot.Core;
 
 namespace Theraot.Collections.Specialized
 {
-    [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "By Design")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "By Design")]
     public class EnumerableFromDelegate<T> : IEnumerable<T>
     {
         private readonly Func<IEnumerator<T>> _getEnumerator;
@@ -34,14 +34,12 @@ namespace Theraot.Collections.Specialized
             {
                 return null;
             }
-            else if (enumerator is IEnumerator<T>)
+            var genericEnumerator = enumerator as IEnumerator<T>;
+            if (genericEnumerator != null)
             {
-                return enumerator as IEnumerator<T>;
+                return genericEnumerator;
             }
-            else
-            {
-                return ConvertEnumeratorExtracted(enumerator);
-            }
+            return ConvertEnumeratorExtracted(enumerator);
         }
 
         private static IEnumerator<T> ConvertEnumeratorExtracted(IEnumerator enumerator)
@@ -50,7 +48,7 @@ namespace Theraot.Collections.Specialized
             {
                 while (enumerator.MoveNext())
                 {
-                    object element = enumerator.Current;
+                    var element = enumerator.Current;
                     if (element is T)
                     {
                         yield return (T)element;

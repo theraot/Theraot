@@ -135,6 +135,7 @@ namespace Tests.Theraot.Threading.Needles
         }
 
         [Test]
+        [Category("RaceCondition")] // TODO: Review
         public void TwoThreadsUpdate()
         {
             var context = new LockableContext(16);

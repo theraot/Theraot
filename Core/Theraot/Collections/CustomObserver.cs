@@ -28,17 +28,20 @@ namespace Theraot.Collections
 
         public void OnCompleted()
         {
-            _onCompleted();
+            var onCompleted = _onCompleted;
+            onCompleted();
         }
 
         public void OnError(Exception error)
         {
-            _onError(error);
+            var onError = _onError;
+            onError(error);
         }
 
         public void OnNext(T value)
         {
-            _onNext(value);
+            var onNext = _onNext;
+            onNext(value);
         }
     }
 }

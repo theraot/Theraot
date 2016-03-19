@@ -257,8 +257,6 @@ namespace MonoTests.System.Collections.Concurrent
         }
 
         [Test]
-        // This depends on precise stack scanning
-        [Category("NotWorking")]
         public void TryDequeueReferenceTest()
         {
             var obj = new Object();

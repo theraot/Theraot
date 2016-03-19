@@ -15,8 +15,6 @@
 //
 // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-using System;
-using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
 namespace System.Threading.Tasks
@@ -29,13 +27,14 @@ namespace System.Threading.Tasks
     {
 
         [NonSerialized]
-        private Task m_canceledTask; // The task which has been canceled.
+        private readonly Task _canceledTask; // The task which has been canceled.
 
         /// <summary>
         /// Initializes a new instance of the <see cref="T:System.Threading.Tasks.TaskCanceledException"/> class.
         /// </summary>
         public TaskCanceledException() : base("A task was canceled")
         {
+            // Empty
         }
 
         /// <summary>
@@ -45,6 +44,7 @@ namespace System.Threading.Tasks
         /// <param name="message">The error message that explains the reason for the exception.</param>
         public TaskCanceledException(string message) : base(message)
         {
+            // Empty
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace System.Threading.Tasks
         public TaskCanceledException(Task task) :
             base("A task was canceled", task != null ? task.CancellationToken : new CancellationToken())
         {
-            m_canceledTask = task;
+            _canceledTask = task;
         }
 
         /// <summary>
@@ -77,6 +77,7 @@ namespace System.Threading.Tasks
         /// <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination. </param>
         protected TaskCanceledException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
+            // Empty
         }
 
         /// <summary>
@@ -89,7 +90,10 @@ namespace System.Threading.Tasks
         /// </remarks>
         public Task Task
         {
-            get { return m_canceledTask; }
+            get
+            {
+                return _canceledTask;
+            }
         }
 
     }

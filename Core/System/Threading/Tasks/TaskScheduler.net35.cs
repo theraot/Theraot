@@ -1,6 +1,7 @@
 #if NET20 || NET30 || NET35
 
 using System.Collections.Generic;
+using Theraot.Core;
 
 namespace System.Threading.Tasks
 {
@@ -35,6 +36,7 @@ namespace System.Threading.Tasks
                 return _default;
             }
         }
+
         public int Id
         {
             get
@@ -65,6 +67,33 @@ namespace System.Threading.Tasks
             throw new NotImplementedException();
         }
 
+        internal bool InernalTryDequeue(Task task, ref bool special)
+        {
+            try
+            {
+                return TryDequeue(task);
+            }
+            catch (Exception exception)
+            {
+                if (exception is InternalSpecialCancelException)
+                {
+                    // Special path for ThreadPool
+                    special = true;
+                    return false;
+                }
+                if (exception is ThreadAbortException)
+                {
+                    return false;
+                }
+                throw new TaskSchedulerException(exception);
+            }
+        }
+
+        internal bool InernalTryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
+        {
+            return TryExecuteTaskInline(task, taskWasPreviouslyQueued);
+        }
+
         internal virtual void NotifyWorkItemProgress()
         {
             // Empty
@@ -72,13 +101,13 @@ namespace System.Threading.Tasks
 
         protected internal abstract void QueueTask(Task task);
 
-        protected internal virtual bool TryDequeue(Task task)
+        protected abstract IEnumerable<Task> GetScheduledTasks();
+
+        protected virtual bool TryDequeue(Task task)
         {
             GC.KeepAlive(task);
             return false;
         }
-
-        protected abstract IEnumerable<Task> GetScheduledTasks();
 
         protected bool TryExecuteTask(Task task)
         {
@@ -89,7 +118,7 @@ namespace System.Threading.Tasks
             return task.ExecuteEntry(true);
         }
 
-        protected internal abstract bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued);
+        protected abstract bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued);
     }
 }
 

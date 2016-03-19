@@ -92,7 +92,7 @@ namespace MonoTests.System.Linq.Expressions {
 #else
         [ExpectedException (typeof (ArgumentException))]
 #endif
-        public void ArgInstanceNullForNonStaticMethod ()
+        public void ArgInstanceNullForNonStaticMethod () // Passing on .NET 2.0, .3.0, .4.0 and .4.5 Failing on .NET 3.5
 		{
 			Expression.Call (null, typeof (object).GetMethod ("ToString"));
 		}

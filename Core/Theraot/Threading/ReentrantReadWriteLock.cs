@@ -7,10 +7,10 @@ namespace Theraot.Threading
 {
     internal sealed partial class ReentrantReadWriteLock : IReadWriteLock
     {
-        private NoTrackingThreadLocal<int> _currentReadingCount = new NoTrackingThreadLocal<int>(() => 0);
+        private NoTrackingThreadLocal<int> _currentReadingCount = new NoTrackingThreadLocal<int>(() => 0); // Disposed
         private int _edge;
-        private ManualResetEventSlim _freeToRead = new ManualResetEventSlim(false);
-        private ManualResetEventSlim _freeToWrite = new ManualResetEventSlim(false);
+        private ManualResetEventSlim _freeToRead = new ManualResetEventSlim(false); // Disposed
+        private ManualResetEventSlim _freeToWrite = new ManualResetEventSlim(false); // Disposed
         private int _master;
         private Thread _ownerThread;
         private int _readCount;
@@ -62,16 +62,10 @@ namespace Theraot.Threading
                 {
                     return DisposableAkin.Create(DoneUpgrade);
                 }
-                else
-                {
-                    throw new InvalidOperationException();
-                }
+                throw new InvalidOperationException();
             }
-            else
-            {
-                WaitCanWrite();
-                return DisposableAkin.Create(DoneWrite);
-            }
+            WaitCanWrite();
+            return DisposableAkin.Create(DoneWrite);
         }
 
         public bool TryEnterRead(out IDisposable engagement)
@@ -95,20 +89,14 @@ namespace Theraot.Threading
                     engagement = DisposableAkin.Create(DoneUpgrade);
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
-            else
+            if (!CanWrite())
             {
-                if (!CanWrite())
-                {
-                    return false;
-                }
-                engagement = DisposableAkin.Create(DoneWrite);
-                return true;
+                return false;
             }
+            engagement = DisposableAkin.Create(DoneWrite);
+            return true;
         }
 
         private bool CanRead()
@@ -119,17 +107,14 @@ namespace Theraot.Threading
                 _currentReadingCount.Value++;
                 return true;
             }
-            else
+            if (Interlocked.CompareExchange(ref _master, 1, 0) >= 0)
             {
-                if (Interlocked.CompareExchange(ref _master, 1, 0) >= 0)
-                {
-                    _freeToWrite.Reset();
-                    Interlocked.Increment(ref _readCount);
-                    _currentReadingCount.Value++;
-                    return true;
-                }
-                return false;
+                _freeToWrite.Reset();
+                Interlocked.Increment(ref _readCount);
+                _currentReadingCount.Value++;
+                return true;
             }
+            return false;
         }
 
         private bool CanUpgrade()
@@ -139,26 +124,19 @@ namespace Theraot.Threading
                 Interlocked.Increment(ref _writeCount);
                 return true;
             }
-            else
+            var check = Interlocked.CompareExchange(ref _master, -2, 1);
+            if (check == 1)
             {
-                var check = Interlocked.CompareExchange(ref _master, -2, 1);
-                if (check == 1)
+                _freeToRead.Reset();
+                // --
+                if (Thread.VolatileRead(ref _readCount) <= _currentReadingCount.Value && Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null) == null)
                 {
-                    _freeToRead.Reset();
-                    // --
-                    if
-                        (
-                        Thread.VolatileRead(ref _readCount) <= _currentReadingCount.Value
-                        && Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null) == null
-                        )
-                    {
-                        Thread.VolatileWrite(ref _master, -1);
-                        Interlocked.Increment(ref _writeCount);
-                        return true;
-                    }
+                    Thread.VolatileWrite(ref _master, -1);
+                    Interlocked.Increment(ref _writeCount);
+                    return true;
                 }
-                return false;
             }
+            return false;
         }
 
         private bool CanWrite()
@@ -168,20 +146,18 @@ namespace Theraot.Threading
                 Interlocked.Increment(ref _writeCount);
                 return true;
             }
-            else
+            if (Interlocked.CompareExchange(ref _master, -1, 0) == 0)
             {
-                if (Interlocked.CompareExchange(ref _master, -1, 0) == 0)
+                _freeToRead.Reset();
+                // --
+                if (Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null) == null)
                 {
-                    _freeToRead.Reset();
-                    if (Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null) == null)
-                    {
-                        // Success
-                        Interlocked.Increment(ref _writeCount);
-                        return true;
-                    }
+                    // Success
+                    Interlocked.Increment(ref _writeCount);
+                    return true;
                 }
-                return false;
             }
+            return false;
         }
 
         private void DoneRead()
@@ -294,11 +270,8 @@ namespace Theraot.Threading
                                 Interlocked.Increment(ref _writeCount);
                                 return;
                             }
-                            else
-                            {
-                                // It was reserved by another thread
-                                break;
-                            }
+                            // It was reserved by another thread
+                            break;
 
                         case 1:
                             // There are readers currently
@@ -378,171 +351,7 @@ namespace Theraot.Threading
                     }
                 }
             }
-            else
-            {
-                return false;
-            }
-        }
-    }
-
-    internal sealed partial class ReentrantReadWriteLock : IExtendedDisposable
-    {
-        private int _status;
-
-        [System.Diagnostics.DebuggerNonUserCode]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
-        ~ReentrantReadWriteLock()
-        {
-            try
-            {
-                // Empty
-            }
-            finally
-            {
-                Dispose(false);
-            }
-        }
-
-        public bool IsDisposed
-        {
-            [System.Diagnostics.DebuggerNonUserCode]
-            get
-            {
-                return _status == -1;
-            }
-        }
-
-        [System.Diagnostics.DebuggerNonUserCode]
-        public void Dispose()
-        {
-            try
-            {
-                Dispose(true);
-            }
-            finally
-            {
-                GC.SuppressFinalize(this);
-            }
-        }
-
-        [System.Diagnostics.DebuggerNonUserCode]
-        public void DisposedConditional(Action whenDisposed, Action whenNotDisposed)
-        {
-            if (_status == -1)
-            {
-                if (!ReferenceEquals(whenDisposed, null))
-                {
-                    whenDisposed.Invoke();
-                }
-            }
-            else
-            {
-                if (!ReferenceEquals(whenNotDisposed, null))
-                {
-                    if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
-                    {
-                        try
-                        {
-                            whenNotDisposed.Invoke();
-                        }
-                        finally
-                        {
-                            Interlocked.Decrement(ref _status);
-                        }
-                    }
-                    else
-                    {
-                        if (!ReferenceEquals(whenDisposed, null))
-                        {
-                            whenDisposed.Invoke();
-                        }
-                    }
-                }
-            }
-        }
-
-        [System.Diagnostics.DebuggerNonUserCode]
-        public TReturn DisposedConditional<TReturn>(Func<TReturn> whenDisposed, Func<TReturn> whenNotDisposed)
-        {
-            if (_status == -1)
-            {
-                if (ReferenceEquals(whenDisposed, null))
-                {
-                    return default(TReturn);
-                }
-                else
-                {
-                    return whenDisposed.Invoke();
-                }
-            }
-            else
-            {
-                if (ReferenceEquals(whenNotDisposed, null))
-                {
-                    return default(TReturn);
-                }
-                else
-                {
-                    if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
-                    {
-                        try
-                        {
-                            return whenNotDisposed.Invoke();
-                        }
-                        finally
-                        {
-                            Interlocked.Decrement(ref _status);
-                        }
-                    }
-                    else
-                    {
-                        if (ReferenceEquals(whenDisposed, null))
-                        {
-                            return default(TReturn);
-                        }
-                        else
-                        {
-                            return whenDisposed.Invoke();
-                        }
-                    }
-                }
-            }
-        }
-
-        [System.Diagnostics.DebuggerNonUserCode]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2004:RemoveCallsToGCKeepAlive", Justification = "By Design")]
-        private void Dispose(bool disposeManagedResources)
-        {
-            if (TakeDisposalExecution())
-            {
-                try
-                {
-                    if (disposeManagedResources)
-                    {
-                        _freeToRead.Dispose();
-                        _freeToWrite.Dispose();
-                        _currentReadingCount.Dispose();
-                    }
-                }
-                finally
-                {
-                    _freeToRead = null;
-                    _freeToWrite = null;
-                    _currentReadingCount = null;
-                }
-            }
-        }
-
-        private bool TakeDisposalExecution()
-        {
-            if (_status == -1)
-            {
-                return false;
-            }
-            else
-            {
-                return ThreadingHelper.SpinWaitSetUnless(ref _status, -1, 0, -1);
-            }
+            return false;
         }
     }
 }

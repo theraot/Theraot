@@ -136,7 +136,7 @@ namespace Theraot.Core
                 throw new ArgumentNullException("converter");
             }
             var stringList = new List<string>();
-            int length = 0;
+            var length = 0;
             foreach (var item in values)
             {
                 var itemToString = converter.Invoke(item);
@@ -152,7 +152,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("text");
             }
-            int length = text.Length;
+            var length = text.Length;
             if (length < characterCount)
             {
                 return text;
@@ -244,7 +244,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("text");
             }
-            int length = text.Length;
+            var length = text.Length;
             if (length < characterCount)
             {
                 return string.Empty;
@@ -258,7 +258,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("text");
             }
-            int length = text.Length;
+            var length = text.Length;
             if (length < characterCount)
             {
                 return string.Empty;
@@ -277,7 +277,7 @@ namespace Theraot.Core
                 throw new ArgumentNullException("values");
             }
             var array = new string[values.Length];
-            int index = 0;
+            var index = 0;
             foreach (var item in values)
             {
                 array[index++] = item.ToString();
@@ -813,7 +813,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("text");
             }
-            int length = text.Length;
+            var length = text.Length;
             if (length < characterCount)
             {
                 return text;
@@ -823,10 +823,10 @@ namespace Theraot.Core
 
         private static string ConcatExtracted(object[] array, int startIndex, int count)
         {
-            int length = 0;
-            int maxIndex = startIndex + count;
+            var length = 0;
+            var maxIndex = startIndex + count;
             var newArray = new string[count];
-            for (int index = startIndex; index < maxIndex; index++)
+            for (var index = startIndex; index < maxIndex; index++)
             {
                 var item = array[index];
                 if (!ReferenceEquals(item, null))
@@ -841,9 +841,9 @@ namespace Theraot.Core
 
         private static string ConcatExtracted(string[] array, int startIndex, int count)
         {
-            int length = 0;
-            int maxIndex = startIndex + count;
-            for (int index = startIndex; index < maxIndex; index++)
+            var length = 0;
+            var maxIndex = startIndex + count;
+            for (var index = startIndex; index < maxIndex; index++)
             {
                 var item = array[index];
                 if (!ReferenceEquals(item, null))
@@ -861,7 +861,7 @@ namespace Theraot.Core
                 return string.Empty;
             }
             var result = new StringBuilder(length);
-            for (int index = startIndex; index < maxIndex; index++)
+            for (var index = startIndex; index < maxIndex; index++)
             {
                 var item = array[index];
                 result.Append(item);
@@ -871,10 +871,10 @@ namespace Theraot.Core
 
         private static string ImplodeExtracted(string separator, object[] array, int startIndex, int count)
         {
-            int length = 0;
-            int maxIndex = startIndex + count;
+            var length = 0;
+            var maxIndex = startIndex + count;
             var newArray = new string[count];
-            for (int index = startIndex; index < maxIndex; index++)
+            for (var index = startIndex; index < maxIndex; index++)
             {
                 var item = array[index];
                 if (!ReferenceEquals(item, null))
@@ -890,9 +890,9 @@ namespace Theraot.Core
 
         private static string ImplodeExtracted(string separator, string[] array, int startIndex, int count)
         {
-            int length = 0;
-            int maxIndex = startIndex + count;
-            for (int index = startIndex; index < maxIndex; index++)
+            var length = 0;
+            var maxIndex = startIndex + count;
+            for (var index = startIndex; index < maxIndex; index++)
             {
                 var item = array[index];
                 if (!ReferenceEquals(item, null))
@@ -911,8 +911,8 @@ namespace Theraot.Core
                 return string.Empty;
             }
             var result = new StringBuilder(length);
-            bool first = true;
-            for (int index = startIndex; index < maxIndex; index++)
+            var first = true;
+            for (var index = startIndex; index < maxIndex; index++)
             {
                 var item = array[index];
                 if (first)
@@ -939,7 +939,7 @@ namespace Theraot.Core
             {
                 return true;
             }
-            foreach (char character in value)
+            foreach (var character in value)
             {
                 if (!char.IsWhiteSpace(character))
                 {
@@ -960,7 +960,7 @@ namespace Theraot.Core
                 throw new ArgumentNullException("values");
             }
             var stringList = new List<string>();
-            int length = 0;
+            var length = 0;
             foreach (var item in values)
             {
                 stringList.Add(item);
@@ -980,7 +980,7 @@ namespace Theraot.Core
                 throw new ArgumentNullException("values");
             }
             var stringList = new List<string>();
-            int length = 0;
+            var length = 0;
             foreach (var item in values)
             {
                 var itemToString = item.ToString();
@@ -1004,8 +1004,8 @@ namespace Theraot.Core
                 throw new ArgumentNullException("values");
             }
             var stringList = new List<string>();
-            int length = 0;
-            int separatorLength = separator.Length;
+            var length = 0;
+            var separatorLength = separator.Length;
             foreach (var item in values)
             {
                 if (length != 0)
@@ -1030,8 +1030,8 @@ namespace Theraot.Core
                 throw new ArgumentNullException("values");
             }
             var stringList = new List<string>();
-            int length = 0;
-            int separatorLength = separator.Length;
+            var length = 0;
+            var separatorLength = separator.Length;
             foreach (var item in values)
             {
                 if (length != 0)
@@ -1057,8 +1057,8 @@ namespace Theraot.Core
                 throw new ArgumentNullException("values");
             }
             var stringList = new List<string>();
-            int length = 0;
-            int separatorLength = separator.Length;
+            var length = 0;
+            var separatorLength = separator.Length;
             foreach (var item in values)
             {
                 if (length != 0)

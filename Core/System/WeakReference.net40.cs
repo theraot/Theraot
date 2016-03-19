@@ -31,12 +31,9 @@ namespace System
             {
                 throw new ArgumentNullException("info");
             }
-            else
-            {
-                var value = (T)info.GetValue("TrackedObject", typeof(T));
-                _trackResurrection = info.GetBoolean("TrackResurrection");
-                SetTarget(value);
-            }
+            var value = (T)info.GetValue("TrackedObject", typeof(T));
+            _trackResurrection = info.GetBoolean("TrackResurrection");
+            SetTarget(value);
         }
 
         [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
@@ -46,13 +43,10 @@ namespace System
             {
                 throw new ArgumentNullException("info");
             }
-            else
-            {
-                T value;
-                TryGetTarget(out value);
-                info.AddValue("TrackedObject", value, typeof(T));
-                info.AddValue("TrackResurrection", _trackResurrection);
-            }
+            T value;
+            TryGetTarget(out value);
+            info.AddValue("TrackedObject", value, typeof(T));
+            info.AddValue("TrackResurrection", _trackResurrection);
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
@@ -67,9 +61,11 @@ namespace System
                 {
                     oldHandle.Free();
                 }
-                catch (InvalidOperationException)
+                catch (InvalidOperationException exception)
                 {
-                    //Empty
+                    // The handle was freed or never initialized.
+                    // Nothing to do.
+                    GC.KeepAlive(exception);
                 }
             }
             _handle = GetNewHandle(value, _trackResurrection);
@@ -83,25 +79,19 @@ namespace System
             {
                 return false;
             }
-            else
+            try
             {
-                try
-                {
-                    object obj = _handle.Target;
-                    if (obj == null)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        target = obj as T;
-                        return true;
-                    }
-                }
-                catch (InvalidOperationException)
+                var obj = _handle.Target;
+                if (obj == null)
                 {
                     return false;
                 }
+                target = obj as T;
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                return false;
             }
         }
 

@@ -4,7 +4,7 @@ using System.Diagnostics.Contracts;
 
 namespace System.Threading.Tasks
 {
-    internal sealed class ContinuationTaskFromTask : Task
+    internal sealed class ContinuationTaskFromTask : Task, IContinuationTask
     {
         private Task _antecedent;
 
@@ -14,6 +14,14 @@ namespace System.Threading.Tasks
             Contract.Requires(action is Action<Task> || action is Action<Task, object>, "Invalid delegate type in ContinuationTaskFromTask");
             _antecedent = antecedent;
             CapturedContext = ExecutionContext.Capture();
+        }
+
+        Task IContinuationTask.Antecedent
+        {
+            get
+            {
+                return _antecedent;
+            }
         }
 
         /// <summary>

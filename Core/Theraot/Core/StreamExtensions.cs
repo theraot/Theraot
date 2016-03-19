@@ -18,21 +18,18 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("input");
             }
-            else if (ReferenceEquals(output, null))
+            if (ReferenceEquals(output, null))
             {
                 throw new ArgumentNullException("output");
             }
-            else
+            var buffer = new byte[INT_DefaultBufferSize];
+            int read;
+            do
             {
-                var buffer = new byte[INT_DefaultBufferSize];
-                int read;
-                do
-                {
-                    read = input.Read(buffer, 0, INT_DefaultBufferSize);
-                    output.Write(buffer, 0, read);
-                }
-                while (read != 0);
+                read = input.Read(buffer, 0, INT_DefaultBufferSize);
+                output.Write(buffer, 0, read);
             }
+            while (read != 0);
         }
 
 #else
@@ -52,21 +49,18 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("input");
             }
-            else if (ReferenceEquals(output, null))
+            if (ReferenceEquals(output, null))
             {
                 throw new ArgumentNullException("output");
             }
-            else
+            var buffer = new byte[bufferSize];
+            int read;
+            do
             {
-                var buffer = new byte[bufferSize];
-                int read;
-                do
-                {
-                    read = input.Read(buffer, 0, bufferSize);
-                    output.Write(buffer, 0, read);
-                }
-                while (read != 0);
+                read = input.Read(buffer, 0, bufferSize);
+                output.Write(buffer, 0, read);
             }
+            while (read != 0);
         }
 
 #else
@@ -79,10 +73,13 @@ namespace Theraot.Core
 
         public static void ReadComplete(this Stream stream, byte[] buffer, int offset, int length)
         {
-            var _stream = Check.NotNullArgument(stream, "stream");
+            if (ReferenceEquals(stream, null))
+            {
+                throw new ArgumentNullException("stream");
+            }
             while (length > 0)
             {
-                int delta = _stream.Read(buffer, offset, length);
+                var delta = stream.Read(buffer, offset, length);
                 if (delta <= 0)
                 {
                     throw new EndOfStreamException();
@@ -98,21 +95,15 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("stream");
             }
-            else
+            var streamAsMemoryStream = stream as MemoryStream;
+            if (streamAsMemoryStream != null)
             {
-                var _stream = stream as MemoryStream;
-                if (_stream != null)
-                {
-                    return _stream.ToArray();
-                }
-                else
-                {
-                    using (var memoryStream = new MemoryStream())
-                    {
-                        stream.CopyTo(memoryStream);
-                        return memoryStream.ToArray();
-                    }
-                }
+                return streamAsMemoryStream.ToArray();
+            }
+            using (var memoryStream = new MemoryStream())
+            {
+                stream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
             }
         }
     }

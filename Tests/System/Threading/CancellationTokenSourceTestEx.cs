@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System;
+using NUnit.Framework;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,6 +22,7 @@ namespace MonoTests.System.Threading
 
 #if FAT && (NET20 || NET30 || NET35)
         [Test]
+        [Category("RaceCondition")] // This test creates a race condition, that when resolved sequentially will fail
         public void RegisterWhileCancelling()
         {
             var cts = new CancellationTokenSource();

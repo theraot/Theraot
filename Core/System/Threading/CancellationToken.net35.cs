@@ -125,29 +125,41 @@ namespace System.Threading
 
         public CancellationTokenRegistration Register(Action callback)
         {
+            if (callback == null)
+            {
+                throw new ArgumentNullException("callback");
+            }
             return Register(callback, false);
         }
 
         public CancellationTokenRegistration Register(Action callback, bool useSynchronizationContext)
         {
+            if (callback == null)
+            {
+                throw new ArgumentNullException("callback");
+            }
             if (_source == null)
             {
                 return new CancellationTokenRegistration();
             }
-            else
-            {
-                return Source.Register(Check.NotNullArgument(callback, "callback"), useSynchronizationContext);
-            }
+            return _source.Register(callback, useSynchronizationContext);
         }
 
         public CancellationTokenRegistration Register(Action<object> callback, object state)
         {
-            return Register(callback, state, false);
+            if (callback == null)
+            {
+                throw new ArgumentNullException("callback");
+            }
+            return Register(() => callback(state), false);
         }
 
         public CancellationTokenRegistration Register(Action<object> callback, object state, bool useSynchronizationContext)
         {
-            Check.NotNullArgument(callback, "callback");
+            if (callback == null)
+            {
+                throw new ArgumentNullException("callback");
+            }
             return Register(() => callback(state), useSynchronizationContext);
         }
 
@@ -155,7 +167,7 @@ namespace System.Threading
         {
             if (!ReferenceEquals(_source, null) && _source.IsCancellationRequested)
             {
-                throw new Theraot.Core.NewOperationCanceledException(this);
+                throw new NewOperationCanceledException(this);
             }
         }
     }
