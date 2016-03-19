@@ -4,12 +4,15 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
+using Theraot.Core;
 using Theraot.Threading;
 
 namespace System.Threading.Tasks
 {
     public partial class Task
     {
+        private Action _promiseCheck = ActionHelper.GetNoopAction();
+
         internal Task(TaskStatus taskStatus, InternalTaskOptions internalTaskOptions)
         {
             _status = (int)taskStatus;
@@ -95,6 +98,18 @@ namespace System.Threading.Tasks
                     return true;
                 }
                 ThreadingHelper.SpinOnce(ref count);
+            }
+        }
+
+        internal void SetPromiseCheck(Action value)
+        {
+            if (value == null)
+            {
+                _promiseCheck = ActionHelper.GetNoopAction();
+            }
+            else
+            {
+                _promiseCheck = value;
             }
         }
 
@@ -209,6 +224,11 @@ namespace System.Threading.Tasks
             {
                 CancellationToken = default(CancellationToken)
             };
+        }
+
+        private void PromiseCheck()
+        {
+            _promiseCheck.Invoke();
         }
     }
 
