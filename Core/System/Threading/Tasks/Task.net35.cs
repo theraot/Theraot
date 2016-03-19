@@ -246,8 +246,8 @@ namespace System.Threading.Tasks
         {
             get
             {
-                var status = Thread.VolatileRead(ref _status);
-                return status == (int)TaskStatus.RanToCompletion || status == (int)TaskStatus.Faulted || status == (int)TaskStatus.Canceled;
+                var status = Status; // So PromiseCheck runs
+                return status == TaskStatus.RanToCompletion || status == TaskStatus.Faulted || status == TaskStatus.Canceled;
             }
         }
 
@@ -464,7 +464,22 @@ namespace System.Threading.Tasks
                         return true;
                 }
             } while (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < milliseconds);
-            return false;
+            switch (Status)
+            {
+                case TaskStatus.RanToCompletion:
+                    return true;
+
+                case TaskStatus.Canceled:
+                    ThrowIfExceptional(true);
+                    return true;
+
+                case TaskStatus.Faulted:
+                    ThrowIfExceptional(true);
+                    return true;
+
+                default:
+                    return false;
+            }
         }
 
         internal static Task InternalCurrentIfAttached(TaskCreationOptions creationOptions)
