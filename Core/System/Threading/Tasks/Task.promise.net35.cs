@@ -45,9 +45,28 @@ namespace System.Threading.Tasks
             Scheduler = TaskScheduler.Default;
         }
 
-        public static Task FromCancellation(CancellationToken token)
+        public static Task FromCanceled(CancellationToken cancellationToken)
         {
-            var result = new Task(TaskStatus.WaitingForActivation, InternalTaskOptions.PromiseTask)
+            return FromCancellation(cancellationToken);
+        }
+
+        public static Task<TResult> FromCanceled<TResult>(CancellationToken cancellationToken)
+        {
+            return FromCancellation<TResult>(cancellationToken);
+        }
+
+        public static Task<TResult> FromResult<TResult>(TResult result)
+        {
+            return new Task<TResult>(TaskStatus.RanToCompletion, InternalTaskOptions.DoNotDispose)
+            {
+                CancellationToken = default(CancellationToken),
+                InternalResult = result
+            };
+        }
+
+        internal static Task<TResult> FromCancellation<TResult>(CancellationToken token)
+        {
+            var result = new Task<TResult>(TaskStatus.WaitingForActivation, InternalTaskOptions.PromiseTask)
             {
                 CancellationToken = token,
                 Scheduler = TaskScheduler.Default
@@ -63,13 +82,22 @@ namespace System.Threading.Tasks
             return result;
         }
 
-        public static Task<TResult> FromResult<TResult>(TResult result)
+        internal static Task FromCancellation(CancellationToken token)
         {
-            return new Task<TResult>(TaskStatus.RanToCompletion, InternalTaskOptions.DoNotDispose)
+            var result = new Task(TaskStatus.WaitingForActivation, InternalTaskOptions.PromiseTask)
             {
-                CancellationToken = default(CancellationToken),
-                InternalResult = result
+                CancellationToken = token,
+                Scheduler = TaskScheduler.Default
             };
+            if (token.IsCancellationRequested)
+            {
+                result.InternalCancel(false);
+            }
+            else if (token.CanBeCanceled)
+            {
+                token.Register(() => result.InternalCancel(false));
+            }
+            return result;
         }
 
         internal bool SetCompleted(bool preventDoubleExecution)
@@ -103,14 +131,7 @@ namespace System.Threading.Tasks
 
         internal void SetPromiseCheck(Action value)
         {
-            if (value == null)
-            {
-                _promiseCheck = ActionHelper.GetNoopAction();
-            }
-            else
-            {
-                _promiseCheck = value;
-            }
+            _promiseCheck = value ?? ActionHelper.GetNoopAction();
         }
 
         internal bool TrySetCanceled(CancellationToken cancellationToken)
