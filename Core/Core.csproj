@@ -354,7 +354,7 @@
     <Compile Include="System\Runtime\CompilerServices\YieldAwaitable.net40.cs" />
     <Compile Include="System\Runtime\ExceptionServices\ExceptionDispatchInfo.net40.cs" />
     <Compile Include="System\Runtime\TargetedPatchingOptOutAttribute.net35.cs" />
-    <Compile Include="System\Security\SecuritySafeCriticalAttribute.net35.cs" />
+    <Compile Include="System\Security\SecuritySafeCriticalAttribute.net30.cs" />
     <Compile Include="System\SR.cs" />
     <Compile Include="System\Threading\Barrier.net35.cs" />
     <Compile Include="System\Threading\CancellationToken.net35.cs" />
