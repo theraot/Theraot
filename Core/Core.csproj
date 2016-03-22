@@ -379,6 +379,7 @@
     <Compile Include="System\Threading\LockRecursionPolicy.net30.cs" />
     <Compile Include="System\Threading\ReaderWriterLockSlim.helpers.cs" />
     <Compile Include="System\Threading\ReaderWriterLockSlim.net35.cs" />
+    <Compile Include="System\Threading\Tasks\AsyncCompatLibExtensions.net40.asyncbridge.cs" />
     <Compile Include="System\Threading\Tasks\AwaitTaskContinuation.cs" />
     <Compile Include="System\Threading\Tasks\ContinuationResultTaskFromResultTask.cs" />
     <Compile Include="System\Threading\Tasks\ContinuationResultTaskFromTask.cs" />
@@ -405,6 +406,8 @@
     <Compile Include="System\Threading\Tasks\TaskCompletionSource.net35.cs" />
     <Compile Include="System\Threading\Tasks\TaskContinuation.net35.cs" />
     <Compile Include="System\Threading\Tasks\TaskContinuationOptions.net35.cs" />
+    <Compile Include="System\Threading\Tasks\TaskEx.net35.asyncbridge.cs" />
+    <Compile Include="System\Threading\Tasks\TaskEx.asyncbridge.cs" />
     <Compile Include="System\Threading\Tasks\TaskExceptionHolder.net35.cs" />
     <Compile Include="System\Threading\Tasks\TaskExtensions.net35.cs" />
     <Compile Include="System\Threading\Tasks\TaskFactory.net35.cs" />
