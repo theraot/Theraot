@@ -406,6 +406,7 @@
     <Compile Include="System\Threading\Tasks\TaskContinuation.net35.cs" />
     <Compile Include="System\Threading\Tasks\TaskContinuationOptions.net35.cs" />
     <Compile Include="System\Threading\Tasks\TaskExceptionHolder.net35.cs" />
+    <Compile Include="System\Threading\Tasks\TaskExtensions.net35.cs" />
     <Compile Include="System\Threading\Tasks\TaskFactory.net35.cs" />
     <Compile Include="System\Threading\Tasks\TaskScheduler.microsoft.net35.cs" />
     <Compile Include="System\Threading\Tasks\TaskSchedulerAwaitTaskContinuation.net35.cs" />
