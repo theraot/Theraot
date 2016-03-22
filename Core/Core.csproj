@@ -351,6 +351,7 @@
     <Compile Include="System\Runtime\CompilerServices\INotifyCompletion.net40.cs" />
     <Compile Include="System\Runtime\CompilerServices\IRuntimeVariables.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\IStrongBox.net30.cs" />
+    <Compile Include="System\Runtime\CompilerServices\YieldAwaitable.net40.cs" />
     <Compile Include="System\Runtime\ExceptionServices\ExceptionDispatchInfo.net40.cs" />
     <Compile Include="System\Runtime\TargetedPatchingOptOutAttribute.net35.cs" />
     <Compile Include="System\Security\SecuritySafeCriticalAttribute.net35.cs" />
@@ -376,6 +377,7 @@
     <Compile Include="System\Threading\Tasks\StandardTaskContinuation.cs" />
     <Compile Include="System\Threading\Tasks\SynchronizationContextAwaitTaskContinuation.cs" />
     <Compile Include="System\Threading\Tasks\Task.delay.net35.cs" />
+    <Compile Include="System\Threading\Tasks\Task.yield.net35.cs" />
     <Compile Include="System\Threading\Tasks\Task.when.net35.cs" />
     <Compile Include="System\Threading\Tasks\Task.wait.net35.cs" />
     <Compile Include="System\Threading\Tasks\Task.promise.net35.cs" />

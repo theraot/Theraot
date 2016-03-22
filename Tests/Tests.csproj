@@ -279,6 +279,7 @@
     <Compile Include="System\Numerics\BigIntegerTestEx.cs" />
     <Compile Include="System\Numerics\BigIntegerTest.cs" />
     <Compile Include="System\Runtime\CompilationServices\ConditionalWeakTableTest.cs" />
+    <Compile Include="System\Runtime\CompilationServices\YieldAwaitableTest.cs" />
     <Compile Include="System\Runtime\ExceptionServices\ExceptionDispatchInfoTestEx.cs" />
     <Compile Include="System\Threading\CancellationTokenSourceTestEx.cs" />
     <Compile Include="System\Threading\ReaderWriterLockSlimTest.cs" />
