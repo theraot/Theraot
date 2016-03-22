@@ -42,7 +42,7 @@ namespace System.Threading.Tasks
         public Task StartNew(Action action, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
             var result = new Task(action, Task.InternalCurrentIfAttached(creationOptions), cancellationToken, creationOptions, InternalTaskOptions.None, scheduler);
-            result.InternalStart(_scheduler, false, true);
+            result.InternalStart(scheduler, false, true);
             return result;
         }
 
@@ -70,7 +70,7 @@ namespace System.Threading.Tasks
         public Task StartNew(Action<object> action, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
             var result = new Task(action, state, Task.InternalCurrentIfAttached(creationOptions), cancellationToken, creationOptions, InternalTaskOptions.None, scheduler);
-            result.InternalStart(_scheduler, false, true);
+            result.InternalStart(scheduler, false, true);
             return result;
         }
 
@@ -98,7 +98,7 @@ namespace System.Threading.Tasks
         public Task<TResult> StartNew<TResult>(Func<TResult> function, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
             var result = new Task<TResult>(function, cancellationToken, creationOptions, scheduler);
-            result.InternalStart(_scheduler, false, true);
+            result.InternalStart(scheduler, false, true);
             return result;
         }
 
@@ -126,7 +126,7 @@ namespace System.Threading.Tasks
         public Task<TResult> StartNew<TResult>(Func<object, TResult> function, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
             var result = new Task<TResult>(function, state, cancellationToken, creationOptions, scheduler);
-            result.InternalStart(_scheduler, false, true);
+            result.InternalStart(scheduler, false, true);
             return result;
         }
     }
