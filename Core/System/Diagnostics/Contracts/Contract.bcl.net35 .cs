@@ -11,6 +11,8 @@
 ** Implementation details of CLR Contracts.
 **
 ===========================================================*/
+#define FEATURE_CORECLR
+
 #define DEBUG // The behavior of this contract library should be consistent regardless of build type.
 
 #if SILVERLIGHT
@@ -31,7 +33,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Reflection;
-
+using System.Runtime.CompilerServices;
 #if FEATURE_RELIABILITY_CONTRACTS
 using System.Runtime.ConstrainedExecution;
 #endif
@@ -58,7 +60,7 @@ namespace System.Diagnostics.Contracts
         static partial void AssertMustUseRewriter(ContractFailureKind kind, String contractKind)
         {
             if (_assertingMustUseRewriter)
-                System.Diagnostics.Assert.Fail("Asserting that we must use the rewriter went reentrant.", "Didn't rewrite this mscorlib?");
+                ContractHelperEx.Fail("Asserting that we must use the rewriter went reentrant."); // Didn't rewrite this mscorlib?
             _assertingMustUseRewriter = true;
 
             // For better diagnostics, report which assembly is at fault.  Walk up stack and
@@ -79,7 +81,8 @@ namespace System.Diagnostics.Contracts
             if (probablyNotRewritten == null)
                 probablyNotRewritten = thisAssembly;
             String simpleName = probablyNotRewritten.GetName().Name;
-            System.Runtime.CompilerServices.ContractHelper.TriggerFailure(kind, Environment.GetResourceString("MustUseCCRewrite", contractKind, simpleName), null, null, null);
+            System.Runtime.CompilerServices.ContractHelper.TriggerFailure(kind, string.Format("The code has not been rewriten. ContractKind: {0} - Source: {1}", contractKind, simpleName), null, null, null);
+
 
             _assertingMustUseRewriter = false;
         }
@@ -102,7 +105,8 @@ namespace System.Diagnostics.Contracts
         static partial void ReportFailure(ContractFailureKind failureKind, String userMessage, String conditionText, Exception innerException)
         {
             if (failureKind < ContractFailureKind.Precondition || failureKind > ContractFailureKind.Assume)
-                throw new ArgumentException(Environment.GetResourceString("Arg_EnumIllegalVal", failureKind), "failureKind");
+                throw new ArgumentException(string.Format("Invalid enum value: {0}", failureKind), "failureKind");
+
             Contract.EndContractBlock();
 
             // displayMessage == null means: yes we handled it. Otherwise it is the localized failure message
@@ -309,7 +313,7 @@ namespace System.Runtime.CompilerServices
                 // would be a perf hit and wouldn't significantly improve reliability.
                 // UE: Please mention reliable event handlers should also be marked with the 
                 // PrePrepareMethodAttribute to avoid CER eager preparation work when ngen'ed.
-                System.Runtime.CompilerServices.RuntimeHelpers.PrepareContractedDelegate(value);
+                // System.Runtime.CompilerServices.RuntimeHelpers.PrepareContractedDelegate(value); // TODO? I'm afraid I can't do that.
                 lock (lockObject)
                 {
                     contractFailedEvent += value;
@@ -347,7 +351,7 @@ namespace System.Runtime.CompilerServices
         static partial void RaiseContractFailedEventImplementation(ContractFailureKind failureKind, String userMessage, String conditionText, Exception innerException, ref string resultFailureMessage)
         {
             if (failureKind < ContractFailureKind.Precondition || failureKind > ContractFailureKind.Assume)
-                throw new ArgumentException(Environment.GetResourceString("Arg_EnumIllegalVal", failureKind), "failureKind");
+                throw new ArgumentException(string.Format("Invalid enum value: {0}", failureKind), "failureKind");
             Contract.EndContractBlock();
 
             string returnValue;
@@ -435,12 +439,7 @@ namespace System.Runtime.CompilerServices
             {
                 throw new ContractException(kind, displayMessage, userMessage, conditionText, innerException);
             }
-            // May need to rethink Assert.Fail w/ TaskDialogIndirect as a model.  Window title.  Main instruction.  Content.  Expanded info.
-            // Optional info like string for collapsed text vs. expanded text.
-            String windowTitle = Environment.GetResourceString(GetResourceNameForFailure(kind));
-            const int numStackFramesToSkip = 2;  // To make stack traces easier to read
-            System.Diagnostics.Assert.Fail(conditionText, displayMessage, windowTitle, COR_E_CODECONTRACTFAILED, StackTrace.TraceFormat.Normal, numStackFramesToSkip);
-            // If we got here, the user selected Ignore.  Continue.
+            ContractHelperEx.Fail(displayMessage);
         }
 
         private static String GetResourceNameForFailure(ContractFailureKind failureKind)
@@ -492,15 +491,7 @@ namespace System.Runtime.CompilerServices
             // Note that both the conditionText and userMessage may be null.  Also, 
             // on Silverlight we may not be able to look up a friendly string for the
             // error message.  Let's leverage Silverlight's default error message there.
-            String failureMessage;
-            if (!String.IsNullOrEmpty(conditionText))
-            {
-                resourceName += "_Cnd";
-                failureMessage = Environment.GetResourceString(resourceName, conditionText);
-            }
-            else {
-                failureMessage = Environment.GetResourceString(resourceName);
-            }
+            string failureMessage = ContractHelperEx.GetFailureMessage(failureKind, conditionText);
 
             // Now add in the user message, if present.
             if (!String.IsNullOrEmpty(userMessage))

@@ -908,20 +908,6 @@ namespace System.Diagnostics.Contracts
 
         #endregion
     }
-
-    public enum ContractFailureKind
-    {
-        Precondition,
-        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Postcondition")]
-        Postcondition,
-        [SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Postcondition")]
-        PostconditionOnException,
-        Invariant,
-        Assert,
-        Assume,
-    }
-
-
 }
 
 // Note: In .NET FX 4.5, we duplicated the ContractHelper class in the System.Runtime.CompilerServices

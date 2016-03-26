@@ -357,6 +357,7 @@
     <Compile Include="System\Runtime\CompilerServices\Closure.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\ConditionalWeakTable.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\ConfiguredTaskAwaitable.net40.cs" />
+    <Compile Include="System\Runtime\CompilerServices\ContractHelperEx.cs" />
     <Compile Include="System\Runtime\CompilerServices\IAsyncMethodBuilder.cs" />
     <Compile Include="System\Runtime\CompilerServices\IAsyncStateMachine.net40.cs" />
     <Compile Include="System\Runtime\CompilerServices\ICriticalNotifyCompletion.net40.cs" />
