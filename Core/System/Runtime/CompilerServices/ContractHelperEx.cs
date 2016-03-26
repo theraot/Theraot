@@ -1,10 +1,8 @@
 #if NET20 || NET30 || NET35 || NET40
 
-// ==++==
-//
-//   Copyright (c) Microsoft Corporation.  All rights reserved.
-//
-// ==--==
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
 using System.Security;
@@ -29,7 +27,7 @@ namespace System.Runtime.CompilerServices
 
         internal static string GetFailureMessage(ContractFailureKind failureKind, string conditionText = "")
         {
-            string result = null;
+            string result;
             var withCondition = !string.IsNullOrEmpty(conditionText);
             switch (failureKind)
             {
@@ -58,9 +56,8 @@ namespace System.Runtime.CompilerServices
                     break;
 
                 default:
-                    // TODO implement Contract.Assume
-                    // Contract.Assume(false, "Unreachable code");
                     result = "Assumption failed.";
+                    Contract.Assume(false, "Unreachable code");
                     break;
             }
             return result;
