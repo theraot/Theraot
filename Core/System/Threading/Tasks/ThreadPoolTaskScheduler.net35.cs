@@ -88,11 +88,16 @@ namespace System.Threading.Tasks
         [SecurityCritical]
         protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
         {
+            if ((task.CreationOptions & TaskCreationOptions.LongRunning) != 0)
+            {
+                // LongRunning task are going to run on a dedicated Thread.
+                return false;
+            }
             // Propagate the return value of Task.ExecuteEntry()
             bool result;
             try
             {
-                result = task.ExecuteEntry(false); // handles switching Task.Current etc.
+                result = task.ExecuteEntry(true); // handles switching Task.Current etc.
             }
             finally
             {
