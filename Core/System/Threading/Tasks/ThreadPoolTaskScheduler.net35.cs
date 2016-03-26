@@ -26,6 +26,17 @@ namespace System.Threading.Tasks
     /// </summary>
     internal sealed class ThreadPoolTaskScheduler: TaskScheduler
     {
+        private static readonly WaitCallback _executeCallback = TaskExecuteCallback;
+
+        private static void TaskExecuteCallback(object obj)
+        {
+            var task = obj as Task;
+            if (task != null)
+            {
+                task.ExecuteEntry(true);
+            }
+        }
+
         /// <summary>
         /// Constructs a new ThreadPool task scheduler object
         /// </summary>
@@ -52,7 +63,7 @@ namespace System.Threading.Tasks
         [SecurityCritical]
         protected internal override void QueueTask(Task task)
         {
-            if ((task.Options & TaskCreationOptions.LongRunning) != 0)
+            if ((task.CreationOptions & TaskCreationOptions.LongRunning) != 0)
             {
                 // Run LongRunning tasks on their own dedicated thread.
                 Thread thread = new Thread(s_longRunningThreadWork);
@@ -61,9 +72,8 @@ namespace System.Threading.Tasks
             }
             else
             {
-                // Normal handling for non-LongRunning tasks.
-                bool forceToGlobalQueue = ((task.Options & TaskCreationOptions.PreferFairness) != 0);
-                ThreadPool.UnsafeQueueCustomWorkItem(task, forceToGlobalQueue);
+                // TODO: TaskCreationOptions.PreferFairness ?
+                ThreadPool.QueueUserWorkItem(_executeCallback, task);
             }
         }
         
@@ -78,47 +88,35 @@ namespace System.Threading.Tasks
         [SecurityCritical]
         protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
         {
-            // If the task was previously scheduled, and we can't pop it, then return false.
-            if (taskWasPreviouslyQueued && !ThreadPool.TryPopCustomWorkItem(task))
-                return false;
-
             // Propagate the return value of Task.ExecuteEntry()
-            bool rval = false;
+            bool result;
             try
             {
-                rval = task.ExecuteEntry(false); // handles switching Task.Current etc.
+                result = task.ExecuteEntry(false); // handles switching Task.Current etc.
             }
             finally
             {
                 //   Only call NWIP() if task was previously queued
-                if(taskWasPreviouslyQueued) NotifyWorkItemProgress();
+                if (taskWasPreviouslyQueued)
+                {
+                    NotifyWorkItemProgress();
+                }
             }
 
-            return rval;
+            return result;
         }
 
         [SecurityCritical]
-        protected internal override bool TryDequeue(Task task)
+        protected override bool TryDequeue(Task task)
         {
-            // just delegate to TP
-            return ThreadPool.TryPopCustomWorkItem(task);
+            throw new Theraot.Core.InternalSpecialCancelException("ThreadPool");
         }
 
         [SecurityCritical]
         protected override IEnumerable<Task> GetScheduledTasks()
         {
-            return FilterTasksFromWorkItems(ThreadPool.GetQueuedWorkItems());
-        }
-
-        private IEnumerable<Task> FilterTasksFromWorkItems(IEnumerable<IThreadPoolWorkItem> tpwItems)
-        {
-            foreach (IThreadPoolWorkItem tpwi in tpwItems)
-            {
-                if (tpwi is Task)
-                {
-                    yield return (Task)tpwi;
-                }
-            }
+            // TODO ?
+            yield break;
         }
 
         /// <summary>
@@ -126,7 +124,7 @@ namespace System.Threading.Tasks
         /// </summary>
         internal override void NotifyWorkItemProgress()
         {
-            ThreadPool.NotifyWorkItemProgress();
+            // TODO ?
         }
 
         /// <summary>
