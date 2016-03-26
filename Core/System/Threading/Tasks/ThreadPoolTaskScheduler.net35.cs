@@ -9,51 +9,41 @@
 // TaskScheduler.cs
 //
 //
-// This file contains the primary interface and management of tasks and queues.  
+// This file contains the primary interface and management of tasks and queues.
 //
 // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-using System;
-using System.Security;
-using System.Diagnostics.Contracts;
 using System.Collections.Generic;
-using System.Text;
+using System.Diagnostics.Contracts;
+using System.Security;
 
 namespace System.Threading.Tasks
 {
     /// <summary>
     /// An implementation of TaskScheduler that uses the ThreadPool scheduler
     /// </summary>
-    internal sealed class ThreadPoolTaskScheduler: TaskScheduler
+    internal sealed class ThreadPoolTaskScheduler : TaskScheduler
     {
         private static readonly WaitCallback _executeCallback = TaskExecuteCallback;
 
-        private static void TaskExecuteCallback(object obj)
+        // static delegate for threads allocated to handle LongRunning tasks.
+        private static readonly ParameterizedThreadStart _longRunningThreadWork = LongRunningThreadWork;
+
+        /// <summary>
+        /// This is the only scheduler that returns false for this property, indicating that the task entry codepath is unsafe (CAS free)
+        /// since we know that the underlying scheduler already takes care of atomic transitions from queued to non-queued.
+        /// </summary>
+        internal override bool RequiresAtomicStartTransition
         {
-            var task = obj as Task;
-            if (task != null)
-            {
-                task.ExecuteEntry(true);
-            }
+            get { return false; }
         }
 
         /// <summary>
-        /// Constructs a new ThreadPool task scheduler object
+        /// Notifies the scheduler that work is progressing (no-op).
         /// </summary>
-        internal ThreadPoolTaskScheduler()
+        internal override void NotifyWorkItemProgress()
         {
-            int id = base.Id; // force ID creation of the default scheduler
-        }
-
-        // static delegate for threads allocated to handle LongRunning tasks.
-        private static readonly ParameterizedThreadStart s_longRunningThreadWork = new ParameterizedThreadStart(LongRunningThreadWork);
-
-        private static void LongRunningThreadWork(object obj)
-        {
-            Contract.Requires(obj != null, "TaskScheduler.LongRunningThreadWork: obj is null");
-            Task t = obj as Task;
-            Contract.Assert(t != null, "TaskScheduler.LongRunningThreadWork: t is null");
-            t.ExecuteEntry(false);
+            // TODO ?
         }
 
         /// <summary>
@@ -66,8 +56,10 @@ namespace System.Threading.Tasks
             if ((task.CreationOptions & TaskCreationOptions.LongRunning) != 0)
             {
                 // Run LongRunning tasks on their own dedicated thread.
-                Thread thread = new Thread(s_longRunningThreadWork);
-                thread.IsBackground = true; // Keep this thread from blocking process shutdown
+                var thread = new Thread(_longRunningThreadWork)
+                {
+                    IsBackground = true // Keep this thread from blocking process shutdown
+                };
                 thread.Start(task);
             }
             else
@@ -76,15 +68,20 @@ namespace System.Threading.Tasks
                 ThreadPool.QueueUserWorkItem(_executeCallback, task);
             }
         }
-        
-        /// <summary>
-        /// This internal function will do this:
-        ///   (1) If the task had previously been queued, attempt to pop it and return false if that fails.
-        ///   (2) Propagate the return value from Task.ExecuteEntry() back to the caller.
-        /// 
-        /// IMPORTANT NOTE: TryExecuteTaskInline will NOT throw task exceptions itself. Any wait code path using this function needs
-        /// to account for exceptions that need to be propagated, and throw themselves accordingly.
-        /// </summary>
+
+        [SecurityCritical]
+        protected override IEnumerable<Task> GetScheduledTasks()
+        {
+            // TODO ?
+            yield break;
+        }
+
+        [SecurityCritical]
+        protected override bool TryDequeue(Task task)
+        {
+            throw new Theraot.Core.InternalSpecialCancelException("ThreadPool");
+        }
+
         [SecurityCritical]
         protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
         {
@@ -111,34 +108,27 @@ namespace System.Threading.Tasks
             return result;
         }
 
-        [SecurityCritical]
-        protected override bool TryDequeue(Task task)
+        private static void LongRunningThreadWork(object obj)
         {
-            throw new Theraot.Core.InternalSpecialCancelException("ThreadPool");
+            Contract.Requires(obj != null, "TaskScheduler.LongRunningThreadWork: obj is null");
+            var task = obj as Task;
+            if (task != null)
+            {
+                task.ExecuteEntry(false);
+            }
+            else
+            {
+                Contract.Assert(false, "TaskScheduler.LongRunningThreadWork: t is null");
+            }
         }
 
-        [SecurityCritical]
-        protected override IEnumerable<Task> GetScheduledTasks()
+        private static void TaskExecuteCallback(object obj)
         {
-            // TODO ?
-            yield break;
-        }
-
-        /// <summary>
-        /// Notifies the scheduler that work is progressing (no-op).
-        /// </summary>
-        internal override void NotifyWorkItemProgress()
-        {
-            // TODO ?
-        }
-
-        /// <summary>
-        /// This is the only scheduler that returns false for this property, indicating that the task entry codepath is unsafe (CAS free)
-        /// since we know that the underlying scheduler already takes care of atomic transitions from queued to non-queued.
-        /// </summary>
-        internal override bool RequiresAtomicStartTransition
-        {
-            get { return false; }
+            var task = obj as Task;
+            if (task != null)
+            {
+                task.ExecuteEntry(true);
+            }
         }
     }
 }
