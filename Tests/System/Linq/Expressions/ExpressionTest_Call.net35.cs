@@ -89,7 +89,7 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         [Test]
-#if  || NET30 || NET35
+#if  NET30 || NET35
         [ExpectedException(typeof(ArgumentNullException))]
 #else
         [ExpectedException (typeof (ArgumentException))]
@@ -104,8 +104,8 @@ namespace MonoTests.System.Linq.Expressions
         public void InstanceTypeDoesntMatchMethodDeclaringType ()
         {
 #if MOBILE
-			// ensure that String.Intern won't be removed by the linker
-			string s = String.Intern (String.Empty);
+            // ensure that String.Intern won't be removed by the linker
+            string s = String.Intern (String.Empty);
 #endif
             Expression.Call (Expression.Constant (1), typeof (string).GetMethod ("Intern"));
         }

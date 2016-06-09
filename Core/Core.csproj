@@ -1,723 +1,719 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<PropertyGroup>
-		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-		<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-		<ProjectGuid>{B5078871-4299-49ED-B921-3B5EBE57336A}</ProjectGuid>
-		<OutputType>Library</OutputType>
-		<AppDesignerFolder>Properties</AppDesignerFolder>
-		<RootNamespace>Theraot.Core</RootNamespace>
-		<AssemblyName>Theraot.Core</AssemblyName>
-		<FileAlignment>512</FileAlignment>
-		<TargetFrameworkProfile>
-		</TargetFrameworkProfile>
-		<TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-		<ReleaseVersion>2.0.0</ReleaseVersion>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-		<DebugSymbols>True</DebugSymbols>
-		<DebugType>full</DebugType>
-		<Optimize>False</Optimize>
-		<OutputPath>bin\Debug\</OutputPath>
-		<DefineConstants>TRACE;DEBUG;FAT;NET35</DefineConstants>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-		<Prefer32Bit>false</Prefer32Bit>
-		<LangVersion>5</LangVersion>
-		<TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-		<Optimize>True</Optimize>
-		<OutputPath>bin\Release\</OutputPath>
-		<DefineConstants>;NET35</DefineConstants>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-		<Prefer32Bit>false</Prefer32Bit>
-		<LangVersion>5</LangVersion>
-		<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET35|AnyCPU'">
-		<Optimize>False</Optimize>
-		<OutputPath>bin\Debug_NET35\</OutputPath>
-		<DefineConstants>TRACE;DEBUG;FAT;NET35</DefineConstants>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-		<Prefer32Bit>false</Prefer32Bit>
-		<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-		<LangVersion>5</LangVersion>
-		<DebugSymbols>true</DebugSymbols>
-		<DebugType>full</DebugType>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET40|AnyCPU'">
-		<Optimize>False</Optimize>
-		<OutputPath>bin\Debug_NET40\</OutputPath>
-		<DefineConstants>TRACE;DEBUG;FAT;NET40</DefineConstants>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-		<Prefer32Bit>false</Prefer32Bit>
-		<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-		<LangVersion>5</LangVersion>
-		<DebugSymbols>true</DebugSymbols>
-		<DebugType>full</DebugType>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET45|AnyCPU'">
-		<Optimize>False</Optimize>
-		<OutputPath>bin\Debug_NET45\</OutputPath>
-		<DefineConstants>TRACE;DEBUG;FAT;NET45</DefineConstants>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-		<Prefer32Bit>false</Prefer32Bit>
-		<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-		<LangVersion>5</LangVersion>
-		<DebugSymbols>true</DebugSymbols>
-		<DebugType>full</DebugType>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35|AnyCPU' ">
-		<Optimize>True</Optimize>
-		<OutputPath>bin\NET35\</OutputPath>
-		<DefineConstants>NET35</DefineConstants>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-		<Prefer32Bit>false</Prefer32Bit>
-		<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-		<LangVersion>5</LangVersion>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40|AnyCPU' ">
-		<Optimize>True</Optimize>
-		<OutputPath>bin\NET40\</OutputPath>
-		<DefineConstants>NET40</DefineConstants>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-		<Prefer32Bit>false</Prefer32Bit>
-		<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-		<LangVersion>5</LangVersion>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET45|AnyCPU' ">
-		<Optimize>True</Optimize>
-		<OutputPath>bin\NET45\</OutputPath>
-		<DefineConstants>NET45</DefineConstants>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-		<Prefer32Bit>false</Prefer32Bit>
-		<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-		<LangVersion>5</LangVersion>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35_FAT|AnyCPU' ">
-		<Optimize>True</Optimize>
-		<OutputPath>bin\NET35_FAT\</OutputPath>
-		<DefineConstants>NET35;FAT</DefineConstants>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-		<Prefer32Bit>false</Prefer32Bit>
-		<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-		<LangVersion>5</LangVersion>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40_FAT|AnyCPU' ">
-		<Optimize>True</Optimize>
-		<OutputPath>bin\NET40_FAT\</OutputPath>
-		<DefineConstants>NET40;FAT</DefineConstants>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-		<Prefer32Bit>false</Prefer32Bit>
-		<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-		<LangVersion>5</LangVersion>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET45_FAT|AnyCPU' ">
-		<Optimize>True</Optimize>
-		<OutputPath>bin\NET45_FAT\</OutputPath>
-		<DefineConstants>NET45;FAT</DefineConstants>
-		<ErrorReport>prompt</ErrorReport>
-		<WarningLevel>4</WarningLevel>
-		<Prefer32Bit>false</Prefer32Bit>
-		<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-		<LangVersion>5</LangVersion>
-	</PropertyGroup>
-	<PropertyGroup>
-		<DefineConstants Condition=" !$(DefineConstants.Contains(';NET')) ">$(DefineConstants);$(TargetFrameworkVersion.Replace("v", "NET").Replace(".", ""))</DefineConstants>
-		<DefineConstants Condition=" $(DefineConstants.Contains(';NET')) ">$(DefineConstants.Remove($(DefineConstants.LastIndexOf(";NET"))));$(TargetFrameworkVersion.Replace("v", "NET").Replace(".", ""))</DefineConstants>
-	</PropertyGroup>
-	<PropertyGroup>
-		<SignAssembly>true</SignAssembly>
-	</PropertyGroup>
-	<PropertyGroup>
-		<AssemblyOriginatorKeyFile>OpenSourceKey.snk</AssemblyOriginatorKeyFile>
-	</PropertyGroup>
-	<ItemGroup>
-		<Compile Include="CLSCompliant.cs" />
-		<Compile Include="System\Action10.net35.cs" />
-		<Compile Include="System\Action11.net35.cs" />
-		<Compile Include="System\Action12.net35.cs" />
-		<Compile Include="System\Action13.net35.cs" />
-		<Compile Include="System\Action14.net35.cs" />
-		<Compile Include="System\Action15.net35.cs" />
-		<Compile Include="System\Action16.net35.cs" />
-		<Compile Include="System\Action5.net35.cs" />
-		<Compile Include="System\Action6.net35.cs" />
-		<Compile Include="System\Action7.net35.cs" />
-		<Compile Include="System\Action8.net35.cs" />
-		<Compile Include="System\Action9.net35.cs" />
-		<Compile Include="System\Collections\Concurrent\ConcurrentDictionary.net35.cs" />
-		<Compile Include="System\Collections\Concurrent\ConcurrentQueue.net35.cs" />
-		<Compile Include="System\Collections\Concurrent\IProducerConsumerCollection.net35.cs" />
-		<Compile Include="System\Collections\Generic\SortedSet.net35.cs" />
-		<Compile Include="System\Collections\ObjectModel\ReadOnlyDictionary.ValueCollection.net40.cs" />
-		<Compile Include="System\Collections\ObjectModel\ReadOnlyDictionary.KeyCollection.net40.cs" />
-		<Compile Include="System\Collections\ObjectModel\ReadOnlyDictionary.net40.cs" />
-		<Compile Include="System\Collections\StructuralComparisons.net35.cs" />
-		<Compile Include="System\Diagnostics\Contracts\Contract.bcl.net35 .cs" />
-		<Compile Include="System\Diagnostics\Contracts\Contract.net35.cs" />
-		<Compile Include="System\Diagnostics\Contracts\ContractAbbreviatorAttribute.net40.cs" />
-		<Compile Include="System\Diagnostics\Contracts\ContractArgumentValidatorAttribute.net40.cs" />
-		<Compile Include="System\Diagnostics\Contracts\ContractClassAttribute.net35.cs" />
-		<Compile Include="System\Diagnostics\Contracts\ContractClassForAttribute.net35.cs" />
-		<Compile Include="System\Diagnostics\Contracts\ContractException.net40.cs" />
-		<Compile Include="System\Diagnostics\Contracts\ContractInvariantMethodAttribute.net35.cs" />
-		<Compile Include="System\Diagnostics\Contracts\ContractOptionAttribute.net40.cs" />
-		<Compile Include="System\Diagnostics\Contracts\ContractPublicPropertyNameAttribute.net35.cs" />
-		<Compile Include="System\Diagnostics\Contracts\ContractReferenceAssemblyAttribute.net40.cs" />
-		<Compile Include="System\Diagnostics\Contracts\ContractRuntimeIgnoredAttribute.net35.cs" />
-		<Compile Include="System\Diagnostics\Contracts\ContractVerificationAttribute.net35.cs" />
-		<Compile Include="System\Dynamic\Utils\CacheDict.cs" />
-		<Compile Include="System\Dynamic\Utils\ContractsUtil.cs" />
-		<Compile Include="System\Dynamic\Utils\DelegateHelpers.cs" />
-		<Compile Include="System\Dynamic\Utils\Error.cs" />
-		<Compile Include="System\Dynamic\Utils\ExpressionUtils.cs" />
-		<Compile Include="System\Dynamic\Utils\ExpressionVisitorUtils.cs" />
-		<Compile Include="System\Dynamic\Utils\Helpers.cs" />
-		<Compile Include="System\Dynamic\Utils\ListArgumentProvider.cs" />
-		<Compile Include="System\Dynamic\Utils\Strings.cs" />
-		<Compile Include="System\Dynamic\Utils\TrueReadOnlyCollection.cs" />
-		<Compile Include="System\Linq\Expressions\Compiler\AssemblyGen.cs" />
-		<Compile Include="System\Linq\Expressions\Compiler\ConstantCheck.cs" />
-		<Compile Include="System\Linq\Expressions\Compiler\DelegateHelpers.Generated.cs" />
-		<Compile Include="System\Linq\Expressions\Compiler\DelegateHelpers.cs" />
-		<Compile Include="System\Linq\Expressions\Compiler\ILGen.cs" />
-		<Compile Include="System\Linq\Expressions\Compiler\KeyedQueue.cs" />
-		<Compile Include="System\Linq\Expressions\Compiler\LabelInfo.cs" />
-		<Compile Include="System\Linq\Expressions\Error.cs" />
-		<Compile Include="System\Linq\Expressions\IArgumentProvider.net35.cs" />
-		<Compile Include="System\Linq\Expressions\IDynamicExpression.net35.cs" />
-		<Compile Include="System\Linq\Expressions\Interpreter\ConstantCheck.cs" />
-		<Compile Include="System\Linq\Expressions\Interpreter\ILightCallSiteBinder.cs" />
-		<Compile Include="System\Linq\Expressions\Interpreter\RuntimeVariables.cs" />
-		<Compile Include="System\Linq\Expressions\LabelTarget.net35.cs" />
-		<Compile Include="System\Linq\Expressions\Strings.cs" />
-		<Compile Include="System\Linq\Expressions\SymbolDocumentInfo.net35.cs" />
-		<Compile Include="System\Numerics\BigInteger.net35.cs" />
-		<Compile Include="System\Numerics\BigIntegerBuilder.cs" />
-		<Compile Include="System\Numerics\BigInteger.string.cs" />
-		<Compile Include="System\Numerics\BigNumberBuffer.cs" />
-		<Compile Include="System\Numerics\NumericsHelpers.cs" />
-		<Compile Include="System\Numerics\ReverseStringBuilder.cs" />
-		<Compile Include="System\Runtime\CompilerServices\AsyncMethodBuilderCore.cs" />
-		<Compile Include="System\Runtime\CompilerServices\AsyncMethodTaskCache.cs" />
-		<Compile Include="System\Runtime\CompilerServices\AsyncStateMachineAttribute.net40.cs" />
-		<Compile Include="System\Runtime\CompilerServices\AsyncTaskMethodBuilder.net40.cs" />
-		<Compile Include="System\Runtime\CompilerServices\AsyncVoidMethodBuilder.net40.cs" />
-		<Compile Include="System\Runtime\CompilerServices\CallerFilePathAttribute.net40.cs" />
-		<Compile Include="System\Runtime\CompilerServices\CallerLineNumberAttribute.net40.cs" />
-		<Compile Include="System\Runtime\CompilerServices\CallerMemberNameAttribute.net40.cs" />
-		<Compile Include="System\Runtime\CompilerServices\Closure.net35.cs" />
-		<Compile Include="System\Runtime\CompilerServices\ConditionalWeakTable.net35.cs" />
-		<Compile Include="System\Runtime\CompilerServices\ConfiguredTaskAwaitable.net40.cs" />
-		<Compile Include="System\Runtime\CompilerServices\ContractHelperEx.cs" />
-		<Compile Include="System\Runtime\CompilerServices\IAsyncMethodBuilder.cs" />
-		<Compile Include="System\Runtime\CompilerServices\IAsyncStateMachine.net40.cs" />
-		<Compile Include="System\Runtime\CompilerServices\ICriticalNotifyCompletion.net40.cs" />
-		<Compile Include="System\Runtime\CompilerServices\INotifyCompletion.net40.cs" />
-		<Compile Include="System\Runtime\CompilerServices\IRuntimeVariables.net35.cs" />
-		<Compile Include="System\Runtime\CompilerServices\IteratorStateMachineAttribute.net40.cs" />
-		<Compile Include="System\Runtime\CompilerServices\StateMachineAttribute.net40.cs" />
-		<Compile Include="System\Runtime\CompilerServices\TaskAwaiter.net40.cs" />
-		<Compile Include="System\Runtime\CompilerServices\VoidTaskResult.cs" />
-		<Compile Include="System\Runtime\CompilerServices\YieldAwaitable.net40.cs" />
-		<Compile Include="System\Runtime\ExceptionServices\ExceptionDispatchInfo.net40.cs" />
-		<Compile Include="System\Runtime\TargetedPatchingOptOutAttribute.net35.cs" />
-		<Compile Include="System\SR.cs" />
-		<Compile Include="System\Threading\Barrier.net35.cs" />
-		<Compile Include="System\Threading\CancellationToken.net35.cs" />
-		<Compile Include="System\Threading\CancellationTokenRegistration.net35.cs" />
-		<Compile Include="System\Threading\CancellationTokenSource.net35.cs" />
-		<Compile Include="System\Threading\CountdownEvent.net35.cs" />
-		<Compile Include="System\Threading\Tasks\AsyncCompatLibExtensions.net40.asyncbridge.cs" />
-		<Compile Include="System\Threading\Tasks\AwaitTaskContinuation.cs" />
-		<Compile Include="System\Threading\Tasks\ContinuationResultTaskFromResultTask.cs" />
-		<Compile Include="System\Threading\Tasks\ContinuationResultTaskFromTask.cs" />
-		<Compile Include="System\Threading\Tasks\ContinuationTaskFromResultTask.cs" />
-		<Compile Include="System\Threading\Tasks\ContinuationTaskFromTask.cs" />
-		<Compile Include="System\Threading\Tasks\IContinuationTask.cs" />
-		<Compile Include="System\Threading\Tasks\InternalSpecialCancelException.cs" />
-		<Compile Include="System\Threading\Tasks\InternalTaskOptions.cs" />
-		<Compile Include="System\Threading\IThreadPoolWorkItem.cs" />
-		<Compile Include="System\Threading\Tasks\ITaskCompletionAction.cs" />
-		<Compile Include="System\Threading\Tasks\StandardTaskContinuation.cs" />
-		<Compile Include="System\Threading\Tasks\SynchronizationContextAwaitTaskContinuation.cs" />
-		<Compile Include="System\Threading\Tasks\Task.delay.net35.cs" />
-		<Compile Include="System\Threading\Tasks\Task.await.net35.cs" />
-		<Compile Include="System\Threading\Tasks\Task.yield.net35.cs" />
-		<Compile Include="System\Threading\Tasks\Task.when.net35.cs" />
-		<Compile Include="System\Threading\Tasks\Task.wait.net35.cs" />
-		<Compile Include="System\Threading\Tasks\Task.promise.net35.cs" />
-		<Compile Include="System\Threading\Tasks\Task.microsoft.net35.cs" />
-		<Compile Include="System\Threading\Tasks\Task.continuation.net35.cs" />
-		<Compile Include="System\Threading\Tasks\Task.run.net35.cs" />
-		<Compile Include="System\Threading\Tasks\Task1.net35.cs" />
-		<Compile Include="System\Threading\Tasks\TaskCanceledException.net35.cs" />
-		<Compile Include="System\Threading\Tasks\TaskCompletionSource.net35.cs" />
-		<Compile Include="System\Threading\Tasks\TaskContinuation.net35.cs" />
-		<Compile Include="System\Threading\Tasks\TaskContinuationOptions.net35.cs" />
-		<Compile Include="System\Threading\Tasks\TaskEx.net35.asyncbridge.cs" />
-		<Compile Include="System\Threading\Tasks\TaskEx.asyncbridge.cs" />
-		<Compile Include="System\Threading\Tasks\TaskExceptionHolder.net35.cs" />
-		<Compile Include="System\Threading\Tasks\TaskExtensions.net35.cs" />
-		<Compile Include="System\Threading\Tasks\TaskFactory.net35.cs" />
-		<Compile Include="System\Threading\Tasks\TaskScheduler.microsoft.net35.cs" />
-		<Compile Include="System\Threading\Tasks\TaskSchedulerAwaitTaskContinuation.net35.cs" />
-		<Compile Include="System\Threading\Tasks\TaskSchedulerException.net35.cs" />
-		<Compile Include="System\Threading\Tasks\ThreadPoolTaskScheduler.net35.cs" />
-		<Compile Include="System\Threading\Tasks\UnobservedTaskExceptionEventArgs.net35.cs" />
-		<Compile Include="Theraot\Collections\ConversionSet.cs" />
-		<Compile Include="Theraot\Collections\ConvertedObserver.cs" />
-		<Compile Include="Theraot\Collections\CustomObserver.cs" />
-		<Compile Include="Theraot\Collections\EmptyCollection.cs" />
-		<Compile Include="Theraot\Collections\EmptyList.cs" />
-		<Compile Include="Theraot\Collections\EmptySet.cs" />
-		<Compile Include="Theraot\Collections\ExtendedDictionary.cs" />
-		<Compile Include="Theraot\Collections\ExtendedList.cs" />
-		<Compile Include="Theraot\Collections\ExtendedQueue.cs" />
-		<Compile Include="Theraot\Collections\ExtendedReadOnlyCollection.cs" />
-		<Compile Include="Theraot\Collections\ExtendedReadOnlyCollection.extended.cs" />
-		<Compile Include="Theraot\Collections\ExtendedReadOnlyDictionary.cs" />
-		<Compile Include="Theraot\Collections\ExtendedReadOnlyList.cs" />
-		<Compile Include="Theraot\Collections\ExtendedReadOnlySet.cs" />
-		<Compile Include="Theraot\Collections\ExtendedSet.cs" />
-		<Compile Include="Theraot\Collections\ExtendedStack.cs" />
-		<Compile Include="Theraot\Collections\Extensions.groupby.cs" />
-		<Compile Include="Theraot\Collections\Extensions.add.cs" />
-		<Compile Include="Theraot\Collections\Extensions.beforeafter.cs" />
-		<Compile Include="Theraot\Collections\Extensions.drop.cs" />
-		<Compile Include="Theraot\Collections\Extensions.extra.cs" />
-		<Compile Include="Theraot\Collections\Extensions.insert.cs" />
-		<Compile Include="Theraot\Collections\Extensions.interleave.cs">
-			<AutoGen>True</AutoGen>
-			<DesignTime>True</DesignTime>
-			<DependentUpon>Extensions.interleave.tt</DependentUpon>
-		</Compile>
-		<Compile Include="Theraot\Collections\Extensions.numeric.cs" />
-		<Compile Include="Theraot\Collections\Extensions.operations.cs" />
-		<Compile Include="Theraot\Collections\Extensions.zip.cs">
-			<AutoGen>True</AutoGen>
-			<DesignTime>True</DesignTime>
-			<DependentUpon>Extensions.zip.tt</DependentUpon>
-		</Compile>
-		<Compile Include="Theraot\Collections\Extensions._.cs" />
-		<Compile Include="Theraot\Collections\FilteredConvertedObserver.cs" />
-		<Compile Include="Theraot\Collections\FilteredObserver.cs" />
-		<Compile Include="Theraot\Collections\IDropPoint.cs" />
-		<Compile Include="Theraot\Collections\IExtendedCollection.cs" />
-		<Compile Include="Theraot\Collections\IExtendedDictionary.cs" />
-		<Compile Include="Theraot\Collections\IExtendedList.cs" />
-		<Compile Include="Theraot\Collections\IExtendedReadOnlyCollection.cs" />
-		<Compile Include="Theraot\Collections\IExtendedReadOnlyDictionary.cs" />
-		<Compile Include="Theraot\Collections\IExtendedReadOnlyList.cs" />
-		<Compile Include="Theraot\Collections\IExtendedReadOnlySet.cs" />
-		<Compile Include="Theraot\Collections\IExtendedSet.cs" />
-		<Compile Include="Theraot\Collections\IProxyObservable.cs" />
-		<Compile Include="Theraot\Collections\IReadOnlyDropPoint.cs" />
-		<Compile Include="Theraot\Collections\IReadOnlySet.cs" />
-		<Compile Include="Theraot\Collections\KeyValuePairComparer.cs" />
-		<Compile Include="Theraot\Collections\KeyValuePairEqualityComparer.cs" />
-		<Compile Include="Theraot\Collections\ObservableExtensions.cs" />
-		<Compile Include="Theraot\Collections\ProgressiveCollection.cs">
-			<SubType>Code</SubType>
-		</Compile>
-		<Compile Include="Theraot\Collections\ProgressiveCollection.extended.cs" />
-		<Compile Include="Theraot\Collections\ProgressiveDictionary.cs" />
-		<Compile Include="Theraot\Collections\ProgressiveList.cs" />
-		<Compile Include="Theraot\Collections\ProgressiveList.extended.cs" />
-		<Compile Include="Theraot\Collections\ProgressiveLookup.cs" />
-		<Compile Include="Theraot\Collections\ProgressiveSet.cs" />
-		<Compile Include="Theraot\Collections\ProgressiveSet.extended.cs" />
-		<Compile Include="Theraot\Collections\Progressor.cs" />
-		<Compile Include="Theraot\Collections\ProxyObservable.cs" />
-		<Compile Include="Theraot\Collections\Specialized\AVLTree.AVLNode.cs" />
-		<Compile Include="Theraot\Collections\Specialized\AVLTree.cs" />
-		<Compile Include="Theraot\Collections\Specialized\ConditionalExtendedEnumerable.cs" />
-		<Compile Include="Theraot\Collections\Specialized\ConversionComparer.cs" />
-		<Compile Include="Theraot\Collections\Specialized\ConversionEqualityComparer.cs" />
-		<Compile Include="Theraot\Collections\Specialized\ConvertedValueCollection.cs" />
-		<Compile Include="Theraot\Collections\Specialized\CustomComparer.cs" />
-		<Compile Include="Theraot\Collections\Specialized\CustomEqualityComparer.cs" />
-		<Compile Include="Theraot\Collections\Specialized\DelegatedCollection.cs" />
-		<Compile Include="Theraot\Collections\Specialized\DelegatedCollection.extended.cs" />
-		<Compile Include="Theraot\Collections\Specialized\EnumCollection.cs" />
-		<Compile Include="Theraot\Collections\Specialized\EnumerableFromDelegate.cs" />
-		<Compile Include="Theraot\Collections\Specialized\EnumerationCollection.cs" />
-		<Compile Include="Theraot\Collections\Specialized\EnumerationCollection.extended.cs" />
-		<Compile Include="Theraot\Collections\Specialized\EnumerationSet.cs" />
-		<Compile Include="Theraot\Collections\Specialized\ExtendedEnumerable.cs" />
-		<Compile Include="Theraot\Collections\Specialized\ExtendedEnumerableBase.cs" />
-		<Compile Include="Theraot\Collections\Specialized\FlagArray.cs" />
-		<Compile Include="Theraot\Collections\Specialized\NeedleConversionEqualityComparer.cs" />
-		<Compile Include="Theraot\Collections\Specialized\NullAwareDictionary.cs" />
-		<Compile Include="Theraot\Collections\Specialized\NullAwareDictionary.extended.cs" />
-		<Compile Include="Theraot\Collections\Specialized\OrderedCollection.cs" />
-		<Compile Include="Theraot\Collections\ThreadSafe\ArrayReservoir.cs" />
-		<Compile Include="Theraot\Collections\ThreadSafe\Branch.cs" />
-		<Compile Include="Theraot\Collections\ThreadSafe\Bucket.cs" />
-		<Compile Include="Theraot\Collections\ThreadSafe\BucketHelper.cs" />
-		<Compile Include="Theraot\Collections\ThreadSafe\BucketStatus.cs" />
-		<Compile Include="Theraot\Collections\ThreadSafe\CircularBucket.cs" />
-		<Compile Include="Theraot\Collections\ThreadSafe\FixedSizeQueue.cs" />
-		<Compile Include="Theraot\Collections\Specialized\KeyCollection.cs" />
-		<Compile Include="Theraot\Collections\ThreadSafe\Mapper.cs" />
-		<Compile Include="Theraot\Collections\ThreadSafe\NeedleBucket.cs" />
-		<Compile Include="Theraot\Collections\ThreadSafe\NeedleReservoir.cs" />
-		<Compile Include="Theraot\Collections\ThreadSafe\Pool.cs" />
-		<Compile Include="Theraot\Collections\ThreadSafe\PoolHelper.cs" />
-		<Compile Include="Theraot\Collections\ThreadSafe\SafeDictionary.cs" />
-		<Compile Include="Theraot\Collections\ThreadSafe\SafeQueue.cs" />
-		<Compile Include="Theraot\Collections\ThreadSafe\SafeSet.cs" />
-		<Compile Include="Theraot\Collections\Specialized\ValueCollection.cs" />
-		<Compile Include="Theraot\Collections\ThreadSafe\WeakCancellableEvent.cs" />
-		<Compile Include="Theraot\Collections\ThreadSafe\WeakDelegateCollection.cs" />
-		<Compile Include="Theraot\Collections\ThreadSafe\WeakEvent.cs" />
-		<Compile Include="Theraot\Collections\ThreadSafe\WeakDictionary.cs" />
-		<Compile Include="Theraot\Collections\ThreadSafe\WeakCollection.cs" />
-		<Compile Include="Theraot\Collections\TryTake.cs" />
-		<Compile Include="Theraot\Core\ActionHelper.cs">
-			<DependentUpon>ActionHelper.tt</DependentUpon>
-			<DesignTime>True</DesignTime>
-			<AutoGen>True</AutoGen>
-		</Compile>
-		<Compile Include="Theraot\Core\AggregateExceptionHelper.cs" />
-		<Compile Include="Theraot\Core\CharHelper.cs" />
-		<Compile Include="Theraot\Core\EnvironmentHelper.cs" />
-		<Compile Include="Theraot\Core\IntPtrHelper.cs" />
-		<Compile Include="Theraot\Core\NumericHelper.checks.cs" />
-		<Compile Include="Theraot\Core\PathHelper.cs" />
-		<Compile Include="Theraot\Core\StringProcessor.cs" />
-		<Compile Include="Theraot\Threading\AtomicBoolean.cs" />
-		<Compile Include="Theraot\Core\CancellationTokenHelper.cs" />
-		<Compile Include="Theraot\Core\Check.cs" />
-		<Compile Include="Theraot\Core\CloneHelper.cs" />
-		<Compile Include="Theraot\Core\ComparerExtensions.cs" />
-		<Compile Include="Theraot\Core\DebugHelper.cs" />
-		<Compile Include="Theraot\Core\DelegateDeepEqualityComparer.cs" />
-		<Compile Include="Theraot\Core\DelegateEqualityComparer.cs" />
-		<Compile Include="Theraot\Core\DelegateExtensions.cs" />
-		<Compile Include="Theraot\Core\EnumerableHelper.cs" />
-		<Compile Include="Theraot\Core\EnumHelper.cs" />
-		<Compile Include="Theraot\Core\EqualityComparerHelper.cs" />
-		<Compile Include="Theraot\Core\EqualityComparerHelper1.cs" />
-		<Compile Include="Theraot\Core\ErsatzAction.cs">
-			<AutoGen>True</AutoGen>
-			<DesignTime>True</DesignTime>
-			<DependentUpon>ErsatzAction.tt</DependentUpon>
-		</Compile>
-		<Compile Include="Theraot\Core\ErsatzFunc.cs">
-			<AutoGen>True</AutoGen>
-			<DesignTime>True</DesignTime>
-			<DependentUpon>ErsatzFunc.tt</DependentUpon>
-		</Compile>
-		<Compile Include="Theraot\Core\FolderEnumeration.cs" />
-		<Compile Include="Theraot\Core\FuncHelper.cs">
-			<DependentUpon>FuncHelper.tt</DependentUpon>
-			<DesignTime>True</DesignTime>
-			<AutoGen>True</AutoGen>
-		</Compile>
-		<Compile Include="Theraot\Core\FuncHelper.predicate.cs" />
-		<Compile Include="Theraot\Core\FuncHelper._.cs" />
-		<Compile Include="Theraot\Core\GraphHelper.cs" />
-		<Compile Include="Theraot\Core\ICloneable.cs" />
-		<Compile Include="Theraot\Core\ICloner.cs" />
-		<Compile Include="Theraot\Core\MonitorHelper.cs" />
-		<Compile Include="Theraot\Core\NewEventHandler.cs" />
-		<Compile Include="Theraot\Core\NewOperationCanceledException.cs" />
-		<Compile Include="Theraot\Core\NumericHelper.unchecked.cs" />
-		<Compile Include="Theraot\Core\NumericHelper.checked.cs" />
-		<Compile Include="Theraot\Core\NumericHelper.Binary.cs" />
-		<Compile Include="Theraot\Core\NumericHelper.build.cs" />
-		<Compile Include="Theraot\Core\NumericHelper.cs">
-			<SubType>Code</SubType>
-		</Compile>
-		<Compile Include="Theraot\Core\OrderedEnumerable.cs" />
-		<Compile Include="Theraot\Core\PrimeHelper.array.cs" />
-		<Compile Include="Theraot\Core\PrimeHelper.cs" />
-		<Compile Include="Theraot\Core\Range.cs" />
-		<Compile Include="Theraot\Core\RangeExtensions.cs" />
-		<Compile Include="Theraot\Core\Reference.cs" />
-		<Compile Include="Theraot\Core\StopwatchExtensions.cs" />
-		<Compile Include="Theraot\Core\StreamExtensions.cs" />
-		<Compile Include="Theraot\Core\StringBuilderExtensions.cs" />
-		<Compile Include="Theraot\Core\StringHelper.cs" />
-		<Compile Include="Theraot\Core\ReferenceEqualityComparer.cs" />
-		<Compile Include="Theraot\Core\TraceRoute.cs" />
-		<Compile Include="Theraot\Core\TracertNode.cs" />
-		<Compile Include="Theraot\Core\TupleEqualityComparer.cs">
-			<AutoGen>True</AutoGen>
-			<DesignTime>True</DesignTime>
-			<DependentUpon>TupleEqualityComparer.tt</DependentUpon>
-		</Compile>
-		<Compile Include="Theraot\Core\TypeHelper.util.cs" />
-		<Compile Include="Theraot\Core\TypeHelper.ConstructorHelper.cs">
-			<DependentUpon>TypeHelper.ConstructorHelper.tt</DependentUpon>
-			<DesignTime>True</DesignTime>
-			<AutoGen>True</AutoGen>
-		</Compile>
-		<Compile Include="Theraot\Core\TypeHelper.cs" />
-		<Compile Include="Theraot\Core\TypeHelper.extra.cs" />
-		<Compile Include="Theraot\Threading\CriticalDisposable.cs" />
-		<Compile Include="Theraot\Threading\CriticalDisposable.disposable.cs" />
-		<Compile Include="Theraot\Threading\Disposable.cs">
-			<SubType>Code</SubType>
-		</Compile>
-		<Compile Include="Theraot\Threading\Disposable.disposable.cs">
-			<DependentUpon>Disposable.cs</DependentUpon>
-			<SubType>Code</SubType>
-			<DesignTime>True</DesignTime>
-		</Compile>
-		<Compile Include="Theraot\Threading\Disposable.extended.cs" />
-		<Compile Include="Theraot\Threading\DisposableAkin.cs">
-			<SubType>Code</SubType>
-		</Compile>
-		<Compile Include="Theraot\Threading\DisposableExtensions.cs" />
-		<Compile Include="Theraot\Threading\GCMonitor.internal.cs" />
-		<Compile Include="Theraot\Threading\GCMonitor.cs" />
-		<Compile Include="Theraot\Threading\IExtendedDisposable.cs" />
-		<Compile Include="Theraot\Threading\IReadWriteLock.cs" />
-		<Compile Include="Theraot\Threading\IThreadLocal.cs" />
-		<Compile Include="Theraot\Threading\LockContext.cs" />
-		<Compile Include="Theraot\Threading\LockSlot.cs" />
-		<Compile Include="Theraot\Threading\NeedleLock.cs" />
-		<Compile Include="Theraot\Threading\Needles\CacheNeedle.cs" />
-		<Compile Include="Theraot\Threading\Needles\CacheNeedle.disposable.cs" />
-		<Compile Include="Theraot\Threading\Needles\DefaultNeedle.cs" />
-		<Compile Include="Theraot\Threading\Needles\ExceptionStructNeedle.cs" />
-		<Compile Include="Theraot\Threading\Needles\FutureDisposableNeedle.cs" />
-		<Compile Include="Theraot\Threading\Needles\FutureAction.cs" />
-		<Compile Include="Theraot\Threading\Needles\FutureNeedle.cs" />
-		<Compile Include="Theraot\Threading\Needles\ICacheNeedle.cs" />
-		<Compile Include="Theraot\Threading\Needles\INeedle.cs" />
-		<Compile Include="Theraot\Threading\Needles\IPromise.cs" />
-		<Compile Include="Theraot\Threading\Needles\IReadOnlyNeedle.cs" />
-		<Compile Include="Theraot\Threading\Needles\IRecyclableNeedle.cs" />
-		<Compile Include="Theraot\Threading\Needles\LazyDisposableNeedle.cs" />
-		<Compile Include="Theraot\Threading\Needles\LazyDisposableNeedle.disposable.cs" />
-		<Compile Include="Theraot\Threading\Needles\LazyAction.cs" />
-		<Compile Include="Theraot\Threading\Needles\LazyNeedle.cs" />
-		<Compile Include="Theraot\Threading\Needles\LockableContext.cs" />
-		<Compile Include="Theraot\Threading\Needles\LockableSlot.cs" />
-		<Compile Include="Theraot\Threading\Needles\Needle.cs" />
-		<Compile Include="Theraot\Threading\Needles\NeedleHelper.cs" />
-		<Compile Include="Theraot\Threading\Needles\NotNull.cs" />
-		<Compile Include="Theraot\Threading\Needles\Promise.cs" />
-		<Compile Include="Theraot\Threading\Needles\PromiseNeedle1.cs" />
-		<Compile Include="Theraot\Threading\Needles\ReadOnlyDisposableNeedle.cs" />
-		<Compile Include="Theraot\Threading\Needles\ReadOnlyDisposableNeedle.disposable.cs" />
-		<Compile Include="Theraot\Threading\Needles\ReadOnlyNeedle.cs" />
-		<Compile Include="Theraot\Threading\Needles\ReadOnlyPromise.cs" />
-		<Compile Include="Theraot\Threading\Needles\ReadOnlyPromiseNeedle.cs" />
-		<Compile Include="Theraot\Threading\Needles\ReadOnlyStructNeedle.cs" />
-		<Compile Include="Theraot\Threading\Needles\StructNeedle.cs" />
-		<Compile Include="Theraot\Threading\Needles\Transact.cs" />
-		<Compile Include="Theraot\Threading\Needles\Transact.disposable.cs" />
-		<Compile Include="Theraot\Threading\Needles\Transact.IResource.cs" />
-		<Compile Include="Theraot\Threading\Needles\Transact.Needle.cs" />
-		<Compile Include="Theraot\Threading\Needles\Transact.Needle.disposable.cs" />
-		<Compile Include="Theraot\Threading\Needles\WeakDelegateNeedle.cs" />
-		<Compile Include="Theraot\Threading\Needles\WeakNeedle.cs" />
-		<Compile Include="Theraot\Threading\Needles\WeakNeedle.disposable.cs" />
-		<Compile Include="Theraot\Threading\Needles\WeakNeedle.extended.cs" />
-		<Compile Include="Theraot\Threading\NoReentrantReadWriteLock.disposable.cs" />
-		<Compile Include="Theraot\Threading\NoReentrantReadWriteLock.cs" />
-		<Compile Include="Theraot\Threading\NoTrackingThreadLocal.cs" />
-		<Compile Include="Theraot\Threading\ReadWriteLock.cs" />
-		<Compile Include="Theraot\Threading\ReentrantReadWriteLock.disposable.cs" />
-		<Compile Include="Theraot\Threading\ReentrantReadWriteLock.cs" />
-		<Compile Include="Theraot\Threading\ReentryGuard.cs" />
-		<Compile Include="Theraot\Threading\Timeout.cs" />
-		<Compile Include="Theraot\Threading\RuntimeUniqueIdProdiver.cs" />
-		<Compile Include="Theraot\Threading\Needles\LockableNeedle.cs" />
-		<Compile Include="Theraot\Threading\SimpleReentryGuard.cs" />
-		<Compile Include="Theraot\Threading\ThreadingHelper.cs" />
-		<Compile Include="Theraot\Threading\ThreadingHelper.extra.cs" />
-		<Compile Include="Theraot\Threading\ThreadingHelper.SpinWait.cs" />
-		<Compile Include="Theraot\Threading\ThreadLocalHelper.cs" />
-		<Compile Include="Theraot\Threading\ThreadLocalHelper1.cs" />
-		<Compile Include="Theraot\Threading\TrackingThreadLocal.cs" />
-		<Compile Include="Theraot\Threading\VersionProvider.cs" />
-		<Compile Include="System\Threading\Tasks\Task.net35.cs" />
-		<Compile Include="System\Threading\Tasks\TaskScheduler.net35.cs" />
-		<Compile Include="System\Threading\LazyInitializer.net35.cs" />
-		<Compile Include="System\Threading\SemaphoreSlim.net35.cs" />
-		<Compile Include="System\Threading\SpinLock.net35.cs">
-			<SubType>Code</SubType>
-		</Compile>
-		<Compile Include="System\Threading\SpinWait.net35.cs">
-			<SubType>Code</SubType>
-		</Compile>
-		<Compile Include="System\Func10.net35.cs" />
-		<Compile Include="System\Func11.net35.cs" />
-		<Compile Include="System\Func12.net35.cs" />
-		<Compile Include="System\Func13.net35.cs" />
-		<Compile Include="System\Func14.net35.cs" />
-		<Compile Include="System\Func15.net35.cs" />
-		<Compile Include="System\Func16.net35.cs" />
-		<Compile Include="System\Func17.net35.cs" />
-		<Compile Include="System\Func6.net35.cs" />
-		<Compile Include="System\Func7.net35.cs" />
-		<Compile Include="System\Func8.net35.cs" />
-		<Compile Include="System\Func9.net35.cs" />
-		<Compile Include="System\IObservable.net35.cs" />
-		<Compile Include="System\IObserver.net35.cs" />
-		<Compile Include="System\IProgress.net40.cs" />
-		<Compile Include="System\Lazy1.net35.cs" />
-		<Compile Include="System\Lazy2.net35.cs" />
-		<Compile Include="System\LazyThreadSafetyMode.net35.cs" />
-		<Compile Include="System\Linq\LinqCheck.cs" />
-		<Compile Include="System\Linq\EnumerableExecutor.net35.cs" />
-		<Compile Include="System\Linq\EnumerableExecutor1.net35.cs" />
-		<Compile Include="System\Linq\EnumerableQuery.cs" />
-		<Compile Include="System\Linq\EnumerableQuery1.net35.cs" />
-		<Compile Include="System\Linq\Expressions\ExpressionTransformer.cs" />
-		<Compile Include="System\Linq\Expressions\Extensions.cs" />
-		<Compile Include="System\Linq\Grouping.cs" />
-		<Compile Include="System\Linq\IOrderedQueryable.cs" />
-		<Compile Include="System\Linq\OrderedEnumerable.cs" />
-		<Compile Include="System\Linq\OrderedSequence.cs" />
-		<Compile Include="System\Linq\ParallelExecutionMode.net35.cs" />
-		<Compile Include="System\Linq\ParallelMergeOptions.net35.cs" />
-		<Compile Include="System\Linq\QueryableEnumerable.cs" />
-		<Compile Include="System\Linq\QueryableTransformer.cs" />
-		<Compile Include="System\Linq\QuickSort.cs" />
-		<Compile Include="System\Linq\SortContext.cs" />
-		<Compile Include="System\Linq\SortDirection.cs" />
-		<Compile Include="System\Linq\SortSequenceContext.cs" />
-		<Compile Include="System\Numerics\Complex.net35.cs" />
-		<Compile Include="System\Progress.net40.cs" />
-		<Compile Include="System\Runtime\CompilerServices\DynamicAttribute.net35.cs" />
-		<Compile Include="System\AggregateException.net35.cs" />
-		<Compile Include="System\Threading\ManualResetEventSlim.net35.cs" />
-		<Compile Include="System\Threading\Tasks\TaskCreationOption.net35.cs" />
-		<Compile Include="System\Threading\Tasks\TaskStatus.net35.cs" />
-		<Compile Include="System\WeakReference.net40.cs" />
-		<Compile Include="System\Threading\ThreadLocal.net35.cs">
-			<SubType>Code</SubType>
-		</Compile>
-		<Compile Include="System\Threading\Volatile.net40.cs" />
-		<Compile Include="System\Tuple8.net35.cs" />
-		<Compile Include="System\Tuple7.net35.cs" />
-		<Compile Include="System\Tuple6.net35.cs" />
-		<Compile Include="System\Tuple5.net35.cs" />
-		<Compile Include="System\Tuple3.net35.cs" />
-		<Compile Include="System\Tuple4.net35.cs" />
-		<Compile Include="System\Tuple2.net35.cs" />
-		<Compile Include="System\Collections\Generic\ISet.net35.cs" />
-		<Compile Include="System\Collections\IStructuralComparable.net35.cs" />
-		<Compile Include="System\Collections\IStructuralEquatable.net35.cs" />
-		<Compile Include="Properties\AssemblyInfo.cs" />
-		<Compile Include="System\Collections\Generic\IReadOnlyCollection.net40.cs" />
-		<Compile Include="System\Collections\Generic\IReadOnlyDictionary.net40.cs" />
-		<Compile Include="System\Collections\Generic\IReadOnlyList.net40.cs" />
-		<Compile Include="System\Tuple1.net35.cs" />
-		<Compile Include="System\Tuple.net35.cs" />
-		<Compile Include="Theraot\VoidStruct.cs" />
-		<None Include="packages.config" />
-		<None Include="Theraot\Collections\Extensions.interleave.tt">
-			<Generator>TextTemplatingFileGenerator</Generator>
-			<LastGenOutput>Extensions.interleave.cs</LastGenOutput>
-		</None>
-		<None Include="Theraot\Collections\Extensions.zip.tt">
-			<Generator>TextTemplatingFileGenerator</Generator>
-			<LastGenOutput>Extensions.zip.cs</LastGenOutput>
-		</None>
-		<None Include="Theraot\Core\ActionHelper.tt">
-			<Generator>TextTemplatingFileGenerator</Generator>
-			<LastGenOutput>ActionHelper.cs</LastGenOutput>
-		</None>
-		<None Include="Theraot\Core\FuncHelper.tt">
-			<Generator>TextTemplatingFileGenerator</Generator>
-			<LastGenOutput>FuncHelper.cs</LastGenOutput>
-		</None>
-		<None Include="Theraot\Core\TupleEqualityComparer.tt">
-			<Generator>TextTemplatingFileGenerator</Generator>
-			<LastGenOutput>TupleEqualityComparer.cs</LastGenOutput>
-		</None>
-		<None Include="Theraot\Core\TypeHelper.ConstructorHelper.tt">
-			<Generator>TextTemplatingFileGenerator</Generator>
-			<LastGenOutput>TypeHelper.ConstructorHelper.cs</LastGenOutput>
-		</None>
-		<Compile Include="System\Diagnostics\Contracts\ContractFailureKind.net35.cs" />
-		<Compile Include="System\Diagnostics\Contracts\ContractFailedEventArgs.net35.cs" />
-		<Compile Include="System\Diagnostics\Contracts\PureAttribute.net35.cs" />
-		<Compile Include="System\Runtime\CompilerServices\ContractHelper.net40.cs" />
-		<Compile Include="System\Diagnostics\Contracts\Internal\ContractHelper.net35.cs" />
-		<Compile Include="Theraot\Threading\AtomicBooleanValue.cs" />
-	</ItemGroup>
-	<ItemGroup>
-		<Reference Include="System" />
-	</ItemGroup>
-	<ItemGroup Condition="'$(TargetFrameworkVersion)'!='v2.0' And '$(TargetFrameworkVersion)'!='v3.0'">
-		<Reference Include="System.Core" />
-	</ItemGroup>
-	<ItemGroup Condition="'$(TargetFrameworkVersion)'!='v2.0'">
-		<Reference Include="WindowsBase" />
-	</ItemGroup>
-	<ItemGroup>
-		<BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-			<Visible>False</Visible>
-			<ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-			<Install>false</Install>
-		</BootstrapperPackage>
-		<BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-			<Visible>False</Visible>
-			<ProductName>.NET Framework 3.5 SP1</ProductName>
-			<Install>true</Install>
-		</BootstrapperPackage>
-		<BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
-			<Visible>False</Visible>
-			<ProductName>Windows Installer 3.1</ProductName>
-			<Install>true</Install>
-		</BootstrapperPackage>
-	</ItemGroup>
-	<ItemGroup>
-		<Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-	</ItemGroup>
-	<Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-	<!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B5078871-4299-49ED-B921-3B5EBE57336A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Theraot.Core</RootNamespace>
+    <AssemblyName>Theraot.Core</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <ReleaseVersion>2.0.0</ReleaseVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FAT;NET35</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>5</LangVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Optimize>True</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>;NET35</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>5</LangVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET35|AnyCPU'">
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug_NET35\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FAT;NET35</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <LangVersion>5</LangVersion>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET40|AnyCPU'">
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug_NET40\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FAT;NET40</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <LangVersion>5</LangVersion>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET45|AnyCPU'">
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug_NET45\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;FAT;NET45</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <LangVersion>5</LangVersion>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35|AnyCPU' ">
+    <Optimize>True</Optimize>
+    <OutputPath>bin\NET35\</OutputPath>
+    <DefineConstants>NET35</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <LangVersion>5</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40|AnyCPU' ">
+    <Optimize>True</Optimize>
+    <OutputPath>bin\NET40\</OutputPath>
+    <DefineConstants>NET40</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <LangVersion>5</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET45|AnyCPU' ">
+    <Optimize>True</Optimize>
+    <OutputPath>bin\NET45\</OutputPath>
+    <DefineConstants>NET45</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <LangVersion>5</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35_FAT|AnyCPU' ">
+    <Optimize>True</Optimize>
+    <OutputPath>bin\NET35_FAT\</OutputPath>
+    <DefineConstants>NET35;FAT</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <LangVersion>5</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40_FAT|AnyCPU' ">
+    <Optimize>True</Optimize>
+    <OutputPath>bin\NET40_FAT\</OutputPath>
+    <DefineConstants>NET40;FAT</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <LangVersion>5</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET45_FAT|AnyCPU' ">
+    <Optimize>True</Optimize>
+    <OutputPath>bin\NET45_FAT\</OutputPath>
+    <DefineConstants>NET45;FAT</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <LangVersion>5</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DefineConstants Condition=" !$(DefineConstants.Contains(';NET')) ">$(DefineConstants);$(TargetFrameworkVersion.Replace("v", "NET").Replace(".", ""))</DefineConstants>
+    <DefineConstants Condition=" $(DefineConstants.Contains(';NET')) ">$(DefineConstants.Remove($(DefineConstants.LastIndexOf(";NET"))));$(TargetFrameworkVersion.Replace("v", "NET").Replace(".", ""))</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>OpenSourceKey.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="CLSCompliant.cs" />
+    <Compile Include="System\Action10.net35.cs" />
+    <Compile Include="System\Action11.net35.cs" />
+    <Compile Include="System\Action12.net35.cs" />
+    <Compile Include="System\Action13.net35.cs" />
+    <Compile Include="System\Action14.net35.cs" />
+    <Compile Include="System\Action15.net35.cs" />
+    <Compile Include="System\Action16.net35.cs" />
+    <Compile Include="System\Action5.net35.cs" />
+    <Compile Include="System\Action6.net35.cs" />
+    <Compile Include="System\Action7.net35.cs" />
+    <Compile Include="System\Action8.net35.cs" />
+    <Compile Include="System\Action9.net35.cs" />
+    <Compile Include="System\Collections\Concurrent\ConcurrentDictionary.net35.cs" />
+    <Compile Include="System\Collections\Concurrent\ConcurrentQueue.net35.cs" />
+    <Compile Include="System\Collections\Concurrent\IProducerConsumerCollection.net35.cs" />
+    <Compile Include="System\Collections\Generic\SortedSet.net35.cs" />
+    <Compile Include="System\Collections\ObjectModel\ReadOnlyDictionary.ValueCollection.net40.cs" />
+    <Compile Include="System\Collections\ObjectModel\ReadOnlyDictionary.KeyCollection.net40.cs" />
+    <Compile Include="System\Collections\ObjectModel\ReadOnlyDictionary.net40.cs" />
+    <Compile Include="System\Collections\StructuralComparisons.net35.cs" />
+    <Compile Include="System\Diagnostics\Contracts\Contract.bcl.net35 .cs" />
+    <Compile Include="System\Diagnostics\Contracts\Contract.net35.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractAbbreviatorAttribute.net40.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractArgumentValidatorAttribute.net40.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractClassAttribute.net35.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractClassForAttribute.net35.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractException.net40.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractInvariantMethodAttribute.net35.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractOptionAttribute.net40.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractPublicPropertyNameAttribute.net35.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractReferenceAssemblyAttribute.net40.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractRuntimeIgnoredAttribute.net35.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractVerificationAttribute.net35.cs" />
+    <Compile Include="System\Dynamic\Utils\CacheDict.cs" />
+    <Compile Include="System\Dynamic\Utils\ContractsUtil.cs" />
+    <Compile Include="System\Dynamic\Utils\DelegateHelpers.cs" />
+    <Compile Include="System\Dynamic\Utils\Error.cs" />
+    <Compile Include="System\Dynamic\Utils\ExpressionUtils.cs" />
+    <Compile Include="System\Dynamic\Utils\Helpers.cs" />
+    <Compile Include="System\Dynamic\Utils\ListArgumentProvider.cs" />
+    <Compile Include="System\Dynamic\Utils\Strings.cs" />
+    <Compile Include="System\Dynamic\Utils\TrueReadOnlyCollection.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\AssemblyGen.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\ConstantCheck.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\DelegateHelpers.Generated.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\DelegateHelpers.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\ILGen.cs" />
+    <Compile Include="System\Linq\Expressions\Compiler\KeyedQueue.cs" />
+    <Compile Include="System\Linq\Expressions\Error.cs" />
+    <Compile Include="System\Linq\Expressions\IArgumentProvider.net35.cs" />
+    <Compile Include="System\Linq\Expressions\IDynamicExpression.net35.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\ConstantCheck.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\ILightCallSiteBinder.cs" />
+    <Compile Include="System\Linq\Expressions\Interpreter\RuntimeVariables.cs" />
+    <Compile Include="System\Linq\Expressions\LabelTarget.net35.cs" />
+    <Compile Include="System\Linq\Expressions\Strings.cs" />
+    <Compile Include="System\Linq\Expressions\SymbolDocumentInfo.net35.cs" />
+    <Compile Include="System\Numerics\BigInteger.net35.cs" />
+    <Compile Include="System\Numerics\BigIntegerBuilder.cs" />
+    <Compile Include="System\Numerics\BigInteger.string.cs" />
+    <Compile Include="System\Numerics\BigNumberBuffer.cs" />
+    <Compile Include="System\Numerics\NumericsHelpers.cs" />
+    <Compile Include="System\Numerics\ReverseStringBuilder.cs" />
+    <Compile Include="System\Runtime\CompilerServices\AsyncMethodBuilderCore.cs" />
+    <Compile Include="System\Runtime\CompilerServices\AsyncMethodTaskCache.cs" />
+    <Compile Include="System\Runtime\CompilerServices\AsyncStateMachineAttribute.net40.cs" />
+    <Compile Include="System\Runtime\CompilerServices\AsyncTaskMethodBuilder.net40.cs" />
+    <Compile Include="System\Runtime\CompilerServices\AsyncVoidMethodBuilder.net40.cs" />
+    <Compile Include="System\Runtime\CompilerServices\CallerFilePathAttribute.net40.cs" />
+    <Compile Include="System\Runtime\CompilerServices\CallerLineNumberAttribute.net40.cs" />
+    <Compile Include="System\Runtime\CompilerServices\CallerMemberNameAttribute.net40.cs" />
+    <Compile Include="System\Runtime\CompilerServices\Closure.net35.cs" />
+    <Compile Include="System\Runtime\CompilerServices\ConditionalWeakTable.net35.cs" />
+    <Compile Include="System\Runtime\CompilerServices\ConfiguredTaskAwaitable.net40.cs" />
+    <Compile Include="System\Runtime\CompilerServices\ContractHelperEx.cs" />
+    <Compile Include="System\Runtime\CompilerServices\IAsyncMethodBuilder.cs" />
+    <Compile Include="System\Runtime\CompilerServices\IAsyncStateMachine.net40.cs" />
+    <Compile Include="System\Runtime\CompilerServices\ICriticalNotifyCompletion.net40.cs" />
+    <Compile Include="System\Runtime\CompilerServices\INotifyCompletion.net40.cs" />
+    <Compile Include="System\Runtime\CompilerServices\IRuntimeVariables.net35.cs" />
+    <Compile Include="System\Runtime\CompilerServices\IteratorStateMachineAttribute.net40.cs" />
+    <Compile Include="System\Runtime\CompilerServices\StateMachineAttribute.net40.cs" />
+    <Compile Include="System\Runtime\CompilerServices\TaskAwaiter.net40.cs" />
+    <Compile Include="System\Runtime\CompilerServices\VoidTaskResult.cs" />
+    <Compile Include="System\Runtime\CompilerServices\YieldAwaitable.net40.cs" />
+    <Compile Include="System\Runtime\ExceptionServices\ExceptionDispatchInfo.net40.cs" />
+    <Compile Include="System\Runtime\TargetedPatchingOptOutAttribute.net35.cs" />
+    <Compile Include="System\SR.cs" />
+    <Compile Include="System\Threading\Barrier.net35.cs" />
+    <Compile Include="System\Threading\CancellationToken.net35.cs" />
+    <Compile Include="System\Threading\CancellationTokenRegistration.net35.cs" />
+    <Compile Include="System\Threading\CancellationTokenSource.net35.cs" />
+    <Compile Include="System\Threading\CountdownEvent.net35.cs" />
+    <Compile Include="System\Threading\Tasks\AsyncCompatLibExtensions.net40.asyncbridge.cs" />
+    <Compile Include="System\Threading\Tasks\AwaitTaskContinuation.cs" />
+    <Compile Include="System\Threading\Tasks\ContinuationResultTaskFromResultTask.cs" />
+    <Compile Include="System\Threading\Tasks\ContinuationResultTaskFromTask.cs" />
+    <Compile Include="System\Threading\Tasks\ContinuationTaskFromResultTask.cs" />
+    <Compile Include="System\Threading\Tasks\ContinuationTaskFromTask.cs" />
+    <Compile Include="System\Threading\Tasks\IContinuationTask.cs" />
+    <Compile Include="System\Threading\Tasks\InternalSpecialCancelException.cs" />
+    <Compile Include="System\Threading\Tasks\InternalTaskOptions.cs" />
+    <Compile Include="System\Threading\IThreadPoolWorkItem.cs" />
+    <Compile Include="System\Threading\Tasks\ITaskCompletionAction.cs" />
+    <Compile Include="System\Threading\Tasks\StandardTaskContinuation.cs" />
+    <Compile Include="System\Threading\Tasks\SynchronizationContextAwaitTaskContinuation.cs" />
+    <Compile Include="System\Threading\Tasks\Task.delay.net35.cs" />
+    <Compile Include="System\Threading\Tasks\Task.await.net35.cs" />
+    <Compile Include="System\Threading\Tasks\Task.yield.net35.cs" />
+    <Compile Include="System\Threading\Tasks\Task.when.net35.cs" />
+    <Compile Include="System\Threading\Tasks\Task.wait.net35.cs" />
+    <Compile Include="System\Threading\Tasks\Task.promise.net35.cs" />
+    <Compile Include="System\Threading\Tasks\Task.microsoft.net35.cs" />
+    <Compile Include="System\Threading\Tasks\Task.continuation.net35.cs" />
+    <Compile Include="System\Threading\Tasks\Task.run.net35.cs" />
+    <Compile Include="System\Threading\Tasks\Task1.net35.cs" />
+    <Compile Include="System\Threading\Tasks\TaskCanceledException.net35.cs" />
+    <Compile Include="System\Threading\Tasks\TaskCompletionSource.net35.cs" />
+    <Compile Include="System\Threading\Tasks\TaskContinuation.net35.cs" />
+    <Compile Include="System\Threading\Tasks\TaskContinuationOptions.net35.cs" />
+    <Compile Include="System\Threading\Tasks\TaskEx.net35.asyncbridge.cs" />
+    <Compile Include="System\Threading\Tasks\TaskEx.asyncbridge.cs" />
+    <Compile Include="System\Threading\Tasks\TaskExceptionHolder.net35.cs" />
+    <Compile Include="System\Threading\Tasks\TaskExtensions.net35.cs" />
+    <Compile Include="System\Threading\Tasks\TaskFactory.net35.cs" />
+    <Compile Include="System\Threading\Tasks\TaskScheduler.microsoft.net35.cs" />
+    <Compile Include="System\Threading\Tasks\TaskSchedulerAwaitTaskContinuation.net35.cs" />
+    <Compile Include="System\Threading\Tasks\TaskSchedulerException.net35.cs" />
+    <Compile Include="System\Threading\Tasks\ThreadPoolTaskScheduler.net35.cs" />
+    <Compile Include="System\Threading\Tasks\UnobservedTaskExceptionEventArgs.net35.cs" />
+    <Compile Include="Theraot\Collections\ConversionSet.cs" />
+    <Compile Include="Theraot\Collections\ConvertedObserver.cs" />
+    <Compile Include="Theraot\Collections\CustomObserver.cs" />
+    <Compile Include="Theraot\Collections\EmptyCollection.cs" />
+    <Compile Include="Theraot\Collections\EmptyList.cs" />
+    <Compile Include="Theraot\Collections\EmptySet.cs" />
+    <Compile Include="Theraot\Collections\ExtendedDictionary.cs" />
+    <Compile Include="Theraot\Collections\ExtendedList.cs" />
+    <Compile Include="Theraot\Collections\ExtendedQueue.cs" />
+    <Compile Include="Theraot\Collections\ExtendedReadOnlyCollection.cs" />
+    <Compile Include="Theraot\Collections\ExtendedReadOnlyCollection.extended.cs" />
+    <Compile Include="Theraot\Collections\ExtendedReadOnlyDictionary.cs" />
+    <Compile Include="Theraot\Collections\ExtendedReadOnlyList.cs" />
+    <Compile Include="Theraot\Collections\ExtendedReadOnlySet.cs" />
+    <Compile Include="Theraot\Collections\ExtendedSet.cs" />
+    <Compile Include="Theraot\Collections\ExtendedStack.cs" />
+    <Compile Include="Theraot\Collections\Extensions.groupby.cs" />
+    <Compile Include="Theraot\Collections\Extensions.add.cs" />
+    <Compile Include="Theraot\Collections\Extensions.beforeafter.cs" />
+    <Compile Include="Theraot\Collections\Extensions.drop.cs" />
+    <Compile Include="Theraot\Collections\Extensions.extra.cs" />
+    <Compile Include="Theraot\Collections\Extensions.insert.cs" />
+    <Compile Include="Theraot\Collections\Extensions.interleave.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Extensions.interleave.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Theraot\Collections\Extensions.numeric.cs" />
+    <Compile Include="Theraot\Collections\Extensions.operations.cs" />
+    <Compile Include="Theraot\Collections\Extensions.zip.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Extensions.zip.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Theraot\Collections\Extensions._.cs" />
+    <Compile Include="Theraot\Collections\FilteredConvertedObserver.cs" />
+    <Compile Include="Theraot\Collections\FilteredObserver.cs" />
+    <Compile Include="Theraot\Collections\IDropPoint.cs" />
+    <Compile Include="Theraot\Collections\IExtendedCollection.cs" />
+    <Compile Include="Theraot\Collections\IExtendedDictionary.cs" />
+    <Compile Include="Theraot\Collections\IExtendedList.cs" />
+    <Compile Include="Theraot\Collections\IExtendedReadOnlyCollection.cs" />
+    <Compile Include="Theraot\Collections\IExtendedReadOnlyDictionary.cs" />
+    <Compile Include="Theraot\Collections\IExtendedReadOnlyList.cs" />
+    <Compile Include="Theraot\Collections\IExtendedReadOnlySet.cs" />
+    <Compile Include="Theraot\Collections\IExtendedSet.cs" />
+    <Compile Include="Theraot\Collections\IProxyObservable.cs" />
+    <Compile Include="Theraot\Collections\IReadOnlyDropPoint.cs" />
+    <Compile Include="Theraot\Collections\IReadOnlySet.cs" />
+    <Compile Include="Theraot\Collections\KeyValuePairComparer.cs" />
+    <Compile Include="Theraot\Collections\KeyValuePairEqualityComparer.cs" />
+    <Compile Include="Theraot\Collections\ObservableExtensions.cs" />
+    <Compile Include="Theraot\Collections\ProgressiveCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Theraot\Collections\ProgressiveCollection.extended.cs" />
+    <Compile Include="Theraot\Collections\ProgressiveDictionary.cs" />
+    <Compile Include="Theraot\Collections\ProgressiveList.cs" />
+    <Compile Include="Theraot\Collections\ProgressiveList.extended.cs" />
+    <Compile Include="Theraot\Collections\ProgressiveLookup.cs" />
+    <Compile Include="Theraot\Collections\ProgressiveSet.cs" />
+    <Compile Include="Theraot\Collections\ProgressiveSet.extended.cs" />
+    <Compile Include="Theraot\Collections\Progressor.cs" />
+    <Compile Include="Theraot\Collections\ProxyObservable.cs" />
+    <Compile Include="Theraot\Collections\Specialized\AVLTree.AVLNode.cs" />
+    <Compile Include="Theraot\Collections\Specialized\AVLTree.cs" />
+    <Compile Include="Theraot\Collections\Specialized\ConditionalExtendedEnumerable.cs" />
+    <Compile Include="Theraot\Collections\Specialized\ConversionComparer.cs" />
+    <Compile Include="Theraot\Collections\Specialized\ConversionEqualityComparer.cs" />
+    <Compile Include="Theraot\Collections\Specialized\ConvertedValueCollection.cs" />
+    <Compile Include="Theraot\Collections\Specialized\CustomComparer.cs" />
+    <Compile Include="Theraot\Collections\Specialized\CustomEqualityComparer.cs" />
+    <Compile Include="Theraot\Collections\Specialized\DelegatedCollection.cs" />
+    <Compile Include="Theraot\Collections\Specialized\DelegatedCollection.extended.cs" />
+    <Compile Include="Theraot\Collections\Specialized\EnumCollection.cs" />
+    <Compile Include="Theraot\Collections\Specialized\EnumerableFromDelegate.cs" />
+    <Compile Include="Theraot\Collections\Specialized\EnumerationCollection.cs" />
+    <Compile Include="Theraot\Collections\Specialized\EnumerationCollection.extended.cs" />
+    <Compile Include="Theraot\Collections\Specialized\EnumerationSet.cs" />
+    <Compile Include="Theraot\Collections\Specialized\ExtendedEnumerable.cs" />
+    <Compile Include="Theraot\Collections\Specialized\ExtendedEnumerableBase.cs" />
+    <Compile Include="Theraot\Collections\Specialized\FlagArray.cs" />
+    <Compile Include="Theraot\Collections\Specialized\NeedleConversionEqualityComparer.cs" />
+    <Compile Include="Theraot\Collections\Specialized\NullAwareDictionary.cs" />
+    <Compile Include="Theraot\Collections\Specialized\NullAwareDictionary.extended.cs" />
+    <Compile Include="Theraot\Collections\Specialized\OrderedCollection.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\ArrayReservoir.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\Branch.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\Bucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\BucketHelper.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\BucketStatus.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\CircularBucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\FixedSizeQueue.cs" />
+    <Compile Include="Theraot\Collections\Specialized\KeyCollection.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\Mapper.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\NeedleBucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\NeedleReservoir.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\Pool.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\PoolHelper.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\SafeDictionary.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\SafeQueue.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\SafeSet.cs" />
+    <Compile Include="Theraot\Collections\Specialized\ValueCollection.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\WeakCancellableEvent.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\WeakDelegateCollection.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\WeakEvent.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\WeakDictionary.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\WeakCollection.cs" />
+    <Compile Include="Theraot\Collections\TryTake.cs" />
+    <Compile Include="Theraot\Core\ActionHelper.cs">
+      <DependentUpon>ActionHelper.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Theraot\Core\AggregateExceptionHelper.cs" />
+    <Compile Include="Theraot\Core\CharHelper.cs" />
+    <Compile Include="Theraot\Core\EnvironmentHelper.cs" />
+    <Compile Include="Theraot\Core\IntPtrHelper.cs" />
+    <Compile Include="Theraot\Core\NumericHelper.checks.cs" />
+    <Compile Include="Theraot\Core\PathHelper.cs" />
+    <Compile Include="Theraot\Core\StringProcessor.cs" />
+    <Compile Include="Theraot\Threading\AtomicBoolean.cs" />
+    <Compile Include="Theraot\Core\CancellationTokenHelper.cs" />
+    <Compile Include="Theraot\Core\Check.cs" />
+    <Compile Include="Theraot\Core\CloneHelper.cs" />
+    <Compile Include="Theraot\Core\ComparerExtensions.cs" />
+    <Compile Include="Theraot\Core\DebugHelper.cs" />
+    <Compile Include="Theraot\Core\DelegateDeepEqualityComparer.cs" />
+    <Compile Include="Theraot\Core\DelegateEqualityComparer.cs" />
+    <Compile Include="Theraot\Core\DelegateExtensions.cs" />
+    <Compile Include="Theraot\Core\EnumerableHelper.cs" />
+    <Compile Include="Theraot\Core\EnumHelper.cs" />
+    <Compile Include="Theraot\Core\EqualityComparerHelper.cs" />
+    <Compile Include="Theraot\Core\EqualityComparerHelper1.cs" />
+    <Compile Include="Theraot\Core\ErsatzAction.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ErsatzAction.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Theraot\Core\ErsatzFunc.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ErsatzFunc.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Theraot\Core\FolderEnumeration.cs" />
+    <Compile Include="Theraot\Core\FuncHelper.cs">
+      <DependentUpon>FuncHelper.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Theraot\Core\FuncHelper.predicate.cs" />
+    <Compile Include="Theraot\Core\FuncHelper._.cs" />
+    <Compile Include="Theraot\Core\GraphHelper.cs" />
+    <Compile Include="Theraot\Core\ICloneable.cs" />
+    <Compile Include="Theraot\Core\ICloner.cs" />
+    <Compile Include="Theraot\Core\MonitorHelper.cs" />
+    <Compile Include="Theraot\Core\NewEventHandler.cs" />
+    <Compile Include="Theraot\Core\NewOperationCanceledException.cs" />
+    <Compile Include="Theraot\Core\NumericHelper.unchecked.cs" />
+    <Compile Include="Theraot\Core\NumericHelper.checked.cs" />
+    <Compile Include="Theraot\Core\NumericHelper.Binary.cs" />
+    <Compile Include="Theraot\Core\NumericHelper.build.cs" />
+    <Compile Include="Theraot\Core\NumericHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Theraot\Core\OrderedEnumerable.cs" />
+    <Compile Include="Theraot\Core\PrimeHelper.array.cs" />
+    <Compile Include="Theraot\Core\PrimeHelper.cs" />
+    <Compile Include="Theraot\Core\Range.cs" />
+    <Compile Include="Theraot\Core\RangeExtensions.cs" />
+    <Compile Include="Theraot\Core\Reference.cs" />
+    <Compile Include="Theraot\Core\StopwatchExtensions.cs" />
+    <Compile Include="Theraot\Core\StreamExtensions.cs" />
+    <Compile Include="Theraot\Core\StringBuilderExtensions.cs" />
+    <Compile Include="Theraot\Core\StringHelper.cs" />
+    <Compile Include="Theraot\Core\ReferenceEqualityComparer.cs" />
+    <Compile Include="Theraot\Core\TraceRoute.cs" />
+    <Compile Include="Theraot\Core\TracertNode.cs" />
+    <Compile Include="Theraot\Core\TupleEqualityComparer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TupleEqualityComparer.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Theraot\Core\TypeHelper.util.cs" />
+    <Compile Include="Theraot\Core\TypeHelper.ConstructorHelper.cs">
+      <DependentUpon>TypeHelper.ConstructorHelper.tt</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Theraot\Core\TypeHelper.cs" />
+    <Compile Include="Theraot\Core\TypeHelper.extra.cs" />
+    <Compile Include="Theraot\Threading\CriticalDisposable.cs" />
+    <Compile Include="Theraot\Threading\CriticalDisposable.disposable.cs" />
+    <Compile Include="Theraot\Threading\Disposable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Theraot\Threading\Disposable.disposable.cs">
+      <DependentUpon>Disposable.cs</DependentUpon>
+      <SubType>Code</SubType>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Theraot\Threading\Disposable.extended.cs" />
+    <Compile Include="Theraot\Threading\DisposableAkin.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Theraot\Threading\DisposableExtensions.cs" />
+    <Compile Include="Theraot\Threading\GCMonitor.internal.cs" />
+    <Compile Include="Theraot\Threading\GCMonitor.cs" />
+    <Compile Include="Theraot\Threading\IExtendedDisposable.cs" />
+    <Compile Include="Theraot\Threading\IReadWriteLock.cs" />
+    <Compile Include="Theraot\Threading\IThreadLocal.cs" />
+    <Compile Include="Theraot\Threading\LockContext.cs" />
+    <Compile Include="Theraot\Threading\LockSlot.cs" />
+    <Compile Include="Theraot\Threading\NeedleLock.cs" />
+    <Compile Include="Theraot\Threading\Needles\CacheNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\CacheNeedle.disposable.cs" />
+    <Compile Include="Theraot\Threading\Needles\DefaultNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\ExceptionStructNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\FutureDisposableNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\FutureAction.cs" />
+    <Compile Include="Theraot\Threading\Needles\FutureNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\ICacheNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\INeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\IPromise.cs" />
+    <Compile Include="Theraot\Threading\Needles\IReadOnlyNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\IRecyclableNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\LazyDisposableNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\LazyDisposableNeedle.disposable.cs" />
+    <Compile Include="Theraot\Threading\Needles\LazyAction.cs" />
+    <Compile Include="Theraot\Threading\Needles\LazyNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\LockableContext.cs" />
+    <Compile Include="Theraot\Threading\Needles\LockableSlot.cs" />
+    <Compile Include="Theraot\Threading\Needles\Needle.cs" />
+    <Compile Include="Theraot\Threading\Needles\NeedleHelper.cs" />
+    <Compile Include="Theraot\Threading\Needles\NotNull.cs" />
+    <Compile Include="Theraot\Threading\Needles\Promise.cs" />
+    <Compile Include="Theraot\Threading\Needles\PromiseNeedle1.cs" />
+    <Compile Include="Theraot\Threading\Needles\ReadOnlyDisposableNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\ReadOnlyDisposableNeedle.disposable.cs" />
+    <Compile Include="Theraot\Threading\Needles\ReadOnlyNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\ReadOnlyPromise.cs" />
+    <Compile Include="Theraot\Threading\Needles\ReadOnlyPromiseNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\ReadOnlyStructNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\StructNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\Transact.cs" />
+    <Compile Include="Theraot\Threading\Needles\Transact.disposable.cs" />
+    <Compile Include="Theraot\Threading\Needles\Transact.IResource.cs" />
+    <Compile Include="Theraot\Threading\Needles\Transact.Needle.cs" />
+    <Compile Include="Theraot\Threading\Needles\Transact.Needle.disposable.cs" />
+    <Compile Include="Theraot\Threading\Needles\WeakDelegateNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\WeakNeedle.cs" />
+    <Compile Include="Theraot\Threading\Needles\WeakNeedle.disposable.cs" />
+    <Compile Include="Theraot\Threading\Needles\WeakNeedle.extended.cs" />
+    <Compile Include="Theraot\Threading\NoReentrantReadWriteLock.disposable.cs" />
+    <Compile Include="Theraot\Threading\NoReentrantReadWriteLock.cs" />
+    <Compile Include="Theraot\Threading\NoTrackingThreadLocal.cs" />
+    <Compile Include="Theraot\Threading\ReadWriteLock.cs" />
+    <Compile Include="Theraot\Threading\ReentrantReadWriteLock.disposable.cs" />
+    <Compile Include="Theraot\Threading\ReentrantReadWriteLock.cs" />
+    <Compile Include="Theraot\Threading\ReentryGuard.cs" />
+    <Compile Include="Theraot\Threading\Timeout.cs" />
+    <Compile Include="Theraot\Threading\RuntimeUniqueIdProdiver.cs" />
+    <Compile Include="Theraot\Threading\Needles\LockableNeedle.cs" />
+    <Compile Include="Theraot\Threading\SimpleReentryGuard.cs" />
+    <Compile Include="Theraot\Threading\ThreadingHelper.cs" />
+    <Compile Include="Theraot\Threading\ThreadingHelper.extra.cs" />
+    <Compile Include="Theraot\Threading\ThreadingHelper.SpinWait.cs" />
+    <Compile Include="Theraot\Threading\ThreadLocalHelper.cs" />
+    <Compile Include="Theraot\Threading\ThreadLocalHelper1.cs" />
+    <Compile Include="Theraot\Threading\TrackingThreadLocal.cs" />
+    <Compile Include="Theraot\Threading\VersionProvider.cs" />
+    <Compile Include="System\Threading\Tasks\Task.net35.cs" />
+    <Compile Include="System\Threading\Tasks\TaskScheduler.net35.cs" />
+    <Compile Include="System\Threading\LazyInitializer.net35.cs" />
+    <Compile Include="System\Threading\SemaphoreSlim.net35.cs" />
+    <Compile Include="System\Threading\SpinLock.net35.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="System\Threading\SpinWait.net35.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="System\Func10.net35.cs" />
+    <Compile Include="System\Func11.net35.cs" />
+    <Compile Include="System\Func12.net35.cs" />
+    <Compile Include="System\Func13.net35.cs" />
+    <Compile Include="System\Func14.net35.cs" />
+    <Compile Include="System\Func15.net35.cs" />
+    <Compile Include="System\Func16.net35.cs" />
+    <Compile Include="System\Func17.net35.cs" />
+    <Compile Include="System\Func6.net35.cs" />
+    <Compile Include="System\Func7.net35.cs" />
+    <Compile Include="System\Func8.net35.cs" />
+    <Compile Include="System\Func9.net35.cs" />
+    <Compile Include="System\IObservable.net35.cs" />
+    <Compile Include="System\IObserver.net35.cs" />
+    <Compile Include="System\IProgress.net40.cs" />
+    <Compile Include="System\Lazy1.net35.cs" />
+    <Compile Include="System\Lazy2.net35.cs" />
+    <Compile Include="System\LazyThreadSafetyMode.net35.cs" />
+    <Compile Include="System\Linq\LinqCheck.cs" />
+    <Compile Include="System\Linq\EnumerableExecutor.net35.cs" />
+    <Compile Include="System\Linq\EnumerableExecutor1.net35.cs" />
+    <Compile Include="System\Linq\EnumerableQuery.cs" />
+    <Compile Include="System\Linq\EnumerableQuery1.net35.cs" />
+    <Compile Include="System\Linq\Expressions\ExpressionTransformer.cs" />
+    <Compile Include="System\Linq\Expressions\Extensions.cs" />
+    <Compile Include="System\Linq\Grouping.cs" />
+    <Compile Include="System\Linq\IOrderedQueryable.cs" />
+    <Compile Include="System\Linq\OrderedEnumerable.cs" />
+    <Compile Include="System\Linq\OrderedSequence.cs" />
+    <Compile Include="System\Linq\ParallelExecutionMode.net35.cs" />
+    <Compile Include="System\Linq\ParallelMergeOptions.net35.cs" />
+    <Compile Include="System\Linq\QueryableEnumerable.cs" />
+    <Compile Include="System\Linq\QueryableTransformer.cs" />
+    <Compile Include="System\Linq\QuickSort.cs" />
+    <Compile Include="System\Linq\SortContext.cs" />
+    <Compile Include="System\Linq\SortDirection.cs" />
+    <Compile Include="System\Linq\SortSequenceContext.cs" />
+    <Compile Include="System\Numerics\Complex.net35.cs" />
+    <Compile Include="System\Progress.net40.cs" />
+    <Compile Include="System\Runtime\CompilerServices\DynamicAttribute.net35.cs" />
+    <Compile Include="System\AggregateException.net35.cs" />
+    <Compile Include="System\Threading\ManualResetEventSlim.net35.cs" />
+    <Compile Include="System\Threading\Tasks\TaskCreationOption.net35.cs" />
+    <Compile Include="System\Threading\Tasks\TaskStatus.net35.cs" />
+    <Compile Include="System\WeakReference.net40.cs" />
+    <Compile Include="System\Threading\ThreadLocal.net35.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="System\Threading\Volatile.net40.cs" />
+    <Compile Include="System\Tuple8.net35.cs" />
+    <Compile Include="System\Tuple7.net35.cs" />
+    <Compile Include="System\Tuple6.net35.cs" />
+    <Compile Include="System\Tuple5.net35.cs" />
+    <Compile Include="System\Tuple3.net35.cs" />
+    <Compile Include="System\Tuple4.net35.cs" />
+    <Compile Include="System\Tuple2.net35.cs" />
+    <Compile Include="System\Collections\Generic\ISet.net35.cs" />
+    <Compile Include="System\Collections\IStructuralComparable.net35.cs" />
+    <Compile Include="System\Collections\IStructuralEquatable.net35.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="System\Collections\Generic\IReadOnlyCollection.net40.cs" />
+    <Compile Include="System\Collections\Generic\IReadOnlyDictionary.net40.cs" />
+    <Compile Include="System\Collections\Generic\IReadOnlyList.net40.cs" />
+    <Compile Include="System\Tuple1.net35.cs" />
+    <Compile Include="System\Tuple.net35.cs" />
+    <Compile Include="Theraot\VoidStruct.cs" />
+    <None Include="packages.config" />
+    <None Include="Theraot\Collections\Extensions.interleave.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Extensions.interleave.cs</LastGenOutput>
+    </None>
+    <None Include="Theraot\Collections\Extensions.zip.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Extensions.zip.cs</LastGenOutput>
+    </None>
+    <None Include="Theraot\Core\ActionHelper.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ActionHelper.cs</LastGenOutput>
+    </None>
+    <None Include="Theraot\Core\FuncHelper.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>FuncHelper.cs</LastGenOutput>
+    </None>
+    <None Include="Theraot\Core\TupleEqualityComparer.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>TupleEqualityComparer.cs</LastGenOutput>
+    </None>
+    <None Include="Theraot\Core\TypeHelper.ConstructorHelper.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>TypeHelper.ConstructorHelper.cs</LastGenOutput>
+    </None>
+    <Compile Include="System\Diagnostics\Contracts\ContractFailureKind.net35.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractFailedEventArgs.net35.cs" />
+    <Compile Include="System\Diagnostics\Contracts\PureAttribute.net35.cs" />
+    <Compile Include="System\Runtime\CompilerServices\ContractHelper.net40.cs" />
+    <Compile Include="System\Diagnostics\Contracts\Internal\ContractHelper.net35.cs" />
+    <Compile Include="Theraot\Threading\AtomicBooleanValue.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Core" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
     Other similar extension points exist, see Microsoft.Common.targets.
  <Target Name="BeforeBuild">
  </Target>
  <Target Name="AfterBuild">
  </Target>
  -->
-	<ProjectExtensions>
-	  <MonoDevelop>
-	    <Properties>
-	      <Policies>
-	        <TextStylePolicy EolMarker="Windows" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/x-csharp" />
-	        <CSharpFormattingPolicy inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
-	        <TextStylePolicy EolMarker="Windows" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
-	      </Policies>
-	    </Properties>
-	  </MonoDevelop>
-	</ProjectExtensions>
-	<ItemGroup>
-		<None Include="OpenSourceKey.snk" />
-	</ItemGroup>
-	<ItemGroup>
-		<Content Include="Theraot\Core\ErsatzAction.tt">
-			<Generator>TextTemplatingFileGenerator</Generator>
-			<LastGenOutput>ErsatzAction.cs</LastGenOutput>
-		</Content>
-		<Content Include="Theraot\Core\ErsatzFunc.tt">
-			<Generator>TextTemplatingFileGenerator</Generator>
-			<LastGenOutput>ErsatzFunc.cs</LastGenOutput>
-		</Content>
-	</ItemGroup>
-	<ItemGroup />
-	<ItemGroup>
-	  <Folder Include="System\Collections\Specialized\" />
-	</ItemGroup>
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <TextStylePolicy EolMarker="Windows" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/x-csharp" />
+          <CSharpFormattingPolicy inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
+          <TextStylePolicy EolMarker="Windows" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
+  <ItemGroup>
+    <None Include="OpenSourceKey.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Theraot\Core\ErsatzAction.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ErsatzAction.cs</LastGenOutput>
+    </Content>
+    <Content Include="Theraot\Core\ErsatzFunc.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ErsatzFunc.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="System\Collections\Specialized\" />
+  </ItemGroup>
+  <ItemGroup />
 </Project>
