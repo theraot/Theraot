@@ -2,13 +2,13 @@
 <package >
   <metadata>
     <id>Theraot.Core</id>
-    <version>1.0.0</version>
+    <version>1.0.2</version>
     <authors>Theraot</authors>
     <owners>Theraot</owners>
     <licenseUrl>https://github.com/theraot/Theraot/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/theraot/Theraot/</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>.NET Backport</description>
-    <copyright>Copyright 2015</copyright>
+    <copyright>Copyright 2016</copyright>
   </metadata>
 </package>
