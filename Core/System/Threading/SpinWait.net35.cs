@@ -22,7 +22,7 @@
 
 using Theraot.Core;
 
-#if NET20 || NET30 || NET35
+#if NET35
 
 namespace System.Threading
 {

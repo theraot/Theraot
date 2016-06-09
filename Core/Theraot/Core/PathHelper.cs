@@ -39,7 +39,7 @@ namespace Theraot.Core
 
         public static string Combine(params string[] paths)
         {
-#if NET20 || NET30 || NET35
+#if NET35
             if (paths == null)
             {
                 throw new ArgumentNullException("paths");
@@ -77,7 +77,7 @@ namespace Theraot.Core
 
         public static string Combine(string path1, string path2)
         {
-#if NET20 || NET30 || NET35
+#if NET35
 
             if (HasInvalidPathChars(path1) || HasInvalidPathChars(path2))
             {
@@ -107,7 +107,7 @@ namespace Theraot.Core
 
         public static string Combine(string path1, string path2, string path3)
         {
-#if NET20 || NET30 || NET35
+#if NET35
             if (HasInvalidPathChars(path1) || HasInvalidPathChars(path2) || HasInvalidPathChars(path3))
             {
                 throw new ArgumentException("invalid characters in path");
@@ -149,7 +149,7 @@ namespace Theraot.Core
 
         public static string Combine(string path1, string path2, string path3, string path4)
         {
-#if NET20 || NET30 || NET35
+#if NET35
             if (HasInvalidPathChars(path1) || HasInvalidPathChars(path2) || HasInvalidPathChars(path3) || HasInvalidPathChars(path4))
             {
                 throw new ArgumentException("invalid characters in path");

@@ -7,7 +7,7 @@ using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
-#if NET20 || NET30 || NET35
+#if NET35
 
     /// <summary>
     /// Used to denote the target of a <see cref="GotoExpression"/>.
@@ -49,54 +49,6 @@ namespace System.Linq.Expressions
         public override string ToString()
         {
             return String.IsNullOrEmpty(this.Name) ? "UnamedLabel" : this.Name;
-        }
-    }
-
-#endif
-#if NET20 || NET30
-
-    public partial class Expression
-    {
-        /// <summary>
-        /// Creates a <see cref="LabelTarget"/> representing a label with void type and no name.
-        /// </summary>
-        /// <returns>The new <see cref="LabelTarget"/>.</returns>
-        public static LabelTarget Label()
-        {
-            return Label(typeof(void), null);
-        }
-
-        /// <summary>
-        /// Creates a <see cref="LabelTarget"/> representing a label with void type and the given name.
-        /// </summary>
-        /// <param name="name">The name of the label.</param>
-        /// <returns>The new <see cref="LabelTarget"/>.</returns>
-        public static LabelTarget Label(string name)
-        {
-            return Label(typeof(void), name);
-        }
-
-        /// <summary>
-        /// Creates a <see cref="LabelTarget"/> representing a label with the given type.
-        /// </summary>
-        /// <param name="type">The type of value that is passed when jumping to the label.</param>
-        /// <returns>The new <see cref="LabelTarget"/>.</returns>
-        public static LabelTarget Label(Type type)
-        {
-            return Label(type, null);
-        }
-
-        /// <summary>
-        /// Creates a <see cref="LabelTarget"/> representing a label with the given type and name.
-        /// </summary>
-        /// <param name="type">The type of value that is passed when jumping to the label.</param>
-        /// <param name="name">The name of the label.</param>
-        /// <returns>The new <see cref="LabelTarget"/>.</returns>
-        public static LabelTarget Label(Type type, string name)
-        {
-            ContractUtils.RequiresNotNull(type, "type");
-            TypeHelper.ValidateType(type);
-            return new LabelTarget(type, name);
         }
     }
 

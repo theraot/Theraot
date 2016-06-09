@@ -2,7 +2,7 @@
 
 using System;
 
-#if NET20 || NET30 || NET35
+#if NET35
 
 using System.Threading;
 
@@ -23,7 +23,7 @@ namespace Theraot.Core
 
     public partial class NewOperationCanceledException
     {
-#if NET20 || NET30 || NET35
+#if NET35
 
         [NonSerialized]
         private CancellationToken? _token;

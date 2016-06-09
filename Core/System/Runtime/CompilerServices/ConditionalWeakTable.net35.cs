@@ -1,4 +1,4 @@
-﻿#if NET20 || NET30 || NET35
+﻿#if NET35
 
 using System.Runtime.InteropServices;
 using Theraot.Collections.ThreadSafe;

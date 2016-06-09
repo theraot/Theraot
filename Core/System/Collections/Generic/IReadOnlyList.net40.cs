@@ -11,7 +11,7 @@
         }
     }
 #endif
-#if NET20 || NET30 || NET35
+#if NET35
 
     [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "By Design")]
     public interface IReadOnlyList<T> : IReadOnlyCollection<T>
