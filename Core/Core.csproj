@@ -11,7 +11,8 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <ReleaseVersion>1.0.2</ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -236,8 +237,19 @@
     <Compile Include="System\Collections\Specialized\NotifyCollectionChangedEventArgs.net30.cs" />
     <Compile Include="System\Collections\Specialized\NotifyCollectionChangedEventHandler.net30.cs" />
     <Compile Include="System\Collections\StructuralComparisons.net35.cs" />
+    <Compile Include="System\Diagnostics\Contracts\Contract.bcl.net35 .cs" />
     <Compile Include="System\Diagnostics\Contracts\Contract.net35.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractAbbreviatorAttribute.net40.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractArgumentValidatorAttribute.net40.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractClassAttribute.net35.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractClassForAttribute.net35.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractException.net40.cs" />
     <Compile Include="System\Diagnostics\Contracts\ContractInvariantMethodAttribute.net35.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractOptionAttribute.net40.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractPublicPropertyNameAttribute.net35.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractReferenceAssemblyAttribute.net40.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractRuntimeIgnoredAttribute.net35.cs" />
+    <Compile Include="System\Diagnostics\Contracts\ContractVerificationAttribute.net35.cs" />
     <Compile Include="System\Dynamic\Utils\CacheDict.cs" />
     <Compile Include="System\Dynamic\Utils\ContractsUtil.cs" />
     <Compile Include="System\Dynamic\Utils\DelegateHelpers.cs" />
@@ -356,6 +368,7 @@
     <Compile Include="System\Runtime\CompilerServices\Closure.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\ConditionalWeakTable.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\ConfiguredTaskAwaitable.net40.cs" />
+    <Compile Include="System\Runtime\CompilerServices\ContractHelperEx.cs" />
     <Compile Include="System\Runtime\CompilerServices\IAsyncMethodBuilder.cs" />
     <Compile Include="System\Runtime\CompilerServices\IAsyncStateMachine.net40.cs" />
     <Compile Include="System\Runtime\CompilerServices\ICriticalNotifyCompletion.net40.cs" />
@@ -369,7 +382,6 @@
     <Compile Include="System\Runtime\CompilerServices\YieldAwaitable.net40.cs" />
     <Compile Include="System\Runtime\ExceptionServices\ExceptionDispatchInfo.net40.cs" />
     <Compile Include="System\Runtime\TargetedPatchingOptOutAttribute.net35.cs" />
-    <Compile Include="System\Security\SecuritySafeCriticalAttribute.net30.cs" />
     <Compile Include="System\SR.cs" />
     <Compile Include="System\Threading\Barrier.net35.cs" />
     <Compile Include="System\Threading\CancellationToken.net35.cs" />
@@ -830,7 +842,6 @@
     <Compile Include="System\Diagnostics\Contracts\PureAttribute.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\ContractHelper.net40.cs" />
     <Compile Include="System\Diagnostics\Contracts\Internal\ContractHelper.net35.cs" />
-    <Compile Include="System\Diagnostics\Contracts\ContractException.net40.cs" />
     <Compile Include="Theraot\Threading\AtomicBooleanValue.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -875,7 +886,7 @@
       <Properties>
         <Policies>
           <TextStylePolicy EolMarker="Windows" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/x-csharp" />
-          <CSharpFormattingPolicy IndentSwitchBody="True" SimplePropertyFormatting="ForceNewLine" AutoPropertyFormatting="ForceNewLine" IndentPreprocessorDirectives="False" AnonymousMethodBraceStyle="NextLine" PropertyBraceStyle="NextLine" PropertyGetBraceStyle="NextLine" PropertySetBraceStyle="NextLine" SimpleGetBlockFormatting="ForceNewLine" SimpleSetBlockFormatting="ForceNewLine" EventBraceStyle="NextLine" EventAddBraceStyle="NextLine" EventRemoveBraceStyle="NextLine" AllowEventAddBlockInline="False" AllowEventRemoveBlockInline="False" StatementBraceStyle="NextLine" ElseNewLinePlacement="NewLine" CatchNewLinePlacement="NewLine" FinallyNewLinePlacement="NewLine" ArrayInitializerBraceStyle="NextLine" BeforeMethodDeclarationParentheses="False" BeforeMethodCallParentheses="False" BeforeConstructorDeclarationParentheses="False" NewLineBeforeConstructorInitializerColon="NewLine" NewLineAfterConstructorInitializerColon="SameLine" BeforeIndexerDeclarationBracket="False" BeforeDelegateDeclarationParentheses="False" AfterDelegateDeclarationParameterComma="True" NewParentheses="False" SpacesBeforeBrackets="False" MethodDeclarationParameterWrapping="DoNotWrap" AlignToFirstMethodDeclarationParameter="False" IndexerDeclarationParameterWrapping="DoNotWrap" AlignToFirstIndexerDeclarationParameter="False" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
+          <CSharpFormattingPolicy inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
           <TextStylePolicy EolMarker="Windows" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
         </Policies>
       </Properties>

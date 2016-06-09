@@ -1,23 +1,21 @@
 ﻿#if NET20 || NET30 || NET35
 
-// ==++==
-//
-//   Copyright (c) Microsoft Corporation.  All rights reserved.
-// 
-// ==--==
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
 // =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
 //
 // TaskScheduler.cs
 //
-// <OWNER>[....]</OWNER>
 //
-// This file contains the primary interface and management of tasks and queues.  
+// This file contains the primary interface and management of tasks and queues.
 //
 // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-using System.Security;
-using System.Diagnostics.Contracts;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Security;
 
 namespace System.Threading.Tasks
 {
@@ -26,30 +24,26 @@ namespace System.Threading.Tasks
     /// </summary>
     internal sealed class ThreadPoolTaskScheduler : TaskScheduler
     {
-        // static delegate for threads allocated to handle LongRunning tasks.
-        private static readonly ParameterizedThreadStart _longRunningThreadWork = LongRunningThreadWork;
         private static readonly WaitCallback _executeCallback = TaskExecuteCallback;
 
-        private static void TaskExecuteCallback(object obj)
+        // static delegate for threads allocated to handle LongRunning tasks.
+        private static readonly ParameterizedThreadStart _longRunningThreadWork = LongRunningThreadWork;
+
+        /// <summary>
+        /// This is the only scheduler that returns false for this property, indicating that the task entry codepath is unsafe (CAS free)
+        /// since we know that the underlying scheduler already takes care of atomic transitions from queued to non-queued.
+        /// </summary>
+        internal override bool RequiresAtomicStartTransition
         {
-            var task = obj as Task;
-            if (task != null)
-            {
-                task.ExecuteEntry(true);
-            }
+            get { return false; }
         }
 
-        private static void LongRunningThreadWork(object obj)
+        /// <summary>
+        /// Notifies the scheduler that work is progressing (no-op).
+        /// </summary>
+        internal override void NotifyWorkItemProgress()
         {
-            var task = obj as Task;
-            if (task != null)
-            {
-                task.ExecuteEntry(false);
-            }
-            else
-            {
-                Contract.Assert(false, "TaskScheduler.LongRunningThreadWork: no task to run");
-            }
+            // TODO ?
         }
 
         /// <summary>
@@ -70,9 +64,22 @@ namespace System.Threading.Tasks
             }
             else
             {
-                // TODO: TaskCreationOptions.PreferFairness
+                // TODO: TaskCreationOptions.PreferFairness ?
                 ThreadPool.QueueUserWorkItem(_executeCallback, task);
             }
+        }
+
+        [SecurityCritical]
+        protected override IEnumerable<Task> GetScheduledTasks()
+        {
+            // TODO ?
+            yield break;
+        }
+
+        [SecurityCritical]
+        protected override bool TryDequeue(Task task)
+        {
+            throw new Theraot.Core.InternalSpecialCancelException("ThreadPool");
         }
 
         [SecurityCritical]
@@ -92,41 +99,35 @@ namespace System.Threading.Tasks
             finally
             {
                 //   Only call NWIP() if task was previously queued
-                if (taskWasPreviouslyQueued) NotifyWorkItemProgress();
+                if (taskWasPreviouslyQueued)
+                {
+                    NotifyWorkItemProgress();
+                }
             }
+
             return result;
         }
 
-        [SecurityCritical]
-        protected override bool TryDequeue(Task task)
+        private static void LongRunningThreadWork(object obj)
         {
-            throw new Theraot.Core.InternalSpecialCancelException("ThreadPool");
-        }
-
-        [SecurityCritical]
-        protected override IEnumerable<Task> GetScheduledTasks()
-        {
-            // TODO?
-            yield break;
-        }
-
-        /// <summary>
-        /// Notifies the scheduler that work is progressing (no-op).
-        /// </summary>
-        internal override void NotifyWorkItemProgress()
-        {
-            // TODO?
-        }
-
-        /// <summary>
-        /// This is the only scheduler that returns false for this property, indicating that the task entry codepath is unsafe (CAS free)
-        /// since we know that the underlying scheduler already takes care of atomic transitions from queued to non-queued.
-        /// </summary>
-        internal override bool RequiresAtomicStartTransition
-        {
-            get
+            Contract.Requires(obj != null, "TaskScheduler.LongRunningThreadWork: obj is null");
+            var task = obj as Task;
+            if (task != null)
             {
-                return false;
+                task.ExecuteEntry(false);
+            }
+            else
+            {
+                Contract.Assert(false, "TaskScheduler.LongRunningThreadWork: t is null");
+            }
+        }
+
+        private static void TaskExecuteCallback(object obj)
+        {
+            var task = obj as Task;
+            if (task != null)
+            {
+                task.ExecuteEntry(true);
             }
         }
     }

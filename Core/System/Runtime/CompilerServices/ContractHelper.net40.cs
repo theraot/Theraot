@@ -1,95 +1,29 @@
 #if NET20 || NET30 || NET35 || NET40
 
-// ==++==
-//
-//   Copyright (c) Microsoft Corporation.  All rights reserved.
-//
-// ==--==
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+/*============================================================
+**
+**
+**
+** Implementation details of CLR Contracts.
+**
+===========================================================*/
 
 using System.Diagnostics;
-using System.Security;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
-using System.Security.Permissions;
 using System.Runtime.ConstrainedExecution;
+using System.Security;
 
 namespace System.Runtime.CompilerServices
 {
     public static class ContractHelper
     {
-        internal const int COR_E_CODECONTRACTFAILED = unchecked((int)0x80131542);
-        private static volatile EventHandler<ContractFailedEventArgs> contractFailedEvent;
-        private static readonly Object lockObject = new Object();
-
-        /// <summary>
-        /// Allows a managed application environment such as an interactive interpreter (IronPython) or a
-        /// web browser host (Jolt hosting Silverlight in IE) to be notified of contract failures and 
-        /// potentially "handle" them, either by throwing a particular exception type, etc.  If any of the
-        /// event handlers sets the Cancel flag in the ContractFailedEventArgs, then the Contract class will
-        /// not pop up an assert dialog box or trigger escalation policy.  Hooking this event requires 
-        /// full trust.
-        /// </summary>
-        internal static event EventHandler<ContractFailedEventArgs> InternalContractFailed
-        {
-            [SecurityCritical]
-            add
-            {
-                // Eagerly prepare each event handler _marked with a reliability contract_, to 
-                // attempt to reduce out of memory exceptions while reporting contract violations.
-                // This only works if the new handler obeys the constraints placed on 
-                // constrained execution regions.  Eagerly preparing non-reliable event handlers
-                // would be a perf hit and wouldn't significantly improve reliability.
-                // UE: Please mention reliable event handlers should also be marked with the 
-                // PrePrepareMethodAttribute to avoid CER eager preparation work when ngen'ed.
-                // System.Runtime.CompilerServices.RuntimeHelpers.PrepareContractedDelegate(value); // TODO? I'm afraid I can't do that.
-                lock (lockObject)
-                {
-                    contractFailedEvent += value;
-                }
-            }
-            [SecurityCritical]
-            remove
-            {
-                lock (lockObject)
-                {
-                    contractFailedEvent -= value;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Allows a managed application environment such as an interactive interpreter (IronPython)
-        /// to be notified of contract failures and 
-        /// potentially "handle" them, either by throwing a particular exception type, etc.  If any of the
-        /// event handlers sets the Cancel flag in the ContractFailedEventArgs, then the Contract class will
-        /// not pop up an assert dialog box or trigger escalation policy.  Hooking this event requires 
-        /// full trust, because it will inform you of bugs in the appdomain and because the event handler
-        /// could allow you to continue execution.
-        /// </summary>
-        public static event EventHandler<ContractFailedEventArgs> ContractFailed
-        {
-            [SecurityCritical]
-            [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
-            add
-            {
-                System.Runtime.CompilerServices.ContractHelper.InternalContractFailed += value;
-            }
-            [SecurityCritical]
-            [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
-            remove
-            {
-                System.Runtime.CompilerServices.ContractHelper.InternalContractFailed -= value;
-            }
-        }
-
-        /// <summary>
-        /// Rewriter will call this method on a contract failure to allow listeners to be notified.
-        /// The method should not perform any failure (assert/throw) itself.
-        /// </summary>
-        /// <returns>null if the event was handled and should not trigger a failure.
-        ///          Otherwise, returns the localized failure message</returns>
         [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static string RaiseContractFailedEvent(ContractFailureKind failureKind, string userMessage, string conditionText, Exception innerException)
         {
@@ -98,89 +32,121 @@ namespace System.Runtime.CompilerServices
             return resultFailureMessage;
         }
 
-        /// <summary>
-        /// Rewriter calls this method to get the default failure behavior.
-        /// </summary>
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public static void TriggerFailure(ContractFailureKind kind, string displayMessage, string userMessage, string conditionText, Exception innerException)
         {
             TriggerFailureImplementation(kind, displayMessage, userMessage, conditionText, innerException);
         }
 
+        internal const int Cor_E_Codecontractfailed = unchecked((int)0x80131542);
+        private static readonly object _lockObject = new object();
+        private static volatile EventHandler<ContractFailedEventArgs> _contractFailedEvent;
+
+        /// <summary>
+        /// Allows a managed application environment such as an interactive interpreter (IronPython) or a
+        /// web browser host (Jolt hosting Silverlight in IE) to be notified of contract failures and
+        /// potentially "handle" them, either by throwing a particular exception type, etc.  If any of the
+        /// event handlers sets the Cancel flag in the ContractFailedEventArgs, then the Contract class will
+        /// not pop up an assert dialog box or trigger escalation policy.  Hooking this event requires
+        /// full trust.
+        /// </summary>
+        internal static event EventHandler<ContractFailedEventArgs> InternalContractFailed
+        {
+            [SecurityCritical]
+            add
+            {
+                // Eagerly prepare each event handler _marked with a reliability contract_, to
+                // attempt to reduce out of memory exceptions while reporting contract violations.
+                // This only works if the new handler obeys the constraints placed on
+                // constrained execution regions.  Eagerly preparing non-reliable event handlers
+                // would be a perf hit and wouldn't significantly improve reliability.
+                // UE: Please mention reliable event handlers should also be marked with the
+                // PrePrepareMethodAttribute to avoid CER eager preparation work when ngen'ed.
+                // System.Runtime.CompilerServices.RuntimeHelpers.PrepareContractedDelegate(value); // TODO? I'm afraid I can't do that.
+                lock (_lockObject)
+                {
+                    _contractFailedEvent += value;
+                }
+            }
+            [SecurityCritical]
+            remove
+            {
+                lock (_lockObject)
+                {
+                    _contractFailedEvent -= value;
+                }
+            }
+        }
+
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-        private static string GetDisplayMessage(ContractFailureKind failureKind, string userMessage, string conditionText)
+        private static string GetDisplayMessage(ContractFailureKind failureKind, string userMessage,
+            string conditionText)
         {
             // Well-formatted English messages will take one of four forms.  A sentence ending in
-            // either a period or a colon, the condition string, then the message tacked 
+            // either a period or a colon, the condition string, then the message tacked
             // on to the end with two spaces in front.
-            // Note that both the conditionText and userMessage may be null.  Also, 
+            // Note that both the conditionText and userMessage may be null.  Also,
             // on Silverlight we may not be able to look up a friendly string for the
             // error message.  Let's leverage Silverlight's default error message there.
-            string failureMessage = ContractHelperEx.GetFailureMessage(failureKind, conditionText);
+            var failureMessage = ContractHelperEx.GetFailureMessage(failureKind, conditionText);
 
             // Now add in the user message, if present.
             if (!string.IsNullOrEmpty(userMessage))
             {
                 return failureMessage + "  " + userMessage;
             }
-            else
-            {
-                return failureMessage;
-            }
+            return failureMessage;
         }
 
-        /// <summary>
-        /// Rewriter will call this method on a contract failure to allow listeners to be notified.
-        /// The method should not perform any failure (assert/throw) itself.
-        /// This method has 3 functions:
-        /// 1. Call any contract hooks (such as listeners to Contract failed events)
-        /// 2. Determine if the listeneres deem the failure as handled (then resultFailureMessage should be set to null)
-        /// 3. Produce a localized resultFailureMessage used in advertising the failure subsequently.
-        /// </summary>
-        /// <param name="resultFailureMessage">Should really be out (or the return value), but partial methods are not flexible enough.
-        /// On exit: null if the event was handled and should not trigger a failure.
-        ///          Otherwise, returns the localized failure message</param>
         [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         [SecuritySafeCritical]
-        static void RaiseContractFailedEventImplementation(ContractFailureKind failureKind, string userMessage, string conditionText, Exception innerException, ref string resultFailureMessage)
+        static void RaiseContractFailedEventImplementation(ContractFailureKind failureKind, string userMessage,
+            string conditionText, Exception innerException, ref string resultFailureMessage)
         {
             if (failureKind < ContractFailureKind.Precondition || failureKind > ContractFailureKind.Assume)
                 throw new ArgumentException(string.Format("Invalid enum value: {0}", failureKind), "failureKind");
             Contract.EndContractBlock();
 
             string returnValue;
-            string displayMessage = "contract failed.";  // Incomplete, but in case of OOM during resource lookup...
-            ContractFailedEventArgs eventArgs = null;  // In case of OOM.
+            var displayMessage = "contract failed."; // Incomplete, but in case of OOM during resource lookup...
+            ContractFailedEventArgs eventArgs = null; // In case of OOM.
             RuntimeHelpers.PrepareConstrainedRegions();
             try
             {
                 displayMessage = GetDisplayMessage(failureKind, userMessage, conditionText);
-                EventHandler<ContractFailedEventArgs> contractFailedEventLocal = contractFailedEvent;
+                var contractFailedEventLocal = _contractFailedEvent;
                 if (contractFailedEventLocal != null)
                 {
                     eventArgs = new ContractFailedEventArgs(failureKind, displayMessage, conditionText, innerException);
-                    foreach (EventHandler<ContractFailedEventArgs> handler in contractFailedEventLocal.GetInvocationList())
+                    foreach (var @delegate in contractFailedEventLocal.GetInvocationList())
                     {
+                        var handler = (EventHandler<ContractFailedEventArgs>)@delegate;
                         try
                         {
                             handler(null, eventArgs);
                         }
-                        catch (Exception /*e*/)
+                        catch (Exception e)
                         {
-                            // eventArgs.thrownDuringHandler = e;
+#if NET20 || NET30 || NET35
+                            eventArgs.ThrownDuringHandler = e;
+#else
+                            GC.KeepAlive(e);
+#endif
                             eventArgs.SetUnwind();
                         }
                     }
                     if (eventArgs.Unwind)
                     {
+#if NET20 || NET30 || NET35
                         // unwind
-                        // if (innerException == null)
-                        // {
-                        //     innerException = eventArgs.thrownDuringHandler;
-                        // }
+                        if (innerException == null)
+                        {
+                            innerException = eventArgs.ThrownDuringHandler;
+                        }
+#endif
                         throw new ContractException(failureKind, displayMessage, userMessage, conditionText, innerException);
                     }
                 }
@@ -199,77 +165,27 @@ namespace System.Runtime.CompilerServices
             resultFailureMessage = returnValue;
         }
 
-        /// <summary>
-        /// Rewriter calls this method to get the default failure behavior.
-        /// </summary>
         [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "conditionText")]
         [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "userMessage")]
         [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "kind")]
         [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "innerException")]
-        [System.Diagnostics.DebuggerNonUserCode]
+        [DebuggerNonUserCode]
         [SecuritySafeCritical]
-        static void TriggerFailureImplementation(ContractFailureKind kind, string displayMessage, string userMessage, string conditionText, Exception innerException)
+        static void TriggerFailureImplementation(ContractFailureKind kind, string displayMessage,
+            string userMessage, string conditionText, Exception innerException)
         {
+            // If we're here, our intent is to pop up a dialog box (if we can).  For developers
+            // interacting live with a debugger, this is a good experience.  For Silverlight
+            // hosted in Internet Explorer, the assert window is great.  If we cannot
+            // pop up a dialog box, throw an exception (consider a library compiled with
+            // "Assert On Failure" but used in a process that can't pop up asserts, like an
+            // NT Service).  For the CLR hosted by server apps like SQL or Exchange, we should
+            // trigger escalation policy.
             if (!Environment.UserInteractive)
             {
                 throw new ContractException(kind, displayMessage, userMessage, conditionText, innerException);
             }
             ContractHelperEx.Fail(displayMessage);
-        }
-    }
-
-    internal static class ContractHelperEx
-    {
-        [SecuritySafeCritical]
-        internal static void Fail(string message)
-        {
-            if (Debugger.IsAttached)
-            {
-                Debugger.Break();
-            }
-            else
-            {
-                Environment.FailFast(message);
-            }
-        }
-
-        internal static string GetFailureMessage(ContractFailureKind failureKind, string conditionText = "")
-        {
-            string result = null;
-            var withCondition = !string.IsNullOrEmpty(conditionText);
-            switch (failureKind)
-            {
-                case ContractFailureKind.Assert:
-                    result = withCondition ? string.Format("Assertion failed: {0}", conditionText) : "Assertion failed.";
-                    break;
-
-                case ContractFailureKind.Assume:
-                    result = withCondition ? string.Format("Assumption failed: {0}", conditionText) : "Assumption failed.";
-                    break;
-
-                case ContractFailureKind.Precondition:
-                    result = withCondition ? string.Format("Precondition failed: {0}", conditionText) : "Precondition failed.";
-                    break;
-
-                case ContractFailureKind.Postcondition:
-                    result = withCondition ? string.Format("Postcondition failed: {0}", conditionText) : "Postcondition failed.";
-                    break;
-
-                case ContractFailureKind.Invariant:
-                    result = withCondition ? string.Format("Invariant failed: {0}", conditionText) : "Invariant failed.";
-                    break;
-
-                case ContractFailureKind.PostconditionOnException:
-                    result = withCondition ? string.Format("Postcondition failed after throwing an exception: {0}", conditionText) : "Postcondition failed after throwing an exception.";
-                    break;
-
-                default:
-                    // TODO implement Contract.Assume
-                    // Contract.Assume(false, "Unreachable code");
-                    result = "Assumption failed.";
-                    break;
-            }
-            return result;
         }
     }
 }

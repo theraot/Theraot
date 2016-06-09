@@ -12,7 +12,7 @@ namespace Theraot.Threading
     [System.Diagnostics.DebuggerNonUserCode]
     public sealed class ReentryGuard
     {
-        private readonly StructNeedle<NoTrackingThreadLocal<bool>> _flag;
+        private readonly StructNeedle<TrackingThreadLocal<bool>> _flag;
         private readonly SafeQueue<Action> _workQueue;
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace Theraot.Threading
         public ReentryGuard()
         {
             _workQueue = new SafeQueue<Action>();
-            _flag = new StructNeedle<NoTrackingThreadLocal<bool>>(new NoTrackingThreadLocal<bool>());
+            _flag = new StructNeedle<TrackingThreadLocal<bool>>(new TrackingThreadLocal<bool>());
         }
 
         /// <summary>
@@ -104,8 +104,7 @@ namespace Theraot.Threading
             return result;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times", Justification = "By Design")]
-        private static void ExecutePending(SafeQueue<Action> queue, NoTrackingThreadLocal<bool> flag)
+        private static void ExecutePending(SafeQueue<Action> queue, IThreadLocal<bool> flag)
         {
             if (flag.Value)
             {
