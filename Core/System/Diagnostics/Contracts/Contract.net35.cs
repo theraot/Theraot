@@ -1,50 +1,42 @@
 ﻿#if NET20 || NET30 || NET35
 
-// ==++==
-// 
-//   Copyright (c) Microsoft Corporation.  All rights reserved.
-// 
-// ==--==
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
+/*============================================================
+**
+**
+**
+** Purpose: The contract class allows for expressing preconditions,
+** postconditions, and object invariants about methods in source
+** code for runtime checking & static analysis.
+**
+** Two classes (Contract and ContractHelper) are split into partial classes
+** in order to share the public front for multiple platforms (this file)
+** while providing separate implementation details for each platform.
+**
+===========================================================*/
+#define DEBUG // The behavior of this contract library should be consistent regardless of build type.
+
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.ConstrainedExecution;
-using System.Security;
-using System.Security.Permissions;
 
 namespace System.Diagnostics.Contracts
 {
-    public static class Contract
+    /// <summary>
+    /// Contains static methods for representing program contracts such as preconditions, postconditions, and invariants.
+    /// </summary>
+    /// <remarks>
+    /// WARNING: A binary rewriter must be used to insert runtime enforcement of these contracts.
+    /// Otherwise some contracts like Ensures can only be checked statically and will not throw exceptions during runtime when contracts are violated.
+    /// Please note this class uses conditional compilation to help avoid easy mistakes.  Defining the preprocessor
+    /// symbol CONTRACTS_PRECONDITIONS will include all preconditions expressed using Contract.Requires in your
+    /// build.  The symbol CONTRACTS_FULL will include postconditions and object invariants, and requires the binary rewriter.
+    /// </remarks>
+    public static partial class Contract
     {
-        [ThreadStatic]
-        private static bool _assertingMustUseRewriter;
-
-        /// <summary>
-        /// Allows a managed application environment such as an interactive interpreter (IronPython)
-        /// to be notified of contract failures and 
-        /// potentially "handle" them, either by throwing a particular exception type, etc.  If any of the
-        /// event handlers sets the Cancel flag in the ContractFailedEventArgs, then the Contract class will
-        /// not pop up an assert dialog box or trigger escalation policy.  Hooking this event requires 
-        /// full trust, because it will inform you of bugs in the appdomain and because the event handler
-        /// could allow you to continue execution.
-        /// </summary>
-        public static event EventHandler<ContractFailedEventArgs> ContractFailed
-        {
-            [SecurityCritical]
-            // [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
-            add
-            {
-                System.Runtime.CompilerServices.ContractHelper.InternalContractFailed += value;
-            }
-            [SecurityCritical]
-            // [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
-            remove
-            {
-                System.Runtime.CompilerServices.ContractHelper.InternalContractFailed -= value;
-            }
-        }
-
         /// <summary>
         /// In debug builds, perform a runtime check that <paramref name="condition"/> is true.
         /// </summary>
@@ -56,7 +48,9 @@ namespace System.Diagnostics.Contracts
         public static void Assert(bool condition)
         {
             if (!condition)
+            {
                 ReportFailure(ContractFailureKind.Assert, null, null, null);
+            }
         }
 
         /// <summary>
@@ -68,108 +62,61 @@ namespace System.Diagnostics.Contracts
         [Conditional("DEBUG")]
         [Conditional("CONTRACTS_FULL")]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-        public static void Assert(bool condition, String userMessage)
+        public static void Assert(bool condition, string userMessage)
         {
             if (!condition)
-                ReportFailure(ContractFailureKind.Assert, userMessage, null, null);
-        }
-
-        /// <summary>
-        /// Without contract rewriting, failing Assert/Assumes end up calling this method.
-        /// Code going through the contract rewriter never calls this method. Instead, the rewriter produced failures call
-        /// System.Runtime.CompilerServices.ContractHelper.RaiseContractFailedEvent, followed by 
-        /// System.Runtime.CompilerServices.ContractHelper.TriggerFailure.
-        /// </summary>
-        [SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.Security.SecuritySafeCriticalAttribute")]
-        [System.Diagnostics.DebuggerNonUserCode]
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-        static void ReportFailure(ContractFailureKind failureKind, String userMessage, String conditionText, Exception innerException)
-        {
-            if (failureKind < ContractFailureKind.Precondition || failureKind > ContractFailureKind.Assume)
             {
-                throw new ArgumentException(string.Format("Invalid enum value: {0}", failureKind), "failureKind");
+                ReportFailure(ContractFailureKind.Assert, userMessage, null, null);
             }
-            Contract.EndContractBlock();
-
-            // displayMessage == null means: yes we handled it. Otherwise it is the localized failure message
-            var displayMessage = System.Runtime.CompilerServices.ContractHelper.RaiseContractFailedEvent(failureKind, userMessage, conditionText, innerException);
-
-            if (displayMessage == null) return;
-
-            System.Runtime.CompilerServices.ContractHelper.TriggerFailure(failureKind, displayMessage, userMessage, conditionText, innerException);
         }
 
         /// <summary>
-        /// Specifies a contract such that the expression <paramref name="condition"/> must be true before the enclosing method or property is invoked.
+        /// Instructs code analysis tools to assume the expression <paramref name="condition"/> is true even if it can not be statically proven to always be true.
         /// </summary>
-        /// <param name="condition">Boolean expression representing the contract.</param>
+        /// <param name="condition">Expression to assume will always be true.</param>
         /// <remarks>
-        /// This call must happen at the beginning of a method or property before any other code.
-        /// This contract is exposed to clients so must only reference members at least as visible as the enclosing method.
-        /// Use this form when backward compatibility does not force you to throw a particular exception.
+        /// At runtime this is equivalent to an <seealso cref="System.Diagnostics.Contracts.Contract.Assert(bool)"/>.
         /// </remarks>
         [Pure]
+        [Conditional("DEBUG")]
         [Conditional("CONTRACTS_FULL")]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-        public static void Requires(bool condition)
+        public static void Assume(bool condition)
         {
-            AssertMustUseRewriter(ContractFailureKind.Precondition, "Requires");
+            if (!condition)
+            {
+                ReportFailure(ContractFailureKind.Assume, null, null, null);
+            }
         }
 
         /// <summary>
-        /// Specifies a contract such that the expression <paramref name="condition"/> must be true before the enclosing method or property is invoked.
+        /// Instructs code analysis tools to assume the expression <paramref name="condition"/> is true even if it can not be statically proven to always be true.
         /// </summary>
-        /// <param name="condition">Boolean expression representing the contract.</param>
+        /// <param name="condition">Expression to assume will always be true.</param>
         /// <param name="userMessage">If it is not a constant string literal, then the contract may not be understood by tools.</param>
         /// <remarks>
-        /// This call must happen at the beginning of a method or property before any other code.
-        /// This contract is exposed to clients so must only reference members at least as visible as the enclosing method.
-        /// Use this form when backward compatibility does not force you to throw a particular exception.
+        /// At runtime this is equivalent to an <seealso cref="System.Diagnostics.Contracts.Contract.Assert(bool)"/>.
         /// </remarks>
         [Pure]
+        [Conditional("DEBUG")]
         [Conditional("CONTRACTS_FULL")]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-        public static void Requires(bool condition, String userMessage)
+        public static void Assume(bool condition, string userMessage)
         {
-            AssertMustUseRewriter(ContractFailureKind.Precondition, "Requires");
+            if (!condition)
+            {
+                ReportFailure(ContractFailureKind.Assume, userMessage, null, null);
+            }
         }
 
         /// <summary>
-        /// Specifies a contract such that the expression <paramref name="condition"/> must be true before the enclosing method or property is invoked.
+        /// Marker to indicate the end of the contract section of a method.
         /// </summary>
-        /// <param name="condition">Boolean expression representing the contract.</param>
-        /// <remarks>
-        /// This call must happen at the beginning of a method or property before any other code.
-        /// This contract is exposed to clients so must only reference members at least as visible as the enclosing method.
-        /// Use this form when you want to throw a particular exception.
-        /// </remarks>
-        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "condition")]
-        [SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
-        [Pure]
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-        public static void Requires<TException>(bool condition) where TException : Exception
+        [Conditional("CONTRACTS_FULL")]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+        public static void EndContractBlock()
         {
-            AssertMustUseRewriter(ContractFailureKind.Precondition, "Requires<TException>");
-        }
-
-        /// <summary>
-        /// Specifies a contract such that the expression <paramref name="condition"/> must be true before the enclosing method or property is invoked.
-        /// </summary>
-        /// <param name="condition">Boolean expression representing the contract.</param>
-        /// <param name="userMessage">If it is not a constant string literal, then the contract may not be understood by tools.</param>
-        /// <remarks>
-        /// This call must happen at the beginning of a method or property before any other code.
-        /// This contract is exposed to clients so must only reference members at least as visible as the enclosing method.
-        /// Use this form when you want to throw a particular exception.
-        /// </remarks>
-        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "userMessage")]
-        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "condition")]
-        [SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
-        [Pure]
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-        public static void Requires<TException>(bool condition, String userMessage) where TException : Exception
-        {
-            AssertMustUseRewriter(ContractFailureKind.Precondition, "Requires<TException>");
+            // Empty
         }
 
         /// <summary>
@@ -202,7 +149,7 @@ namespace System.Diagnostics.Contracts
         [Pure]
         [Conditional("CONTRACTS_FULL")]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-        public static void Ensures(bool condition, String userMessage)
+        public static void Ensures(bool condition, string userMessage)
         {
             AssertMustUseRewriter(ContractFailureKind.Postcondition, "Ensures");
         }
@@ -241,51 +188,144 @@ namespace System.Diagnostics.Contracts
         [Conditional("CONTRACTS_FULL")]
         [SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "Exception type used in tools.")]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-        public static void EnsuresOnThrow<TException>(bool condition, String userMessage) where TException : Exception
+        public static void EnsuresOnThrow<TException>(bool condition, string userMessage) where TException : Exception
         {
             AssertMustUseRewriter(ContractFailureKind.PostconditionOnException, "EnsuresOnThrow");
         }
 
         /// <summary>
-        /// Represents the result (a.k.a. return value) of a method or property.
+        /// Returns whether the <paramref name="predicate"/> returns <c>true</c>
+        /// for any integer starting from <paramref name="fromInclusive"/> to <paramref name="toExclusive"/> - 1.
         /// </summary>
-        /// <typeparam name="T">Type of return value of the enclosing method or property.</typeparam>
-        /// <returns>Return value of the enclosing method or property.</returns>
-        /// <remarks>
-        /// This method can only be used within the argument to the <seealso cref="Ensures(bool)"/> contract.
-        /// </remarks>
-        [SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "Not intended to be called at runtime.")]
+        /// <param name="fromInclusive">First integer to pass to <paramref name="predicate"/>.</param>
+        /// <param name="toExclusive">One greater than the last integer to pass to <paramref name="predicate"/>.</param>
+        /// <param name="predicate">Function that is evaluated from <paramref name="fromInclusive"/> to <paramref name="toExclusive"/> - 1.</param>
+        /// <returns><c>true</c> if <paramref name="predicate"/> returns <c>true</c> for any integer
+        /// starting from <paramref name="fromInclusive"/> to <paramref name="toExclusive"/> - 1.</returns>
+        /// <seealso cref="System.Collections.Generic.List&lt;T&gt;.Exists"/>
         [Pure]
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-        public static T Result<T>() { return default(T); }
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]  // Assumes predicate obeys CER rules.
+        public static bool Exists(int fromInclusive, int toExclusive, Predicate<int> predicate)
+        {
+            if (fromInclusive > toExclusive)
+            {
+                throw new ArgumentException("fromInclusive must be less than or equal to toExclusive.");
+            }
+            if (predicate == null)
+            {
+                throw new ArgumentNullException("predicate");
+            }
+            EndContractBlock();
+
+            for (int i = fromInclusive; i < toExclusive; i++)
+            {
+                if (predicate(i))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         /// <summary>
-        /// Represents the final (output) value of an out parameter when returning from a method.
+        /// Returns whether the <paramref name="predicate"/> returns <c>true</c>
+        /// for any element in the <paramref name="collection"/>.
         /// </summary>
-        /// <typeparam name="T">Type of the out parameter.</typeparam>
-        /// <param name="value">The out parameter.</param>
-        /// <returns>The output value of the out parameter.</returns>
-        /// <remarks>
-        /// This method can only be used within the argument to the <seealso cref="Ensures(bool)"/> contract.
-        /// </remarks>
-        [SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "0#", Justification = "Not intended to be called at runtime.")]
+        /// <param name="collection">The collection from which elements will be drawn from to pass to <paramref name="predicate"/>.</param>
+        /// <param name="predicate">Function that is evaluated on elements from <paramref name="collection"/>.</param>
+        /// <returns><c>true</c> if and only if <paramref name="predicate"/> returns <c>true</c> for an element in
+        /// <paramref name="collection"/>.</returns>
+        /// <seealso cref="System.Collections.Generic.List&lt;T&gt;.Exists"/>
         [Pure]
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-        public static T ValueAtReturn<T>(out T value) { value = default(T); return value; }
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]  // Assumes predicate & collection enumerator obey CER rules.
+        public static bool Exists<T>(IEnumerable<T> collection, Predicate<T> predicate)
+        {
+            if (collection == null)
+            {
+                throw new ArgumentNullException("collection");
+            }
+            if (predicate == null)
+            {
+                throw new ArgumentNullException("predicate");
+            }
+            EndContractBlock();
+
+            foreach (T t in collection)
+            {
+                if (predicate(t))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         /// <summary>
-        /// Represents the value of <paramref name="value"/> as it was at the start of the method or property.
+        /// Returns whether the <paramref name="predicate"/> returns <c>true</c>
+        /// for all integers starting from <paramref name="fromInclusive"/> to <paramref name="toExclusive"/> - 1.
         /// </summary>
-        /// <typeparam name="T">Type of <paramref name="value"/>.  This can be inferred.</typeparam>
-        /// <param name="value">Value to represent.  This must be a field or parameter.</param>
-        /// <returns>Value of <paramref name="value"/> at the start of the method or property.</returns>
-        /// <remarks>
-        /// This method can only be used within the argument to the <seealso cref="Ensures(bool)"/> contract.
-        /// </remarks>
-        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "value")]
+        /// <param name="fromInclusive">First integer to pass to <paramref name="predicate"/>.</param>
+        /// <param name="toExclusive">One greater than the last integer to pass to <paramref name="predicate"/>.</param>
+        /// <param name="predicate">Function that is evaluated from <paramref name="fromInclusive"/> to <paramref name="toExclusive"/> - 1.</param>
+        /// <returns><c>true</c> if <paramref name="predicate"/> returns <c>true</c> for all integers
+        /// starting from <paramref name="fromInclusive"/> to <paramref name="toExclusive"/> - 1.</returns>
+        /// <seealso cref="System.Collections.Generic.List&lt;T&gt;.TrueForAll"/>
         [Pure]
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-        public static T OldValue<T>(T value) { return default(T); }
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]  // Assumes predicate obeys CER rules.
+        public static bool ForAll(int fromInclusive, int toExclusive, Predicate<int> predicate)
+        {
+            if (fromInclusive > toExclusive)
+            {
+                throw new ArgumentException("fromInclusive must be less than or equal to toExclusive.");
+            }
+            if (predicate == null)
+            {
+                throw new ArgumentNullException("predicate");
+            }
+            EndContractBlock();
+
+            for (int i = fromInclusive; i < toExclusive; i++)
+            {
+                if (!predicate(i))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Returns whether the <paramref name="predicate"/> returns <c>true</c>
+        /// for all elements in the <paramref name="collection"/>.
+        /// </summary>
+        /// <param name="collection">The collection from which elements will be drawn from to pass to <paramref name="predicate"/>.</param>
+        /// <param name="predicate">Function that is evaluated on elements from <paramref name="collection"/>.</param>
+        /// <returns><c>true</c> if and only if <paramref name="predicate"/> returns <c>true</c> for all elements in
+        /// <paramref name="collection"/>.</returns>
+        /// <seealso cref="System.Collections.Generic.List&lt;T&gt;.TrueForAll"/>
+        [Pure]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]  // Assumes predicate & collection enumerator obey CER rules.
+        public static bool ForAll<T>(IEnumerable<T> collection, Predicate<T> predicate)
+        {
+            if (collection == null)
+            {
+                throw new ArgumentNullException("collection");
+            }
+            if (predicate == null)
+            {
+                throw new ArgumentNullException("predicate");
+            }
+            EndContractBlock();
+
+            foreach (T t in collection)
+            {
+                if (!predicate(t))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
 
         /// <summary>
         /// Specifies a contract such that the expression <paramref name="condition"/> will be true after every method or property on the enclosing class.
@@ -317,56 +357,133 @@ namespace System.Diagnostics.Contracts
         [Pure]
         [Conditional("CONTRACTS_FULL")]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-        public static void Invariant(bool condition, String userMessage)
+        public static void Invariant(bool condition, string userMessage)
         {
             AssertMustUseRewriter(ContractFailureKind.Invariant, "Invariant");
         }
 
         /// <summary>
-        /// This method is used internally to trigger a failure indicating to the "programmer" that he is using the interface incorrectly.
-        /// It is NEVER used to indicate failure of actual contracts at runtime.
+        /// Represents the value of <paramref name="value"/> as it was at the start of the method or property.
         /// </summary>
-        [SecuritySafeCritical]
-        static void AssertMustUseRewriter(ContractFailureKind kind, String contractKind)
+        /// <typeparam name="T">Type of <paramref name="value"/>.  This can be inferred.</typeparam>
+        /// <param name="value">Value to represent.  This must be a field or parameter.</param>
+        /// <returns>Value of <paramref name="value"/> at the start of the method or property.</returns>
+        /// <remarks>
+        /// This method can only be used within the argument to the <seealso cref="Ensures(bool)"/> contract.
+        /// </remarks>
+        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "value")]
+        [Pure]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+        public static T OldValue<T>(T value)
         {
-            if (_assertingMustUseRewriter)
-            {
-                ContractHelperEx.Fail("Asserting that we must use the rewriter went reentrant."); // Didn't rewrite this mscorlib?
-            }
-            _assertingMustUseRewriter = true;
-
-            // For better diagnostics, report which assembly is at fault.  Walk up stack and
-            // find the first non-mscorlib assembly.
-            Assembly thisAssembly = typeof(Contract).Assembly;  // In case we refactor mscorlib, use Contract class instead of Object.
-            StackTrace stack = new StackTrace();
-            Assembly probablyNotRewritten = null;
-            for (int i = 0; i < stack.FrameCount; i++)
-            {
-                Assembly caller = stack.GetFrame(i).GetMethod().DeclaringType.Assembly;
-                if (caller != thisAssembly)
-                {
-                    probablyNotRewritten = caller;
-                    break;
-                }
-            }
-
-            if (probablyNotRewritten == null)
-            {
-                probablyNotRewritten = thisAssembly;
-            }
-            var simpleName = probablyNotRewritten.GetName().Name;
-            ContractHelper.TriggerFailure(kind, string.Format("The code has not been rewriten. ContractKind: {0} - Source: {1}", contractKind, simpleName), null, null, null);
-            _assertingMustUseRewriter = false;
+            return default(T);
         }
 
         /// <summary>
-        /// Marker to indicate the end of the contract section of a method.
+        /// Specifies a contract such that the expression <paramref name="condition"/> must be true before the enclosing method or property is invoked.
         /// </summary>
+        /// <param name="condition">Boolean expression representing the contract.</param>
+        /// <remarks>
+        /// This call must happen at the beginning of a method or property before any other code.
+        /// This contract is exposed to clients so must only reference members at least as visible as the enclosing method.
+        /// Use this form when backward compatibility does not force you to throw a particular exception.
+        /// </remarks>
+        [Pure]
         [Conditional("CONTRACTS_FULL")]
-        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-        public static void EndContractBlock()
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+        public static void Requires(bool condition)
         {
-            // Empty
+            AssertMustUseRewriter(ContractFailureKind.Precondition, "Requires");
+        }
+
+        /// <summary>
+        /// Specifies a contract such that the expression <paramref name="condition"/> must be true before the enclosing method or property is invoked.
+        /// </summary>
+        /// <param name="condition">Boolean expression representing the contract.</param>
+        /// <param name="userMessage">If it is not a constant string literal, then the contract may not be understood by tools.</param>
+        /// <remarks>
+        /// This call must happen at the beginning of a method or property before any other code.
+        /// This contract is exposed to clients so must only reference members at least as visible as the enclosing method.
+        /// Use this form when backward compatibility does not force you to throw a particular exception.
+        /// </remarks>
+        [Pure]
+        [Conditional("CONTRACTS_FULL")]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+        public static void Requires(bool condition, string userMessage)
+        {
+            AssertMustUseRewriter(ContractFailureKind.Precondition, "Requires");
+        }
+
+        /// <summary>
+        /// Specifies a contract such that the expression <paramref name="condition"/> must be true before the enclosing method or property is invoked.
+        /// </summary>
+        /// <param name="condition">Boolean expression representing the contract.</param>
+        /// <remarks>
+        /// This call must happen at the beginning of a method or property before any other code.
+        /// This contract is exposed to clients so must only reference members at least as visible as the enclosing method.
+        /// Use this form when you want to throw a particular exception.
+        /// </remarks>
+        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "condition")]
+        [SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        [Pure]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+        public static void Requires<TException>(bool condition) where TException : Exception
+        {
+            AssertMustUseRewriter(ContractFailureKind.Precondition, "Requires<TException>");
+        }
+
+        /// <summary>
+        /// Specifies a contract such that the expression <paramref name="condition"/> must be true before the enclosing method or property is invoked.
+        /// </summary>
+        /// <param name="condition">Boolean expression representing the contract.</param>
+        /// <param name="userMessage">If it is not a constant string literal, then the contract may not be understood by tools.</param>
+        /// <remarks>
+        /// This call must happen at the beginning of a method or property before any other code.
+        /// This contract is exposed to clients so must only reference members at least as visible as the enclosing method.
+        /// Use this form when you want to throw a particular exception.
+        /// </remarks>
+        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "userMessage")]
+        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "condition")]
+        [SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
+        [Pure]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+        public static void Requires<TException>(bool condition, string userMessage) where TException : Exception
+        {
+            AssertMustUseRewriter(ContractFailureKind.Precondition, "Requires<TException>");
+        }
+
+        /// <summary>
+        /// Represents the result (a.k.a. return value) of a method or property.
+        /// </summary>
+        /// <typeparam name="T">Type of return value of the enclosing method or property.</typeparam>
+        /// <returns>Return value of the enclosing method or property.</returns>
+        /// <remarks>
+        /// This method can only be used within the argument to the <seealso cref="Ensures(bool)"/> contract.
+        /// </remarks>
+        [SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "Not intended to be called at runtime.")]
+        [Pure]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+        public static T Result<T>()
+        {
+            return default(T);
+        }
+
+        /// <summary>
+        /// Represents the final (output) value of an out parameter when returning from a method.
+        /// </summary>
+        /// <typeparam name="T">Type of the out parameter.</typeparam>
+        /// <param name="value">The out parameter.</param>
+        /// <returns>The output value of the out parameter.</returns>
+        /// <remarks>
+        /// This method can only be used within the argument to the <seealso cref="Ensures(bool)"/> contract.
+        /// </remarks>
+        [SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "0#", Justification = "Not intended to be called at runtime.")]
+        [Pure]
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
+        public static T ValueAtReturn<T>(out T value)
+        {
+            value = default(T);
+            return value;
         }
     }
 }

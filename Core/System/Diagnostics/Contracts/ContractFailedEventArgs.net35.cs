@@ -1,25 +1,27 @@
 #if NET20 || NET30 || NET35
 
-// ==++==
-// 
-//   Copyright (c) Microsoft Corporation.  All rights reserved.
-// 
-// ==--==
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using System.Runtime.ConstrainedExecution;
+using System.Security;
+using System.Security.Permissions;
 
 namespace System.Diagnostics.Contracts
 {
     public sealed class ContractFailedEventArgs : EventArgs
     {
-        private ContractFailureKind _failureKind;
-        private String _message;
-        private String _condition;
-        private Exception _originalException;
+        internal Exception ThrownDuringHandler;
+        private readonly string _condition;
+        private readonly ContractFailureKind _failureKind;
+        private readonly string _message;
+        private readonly Exception _originalException;
         private bool _handled;
         private bool _unwind;
 
-        // internal Exception thrownDuringHandler;
-
-        public ContractFailedEventArgs(ContractFailureKind failureKind, String message, String condition, Exception originalException)
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
+        public ContractFailedEventArgs(ContractFailureKind failureKind, string message, string condition, Exception originalException)
         {
             Contract.Requires(originalException == null || failureKind == ContractFailureKind.PostconditionOnException);
             _failureKind = failureKind;
@@ -28,15 +30,7 @@ namespace System.Diagnostics.Contracts
             _originalException = originalException;
         }
 
-        public String Message
-        {
-            get
-            {
-                return _message;
-            }
-        }
-
-        public String Condition
+        public string Condition
         {
             get
             {
@@ -52,14 +46,6 @@ namespace System.Diagnostics.Contracts
             }
         }
 
-        public Exception OriginalException
-        {
-            get
-            {
-                return _originalException;
-            }
-        }
-
         // Whether the event handler "handles" this contract failure, or to fail via escalation policy.
         public bool Handled
         {
@@ -69,9 +55,20 @@ namespace System.Diagnostics.Contracts
             }
         }
 
-        public void SetHandled()
+        public string Message
         {
-            _handled = true;
+            get
+            {
+                return _message;
+            }
+        }
+
+        public Exception OriginalException
+        {
+            get
+            {
+                return _originalException;
+            }
         }
 
         public bool Unwind
@@ -82,6 +79,15 @@ namespace System.Diagnostics.Contracts
             }
         }
 
+        [SecurityCritical]
+        [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
+        public void SetHandled()
+        {
+            _handled = true;
+        }
+
+        [SecurityCritical]
+        [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         public void SetUnwind()
         {
             _unwind = true;
