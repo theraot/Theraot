@@ -627,7 +627,7 @@ namespace Theraot.Core
         }
     }
 
-#if NET20 || NET30 || NET35 || NET40
+#if NET35 || NET40
 
     public static partial class TypeHelper
     {

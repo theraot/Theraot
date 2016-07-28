@@ -11,7 +11,7 @@ namespace System.Collections.Generic
     }
 
 #endif
-#if NET20 || NET30 || NET35
+#if NET35
 
     public interface IReadOnlyCollection<T> : IEnumerable<T>
     {

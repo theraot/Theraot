@@ -1,13 +1,13 @@
 Theraot.Core [![Build status](https://ci.appveyor.com/api/projects/status/rulmie40mm1ydvno/branch/master?svg=true)](https://ci.appveyor.com/project/theraot/theraot/branch/master)
 ===
 
-These Libraries are an ongoing effort to ease the work on .NET, including a backport of recent .NET features to .NET 2.0 among other things.
+These Libraries are an ongoing effort to ease the work on .NET, including a backport of recent .NET features to .NET 3.5 among other things.
 
 ---
 Introduction
 ---
 
-Theraot.Core is as close as I am to a ".NET Compatibility Pack" capable to bring code from recent .NET versions back to .NET 2.0.
+Theraot.Core is as close as I am to a ".NET Compatibility Pack" capable to bring code from recent .NET versions back to .NET 3.5.
 
 Please refer to the Wiki for more information.
 

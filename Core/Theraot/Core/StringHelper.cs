@@ -933,7 +933,7 @@ namespace Theraot.Core
     {
         public static bool IsNullOrWhiteSpace(string value)
         {
-#if NET20 || NET30 || NET35
+#if NET35
             //Added in .NET 4.0
             if (string.IsNullOrEmpty(value))
             {
@@ -954,7 +954,7 @@ namespace Theraot.Core
 
         public static string Concat(IEnumerable<string> values)
         {
-#if NET20 || NET30 || NET35
+#if NET35
             if (values == null)
             {
                 throw new ArgumentNullException("values");
@@ -974,7 +974,7 @@ namespace Theraot.Core
 
         public static string Concat<T>(IEnumerable<T> values)
         {
-#if NET20 || NET30 || NET35
+#if NET35
             if (values == null)
             {
                 throw new ArgumentNullException("values");
@@ -998,7 +998,7 @@ namespace Theraot.Core
     {
         public static string Join(string separator, IEnumerable<string> values)
         {
-#if NET20 || NET30 || NET35
+#if NET35
             if (values == null)
             {
                 throw new ArgumentNullException("values");
@@ -1024,7 +1024,7 @@ namespace Theraot.Core
 
         public static string Join<T>(string separator, IEnumerable<T> values)
         {
-#if NET20 || NET30 || NET35
+#if NET35
             if (values == null)
             {
                 throw new ArgumentNullException("values");
@@ -1051,7 +1051,7 @@ namespace Theraot.Core
 
         public static string Join(string separator, params object[] values)
         {
-#if NET20 || NET30 || NET35
+#if NET35
             if (values == null)
             {
                 throw new ArgumentNullException("values");

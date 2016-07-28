@@ -9,7 +9,7 @@ namespace Theraot.Core
     {
         private const int INT_DefaultBufferSize = 4096;
 
-#if NET20 || NET30 || NET35
+#if NET35
 
         public static void CopyTo(this Stream input, Stream output)
         {
@@ -40,7 +40,7 @@ namespace Theraot.Core
         }
 #endif
 
-#if NET20 || NET30 || NET35
+#if NET35
 
         public static void CopyTo(this Stream input, Stream output, int bufferSize)
         {
