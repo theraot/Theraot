@@ -8,7 +8,7 @@ namespace Theraot.Core
     {
         public static IntPtr Add(IntPtr pointer, int offset)
         {
-#if NET20 || NET30 || NET35
+#if NET35
             switch (IntPtr.Size)
             {
                 case 4:
@@ -25,7 +25,7 @@ namespace Theraot.Core
 
         public static IntPtr Subtract(IntPtr pointer, int offset)
         {
-#if NET20 || NET30 || NET35
+#if NET35
             switch (IntPtr.Size)
             {
                 case 4:
@@ -46,7 +46,7 @@ namespace Theraot.Core
         [CLSCompliant(false)]
         public static UIntPtr Add(UIntPtr pointer, int offset)
         {
-#if NET20 || NET30 || NET35
+#if NET35
             switch (UIntPtr.Size)
             {
                 case 4:
@@ -64,7 +64,7 @@ namespace Theraot.Core
         [CLSCompliant(false)]
         public static UIntPtr Subtract(UIntPtr pointer, int offset)
         {
-#if NET20 || NET30 || NET35
+#if NET35
             switch (UIntPtr.Size)
             {
                 case 4:

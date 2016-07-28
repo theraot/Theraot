@@ -1,4 +1,4 @@
-﻿#if NET20 || NET30 || NET35
+﻿#if NET35
 
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;

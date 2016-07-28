@@ -10,375 +10,340 @@ namespace MonoTests.System.Threading.Tasks
     public class ContinueTaskTests
     {
         [Test]
-        public void ContinueWithInvalidArguments()
+        public void ContinueWithInvalidArguments ()
         {
-            var task = new Task(() => { });
-            try
-            {
-                task.ContinueWith(null);
-                Assert.Fail("#1");
-            }
-            catch (ArgumentNullException e)
-            {
+            var task = new Task (() => { });
+            try {
+                task.ContinueWith (null);
+                Assert.Fail ("#1");
+            } catch (ArgumentNullException e) {
             }
 
-            try
-            {
-                task.ContinueWith(delegate { }, null);
-                Assert.Fail("#2");
-            }
-            catch (ArgumentNullException e)
-            {
+            try {
+                task.ContinueWith (delegate { }, null);
+                Assert.Fail ("#2");
+            } catch (ArgumentNullException e) {
             }
 
-            try
-            {
-                task.ContinueWith(delegate { }, TaskContinuationOptions.OnlyOnCanceled | TaskContinuationOptions.NotOnCanceled);
-                Assert.Fail("#3");
-            }
-            catch (ArgumentOutOfRangeException)
-            {
+            try {
+                task.ContinueWith (delegate { }, TaskContinuationOptions.OnlyOnCanceled | TaskContinuationOptions.NotOnCanceled);
+                Assert.Fail ("#3");
+            } catch (ArgumentOutOfRangeException) {
             }
 
-            try
-            {
-                task.ContinueWith(delegate { }, TaskContinuationOptions.OnlyOnRanToCompletion | TaskContinuationOptions.NotOnRanToCompletion);
-                Assert.Fail("#4");
-            }
-            catch (ArgumentOutOfRangeException)
-            {
+            try {
+                task.ContinueWith (delegate { }, TaskContinuationOptions.OnlyOnRanToCompletion | TaskContinuationOptions.NotOnRanToCompletion);
+                Assert.Fail ("#4");
+            } catch (ArgumentOutOfRangeException) {
             }
         }
 
         [Test]
-        public void ContinueWithOnAnyTestCase()
+        public void ContinueWithOnAnyTestCase ()
         {
-            ParallelTestHelper.Repeat(delegate {
+            ParallelTestHelper.Repeat (delegate {
                 bool result = false;
 
-                Task t = Task.Factory.StartNew(delegate { });
-                Task cont = t.ContinueWith(delegate { result = true; }, TaskContinuationOptions.None);
-                Assert.IsTrue(t.Wait(2000), "First wait, (status, {0})", t.Status);
-                Assert.IsTrue(cont.Wait(2000), "Cont wait, (result, {0}) (parent status, {2}) (status, {1})", result, cont.Status, t.Status);
-                Assert.IsNull(cont.Exception, "#1");
-                Assert.IsNotNull(cont, "#2");
-                Assert.IsTrue(result, "#3");
+                Task t = Task.Factory.StartNew (delegate { });
+                Task cont = t.ContinueWith (delegate { result = true; }, TaskContinuationOptions.None);
+                Assert.IsTrue (t.Wait (2000), "First wait, (status, {0})", t.Status);
+                Assert.IsTrue (cont.Wait (2000), "Cont wait, (result, {0}) (parent status, {2}) (status, {1})", result, cont.Status, t.Status);
+                Assert.IsNull (cont.Exception, "#1");
+                Assert.IsNotNull (cont, "#2");
+                Assert.IsTrue (result, "#3");
             });
         }
 
         [Test]
-        public void ContinueWithOnCompletedSuccessfullyTestCase()
+        public void ContinueWithOnCompletedSuccessfullyTestCase ()
         {
-            ParallelTestHelper.Repeat(delegate {
+            ParallelTestHelper.Repeat (delegate {
                 bool result = false;
 
-                Task t = Task.Factory.StartNew(delegate { });
-                Task cont = t.ContinueWith(delegate { result = true; }, TaskContinuationOptions.OnlyOnRanToCompletion);
-                Assert.IsTrue(t.Wait(1000), "#4");
-                Assert.IsTrue(cont.Wait(1000), "#5");
+                Task t = Task.Factory.StartNew (delegate { });
+                Task cont = t.ContinueWith (delegate { result = true; }, TaskContinuationOptions.OnlyOnRanToCompletion);
+                Assert.IsTrue (t.Wait (1000), "#4");
+                Assert.IsTrue (cont.Wait (1000), "#5");
 
-                Assert.IsNull(cont.Exception, "#1");
-                Assert.IsNotNull(cont, "#2");
-                Assert.IsTrue(result, "#3");
+                Assert.IsNull (cont.Exception, "#1");
+                Assert.IsNotNull (cont, "#2");
+                Assert.IsTrue (result, "#3");
             });
         }
 
         [Test]
-        public void ContinueWithOnAbortedTestCase()
+        public void ContinueWithOnAbortedTestCase ()
         {
             bool result = false;
             bool taskResult = false;
 
-            CancellationTokenSource src = new CancellationTokenSource();
-            Task t = new Task(delegate { taskResult = true; }, src.Token);
+            CancellationTokenSource src = new CancellationTokenSource ();
+            Task t = new Task (delegate { taskResult = true; }, src.Token);
 
-            Task cont = t.ContinueWith(delegate { result = true; },
+            Task cont = t.ContinueWith (delegate { result = true; },
                 TaskContinuationOptions.OnlyOnCanceled | TaskContinuationOptions.ExecuteSynchronously);
 
-            src.Cancel();
+            src.Cancel ();
 
-            Assert.AreEqual(TaskStatus.Canceled, t.Status, "#1a");
-            Assert.IsTrue(cont.IsCompleted, "#1b");
-            Assert.IsTrue(result, "#1c");
+            Assert.AreEqual (TaskStatus.Canceled, t.Status, "#1a");
+            Assert.IsTrue (cont.IsCompleted, "#1b");
+            Assert.IsTrue (result, "#1c");
 
-            try
-            {
-                t.Start();
-                Assert.Fail("#2");
-            }
-            catch (InvalidOperationException)
-            {
+            try {
+                t.Start ();
+                Assert.Fail ("#2");
+            } catch (InvalidOperationException) {
             }
 
-            Assert.IsTrue(cont.Wait(1000), "#3");
+            Assert.IsTrue (cont.Wait (1000), "#3");
 
-            Assert.IsFalse(taskResult, "#4");
+            Assert.IsFalse (taskResult, "#4");
 
-            Assert.IsNull(cont.Exception, "#5");
-            Assert.AreEqual(TaskStatus.RanToCompletion, cont.Status, "#6");
+            Assert.IsNull (cont.Exception, "#5");
+            Assert.AreEqual (TaskStatus.RanToCompletion, cont.Status, "#6");
         }
 
         [Test]
-        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
-        [Category("ThreadPool")]
-        public void ContinueWithOnFailedTestCase()
+        [Category ("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
+        [Category ("ThreadPool")]
+        public void ContinueWithOnFailedTestCase ()
         {
-            ParallelTestHelper.Repeat(delegate {
+            ParallelTestHelper.Repeat (delegate {
                 bool result = false;
 
-                Task t = Task.Factory.StartNew(delegate { throw new Exception("foo"); });
-                Task cont = t.ContinueWith(delegate { result = true; }, TaskContinuationOptions.OnlyOnFaulted);
+                Task t = Task.Factory.StartNew (delegate { throw new Exception ("foo"); });
+                Task cont = t.ContinueWith (delegate { result = true; }, TaskContinuationOptions.OnlyOnFaulted);
 
-                Assert.IsTrue(cont.Wait(1000), "#0");
-                Assert.IsNotNull(t.Exception, "#1");
-                Assert.IsNotNull(cont, "#2");
-                Assert.IsTrue(result, "#3");
+                Assert.IsTrue (cont.Wait (1000), "#0");
+                Assert.IsNotNull (t.Exception, "#1");
+                Assert.IsNotNull (cont, "#2");
+                Assert.IsTrue (result, "#3");
             });
         }
 
         [Test]
-        public void ContinueWithWithStart()
+        public void ContinueWithWithStart ()
         {
-            Task t = new Task<int>(() => 1);
-            t = t.ContinueWith(l => { });
-            try
-            {
-                t.Start();
-                Assert.Fail();
-            }
-            catch (InvalidOperationException)
-            {
+            Task t = new Task<int> (() => 1);
+            t = t.ContinueWith (l => { });
+            try {
+                t.Start ();
+                Assert.Fail ();
+            } catch (InvalidOperationException) {
             }
         }
 
         [Test]
-        public void ContinueWithChildren()
+        public void ContinueWithChildren ()
         {
-            ParallelTestHelper.Repeat(delegate {
+            ParallelTestHelper.Repeat (delegate {
                 bool result = false;
 
-                var t = Task.Factory.StartNew(() => Task.Factory.StartNew(() => { }, TaskCreationOptions.AttachedToParent));
+                var t = Task.Factory.StartNew (() => Task.Factory.StartNew (() => { }, TaskCreationOptions.AttachedToParent));
 
-                var mre = new ManualResetEvent(false);
-                t.ContinueWith(l => {
+                var mre = new ManualResetEvent (false);
+                t.ContinueWith (l => {
                     result = true;
-                    mre.Set();
+                    mre.Set ();
                 });
 
-                Assert.IsTrue(mre.WaitOne(1000), "#1");
-                Assert.IsTrue(result, "#2");
+                Assert.IsTrue (mre.WaitOne (1000), "#1");
+                Assert.IsTrue (result, "#2");
             }, 2);
         }
 
         [Test]
-        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
-        [Category("ThreadPool")]
-        public void ContinueWithDifferentOptionsAreCanceledTest()
+        [Category ("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
+        [Category ("ThreadPool")]
+        public void ContinueWithDifferentOptionsAreCanceledTest ()
         {
-            var mre = new ManualResetEventSlim();
-            var task = Task.Factory.StartNew(() => mre.Wait(200));
-            var contFailed = task.ContinueWith(t => { }, TaskContinuationOptions.OnlyOnFaulted);
-            var contCanceled = task.ContinueWith(t => { }, TaskContinuationOptions.OnlyOnCanceled);
-            var contSuccess = task.ContinueWith(t => { }, TaskContinuationOptions.OnlyOnRanToCompletion);
+            var mre = new ManualResetEventSlim ();
+            var task = Task.Factory.StartNew (() => mre.Wait (200));
+            var contFailed = task.ContinueWith (t => { }, TaskContinuationOptions.OnlyOnFaulted);
+            var contCanceled = task.ContinueWith (t => { }, TaskContinuationOptions.OnlyOnCanceled);
+            var contSuccess = task.ContinueWith (t => { }, TaskContinuationOptions.OnlyOnRanToCompletion);
 
-            mre.Set();
-            contSuccess.Wait(100);
+            mre.Set ();
+            contSuccess.Wait (100);
 
-            Assert.IsTrue(contSuccess.IsCompleted);
-            Assert.IsTrue(contFailed.IsCompleted);
-            Assert.IsTrue(contCanceled.IsCompleted);
-            Assert.IsFalse(contSuccess.IsCanceled);
-            Assert.IsTrue(contFailed.IsCanceled);
-            Assert.IsTrue(contCanceled.IsCanceled);
+            Assert.IsTrue (contSuccess.IsCompleted);
+            Assert.IsTrue (contFailed.IsCompleted);
+            Assert.IsTrue (contCanceled.IsCompleted);
+            Assert.IsFalse (contSuccess.IsCanceled);
+            Assert.IsTrue (contFailed.IsCanceled);
+            Assert.IsTrue (contCanceled.IsCanceled);
         }
 
         Task parent_wfc;
 
         [Test]
-        public void WaitingForChildrenToComplete()
+        public void WaitingForChildrenToComplete ()
         {
             Task nested = null;
-            var mre = new ManualResetEvent(false);
+            var mre = new ManualResetEvent (false);
 
-            parent_wfc = Task.Factory.StartNew(() => {
-                nested = Task.Factory.StartNew(() => {
-                    Assert.IsTrue(mre.WaitOne(4000), "parent_wfc needs to be set first");
-                    Assert.IsFalse(parent_wfc.Wait(10), "#1a");
-                    Assert.AreEqual(TaskStatus.WaitingForChildrenToComplete, parent_wfc.Status, "#1b");
-                }, TaskCreationOptions.AttachedToParent).ContinueWith(l => {
-                    Assert.IsTrue(parent_wfc.Wait(2000), "#2a");
-                    Assert.AreEqual(TaskStatus.RanToCompletion, parent_wfc.Status, "#2b");
+            parent_wfc = Task.Factory.StartNew (() => {
+                nested = Task.Factory.StartNew (() => {
+                    Assert.IsTrue (mre.WaitOne (4000), "parent_wfc needs to be set first");
+                    Assert.IsFalse (parent_wfc.Wait (10), "#1a");
+                    Assert.AreEqual (TaskStatus.WaitingForChildrenToComplete, parent_wfc.Status, "#1b");
+                }, TaskCreationOptions.AttachedToParent).ContinueWith (l => {
+                    Assert.IsTrue (parent_wfc.Wait (2000), "#2a");
+                    Assert.AreEqual (TaskStatus.RanToCompletion, parent_wfc.Status, "#2b");
                 }, TaskContinuationOptions.ExecuteSynchronously);
             });
 
-            mre.Set();
-            Assert.IsTrue(parent_wfc.Wait(2000), "#3");
-            Assert.IsTrue(nested.Wait(2000), "#4");
+            mre.Set ();
+            Assert.IsTrue (parent_wfc.Wait (2000), "#3");
+            Assert.IsTrue (nested.Wait (2000), "#4");
         }
 
         [Test]
-        public void WaitChildWithContinuationAttachedTest()
+        public void WaitChildWithContinuationAttachedTest ()
         {
             bool result = false;
-            var task = new Task(() =>
-            {
-                Task.Factory.StartNew(() => {
-                    Thread.Sleep(200);
-                }, TaskCreationOptions.AttachedToParent).ContinueWith(t => {
-                    Thread.Sleep(200);
+            var task = new Task (() => {
+                Task.Factory.StartNew (() => {
+                    Thread.Sleep (200);
+                }, TaskCreationOptions.AttachedToParent).ContinueWith (t => {
+                    Thread.Sleep (200);
                     result = true;
                 }, TaskContinuationOptions.AttachedToParent);
             });
-            task.Start();
-            task.Wait();
-            Assert.IsTrue(result);
+            task.Start ();
+            task.Wait ();
+            Assert.IsTrue (result);
         }
 
         [Test]
-        public void WaitChildWithContinuationNotAttachedTest()
+        public void WaitChildWithContinuationNotAttachedTest ()
         {
-            var task = new Task(() =>
-            {
-                Task.Factory.StartNew(() => {
-                    Thread.Sleep(200);
-                }, TaskCreationOptions.AttachedToParent).ContinueWith(t => {
-                    Thread.Sleep(3000);
+            var task = new Task (() => {
+                Task.Factory.StartNew (() => {
+                    Thread.Sleep (200);
+                }, TaskCreationOptions.AttachedToParent).ContinueWith (t => {
+                    Thread.Sleep (3000);
                 });
             });
-            task.Start();
-            Assert.IsTrue(task.Wait(400));
+            task.Start ();
+            Assert.IsTrue (task.Wait (400));
         }
 
         [Test]
-        public void RunSynchronouslyOnContinuation()
+        public void RunSynchronouslyOnContinuation ()
         {
-            Task t = new Task<int>(() => 1);
-            t = t.ContinueWith(l => { });
-            try
-            {
-                t.RunSynchronously();
-                Assert.Fail("#1");
-            }
-            catch (InvalidOperationException)
-            {
+            Task t = new Task<int> (() => 1);
+            t = t.ContinueWith (l => { });
+            try {
+                t.RunSynchronously ();
+                Assert.Fail ("#1");
+            } catch (InvalidOperationException) {
             }
         }
 
         [Test]
-        [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0  - this fails if serialized
-        [Category("ThreadPool")]
-        public void CanceledContinuationExecuteSynchronouslyTest()
+        [Category ("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0  - this fails if serialized
+        [Category ("ThreadPool")]
+        public void CanceledContinuationExecuteSynchronouslyTest ()
         {
-            var source = new CancellationTokenSource();
+            var source = new CancellationTokenSource ();
             var token = source.Token;
-            var evt = new ManualResetEventSlim();
+            var evt = new ManualResetEventSlim ();
             bool result = false;
             bool thrown = false;
 
-            var task = Task.Factory.StartNew(() => evt.Wait(100));
-            var cont = task.ContinueWith(t => result = true, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            var task = Task.Factory.StartNew (() => evt.Wait (100));
+            var cont = task.ContinueWith (t => result = true, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
 
-            source.Cancel();
-            evt.Set();
-            task.Wait(100);
-            try
-            {
-                cont.Wait(100);
-            }
-            catch (Exception ex)
-            {
+            source.Cancel ();
+            evt.Set ();
+            task.Wait (100);
+            try {
+                cont.Wait (100);
+            } catch (Exception ex) {
                 thrown = true;
             }
 
-            Assert.IsTrue(task.IsCompleted);
-            Assert.IsTrue(cont.IsCanceled);
-            Assert.IsFalse(result);
-            Assert.IsTrue(thrown);
+            Assert.IsTrue (task.IsCompleted);
+            Assert.IsTrue (cont.IsCanceled);
+            Assert.IsFalse (result);
+            Assert.IsTrue (thrown);
         }
 
         [Test]
-        public void WhenChildTaskErrorIsThrownOnlyOnFaultedContinuationShouldExecute()
+        public void WhenChildTaskErrorIsThrownOnlyOnFaultedContinuationShouldExecute ()
         {
             var continuationRan = false;
-            var testTask = new Task(() =>
-            {
-                var task = new Task(() =>
-                {
-                    throw new InvalidOperationException();
+            var testTask = new Task (() => {
+                var task = new Task (() => {
+                    throw new InvalidOperationException ();
                 }, TaskCreationOptions.AttachedToParent);
-                task.RunSynchronously();
+                task.RunSynchronously ();
             });
-            var onErrorTask = testTask.ContinueWith(x => continuationRan = true, TaskContinuationOptions.OnlyOnFaulted);
-            testTask.RunSynchronously();
-            onErrorTask.Wait(100);
-            Assert.IsTrue(continuationRan);
+            var onErrorTask = testTask.ContinueWith (x => continuationRan = true, TaskContinuationOptions.OnlyOnFaulted);
+            testTask.RunSynchronously ();
+            onErrorTask.Wait (100);
+            Assert.IsTrue (continuationRan);
         }
 
         [Test]
-        public void WhenChildTaskErrorIsThrownNotOnFaultedContinuationShouldNotBeExecuted()
+        public void WhenChildTaskErrorIsThrownNotOnFaultedContinuationShouldNotBeExecuted ()
         {
             var continuationRan = false;
-            var testTask = new Task(() =>
-            {
-                var task = new Task(() =>
-                {
-                    throw new InvalidOperationException();
+            var testTask = new Task (() => {
+                var task = new Task (() => {
+                    throw new InvalidOperationException ();
                 }, TaskCreationOptions.AttachedToParent);
-                task.RunSynchronously();
+                task.RunSynchronously ();
             });
-            var onErrorTask = testTask.ContinueWith(x => continuationRan = true, TaskContinuationOptions.NotOnFaulted);
-            testTask.RunSynchronously();
-            Assert.IsTrue(onErrorTask.IsCompleted);
-            Assert.IsFalse(onErrorTask.IsFaulted);
-            Assert.IsFalse(continuationRan);
+            var onErrorTask = testTask.ContinueWith (x => continuationRan = true, TaskContinuationOptions.NotOnFaulted);
+            testTask.RunSynchronously ();
+            Assert.IsTrue (onErrorTask.IsCompleted);
+            Assert.IsFalse (onErrorTask.IsFaulted);
+            Assert.IsFalse (continuationRan);
         }
 
         [Test]
-        public void WhenChildTaskSeveralLevelsDeepHandlesAggregateExceptionErrorStillBubblesToParent()
+        public void WhenChildTaskSeveralLevelsDeepHandlesAggregateExceptionErrorStillBubblesToParent ()
         {
             var continuationRan = false;
             AggregateException e = null;
-            var testTask = new Task(() =>
-            {
-                var child1 = new Task(() =>
-                {
-                    var child2 = new Task(() =>
-                    {
-                        throw new InvalidOperationException();
+            var testTask = new Task (() => {
+                var child1 = new Task (() => {
+                    var child2 = new Task (() => {
+                        throw new InvalidOperationException ();
                     }, TaskCreationOptions.AttachedToParent);
-                    child2.RunSynchronously();
+                    child2.RunSynchronously ();
                 }, TaskCreationOptions.AttachedToParent);
 
-                child1.RunSynchronously();
+                child1.RunSynchronously ();
                 e = child1.Exception;
-                child1.Exception.Handle(ex => true);
+                child1.Exception.Handle (ex => true);
             });
-            var onErrorTask = testTask.ContinueWith(x => continuationRan = true, TaskContinuationOptions.OnlyOnFaulted);
-            testTask.RunSynchronously();
-            onErrorTask.Wait(1000);
-            Assert.IsNotNull(e);
-            Assert.IsTrue(continuationRan);
+            var onErrorTask = testTask.ContinueWith (x => continuationRan = true, TaskContinuationOptions.OnlyOnFaulted);
+            testTask.RunSynchronously ();
+            onErrorTask.Wait (1000);
+            Assert.IsNotNull (e);
+            Assert.IsTrue (continuationRan);
         }
 
         [Test]
-        public void AlreadyCompletedChildTaskShouldRunContinuationImmediately()
+        public void AlreadyCompletedChildTaskShouldRunContinuationImmediately ()
         {
             string result = "Failed";
-            var testTask = new Task(() =>
-            {
-                var child = new Task<string>(() =>
-                {
+            var testTask = new Task (() => {
+                var child = new Task<string> (() => {
                     return "Success";
                 }, TaskCreationOptions.AttachedToParent);
-                child.RunSynchronously();
-                child.ContinueWith(x => { Thread.Sleep(50); result = (x as Task<string>).Result; }, TaskContinuationOptions.AttachedToParent | TaskContinuationOptions.NotOnFaulted);
+                child.RunSynchronously ();
+                child.ContinueWith (x => { Thread.Sleep (50); result = (x as Task<string>).Result; }, TaskContinuationOptions.AttachedToParent | TaskContinuationOptions.NotOnFaulted);
             });
-            testTask.RunSynchronously();
+            testTask.RunSynchronously ();
 
-            Assert.AreEqual("Success", result);
+            Assert.AreEqual ("Success", result);
         }
 
-#if NET20 || NET30 || NET35 || NET45
+#if NET35 || NET45
         [Test]
         [Category("NotWorking")] // This task relies on a race condition and the ThreadPool is too slow to schedule tasks prior to .NET 4.0 - this succeds if serialized
         [Category("ThreadPool")]
@@ -466,16 +431,16 @@ namespace MonoTests.System.Threading.Tasks
 #endif
 
         [Test]
-        public void ContinueWith_CustomScheduleRejected()
+        public void ContinueWith_CustomScheduleRejected ()
         {
-            var scheduler = new NonInlineableScheduler();
-            var t = Task.Factory.StartNew(delegate { }).
-                ContinueWith(r => { }, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, scheduler);
+            var scheduler = new NonInlineableScheduler ();
+            var t = Task.Factory.StartNew (delegate { }).
+                ContinueWith (r => { }, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, scheduler);
 
-            Assert.IsTrue(t.Wait(5000));
+            Assert.IsTrue (t.Wait (5000));
         }
 
-#if NET20 || NET30 || NET35 || NET45
+#if NET35 || NET45
 
         [Test]
         public void LazyCancelationTest()
@@ -519,29 +484,26 @@ namespace MonoTests.System.Threading.Tasks
 #endif
 
         [Test]
-        public void TaskContinuationChainLeak()
+        public void TaskContinuationChainLeak ()
         {
             // Start cranking out tasks, starting each new task upon completion of and from inside the prior task.
             //
-            var tester = new TaskContinuationChainLeakTester();
-            tester.Run();
-            tester.TasksPilledUp.WaitOne();
+            var tester = new TaskContinuationChainLeakTester ();
+            tester.Run ();
+            tester.TasksPilledUp.WaitOne ();
 
             // Head task should be out of scope by now.  Manually run the GC and expect that it gets collected.
             // 
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
+            GC.Collect ();
+            GC.WaitForPendingFinalizers ();
 
-            try
-            {
+            try {
                 // It's important that we do the asserting while the task recursion is still going, since that is the 
                 // crux of the problem scenario.
                 //
-                tester.Verify();
-            }
-            finally
-            {
-                tester.Stop();
+                tester.Verify ();
+            } finally {
+                tester.Stop ();
             }
         }
     }
