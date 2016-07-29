@@ -43,28 +43,6 @@ namespace Tests.Theraot.Collections.Specialized
         }
 
         [Test]
-        public void AddRemoveAndBalanceExtended()
-        {
-            var avl = new AVLTree<int, int> { { 1, 1 }, { 3, 3 }, { 5, 5 }, { 7, 7 }, { 9, 9 } };
-            Assert.IsTrue(avl.Remove(5));
-            Assert.IsTrue(avl.Remove(7));
-            Assert.IsTrue(avl.Remove(3));
-            Assert.IsFalse(avl.Remove(7));
-            Assert.IsFalse(avl.Remove(11));
-            Assert.IsFalse(avl.Remove(7));
-            Assert.IsFalse(avl.Remove(5));
-            Assert.IsFalse(avl.Remove(2));
-            var expected = new[] { 1, 9 };
-            Assert.AreEqual(avl.Count, expected.Length);
-            var index = 0;
-            foreach (var item in avl)
-            {
-                Assert.AreEqual(item.Key, expected[index]);
-                index++;
-            }
-        }
-
-        [Test]
         public void AddRemoveAndBalanceDuplicates()
         {
             var values = new[]
@@ -131,6 +109,81 @@ namespace Tests.Theraot.Collections.Specialized
                 Assert.AreEqual(item.Key, expected[index]);
                 index++;
             }
+        }
+
+        [Test]
+        public void AddRemoveAndBalanceExtended()
+        {
+            var avl = new AVLTree<int, int> { { 1, 1 }, { 3, 3 }, { 5, 5 }, { 7, 7 }, { 9, 9 } };
+            Assert.IsTrue(avl.Remove(5));
+            Assert.IsTrue(avl.Remove(7));
+            Assert.IsTrue(avl.Remove(3));
+            Assert.IsFalse(avl.Remove(7));
+            Assert.IsFalse(avl.Remove(11));
+            Assert.IsFalse(avl.Remove(7));
+            Assert.IsFalse(avl.Remove(5));
+            Assert.IsFalse(avl.Remove(2));
+            var expected = new[] { 1, 9 };
+            Assert.AreEqual(avl.Count, expected.Length);
+            var index = 0;
+            foreach (var item in avl)
+            {
+                Assert.AreEqual(item.Key, expected[index]);
+                index++;
+            }
+        }
+
+        [Test]
+        public void SearchLeft()
+        {
+            var avl = new AVLTree<int, int> { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 }, { 50, 50 } };
+            Assert.AreEqual(50, avl.SearchNearestLeft(100).Key);
+            Assert.AreEqual(30, avl.SearchNearestLeft(30).Key);
+            Assert.AreEqual(20, avl.SearchNearestLeft(25).Key);
+            Assert.AreEqual(20, avl.SearchNearestLeft(20).Key);
+            Assert.IsNull(avl.SearchNearestLeft(5));
+
+            avl = new AVLTree<int, int> { { 10, 10 }, { 10, 20 }, { 30, 30 }, { 30, 40 }, { 50, 50 }, { 50, 60 } };
+            Assert.AreEqual(50, avl.SearchNearestLeft(100).Key);
+            Assert.AreEqual(60, avl.SearchNearestLeft(100).Value);
+            Assert.AreEqual(30, avl.SearchNearestLeft(30).Key);
+            Assert.AreEqual(40, avl.SearchNearestLeft(30).Value);
+            Assert.AreEqual(10, avl.SearchNearestLeft(25).Key);
+            Assert.AreEqual(20, avl.SearchNearestLeft(25).Value);
+            Assert.AreEqual(10, avl.SearchNearestLeft(20).Key);
+            Assert.AreEqual(20, avl.SearchNearestLeft(20).Value);
+            Assert.IsNull(avl.SearchNearestLeft(5));
+
+            Assert.AreEqual(avl.SearchNearestLeft(100).Value, avl.RemoveNearestLeft(100).Value);
+            Assert.AreEqual(avl.SearchNearestLeft(30).Value, avl.RemoveNearestLeft(30).Value);
+            Assert.AreEqual(avl.SearchNearestLeft(20).Value, avl.RemoveNearestLeft(25).Value);
+            Assert.IsNull(avl.RemoveNearestLeft(5));
+        }
+
+        [Test]
+        public void SearchRight()
+        {
+            var avl = new AVLTree<int, int> { { 10, 10 }, { 20, 20 }, { 30, 30 }, { 40, 40 }, { 50, 50 } };
+            Assert.IsNull(avl.SearchNearestRight(100));
+            Assert.AreEqual(30, avl.SearchNearestRight(30).Key);
+            Assert.AreEqual(30, avl.SearchNearestRight(25).Key);
+            Assert.AreEqual(20, avl.SearchNearestRight(20).Key);
+            Assert.AreEqual(10, avl.SearchNearestRight(5).Key);
+
+            avl = new AVLTree<int, int> { { 10, 10 }, { 10, 20 }, { 30, 30 }, { 30, 40 }, { 50, 50 }, { 50, 60 } };
+            Assert.IsNull(avl.SearchNearestRight(100));
+            Assert.AreEqual(30, avl.SearchNearestRight(30).Key);
+            Assert.AreEqual(40, avl.SearchNearestRight(30).Value);
+            Assert.AreEqual(30, avl.SearchNearestRight(25).Key);
+            Assert.AreEqual(30, avl.SearchNearestRight(25).Value);
+            Assert.AreEqual(30, avl.SearchNearestRight(20).Key);
+            Assert.AreEqual(30, avl.SearchNearestRight(20).Value);
+            Assert.AreEqual(10, avl.SearchNearestRight(5).Key);
+            Assert.AreEqual(10, avl.SearchNearestRight(5).Value);
+
+            Assert.IsNull(avl.RemoveNearestRight(100));
+            Assert.AreEqual(avl.SearchNearestRight(30).Value, avl.RemoveNearestRight(30).Value);
+            Assert.AreEqual(avl.SearchNearestRight(5).Value, avl.RemoveNearestRight(5).Value);
         }
 
         [Test]

@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using Theraot.Threading.Needles;
 
 namespace Theraot.Collections.Specialized
 {
@@ -11,23 +12,23 @@ namespace Theraot.Collections.Specialized
         private readonly Comparison<TKey> _comparison;
 
         private int _count;
-        private AVLNode _root;
+        private INeedle<AVLNode> _root;
 
         public AVLTree()
         {
-            _root = null;
+            _root = new StructNeedle<AVLNode>();
             _comparison = Comparer<TKey>.Default.Compare;
         }
 
         public AVLTree(IComparer<TKey> comparer)
         {
-            _root = null;
+            _root = new StructNeedle<AVLNode>();
             _comparison = (comparer ?? Comparer<TKey>.Default).Compare;
         }
 
         public AVLTree(Comparison<TKey> comparison)
         {
-            _root = null;
+            _root = new StructNeedle<AVLNode>();
             _comparison = comparison ?? Comparer<TKey>.Default.Compare;
         }
 
@@ -43,19 +44,19 @@ namespace Theraot.Collections.Specialized
         {
             get
             {
-                return _root;
+                return _root.Value;
             }
         }
 
         public void Add(TKey key, TValue value)
         {
-            AVLNode.Add(ref _root, key, value, _comparison);
+            AVLNode.Add(_root, key, value, _comparison);
             _count++;
         }
 
         public bool AddNonDuplicate(TKey key, TValue value)
         {
-            if (AVLNode.AddNonDuplicate(ref _root, key, value, _comparison))
+            if (AVLNode.AddNonDuplicate(_root, key, value, _comparison))
             {
                 _count++;
                 return true;
@@ -65,7 +66,7 @@ namespace Theraot.Collections.Specialized
 
         public void Bound(TKey key, out AVLNode lower, out AVLNode upper)
         {
-            AVLNode.Bound(_root, key, _comparison, out lower, out upper);
+            AVLNode.Bound(_root.Value, key, _comparison, out lower, out upper);
         }
 
         public void Clear()
@@ -76,12 +77,12 @@ namespace Theraot.Collections.Specialized
 
         public IEnumerator<AVLNode> GetEnumerator()
         {
-            return AVLNode.EnumerateRoot(_root).GetEnumerator();
+            return AVLNode.EnumerateRoot(_root.Value).GetEnumerator();
         }
 
         public IEnumerable<AVLNode> Range(TKey lower, TKey upper)
         {
-            foreach (var item in AVLNode.EnumerateFrom(_root, lower, _comparison))
+            foreach (var item in AVLNode.EnumerateFrom(_root.Value, lower, _comparison))
             {
                 var comparison = _comparison;
                 if (comparison(item.Key, upper) > 0)
@@ -94,7 +95,7 @@ namespace Theraot.Collections.Specialized
 
         public bool Remove(TKey key)
         {
-            if (AVLNode.Remove(ref _root, key, _comparison))
+            if (AVLNode.Remove(_root, key, _comparison))
             {
                 _count--;
                 return true;
@@ -102,19 +103,29 @@ namespace Theraot.Collections.Specialized
             return false;
         }
 
+        public AVLNode RemoveNearestLeft(TKey key)
+        {
+            return AVLNode.RemoveNearestLeft(_root, key, _comparison);
+        }
+
+        public AVLNode RemoveNearestRight(TKey key)
+        {
+            return AVLNode.RemoveNearestRight(_root, key, _comparison);
+        }
+
         public AVLNode Search(TKey key)
         {
-            return AVLNode.Search(_root, key, _comparison);
+            return AVLNode.Search(_root.Value, key, _comparison);
         }
 
         public AVLNode SearchNearestLeft(TKey key)
         {
-            return AVLNode.SearchNearestLeft(_root, key, _comparison);
+            return AVLNode.SearchNearestLeft(_root.Value, key, _comparison);
         }
 
         public AVLNode SearchNearestRight(TKey key)
         {
-            return AVLNode.SearchNearestRight(_root, key, _comparison);
+            return AVLNode.SearchNearestRight(_root.Value, key, _comparison);
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
