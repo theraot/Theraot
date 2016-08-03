@@ -382,7 +382,7 @@ namespace Tests.Theraot.Collections.Specialized
             Assert.AreEqual(50, avl.SearchNearestLeft(100).Key);
             Assert.AreEqual(60, avl.SearchNearestLeft(100).Value);
             Assert.AreEqual(30, avl.SearchNearestLeft(30).Key);
-            Assert.AreEqual(40, avl.SearchNearestLeft(30).Value);
+            Assert.AreEqual(30, avl.SearchNearestLeft(30).Value);
             Assert.AreEqual(10, avl.SearchNearestLeft(25).Key);
             Assert.AreEqual(20, avl.SearchNearestLeft(25).Value);
             Assert.AreEqual(10, avl.SearchNearestLeft(20).Key);
@@ -408,7 +408,7 @@ namespace Tests.Theraot.Collections.Specialized
             avl = new AVLTree<int, int> { { 10, 10 }, { 10, 20 }, { 30, 30 }, { 30, 40 }, { 50, 50 }, { 50, 60 } };
             Assert.IsNull(avl.SearchNearestRight(100));
             Assert.AreEqual(30, avl.SearchNearestRight(30).Key);
-            Assert.AreEqual(40, avl.SearchNearestRight(30).Value);
+            Assert.AreEqual(30, avl.SearchNearestRight(30).Value);
             Assert.AreEqual(30, avl.SearchNearestRight(25).Key);
             Assert.AreEqual(30, avl.SearchNearestRight(25).Value);
             Assert.AreEqual(30, avl.SearchNearestRight(20).Key);

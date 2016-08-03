@@ -400,41 +400,36 @@ namespace Theraot.Collections.Specialized
                 }
             }
 
-            private static bool IsLeftHeavy(AVLNode node)
-            {
-                return node._balance <= -2;
-            }
-
-            private static bool IsRightHeavy(AVLNode node)
-            {
-                return node._balance >= 2;
-            }
-
             private static void MakeBalanced(INeedle<AVLNode> nodeNeedle)
             {
-                Update(nodeNeedle.Value);
-                if (IsRightHeavy(nodeNeedle.Value))
+                AVLNode node;
+                do
                 {
-                    if (IsLeftHeavy(nodeNeedle.Value._rightNeedle.Value))
+                    node = nodeNeedle.Value;
+                    Update(node);
+                    if (node._balance >= 2)
                     {
-                        DoubleLeft(nodeNeedle);
+                        if (node._rightNeedle.Value._balance <= 1)
+                        {
+                            DoubleLeft(nodeNeedle);
+                        }
+                        else
+                        {
+                            RotateLeft(nodeNeedle);
+                        }
                     }
-                    else
+                    else if (node._balance <= -2)
                     {
-                        RotateLeft(nodeNeedle);
+                        if (node._leftNeedle.Value._balance >= 1)
+                        {
+                            DoubleRight(nodeNeedle);
+                        }
+                        else
+                        {
+                            RotateRight(nodeNeedle);
+                        }
                     }
-                }
-                else if (IsLeftHeavy(nodeNeedle.Value))
-                {
-                    if (IsRightHeavy(nodeNeedle.Value._leftNeedle.Value))
-                    {
-                        DoubleRight(nodeNeedle);
-                    }
-                    else
-                    {
-                        RotateRight(nodeNeedle);
-                    }
-                }
+                } while (node != nodeNeedle.Value);
             }
 
             private static int RemoveExtracted(INeedle<AVLNode> nodeNeedle)
@@ -520,15 +515,10 @@ namespace Theraot.Collections.Specialized
 
             private static void Update(AVLNode node)
             {
-                node._depth =
-                    Math.Max
-                        (
-                            node._rightNeedle.IsAlive ? node._rightNeedle.Value._depth + 1 : 0,
-                            node._leftNeedle.IsAlive ? node._leftNeedle.Value._depth + 1 : 0
-                        );
-                node._balance =
-                    (node._rightNeedle.IsAlive ? node._rightNeedle.Value._depth + 1 : 0)
-                    - (node._leftNeedle.IsAlive ? node._leftNeedle.Value._depth + 1 : 0);
+                var right = node._rightNeedle.Value;
+                var left = node._leftNeedle.Value;
+                node._depth = Math.Max(right == null ? 0 : right._depth + 1, left == null ? 0 : left._depth + 1);
+                node._balance = (right == null ? 0 : right._depth + 1) - (left == null ? 0 : left._depth + 1);
             }
         }
     }
