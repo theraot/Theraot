@@ -1,5 +1,6 @@
 ﻿#if NET20 || NET30 || NET35
 
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
@@ -9,7 +10,7 @@ using Theraot.Core;
 
 namespace System.Collections.Generic
 {
-    [SerializableAttribute]
+    [Serializable]
     public class SortedSet<T> : ISet<T>, ICollection, ISerializable, IDeserializationCallback
     {
         private readonly AVLTree<T, T> _wrapped;
@@ -75,7 +76,7 @@ namespace System.Collections.Generic
             }
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
+        [SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
         bool ICollection.IsSynchronized
         {
             get
@@ -84,7 +85,7 @@ namespace System.Collections.Generic
             }
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns this")]
+        [SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns this")]
         object ICollection.SyncRoot
         {
             get
@@ -93,7 +94,7 @@ namespace System.Collections.Generic
             }
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
+        [SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
         bool ICollection<T>.IsReadOnly
         {
             get
@@ -173,10 +174,7 @@ namespace System.Collections.Generic
             {
                 return new SortedSubSet(this, lowerValue, upperValue);
             }
-            else
-            {
-                throw new ArgumentException("lowerBound is greater than upperBound.");
-            }
+            throw new ArgumentException("lowerBound is greater than upperBound.");
         }
 
         void ICollection<T>.Add(T item)
@@ -282,14 +280,11 @@ namespace System.Collections.Generic
             {
                 return default(T);
             }
-            else
+            while (node.Right != null)
             {
-                while (node.Right != null)
-                {
-                    node = node.Right;
-                }
-                return node.Key;
+                node = node.Right;
             }
+            return node.Key;
         }
 
         protected virtual T GetMin()
@@ -299,26 +294,26 @@ namespace System.Collections.Generic
             {
                 return default(T);
             }
-            else
+            while (node.Left != null)
             {
-                while (node.Left != null)
-                {
-                    node = node.Left;
-                }
-                return node.Key;
+                node = node.Left;
             }
+            return node.Key;
         }
 
         protected virtual void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            var _info = Check.NotNullArgument(info, "info");
-            _info.AddValue("Comparer", _comparer, typeof(IComparer<T>));
-            _info.AddValue("Count", Count);
+            if (info == null)
+            {
+                throw new ArgumentNullException();
+            }
+            info.AddValue("Comparer", _comparer, typeof(IComparer<T>));
+            info.AddValue("Count", Count);
             if (Count > 0)
             {
-                _info.AddValue("Items", this.ToArray(), typeof(T[]));
+                info.AddValue("Items", this.ToArray(), typeof(T[]));
             }
-            _info.AddValue("Version", 0);
+            info.AddValue("Version", 0);
         }
 
         protected virtual void OnDeserialization(object sender)
@@ -329,32 +324,26 @@ namespace System.Collections.Generic
                 {
                     throw new SerializationException();
                 }
-                else
+                _comparer = (IComparer<T>)_serializationInfo.GetValue("Comparer", typeof(IComparer<T>));
+                int count = _serializationInfo.GetInt32("Count");
+                if (count != 0)
                 {
-                    _comparer = (IComparer<T>)_serializationInfo.GetValue("Comparer", typeof(IComparer<T>));
-                    int count = _serializationInfo.GetInt32("Count");
-                    if (count != 0)
-                    {
-                        var value = (T[])_serializationInfo.GetValue("Items", typeof(T[]));
-                        if (value == null)
-                        {
-                            throw new SerializationException();
-                        }
-                        else
-                        {
-                            foreach (T item in value)
-                            {
-                                Add(item);
-                            }
-                        }
-                    }
-                    _serializationInfo.GetInt32("Version");
-                    if (Count != count)
+                    var value = (T[])_serializationInfo.GetValue("Items", typeof(T[]));
+                    if (value == null)
                     {
                         throw new SerializationException();
                     }
-                    _serializationInfo = null;
+                    foreach (T item in value)
+                    {
+                        Add(item);
+                    }
                 }
+                _serializationInfo.GetInt32("Version");
+                if (Count != count)
+                {
+                    throw new SerializationException();
+                }
+                _serializationInfo = null;
             }
         }
 
@@ -389,10 +378,7 @@ namespace System.Collections.Generic
                 {
                     return false;
                 }
-                else
-                {
-                    return _wrapped.Contains(item);
-                }
+                return _wrapped.Contains(item);
             }
 
             public override SortedSet<T> GetViewBetween(T lowerValue, T upperValue)
@@ -418,13 +404,10 @@ namespace System.Collections.Generic
                 {
                     throw new ArgumentNullException("other");
                 }
-                else
-                {
-                    var slice = new SortedSet<T>(this);
-                    slice.IntersectWith(other);
-                    Clear();
-                    _wrapped.UnionWith(slice);
-                }
+                var slice = new SortedSet<T>(this);
+                slice.IntersectWith(other);
+                Clear();
+                _wrapped.UnionWith(slice);
             }
 
             protected override bool AddExtracted(T item)
@@ -433,15 +416,12 @@ namespace System.Collections.Generic
                 {
                     throw new ArgumentOutOfRangeException("item");
                 }
-                else
-                {
-                    return _wrapped.AddExtracted(item);
-                }
+                return _wrapped.AddExtracted(item);
             }
 
             protected override int GetCount()
             {
-                return System.Linq.Enumerable.Count(_wrapped._wrapped.Range(_lower, _upper));
+                return _wrapped._wrapped.Range(_lower, _upper).Count();
             }
 
             protected override IEnumerator<T> GetEnumeratorExtracted()
@@ -456,10 +436,7 @@ namespace System.Collections.Generic
                 {
                     return default(T);
                 }
-                else
-                {
-                    return bound.Key;
-                }
+                return bound.Key;
             }
 
             protected override T GetMin()
@@ -469,10 +446,7 @@ namespace System.Collections.Generic
                 {
                     return default(T);
                 }
-                else
-                {
-                    return bound.Key;
-                }
+                return bound.Key;
             }
 
             protected override void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -481,14 +455,11 @@ namespace System.Collections.Generic
                 {
                     throw new ArgumentNullException("info");
                 }
-                else
-                {
-                    info.AddValue("Max", _lower, typeof(T));
-                    info.AddValue("Min", _upper, typeof(T));
-                    info.AddValue("lBoundActive", true);
-                    info.AddValue("uBoundActive", true);
-                    base.GetObjectData(info, context);
-                }
+                info.AddValue("Max", _lower, typeof(T));
+                info.AddValue("Min", _upper, typeof(T));
+                info.AddValue("lBoundActive", true);
+                info.AddValue("uBoundActive", true);
+                base.GetObjectData(info, context);
             }
 
             protected override bool RemoveExtracted(T item)
@@ -497,10 +468,7 @@ namespace System.Collections.Generic
                 {
                     return false;
                 }
-                else
-                {
-                    return _wrapped.RemoveExtracted(item);
-                }
+                return _wrapped.RemoveExtracted(item);
             }
 
             private bool InRange(T item)
