@@ -9,9 +9,13 @@ namespace System.Linq
     {
         public static double Average(this IEnumerable<int> source)
         {
-            long sum = 0L;
-            long count = 0L;
-            foreach (int item in Check.NotNullArgument(source, "source"))
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var sum = 0L;
+            var count = 0L;
+            foreach (var item in source)
             {
                 sum += item;
                 count++;
@@ -20,10 +24,7 @@ namespace System.Linq
             {
                 throw new InvalidOperationException();
             }
-            else
-            {
-                return sum / (double)count;
-            }
+            return sum / (double)count;
         }
 
         public static double Average<TSource>(this IEnumerable<TSource> source, Func<TSource, int> selector)
@@ -33,9 +34,13 @@ namespace System.Linq
 
         public static double? Average(this IEnumerable<int?> source)
         {
-            long sum = 0L;
-            long count = 0L;
-            foreach (int? item in Where(Check.NotNullArgument(source, "source"), n => n.HasValue))
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var sum = 0L;
+            var count = 0L;
+            foreach (var item in Where(source, n => n.HasValue))
             {
                 sum += item.Value;
                 count++;
@@ -44,10 +49,7 @@ namespace System.Linq
             {
                 return null;
             }
-            else
-            {
-                return sum / (double)count;
-            }
+            return sum / (double)count;
         }
 
         public static double? Average<TSource>(this IEnumerable<TSource> source, Func<TSource, int?> selector)
@@ -57,9 +59,13 @@ namespace System.Linq
 
         public static double Average(this IEnumerable<long> source)
         {
-            long sum = 0L;
-            long count = 0L;
-            foreach (long item in Check.NotNullArgument(source, "source"))
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var sum = 0L;
+            var count = 0L;
+            foreach (var item in source)
             {
                 sum += item;
                 count++;
@@ -68,10 +74,7 @@ namespace System.Linq
             {
                 throw new InvalidOperationException();
             }
-            else
-            {
-                return sum / (double)count;
-            }
+            return sum / (double)count;
         }
 
         public static double Average<TSource>(this IEnumerable<TSource> source, Func<TSource, long> selector)
@@ -81,9 +84,13 @@ namespace System.Linq
 
         public static double? Average(this IEnumerable<long?> source)
         {
-            long sum = 0L;
-            long count = 0L;
-            foreach (long? item in Where(Check.NotNullArgument(source, "source"), n => n.HasValue))
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var sum = 0L;
+            var count = 0L;
+            foreach (var item in Where(source, n => n.HasValue))
             {
                 sum += item.Value;
                 count++;
@@ -92,10 +99,7 @@ namespace System.Linq
             {
                 return null;
             }
-            else
-            {
-                return sum / (double)count;
-            }
+            return sum / (double)count;
         }
 
         public static double? Average<TSource>(this IEnumerable<TSource> source, Func<TSource, long?> selector)
@@ -105,9 +109,13 @@ namespace System.Linq
 
         public static float Average(this IEnumerable<float> source)
         {
-            float sum = 0.0f;
-            long count = 0L;
-            foreach (float item in Check.NotNullArgument(source, "source"))
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var sum = 0.0f;
+            var count = 0L;
+            foreach (var item in source)
             {
                 sum += item;
                 count++;
@@ -116,10 +124,7 @@ namespace System.Linq
             {
                 throw new InvalidOperationException();
             }
-            else
-            {
-                return sum / count;
-            }
+            return sum / count;
         }
 
         public static float Average<TSource>(this IEnumerable<TSource> source, Func<TSource, float> selector)
@@ -129,9 +134,13 @@ namespace System.Linq
 
         public static float? Average(this IEnumerable<float?> source)
         {
-            float sum = 0.0f;
-            long count = 0L;
-            foreach (float? nullable in Where(Check.NotNullArgument(source, "source"), n => n.HasValue))
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var sum = 0.0f;
+            var count = 0L;
+            foreach (var nullable in Where(source, n => n.HasValue))
             {
                 sum += nullable.Value;
                 count++;
@@ -140,10 +149,7 @@ namespace System.Linq
             {
                 return null;
             }
-            else
-            {
-                return sum / count;
-            }
+            return sum / count;
         }
 
         public static float? Average<TSource>(this IEnumerable<TSource> source, Func<TSource, float?> selector)
@@ -153,9 +159,13 @@ namespace System.Linq
 
         public static double Average(this IEnumerable<double> source)
         {
-            double sum = 0.0d;
-            long count = 0L;
-            foreach (double item in Check.NotNullArgument(source, "source"))
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var sum = 0.0d;
+            var count = 0L;
+            foreach (var item in source)
             {
                 sum += item;
                 count++;
@@ -164,10 +174,7 @@ namespace System.Linq
             {
                 throw new InvalidOperationException();
             }
-            else
-            {
-                return sum / count;
-            }
+            return sum / count;
         }
 
         public static double Average<TSource>(this IEnumerable<TSource> source, Func<TSource, double> selector)
@@ -177,9 +184,13 @@ namespace System.Linq
 
         public static double? Average(this IEnumerable<double?> source)
         {
-            double sum = 0.0d;
-            long count = 0L;
-            foreach (double? item in Where(Check.NotNullArgument(source, "source"), n => n.HasValue))
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var sum = 0.0d;
+            var count = 0L;
+            foreach (var item in Where(source, n => n.HasValue))
             {
                 sum += item.Value;
                 count++;
@@ -188,10 +199,7 @@ namespace System.Linq
             {
                 return null;
             }
-            else
-            {
-                return sum / count;
-            }
+            return sum / count;
         }
 
         public static double? Average<TSource>(this IEnumerable<TSource> source, Func<TSource, double?> selector)
@@ -201,9 +209,13 @@ namespace System.Linq
 
         public static decimal Average(this IEnumerable<decimal> source)
         {
-            decimal sum = 0.0m;
-            long count = 0L;
-            foreach (decimal item in Check.NotNullArgument(source, "source"))
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var sum = 0.0m;
+            var count = 0L;
+            foreach (var item in source)
             {
                 sum += item;
                 count++;
@@ -212,10 +224,7 @@ namespace System.Linq
             {
                 throw new InvalidOperationException();
             }
-            else
-            {
-                return sum / count;
-            }
+            return sum / count;
         }
 
         public static decimal Average<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal> selector)
@@ -225,9 +234,13 @@ namespace System.Linq
 
         public static decimal? Average(this IEnumerable<decimal?> source)
         {
-            decimal sum = 0.0m;
-            long count = 0L;
-            foreach (decimal? item in Where(Check.NotNullArgument(source, "source"), n => n.HasValue))
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var sum = 0.0m;
+            var count = 0L;
+            foreach (var item in Where(source, n => n.HasValue))
             {
                 sum += item.Value;
                 count++;
@@ -236,10 +249,7 @@ namespace System.Linq
             {
                 return null;
             }
-            else
-            {
-                return sum / count;
-            }
+            return sum / count;
         }
 
         public static decimal? Average<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal?> selector)
@@ -249,10 +259,13 @@ namespace System.Linq
 
         public static int Max(this IEnumerable<int> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var found = false;
             var max = int.MinValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 max = Math.Max(element, max);
                 found = true;
@@ -261,18 +274,18 @@ namespace System.Linq
             {
                 return max;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static long Max(this IEnumerable<long> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var found = false;
             var max = long.MinValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 max = Math.Max(element, max);
                 found = true;
@@ -281,18 +294,18 @@ namespace System.Linq
             {
                 return max;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static double Max(this IEnumerable<double> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var found = false;
             var max = double.MinValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 max = Math.Max(element, max);
                 found = true;
@@ -301,18 +314,18 @@ namespace System.Linq
             {
                 return max;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static float Max(this IEnumerable<float> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var found = false;
             var max = float.MinValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 max = Math.Max(element, max);
                 found = true;
@@ -321,18 +334,18 @@ namespace System.Linq
             {
                 return max;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static decimal Max(this IEnumerable<decimal> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var found = false;
             var max = decimal.MinValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 max = Math.Max(element, max);
                 found = true;
@@ -341,18 +354,18 @@ namespace System.Linq
             {
                 return max;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static int? Max(this IEnumerable<int?> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var found = false;
             var max = int.MinValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 if (element.HasValue)
                 {
@@ -364,18 +377,18 @@ namespace System.Linq
             {
                 return max;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public static long? Max(this IEnumerable<long?> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var found = false;
             var max = long.MinValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 if (element.HasValue)
                 {
@@ -387,18 +400,18 @@ namespace System.Linq
             {
                 return max;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public static double? Max(this IEnumerable<double?> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var found = false;
             var max = double.MinValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 if (element.HasValue)
                 {
@@ -410,18 +423,18 @@ namespace System.Linq
             {
                 return max;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public static float? Max(this IEnumerable<float?> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var found = false;
             var max = float.MinValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 if (element.HasValue)
                 {
@@ -433,18 +446,18 @@ namespace System.Linq
             {
                 return max;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public static decimal? Max(this IEnumerable<decimal?> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var found = false;
             var max = decimal.MinValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 if (element.HasValue)
                 {
@@ -456,20 +469,20 @@ namespace System.Linq
             {
                 return max;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public static TSource Max<TSource>(this IEnumerable<TSource> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
             var comparer = Comparer<TSource>.Default;
-            TSource max = default(TSource);
+            var max = default(TSource);
             if (typeof(TSource).CanBeNull())
             {
-                foreach (var element in _source)
+                foreach (var element in source)
                 {
                     if (element != null)
                     {
@@ -481,149 +494,164 @@ namespace System.Linq
                 }
                 return max;
             }
-            else
+            var found = false;
+            foreach (var element in source)
             {
-                bool found = false;
-                foreach (var element in _source)
-                {
-                    if (found)
-                    {
-                        if (comparer.Compare(element, max) > 0)
-                        {
-                            max = element;
-                        }
-                    }
-                    else
-                    {
-                        max = element;
-                        found = true;
-                    }
-                }
                 if (found)
                 {
-                    return max;
+                    if (comparer.Compare(element, max) > 0)
+                    {
+                        max = element;
+                    }
                 }
                 else
                 {
-                    throw new InvalidOperationException();
+                    max = element;
+                    found = true;
                 }
             }
+            if (found)
+            {
+                return max;
+            }
+            throw new InvalidOperationException();
         }
 
         public static int Max<TSource>(this IEnumerable<TSource> source, Func<TSource, int> selector)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            var max = int.MinValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                max = Math.Max(_selector(element), max);
+                throw new ArgumentNullException("source");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            var max = int.MinValue;
+            foreach (var element in source)
+            {
+                max = Math.Max(selector(element), max);
                 found = true;
             }
             if (found)
             {
                 return max;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static long Max<TSource>(this IEnumerable<TSource> source, Func<TSource, long> selector)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            var max = long.MinValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                max = Math.Max(_selector(element), max);
+                throw new ArgumentNullException("source");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            var max = long.MinValue;
+            foreach (var element in source)
+            {
+                max = Math.Max(selector(element), max);
                 found = true;
             }
             if (found)
             {
                 return max;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static double Max<TSource>(this IEnumerable<TSource> source, Func<TSource, double> selector)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            var max = double.MinValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                max = Math.Max(_selector(element), max);
+                throw new ArgumentNullException("source");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            var max = double.MinValue;
+            foreach (var element in source)
+            {
+                max = Math.Max(selector(element), max);
                 found = true;
             }
             if (found)
             {
                 return max;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static float Max<TSource>(this IEnumerable<TSource> source, Func<TSource, float> selector)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            var max = float.MinValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                max = Math.Max(_selector(element), max);
+                throw new ArgumentNullException("source");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            var max = float.MinValue;
+            foreach (var element in source)
+            {
+                max = Math.Max(selector(element), max);
                 found = true;
             }
             if (found)
             {
                 return max;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static decimal Max<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal> selector)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            var max = decimal.MinValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                max = Math.Max(_selector(element), max);
+                throw new ArgumentNullException("source");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            var max = decimal.MinValue;
+            foreach (var element in source)
+            {
+                max = Math.Max(selector(element), max);
                 found = true;
             }
             if (found)
             {
                 return max;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static int? Max<TSource>(this IEnumerable<TSource> source, Func<TSource, int?> selector)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            int? max = null;
-            foreach (var element in _source)
+            if (source == null)
             {
-                int? item = _selector(element);
+                throw new ArgumentNullException("source");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            int? max = null;
+            foreach (var element in source)
+            {
+                var item = selector(element);
                 if (max.HasValue)
                 {
                     if (item > max)
@@ -641,21 +669,24 @@ namespace System.Linq
             {
                 return max;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public static long? Max<TSource>(this IEnumerable<TSource> source, Func<TSource, long?> selector)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            long? max = null;
-            foreach (var element in _source)
+            if (source == null)
             {
-                long? item = _selector(element);
+                throw new ArgumentNullException("source");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            long? max = null;
+            foreach (var element in source)
+            {
+                var item = selector(element);
                 if (max.HasValue)
                 {
                     if (item > max)
@@ -673,21 +704,24 @@ namespace System.Linq
             {
                 return max;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public static double? Max<TSource>(this IEnumerable<TSource> source, Func<TSource, double?> selector)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            double? max = null;
-            foreach (var element in _source)
+            if (source == null)
             {
-                double? item = _selector(element);
+                throw new ArgumentNullException("source");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            double? max = null;
+            foreach (var element in source)
+            {
+                var item = selector(element);
                 if (max.HasValue)
                 {
                     if (item > max)
@@ -705,21 +739,24 @@ namespace System.Linq
             {
                 return max;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public static float? Max<TSource>(this IEnumerable<TSource> source, Func<TSource, float?> selector)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            float? max = null;
-            foreach (var element in _source)
+            if (source == null)
             {
-                float? item = _selector(element);
+                throw new ArgumentNullException("source");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            float? max = null;
+            foreach (var element in source)
+            {
+                var item = selector(element);
                 if (max.HasValue)
                 {
                     if (item > max)
@@ -737,21 +774,24 @@ namespace System.Linq
             {
                 return max;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public static decimal? Max<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal?> selector)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            decimal? max = null;
-            foreach (var element in _source)
+            if (source == null)
             {
-                decimal? item = _selector(element);
+                throw new ArgumentNullException("source");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            decimal? max = null;
+            foreach (var element in source)
+            {
+                var item = selector(element);
                 if (max.HasValue)
                 {
                     if (item > max)
@@ -769,33 +809,39 @@ namespace System.Linq
             {
                 return max;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public static TResult Max<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            Func<TSource, int, TResult> __selector = (item, i) => _selector(item);
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            Func<TSource, int, TResult> closureSelector = (item, i) => selector(item);
             return Max
             (
-                Enumerable.SelectExtracted
+                SelectExtracted
                 (
-                    _source,
-                    __selector
+                    source,
+                    closureSelector
                 )
             );
         }
 
         public static int Min(this IEnumerable<int> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var found = false;
             var min = int.MaxValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 min = Math.Min(element, min);
                 found = true;
@@ -804,18 +850,18 @@ namespace System.Linq
             {
                 return min;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static long Min(this IEnumerable<long> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var found = false;
             var min = long.MaxValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 min = Math.Min(element, min);
                 found = true;
@@ -824,18 +870,18 @@ namespace System.Linq
             {
                 return min;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static double Min(this IEnumerable<double> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var found = false;
             var min = double.MaxValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 min = Math.Min(element, min);
                 found = true;
@@ -844,18 +890,18 @@ namespace System.Linq
             {
                 return min;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static float Min(this IEnumerable<float> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var found = false;
             var min = float.MaxValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 min = Math.Min(element, min);
                 found = true;
@@ -864,18 +910,18 @@ namespace System.Linq
             {
                 return min;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static decimal Min(this IEnumerable<decimal> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var found = false;
             var min = decimal.MaxValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 min = Math.Min(element, min);
                 found = true;
@@ -884,20 +930,18 @@ namespace System.Linq
             {
                 return min;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static int? Min(this IEnumerable<int?> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
-
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var found = false;
             var min = int.MaxValue;
-
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 if (element.HasValue)
                 {
@@ -909,18 +953,18 @@ namespace System.Linq
             {
                 return min;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public static long? Min(this IEnumerable<long?> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var found = false;
             var min = long.MaxValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 if (element.HasValue)
                 {
@@ -932,18 +976,18 @@ namespace System.Linq
             {
                 return min;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public static double? Min(this IEnumerable<double?> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var found = false;
             var min = double.MaxValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 if (element.HasValue)
                 {
@@ -955,18 +999,18 @@ namespace System.Linq
             {
                 return min;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public static float? Min(this IEnumerable<float?> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var found = false;
             var min = float.MaxValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 if (element.HasValue)
                 {
@@ -978,18 +1022,18 @@ namespace System.Linq
             {
                 return min;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public static decimal? Min(this IEnumerable<decimal?> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            bool found = false;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var found = false;
             var min = decimal.MaxValue;
-            foreach (var element in _source)
+            foreach (var element in source)
             {
                 if (element.HasValue)
                 {
@@ -1001,20 +1045,20 @@ namespace System.Linq
             {
                 return min;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public static TSource Min<TSource>(this IEnumerable<TSource> source)
         {
-            var _source = Check.NotNullArgument(source, "source");
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
             var comparer = Comparer<TSource>.Default;
-            TSource min = default(TSource);
+            var min = default(TSource);
             if (default(TSource) == null)
             {
-                foreach (var element in _source)
+                foreach (var element in source)
                 {
                     if (element == null)
                     {
@@ -1027,149 +1071,164 @@ namespace System.Linq
                 }
                 return min;
             }
-            else
+            var found = false;
+            foreach (var element in source)
             {
-                bool found = false;
-                foreach (var element in _source)
-                {
-                    if (found)
-                    {
-                        if (comparer.Compare(element, min) < 0)
-                        {
-                            min = element;
-                        }
-                    }
-                    else
-                    {
-                        min = element;
-                        found = true;
-                    }
-                }
                 if (found)
                 {
-                    return min;
+                    if (comparer.Compare(element, min) < 0)
+                    {
+                        min = element;
+                    }
                 }
                 else
                 {
-                    throw new InvalidOperationException();
+                    min = element;
+                    found = true;
                 }
             }
+            if (found)
+            {
+                return min;
+            }
+            throw new InvalidOperationException();
         }
 
         public static int Min<TSource>(this IEnumerable<TSource> source, Func<TSource, int> selector)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            var min = int.MaxValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                min = Math.Min(_selector(element), min);
+                throw new ArgumentNullException("source");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            var min = int.MaxValue;
+            foreach (var element in source)
+            {
+                min = Math.Min(selector(element), min);
                 found = true;
             }
             if (found)
             {
                 return min;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static long Min<TSource>(this IEnumerable<TSource> source, Func<TSource, long> selector)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            var min = long.MaxValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                min = Math.Min(_selector(element), min);
+                throw new ArgumentNullException("source");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            var min = long.MaxValue;
+            foreach (var element in source)
+            {
+                min = Math.Min(selector(element), min);
                 found = true;
             }
             if (found)
             {
                 return min;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static double Min<TSource>(this IEnumerable<TSource> source, Func<TSource, double> selector)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            var min = double.MaxValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                min = Math.Min(_selector(element), min);
+                throw new ArgumentNullException("source");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            var min = double.MaxValue;
+            foreach (var element in source)
+            {
+                min = Math.Min(selector(element), min);
                 found = true;
             }
             if (found)
             {
                 return min;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static float Min<TSource>(this IEnumerable<TSource> source, Func<TSource, float> selector)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            var min = float.MaxValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                min = Math.Min(_selector(element), min);
+                throw new ArgumentNullException("source");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            var min = float.MaxValue;
+            foreach (var element in source)
+            {
+                min = Math.Min(selector(element), min);
                 found = true;
             }
             if (found)
             {
                 return min;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static decimal Min<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal> selector)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            var min = decimal.MaxValue;
-            foreach (var element in _source)
+            if (source == null)
             {
-                min = Math.Min(_selector(element), min);
+                throw new ArgumentNullException("source");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            var min = decimal.MaxValue;
+            foreach (var element in source)
+            {
+                min = Math.Min(selector(element), min);
                 found = true;
             }
             if (found)
             {
                 return min;
             }
-            else
-            {
-                throw new InvalidOperationException();
-            }
+            throw new InvalidOperationException();
         }
 
         public static int? Min<TSource>(this IEnumerable<TSource> source, Func<TSource, int?> selector)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            int? min = null;
-            foreach (var element in _source)
+            if (source == null)
             {
-                int? item = _selector(element);
+                throw new ArgumentNullException("source");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            int? min = null;
+            foreach (var element in source)
+            {
+                var item = selector(element);
                 if (min.HasValue)
                 {
                     if (item < min)
@@ -1187,22 +1246,24 @@ namespace System.Linq
             {
                 return min;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public static long? Min<TSource>(this IEnumerable<TSource> source, Func<TSource, long?> selector)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-
-            bool found = false;
-            long? min = null;
-            foreach (var element in _source)
+            if (source == null)
             {
-                long? item = _selector(element);
+                throw new ArgumentNullException("source");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            long? min = null;
+            foreach (var element in source)
+            {
+                var item = selector(element);
                 if (min.HasValue)
                 {
                     if (item < min)
@@ -1220,21 +1281,24 @@ namespace System.Linq
             {
                 return min;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public static float? Min<TSource>(this IEnumerable<TSource> source, Func<TSource, float?> selector)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            float? min = null;
-            foreach (var element in _source)
+            if (source == null)
             {
-                float? item = _selector(element);
+                throw new ArgumentNullException("source");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            float? min = null;
+            foreach (var element in source)
+            {
+                var item = selector(element);
                 if (min.HasValue)
                 {
                     if (item < min)
@@ -1252,21 +1316,24 @@ namespace System.Linq
             {
                 return min;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public static double? Min<TSource>(this IEnumerable<TSource> source, Func<TSource, double?> selector)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            double? min = null;
-            foreach (var element in _source)
+            if (source == null)
             {
-                double? item = _selector(element);
+                throw new ArgumentNullException("source");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            double? min = null;
+            foreach (var element in source)
+            {
+                var item = selector(element);
                 if (min.HasValue)
                 {
                     if (item < min)
@@ -1284,21 +1351,24 @@ namespace System.Linq
             {
                 return min;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public static decimal? Min<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal?> selector)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            bool found = false;
-            decimal? min = null;
-            foreach (var element in _source)
+            if (source == null)
             {
-                decimal? item = _selector(element);
+                throw new ArgumentNullException("source");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            var found = false;
+            decimal? min = null;
+            foreach (var element in source)
+            {
+                var item = selector(element);
                 if (min.HasValue)
                 {
                     if (item < min)
@@ -1316,23 +1386,26 @@ namespace System.Linq
             {
                 return min;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public static TResult Min<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var _selector = Check.NotNullArgument(selector, "selector");
-            Func<TSource, int, TResult> __selector = (item, i) => _selector(item);
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (selector == null)
+            {
+                throw new ArgumentNullException("selector");
+            }
+            Func<TSource, int, TResult> closureSelector = (item, i) => selector(item);
             return Min
             (
-                Enumerable.SelectExtracted
+                SelectExtracted
                 (
-                    _source,
-                    __selector
+                    source,
+                    closureSelector
                 )
             );
         }
@@ -1343,23 +1416,21 @@ namespace System.Linq
             {
                 throw new ArgumentOutOfRangeException("count");
             }
-            else
+            if (((long)start + count) - 1L > int.MaxValue)
             {
-                if (((long)start + count) - 1L > int.MaxValue)
-                {
-                    throw new ArgumentOutOfRangeException();
-                }
-                else
-                {
-                    return RangeExtracted(start, count);
-                }
+                throw new ArgumentOutOfRangeException();
             }
+            return RangeExtracted(start, count);
         }
 
         public static int Sum(this IEnumerable<int> source)
         {
-            int count = 0;
-            foreach (int item in Check.NotNullArgument(source, "source"))
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var count = 0;
+            foreach (var item in source)
             {
                 count += item;
             }
@@ -1373,8 +1444,12 @@ namespace System.Linq
 
         public static int? Sum(this IEnumerable<int?> source)
         {
-            int sum = 0;
-            foreach (int? item in Check.NotNullArgument(source, "source"))
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var sum = 0;
+            foreach (var item in source)
             {
                 if (item.HasValue)
                 {
@@ -1391,8 +1466,12 @@ namespace System.Linq
 
         public static long Sum(this IEnumerable<long> source)
         {
-            long sum = 0L;
-            foreach (long item in Check.NotNullArgument(source, "source"))
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var sum = 0L;
+            foreach (var item in source)
             {
                 sum += item;
             }
@@ -1406,8 +1485,12 @@ namespace System.Linq
 
         public static long? Sum(this IEnumerable<long?> source)
         {
-            long sum = 0L;
-            foreach (long? item in Check.NotNullArgument(source, "source"))
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var sum = 0L;
+            foreach (var item in source)
             {
                 if (item.HasValue)
                 {
@@ -1424,8 +1507,12 @@ namespace System.Linq
 
         public static float Sum(this IEnumerable<float> source)
         {
-            float sum = 0.0f;
-            foreach (float item in Check.NotNullArgument(source, "source"))
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var sum = 0.0f;
+            foreach (var item in source)
             {
                 sum += item;
             }
@@ -1439,8 +1526,12 @@ namespace System.Linq
 
         public static float? Sum(this IEnumerable<float?> source)
         {
-            float sum = 0f;
-            foreach (float? item in Check.NotNullArgument(source, "source"))
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var sum = 0f;
+            foreach (var item in source)
             {
                 if (item.HasValue)
                 {
@@ -1457,8 +1548,12 @@ namespace System.Linq
 
         public static double Sum(this IEnumerable<double> source)
         {
-            double sum = 0.0d;
-            foreach (double item in Check.NotNullArgument(source, "source"))
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var sum = 0.0d;
+            foreach (var item in source)
             {
                 sum += item;
             }
@@ -1472,8 +1567,12 @@ namespace System.Linq
 
         public static double? Sum(this IEnumerable<double?> source)
         {
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
             double sum = 0;
-            foreach (double? item in Check.NotNullArgument(source, "source"))
+            foreach (var item in source)
             {
                 if (item.HasValue)
                 {
@@ -1490,8 +1589,12 @@ namespace System.Linq
 
         public static decimal Sum(this IEnumerable<decimal> source)
         {
-            decimal sum = 0.0m;
-            foreach (decimal item in Check.NotNullArgument(source, "source"))
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var sum = 0.0m;
+            foreach (var item in source)
             {
                 sum += item;
             }
@@ -1505,8 +1608,12 @@ namespace System.Linq
 
         public static decimal? Sum(this IEnumerable<decimal?> source)
         {
-            decimal sum = 0.0m;
-            foreach (decimal? item in Check.NotNullArgument(source, "source"))
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var sum = 0.0m;
+            foreach (var item in source)
             {
                 if (item.HasValue)
                 {
@@ -1523,7 +1630,7 @@ namespace System.Linq
 
         private static IEnumerable<int> RangeExtracted(int start, int count)
         {
-            for (int index = start; count > 0; count--, index++)
+            for (var index = start; count > 0; count--, index++)
             {
                 yield return index;
             }
