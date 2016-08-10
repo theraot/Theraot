@@ -27,8 +27,7 @@ namespace Theraot.Collections.ThreadSafe
         public Bucket(int capacity)
         {
             _count = 0;
-            _entries = ArrayReservoir<object>.GetArray(capacity);
-            _capacity = _entries.Length;
+            _capacity = Grow(capacity);
         }
 
         /// <summary>
@@ -37,19 +36,16 @@ namespace Theraot.Collections.ThreadSafe
         public Bucket(IEnumerable<T> source)
         {
             var collection = source as ICollection<T>;
-            _entries = ArrayReservoir<object>.GetArray(collection == null ? 64 : collection.Count);
-            _capacity = _entries.Length;
+            _capacity = Grow(collection == null ? 64 : collection.Count);
             foreach (var item in source)
             {
                 if (_count == _capacity)
                 {
-                    _capacity <<= 1;
-                    var old = _entries;
-                    _entries = ArrayReservoir<object>.GetArray(_capacity);
-                    Array.Copy(old, 0, _entries, 0, _count);
-                    ArrayReservoir<object>.DonateArray(old);
+                    _capacity = Grow(_capacity << 1);
                 }
-                _entries[_count] = (object)item ?? BucketHelper.Null;
+#pragma warning disable 618 // Use only during initialization
+                SetPrivate(_count, item);
+#pragma warning restore 618
                 _count++;
             }
         }
@@ -108,21 +104,7 @@ namespace Theraot.Collections.ThreadSafe
             }
             try
             {
-                foreach (var entry in _entries)
-                {
-                    if (entry != null)
-                    {
-                        if (ReferenceEquals(entry, BucketHelper.Null))
-                        {
-                            array[arrayIndex] = default(T);
-                        }
-                        else
-                        {
-                            array[arrayIndex] = (T)entry;
-                        }
-                        arrayIndex++;
-                    }
-                }
+                CopyToPrivate(array, arrayIndex);
             }
             catch (IndexOutOfRangeException exception)
             {
@@ -157,19 +139,9 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            foreach (var entry in _entries)
+            foreach (var p in EnumeratePrivate())
             {
-                if (entry != null)
-                {
-                    if (ReferenceEquals(entry, BucketHelper.Null))
-                    {
-                        yield return default(T);
-                    }
-                    else
-                    {
-                        yield return (T)entry;
-                    }
-                }
+                yield return p;
             }
         }
 
@@ -563,7 +535,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool TryGetInternal(int index, out T value)
         {
-            var entry = Interlocked.CompareExchange(ref _entries[index], null, null);
+            var entry = GetPrivate(index);
             if (entry == null)
             {
                 value = default(T);
@@ -633,9 +605,63 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        private void CopyToPrivate(T[] array, int arrayIndex)
+        {
+            foreach (var entry in _entries)
+            {
+                if (entry != null)
+                {
+                    if (ReferenceEquals(entry, BucketHelper.Null))
+                    {
+                        array[arrayIndex] = default(T);
+                    }
+                    else
+                    {
+                        array[arrayIndex] = (T)entry;
+                    }
+                    arrayIndex++;
+                }
+            }
+        }
+
+        private IEnumerable<T> EnumeratePrivate()
+        {
+            foreach (var entry in _entries)
+            {
+                if (entry != null)
+                {
+                    if (ReferenceEquals(entry, BucketHelper.Null))
+                    {
+                        yield return default(T);
+                    }
+                    else
+                    {
+                        yield return (T)entry;
+                    }
+                }
+            }
+        }
+
         private void ExchangePrivate(int index, object item, out object previous)
         {
             previous = Interlocked.Exchange(ref _entries[index], item ?? BucketHelper.Null);
+        }
+
+        private object GetPrivate(int index)
+        {
+            return Interlocked.CompareExchange(ref _entries[index], null, null);
+        }
+
+        private int Grow(int capacity)
+        {
+            var old = _entries;
+            _entries = ArrayReservoir<object>.GetArray(capacity);
+            if (old != null)
+            {
+                Array.Copy(old, 0, _entries, 0, _count);
+                ArrayReservoir<object>.DonateArray(old);
+            }
+            return _entries.Length;
         }
 
         private bool InsertPrivate(int index, object item, out object previous)
@@ -667,6 +693,12 @@ namespace Theraot.Collections.ThreadSafe
         private void SetPrivate(int index, object item, out bool isNew)
         {
             isNew = Interlocked.Exchange(ref _entries[index], item ?? BucketHelper.Null) == null;
+        }
+
+        [Obsolete("Use only during initialization")]
+        private void SetPrivate(int index, object item)
+        {
+            _entries[index] = item ?? BucketHelper.Null;
         }
 
         private bool UpdatePrivate(int index, object item, object comparisonItem, out object previous)
