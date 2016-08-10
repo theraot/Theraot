@@ -182,5 +182,48 @@ namespace Theraot.Collections.ThreadSafe
                 }
             }
         }
+
+        /// <summary>
+        /// Removes the item at the specified index.
+        /// </summary>
+        /// <param name="bucket">The bucket on which to operate.</param>
+        /// <param name="index">The index.</param>
+        /// <param name="check">verification for the old item.</param>
+        /// <param name="previous">The previous item in the specified index.</param>
+        /// <returns>
+        ///   <c>true</c> if the item was inserted; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity.</exception>
+        /// <remarks>
+        /// The insertion can fail if the index is already used or is being written by another thread.
+        /// If the index is being written it can be understood that the insert operation happened before but the item was overwritten or removed.
+        /// </remarks>
+        public static bool RemoveValueAt<T>(this IBucket<T> bucket, int index, Predicate<T> check, out T previous)
+        {
+            if (index < 0 || index >= bucket.Capacity)
+            {
+                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity.");
+            }
+            if (!bucket.TryGet(index, out previous))
+            {
+                // There was not an item
+                return false;
+            }
+            // There was an item
+            while (true)
+            {
+                if (!check(previous))
+                {
+                    // The item did not pass the check
+                    return false;
+                }
+                // The item passes the check
+                if (bucket.RemoveValueAt(index, previous, out previous))
+                {
+                    // The item was replaced
+                    return true;
+                }
+            }
+        }
     }
 }
