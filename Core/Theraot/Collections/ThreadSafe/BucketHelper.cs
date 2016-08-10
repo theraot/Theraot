@@ -131,5 +131,56 @@ namespace Theraot.Collections.ThreadSafe
                 }
             }
         }
+
+        /// <summary>
+        /// Replaces the item at the specified index.
+        /// </summary>
+        /// <param name="bucket">The bucket on which to operate.</param>
+        /// <param name="index">The index.</param>
+        /// <param name="item">The new item.</param>
+        /// <param name="check">verification for the old item.</param>
+        /// <param name="previous">The previous item in the specified index.</param>
+        /// <param name="isNew">if set to <c>true</c> the index was not previously used.</param>
+        /// <returns>
+        ///   <c>true</c> if the item was inserted; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity.</exception>
+        /// <remarks>
+        /// The insertion can fail if the index is already used or is being written by another thread.
+        /// If the index is being written it can be understood that the insert operation happened before but the item was overwritten or removed.
+        /// </remarks>
+        public static bool Update<T>(this Bucket<T> bucket, int index, T item, Predicate<T> check, out T previous, out bool isNew)
+        {
+            if (index < 0 || index >= bucket.Capacity)
+            {
+                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity.");
+            }
+            isNew = false;
+            if (!bucket.TryGetInternal(index, out previous))
+            {
+                // There was not an item
+                return false;
+            }
+            // There was an item
+            while (true)
+            {
+                if (!check(previous))
+                {
+                    // The item did not pass the check
+                    return false;
+                }
+                // The item passes the check
+                if (bucket.UpdateInternal(index, item, previous, out previous, out isNew))
+                {
+                    // The item was replaced
+                    return true;
+                }
+                if (isNew)
+                {
+                    // There is no longer an item
+                    return false;
+                }
+            }
+        }
     }
 }

@@ -432,6 +432,10 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 return true;
             }
+            if (found == null)
+            {
+                isNew = true;
+            }
             return false;
         }
 
