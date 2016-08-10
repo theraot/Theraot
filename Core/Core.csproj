@@ -519,7 +519,6 @@
     <Compile Include="Theraot\Collections\ThreadSafe\Bucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\FixedSizeBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\BucketHelper.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\BucketStatus.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\CircularBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\FixedSizeQueue.cs" />
     <Compile Include="Theraot\Collections\Specialized\KeyCollection.cs" />
