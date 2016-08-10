@@ -38,7 +38,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <remarks>
         /// The operation will be attempted as long as check returns true - this operation may starve.
         /// </remarks>
-        public static bool InsertOrUpdate<T>(this Bucket<T> bucket, int index, T item, Func<T, T> itemUpdateFactory, Predicate<T> check, out T stored, out bool isNew)
+        public static bool InsertOrUpdate<T>(this IBucket<T> bucket, int index, T item, Func<T, T> itemUpdateFactory, Predicate<T> check, out T stored, out bool isNew)
         {
             if (index < 0 || index >= bucket.Capacity)
             {
@@ -51,7 +51,7 @@ namespace Theraot.Collections.ThreadSafe
                 if (isNew)
                 {
                     var result = item;
-                    if (bucket.InsertInternal(index, result, out stored))
+                    if (bucket.Insert(index, result, out stored))
                     {
                         return true;
                     }
@@ -62,7 +62,7 @@ namespace Theraot.Collections.ThreadSafe
                     if (check(stored))
                     {
                         var result = itemUpdateFactory.Invoke(stored);
-                        if (bucket.UpdateInternal(index, result, stored, out stored, out isNew))
+                        if (bucket.Update(index, result, stored, out stored, out isNew))
                         {
                             stored = result;
                             return true;
@@ -93,7 +93,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <remarks>
         /// The operation will be attempted as long as check returns true - this operation may starve.
         /// </remarks>
-        public static bool InsertOrUpdate<T>(this Bucket<T> bucket, int index, Func<T> itemFactory, Func<T, T> itemUpdateFactory, Predicate<T> check, out T stored, out bool isNew)
+        public static bool InsertOrUpdate<T>(this IBucket<T> bucket, int index, Func<T> itemFactory, Func<T, T> itemUpdateFactory, Predicate<T> check, out T stored, out bool isNew)
         {
             if (index < 0 || index >= bucket.Capacity)
             {
@@ -107,7 +107,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     var result = itemFactory.Invoke();
                     itemFactory = () => result;
-                    if (bucket.InsertInternal(index, result, out stored))
+                    if (bucket.Insert(index, result, out stored))
                     {
                         return true;
                     }
@@ -118,7 +118,7 @@ namespace Theraot.Collections.ThreadSafe
                     if (check(stored))
                     {
                         var result = itemUpdateFactory.Invoke(stored);
-                        if (bucket.UpdateInternal(index, result, stored, out stored, out isNew))
+                        if (bucket.Update(index, result, stored, out stored, out isNew))
                         {
                             stored = result;
                             return true;
@@ -149,14 +149,14 @@ namespace Theraot.Collections.ThreadSafe
         /// The insertion can fail if the index is already used or is being written by another thread.
         /// If the index is being written it can be understood that the insert operation happened before but the item was overwritten or removed.
         /// </remarks>
-        public static bool Update<T>(this Bucket<T> bucket, int index, T item, Predicate<T> check, out T previous, out bool isNew)
+        public static bool Update<T>(this IBucket<T> bucket, int index, T item, Predicate<T> check, out T previous, out bool isNew)
         {
             if (index < 0 || index >= bucket.Capacity)
             {
                 throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity.");
             }
             isNew = false;
-            if (!bucket.TryGetInternal(index, out previous))
+            if (!bucket.TryGet(index, out previous))
             {
                 // There was not an item
                 return false;
@@ -170,7 +170,7 @@ namespace Theraot.Collections.ThreadSafe
                     return false;
                 }
                 // The item passes the check
-                if (bucket.UpdateInternal(index, item, previous, out previous, out isNew))
+                if (bucket.Update(index, item, previous, out previous, out isNew))
                 {
                     // The item was replaced
                     return true;
