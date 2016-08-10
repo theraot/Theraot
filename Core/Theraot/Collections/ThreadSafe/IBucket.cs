@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Theraot.Collections.ThreadSafe
 {
-    public interface IBucket<T>
+    public interface IBucket<T> : IEnumerable<T>
     {
         int Capacity
         {
@@ -18,8 +18,6 @@ namespace Theraot.Collections.ThreadSafe
         void CopyTo(T[] array, int arrayIndex);
 
         bool Exchange(int index, T item, out T previous);
-
-        IEnumerator<T> GetEnumerator();
 
         bool Insert(int index, T item);
 
