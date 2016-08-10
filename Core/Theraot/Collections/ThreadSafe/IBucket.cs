@@ -24,5 +24,6 @@ namespace Theraot.Collections.ThreadSafe
         void Set(int index, T item, out bool isNew);
         bool TryGet(int index, out T value);
         bool Update(int index, T item, T comparisonItem, out T previous, out bool isNew);
+        IEnumerable<T> Where(Predicate<T> predicate);
     }
 }

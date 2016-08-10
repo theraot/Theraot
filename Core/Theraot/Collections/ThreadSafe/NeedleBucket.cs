@@ -507,6 +507,14 @@ namespace Theraot.Collections.ThreadSafe
             found.TryGetValue(out previous);
             return false;
         }
+
+        public IEnumerable<T> Where(Predicate<T> predicate)
+        {
+            foreach (var needle in _entries.Where(needle => predicate(needle.Value)))
+            {
+                yield return needle.Value;
+            }
+        }
     }
 }
 
