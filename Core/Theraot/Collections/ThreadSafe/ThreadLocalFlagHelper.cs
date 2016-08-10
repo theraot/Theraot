@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace Theraot.Collections.ThreadSafe
 {
-    internal static class PoolHelper
+    internal static class ThreadLocalFlagHelper
     {
         [ThreadStatic]
         private static List<int> _guard;

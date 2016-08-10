@@ -13,7 +13,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public Pool(int capacity)
         {
-            _id = PoolHelper.GetId();
+            _id = ThreadLocalFlagHelper.GetId();
             _entries = new FixedSizeQueue<T>(capacity);
             _recycler = GC.KeepAlive;
         }
@@ -24,14 +24,14 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("recycler");
             }
-            _id = PoolHelper.GetId();
+            _id = ThreadLocalFlagHelper.GetId();
             _entries = new FixedSizeQueue<T>(capacity);
             _recycler = recycler;
         }
 
         internal bool Donate(T entry)
         {
-            if (!ReferenceEquals(entry, null) && PoolHelper.Enter(_id))
+            if (!ReferenceEquals(entry, null) && ThreadLocalFlagHelper.Enter(_id))
             {
                 try
                 {
@@ -45,7 +45,7 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 finally
                 {
-                    PoolHelper.Leave(_id);
+                    ThreadLocalFlagHelper.Leave(_id);
                 }
             }
             return false;
