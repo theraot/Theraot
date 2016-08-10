@@ -17,9 +17,10 @@ namespace Theraot.Collections.ThreadSafe
     /// Consider wrapping this class to implement <see cref="ICollection{T}" /> or any other desired interface.
     /// </remarks>
     [Serializable]
-    public sealed class NeedleBucket<T, TNeedle> : IEnumerable<T>
+    public sealed class NeedleBucket<T, TNeedle> : IEnumerable<T>, IBucket<T>
         where TNeedle : class, IRecyclableNeedle<T>
     {
+        private readonly IEqualityComparer<T> _comparer;
         private readonly Bucket<TNeedle> _entries;
         private readonly Converter<int, TNeedle> _needleFactory;
 
@@ -30,7 +31,52 @@ namespace Theraot.Collections.ThreadSafe
         /// <param name="capacity">The capacity.</param>
         public NeedleBucket(Converter<int, T> valueFactory, int capacity)
         {
-            if (ReferenceEquals(valueFactory, null))
+            if (valueFactory == null)
+            {
+                throw new ArgumentNullException("valueFactory");
+            }
+            if (!NeedleHelper.CanCreateNeedle<T, TNeedle>())
+            {
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
+            }
+            _needleFactory = index => NeedleReservoir<T, TNeedle>.GetNeedle(valueFactory(index));
+            _entries = new Bucket<TNeedle>(capacity);
+            _comparer = EqualityComparer<T>.Default;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NeedleBucket{T, TNeedle}" /> class.
+        /// </summary>
+        /// <param name = "valueFactory">The delegate that is invoked to do the lazy initialization of the items.</param>
+        /// <param name="capacity">The capacity.</param>
+        public NeedleBucket(Func<T> valueFactory, int capacity)
+        {
+            if (valueFactory == null)
+            {
+                throw new ArgumentNullException("valueFactory");
+            }
+            if (!NeedleHelper.CanCreateNeedle<T, TNeedle>())
+            {
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
+            }
+            _needleFactory = index => NeedleReservoir<T, TNeedle>.GetNeedle(valueFactory());
+            _entries = new Bucket<TNeedle>(capacity);
+            _comparer = EqualityComparer<T>.Default;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NeedleBucket{T, TNeedle}" /> class.
+        /// </summary>
+        /// <param name = "valueFactory">The delegate that is invoked to do the lazy initialization of the items given their index.</param>
+        /// <param name="capacity">The capacity.</param>
+        /// <param name="comparer">The equality comparer</param>
+        public NeedleBucket(Converter<int, T> valueFactory, int capacity, IEqualityComparer<T> comparer)
+        {
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            if (valueFactory == null)
             {
                 throw new ArgumentNullException("valueFactory");
             }
@@ -47,9 +93,14 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         /// <param name = "valueFactory">The delegate that is invoked to do the lazy initialization of the items.</param>
         /// <param name="capacity">The capacity.</param>
-        public NeedleBucket(Func<T> valueFactory, int capacity)
+        /// <param name="comparer">The equality comparer</param>
+        public NeedleBucket(Func<T> valueFactory, int capacity, IEqualityComparer<T> comparer)
         {
-            if (ReferenceEquals(valueFactory, null))
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            if (valueFactory == null)
             {
                 throw new ArgumentNullException("valueFactory");
             }
@@ -59,6 +110,7 @@ namespace Theraot.Collections.ThreadSafe
             }
             _needleFactory = index => NeedleReservoir<T, TNeedle>.GetNeedle(valueFactory());
             _entries = new Bucket<TNeedle>(capacity);
+            _comparer = comparer;
         }
 
         /// <summary>
@@ -227,7 +279,13 @@ namespace Theraot.Collections.ThreadSafe
             // Only succeeds if there was nothing there before
             // meaning that if this succeeds it replaced nothing
             // If this fails whatever was there is still there
-            return _entries.Insert(index, NeedleReservoir<T, TNeedle>.GetNeedle(item));
+            var newNeedle = NeedleReservoir<T, TNeedle>.GetNeedle(item);
+            if (_entries.Insert(index, newNeedle))
+            {
+                return true;
+            }
+            NeedleReservoir<T, TNeedle>.DonateNeedle(newNeedle);
+            return false;
         }
 
         /// <summary>
@@ -246,16 +304,19 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public bool Insert(int index, T item, out T previous)
         {
+            // Only succeeds if there was nothing there before
+            // meaning that if this succeeds it replaced nothing
+            // If this fails whatever was there is still there
             TNeedle found;
-            if (_entries.Insert(index, NeedleReservoir<T, TNeedle>.GetNeedle(item), out found))
+            var newNeedle = NeedleReservoir<T, TNeedle>.GetNeedle(item);
+            if (_entries.Insert(index, newNeedle, out found))
             {
                 previous = default(T);
                 return true;
             }
+            NeedleReservoir<T, TNeedle>.DonateNeedle(newNeedle);
             // TryGetValue is null resistant
             found.TryGetValue(out previous);
-            // Donate it
-            NeedleReservoir<T, TNeedle>.DonateNeedle(found);
             return false;
         }
 
@@ -349,6 +410,21 @@ namespace Theraot.Collections.ThreadSafe
             return _entries.RemoveAt(index, out previous);
         }
 
+        public bool RemoveValueAt(int index, T value, out T previous)
+        {
+            TNeedle found;
+            if (_entries.RemoveValueAt(index, needle => _comparer.Equals(needle.Value, value), out found))
+            {
+                // TryGetValue is null resistant
+                found.TryGetValue(out previous);
+                // Donate it
+                NeedleReservoir<T, TNeedle>.DonateNeedle(found);
+                return true;
+            }
+            previous = default(T);
+            return false;
+        }
+
         /// <summary>
         /// Sets the item at the specified index.
         /// </summary>
@@ -373,6 +449,11 @@ namespace Theraot.Collections.ThreadSafe
         {
             // This may allow null to enter
             _entries.Set(index, needle, out isNew);
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         /// <summary>
@@ -412,9 +493,19 @@ namespace Theraot.Collections.ThreadSafe
             return _entries.TryGet(index, out value);
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        public bool Update(int index, T item, T comparisonItem, out T previous, out bool isNew)
         {
-            return GetEnumerator();
+            TNeedle found;
+            var newNeedle = NeedleReservoir<T, TNeedle>.GetNeedle(item);
+            if (_entries.Update(index, newNeedle, needle => _comparer.Equals(needle.Value, comparisonItem), out found, out isNew))
+            {
+                // Null resistant
+                found.TryGetValue(out previous);
+                return true;
+            }
+            NeedleReservoir<T, TNeedle>.DonateNeedle(newNeedle);
+            found.TryGetValue(out previous);
+            return false;
         }
     }
 }
