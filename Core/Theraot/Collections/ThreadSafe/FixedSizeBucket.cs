@@ -33,6 +33,10 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public FixedSizeBucket(IEnumerable<T> source)
         {
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
             var collection = source as ICollection<T>;
             _entries = ArrayReservoir<object>.GetArray(collection == null ? 64 : collection.Count);
             _capacity = _entries.Length;
@@ -49,6 +53,24 @@ namespace Theraot.Collections.ThreadSafe
                     }
                     _capacity = _entries.Length;
                 }
+                _entries[_count] = (object)item ?? BucketHelper.Null;
+                _count++;
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FixedSizeBucket{T}" /> class.
+        /// </summary>
+        public FixedSizeBucket(T[] source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            _entries = ArrayReservoir<object>.GetArray(source.Length);
+            _capacity = _entries.Length;
+            foreach (var item in source)
+            {
                 _entries[_count] = (object)item ?? BucketHelper.Null;
                 _count++;
             }
