@@ -444,6 +444,7 @@
     <Compile Include="Theraot\Collections\ExtendedReadOnlySet.cs" />
     <Compile Include="Theraot\Collections\ExtendedSet.cs" />
     <Compile Include="Theraot\Collections\ExtendedStack.cs" />
+    <Compile Include="Theraot\Collections\Extensions.partition.cs" />
     <Compile Include="Theraot\Collections\Extensions.groupby.cs" />
     <Compile Include="Theraot\Collections\Extensions.add.cs" />
     <Compile Include="Theraot\Collections\Extensions.beforeafter.cs" />
