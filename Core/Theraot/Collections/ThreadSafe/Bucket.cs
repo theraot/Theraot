@@ -14,7 +14,7 @@ namespace Theraot.Collections.ThreadSafe
     /// Consider wrapping this class to implement <see cref="ICollection{T}" /> or any other desired interface.
     /// </remarks>
     [Serializable]
-    public sealed class Bucket<T> : IEnumerable<T>
+    public sealed class Bucket<T> : IEnumerable<T>, IBucket<T>
     {
         private readonly int _capacity;
         private int _count;
