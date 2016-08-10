@@ -21,7 +21,7 @@ namespace Theraot.Collections.ThreadSafe
         where TNeedle : class, IRecyclableNeedle<T>
     {
         private readonly IEqualityComparer<T> _comparer;
-        private readonly Bucket<TNeedle> _entries;
+        private readonly FixedSizeBucket<TNeedle> _entries;
         private readonly Converter<int, TNeedle> _needleFactory;
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace Theraot.Collections.ThreadSafe
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
             }
             _needleFactory = index => NeedleReservoir<T, TNeedle>.GetNeedle(valueFactory(index));
-            _entries = new Bucket<TNeedle>(capacity);
+            _entries = new FixedSizeBucket<TNeedle>(capacity);
             _comparer = EqualityComparer<T>.Default;
         }
 
@@ -60,7 +60,7 @@ namespace Theraot.Collections.ThreadSafe
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
             }
             _needleFactory = index => NeedleReservoir<T, TNeedle>.GetNeedle(valueFactory());
-            _entries = new Bucket<TNeedle>(capacity);
+            _entries = new FixedSizeBucket<TNeedle>(capacity);
             _comparer = EqualityComparer<T>.Default;
         }
 
@@ -85,7 +85,7 @@ namespace Theraot.Collections.ThreadSafe
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
             }
             _needleFactory = index => NeedleReservoir<T, TNeedle>.GetNeedle(valueFactory(index));
-            _entries = new Bucket<TNeedle>(capacity);
+            _entries = new FixedSizeBucket<TNeedle>(capacity);
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace Theraot.Collections.ThreadSafe
                 throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Unable to find a way to create {0}", typeof(TNeedle).Name));
             }
             _needleFactory = index => NeedleReservoir<T, TNeedle>.GetNeedle(valueFactory());
-            _entries = new Bucket<TNeedle>(capacity);
+            _entries = new FixedSizeBucket<TNeedle>(capacity);
             _comparer = comparer;
         }
 

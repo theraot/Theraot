@@ -14,17 +14,17 @@ namespace Theraot.Collections.ThreadSafe
     /// Consider wrapping this class to implement <see cref="ICollection{T}" /> or any other desired interface.
     /// </remarks>
     [Serializable]
-    public sealed class Bucket<T> : IEnumerable<T>, IBucket<T>
+    public sealed class FixedSizeBucket<T> : IEnumerable<T>, IBucket<T>
     {
         private readonly int _capacity;
         private int _count;
         private object[] _entries;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Bucket{T}" /> class.
+        /// Initializes a new instance of the <see cref="FixedSizeBucket{T}" /> class.
         /// </summary>
         /// <param name="capacity">The capacity.</param>
-        public Bucket(int capacity)
+        public FixedSizeBucket(int capacity)
         {
             _count = 0;
             _entries = ArrayReservoir<object>.GetArray(capacity);
@@ -32,9 +32,9 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Bucket{T}" /> class.
+        /// Initializes a new instance of the <see cref="FixedSizeBucket{T}" /> class.
         /// </summary>
-        public Bucket(IEnumerable<T> source)
+        public FixedSizeBucket(IEnumerable<T> source)
         {
             var collection = source as ICollection<T>;
             _entries = ArrayReservoir<object>.GetArray(collection == null ? 64 : collection.Count);
@@ -57,7 +57,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        ~Bucket()
+        ~FixedSizeBucket()
         {
             if (!AppDomain.CurrentDomain.IsFinalizingForUnload())
             {
