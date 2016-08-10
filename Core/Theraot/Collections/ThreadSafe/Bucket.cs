@@ -191,123 +191,6 @@ namespace Theraot.Collections.ThreadSafe
         }
 
         /// <summary>
-        /// Inserts or replaces the item at the specified index.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <param name="item">The item.</param>
-        /// <param name="itemUpdateFactory"></param>
-        /// <param name="check">A predicate to decide if a particular item should be replaced.</param>
-        /// <param name="stored">the item that was left at the specified index.</param>
-        /// <param name="isNew">if set to <c>true</c> the index was not previously used.</param>
-        /// <returns>
-        ///   <c>true</c> if the item or repalced inserted; otherwise, <c>false</c>.
-        /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
-        /// <remarks>
-        /// The operation will be attempted as long as check returns true - this operation may starve.
-        /// </remarks>
-        public bool InsertOrUpdate(int index, T item, Func<T, T> itemUpdateFactory, Predicate<T> check, out T stored, out bool isNew)
-        {
-            if (index < 0 || index >= _capacity)
-            {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
-            }
-            stored = default(T);
-            isNew = true;
-            while (true)
-            {
-                if (isNew)
-                {
-                    var result = item;
-                    if (InsertInternal(index, result, out stored))
-                    {
-                        return true;
-                    }
-                    isNew = false;
-                }
-                else
-                {
-                    if (check(stored))
-                    {
-                        object found;
-                        var result = itemUpdateFactory.Invoke(stored);
-                        if (UpdatePrivate(index, result, stored, out found))
-                        {
-                            stored = result;
-                            return true;
-                        }
-                        if (ReferenceEquals(found, BucketHelper.Null))
-                        {
-                            isNew = true;
-                        }
-                        stored = (T)found;
-                    }
-                    else
-                    {
-                        return false; // returns false only when check returns false
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Inserts or replaces the item at the specified index.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <param name="itemFactory">The item factory to create the item to insert.</param>
-        /// <param name="itemUpdateFactory">The item factory to create the item to replace with.</param>
-        /// <param name="check">A predicate to decide if a particular item should be replaced.</param>
-        /// <param name="stored">the item that was left at the specified index.</param>
-        /// <param name="isNew">if set to <c>true</c> the index was not previously used.</param>
-        /// <returns>
-        ///   <c>true</c> if the item or repalced inserted; otherwise, <c>false</c>.
-        /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
-        /// <remarks>
-        /// The operation will be attempted as long as check returns true - this operation may starve.
-        /// </remarks>
-        public bool InsertOrUpdate(int index, Func<T> itemFactory, Func<T, T> itemUpdateFactory, Predicate<T> check, out T stored, out bool isNew)
-        {
-            stored = default(T);
-            isNew = true;
-            while (true)
-            {
-                if (isNew)
-                {
-                    var result = itemFactory.Invoke();
-                    itemFactory = () => result;
-                    if (InsertInternal(index, result, out stored))
-                    {
-                        return true;
-                    }
-                    isNew = false;
-                }
-                else
-                {
-                    if (check(stored))
-                    {
-                        object found;
-                        var result = itemUpdateFactory.Invoke(stored);
-                        if (UpdatePrivate(index, result, stored, out found))
-                        {
-                            stored = result;
-                            return true;
-                        }
-                        if (ReferenceEquals(found, BucketHelper.Null))
-                        {
-                            isNew = true;
-                        }
-                        stored = (T)found;
-                    }
-                    else
-                    {
-                        return false; // returns false only when check returns false
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// Removes the item at the specified index.
         /// </summary>
         /// <param name="index">The index.</param>
@@ -416,6 +299,8 @@ namespace Theraot.Collections.ThreadSafe
         /// <param name="index">The index.</param>
         /// <param name="item">The new item.</param>
         /// <param name="check">verification for the old item.</param>
+        /// <param name="previous">The previous item in the specified index.</param>
+        /// <param name="isNew">if set to <c>true</c> the index was not previously used.</param>
         /// <returns>
         ///   <c>true</c> if the item was inserted; otherwise, <c>false</c>.
         /// </returns>
@@ -424,13 +309,13 @@ namespace Theraot.Collections.ThreadSafe
         /// The insertion can fail if the index is already used or is being written by another thread.
         /// If the index is being written it can be understood that the insert operation happened before but the item was overwritten or removed.
         /// </remarks>
-        public bool Update(int index, T item, Predicate<T> check)
+        public bool Update(int index, T item, Predicate<T> check, out T previous, out bool isNew)
         {
             if (index < 0 || index >= _capacity)
             {
                 throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity.");
             }
-            return UpdateInternal(index, item, check);
+            return UpdateInternal(index, item, check, out previous, out isNew);
         }
 
         /// <summary>
@@ -439,6 +324,8 @@ namespace Theraot.Collections.ThreadSafe
         /// <param name="index">The index.</param>
         /// <param name="item">The new item.</param>
         /// <param name="comparisonItem">The old item.</param>
+        /// <param name="previous">The previous item in the specified index.</param>
+        /// <param name="isNew">if set to <c>true</c> the index was not previously used.</param>
         /// <returns>
         ///   <c>true</c> if the item was inserted; otherwise, <c>false</c>.
         /// </returns>
@@ -447,13 +334,13 @@ namespace Theraot.Collections.ThreadSafe
         /// The insertion can fail if the index is already used or is being written by another thread.
         /// If the index is being written it can be understood that the insert operation happened before but the item was overwritten or removed.
         /// </remarks>
-        public bool Update(int index, T item, T comparisonItem)
+        public bool Update(int index, T item, T comparisonItem, out T previous, out bool isNew)
         {
             if (index < 0 || index >= _capacity)
             {
                 throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity.");
             }
-            return UpdateInternal(index, item, comparisonItem);
+            return UpdateInternal(index, item, comparisonItem, out previous, out isNew);
         }
 
         internal bool ExchangeInternal(int index, T item, out T previous)
@@ -552,24 +439,31 @@ namespace Theraot.Collections.ThreadSafe
             return true;
         }
 
-        internal bool UpdateInternal(int index, T item, T comparisonItem)
+        internal bool UpdateInternal(int index, T item, T comparisonItem, out T previous, out bool isNew)
         {
+            previous = default(T);
+            isNew = false;
             object found;
             if (UpdatePrivate(index, item, comparisonItem, out found))
             {
-                if (found != null)
+                if (found == null)
                 {
                     Interlocked.Increment(ref _count);
+                    isNew = true;
+                }
+                if (!ReferenceEquals(found, BucketHelper.Null))
+                {
+                    previous = (T) found;
                 }
                 return true;
             }
             return false;
         }
 
-        internal bool UpdateInternal(int index, T item, Predicate<T> check)
+        internal bool UpdateInternal(int index, T item, Predicate<T> check, out T previous, out bool isNew)
         {
-            T comparisonItem;
-            if (!TryGetInternal(index, out comparisonItem))
+            isNew = false;
+            if (!TryGetInternal(index, out previous))
             {
                 // There was not an item
                 return false;
@@ -577,20 +471,21 @@ namespace Theraot.Collections.ThreadSafe
             // There was an item
             while (true)
             {
-                if (!check(comparisonItem))
+                if (!check(previous))
                 {
                     // The item did not pass the check
                     return false;
                 }
                 // The item passes the check
                 object found;
-                if (UpdatePrivate(index, item, comparisonItem, out found))
+                if (UpdatePrivate(index, item, previous, out found))
                 {
                     // The item was replaced
-                    if (found != null)
+                    if (found == null)
                     {
                         // The item was new
                         Interlocked.Increment(ref _count);
+                        isNew = true;
                     }
                     return true;
                 }
@@ -598,10 +493,11 @@ namespace Theraot.Collections.ThreadSafe
                 if (ReferenceEquals(found, BucketHelper.Null))
                 {
                     // There is no longer an item
+                    previous = default(T);
                     return false;
                 }
                 // There was a different item
-                comparisonItem = (T)found;
+                previous = (T)found;
             }
         }
 
