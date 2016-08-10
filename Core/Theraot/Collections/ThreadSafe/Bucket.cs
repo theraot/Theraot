@@ -360,6 +360,25 @@ namespace Theraot.Collections.ThreadSafe
             return UpdateInternal(index, item, comparisonItem, out previous, out isNew);
         }
 
+        public IEnumerable<T> Where(Predicate<T> predicate)
+        {
+            foreach (var entry in _entries)
+            {
+                if (entry != null)
+                {
+                    T yield = default(T);
+                    if (!ReferenceEquals(entry, BucketHelper.Null))
+                    {
+                        yield = (T)entry;
+                    }
+                    if (predicate(yield))
+                    {
+                        yield return yield;
+                    }
+                }
+            }
+        }
+
         internal bool ExchangeInternal(int index, T item, out T previous)
         {
             previous = default(T);
