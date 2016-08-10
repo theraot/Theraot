@@ -26,6 +26,11 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
+        public static bool IsTaken(RuntimeUniqueIdProdiver.UniqueId id)
+        {
+            return _guard.Contains(id);
+        }
+
         public static void Leave(RuntimeUniqueIdProdiver.UniqueId id)
         {
             _guard.Remove(id);
