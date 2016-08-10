@@ -2,27 +2,20 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
+using Theraot.Threading;
 
 namespace Theraot.Collections.ThreadSafe
 {
     internal static class ThreadLocalFlagHelper
     {
         [ThreadStatic]
-        private static List<int> _guard;
+        private static HashSet<RuntimeUniqueIdProdiver.UniqueId> _guard;
 
-        private static int _id = int.MinValue;
-
-        public static int GetId()
-        {
-            return Interlocked.Increment(ref _id);
-        }
-
-        public static bool Enter(int id)
+        public static bool Enter(RuntimeUniqueIdProdiver.UniqueId id)
         {
             if (_guard == null)
             {
-                _guard = new List<int> { id };
+                _guard = new HashSet<RuntimeUniqueIdProdiver.UniqueId> { id };
                 return true;
             }
             if (!_guard.Contains(id))
@@ -33,7 +26,7 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
-        public static void Leave(int id)
+        public static void Leave(RuntimeUniqueIdProdiver.UniqueId id)
         {
             _guard.Remove(id);
         }

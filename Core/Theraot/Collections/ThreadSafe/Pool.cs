@@ -1,19 +1,20 @@
 ﻿// Needed for NET40
 
 using System;
+using Theraot.Threading;
 
 namespace Theraot.Collections.ThreadSafe
 {
     internal class Pool<T>
         where T : class
     {
-        private readonly int _id;
+        private readonly RuntimeUniqueIdProdiver.UniqueId _id;
         private readonly FixedSizeQueue<T> _entries;
         private readonly Action<T> _recycler;
 
         public Pool(int capacity)
         {
-            _id = ThreadLocalFlagHelper.GetId();
+            _id = RuntimeUniqueIdProdiver.GetNextId();
             _entries = new FixedSizeQueue<T>(capacity);
             _recycler = GC.KeepAlive;
         }
@@ -24,7 +25,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("recycler");
             }
-            _id = ThreadLocalFlagHelper.GetId();
+            _id = RuntimeUniqueIdProdiver.GetNextId();
             _entries = new FixedSizeQueue<T>(capacity);
             _recycler = recycler;
         }
