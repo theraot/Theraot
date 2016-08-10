@@ -31,7 +31,7 @@ namespace Theraot.Threading
         {
             get
             {
-                return ThreadLocalFlagHelper.IsTaken(_id);
+                return ReentryGuardHelper.IsTaken(_id);
             }
         }
 
@@ -106,7 +106,7 @@ namespace Theraot.Threading
 
         private static void ExecutePending(SafeQueue<Action> queue, RuntimeUniqueIdProdiver.UniqueId id)
         {
-            if (!ThreadLocalFlagHelper.Enter(id))
+            if (!ReentryGuardHelper.Enter(id))
             {
                 // called from inside this method - skip
                 return;
@@ -116,7 +116,7 @@ namespace Theraot.Threading
             {
                 action.Invoke();
             }
-            ThreadLocalFlagHelper.Leave(id);
+            ReentryGuardHelper.Leave(id);
         }
     }
 }

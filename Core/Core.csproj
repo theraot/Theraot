@@ -527,7 +527,7 @@
     <Compile Include="Theraot\Collections\ThreadSafe\NeedleBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\NeedleReservoir.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\Pool.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\ThreadLocalFlagHelper.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\ReentryGuardHelper.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\SafeDictionary.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\SafeQueue.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\SafeSet.cs" />

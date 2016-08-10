@@ -6,7 +6,7 @@ using Theraot.Threading;
 
 namespace Theraot.Collections.ThreadSafe
 {
-    internal static class ThreadLocalFlagHelper
+    internal static class ReentryGuardHelper
     {
         [ThreadStatic]
         private static HashSet<RuntimeUniqueIdProdiver.UniqueId> _guard;

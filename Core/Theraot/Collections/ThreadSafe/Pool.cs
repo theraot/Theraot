@@ -32,7 +32,7 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool Donate(T entry)
         {
-            if (!ReferenceEquals(entry, null) && ThreadLocalFlagHelper.Enter(_id))
+            if (!ReferenceEquals(entry, null) && ReentryGuardHelper.Enter(_id))
             {
                 try
                 {
@@ -46,7 +46,7 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 finally
                 {
-                    ThreadLocalFlagHelper.Leave(_id);
+                    ReentryGuardHelper.Leave(_id);
                 }
             }
             return false;
