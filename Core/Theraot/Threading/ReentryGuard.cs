@@ -106,17 +106,28 @@ namespace Theraot.Threading
 
         private static void ExecutePending(SafeQueue<Action> queue, RuntimeUniqueIdProdiver.UniqueId id)
         {
-            if (!ReentryGuardHelper.Enter(id))
+            bool didEnter = false;
+            try
             {
-                // called from inside this method - skip
-                return;
+                didEnter = ReentryGuardHelper.Enter(id);
+                if (!didEnter)
+                {
+                    // called from inside this method - skip
+                    return;
+                }
+                Action action;
+                while (queue.TryTake(out action))
+                {
+                    action.Invoke();
+                }
             }
-            Action action;
-            while (queue.TryTake(out action))
+            finally
             {
-                action.Invoke();
+                if (didEnter)
+                {
+                    ReentryGuardHelper.Leave(id);
+                }
             }
-            ReentryGuardHelper.Leave(id);
         }
     }
 }
