@@ -271,22 +271,29 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         /// <param name="index">The index.</param>
         /// <param name="value">The value intended to remove.</param>
+        /// <param name="previous">The previous item in the specified index.</param>
         /// <returns>
         ///   <c>true</c> if the item was removed; otherwise, <c>false</c>.
         /// </returns>
         /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
-        public bool RemoveValueAt(int index, T value)
+        public bool RemoveValueAt(int index, T value, out T previous)
         {
             if (index < 0 || index >= _capacity)
             {
                 throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
             }
-            if (Interlocked.CompareExchange(ref _entries[index], null, value) != null)
+            previous = default(T);
+            var found = Interlocked.CompareExchange(ref _entries[index], null, value);
+            if (found == null)
             {
-                Interlocked.Decrement(ref _count);
-                return true;
+                return false;
             }
-            return false;
+            Interlocked.Decrement(ref _count);
+            if (!ReferenceEquals(found, BucketHelper.Null))
+            {
+                previous = (T)found;
+            }
+            return true;
         }
 
         /// <summary>
@@ -371,20 +378,16 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool InsertInternal(int index, T item, out T previous)
         {
+            previous = default(T);
             var found = Interlocked.CompareExchange(ref _entries[index], (object) item ?? BucketHelper.Null, null);
             if (found == null)
             {
-                previous = default(T);
                 Interlocked.Increment(ref _count);
                 return true;
             }
-            if (ReferenceEquals(found, BucketHelper.Null))
+            if (!ReferenceEquals(found, BucketHelper.Null))
             {
-                previous = default(T);
-            }
-            else
-            {
-                previous = (T)found;
+                previous = (T) found;
             }
             return false;
         }
@@ -402,21 +405,17 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool RemoveAtInternal(int index, out T previous)
         {
+            previous = default(T);
             var found = Interlocked.Exchange(ref _entries[index], null);
             if (found != null)
             {
                 Interlocked.Decrement(ref _count);
-                if (ReferenceEquals(found, BucketHelper.Null))
+                if (!ReferenceEquals(found, BucketHelper.Null))
                 {
-                    previous = default(T);
-                }
-                else
-                {
-                    previous = (T)found;
+                    previous = (T) found;
                 }
                 return true;
             }
-            previous = default(T);
             return false;
         }
 
