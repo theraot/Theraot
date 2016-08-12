@@ -21,6 +21,30 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        public static T GetOrInsert<T>(this IBucket<T> bucket, int index, T item)
+        {
+            T previous;
+            if (bucket.Insert(index, item, out previous))
+            {
+                return item;
+            }
+            return previous;
+        }
+
+        public static T GetOrInsert<T>(this IBucket<T> bucket, int index, Func<T> itemFactory)
+        {
+            T stored;
+            if (!bucket.TryGet(index, out stored))
+            {
+                var created = itemFactory.Invoke();
+                if (bucket.Insert(index, created, out stored))
+                {
+                    return created;
+                }
+            }
+            return stored;
+        }
+
         /// <summary>
         /// Inserts or replaces the item at the specified index.
         /// </summary>
