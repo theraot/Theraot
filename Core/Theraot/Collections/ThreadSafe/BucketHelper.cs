@@ -23,6 +23,10 @@ namespace Theraot.Collections.ThreadSafe
 
         public static T GetOrInsert<T>(this IBucket<T> bucket, int index, T item)
         {
+            if (bucket == null)
+            {
+                throw new ArgumentNullException("bucket");
+            }
             T previous;
             if (bucket.Insert(index, item, out previous))
             {
@@ -33,6 +37,10 @@ namespace Theraot.Collections.ThreadSafe
 
         public static T GetOrInsert<T>(this IBucket<T> bucket, int index, Func<T> itemFactory)
         {
+            if (bucket == null)
+            {
+                throw new ArgumentNullException("bucket");
+            }
             T stored;
             if (!bucket.TryGet(index, out stored))
             {
@@ -130,10 +138,6 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public static bool InsertOrUpdate<T>(this IBucket<T> bucket, int index, T item, Func<T, T> itemUpdateFactory, Predicate<T> check, out T stored, out bool isNew)
         {
-            if (index < 0 || index >= bucket.Capacity)
-            {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
-            }
             stored = default(T);
             isNew = true;
             while (true)
@@ -205,6 +209,10 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public static bool InsertOrUpdate<T>(this IBucket<T> bucket, int index, Func<T> itemFactory, Func<T, T> itemUpdateFactory, Predicate<T> check, out T stored)
         {
+            if (bucket == null)
+            {
+                throw new ArgumentNullException("bucket");
+            }
             bool isNew;
             return InsertOrUpdate(bucket, index, itemFactory, itemUpdateFactory, check, out stored, out isNew);
         }
@@ -250,9 +258,9 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public static bool InsertOrUpdate<T>(this IBucket<T> bucket, int index, Func<T> itemFactory, Func<T, T> itemUpdateFactory, Predicate<T> check, out T stored, out bool isNew)
         {
-            if (index < 0 || index >= bucket.Capacity)
+            if (bucket == null)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
+                throw new ArgumentNullException("bucket");
             }
             stored = default(T);
             isNew = true;
@@ -332,9 +340,9 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public static bool RemoveValueAt<T>(this IBucket<T> bucket, int index, Predicate<T> check, out T previous)
         {
-            if (index < 0 || index >= bucket.Capacity)
+            if (bucket == null)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity.");
+                throw new ArgumentNullException("bucket");
             }
             if (!bucket.TryGet(index, out previous))
             {
@@ -360,18 +368,30 @@ namespace Theraot.Collections.ThreadSafe
 
         public static bool RemoveValueAt<T>(this IBucket<T> bucket, int index, T value)
         {
+            if (bucket == null)
+            {
+                throw new ArgumentNullException("bucket");
+            }
             T previous;
             return bucket.RemoveValueAt(index, value, out previous);
         }
 
         public static void Set<T>(this IBucket<T> bucket, int index, T value)
         {
+            if (bucket == null)
+            {
+                throw new ArgumentNullException("bucket");
+            }
             bool isNew;
             bucket.Set(index, value, out isNew);
         }
 
         public static bool TryGetOrInsert<T>(this IBucket<T> bucket, int index, T item, out T stored)
         {
+            if (bucket == null)
+            {
+                throw new ArgumentNullException("bucket");
+            }
             T previous;
             if (bucket.Insert(index, item, out previous))
             {
@@ -384,6 +404,10 @@ namespace Theraot.Collections.ThreadSafe
 
         public static bool TryGetOrInsert<T>(this IBucket<T> bucket, int index, Func<T> itemFactory, out T stored)
         {
+            if (bucket == null)
+            {
+                throw new ArgumentNullException("bucket");
+            }
             if (!bucket.TryGet(index, out stored))
             {
                 var created = itemFactory.Invoke();
@@ -417,9 +441,9 @@ namespace Theraot.Collections.ThreadSafe
 
         public static bool TryUpdate<T>(this IBucket<T> bucket, int index, T item, Predicate<T> check, out T previous, out bool isNew)
         {
-            if (index < 0 || index >= bucket.Capacity)
+            if (bucket == null)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity.");
+                throw new ArgumentNullException("bucket");
             }
             isNew = false;
             if (!bucket.TryGet(index, out previous))
@@ -439,6 +463,10 @@ namespace Theraot.Collections.ThreadSafe
 
         public static bool Update<T>(this IBucket<T> bucket, int index, T item, T comparisonItem)
         {
+            if (bucket == null)
+            {
+                throw new ArgumentNullException("bucket");
+            }
             T previous;
             bool isNew;
             return bucket.Update(index, item, comparisonItem, out previous, out isNew);
@@ -446,12 +474,20 @@ namespace Theraot.Collections.ThreadSafe
 
         public static bool Update<T>(this IBucket<T> bucket, int index, T item, T comparisonItem, out T previous)
         {
+            if (bucket == null)
+            {
+                throw new ArgumentNullException("bucket");
+            }
             bool isNew;
             return bucket.Update(index, item, comparisonItem, out previous, out isNew);
         }
 
         public static bool Update<T>(this IBucket<T> bucket, int index, T item, T comparisonItem, out bool isNew)
         {
+            if (bucket == null)
+            {
+                throw new ArgumentNullException("bucket");
+            }
             T previous;
             return bucket.Update(index, item, comparisonItem, out previous, out isNew);
         }
@@ -475,9 +511,9 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public static bool Update<T>(this IBucket<T> bucket, int index, T item, Predicate<T> check, out T previous, out bool isNew)
         {
-            if (index < 0 || index >= bucket.Capacity)
+            if (bucket == null)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity.");
+                throw new ArgumentNullException("bucket");
             }
             isNew = false;
             if (!bucket.TryGet(index, out previous))
