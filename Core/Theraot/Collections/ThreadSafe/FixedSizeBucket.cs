@@ -259,12 +259,12 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
             }
             var found = Interlocked.Exchange(ref _entries[index], null);
-            if (found != null)
+            if (found == null)
             {
-                Interlocked.Decrement(ref _count);
-                return true;
+                return false;
             }
-            return false;
+            Interlocked.Decrement(ref _count);
+            return true;
         }
 
         /// <summary>
@@ -445,16 +445,16 @@ namespace Theraot.Collections.ThreadSafe
         {
             previous = default(T);
             var found = Interlocked.Exchange(ref _entries[index], null);
-            if (found != null)
+            if (found == null)
             {
-                Interlocked.Decrement(ref _count);
-                if (!ReferenceEquals(found, BucketHelper.Null))
-                {
-                    previous = (T)found;
-                }
-                return true;
+                return false;
             }
-            return false;
+            Interlocked.Decrement(ref _count);
+            if (!ReferenceEquals(found, BucketHelper.Null))
+            {
+                previous = (T)found;
+            }
+            return true;
         }
 
         internal void SetInternal(int index, T item, out bool isNew)
