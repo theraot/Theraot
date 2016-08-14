@@ -2,7 +2,6 @@
 
 using System;
 using System.Threading;
-using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
@@ -93,7 +92,11 @@ namespace Theraot.Threading.Needles
 
         public static explicit operator T(Needle<T> needle)
         {
-            return Check.NotNullArgument(needle, "needle").Value;
+            if (needle == null)
+            {
+                throw new ArgumentNullException("needle");
+            }
+            return needle.Value;
         }
 
         public static implicit operator Needle<T>(T field)
