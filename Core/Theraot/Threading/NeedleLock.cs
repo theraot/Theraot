@@ -24,7 +24,7 @@ namespace Theraot.Threading
                 throw new ArgumentNullException("context");
             }
             _context = context;
-            _hashCode = NeedleHelper.GetNextHashCode();
+            _hashCode = base.GetHashCode();
             _capture = new FlagArray(_context.Capacity);
             _owner = -1;
         }
@@ -36,8 +36,15 @@ namespace Theraot.Threading
                 throw new ArgumentNullException("context");
             }
             _context = context;
-            _target = target;
-            _hashCode = NeedleHelper.GetNextHashCode();
+            if (target == null)
+            {
+                _hashCode = base.GetHashCode();
+            }
+            else
+            {
+                _target = target;
+                _hashCode = target.GetHashCode();
+            }
             _capture = new FlagArray(_context.Capacity);
             _owner = -1;
         }
@@ -110,6 +117,11 @@ namespace Theraot.Threading
             return "<Dead Needle>";
         }
 
+        internal void Capture(LockSlot<T> slot)
+        {
+            _capture[slot.Id] = true;
+        }
+
         internal void Release()
         {
             if (ThreadingHelper.VolatileRead(ref _capture).Flags.IsEmpty())
@@ -117,11 +129,6 @@ namespace Theraot.Threading
                 _target = default(T);
                 Thread.MemoryBarrier();
             }
-        }
-
-        internal void Capture(LockSlot<T> slot)
-        {
-            _capture[slot.Id] = true;
         }
 
         internal void Uncapture(LockSlot<T> slot)

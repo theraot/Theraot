@@ -10,8 +10,6 @@ namespace Theraot.Threading.Needles
     [System.Diagnostics.DebuggerNonUserCode]
     public static class NeedleHelper
     {
-        private static int _hashCode;
-
         public static bool CanCreateDeferredNeedle<T, TNeedle>()
             where TNeedle : INeedle<T>
         {
@@ -124,11 +122,6 @@ namespace Theraot.Threading.Needles
             }
             target = needle.Value;
             return needle.IsAlive;
-        }
-
-        internal static int GetNextHashCode()
-        {
-            return Interlocked.Increment(ref _hashCode) - 1;
         }
 
         private static class DeferredNeedleCreator<T, TNeedle>
