@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using Theraot.Threading.Needles;
 
 namespace Theraot.Collections.Specialized
 {
@@ -12,23 +11,23 @@ namespace Theraot.Collections.Specialized
         private readonly Comparison<TKey> _comparison;
 
         private int _count;
-        private INeedle<AVLNode> _root;
+        private AVLNode _root;
 
         public AVLTree()
         {
-            _root = new StructNeedle<AVLNode>();
+            _root = null;
             _comparison = Comparer<TKey>.Default.Compare;
         }
 
         public AVLTree(IComparer<TKey> comparer)
         {
-            _root = new StructNeedle<AVLNode>();
+            _root = null;
             _comparison = (comparer ?? Comparer<TKey>.Default).Compare;
         }
 
         public AVLTree(Comparison<TKey> comparison)
         {
-            _root = new StructNeedle<AVLNode>();
+            _root = null;
             _comparison = comparison ?? Comparer<TKey>.Default.Compare;
         }
 
@@ -44,19 +43,19 @@ namespace Theraot.Collections.Specialized
         {
             get
             {
-                return _root.Value;
+                return _root;
             }
         }
 
         public void Add(TKey key, TValue value)
         {
-            AVLNode.Add(_root, key, value, _comparison);
+            AVLNode.Add(ref _root, key, value, _comparison);
             _count++;
         }
 
         public bool AddNonDuplicate(TKey key, TValue value)
         {
-            if (AVLNode.AddNonDuplicate(_root, key, value, _comparison))
+            if (AVLNode.AddNonDuplicate(ref _root, key, value, _comparison))
             {
                 _count++;
                 return true;
@@ -66,7 +65,7 @@ namespace Theraot.Collections.Specialized
 
         public void Bound(TKey key, out AVLNode lower, out AVLNode upper)
         {
-            AVLNode.Bound(_root.Value, key, _comparison, out lower, out upper);
+            AVLNode.Bound(_root, key, _comparison, out lower, out upper);
         }
 
         public void Clear()
@@ -75,14 +74,40 @@ namespace Theraot.Collections.Specialized
             _count = 0;
         }
 
+        public AVLNode Get(TKey key)
+        {
+            return AVLNode.Get(_root, key, _comparison);
+        }
+
         public IEnumerator<AVLNode> GetEnumerator()
         {
-            return AVLNode.EnumerateRoot(_root.Value).GetEnumerator();
+            return AVLNode.EnumerateRoot(_root).GetEnumerator();
+        }
+
+        public AVLNode GetNearestLeft(TKey key)
+        {
+            return AVLNode.GetNearestLeft(_root, key, _comparison);
+        }
+
+        public AVLNode GetNearestRight(TKey key)
+        {
+            return AVLNode.GetNearestRight(_root, key, _comparison);
+        }
+
+        public AVLNode GetOrAdd(TKey key, Func<TKey, TValue> factory)
+        {
+            bool isNew;
+            var result = AVLNode.GetOrAdd(ref _root, key, factory, _comparison, out isNew);
+            if (isNew)
+            {
+                _count++;
+            }
+            return result;
         }
 
         public IEnumerable<AVLNode> Range(TKey lower, TKey upper)
         {
-            foreach (var item in AVLNode.EnumerateFrom(_root.Value, lower, _comparison))
+            foreach (var item in AVLNode.EnumerateFrom(_root, lower, _comparison))
             {
                 var comparison = _comparison;
                 if (comparison(item.Key, upper) > 0)
@@ -95,7 +120,7 @@ namespace Theraot.Collections.Specialized
 
         public bool Remove(TKey key)
         {
-            if (AVLNode.Remove(_root, key, _comparison))
+            if (AVLNode.Remove(ref _root, key, _comparison))
             {
                 _count--;
                 return true;
@@ -105,27 +130,12 @@ namespace Theraot.Collections.Specialized
 
         public AVLNode RemoveNearestLeft(TKey key)
         {
-            return AVLNode.RemoveNearestLeft(_root, key, _comparison);
+            return AVLNode.RemoveNearestLeft(ref _root, key, _comparison);
         }
 
         public AVLNode RemoveNearestRight(TKey key)
         {
-            return AVLNode.RemoveNearestRight(_root, key, _comparison);
-        }
-
-        public AVLNode Search(TKey key)
-        {
-            return AVLNode.Search(_root.Value, key, _comparison);
-        }
-
-        public AVLNode SearchNearestLeft(TKey key)
-        {
-            return AVLNode.SearchNearestLeft(_root.Value, key, _comparison);
-        }
-
-        public AVLNode SearchNearestRight(TKey key)
-        {
-            return AVLNode.SearchNearestRight(_root.Value, key, _comparison);
+            return AVLNode.RemoveNearestRight(ref _root, key, _comparison);
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

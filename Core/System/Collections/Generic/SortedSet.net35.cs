@@ -131,7 +131,7 @@ namespace System.Collections.Generic
 
         public virtual bool Contains(T item)
         {
-            return _wrapped.Search(item) != null;
+            return _wrapped.Get(item) != null;
         }
 
         public void CopyTo(T[] array)
@@ -431,7 +431,7 @@ namespace System.Collections.Generic
 
             protected override T GetMax()
             {
-                var bound = _wrapped._wrapped.SearchNearestLeft(_upper);
+                var bound = _wrapped._wrapped.GetNearestLeft(_upper);
                 if (bound == null || Comparer.Compare(_lower, bound.Key) > 0)
                 {
                     return default(T);
@@ -441,7 +441,7 @@ namespace System.Collections.Generic
 
             protected override T GetMin()
             {
-                var bound = _wrapped._wrapped.SearchNearestRight(_lower);
+                var bound = _wrapped._wrapped.GetNearestRight(_lower);
                 if (bound == null || Comparer.Compare(_upper, bound.Key) < 0)
                 {
                     return default(T);

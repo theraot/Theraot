@@ -2,7 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using Theraot.Threading.Needles;
+using System.Threading;
 
 namespace Theraot.Collections.Specialized
 {
@@ -16,15 +16,15 @@ namespace Theraot.Collections.Specialized
 
             private int _balance;
             private int _depth;
-            private INeedle<AVLNode> _leftNeedle;
-            private INeedle<AVLNode> _rightNeedle;
+            private AVLNode _left;
+            private AVLNode _right;
 
             private AVLNode(TKey key, TValue value)
             {
                 _key = key;
                 _value = value;
-                _leftNeedle = new StructNeedle<AVLNode>();
-                _rightNeedle = new StructNeedle<AVLNode>();
+                _left = null;
+                _right = null;
             }
 
             public TKey Key
@@ -39,7 +39,7 @@ namespace Theraot.Collections.Specialized
             {
                 get
                 {
-                    return _leftNeedle.Value;
+                    return _left;
                 }
             }
 
@@ -47,7 +47,7 @@ namespace Theraot.Collections.Specialized
             {
                 get
                 {
-                    return _rightNeedle.Value;
+                    return _right;
                 }
             }
 
@@ -72,52 +72,15 @@ namespace Theraot.Collections.Specialized
                 return comparer.Compare(_key, other._key);
             }
 
-            internal static void Add(INeedle<AVLNode> nodeNeedle, TKey key, TValue value, Comparison<TKey> comparison)
+            internal static void Add(ref AVLNode node, TKey key, TValue value, Comparison<TKey> comparison)
             {
-                var stack = new Stack<INeedle<AVLNode>>();
-                while (true)
-                {
-                    int compare;
-                    if (!nodeNeedle.IsAlive || (compare = comparison(key, nodeNeedle.Value._key)) == 0)
-                    {
-                        var result = AddExtracted(nodeNeedle, key, value);
-                        if (result != -1)
-                        {
-                            while (stack.Count > 0)
-                            {
-                                MakeBalanced(stack.Pop());
-                            }
-                            return;
-                        }
-                        compare = -nodeNeedle.Value._balance;
-                    }
-                    stack.Push(nodeNeedle);
-                    nodeNeedle = compare < 0 ? nodeNeedle.Value._leftNeedle : nodeNeedle.Value._rightNeedle;
-                }
+                var created = new AVLNode(key, value);
+                AddExtracted(ref node, key, comparison, created);
             }
 
-            internal static bool AddNonDuplicate(INeedle<AVLNode> nodeNeedle, TKey key, TValue value, Comparison<TKey> comparison)
+            internal static bool AddNonDuplicate(ref AVLNode node, TKey key, TValue value, Comparison<TKey> comparison)
             {
-                var stack = new Stack<INeedle<AVLNode>>();
-                while (true)
-                {
-                    int compare;
-                    if (!nodeNeedle.IsAlive || (compare = comparison(key, nodeNeedle.Value._key)) == 0)
-                    {
-                        var result = AddNonDuplicateExtracted(nodeNeedle, key, value);
-                        if (result != -1)
-                        {
-                            while (stack.Count > 0)
-                            {
-                                MakeBalanced(stack.Pop());
-                            }
-                            return result != 0;
-                        }
-                        compare = -nodeNeedle.Value._balance;
-                    }
-                    stack.Push(nodeNeedle);
-                    nodeNeedle = compare < 0 ? nodeNeedle.Value._leftNeedle : nodeNeedle.Value._rightNeedle;
-                }
+                return AddNonDuplicateExtracted(ref node, key, value, comparison, null);
             }
 
             internal static void Bound(AVLNode node, TKey key, Comparison<TKey> comparison, out AVLNode lower, out AVLNode upper)
@@ -139,7 +102,7 @@ namespace Theraot.Collections.Specialized
                     {
                         break;
                     }
-                    node = compare > 0 ? node._rightNeedle.Value : node._leftNeedle.Value;
+                    node = compare > 0 ? node._right : node._left;
                 }
             }
 
@@ -155,12 +118,12 @@ namespace Theraot.Collections.Specialized
                     }
                     if (compare > 0)
                     {
-                        node = node._rightNeedle.Value;
+                        node = node._right;
                     }
                     else
                     {
                         stack.Push(node);
-                        node = node._leftNeedle.Value;
+                        node = node._left;
                     }
                 }
                 while (true)
@@ -168,7 +131,7 @@ namespace Theraot.Collections.Specialized
                     if (node != null)
                     {
                         yield return node;
-                        foreach (var item in EnumerateRoot(node._rightNeedle.Value))
+                        foreach (var item in EnumerateRoot(node._right))
                         {
                             yield return item;
                         }
@@ -207,110 +170,7 @@ namespace Theraot.Collections.Specialized
                 }
             }
 
-            internal static bool Remove(INeedle<AVLNode> nodeNeedle, TKey key, Comparison<TKey> comparison)
-            {
-                var stack = new Stack<INeedle<AVLNode>>();
-                while (true)
-                {
-                    int compare;
-                    if (!nodeNeedle.IsAlive || (compare = comparison(key, nodeNeedle.Value._key)) == 0)
-                    {
-                        var result = RemoveExtracted(nodeNeedle);
-                        if (result != -1)
-                        {
-                            while (stack.Count > 0)
-                            {
-                                MakeBalanced(stack.Pop());
-                            }
-                            return result != 0;
-                        }
-                        compare = -nodeNeedle.Value._balance;
-                    }
-                    stack.Push(nodeNeedle);
-                    nodeNeedle = compare < 0 ? nodeNeedle.Value._leftNeedle : nodeNeedle.Value._rightNeedle;
-                }
-            }
-
-            internal static AVLNode RemoveNearestLeft(INeedle<AVLNode> nodeNeedle, TKey key, Comparison<TKey> comparison)
-            {
-                var stack = new Stack<INeedle<AVLNode>>();
-                INeedle<AVLNode> resultNeedle = null;
-                while (nodeNeedle.IsAlive)
-                {
-                    stack.Push(nodeNeedle);
-                    var compare = comparison.Invoke(key, nodeNeedle.Value._key);
-                    if (compare >= 0)
-                    {
-                        resultNeedle = nodeNeedle;
-                    }
-                    if (compare == 0)
-                    {
-                        break;
-                    }
-                    nodeNeedle = compare > 0 ? nodeNeedle.Value._rightNeedle : nodeNeedle.Value._leftNeedle;
-                }
-                if (resultNeedle == null)
-                {
-                    return null;
-                }
-                var found = resultNeedle.Value;
-                RemoveExtracted(resultNeedle);
-                while (stack.Count > 0)
-                {
-                    var current = stack.Pop();
-                    if (ReferenceEquals(current, resultNeedle))
-                    {
-                        break;
-                    }
-                }
-                while (stack.Count > 0)
-                {
-                    var current = stack.Pop();
-                    MakeBalanced(current);
-                }
-                return found;
-            }
-
-            internal static AVLNode RemoveNearestRight(INeedle<AVLNode> nodeNeedle, TKey key, Comparison<TKey> comparison)
-            {
-                var stack = new Stack<INeedle<AVLNode>>();
-                INeedle<AVLNode> resultNeedle = null;
-                while (nodeNeedle.IsAlive)
-                {
-                    var compare = comparison.Invoke(key, nodeNeedle.Value._key);
-                    if (compare <= 0)
-                    {
-                        resultNeedle = nodeNeedle;
-                    }
-                    if (compare == 0)
-                    {
-                        break;
-                    }
-                    nodeNeedle = compare > 0 ? nodeNeedle.Value._rightNeedle : nodeNeedle.Value._leftNeedle;
-                }
-                if (resultNeedle == null)
-                {
-                    return null;
-                }
-                var found = resultNeedle.Value;
-                RemoveExtracted(resultNeedle);
-                while (stack.Count > 0)
-                {
-                    var current = stack.Pop();
-                    if (ReferenceEquals(current, resultNeedle))
-                    {
-                        break;
-                    }
-                }
-                while (stack.Count > 0)
-                {
-                    var current = stack.Pop();
-                    MakeBalanced(current);
-                }
-                return found;
-            }
-
-            internal static AVLNode Search(AVLNode node, TKey key, Comparison<TKey> comparison)
+            internal static AVLNode Get(AVLNode node, TKey key, Comparison<TKey> comparison)
             {
                 while (node != null)
                 {
@@ -319,12 +179,34 @@ namespace Theraot.Collections.Specialized
                     {
                         break;
                     }
-                    node = compare > 0 ? node._rightNeedle.Value : node._leftNeedle.Value;
+                    node = compare > 0 ? node._right : node._left;
                 }
                 return node;
             }
 
-            internal static AVLNode SearchNearestLeft(AVLNode node, TKey key, Comparison<TKey> comparison)
+            internal static AVLNode GetFirst(AVLNode node)
+            {
+                AVLNode result = null;
+                while (node != null)
+                {
+                    result = node;
+                    node = node._left;
+                }
+                return result;
+            }
+
+            internal static AVLNode GetLast(AVLNode node)
+            {
+                AVLNode result = null;
+                while (node != null)
+                {
+                    result = node;
+                    node = node._right;
+                }
+                return result;
+            }
+
+            internal static AVLNode GetNearestLeft(AVLNode node, TKey key, Comparison<TKey> comparison)
             {
                 AVLNode result = null;
                 while (node != null)
@@ -338,12 +220,12 @@ namespace Theraot.Collections.Specialized
                     {
                         break;
                     }
-                    node = compare < 0 ? node._leftNeedle.Value : node._rightNeedle.Value;
+                    node = compare < 0 ? node._left : node._right;
                 }
                 return result;
             }
 
-            internal static AVLNode SearchNearestRight(AVLNode node, TKey key, Comparison<TKey> comparison)
+            internal static AVLNode GetNearestRight(AVLNode node, TKey key, Comparison<TKey> comparison)
             {
                 AVLNode result = null;
                 while (node != null)
@@ -357,157 +239,345 @@ namespace Theraot.Collections.Specialized
                     {
                         break;
                     }
-                    node = compare > 0 ? node._rightNeedle.Value : node._leftNeedle.Value;
+                    node = compare > 0 ? node._right : node._left;
                 }
                 return result;
             }
 
-            private static int AddExtracted(INeedle<AVLNode> nodeNeedle, TKey key, TValue value)
+            internal static AVLNode GetOrAdd(ref AVLNode node, TKey key, Func<TKey, TValue> factory, Comparison<TKey> comparison, out bool isNew)
             {
-                if (nodeNeedle.IsAlive)
-                {
-                    return -1;
-                }
-                nodeNeedle.Value = new AVLNode(key, value);
-                return 1;
+                return GetOrAddExtracted(ref node, key, factory, comparison, null, out isNew);
             }
 
-            private static int AddNonDuplicateExtracted(INeedle<AVLNode> nodeNeedle, TKey key, TValue value)
+            internal static bool Remove(ref AVLNode node, TKey key, Comparison<TKey> comparison)
             {
-                if (nodeNeedle.IsAlive)
+                if (node == null)
                 {
-                    return 0;
+                    return false;
                 }
-                nodeNeedle.Value = new AVLNode(key, value);
-                return 1;
-            }
-
-            private static void DoubleLeft(INeedle<AVLNode> nodeNeedle)
-            {
-                if (nodeNeedle.Value._rightNeedle.IsAlive)
+                var compare = comparison(key, node._key);
+                if (compare == 0)
                 {
-                    RotateRight(nodeNeedle.Value._rightNeedle);
-                    RotateLeft(nodeNeedle);
+                    var result = RemoveExtracted(ref node);
+                    return result;
                 }
-            }
-
-            private static void DoubleRight(INeedle<AVLNode> nodeNeedle)
-            {
-                if (nodeNeedle.Value._leftNeedle.IsAlive)
+                try
                 {
-                    RotateLeft(nodeNeedle.Value._leftNeedle);
-                    RotateRight(nodeNeedle);
+                    if (compare < 0)
+                    {
+                        return Remove(ref node._left, key, comparison);
+                    }
+                    return Remove(ref node._right, key, comparison);
+                }
+                finally
+                {
+                    MakeBalanced(ref node);
                 }
             }
 
-            private static void MakeBalanced(INeedle<AVLNode> nodeNeedle)
+            internal static AVLNode RemoveNearestLeft(ref AVLNode node, TKey key, Comparison<TKey> comparison)
             {
-                AVLNode node;
+                AVLNode result = null;
+                return RemoveNearestLeftExtracted(ref node, ref result, key, comparison);
+            }
+
+            internal static AVLNode RemoveNearestRight(ref AVLNode node, TKey key, Comparison<TKey> comparison)
+            {
+                AVLNode result = null;
+                return RemoveNearestRightExtracted(ref node, ref result, key, comparison);
+            }
+
+            private static void AddExtracted(ref AVLNode node, TKey key, Comparison<TKey> comparison, AVLNode created)
+            {
+                int compare;
+                if (node == null || (compare = comparison(key, node._key)) == 0)
+                {
+                    if (Interlocked.CompareExchange(ref node, created, null) == null)
+                    {
+                        return;
+                    }
+                    compare = -node._balance;
+                }
+                if (compare < 0)
+                {
+                    AddExtracted(ref node._left, key, comparison, created);
+                }
+                else
+                {
+                    AddExtracted(ref node._right, key, comparison, created);
+                }
+                MakeBalanced(ref node);
+            }
+
+            private static bool AddNonDuplicateExtracted(ref AVLNode node, TKey key, TValue value, Comparison<TKey> comparison, AVLNode created)
+            {
+                if (node == null)
+                {
+                    if (created == null)
+                    {
+                        created = new AVLNode(key, value);
+                    }
+                    var found = Interlocked.CompareExchange(ref node, created, null);
+                    if (found == null)
+                    {
+                        return true;
+                    }
+                    node = found;
+                }
+                var compare = comparison(key, node._key);
+                if (compare == 0)
+                {
+                    return false;
+                }
+                try
+                {
+                    if (compare < 0)
+                    {
+                        return AddNonDuplicateExtracted(ref node._left, key, value, comparison, created);
+                    }
+                    return AddNonDuplicateExtracted(ref node._right, key, value, comparison, created);
+                }
+                finally
+                {
+                    MakeBalanced(ref node);
+                }
+            }
+
+            private static void DoubleLeft(ref AVLNode node)
+            {
+                if (node._right != null)
+                {
+                    RotateRight(ref node._right);
+                    RotateLeft(ref node);
+                }
+            }
+
+            private static void DoubleRight(ref AVLNode node)
+            {
+                if (node._left != null)
+                {
+                    RotateLeft(ref node._left);
+                    RotateRight(ref node);
+                }
+            }
+
+            private static AVLNode GetOrAddExtracted(ref AVLNode node, TKey key, Func<TKey, TValue> factory, Comparison<TKey> comparison, AVLNode created, out bool isNew)
+            {
+                if (node == null)
+                {
+                    if (created == null)
+                    {
+                        created = new AVLNode(key, factory(key));
+                        factory = null;
+                    }
+                    var found = Interlocked.CompareExchange(ref node, created, null);
+                    if (found == null)
+                    {
+                        isNew = true;
+                        return created;
+                    }
+                    node = found;
+                }
+                var compare = comparison(key, node._key);
+                if (compare == 0)
+                {
+                    isNew = false;
+                    return node;
+                }
+                try
+                {
+                    if (compare < 0)
+                    {
+                        return GetOrAddExtracted(ref node._left, key, factory, comparison, created, out isNew);
+                    }
+                    return GetOrAddExtracted(ref node._right, key, factory, comparison, created, out isNew);
+                }
+                finally
+                {
+                    MakeBalanced(ref node);
+                }
+            }
+
+            private static void MakeBalanced(ref AVLNode node)
+            {
+                AVLNode current;
                 do
                 {
-                    node = nodeNeedle.Value;
+                    current = node;
                     Update(node);
                     if (node._balance >= 2)
                     {
-                        if (node._rightNeedle.Value._balance <= 1)
+                        if (node._right._balance <= 1)
                         {
-                            DoubleLeft(nodeNeedle);
+                            DoubleLeft(ref node);
                         }
                         else
                         {
-                            RotateLeft(nodeNeedle);
+                            RotateLeft(ref node);
                         }
                     }
                     else if (node._balance <= -2)
                     {
-                        if (node._leftNeedle.Value._balance >= 1)
+                        if (node._left._balance >= 1)
                         {
-                            DoubleRight(nodeNeedle);
+                            DoubleRight(ref node);
                         }
                         else
                         {
-                            RotateRight(nodeNeedle);
+                            RotateRight(ref node);
                         }
                     }
-                } while (node != nodeNeedle.Value);
+                } while (node != current);
             }
 
-            private static int RemoveExtracted(INeedle<AVLNode> nodeNeedle)
+            private static bool RemoveExtracted(ref AVLNode node)
             {
-                if (!nodeNeedle.IsAlive)
+                if (node == null)
                 {
-                    return 0;
+                    return false;
                 }
-                if (!nodeNeedle.Value._rightNeedle.IsAlive)
+                if (node._right == null)
                 {
-                    nodeNeedle.Value = nodeNeedle.Value._leftNeedle.Value;
+                    node = node._left;
                 }
                 else
                 {
-                    if (!nodeNeedle.Value._leftNeedle.IsAlive)
+                    if (node._left == null)
                     {
-                        nodeNeedle.Value = nodeNeedle.Value._rightNeedle.Value;
+                        node = node._right;
                     }
                     else
                     {
-                        var trunk = nodeNeedle.Value._rightNeedle;
+                        var trunk = node._right;
                         var successor = trunk;
-                        while (successor.Value._leftNeedle.IsAlive)
+                        while (successor._left != null)
                         {
                             trunk = successor;
-                            successor = trunk.Value._leftNeedle;
+                            successor = trunk._left;
                         }
                         if (ReferenceEquals(trunk, successor))
                         {
-                            nodeNeedle.Value._rightNeedle = successor.Value._rightNeedle;
+                            node._right = successor._right;
                         }
                         else
                         {
-                            trunk.Value._leftNeedle = successor.Value._rightNeedle;
+                            trunk._left = successor._right;
                         }
-                        var tmpLeft = nodeNeedle.Value._leftNeedle;
-                        var tmpRight = nodeNeedle.Value._rightNeedle;
-                        var tmpBalance = nodeNeedle.Value._balance;
-                        nodeNeedle.Value = new AVLNode(successor.Value._key, successor.Value._value)
+                        var tmpLeft = node._left;
+                        var tmpRight = node._right;
+                        var tmpBalance = node._balance;
+                        node = new AVLNode(successor._key, successor._value)
                         {
-                            _leftNeedle = tmpLeft,
-                            _rightNeedle = tmpRight,
+                            _left = tmpLeft,
+                            _right = tmpRight,
                             _balance = tmpBalance
                         };
                     }
                 }
-                if (nodeNeedle.IsAlive)
+                if (node != null)
                 {
-                    MakeBalanced(nodeNeedle);
+                    MakeBalanced(ref node);
                 }
-                return 1;
+                return true;
             }
 
-            private static void RotateLeft(INeedle<AVLNode> nodeNeedle)
+            private static AVLNode RemoveNearestLeftExtracted(ref AVLNode node, ref AVLNode result, TKey key, Comparison<TKey> comparison)
             {
-                if (nodeNeedle.Value._rightNeedle.IsAlive)
+                if (node == null)
                 {
-                    var root = nodeNeedle.Value;
-                    var right = nodeNeedle.Value._rightNeedle.Value;
-                    var rightLeft = nodeNeedle.Value._rightNeedle.Value._leftNeedle.Value;
-                    nodeNeedle.Value._rightNeedle.Value = rightLeft;
-                    right._leftNeedle.Value = root;
-                    nodeNeedle.Value = right;
+                    return null;
+                }
+                var compare = comparison.Invoke(key, node._key);
+                AVLNode tmp;
+                if (compare == 0)
+                {
+                    tmp = node;
+                    RemoveExtracted(ref node);
+                    return tmp;
+                }
+                if (compare < 0)
+                {
+                    tmp = RemoveNearestLeftExtracted(ref node._left, ref result, key, comparison);
+                    if (tmp == null)
+                    {
+                        tmp = result;
+                        RemoveExtracted(ref result);
+                    }
+                    MakeBalanced(ref node);
+                }
+                else
+                {
+                    tmp = RemoveNearestLeftExtracted(ref node._right, ref node, key, comparison);
+                    if (tmp == null)
+                    {
+                        tmp = node;
+                        RemoveExtracted(ref node);
+                    }
+                }
+                return tmp;
+            }
+
+            private static AVLNode RemoveNearestRightExtracted(ref AVLNode node, ref AVLNode result, TKey key, Comparison<TKey> comparison)
+            {
+                if (node == null)
+                {
+                    return null;
+                }
+                var compare = comparison.Invoke(key, node._key);
+                AVLNode tmp;
+                if (compare == 0)
+                {
+                    tmp = node;
+                    RemoveExtracted(ref node);
+                    return tmp;
+                }
+                if (compare < 0)
+                {
+                    tmp = RemoveNearestRightExtracted(ref node._left, ref node, key, comparison);
+                    if (tmp == null)
+                    {
+                        tmp = node;
+                        RemoveExtracted(ref node);
+                    }
+                }
+                else
+                {
+                    tmp = RemoveNearestRightExtracted(ref node._right, ref result, key, comparison);
+                    if (tmp == null)
+                    {
+                        tmp = result;
+                        RemoveExtracted(ref result);
+                    }
+                    MakeBalanced(ref node);
+                }
+                return tmp;
+            }
+
+            private static void RotateLeft(ref AVLNode node)
+            {
+                var root = node;
+                var right = node._right;
+                if (right != null)
+                {
+                    var rightLeft = right._left;
+                    node._right = rightLeft;
+                    right._left = root;
+                    node = right;
                     Update(root);
                     Update(right);
                 }
             }
 
-            private static void RotateRight(INeedle<AVLNode> nodeNeedle)
+            private static void RotateRight(ref AVLNode node)
             {
-                if (nodeNeedle.Value._leftNeedle.IsAlive)
+                var root = node;
+                var left = node._left;
+                if (left != null)
                 {
-                    var root = nodeNeedle.Value;
-                    var left = nodeNeedle.Value._leftNeedle.Value;
-                    var leftRight = nodeNeedle.Value._leftNeedle.Value._rightNeedle.Value;
-                    nodeNeedle.Value._leftNeedle.Value = leftRight;
-                    left._rightNeedle.Value = root;
-                    nodeNeedle.Value = left;
+                    var leftRight = left._right;
+                    node._left = leftRight;
+                    left._right = root;
+                    node = left;
                     Update(root);
                     Update(left);
                 }
@@ -515,8 +585,8 @@ namespace Theraot.Collections.Specialized
 
             private static void Update(AVLNode node)
             {
-                var right = node._rightNeedle.Value;
-                var left = node._leftNeedle.Value;
+                var right = node._right;
+                var left = node._left;
                 node._depth = Math.Max(right == null ? 0 : right._depth + 1, left == null ? 0 : left._depth + 1);
                 node._balance = (right == null ? 0 : right._depth + 1) - (left == null ? 0 : left._depth + 1);
             }
