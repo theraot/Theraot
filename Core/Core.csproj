@@ -197,8 +197,8 @@
     <LangVersion>5</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
-    <DefineConstants Condition=" !$(DefineConstants.Contains(';NET')) ">$(DefineConstants);$(TargetFrameworkVersion.Replace("v", "NET").Replace(".", ""))</DefineConstants>
-    <DefineConstants Condition=" $(DefineConstants.Contains(';NET')) ">$(DefineConstants.Remove($(DefineConstants.LastIndexOf(";NET"))));$(TargetFrameworkVersion.Replace("v", "NET").Replace(".", ""))</DefineConstants>
+    <DefineConstants Condition= "!$([System.Text.RegularExpressions.Regex]::IsMatch($(DefineConstants), ';NET\d\d'))">$(DefineConstants);$(TargetFrameworkVersion.Replace("v", "NET").Replace(".", ""))</DefineConstants>
+    <DefineConstants Condition= "$([System.Text.RegularExpressions.Regex]::IsMatch($(DefineConstants), ';NET\d\d'))">$([System.Text.RegularExpressions.Regex]::Replace($(DefineConstants), ';NET\d\d', ''));$(TargetFrameworkVersion.Replace("v", "NET").Replace(".", ""))</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
