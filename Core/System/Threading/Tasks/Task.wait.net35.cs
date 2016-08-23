@@ -60,7 +60,7 @@ namespace System.Threading.Tasks
             // but this adds a bit of protection in case it fails to, and given that the debugger is involved, 
             // the overhead here for the interlocked is negligable.  We do still rely on the debugger
             // to clear bits, as this doesn't recursively clear bits in the case of, for example, WhenAny.
-            SetNotificationForWaitCompletion(enabled: false);
+            SetNotificationForWaitCompletion(/*enabled:*/ false);
         }
 
         /// <summary>
@@ -297,7 +297,7 @@ namespace System.Threading.Tasks
                     {
                         // We either didn't attempt inline execution because we had a non-infinite timeout or we had a cancellable token.
                         // In all cases we need to do a full wait on the task (=> add its event into the list.)
-                        AddToList(task, ref waitedOnTaskList, initSize: tasks.Length);
+                        AddToList(task, ref waitedOnTaskList, /*initSize:*/ tasks.Length);
                     }
                     else
                     {
@@ -305,7 +305,7 @@ namespace System.Threading.Tasks
                         taskIsCompleted = task.TryStart(task.Scheduler, true) && task.IsCompleted; // A successful TryRunInline doesn't guarantee completion
                         if (!taskIsCompleted)
                         {
-                            AddToList(task, ref waitedOnTaskList, initSize: tasks.Length);
+                            AddToList(task, ref waitedOnTaskList, /*initSize:*/ tasks.Length);
                         }
                     }
                 }
@@ -321,7 +321,7 @@ namespace System.Threading.Tasks
                     }
                     if (task.IsWaitNotificationEnabled)
                     {
-                        AddToList(task, ref notificationTasks, initSize: 1);
+                        AddToList(task, ref notificationTasks, /*initSize:*/ 1);
                     }
                 }
             }
@@ -347,7 +347,7 @@ namespace System.Threading.Tasks
                         }
                         if (task.IsWaitNotificationEnabled)
                         {
-                            AddToList(task, ref notificationTasks, initSize: 1);
+                            AddToList(task, ref notificationTasks, /*initSize:*/ 1);
                         }
                     }
                 }
