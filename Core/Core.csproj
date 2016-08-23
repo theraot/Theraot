@@ -72,9 +72,9 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NETCF|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET35-CF|AnyCPU'">
     <Optimize>False</Optimize>
-    <OutputPath>bin\Debug_NETCF\</OutputPath>
+    <OutputPath>bin\Debug_NET35-CF\</OutputPath>
     <DefineConstants>TRACE;DEBUG;FAT;NETCF;NET35</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -138,9 +138,9 @@
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <LangVersion>5</LangVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NETCF|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35-CF|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\NETCF\</OutputPath>
+    <OutputPath>bin\NET35-CF\</OutputPath>
     <DefineConstants>NETCF;NET35</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -198,9 +198,9 @@
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <LangVersion>5</LangVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NETCF_FAT|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35-CF_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
-    <OutputPath>bin\NETCF_FAT\</OutputPath>
+    <OutputPath>bin\NET35-CF_FAT\</OutputPath>
     <DefineConstants>NETCF;NET35;FAT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
