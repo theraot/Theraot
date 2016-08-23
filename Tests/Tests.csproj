@@ -78,6 +78,19 @@
     <DebugType>full</DebugType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NETCF|AnyCPU'">
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug_NETCF\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NET_4_5;NET_4_0;FAT;NETCF;NET35</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <LangVersion>default</LangVersion>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET40|AnyCPU'">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET40\</OutputPath>
@@ -137,6 +150,17 @@
     <LangVersion>default</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NETCF|AnyCPU' ">
+    <Optimize>True</Optimize>
+    <OutputPath>bin\NETCF\</OutputPath>
+    <DefineConstants>NET_4_5;NET_4_0;NETCF;NET35</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <LangVersion>default</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40|AnyCPU' ">
     <Optimize>True</Optimize>
     <OutputPath>bin\NET40\</OutputPath>
@@ -185,6 +209,17 @@
     <Optimize>True</Optimize>
     <OutputPath>bin\NET35_FAT\</OutputPath>
     <DefineConstants>NET_4_5;NET_4_0;NET35;FAT</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <LangVersion>default</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NETCF_FAT|AnyCPU' ">
+    <Optimize>True</Optimize>
+    <OutputPath>bin\NETCF_FAT\</OutputPath>
+    <DefineConstants>NET_4_5;NET_4_0;NETCF;NET35;FAT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
