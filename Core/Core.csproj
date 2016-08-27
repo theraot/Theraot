@@ -19,27 +19,27 @@
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;FAT;NET20</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET20;FAT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>5</LangVersion>
+    <LangVersion>default</LangVersion>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>True</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>;NET20</DefineConstants>
+    <DefineConstants>NET35</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>5</LangVersion>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <LangVersion>default</LangVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET20|AnyCPU'">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET20\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;FAT;NET20</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET20;FAT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -51,7 +51,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET30|AnyCPU'">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET30\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;FAT;NET30</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET30;FAT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -75,19 +75,20 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET35-CF|AnyCPU'">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET35-CF\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;FAT;NETCF;NET35</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET35;NETCF;FAT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <LangVersion>3</LangVersion>
+    <LangVersion>default</LangVersion>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
+    <CF>true</CF>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET40|AnyCPU'">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET40\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;FAT;NET40</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET40;FAT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -99,7 +100,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET45|AnyCPU'">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET45\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;FAT;NET45</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET45;FAT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -146,7 +147,8 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <LangVersion>3</LangVersion>
+    <LangVersion>default</LangVersion>
+    <CF>true</CF>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -177,6 +179,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <LangVersion>5</LangVersion>
+    <Fat>true</Fat>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET30_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -187,6 +190,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
     <LangVersion>5</LangVersion>
+    <Fat>true</Fat>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -197,6 +201,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <LangVersion>5</LangVersion>
+    <Fat>true</Fat>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35-CF_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -206,7 +211,9 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <LangVersion>3</LangVersion>
+    <LangVersion>default</LangVersion>
+    <CF>true</CF>
+    <Fat>true</Fat>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -217,6 +224,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <LangVersion>5</LangVersion>
+    <Fat>true</Fat>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET45_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -227,10 +235,17 @@
     <Prefer32Bit>false</Prefer32Bit>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <LangVersion>5</LangVersion>
+    <Fat>true</Fat>
   </PropertyGroup>
   <PropertyGroup>
-    <DefineConstants Condition="!$([System.Text.RegularExpressions.Regex]::IsMatch($(DefineConstants), ';NET\d\d'))">$(DefineConstants);$(TargetFrameworkVersion.Replace("v", "NET").Replace(".", ""))</DefineConstants>
-    <DefineConstants Condition="$([System.Text.RegularExpressions.Regex]::IsMatch($(DefineConstants), ';NET\d\d'))">$([System.Text.RegularExpressions.Regex]::Replace($(DefineConstants), ';NET\d\d', ''));$(TargetFrameworkVersion.Replace("v", "NET").Replace(".", ""))</DefineConstants>
+    <DefineConstants Condition="$(TargetFrameworkVersion) == 'v2.0'">NET20</DefineConstants>
+    <DefineConstants Condition="$(TargetFrameworkVersion) == 'v3.0'">NET30</DefineConstants>
+    <DefineConstants Condition="$(TargetFrameworkVersion) == 'v3.5'">NET35</DefineConstants>
+    <DefineConstants Condition="$(TargetFrameworkVersion) == 'v4.0'">NET40</DefineConstants>
+    <DefineConstants Condition="$(TargetFrameworkVersion) == 'v4.5'">NET45</DefineConstants>
+    <DefineConstants Condition="$(CF) == 'true'">$(DefineConstants);NETCF</DefineConstants>
+    <DefineConstants Condition="$(DebugType) == 'full'">$(DefineConstants);TRACE;DEBUG;FAT</DefineConstants>
+    <DefineConstants Condition="$(Fat) == 'true'">$(DefineConstants);FAT</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -880,7 +895,9 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFrameworkVersion)'!='v2.0' And '$(TargetFrameworkVersion)'!='v3.0'">
-    <Reference Include="System.Core" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFrameworkVersion)'!='v2.0'">
     <Reference Include="WindowsBase" />
@@ -923,6 +940,7 @@
         </Policies>
       </Properties>
     </MonoDevelop>
+    <VisualStudio />
   </ProjectExtensions>
   <ItemGroup>
     <None Include="OpenSourceKey.snk" />
