@@ -114,8 +114,7 @@ namespace Theraot.Collections.ThreadSafe
                 (
                     index,
                     true,
-                    (int capacity, int position, ref int use, ref FixedSizeBucket<T> first,
-                        ref FixedSizeBucket<T> second) =>
+                    (int capacity, int position, ref int use, ref FixedSizeBucket<T> first, ref FixedSizeBucket<T> second) =>
                     {
                         try
                         {
@@ -225,10 +224,17 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         try
                         {
-                            T tmp;
                             var bucket = EnterRead(ref use, ref first);
-                            result = bucket.TryGet(index - position, out tmp);
-                            found = tmp;
+                            if (bucket == null)
+                            {
+                                result = false;
+                            }
+                            else
+                            {
+                                T tmp;
+                                result = bucket.TryGet(index - position, out tmp);
+                                found = tmp;
+                            }
                         }
                         finally
                         {
