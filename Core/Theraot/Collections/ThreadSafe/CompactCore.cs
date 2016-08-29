@@ -78,9 +78,12 @@ namespace Theraot.Collections.ThreadSafe
                 try
                 {
                     var bucket = CoreHelper.EnterRead(ref _bucketsUse[bucketIndex], ref _bucketsFirst[bucketIndex]);
-                    foreach (var value in bucket)
+                    if (bucket != null)
                     {
-                        yield return value;
+                        foreach (var value in bucket)
+                        {
+                            yield return value;
+                        }
                     }
                 }
                 finally
