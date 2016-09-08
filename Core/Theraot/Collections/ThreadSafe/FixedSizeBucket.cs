@@ -138,7 +138,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     if (entry != null)
                     {
-                        if (ReferenceEquals(entry, BucketHelper.Null))
+                        if (entry == BucketHelper.Null)
                         {
                             array[arrayIndex] = default(T);
                         }
@@ -187,7 +187,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 if (entry != null)
                 {
-                    if (ReferenceEquals(entry, BucketHelper.Null))
+                    if (entry == BucketHelper.Null)
                     {
                         yield return default(T);
                     }
@@ -308,7 +308,7 @@ namespace Theraot.Collections.ThreadSafe
                 return false;
             }
             Interlocked.Decrement(ref _count);
-            if (!ReferenceEquals(found, BucketHelper.Null))
+            if (found != BucketHelper.Null)
             {
                 previous = (T)found;
             }
@@ -386,7 +386,7 @@ namespace Theraot.Collections.ThreadSafe
                 if (entry != null)
                 {
                     T yield = default(T);
-                    if (!ReferenceEquals(entry, BucketHelper.Null))
+                    if (entry != BucketHelper.Null)
                     {
                         yield = (T)entry;
                     }
@@ -407,7 +407,7 @@ namespace Theraot.Collections.ThreadSafe
                 Interlocked.Increment(ref _count);
                 return true;
             }
-            if (!ReferenceEquals(found, BucketHelper.Null))
+            if (found != BucketHelper.Null)
             {
                 previous = (T)found;
             }
@@ -423,7 +423,7 @@ namespace Theraot.Collections.ThreadSafe
                 Interlocked.Increment(ref _count);
                 return true;
             }
-            if (!ReferenceEquals(found, BucketHelper.Null))
+            if (found != BucketHelper.Null)
             {
                 previous = (T)found;
             }
@@ -450,7 +450,7 @@ namespace Theraot.Collections.ThreadSafe
                 return false;
             }
             Interlocked.Decrement(ref _count);
-            if (!ReferenceEquals(found, BucketHelper.Null))
+            if (found != BucketHelper.Null)
             {
                 previous = (T)found;
             }
@@ -468,19 +468,19 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool TryGetInternal(int index, out T value)
         {
-            var entry = Interlocked.CompareExchange(ref _entries[index], null, null);
-            if (entry == null)
+            var found = Interlocked.CompareExchange(ref _entries[index], null, null);
+            if (found == null)
             {
                 value = default(T);
                 return false;
             }
-            if (ReferenceEquals(entry, BucketHelper.Null))
+            if (found == BucketHelper.Null)
             {
                 value = default(T);
             }
             else
             {
-                value = (T)entry;
+                value = (T)found;
             }
             return true;
         }
