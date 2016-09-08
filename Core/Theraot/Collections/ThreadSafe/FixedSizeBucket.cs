@@ -493,10 +493,7 @@ namespace Theraot.Collections.ThreadSafe
             var found = Interlocked.CompareExchange(ref _entries[index], (object)item ?? BucketHelper.Null, check);
             if (found == check)
             {
-                if (!ReferenceEquals(check, BucketHelper.Null))
-                {
-                    previous = (T)found;
-                }
+                previous = comparisonItem;
                 return true;
             }
             if (found == null)
