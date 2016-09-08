@@ -410,18 +410,20 @@ namespace Theraot.Collections.ThreadSafe
             return _entries.RemoveAt(index, out previous);
         }
 
-        public bool RemoveValueAt(int index, T value, out T previous)
+        public bool RemoveAt(int index, Predicate<T> check)
         {
-            TNeedle found;
-            if (_entries.RemoveValueAt(index, needle => _comparer.Equals(needle.Value, value), out found))
+            TNeedle found = null;
+            Predicate<TNeedle> replacementCheck = needle =>
             {
-                // TryGetValue is null resistant
-                found.TryGetValue(out previous);
+                found = needle;
+                return check(needle.Value);
+            };
+            if (_entries.RemoveAt(index, replacementCheck))
+            {
                 // Donate it
                 NeedleReservoir<T, TNeedle>.DonateNeedle(found);
                 return true;
             }
-            previous = default(T);
             return false;
         }
 
@@ -509,9 +511,9 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
-        public IEnumerable<T> Where(Predicate<T> predicate)
+        public IEnumerable<T> Where(Predicate<T> check)
         {
-            foreach (var needle in _entries.Where(needle => predicate(needle.Value)))
+            foreach (var needle in _entries.Where(needle => check(needle.Value)))
             {
                 yield return needle.Value;
             }

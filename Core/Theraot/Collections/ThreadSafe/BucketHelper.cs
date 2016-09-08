@@ -473,79 +473,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        /// <summary>
-        /// Removes the item at the specified index.
-        /// </summary>
-        /// <param name="bucket">The bucket on which to operate.</param>
-        /// <param name="index">The index.</param>
-        /// <param name="check">verification for the old item.</param>
-        /// <returns>
-        ///   <c>true</c> if the item was inserted; otherwise, <c>false</c>.
-        /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity.</exception>
-        /// <remarks>
-        /// The insertion can fail if the index is already used or is being written by another thread.
-        /// If the index is being written it can be understood that the insert operation happened before but the item was overwritten or removed.
-        /// </remarks>
-        public static bool RemoveValueAt<T>(this IBucket<T> bucket, int index, Predicate<T> check)
-        {
-            T previous;
-            return RemoveValueAt(bucket, index, check, out previous);
-        }
-
-        /// <summary>
-        /// Removes the item at the specified index.
-        /// </summary>
-        /// <param name="bucket">The bucket on which to operate.</param>
-        /// <param name="index">The index.</param>
-        /// <param name="check">verification for the old item.</param>
-        /// <param name="previous">The previous item in the specified index.</param>
-        /// <returns>
-        ///   <c>true</c> if the item was inserted; otherwise, <c>false</c>.
-        /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity.</exception>
-        /// <remarks>
-        /// The insertion can fail if the index is already used or is being written by another thread.
-        /// If the index is being written it can be understood that the insert operation happened before but the item was overwritten or removed.
-        /// </remarks>
-        public static bool RemoveValueAt<T>(this IBucket<T> bucket, int index, Predicate<T> check, out T previous)
-        {
-            if (bucket == null)
-            {
-                throw new ArgumentNullException("bucket");
-            }
-            if (!bucket.TryGet(index, out previous))
-            {
-                // There was not an item
-                return false;
-            }
-            // There was an item
-            while (true)
-            {
-                if (!check(previous))
-                {
-                    // The item did not pass the check
-                    return false;
-                }
-                // The item passes the check
-                if (bucket.RemoveValueAt(index, previous, out previous))
-                {
-                    // The item was replaced
-                    return true;
-                }
-            }
-        }
-
-        public static bool RemoveValueAt<T>(this IBucket<T> bucket, int index, T value)
-        {
-            if (bucket == null)
-            {
-                throw new ArgumentNullException("bucket");
-            }
-            T previous;
-            return bucket.RemoveValueAt(index, value, out previous);
-        }
-
         public static void Set<T>(this IBucket<T> bucket, int index, T value)
         {
             if (bucket == null)
@@ -578,14 +505,15 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("bucket");
             }
-            if (!bucket.TryGet(index, out stored))
+            if (bucket.TryGet(index, out stored))
             {
-                var created = itemFactory.Invoke();
-                if (bucket.Insert(index, created, out stored))
-                {
-                    stored = created;
-                    return true;
-                }
+                return false;
+            }
+            var created = itemFactory.Invoke();
+            if (bucket.Insert(index, created, out stored))
+            {
+                stored = created;
+                return true;
             }
             return false;
         }

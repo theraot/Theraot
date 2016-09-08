@@ -12,54 +12,32 @@ namespace Theraot.Collections.ThreadSafe
     [Serializable]
     public sealed class Bucket<T> : IBucket<T>
     {
-        private readonly ICore<FixedSizeBucket<T>> _core;
+        private readonly BucketCore _bucketCore;
         private int _count;
 
-        public Bucket(GrowthStrategy strategy, int capacity)
+        public Bucket()
         {
-            switch (strategy)
-            {
-                case GrowthStrategy.Compact:
-                    _core = new CompactCore<FixedSizeBucket<T>>(1 + capacity / 64);
-                    break;
-
-                case GrowthStrategy.Sparse:
-                    // TODO _core = new SparseCore<FixedSizeBucket<T>>(1 + capacity / 64);
-                    break;
-
-                default:
-                    throw new ArgumentException("Invalid GrowthStrategy");
-            }
+            _bucketCore = new BucketCore(7);
         }
 
-        public Bucket(GrowthStrategy strategy, IEnumerable<T> source)
+        public Bucket(IEnumerable<T> source)
         {
             if (source == null)
             {
                 throw new ArgumentNullException("source");
             }
-            var collection = source as ICollection<T>;
-            var capacity = collection == null ? 64 : 1 + collection.Count / 64;
-            switch (strategy)
-            {
-                case GrowthStrategy.Compact:
-                    _core = new CompactCore<FixedSizeBucket<T>>(capacity);
-                    break;
-
-                case GrowthStrategy.Sparse:
-                    _core = new SparseCore<FixedSizeBucket<T>>(capacity);
-                    break;
-
-                default:
-                    throw new ArgumentException("Invalid GrowthStrategy");
-            }
+            _bucketCore = new BucketCore(7);
             var index = 0;
-            foreach (var partition in source.Partition(64))
+            foreach (var item in source)
             {
-                var bucket = new FixedSizeBucket<T>(partition);
-                _core.Set(index, bucket);
-                _count += bucket.Count;
+                var copy = item;
+                _bucketCore.DoMayIncrement
+                    (
+                        index,
+                        (ref object target) => Interlocked.Exchange(ref target, (object) copy ?? BucketHelper.Null) == null
+                    );
                 index++;
+                _count++;
             }
         }
 
@@ -67,7 +45,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             get
             {
-                return _core.Length * 64;
+                return _bucketCore.Length;
             }
         }
 
@@ -86,23 +64,34 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool Exchange(int index, T item, out T previous)
         {
-            FixedSizeBucket<T> bucket;
-            if (_core.TryGetValue(index / 64, out bucket))
-            {
-                return bucket.Exchange(index % 64, item, out previous);
-            }
+            var found = BucketHelper.Null;
             previous = default(T);
+            var result = _bucketCore.DoMayIncrement
+                (
+                    index,
+                    (ref object target) =>
+                    {
+                        found = Interlocked.Exchange(ref target, (object)item ?? BucketHelper.Null);
+                        return found == null;
+                    }
+                );
+            if (result)
+            {
+                Interlocked.Increment(ref _count);
+                return true;
+            }
+            if (found != BucketHelper.Null)
+            {
+                previous = (T)found;
+            }
             return false;
         }
 
         public IEnumerator<T> GetEnumerator()
         {
-            foreach (var bucket in _core)
+            foreach (var value in _bucketCore)
             {
-                foreach (var value in bucket)
-                {
-                    yield return value;
-                }
+                yield return value == BucketHelper.Null ? default(T) : (T)value;
             }
         }
 
@@ -113,76 +102,119 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool Insert(int index, T item)
         {
-            var bucket = _core.GetOrInsert(index / 64, () => new FixedSizeBucket<T>(64));
-            if (bucket.Insert(index % 64, item))
+            var result = _bucketCore.DoMayIncrement
+                (
+                    index,
+                    (ref object target) =>
+                    {
+                        var found = Interlocked.CompareExchange(ref target, (object)item ?? BucketHelper.Null, null);
+                        return found == null;
+                    }
+                );
+            if (result)
             {
                 Interlocked.Increment(ref _count);
-                return true;
             }
-            return false;
+            return result;
         }
 
         public bool Insert(int index, T item, out T previous)
         {
-            var bucket = _core.GetOrInsert(index / 64, () => new FixedSizeBucket<T>(64));
-            if (bucket.Insert(index % 64, item, out previous))
+            var found = BucketHelper.Null;
+            previous = default(T);
+            var result = _bucketCore.DoMayIncrement
+                (
+                    index,
+                    (ref object target) =>
+                    {
+                        found = Interlocked.CompareExchange(ref target, (object)item ?? BucketHelper.Null, null);
+                        return found == null;
+                    }
+                );
+            if (result)
             {
                 Interlocked.Increment(ref _count);
                 return true;
+            }
+            if (found != BucketHelper.Null)
+            {
+                previous = (T)found;
             }
             return false;
         }
 
         public bool RemoveAt(int index)
         {
-            FixedSizeBucket<T> bucket;
-            if (_core.TryGetValue(index / 64, out bucket))
+            var result = _bucketCore.DoMayDecrement
+                (
+                    index,
+                    (ref object target) => Interlocked.Exchange(ref target, null) != null
+                );
+            if (result)
             {
-                if (bucket.RemoveAt(index % 64))
-                {
-                    Interlocked.Decrement(ref _count);
-                    return true;
-                }
+                Interlocked.Decrement(ref _count);
             }
-            return false;
+            return result;
         }
 
         public bool RemoveAt(int index, out T previous)
         {
-            FixedSizeBucket<T> bucket;
-            if (_core.TryGetValue(index / 64, out bucket))
+            var found = BucketHelper.Null;
+            previous = default(T);
+            var result = _bucketCore.DoMayDecrement
+                (
+                    index,
+                    (ref object target) =>
+                    {
+                        found = Interlocked.Exchange(ref target, null);
+                        return found != null;
+                    }
+                );
+            if (!result)
             {
-                if (bucket.RemoveAt(index % 64, out previous))
-                {
-                    Interlocked.Decrement(ref _count);
-                    return true;
-                }
                 return false;
             }
-            previous = default(T);
-            return false;
+            Interlocked.Decrement(ref _count);
+            if (found != BucketHelper.Null)
+            {
+                previous = (T)found;
+            }
+            return true;
         }
 
-        public bool RemoveValueAt(int index, T value, out T previous)
+        public bool RemoveAt(int index, Predicate<T> check)
         {
-            FixedSizeBucket<T> bucket;
-            if (_core.TryGetValue(index / 64, out bucket))
-            {
-                if (bucket.RemoveValueAt(index % 64, value, out previous))
-                {
-                    Interlocked.Decrement(ref _count);
-                    return true;
-                }
-                return false;
-            }
-            previous = default(T);
-            return false;
+            return _bucketCore.DoMayDecrement
+                (
+                    index,
+                    (ref object target) =>
+                    {
+                        var found = Interlocked.CompareExchange(ref target, null, null);
+                        if (found != null)
+                        {
+                            var comparisonItem = found == BucketHelper.Null ? default(T) : (T)found;
+                            if (check(comparisonItem))
+                            {
+                                var compare = Interlocked.CompareExchange(ref target, null, found);
+                                if (found == compare)
+                                {
+                                    Interlocked.Decrement(ref _count);
+                                    return true;
+                                }
+                            }
+                        }
+                        return false;
+                    }
+                );
         }
 
         public void Set(int index, T item, out bool isNew)
         {
-            var bucket = _core.GetOrInsert(index / 64, () => new FixedSizeBucket<T>(64));
-            bucket.Set(index % 64, item, out isNew);
+            isNew = _bucketCore.DoMayIncrement
+                (
+                    index,
+                    (ref object target) => Interlocked.Exchange(ref target, (object)item ?? BucketHelper.Null) == null
+                );
             if (isNew)
             {
                 Interlocked.Increment(ref _count);
@@ -191,34 +223,69 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool TryGet(int index, out T value)
         {
-            FixedSizeBucket<T> bucket;
-            if (_core.TryGetValue(index / 64, out bucket))
-            {
-                return bucket.TryGet(index % 64, out value);
-            }
+            var found = BucketHelper.Null;
             value = default(T);
-            return false;
-        }
-
-        public bool Update(int index, T item, T comparisonItem, out T previous, out bool isNew)
-        {
-            FixedSizeBucket<T> bucket;
-            if (_core.TryGetValue(index / 64, out bucket))
+            var done = _bucketCore.Do
+                (
+                    index,
+                    (ref object target) =>
+                    {
+                        found = Interlocked.CompareExchange(ref target, null, null);
+                        return true;
+                    }
+                );
+            if (!done || found == null)
             {
-                return bucket.Update(index % 64, item, comparisonItem, out previous, out isNew);
+                return false;
             }
-            previous = default(T);
-            isNew = true;
-            return false;
+            if (found != BucketHelper.Null)
+            {
+                value = (T) found;
+            }
+            return true;
         }
 
-        public IEnumerable<T> Where(Predicate<T> predicate)
+        public bool Update(int index, Func<T, T> itemUpdateFactory, Predicate<T> check, out bool isEmpty)
         {
-            foreach (var bucket in _core)
+            var found = BucketHelper.Null;
+            var compare = BucketHelper.Null;
+            var result = false;
+            var done = _bucketCore.Do
+                (
+                    index,
+                    (ref object target) =>
+                    {
+                        found = Interlocked.CompareExchange(ref target, null, null);
+                        if (found != null)
+                        {
+                            var comparisonItem = found == BucketHelper.Null ? default(T) : (T) found;
+                            if (check(comparisonItem))
+                            {
+                                var item = itemUpdateFactory(comparisonItem);
+                                compare = Interlocked.CompareExchange(ref target, (object) item ?? BucketHelper.Null, found);
+                                result = found == compare;
+                            }
+                        }
+                        return true;
+                    }
+                );
+            if (!done)
             {
-                foreach (var value in bucket.Where(predicate))
+                isEmpty = true;
+                return false;
+            }
+            isEmpty = found == null || compare == null;
+            return result;
+        }
+
+        public IEnumerable<T> Where(Predicate<T> check)
+        {
+            foreach (var value in _bucketCore)
+            {
+                T castedValue = value == BucketHelper.Null ? default(T) : (T)value;
+                if (check(castedValue))
                 {
-                    yield return value;
+                    yield return castedValue;
                 }
             }
         }

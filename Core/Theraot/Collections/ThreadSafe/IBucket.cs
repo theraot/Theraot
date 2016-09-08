@@ -27,7 +27,7 @@ namespace Theraot.Collections.ThreadSafe
 
         bool RemoveAt(int index, out T previous);
 
-        bool RemoveValueAt(int index, T value, out T previous);
+        bool RemoveAt(int index, Predicate<T> check);
 
         void Set(int index, T item, out bool isNew);
 

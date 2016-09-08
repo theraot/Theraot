@@ -289,30 +289,36 @@ namespace Theraot.Collections.ThreadSafe
         /// Removes the item at the specified index if it matches the specified value.
         /// </summary>
         /// <param name="index">The index.</param>
-        /// <param name="value">The value intended to remove.</param>
-        /// <param name="previous">The previous item in the specified index.</param>
+        /// <param name="check">The predicate to decide to remove.</param>
         /// <returns>
         ///   <c>true</c> if the item was removed; otherwise, <c>false</c>.
         /// </returns>
         /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
-        public bool RemoveValueAt(int index, T value, out T previous)
+        public bool RemoveAt(int index, Predicate<T> check)
         {
             if (index < 0 || index >= _capacity)
             {
                 throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
             }
-            previous = default(T);
-            var found = Interlocked.CompareExchange(ref _entries[index], null, (object)value ?? BucketHelper.Null);
-            if (found == null)
+            if (check == null)
             {
-                return false;
+                throw new ArgumentNullException("check");
             }
-            Interlocked.Decrement(ref _count);
-            if (found != BucketHelper.Null)
+            var found = Interlocked.CompareExchange(ref _entries[index], null, null);
+            if (found != null)
             {
-                previous = (T)found;
+                var comparisonItem = found == BucketHelper.Null ? default(T) : (T) found;
+                if (check(comparisonItem))
+                {
+                    var compare = Interlocked.CompareExchange(ref _entries[index], null, found);
+                    if (found == compare)
+                    {
+                        Interlocked.Decrement(ref _count);
+                        return true;
+                    }
+                }
             }
-            return true;
+            return false;
         }
 
         /// <summary>
@@ -499,27 +505,20 @@ namespace Theraot.Collections.ThreadSafe
         internal bool UpdateInternal(int index, Func<T, T> itemUpdateFactory, Predicate<T> check, out bool isEmpty)
         {
             var found = Interlocked.CompareExchange(ref _entries[index], null, null);
-            isEmpty = found == null;
-            if (isEmpty)
+            var compare = BucketHelper.Null;
+            var result = false;
+            if (found != null)
             {
-                return false;
+                var comparisonItem = found == BucketHelper.Null ? default(T) : (T)found;
+                if (check(comparisonItem))
+                {
+                    var item = itemUpdateFactory(comparisonItem);
+                    compare = Interlocked.CompareExchange(ref _entries[index], (object) item ?? BucketHelper.Null, found);
+                    result = found == compare;
+                }
             }
-            var comparisonItem = found == BucketHelper.Null ? default(T) : (T)found;
-            if (!check(comparisonItem))
-            {
-                return false;
-            }
-            var item = itemUpdateFactory(comparisonItem);
-            var compare = Interlocked.CompareExchange(ref _entries[index], (object)item ?? BucketHelper.Null, found);
-            if (found == compare)
-            {
-                return true;
-            }
-            if (compare == null)
-            {
-                isEmpty = true;
-            }
-            return false;
+            isEmpty = found == null || compare == null;
+            return result;
         }
     }
 }
