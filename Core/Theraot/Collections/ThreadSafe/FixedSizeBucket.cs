@@ -484,7 +484,7 @@ namespace Theraot.Collections.ThreadSafe
             return true;
         }
 
-        internal bool UpdateInternal(int index, Func<T, T> itemUpdateFactory, Predicate<T> predicate, out bool isEmpty)
+        internal bool UpdateInternal(int index, Func<T, T> itemUpdateFactory, Predicate<T> check, out bool isEmpty)
         {
             var found = Interlocked.CompareExchange(ref _entries[index], null, null);
             isEmpty = found == null;
@@ -493,17 +493,17 @@ namespace Theraot.Collections.ThreadSafe
                 return false;
             }
             var comparisonItem = found == BucketHelper.Null ? default(T) : (T)found;
-            if (!predicate(comparisonItem))
+            if (!check(comparisonItem))
             {
                 return false;
             }
             var item = itemUpdateFactory(comparisonItem);
-            var check = Interlocked.CompareExchange(ref _entries[index], (object)item ?? BucketHelper.Null, found);
-            if (found == check)
+            var compare = Interlocked.CompareExchange(ref _entries[index], (object)item ?? BucketHelper.Null, found);
+            if (found == compare)
             {
                 return true;
             }
-            if (check == null)
+            if (compare == null)
             {
                 isEmpty = true;
             }
