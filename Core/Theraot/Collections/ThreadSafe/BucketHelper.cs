@@ -92,6 +92,10 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public static bool InsertOrUpdate<T>(this IBucket<T> bucket, int index, T item, Func<T, T> itemUpdateFactory, Predicate<T> check, out bool isNew)
         {
+            if (bucket == null)
+            {
+                throw new ArgumentNullException("bucket");
+            }
             isNew = true;
             while (true)
             {
@@ -149,6 +153,10 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public static void InsertOrUpdate<T>(this IBucket<T> bucket, int index, T item, Func<T, T> itemUpdateFactory, out bool isNew)
         {
+            if (bucket == null)
+            {
+                throw new ArgumentNullException("bucket");
+            }
             isNew = true;
             while (true)
             {
@@ -208,6 +216,10 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public static bool InsertOrUpdate<T>(this IBucket<T> bucket, int index, T item, Predicate<T> check, out bool isNew)
         {
+            if (bucket == null)
+            {
+                throw new ArgumentNullException("bucket");
+            }
             isNew = true;
             while (true)
             {
