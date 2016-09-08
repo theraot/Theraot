@@ -35,6 +35,6 @@ namespace Theraot.Collections.ThreadSafe
 
         bool Update(int index, Func<T, T> itemUpdateFactory, Predicate<T> check, out bool isEmpty);
 
-        IEnumerable<T> Where(Predicate<T> predicate);
+        IEnumerable<T> Where(Predicate<T> check);
     }
 }

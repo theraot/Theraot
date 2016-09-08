@@ -375,11 +375,23 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity.");
             }
+            if (itemUpdateFactory == null)
+            {
+                throw new ArgumentNullException("itemUpdateFactory");
+            }
+            if (check == null)
+            {
+                throw new ArgumentNullException("check");
+            }
             return UpdateInternal(index, itemUpdateFactory, check, out isEmpty);
         }
 
-        public IEnumerable<T> Where(Predicate<T> predicate)
+        public IEnumerable<T> Where(Predicate<T> check)
         {
+            if (check == null)
+            {
+                throw new ArgumentNullException("check");
+            }
             foreach (var entry in _entries)
             {
                 if (entry != null)
@@ -389,7 +401,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         yield = (T)entry;
                     }
-                    if (predicate(yield))
+                    if (check(yield))
                     {
                         yield return yield;
                     }
