@@ -489,15 +489,10 @@ namespace Theraot.Collections.ThreadSafe
         {
             previous = default(T);
             isNew = false;
-            var check = (object)comparisonItem ?? BucketHelper.Null;
+            var check = (object)comparisonItem ?? BucketHelper.Null; // Cannot be null
             var found = Interlocked.CompareExchange(ref _entries[index], (object)item ?? BucketHelper.Null, check);
             if (found == check)
             {
-                if (check == null)
-                {
-                    Interlocked.Increment(ref _count);
-                    isNew = true;
-                }
                 if (!ReferenceEquals(check, BucketHelper.Null))
                 {
                     previous = (T)found;
