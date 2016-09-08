@@ -302,7 +302,7 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
             }
             previous = default(T);
-            var found = Interlocked.CompareExchange(ref _entries[index], null, value);
+            var found = Interlocked.CompareExchange(ref _entries[index], null, (object)value ?? BucketHelper.Null);
             if (found == null)
             {
                 return false;
