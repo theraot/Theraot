@@ -361,7 +361,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <param name="item">The new item.</param>
         /// <param name="comparisonItem">The old item.</param>
         /// <param name="previous">The previous item in the specified index.</param>
-        /// <param name="isNew">if set to <c>true</c> the index was not previously used.</param>
+        /// <param name="isEmpty">if set to <c>true</c> the index was not previously used.</param>
         /// <returns>
         ///   <c>true</c> if the item was inserted; otherwise, <c>false</c>.
         /// </returns>
@@ -370,13 +370,13 @@ namespace Theraot.Collections.ThreadSafe
         /// The insertion can fail if the index is already used or is being written by another thread.
         /// If the index is being written it can be understood that the insert operation happened before but the item was overwritten or removed.
         /// </remarks>
-        public bool Update(int index, T item, T comparisonItem, out T previous, out bool isNew)
+        public bool Update(int index, T item, T comparisonItem, out T previous, out bool isEmpty)
         {
             if (index < 0 || index >= _capacity)
             {
                 throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity.");
             }
-            return UpdateInternal(index, item, comparisonItem, out previous, out isNew);
+            return UpdateInternal(index, item, comparisonItem, out previous, out isEmpty);
         }
 
         public IEnumerable<T> Where(Predicate<T> predicate)

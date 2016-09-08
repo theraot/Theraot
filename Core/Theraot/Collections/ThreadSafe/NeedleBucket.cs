@@ -493,11 +493,11 @@ namespace Theraot.Collections.ThreadSafe
             return _entries.TryGet(index, out value);
         }
 
-        public bool Update(int index, T item, T comparisonItem, out T previous, out bool isNew)
+        public bool Update(int index, T item, T comparisonItem, out T previous, out bool isEmpty)
         {
             TNeedle found;
             var newNeedle = NeedleReservoir<T, TNeedle>.GetNeedle(item);
-            if (_entries.Update(index, newNeedle, needle => _comparer.Equals(needle.Value, comparisonItem), out found, out isNew))
+            if (_entries.Update(index, newNeedle, needle => _comparer.Equals(needle.Value, comparisonItem), out found, out isEmpty))
             {
                 // Null resistant
                 found.TryGetValue(out previous);
