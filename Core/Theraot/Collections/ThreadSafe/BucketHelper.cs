@@ -163,7 +163,7 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 else
                 {
-                    if (bucket.Update(index, itemUpdateFactory, out isNew))
+                    if (bucket.Update(index, itemUpdateFactory, Tautology, out isNew))
                     {
                         return;
                     }
@@ -222,11 +222,11 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 else
                 {
-                    if (bucket.Update(index, item, check, out isNew))
+                    if (bucket.Update(index, _ => item, check, out isNew))
                     {
                         return true;
                     }
-                    if(!isNew)
+                    if (!isNew)
                     {
                         return false; // returns false only when check returns false
                     }
@@ -289,17 +289,14 @@ namespace Theraot.Collections.ThreadSafe
                 if (isNew)
                 {
                     T stored;
-                    if (factoryUsed || !bucket.TryGet(index, out stored))
+                    if (!factoryUsed)
                     {
-                        if (!factoryUsed)
-                        {
-                            created = itemFactory.Invoke();
-                            factoryUsed = true;
-                        }
-                        if (bucket.Insert(index, created, out stored))
-                        {
-                            return true;
-                        }
+                        created = itemFactory.Invoke();
+                        factoryUsed = true;
+                    }
+                    if (bucket.Insert(index, created, out stored))
+                    {
+                        return true;
                     }
                     isNew = false;
                 }
@@ -364,23 +361,20 @@ namespace Theraot.Collections.ThreadSafe
                 if (isNew)
                 {
                     T stored;
-                    if (factoryUsed || !bucket.TryGet(index, out stored))
+                    if (!factoryUsed)
                     {
-                        if (!factoryUsed)
-                        {
-                            created = itemFactory.Invoke();
-                            factoryUsed = true;
-                        }
-                        if (bucket.Insert(index, created, out stored))
-                        {
-                            return;
-                        }
+                        created = itemFactory.Invoke();
+                        factoryUsed = true;
+                    }
+                    if (bucket.Insert(index, created, out stored))
+                    {
+                        return;
                     }
                     isNew = false;
                 }
                 else
                 {
-                    if (bucket.Update(index, itemUpdateFactory, out isNew))
+                    if (bucket.Update(index, itemUpdateFactory, Tautology, out isNew))
                     {
                         return;
                     }
@@ -441,24 +435,21 @@ namespace Theraot.Collections.ThreadSafe
                 if (isNew)
                 {
                     T stored;
-                    if (factoryUsed || !bucket.TryGet(index, out stored))
+                    if (!factoryUsed)
                     {
-                        if (!factoryUsed)
-                        {
-                            created = itemFactory.Invoke();
-                            factoryUsed = true;
-                        }
-                        if (bucket.Insert(index, created, out stored))
-                        {
-                            return true;
-                        }
+                        created = itemFactory.Invoke();
+                        factoryUsed = true;
+                    }
+                    if (bucket.Insert(index, created, out stored))
+                    {
+                        return true;
                     }
                     isNew = false;
                 }
                 else
                 {
                     var result = itemFactory.Invoke();
-                    if (bucket.Update(index, result, check, out isNew))
+                    if (bucket.Update(index, _ => result, check, out isNew))
                     {
                         return true;
                     }
@@ -594,7 +585,40 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException("bucket");
             }
             bool isEmpty;
-            return bucket.Update(index, item, check, out isEmpty);
+            return bucket.Update(index, _ => item, check, out isEmpty);
+        }
+
+        public static bool Update<T>(this IBucket<T> bucket, int index, T item, Predicate<T> check, out bool isEmpty)
+        {
+            if (bucket == null)
+            {
+                throw new ArgumentNullException("bucket");
+            }
+            return bucket.Update(index, _ => item, check, out isEmpty);
+        }
+
+        public static bool Update<T>(this IBucket<T> bucket, int index, Func<T, T> itemUpdateFactory)
+        {
+            if (bucket == null)
+            {
+                throw new ArgumentNullException("bucket");
+            }
+            bool isEmpty;
+            return bucket.Update(index, itemUpdateFactory, Tautology, out isEmpty);
+        }
+
+        public static bool Update<T>(this IBucket<T> bucket, int index, Func<T, T> itemUpdateFactory, out bool isEmpty)
+        {
+            if (bucket == null)
+            {
+                throw new ArgumentNullException("bucket");
+            }
+            return bucket.Update(index, itemUpdateFactory, Tautology, out isEmpty);
+        }
+
+        private static bool Tautology<T>(T item)
+        {
+            return true;
         }
     }
 }
