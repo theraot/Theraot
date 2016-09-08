@@ -1,6 +1,7 @@
 ﻿// Needed for NET40
 
 using System;
+using System.Collections.Generic;
 
 namespace Theraot.Collections.ThreadSafe
 {
@@ -58,8 +59,8 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         /// <param name="bucket">The bucket on which to operate.</param>
         /// <param name="index">The index.</param>
-        /// <param name="item">The item.</param>
-        /// <param name="itemUpdateFactory"></param>
+        /// <param name="item">The item set.</param>
+        /// <param name="itemUpdateFactory">The item factory to create the item to replace with.</param>
         /// <param name="check">A predicate to decide if a particular item should be replaced.</param>
         /// <returns>
         ///   <c>true</c> if the item or repalced inserted; otherwise, <c>false</c>.
@@ -80,8 +81,8 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         /// <param name="bucket">The bucket on which to operate.</param>
         /// <param name="index">The index.</param>
-        /// <param name="item">The item.</param>
-        /// <param name="itemUpdateFactory"></param>
+        /// <param name="item">The item set.</param>
+        /// <param name="itemUpdateFactory">The item factory to create the item to replace with.</param>
         /// <param name="check">A predicate to decide if a particular item should be replaced.</param>
         /// <param name="stored">the item that was left at the specified index.</param>
         /// <returns>
@@ -102,8 +103,8 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         /// <param name="bucket">The bucket on which to operate.</param>
         /// <param name="index">The index.</param>
-        /// <param name="item">The item.</param>
-        /// <param name="itemUpdateFactory"></param>
+        /// <param name="item">The item set.</param>
+        /// <param name="itemUpdateFactory">The item factory to create the item to replace with.</param>
         /// <param name="check">A predicate to decide if a particular item should be replaced.</param>
         /// <param name="isNew">if set to <c>true</c> the index was not previously used.</param>
         /// <returns>
@@ -124,8 +125,8 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         /// <param name="bucket">The bucket on which to operate.</param>
         /// <param name="index">The index.</param>
-        /// <param name="item">The item.</param>
-        /// <param name="itemUpdateFactory"></param>
+        /// <param name="item">The item insert.</param>
+        /// <param name="itemUpdateFactory">The item factory to create the item to replace with.</param>
         /// <param name="check">A predicate to decide if a particular item should be replaced.</param>
         /// <param name="stored">the item that was left at the specified index.</param>
         /// <param name="isNew">if set to <c>true</c> the index was not previously used.</param>
@@ -152,16 +153,173 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 else
                 {
-                    if (check(stored))
+                    var result = itemUpdateFactory.Invoke(stored);
+                    if (bucket.Update(index, result, check, out stored, out isNew))
                     {
-                        var result = itemUpdateFactory.Invoke(stored);
-                        if (bucket.Update(index, result, stored, out stored, out isNew))
-                        {
-                            stored = result;
-                            return true;
-                        }
+                        stored = result;
+                        return true;
                     }
-                    else
+                    if (!isNew)
+                    {
+                        return false; // returns false only when check returns false
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Inserts or replaces the item at the specified index.
+        /// </summary>
+        /// <param name="bucket">The bucket on which to operate.</param>
+        /// <param name="index">The index.</param>
+        /// <param name="item">The item set.</param>
+        /// <param name="itemUpdateFactory">The item factory to create the item to replace with.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <remarks>
+        /// The operation will be attempted as long as check returns true - this operation may starve.
+        /// </remarks>
+        public static void InsertOrUpdate<T>(this IBucket<T> bucket, int index, T item, Func<T, T> itemUpdateFactory)
+        {
+            bool isNew;
+            InsertOrUpdate(bucket, index, item, itemUpdateFactory, out isNew);
+        }
+
+        /// <summary>
+        /// Inserts or replaces the item at the specified index.
+        /// </summary>
+        /// <param name="bucket">The bucket on which to operate.</param>
+        /// <param name="index">The index.</param>
+        /// <param name="item">The item insert.</param>
+        /// <param name="itemUpdateFactory">The item factory to create the item to replace with.</param>
+        /// <param name="isNew">if set to <c>true</c> the index was not previously used.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <remarks>
+        /// The operation will be attempted as long as check returns true - this operation may starve.
+        /// </remarks>
+        public static void InsertOrUpdate<T>(this IBucket<T> bucket, int index, T item, Func<T, T> itemUpdateFactory, out bool isNew)
+        {
+            isNew = true;
+            while (true)
+            {
+                if (isNew)
+                {
+                    T stored;
+                    if (bucket.Insert(index, item, out stored))
+                    {
+                        return;
+                    }
+                    isNew = false;
+                }
+                else
+                {
+                    if (bucket.Update(index, itemUpdateFactory, out isNew))
+                    {
+                        return;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Inserts or replaces the item at the specified index.
+        /// </summary>
+        /// <param name="bucket">The bucket on which to operate.</param>
+        /// <param name="index">The index.</param>
+        /// <param name="item">The item to set.</param>
+        /// <param name="check">A predicate to decide if a particular item should be replaced.</param>
+        /// <returns>
+        ///   <c>true</c> if the item or repalced inserted; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <remarks>
+        /// The operation will be attempted as long as check returns true - this operation may starve.
+        /// </remarks>
+        public static bool InsertOrUpdate<T>(this IBucket<T> bucket, int index, T item, Predicate<T> check)
+        {
+            T stored;
+            bool isNew;
+            return InsertOrUpdate(bucket, index, item, check, out stored, out isNew);
+        }
+
+        /// <summary>
+        /// Inserts or replaces the item at the specified index.
+        /// </summary>
+        /// <param name="bucket">The bucket on which to operate.</param>
+        /// <param name="index">The index.</param>
+        /// <param name="item">The item set.</param>
+        /// <param name="check">A predicate to decide if a particular item should be replaced.</param>
+        /// <param name="stored">the item that was left at the specified index.</param>
+        /// <returns>
+        ///   <c>true</c> if the item or repalced inserted; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <remarks>
+        /// The operation will be attempted as long as check returns true - this operation may starve.
+        /// </remarks>
+        public static bool InsertOrUpdate<T>(this IBucket<T> bucket, int index, T item, Predicate<T> check, out T stored)
+        {
+            bool isNew;
+            return InsertOrUpdate(bucket, index, item, check, out stored, out isNew);
+        }
+
+        /// <summary>
+        /// Inserts or replaces the item at the specified index.
+        /// </summary>
+        /// <param name="bucket">The bucket on which to operate.</param>
+        /// <param name="index">The index.</param>
+        /// <param name="item">The item set.</param>
+        /// <param name="check">A predicate to decide if a particular item should be replaced.</param>
+        /// <param name="isNew">if set to <c>true</c> the index was not previously used.</param>
+        /// <returns>
+        ///   <c>true</c> if the item or repalced inserted; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <remarks>
+        /// The operation will be attempted as long as check returns true - this operation may starve.
+        /// </remarks>
+        public static bool InsertOrUpdate<T>(this IBucket<T> bucket, int index, T item, Predicate<T> check, out bool isNew)
+        {
+            T stored;
+            return InsertOrUpdate(bucket, index, item, check, out stored, out isNew);
+        }
+
+        /// <summary>
+        /// Inserts or replaces the item at the specified index.
+        /// </summary>
+        /// <param name="bucket">The bucket on which to operate.</param>
+        /// <param name="index">The index.</param>
+        /// <param name="item">The item set.</param>
+        /// <param name="check">A predicate to decide if a particular item should be replaced.</param>
+        /// <param name="stored">the item that was left at the specified index.</param>
+        /// <param name="isNew">if set to <c>true</c> the index was not previously used.</param>
+        /// <returns>
+        ///   <c>true</c> if the item or repalced inserted; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <remarks>
+        /// The operation will be attempted as long as check returns true - this operation may starve.
+        /// </remarks>
+        public static bool InsertOrUpdate<T>(this IBucket<T> bucket, int index, T item, Predicate<T> check, out T stored, out bool isNew)
+        {
+            isNew = true;
+            while (true)
+            {
+                if (isNew)
+                {
+                    if (bucket.Insert(index, item, out stored))
+                    {
+                        return true;
+                    }
+                    isNew = false;
+                }
+                else
+                {
+                    if (bucket.Update(index, item, check, out stored, out isNew))
+                    {
+                        stored = item;
+                        return true;
+                    }
+                    if(!isNew)
                     {
                         return false; // returns false only when check returns false
                     }
@@ -286,16 +444,210 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 else
                 {
-                    if (check(stored))
+                    var result = itemUpdateFactory.Invoke(stored);
+                    if (bucket.Update(index, result, check, out stored, out isNew))
                     {
-                        var result = itemUpdateFactory.Invoke(stored);
-                        if (bucket.Update(index, result, stored, out stored, out isNew))
+                        stored = result;
+                        return true;
+                    }
+                    if (!isNew)
+                    {
+                        return false; // returns false only when check returns false
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Inserts or replaces the item at the specified index.
+        /// </summary>
+        /// <param name="bucket">The bucket on which to operate.</param>
+        /// <param name="index">The index.</param>
+        /// <param name="itemFactory">The item factory to create the item to insert.</param>
+        /// <param name="itemUpdateFactory">The item factory to create the item to replace with.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <remarks>
+        /// The operation will be attempted as long as check returns true - this operation may starve.
+        /// </remarks>
+        public static void InsertOrUpdate<T>(this IBucket<T> bucket, int index, Func<T> itemFactory, Func<T, T> itemUpdateFactory)
+        {
+            if (bucket == null)
+            {
+                throw new ArgumentNullException("bucket");
+            }
+            bool isNew;
+            InsertOrUpdate(bucket, index, itemFactory, itemUpdateFactory, out isNew);
+        }
+
+        /// <summary>
+        /// Inserts or replaces the item at the specified index.
+        /// </summary>
+        /// <param name="bucket">The bucket on which to operate.</param>
+        /// <param name="index">The index.</param>
+        /// <param name="itemFactory">The item factory to create the item to insert.</param>
+        /// <param name="itemUpdateFactory">The item factory to create the item to replace with.</param>
+        /// <param name="isNew">if set to <c>true</c> the index was not previously used.</param>
+        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <remarks>
+        /// The operation will be attempted as long as check returns true - this operation may starve.
+        /// </remarks>
+        public static void InsertOrUpdate<T>(this IBucket<T> bucket, int index, Func<T> itemFactory, Func<T, T> itemUpdateFactory, out bool isNew)
+        {
+            if (bucket == null)
+            {
+                throw new ArgumentNullException("bucket");
+            }
+            isNew = true;
+            bool factoryUsed = false;
+            var created = default(T);
+            while (true)
+            {
+                if (isNew)
+                {
+                    T stored;
+                    if (factoryUsed || !bucket.TryGet(index, out stored))
+                    {
+                        if (!factoryUsed)
                         {
-                            stored = result;
+                            created = itemFactory.Invoke();
+                            factoryUsed = true;
+                        }
+                        if (bucket.Insert(index, created, out stored))
+                        {
+                            return;
+                        }
+                    }
+                    isNew = false;
+                }
+                else
+                {
+                    if (bucket.Update(index, itemUpdateFactory, out isNew))
+                    {
+                        return;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Inserts or replaces the item at the specified index.
+        /// </summary>
+        /// <param name="bucket">The bucket on which to operate.</param>
+        /// <param name="index">The index.</param>
+        /// <param name="itemFactory">The item factory to create the item to set.</param>
+        /// <param name="check">A predicate to decide if a particular item should be replaced.</param>
+        /// <returns>
+        ///   <c>true</c> if the item or repalced inserted; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <remarks>
+        /// The operation will be attempted as long as check returns true - this operation may starve.
+        /// </remarks>
+        public static bool InsertOrUpdate<T>(this IBucket<T> bucket, int index, Func<T> itemFactory, Predicate<T> check)
+        {
+            T stored;
+            bool isNew;
+            return InsertOrUpdate(bucket, index, itemFactory, check, out stored, out isNew);
+        }
+
+        /// <summary>
+        /// Inserts or replaces the item at the specified index.
+        /// </summary>
+        /// <param name="bucket">The bucket on which to operate.</param>
+        /// <param name="index">The index.</param>
+        /// <param name="itemFactory">The item factory to create the item to set.</param>
+        /// <param name="check">A predicate to decide if a particular item should be replaced.</param>
+        /// <param name="stored">the item that was left at the specified index.</param>
+        /// <returns>
+        ///   <c>true</c> if the item or repalced inserted; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <remarks>
+        /// The operation will be attempted as long as check returns true - this operation may starve.
+        /// </remarks>
+        public static bool InsertOrUpdate<T>(this IBucket<T> bucket, int index, Func<T> itemFactory, Predicate<T> check, out T stored)
+        {
+            if (bucket == null)
+            {
+                throw new ArgumentNullException("bucket");
+            }
+            bool isNew;
+            return InsertOrUpdate(bucket, index, itemFactory, check, out stored, out isNew);
+        }
+
+        /// <summary>
+        /// Inserts or replaces the item at the specified index.
+        /// </summary>
+        /// <param name="bucket">The bucket on which to operate.</param>
+        /// <param name="index">The index.</param>
+        /// <param name="itemFactory">The item factory to create the item to set.</param>
+        /// <param name="check">A predicate to decide if a particular item should be replaced.</param>
+        /// <param name="isNew">if set to <c>true</c> the index was not previously used.</param>
+        /// <returns>
+        ///   <c>true</c> if the item or repalced inserted; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <remarks>
+        /// The operation will be attempted as long as check returns true - this operation may starve.
+        /// </remarks>
+        public static bool InsertOrUpdate<T>(this IBucket<T> bucket, int index, Func<T> itemFactory, Predicate<T> check, out bool isNew)
+        {
+            T stored;
+            return InsertOrUpdate(bucket, index, itemFactory, check, out stored, out isNew);
+        }
+
+        /// <summary>
+        /// Inserts or replaces the item at the specified index.
+        /// </summary>
+        /// <param name="bucket">The bucket on which to operate.</param>
+        /// <param name="index">The index.</param>
+        /// <param name="itemFactory">The item factory to create the item to set.</param>
+        /// <param name="check">A predicate to decide if a particular item should be replaced.</param>
+        /// <param name="stored">the item that was left at the specified index.</param>
+        /// <param name="isNew">if set to <c>true</c> the index was not previously used.</param>
+        /// <returns>
+        ///   <c>true</c> if the item or repalced inserted; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        /// <remarks>
+        /// The operation will be attempted as long as check returns true - this operation may starve.
+        /// </remarks>
+        public static bool InsertOrUpdate<T>(this IBucket<T> bucket, int index, Func<T> itemFactory, Predicate<T> check, out T stored, out bool isNew)
+        {
+            if (bucket == null)
+            {
+                throw new ArgumentNullException("bucket");
+            }
+            isNew = true;
+            bool factoryUsed = false;
+            var created = default(T);
+            while (true)
+            {
+                if (isNew)
+                {
+                    if (factoryUsed || !bucket.TryGet(index, out stored))
+                    {
+                        if (!factoryUsed)
+                        {
+                            created = itemFactory.Invoke();
+                            factoryUsed = true;
+                        }
+                        if (bucket.Insert(index, created, out stored))
+                        {
                             return true;
                         }
                     }
-                    else
+                    isNew = false;
+                }
+                else
+                {
+                    var result = itemFactory.Invoke();
+                    if (bucket.Update(index, result, check, out stored, out isNew))
+                    {
+                        stored = result;
+                        return true;
+                    }
+                    if (!isNew)
                     {
                         return false; // returns false only when check returns false
                     }
@@ -420,127 +772,69 @@ namespace Theraot.Collections.ThreadSafe
             return false;
         }
 
-        public static bool TryUpdate<T>(this IBucket<T> bucket, int index, T item, Predicate<T> check)
-        {
-            T previous;
-            bool isNew;
-            return TryUpdate(bucket, index, item, check, out previous, out isNew);
-        }
-
-        public static bool TryUpdate<T>(this IBucket<T> bucket, int index, T item, Predicate<T> check, out T previous)
-        {
-            bool isNew;
-            return TryUpdate(bucket, index, item, check, out previous, out isNew);
-        }
-
-        public static bool TryUpdate<T>(this IBucket<T> bucket, int index, T item, Predicate<T> check, out bool isNew)
-        {
-            T previous;
-            return TryUpdate(bucket, index, item, check, out previous, out isNew);
-        }
-
-        public static bool TryUpdate<T>(this IBucket<T> bucket, int index, T item, Predicate<T> check, out T previous, out bool isNew)
-        {
-            if (bucket == null)
-            {
-                throw new ArgumentNullException("bucket");
-            }
-            isNew = false;
-            if (!bucket.TryGet(index, out previous))
-            {
-                // There was not an item
-                return false;
-            }
-            // There was an item
-            if (!check(previous))
-            {
-                // The item did not pass the check
-                return false;
-            }
-            // The item passes the check
-            return bucket.Update(index, item, previous, out previous, out isNew);
-        }
-
-        public static bool Update<T>(this IBucket<T> bucket, int index, T item, T comparisonItem)
+        public static bool Update<T>(this IBucket<T> bucket, int index, T item, T comparisonItem, IEqualityComparer<T> comparer)
         {
             if (bucket == null)
             {
                 throw new ArgumentNullException("bucket");
             }
             T previous;
-            bool isNew;
-            return bucket.Update(index, item, comparisonItem, out previous, out isNew);
+            bool isEmpty;
+            comparer = comparer ?? EqualityComparer<T>.Default;
+            return bucket.Update(index, item, comparisonItem, comparer, out previous, out isEmpty);
         }
 
-        public static bool Update<T>(this IBucket<T> bucket, int index, T item, T comparisonItem, out T previous)
+        public static bool Update<T>(this IBucket<T> bucket, int index, T item, T comparisonItem, IEqualityComparer<T> comparer, out T previous)
         {
             if (bucket == null)
             {
                 throw new ArgumentNullException("bucket");
             }
-            bool isNew;
-            return bucket.Update(index, item, comparisonItem, out previous, out isNew);
+            bool isEmpty;
+            comparer = comparer ?? EqualityComparer<T>.Default;
+            return bucket.Update(index, item, comparisonItem, comparer, out previous, out isEmpty);
         }
 
-        public static bool Update<T>(this IBucket<T> bucket, int index, T item, T comparisonItem, out bool isNew)
+        public static bool Update<T>(this IBucket<T> bucket, int index, T item, T comparisonItem, IEqualityComparer<T> comparer, out bool isEmpty)
         {
             if (bucket == null)
             {
                 throw new ArgumentNullException("bucket");
             }
             T previous;
-            return bucket.Update(index, item, comparisonItem, out previous, out isNew);
+            comparer = comparer ?? EqualityComparer<T>.Default;
+            return bucket.Update(index, item, comparisonItem, comparer, out previous, out isEmpty);
         }
 
-        /// <summary>
-        /// Replaces the item at the specified index.
-        /// </summary>
-        /// <param name="bucket">The bucket on which to operate.</param>
-        /// <param name="index">The index.</param>
-        /// <param name="item">The new item.</param>
-        /// <param name="check">verification for the old item.</param>
-        /// <param name="previous">The previous item in the specified index.</param>
-        /// <param name="isNew">if set to <c>true</c> the index was not previously used.</param>
-        /// <returns>
-        ///   <c>true</c> if the item was inserted; otherwise, <c>false</c>.
-        /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity.</exception>
-        /// <remarks>
-        /// The insertion can fail if the index is already used or is being written by another thread.
-        /// If the index is being written it can be understood that the insert operation happened before but the item was overwritten or removed.
-        /// </remarks>
-        public static bool Update<T>(this IBucket<T> bucket, int index, T item, Predicate<T> check, out T previous, out bool isNew)
+        public static bool Update<T>(this IBucket<T> bucket, int index, T item, Predicate<T> check)
         {
             if (bucket == null)
             {
                 throw new ArgumentNullException("bucket");
             }
-            isNew = false;
-            if (!bucket.TryGet(index, out previous))
+            T previous;
+            bool isEmpty;
+            return bucket.Update(index, item, check, out previous, out isEmpty);
+        }
+
+        public static bool Update<T>(this IBucket<T> bucket, int index, T item, Predicate<T> check, out T previous)
+        {
+            if (bucket == null)
             {
-                // There was not an item
-                return false;
+                throw new ArgumentNullException("bucket");
             }
-            // There was an item
-            while (true)
+            bool isNew;
+            return bucket.Update(index, item, check, out previous, out isNew);
+        }
+
+        public static bool Update<T>(this IBucket<T> bucket, int index, T item, Predicate<T> check, out bool isNew)
+        {
+            if (bucket == null)
             {
-                if (!check(previous))
-                {
-                    // The item did not pass the check
-                    return false;
-                }
-                // The item passes the check
-                if (bucket.Update(index, item, previous, out previous, out isNew))
-                {
-                    // The item was replaced
-                    return true;
-                }
-                if (isNew)
-                {
-                    // There is no longer an item
-                    return false;
-                }
+                throw new ArgumentNullException("bucket");
             }
+            T previous;
+            return bucket.Update(index, item, check, out previous, out isNew);
         }
     }
 }

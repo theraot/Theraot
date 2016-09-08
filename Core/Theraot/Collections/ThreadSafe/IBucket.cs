@@ -33,7 +33,11 @@ namespace Theraot.Collections.ThreadSafe
 
         bool TryGet(int index, out T value);
 
-        bool Update(int index, T item, T comparisonItem, out T previous, out bool isEmpty);
+        bool Update(int index, T item, T comparisonItem, IEqualityComparer<T> comparer, out T previous, out bool isEmpty);
+
+        bool Update(int index, T item, Predicate<T> check, out T previous, out bool isEmpty);
+
+        bool Update(int index, Func<T, T> itemUpdateFactory, out bool isEmpty);
 
         IEnumerable<T> Where(Predicate<T> predicate);
     }

@@ -360,6 +360,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <param name="index">The index.</param>
         /// <param name="item">The new item.</param>
         /// <param name="comparisonItem">The old item.</param>
+        /// <param name="comparer">The comparer to check item equality</param>
         /// <param name="previous">The previous item in the specified index.</param>
         /// <param name="isEmpty">if set to <c>true</c> the index was not previously used.</param>
         /// <returns>
@@ -370,13 +371,62 @@ namespace Theraot.Collections.ThreadSafe
         /// The insertion can fail if the index is already used or is being written by another thread.
         /// If the index is being written it can be understood that the insert operation happened before but the item was overwritten or removed.
         /// </remarks>
-        public bool Update(int index, T item, T comparisonItem, out T previous, out bool isEmpty)
+        public bool Update(int index, T item, T comparisonItem, IEqualityComparer<T> comparer, out T previous, out bool isEmpty)
         {
             if (index < 0 || index >= _capacity)
             {
                 throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity.");
             }
-            return UpdateInternal(index, item, comparisonItem, out previous, out isEmpty);
+            comparer = comparer ?? EqualityComparer<T>.Default;
+            return UpdateInternal(index, item, found => comparer.Equals(found, comparisonItem), out previous, out isEmpty);
+        }
+
+        /// <summary>
+        /// Replaces the item at the specified index.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="item">The new item.</param>
+        /// <param name="check">The test to update the item.</param>
+        /// <param name="previous">The previous item in the specified index.</param>
+        /// <param name="isEmpty">if set to <c>true</c> the index was not previously used.</param>
+        /// <returns>
+        ///   <c>true</c> if the item was inserted; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity.</exception>
+        /// <remarks>
+        /// The insertion can fail if the index is already used or is being written by another thread.
+        /// If the index is being written it can be understood that the insert operation happened before but the item was overwritten or removed.
+        /// </remarks>
+        public bool Update(int index, T item, Predicate<T> check, out T previous, out bool isEmpty)
+        {
+            if (index < 0 || index >= _capacity)
+            {
+                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity.");
+            }
+            return UpdateInternal(index, item, check, out previous, out isEmpty);
+        }
+
+        /// <summary>
+        /// Replaces the item at the specified index.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="itemUpdateFactory">The item factory to create the item to replace with.</param>
+        /// <param name="isEmpty">if set to <c>true</c> the index was not previously used.</param>
+        /// <returns>
+        ///   <c>true</c> if the item was inserted; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity.</exception>
+        /// <remarks>
+        /// The insertion can fail if the index is already used or is being written by another thread.
+        /// If the index is being written it can be understood that the insert operation happened before but the item was overwritten or removed.
+        /// </remarks>
+        public bool Update(int index, Func<T, T> itemUpdateFactory, out bool isEmpty)
+        {
+            if (index < 0 || index >= _capacity)
+            {
+                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity.");
+            }
+            return UpdateInternal(index, itemUpdateFactory, out isEmpty);
         }
 
         public IEnumerable<T> Where(Predicate<T> predicate)
@@ -485,20 +535,51 @@ namespace Theraot.Collections.ThreadSafe
             return true;
         }
 
-        internal bool UpdateInternal(int index, T item, T comparisonItem, out T previous, out bool isNew)
+        internal bool UpdateInternal(int index, T item, Predicate<T> predicate, out T previous, out bool isEmpty)
         {
             previous = default(T);
-            isNew = false;
-            var check = (object)comparisonItem ?? BucketHelper.Null; // Cannot be null
-            var found = Interlocked.CompareExchange(ref _entries[index], (object)item ?? BucketHelper.Null, check);
+            var found = Interlocked.CompareExchange(ref _entries[index], null, null);
+            isEmpty = found == null;
+            if (isEmpty)
+            {
+                return false;
+            }
+            var comparisonItem = found == BucketHelper.Null ? default(T) : (T) found;
+            if (!predicate(previous))
+            {
+                return false;
+            }
+            var check = Interlocked.CompareExchange(ref _entries[index], (object) item ?? BucketHelper.Null, found);
             if (found == check)
             {
                 previous = comparisonItem;
                 return true;
             }
-            if (found == null)
+            if (check == null)
             {
-                isNew = true;
+                isEmpty = true;
+            }
+            return false;
+        }
+
+        internal bool UpdateInternal(int index, Func<T, T> itemUpdateFactory, out bool isEmpty)
+        {
+            var found = Interlocked.CompareExchange(ref _entries[index], null, null);
+            isEmpty = found == null;
+            if (isEmpty)
+            {
+                return false;
+            }
+            var comparisonItem = found == BucketHelper.Null ? default(T) : (T)found;
+            var item = itemUpdateFactory(comparisonItem);
+            var check = Interlocked.CompareExchange(ref _entries[index], (object)item ?? BucketHelper.Null, found);
+            if (found == check)
+            {
+                return true;
+            }
+            if (check == null)
+            {
+                isEmpty = true;
             }
             return false;
         }
