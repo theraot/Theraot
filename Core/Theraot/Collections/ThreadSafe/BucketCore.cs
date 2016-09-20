@@ -198,18 +198,90 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public IEnumerator<object> GetEnumerator()
+        public IEnumerable<object> EnumerateFrom(int index)
         {
-            for (var index = 0; index < (_level == 7 ? INT_Capacity_Final : INT_Capacity); index++)
+            if (index < 0)
             {
-                var foundFirst = Interlocked.CompareExchange(ref _arrayFirst[index], null, null);
+                throw new ArgumentOutOfRangeException("index", "index < 0");
+            }
+            var startSubIndex = SubIndex(index);
+            for (var subindex = startSubIndex; subindex < (_level == 7 ? INT_Capacity_Final : INT_Capacity); subindex++)
+            {
+                var foundFirst = Interlocked.CompareExchange(ref _arrayFirst[subindex], null, null);
                 if (foundFirst == null)
                 {
                     continue;
                 }
                 try
                 {
-                    Interlocked.Increment(ref _arrayUse[index]);
+                    Interlocked.Increment(ref _arrayUse[subindex]);
+                    if (_level == 1)
+                    {
+                        yield return foundFirst;
+                    }
+                    else
+                    {
+                        foreach (var item in ((BucketCore)foundFirst).EnumerateFrom(index))
+                        {
+                            yield return item;
+                        }
+                    }
+                }
+                finally
+                {
+                    DoLeave(ref _arrayUse[subindex], ref _arrayFirst[subindex], ref _arraySecond[subindex]);
+                }
+            }
+        }
+
+        public IEnumerable<object> EnumerateTo(int index)
+        {
+            if (index < 0)
+            {
+                throw new ArgumentOutOfRangeException("index", "index < 0");
+            }
+            var endSubIndex = SubIndex(index);
+            for (var subindex = 0; subindex < endSubIndex - 1; subindex++)
+            {
+                var foundFirst = Interlocked.CompareExchange(ref _arrayFirst[subindex], null, null);
+                if (foundFirst == null)
+                {
+                    continue;
+                }
+                try
+                {
+                    Interlocked.Increment(ref _arrayUse[subindex]);
+                    if (_level == 1)
+                    {
+                        yield return foundFirst;
+                    }
+                    else
+                    {
+                        foreach (var item in ((BucketCore)foundFirst).EnumerateTo(index))
+                        {
+                            yield return item;
+                        }
+                    }
+                }
+                finally
+                {
+                    DoLeave(ref _arrayUse[subindex], ref _arrayFirst[subindex], ref _arraySecond[subindex]);
+                }
+            }
+        }
+
+        public IEnumerator<object> GetEnumerator()
+        {
+            for (var subindex = 0; subindex < (_level == 7 ? INT_Capacity_Final : INT_Capacity); subindex++)
+            {
+                var foundFirst = Interlocked.CompareExchange(ref _arrayFirst[subindex], null, null);
+                if (foundFirst == null)
+                {
+                    continue;
+                }
+                try
+                {
+                    Interlocked.Increment(ref _arrayUse[subindex]);
                     if (_level == 1)
                     {
                         yield return foundFirst;
@@ -224,7 +296,7 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 finally
                 {
-                    DoLeave(ref _arrayUse[index], ref _arrayFirst[index], ref _arraySecond[index]);
+                    DoLeave(ref _arrayUse[subindex], ref _arrayFirst[subindex], ref _arraySecond[subindex]);
                 }
             }
         }

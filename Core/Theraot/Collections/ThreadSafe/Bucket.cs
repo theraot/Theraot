@@ -34,7 +34,7 @@ namespace Theraot.Collections.ThreadSafe
                 _bucketCore.DoMayIncrement
                     (
                         index,
-                        (ref object target) => Interlocked.Exchange(ref target, (object) copy ?? BucketHelper.Null) == null
+                        (ref object target) => Interlocked.Exchange(ref target, (object)copy ?? BucketHelper.Null) == null
                     );
                 index++;
                 _count++;
@@ -60,6 +60,22 @@ namespace Theraot.Collections.ThreadSafe
         public void CopyTo(T[] array, int arrayIndex)
         {
             Extensions.CopyTo(this, array, arrayIndex);
+        }
+
+        public IEnumerable<T> EnumerateFrom(int index)
+        {
+            foreach (var value in _bucketCore.EnumerateFrom(index))
+            {
+                yield return value == BucketHelper.Null ? default(T) : (T)value;
+            }
+        }
+
+        public IEnumerable<T> EnumerateTo(int index)
+        {
+            foreach (var value in _bucketCore.EnumerateTo(index))
+            {
+                yield return value == BucketHelper.Null ? default(T) : (T)value;
+            }
         }
 
         public bool Exchange(int index, T item, out T previous)
@@ -240,7 +256,7 @@ namespace Theraot.Collections.ThreadSafe
             }
             if (found != BucketHelper.Null)
             {
-                value = (T) found;
+                value = (T)found;
             }
             return true;
         }
@@ -258,11 +274,11 @@ namespace Theraot.Collections.ThreadSafe
                         found = Interlocked.CompareExchange(ref target, null, null);
                         if (found != null)
                         {
-                            var comparisonItem = found == BucketHelper.Null ? default(T) : (T) found;
+                            var comparisonItem = found == BucketHelper.Null ? default(T) : (T)found;
                             if (check(comparisonItem))
                             {
                                 var item = itemUpdateFactory(comparisonItem);
-                                compare = Interlocked.CompareExchange(ref target, (object) item ?? BucketHelper.Null, found);
+                                compare = Interlocked.CompareExchange(ref target, (object)item ?? BucketHelper.Null, found);
                                 result = found == compare;
                             }
                         }
