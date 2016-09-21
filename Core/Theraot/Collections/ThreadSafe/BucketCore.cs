@@ -198,14 +198,20 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        public IEnumerable<object> EnumerateFrom(int index)
+        public IEnumerable<object> EnumerateRange(int indexFrom, int indexTo)
         {
-            if (index < 0)
+            if (indexFrom < 0)
             {
-                throw new ArgumentOutOfRangeException("index", "index < 0");
+                throw new ArgumentOutOfRangeException("indexFrom", "indexFrom < 0");
             }
-            var startSubIndex = SubIndex(index);
-            for (var subindex = startSubIndex; subindex < (_level == 7 ? INT_Capacity_Final : INT_Capacity); subindex++)
+            if (indexTo < 0)
+            {
+                throw new ArgumentOutOfRangeException("indexTo", "indexTo < 0");
+            }
+            var startSubIndex = SubIndex(indexFrom);
+            var endSubIndex = SubIndex(indexTo);
+            var step = endSubIndex - startSubIndex >= 0 ? 1 : -1;
+            for (var subindex = startSubIndex; subindex < endSubIndex + 1; subindex += step)
             {
                 var foundFirst = Interlocked.CompareExchange(ref _arrayFirst[subindex], null, null);
                 if (foundFirst == null)
@@ -221,43 +227,7 @@ namespace Theraot.Collections.ThreadSafe
                     }
                     else
                     {
-                        foreach (var item in ((BucketCore)foundFirst).EnumerateFrom(index))
-                        {
-                            yield return item;
-                        }
-                    }
-                }
-                finally
-                {
-                    DoLeave(ref _arrayUse[subindex], ref _arrayFirst[subindex], ref _arraySecond[subindex]);
-                }
-            }
-        }
-
-        public IEnumerable<object> EnumerateTo(int index)
-        {
-            if (index < 0)
-            {
-                throw new ArgumentOutOfRangeException("index", "index < 0");
-            }
-            var endSubIndex = SubIndex(index);
-            for (var subindex = 0; subindex < endSubIndex - 1; subindex++)
-            {
-                var foundFirst = Interlocked.CompareExchange(ref _arrayFirst[subindex], null, null);
-                if (foundFirst == null)
-                {
-                    continue;
-                }
-                try
-                {
-                    Interlocked.Increment(ref _arrayUse[subindex]);
-                    if (_level == 1)
-                    {
-                        yield return foundFirst;
-                    }
-                    else
-                    {
-                        foreach (var item in ((BucketCore)foundFirst).EnumerateTo(index))
+                        foreach (var item in ((BucketCore)foundFirst).EnumerateRange(indexFrom, indexTo))
                         {
                             yield return item;
                         }

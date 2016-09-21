@@ -41,6 +41,11 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        internal Bucket(int level)
+        {
+            _bucketCore = new BucketCore(level);
+        }
+
         public int Capacity
         {
             get
@@ -62,17 +67,9 @@ namespace Theraot.Collections.ThreadSafe
             Extensions.CopyTo(this, array, arrayIndex);
         }
 
-        public IEnumerable<T> EnumerateFrom(int index)
+        public IEnumerable<T> EnumerateRange(int indexFrom, int indexTo)
         {
-            foreach (var value in _bucketCore.EnumerateFrom(index))
-            {
-                yield return value == BucketHelper.Null ? default(T) : (T)value;
-            }
-        }
-
-        public IEnumerable<T> EnumerateTo(int index)
-        {
-            foreach (var value in _bucketCore.EnumerateTo(index))
+            foreach (var value in _bucketCore.EnumerateRange(indexFrom, indexTo))
             {
                 yield return value == BucketHelper.Null ? default(T) : (T)value;
             }
