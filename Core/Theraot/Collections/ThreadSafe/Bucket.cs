@@ -41,11 +41,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        internal Bucket(int level)
-        {
-            _bucketCore = new BucketCore(level);
-        }
-
         public int Count
         {
             get
