@@ -46,14 +46,6 @@ namespace Theraot.Collections.ThreadSafe
             _bucketCore = new BucketCore(level);
         }
 
-        public int Capacity
-        {
-            get
-            {
-                return _bucketCore.Length;
-            }
-        }
-
         public int Count
         {
             get

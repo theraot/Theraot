@@ -5,11 +5,6 @@ namespace Theraot.Collections.ThreadSafe
 {
     public interface IBucket<T> : IEnumerable<T>
     {
-        int Capacity
-        {
-            get;
-        }
-
         int Count
         {
             get;
