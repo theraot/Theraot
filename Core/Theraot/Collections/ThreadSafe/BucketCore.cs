@@ -210,24 +210,36 @@ namespace Theraot.Collections.ThreadSafe
             }
             var startSubIndex = SubIndex(indexFrom);
             var endSubIndex = SubIndex(indexTo);
+            return PrivateEnumerableRange(indexFrom, indexTo, startSubIndex, endSubIndex);
+        }
+
+        private IEnumerable<object> PrivateEnumerableRange(int indexFrom, int indexTo, int startSubIndex, int endSubIndex)
+        {
             var step = endSubIndex - startSubIndex >= 0 ? 1 : -1;
             for (var subindex = startSubIndex; subindex < endSubIndex + 1; subindex += step)
             {
-                var foundFirst = Interlocked.CompareExchange(ref _arrayFirst[subindex], null, null);
-                if (foundFirst == null)
-                {
-                    continue;
-                }
                 try
                 {
                     Interlocked.Increment(ref _arrayUse[subindex]);
+                    var foundFirst = Interlocked.CompareExchange(ref _arrayFirst[subindex], null, null);
                     if (_level == 1)
                     {
+                        if (foundFirst == null)
+                        {
+                            continue;
+                        }
                         yield return foundFirst;
                     }
                     else
                     {
-                        foreach (var item in ((BucketCore)foundFirst).EnumerateRange(indexFrom, indexTo))
+                        var core = foundFirst as BucketCore;
+                        if (core == null)
+                        {
+                            continue;
+                        }
+                        var subIndexFrom = subindex == startSubIndex ? core.SubIndex(indexFrom) : 0;
+                        var subIndexTo = subindex == endSubIndex ? core.SubIndex(indexTo) : (_level == 7 ? INT_Capacity_Final : INT_Capacity) - 1;
+                        foreach (var item in core.PrivateEnumerableRange(indexFrom, indexTo, subIndexFrom, subIndexTo))
                         {
                             yield return item;
                         }
