@@ -118,7 +118,7 @@ namespace System.Threading.Tasks
             {
                 Contract.Requires(Thread.VolatileRead(ref _ready) == 0);
                 Interlocked.Increment(ref _count);
-                if (!awaitedTask.AddTaskContinuation(this, addBeforeOthers: true))
+                if (!awaitedTask.AddTaskContinuation(this, /*addBeforeOthers:*/ true))
                 {
                     Interlocked.Decrement(ref _count);
                 }
@@ -202,7 +202,7 @@ namespace System.Threading.Tasks
             {
                 Contract.Requires(Thread.VolatileRead(ref _ready) == 0);
                 Interlocked.Increment(ref _count);
-                if (!awaitedTask.AddTaskContinuation(this, addBeforeOthers: true))
+                if (!awaitedTask.AddTaskContinuation(this, /*addBeforeOthers:*/ true))
                 {
                     Interlocked.Decrement(ref _count);
                 }
@@ -253,7 +253,7 @@ namespace System.Threading.Tasks
                     // WhenAll task.  We must do this before we complete the task.
                     if (task.IsWaitNotificationEnabled)
                     {
-                        SetNotificationForWaitCompletion(enabled: true);
+                        SetNotificationForWaitCompletion(/*enabled:*/ true);
                     }
                     else
                     {
@@ -338,7 +338,7 @@ namespace System.Threading.Tasks
             {
                 Contract.Requires(Thread.VolatileRead(ref _ready) == 0);
                 Interlocked.Increment(ref _count);
-                if (!awaitedTask.AddTaskContinuation(this, addBeforeOthers: true))
+                if (!awaitedTask.AddTaskContinuation(this, /*addBeforeOthers:*/ true))
                 {
                     Interlocked.Decrement(ref _count);
                 }
@@ -390,7 +390,7 @@ namespace System.Threading.Tasks
                     }
                     // Regardless of completion state, if the task has its debug bit set, transfer it to the
                     // WhenAll task.  We must do this before we complete the task.
-                    if (task.IsWaitNotificationEnabled) SetNotificationForWaitCompletion(enabled: true);
+                    if (task.IsWaitNotificationEnabled) SetNotificationForWaitCompletion(/*enabled:*/ true);
                     else _tasks[index] = null; // avoid holding onto tasks unnecessarily
                 }
                 if (observedExceptions != null)

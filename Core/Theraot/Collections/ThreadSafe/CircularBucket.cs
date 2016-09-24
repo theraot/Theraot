@@ -16,7 +16,7 @@ namespace Theraot.Collections.ThreadSafe
     public sealed class CircularBucket<T> : IEnumerable<T>
     {
         private readonly int _capacity;
-        private readonly Bucket<T> _entries;
+        private readonly FixedSizeBucket<T> _entries;
         private int _index;
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             _capacity = NumericHelper.PopulationCount(capacity) == 1 ? capacity : NumericHelper.NextPowerOf2(capacity);
             _index = -1;
-            _entries = new Bucket<T>(_capacity);
+            _entries = new FixedSizeBucket<T>(_capacity);
         }
 
         /// <summary>

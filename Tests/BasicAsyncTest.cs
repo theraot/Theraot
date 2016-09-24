@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿#if !NETCF
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -28,3 +29,4 @@ namespace Tests
         }
     }
 }
+#endif

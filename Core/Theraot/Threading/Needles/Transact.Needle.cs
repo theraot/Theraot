@@ -27,7 +27,7 @@ namespace Theraot.Threading.Needles
                 }
                 _comparer = EqualityComparer<T>.Default;
                 _needleLock = new NeedleLock<Thread>(Context);
-                _id = _idProvider.GetNextId();
+                _id = RuntimeUniqueIdProdiver.GetNextId();
             }
 
             public Needle(T value, ICloner<T> cloner)
@@ -40,7 +40,7 @@ namespace Theraot.Threading.Needles
                 _cloner = cloner;
                 _comparer = EqualityComparer<T>.Default;
                 _needleLock = new NeedleLock<Thread>(Context);
-                _id = _idProvider.GetNextId();
+                _id = RuntimeUniqueIdProdiver.GetNextId();
             }
 
             public Needle(T value, IEqualityComparer<T> comparer)
@@ -53,7 +53,7 @@ namespace Theraot.Threading.Needles
                 }
                 _comparer = comparer ?? EqualityComparer<T>.Default;
                 _needleLock = new NeedleLock<Thread>(Context);
-                _id = _idProvider.GetNextId();
+                _id = RuntimeUniqueIdProdiver.GetNextId();
             }
 
             public Needle(T value, ICloner<T> cloner, IEqualityComparer<T> comparer)
@@ -66,7 +66,7 @@ namespace Theraot.Threading.Needles
                 _cloner = cloner;
                 _comparer = comparer ?? EqualityComparer<T>.Default;
                 _needleLock = new NeedleLock<Thread>(Context);
-                _id = _idProvider.GetNextId();
+                _id = RuntimeUniqueIdProdiver.GetNextId();
             }
 
             public override T Value

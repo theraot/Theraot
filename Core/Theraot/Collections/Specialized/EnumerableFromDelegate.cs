@@ -15,7 +15,8 @@ namespace Theraot.Collections.Specialized
 
         public EnumerableFromDelegate(Func<IEnumerator> getEnumerator)
         {
-            _getEnumerator = getEnumerator.ChainConversion(ConvertEnumerator);
+            // Specify the type arguments explicitly
+            _getEnumerator = getEnumerator.ChainConversion<IEnumerator, IEnumerator<T>>(ConvertEnumerator);
         }
 
         public IEnumerator<T> GetEnumerator()

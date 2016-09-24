@@ -4,91 +4,76 @@ using System;
 
 namespace Theraot.Core
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
-    [global::System.Diagnostics.DebuggerStepThrough]
+    [System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerStepThrough]
     public static partial class NumericHelper
     {
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         public static int Log2(int number)
         {
             if (number < 0)
             {
-                throw new ArgumentOutOfRangeException("The logarithm of a negative number is imaginary.");
+                throw new ArgumentOutOfRangeException("number", "The logarithm of a negative number is imaginary.");
             }
-            else
-            {
-                return Log2(unchecked((uint)number));
-            }
+            return Log2(unchecked((uint)number));
         }
 
         [CLSCompliant(false)]
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         public static int Log2(uint number)
         {
             if (number == 0)
             {
-                throw new ArgumentOutOfRangeException("The logarithm of zero is not defined.");
+                throw new ArgumentOutOfRangeException("number", "The logarithm of zero is not defined.");
             }
-            else
-            {
-                number |= number >> 1;
-                number |= number >> 2;
-                number |= number >> 4;
-                number |= number >> 8;
-                number |= number >> 16;
-                return PopulationCount(number >> 1);
-            }
+            number |= number >> 1;
+            number |= number >> 2;
+            number |= number >> 4;
+            number |= number >> 8;
+            number |= number >> 16;
+            return PopulationCount(number >> 1);
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         public static int Log2(long number)
         {
             if (number < 0)
             {
-                throw new ArgumentOutOfRangeException("The logarithm of a negative number is imaginary.");
+                throw new ArgumentOutOfRangeException("number" ,"The logarithm of a negative number is imaginary.");
             }
-            else
-            {
-                return Log2(unchecked((ulong)number));
-            }
+            return Log2(unchecked((ulong)number));
         }
 
         [CLSCompliant(false)]
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         public static int Log2(ulong number)
         {
             if (number == 0)
             {
-                throw new ArgumentOutOfRangeException("The logarithm of zero is not defined.");
+                throw new ArgumentOutOfRangeException("number", "The logarithm of zero is not defined.");
             }
-            else
-            {
-                number |= number >> 1;
-                number |= number >> 2;
-                number |= number >> 4;
-                number |= number >> 8;
-                number |= number >> 16;
-                number |= number >> 32;
-                return PopulationCount(number >> 1);               
-            }
+            number |= number >> 1;
+            number |= number >> 2;
+            number |= number >> 4;
+            number |= number >> 8;
+            number |= number >> 16;
+            number |= number >> 32;
+            return PopulationCount(number >> 1);
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         public static int NextPowerOf2(int number)
         {
             if (number < 0)
             {
                 return 1;
             }
-            else
+            uint unsignedNumber;
+            unchecked
             {
-                uint _number;
-                unchecked
-                {
-                    _number = (uint)number;
-                }
-                return (int)NextPowerOf2(_number);
+                unsignedNumber = (uint)number;
             }
+            return (int)NextPowerOf2(unsignedNumber);
         }
 
         [CLSCompliant(false)]
@@ -162,7 +147,7 @@ namespace Theraot.Core
             return Math.Round(number, mode);
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         public static int Sqrt(int number)
         {
             // Newton's  method  aproximation  for  positive  integers

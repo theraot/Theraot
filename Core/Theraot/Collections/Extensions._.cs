@@ -704,7 +704,7 @@ namespace Theraot.Collections
             return result;
         }
 
-        public static int CounTs<T>(this IEnumerable<T> source)
+        public static int CountItems<T>(this IEnumerable<T> source)
         {
             if (source == null)
             {
@@ -719,7 +719,7 @@ namespace Theraot.Collections
             return result;
         }
 
-        public static int CounTs<T>(this IEnumerable<T> source, T item)
+        public static int CountItems<T>(this IEnumerable<T> source, T item)
         {
             if (source == null)
             {
@@ -737,7 +737,7 @@ namespace Theraot.Collections
             return result;
         }
 
-        public static int CounTsWhere<T>(this IEnumerable<T> source, Predicate<T> predicate)
+        public static int CountItemsWhere<T>(this IEnumerable<T> source, Predicate<T> predicate)
         {
             if (source == null)
             {
