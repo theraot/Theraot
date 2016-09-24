@@ -25,7 +25,12 @@ namespace System.Runtime.CompilerServices
             }
         }
 
-        internal static string GetFailureMessage(ContractFailureKind failureKind, string conditionText = "")
+        internal static string GetFailureMessage(ContractFailureKind failureKind)
+        {
+            return GetFailureMessage(failureKind, "");
+        }
+
+        internal static string GetFailureMessage(ContractFailureKind failureKind, string conditionText)
         {
             string result;
             var withCondition = !string.IsNullOrEmpty(conditionText);

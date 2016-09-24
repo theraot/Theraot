@@ -35,6 +35,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 
 namespace MonoTests.System.Collections.Generic
 {
@@ -455,29 +456,29 @@ namespace MonoTests.System.Collections.Generic
 			view.SymmetricExceptWith (new [] {2});
 		}
 
-		void do_test_e (SortedSet<int> s1, IEnumerable<int> s2, bool o, bool se = false, bool psb = false, bool psu = false)
-		{
-			bool sb = false, su = false;
-			if (se)
-				sb = su = true;
-			if (psb)
-				sb = true;
-			if (psu)
-				su = true;
+        void do_test_e(SortedSet<int> s1, IEnumerable<int> s2, bool o, bool se, bool psb, bool psu)
+        {
+            bool sb = false, su = false;
+            if (se)
+                sb = su = true;
+            if (psb)
+                sb = true;
+            if (psu)
+                su = true;
 
-			Assert.IsTrue (!su || !psb);
-			Assert.IsTrue (!sb || !psu);
+            Assert.IsTrue(!su || !psb);
+            Assert.IsTrue(!sb || !psu);
 
-			// actual tests
-			Assert.AreEqual (o, s1.Overlaps (s2));
-			Assert.AreEqual (se, s1.SetEquals (s2));
-			Assert.AreEqual (sb, s1.IsSubsetOf (s2));
-			Assert.AreEqual (su, s1.IsSupersetOf (s2));
-			Assert.AreEqual (psb, s1.IsProperSubsetOf (s2));
-			Assert.AreEqual (psu, s1.IsProperSupersetOf (s2));
-		}
+            // actual tests
+            Assert.AreEqual(o, s1.Overlaps(s2));
+            Assert.AreEqual(se, s1.SetEquals(s2));
+            Assert.AreEqual(sb, s1.IsSubsetOf(s2));
+            Assert.AreEqual(su, s1.IsSupersetOf(s2));
+            Assert.AreEqual(psb, s1.IsProperSubsetOf(s2));
+            Assert.AreEqual(psu, s1.IsProperSupersetOf(s2));
+        }
 
-		void do_test (SortedSet<int> s1, SortedSet<int> s2, bool o = false, bool se = false, bool psb = false, bool psu = false)
+		void do_test (SortedSet<int> s1, SortedSet<int> s2, bool o, bool se, bool psb, bool psu)
 		{
 			if (s1.Count != 0 && s2.Count != 0 && (se || psb || psu))
 				o = true;
@@ -503,31 +504,31 @@ namespace MonoTests.System.Collections.Generic
 			var non_prime_odd_digit = odds.GetViewBetween (8, 42);
 			var non_trit = digits.GetViewBetween (3, 42);
 
-			do_test (empty, empty, se: true);
-			do_test (empty, zero, psb: true);
-			do_test (empty, digits, psb: true);
-			do_test (zero, zero, se: true);
-			do_test (zero, one);
-			do_test (zero, bit, psb: true);
-			do_test (zero, trit, psb: true);
-			do_test (one, bit, psb: true);
-			do_test (one, trit, psb: true);
-			do_test (two, bit);
-			do_test (two, trit, psb: true);
-			do_test (odds, squares, o: true);
-			do_test (evens, squares, o: true);
-			do_test (odds, digits, psb: true);
-			do_test (evens, digits, psb: true);
-			do_test (squares, digits, psb: true);
-			do_test (digits, digits, se: true);
-			do_test_e (digits, squares.Concat (evens.Concat (odds)), o: true, se: true);
-			do_test (non_prime_odd_digit, digits, psb: true);
-			do_test_e (non_prime_odd_digit, new [] { 9 }, o: true, se: true);
-			do_test (non_trit, digits, psb: true);
-			do_test (trit, non_trit);
-			do_test_e (digits, trit.Concat (non_trit), o: true, se: true);
-			do_test_e (non_trit, new [] { 3, 4, 5, 6, 7, 8, 9 }, o: true, se: true);
-			do_test (digits.GetViewBetween (0, 2), trit, se: true);
+			do_test (empty, empty, false, /*se:*/ true, false, false);
+			do_test (empty, zero, false, false, /*psb:*/ true, false);
+			do_test (empty, digits, false, false, /*psb:*/ true, false);
+			do_test (zero, zero, false, /*se:*/ true, false, false);
+			do_test (zero, one, false, false, false, false);
+			do_test (zero, bit, false, false, /*psb:*/ true, false);
+			do_test (zero, trit, false, false, /*psb:*/ true, false);
+			do_test (one, bit, false, false, /*psb:*/ true, false);
+			do_test (one, trit, false, false, /*psb:*/ true, false);
+			do_test (two, bit, false, false, false, false);
+			do_test (two, trit, false, false, /*psb:*/ true, false);
+			do_test (odds, squares, /*o:*/ true, false, false, false);
+			do_test (evens, squares, /*o:*/ true, false, false, false);
+			do_test (odds, digits, false, false, /*psb:*/ true, false);
+			do_test (evens, digits, false, false, /*psb:*/ true, false);
+			do_test (squares, digits, false, false, /*psb:*/ true, false);
+			do_test (digits, digits, false, /*se:*/ true, false, false);
+			do_test_e (digits, squares.Concat (evens.Concat (odds)), /*o:*/ true, /*se:*/ true, false, false);
+			do_test (non_prime_odd_digit, digits, false, false, /*psb:*/ true, false);
+			do_test_e (non_prime_odd_digit, new [] { 9 }, /*o:*/ true, /*se:*/ true, false, false);
+			do_test (non_trit, digits, false, false, /*psb:*/ true, false);
+			do_test (trit, non_trit, false, false, false, false);
+			do_test_e (digits, trit.Concat (non_trit), /*o:*/ true, /*se:*/ true, false, false);
+			do_test_e (non_trit, new [] { 3, 4, 5, 6, 7, 8, 9 }, /*o:*/ true, /*se:*/ true, false, false);
+			do_test (digits.GetViewBetween (0, 2), trit, false, /*se:*/ true, false, false);
 		}
 	}
 }
