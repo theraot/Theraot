@@ -410,18 +410,20 @@ namespace Theraot.Collections.ThreadSafe
             return _entries.RemoveAt(index, out previous);
         }
 
-        public bool RemoveValueAt(int index, T value, out T previous)
+        public bool RemoveAt(int index, Predicate<T> check)
         {
-            TNeedle found;
-            if (_entries.RemoveValueAt(index, needle => _comparer.Equals(needle.Value, value), out found))
+            TNeedle found = null;
+            Predicate<TNeedle> replacementCheck = needle =>
             {
-                // TryGetValue is null resistant
-                found.TryGetValue(out previous);
+                found = needle;
+                return check(needle.Value);
+            };
+            if (_entries.RemoveAt(index, replacementCheck))
+            {
                 // Donate it
                 NeedleReservoir<T, TNeedle>.DonateNeedle(found);
                 return true;
             }
-            previous = default(T);
             return false;
         }
 
@@ -493,24 +495,25 @@ namespace Theraot.Collections.ThreadSafe
             return _entries.TryGet(index, out value);
         }
 
-        public bool Update(int index, T item, T comparisonItem, out T previous, out bool isNew)
+        public bool Update(int index, Func<T, T> itemUpdateFactory, Predicate<T> check, out bool isEmpty)
         {
-            TNeedle found;
-            var newNeedle = NeedleReservoir<T, TNeedle>.GetNeedle(item);
-            if (_entries.Update(index, newNeedle, needle => _comparer.Equals(needle.Value, comparisonItem), out found, out isNew))
+            TNeedle newNeedle = null;
+            Func<TNeedle, TNeedle> replacementFactory = needle => newNeedle = NeedleReservoir<T, TNeedle>.GetNeedle(itemUpdateFactory(needle.Value));
+            Predicate<TNeedle> replacementCheck = needle => check(needle.Value);
+            if (_entries.Update(index, replacementFactory, replacementCheck, out isEmpty))
             {
-                // Null resistant
-                found.TryGetValue(out previous);
                 return true;
             }
+            if (newNeedle != null)
+            {
+            }
             NeedleReservoir<T, TNeedle>.DonateNeedle(newNeedle);
-            found.TryGetValue(out previous);
             return false;
         }
 
-        public IEnumerable<T> Where(Predicate<T> predicate)
+        public IEnumerable<T> Where(Predicate<T> check)
         {
-            foreach (var needle in _entries.Where(needle => predicate(needle.Value)))
+            foreach (var needle in _entries.Where(needle => check(needle.Value)))
             {
                 yield return needle.Value;
             }

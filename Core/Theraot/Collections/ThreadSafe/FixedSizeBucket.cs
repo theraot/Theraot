@@ -138,7 +138,7 @@ namespace Theraot.Collections.ThreadSafe
                 {
                     if (entry != null)
                     {
-                        if (ReferenceEquals(entry, BucketHelper.Null))
+                        if (entry == BucketHelper.Null)
                         {
                             array[arrayIndex] = default(T);
                         }
@@ -187,7 +187,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 if (entry != null)
                 {
-                    if (ReferenceEquals(entry, BucketHelper.Null))
+                    if (entry == BucketHelper.Null)
                     {
                         yield return default(T);
                     }
@@ -289,30 +289,36 @@ namespace Theraot.Collections.ThreadSafe
         /// Removes the item at the specified index if it matches the specified value.
         /// </summary>
         /// <param name="index">The index.</param>
-        /// <param name="value">The value intended to remove.</param>
-        /// <param name="previous">The previous item in the specified index.</param>
+        /// <param name="check">The predicate to decide to remove.</param>
         /// <returns>
         ///   <c>true</c> if the item was removed; otherwise, <c>false</c>.
         /// </returns>
         /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
-        public bool RemoveValueAt(int index, T value, out T previous)
+        public bool RemoveAt(int index, Predicate<T> check)
         {
             if (index < 0 || index >= _capacity)
             {
                 throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
             }
-            previous = default(T);
-            var found = Interlocked.CompareExchange(ref _entries[index], null, value);
-            if (found == null)
+            if (check == null)
             {
-                return false;
+                throw new ArgumentNullException("check");
             }
-            Interlocked.Decrement(ref _count);
-            if (!ReferenceEquals(found, BucketHelper.Null))
+            var found = Interlocked.CompareExchange(ref _entries[index], null, null);
+            if (found != null)
             {
-                previous = (T)found;
+                var comparisonItem = found == BucketHelper.Null ? default(T) : (T) found;
+                if (check(comparisonItem))
+                {
+                    var compare = Interlocked.CompareExchange(ref _entries[index], null, found);
+                    if (found == compare)
+                    {
+                        Interlocked.Decrement(ref _count);
+                        return true;
+                    }
+                }
             }
-            return true;
+            return false;
         }
 
         /// <summary>
@@ -358,10 +364,9 @@ namespace Theraot.Collections.ThreadSafe
         /// Replaces the item at the specified index.
         /// </summary>
         /// <param name="index">The index.</param>
-        /// <param name="item">The new item.</param>
-        /// <param name="comparisonItem">The old item.</param>
-        /// <param name="previous">The previous item in the specified index.</param>
-        /// <param name="isNew">if set to <c>true</c> the index was not previously used.</param>
+        /// <param name="itemUpdateFactory">The item factory to create the item to replace with.</param>
+        /// <param name="check">The test to update the item.</param>
+        /// <param name="isEmpty">if set to <c>true</c> the index was not previously used.</param>
         /// <returns>
         ///   <c>true</c> if the item was inserted; otherwise, <c>false</c>.
         /// </returns>
@@ -370,27 +375,39 @@ namespace Theraot.Collections.ThreadSafe
         /// The insertion can fail if the index is already used or is being written by another thread.
         /// If the index is being written it can be understood that the insert operation happened before but the item was overwritten or removed.
         /// </remarks>
-        public bool Update(int index, T item, T comparisonItem, out T previous, out bool isNew)
+        public bool Update(int index, Func<T, T> itemUpdateFactory, Predicate<T> check, out bool isEmpty)
         {
             if (index < 0 || index >= _capacity)
             {
                 throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity.");
             }
-            return UpdateInternal(index, item, comparisonItem, out previous, out isNew);
+            if (itemUpdateFactory == null)
+            {
+                throw new ArgumentNullException("itemUpdateFactory");
+            }
+            if (check == null)
+            {
+                throw new ArgumentNullException("check");
+            }
+            return UpdateInternal(index, itemUpdateFactory, check, out isEmpty);
         }
 
-        public IEnumerable<T> Where(Predicate<T> predicate)
+        public IEnumerable<T> Where(Predicate<T> check)
         {
+            if (check == null)
+            {
+                throw new ArgumentNullException("check");
+            }
             foreach (var entry in _entries)
             {
                 if (entry != null)
                 {
                     T yield = default(T);
-                    if (!ReferenceEquals(entry, BucketHelper.Null))
+                    if (entry != BucketHelper.Null)
                     {
                         yield = (T)entry;
                     }
-                    if (predicate(yield))
+                    if (check(yield))
                     {
                         yield return yield;
                     }
@@ -407,7 +424,7 @@ namespace Theraot.Collections.ThreadSafe
                 Interlocked.Increment(ref _count);
                 return true;
             }
-            if (!ReferenceEquals(found, BucketHelper.Null))
+            if (found != BucketHelper.Null)
             {
                 previous = (T)found;
             }
@@ -423,7 +440,7 @@ namespace Theraot.Collections.ThreadSafe
                 Interlocked.Increment(ref _count);
                 return true;
             }
-            if (!ReferenceEquals(found, BucketHelper.Null))
+            if (found != BucketHelper.Null)
             {
                 previous = (T)found;
             }
@@ -450,7 +467,7 @@ namespace Theraot.Collections.ThreadSafe
                 return false;
             }
             Interlocked.Decrement(ref _count);
-            if (!ReferenceEquals(found, BucketHelper.Null))
+            if (found != BucketHelper.Null)
             {
                 previous = (T)found;
             }
@@ -468,47 +485,40 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool TryGetInternal(int index, out T value)
         {
-            var entry = Interlocked.CompareExchange(ref _entries[index], null, null);
-            if (entry == null)
+            var found = Interlocked.CompareExchange(ref _entries[index], null, null);
+            if (found == null)
             {
                 value = default(T);
                 return false;
             }
-            if (ReferenceEquals(entry, BucketHelper.Null))
+            if (found == BucketHelper.Null)
             {
                 value = default(T);
             }
             else
             {
-                value = (T)entry;
+                value = (T)found;
             }
             return true;
         }
 
-        internal bool UpdateInternal(int index, T item, T comparisonItem, out T previous, out bool isNew)
+        internal bool UpdateInternal(int index, Func<T, T> itemUpdateFactory, Predicate<T> check, out bool isEmpty)
         {
-            previous = default(T);
-            isNew = false;
-            var check = (object)comparisonItem ?? BucketHelper.Null;
-            var found = Interlocked.CompareExchange(ref _entries[index], (object)item ?? BucketHelper.Null, check);
-            if (found == check)
+            var found = Interlocked.CompareExchange(ref _entries[index], null, null);
+            var compare = BucketHelper.Null;
+            var result = false;
+            if (found != null)
             {
-                if (found == null)
+                var comparisonItem = found == BucketHelper.Null ? default(T) : (T)found;
+                if (check(comparisonItem))
                 {
-                    Interlocked.Increment(ref _count);
-                    isNew = true;
+                    var item = itemUpdateFactory(comparisonItem);
+                    compare = Interlocked.CompareExchange(ref _entries[index], (object) item ?? BucketHelper.Null, found);
+                    result = found == compare;
                 }
-                if (!ReferenceEquals(found, BucketHelper.Null))
-                {
-                    previous = (T)found;
-                }
-                return true;
             }
-            if (found == null)
-            {
-                isNew = true;
-            }
-            return false;
+            isEmpty = found == null || compare == null;
+            return result;
         }
     }
 }

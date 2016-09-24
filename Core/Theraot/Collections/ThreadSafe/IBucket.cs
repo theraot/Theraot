@@ -5,11 +5,6 @@ namespace Theraot.Collections.ThreadSafe
 {
     public interface IBucket<T> : IEnumerable<T>
     {
-        int Capacity
-        {
-            get;
-        }
-
         int Count
         {
             get;
@@ -27,14 +22,14 @@ namespace Theraot.Collections.ThreadSafe
 
         bool RemoveAt(int index, out T previous);
 
-        bool RemoveValueAt(int index, T value, out T previous);
+        bool RemoveAt(int index, Predicate<T> check);
 
         void Set(int index, T item, out bool isNew);
 
         bool TryGet(int index, out T value);
 
-        bool Update(int index, T item, T comparisonItem, out T previous, out bool isNew);
+        bool Update(int index, Func<T, T> itemUpdateFactory, Predicate<T> check, out bool isEmpty);
 
-        IEnumerable<T> Where(Predicate<T> predicate);
+        IEnumerable<T> Where(Predicate<T> check);
     }
 }
