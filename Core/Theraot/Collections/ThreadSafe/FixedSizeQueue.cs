@@ -15,7 +15,7 @@ namespace Theraot.Collections.ThreadSafe
     public sealed class FixedSizeQueue<T> : IEnumerable<T>
     {
         private readonly int _capacity;
-        private readonly Bucket<T> _entries;
+        private readonly FixedSizeBucket<T> _entries;
         private int _indexDequeue;
         private int _indexEnqueue;
         private int _preCount;
@@ -30,7 +30,7 @@ namespace Theraot.Collections.ThreadSafe
             _preCount = 0;
             _indexEnqueue = 0;
             _indexDequeue = 0;
-            _entries = new Bucket<T>(_capacity);
+            _entries = new FixedSizeBucket<T>(_capacity);
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Theraot.Collections.ThreadSafe
         public FixedSizeQueue(IEnumerable<T> source)
         {
             _indexDequeue = 0;
-            _entries = new Bucket<T>(source);
+            _entries = new FixedSizeBucket<T>(source);
             _capacity = _entries.Capacity;
             _indexEnqueue = _entries.Count;
             _preCount = _indexEnqueue;

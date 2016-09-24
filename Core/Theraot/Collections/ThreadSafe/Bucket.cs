@@ -1,81 +1,46 @@
-﻿// Needed for NET40
-
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 
 namespace Theraot.Collections.ThreadSafe
 {
     /// <summary>
-    /// Represent a thread-safe wait-free fixed size bucket.
+    /// Represent a thread-safe wait-free bucket.
     /// </summary>
     /// <typeparam name="T">The type of the item.</typeparam>
-    /// <remarks>
-    /// Consider wrapping this class to implement <see cref="ICollection{T}" /> or any other desired interface.
-    /// </remarks>
     [Serializable]
-    public sealed class Bucket<T> : IEnumerable<T>
+    public sealed class Bucket<T> : IBucket<T>
     {
-        private readonly int _capacity;
+        private readonly BucketCore _bucketCore;
         private int _count;
-        private object[] _entries;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Bucket{T}" /> class.
-        /// </summary>
-        /// <param name="capacity">The capacity.</param>
-        public Bucket(int capacity)
+        public Bucket()
         {
-            _count = 0;
-            _entries = ArrayReservoir<object>.GetArray(capacity);
-            _capacity = _entries.Length;
+            _bucketCore = new BucketCore(7);
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Bucket{T}" /> class.
-        /// </summary>
         public Bucket(IEnumerable<T> source)
         {
-            var collection = source as ICollection<T>;
-            _entries = ArrayReservoir<object>.GetArray(collection == null ? 64 : collection.Count);
-            _capacity = _entries.Length;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            _bucketCore = new BucketCore(7);
+            var index = 0;
             foreach (var item in source)
             {
-                if (_count == _capacity)
-                {
-                    _capacity <<= 1;
-                    var old = _entries;
-                    _entries = ArrayReservoir<object>.GetArray(_capacity);
-                    Array.Copy(old, 0, _entries, 0, _count);
-                    ArrayReservoir<object>.DonateArray(old);
-                }
-                _entries[_count] = (object)item ?? BucketHelper.Null;
+                var copy = item;
+                _bucketCore.DoMayIncrement
+                    (
+                        index,
+                        (ref object target) => Interlocked.Exchange(ref target, (object)copy ?? BucketHelper.Null) == null
+                    );
+                index++;
                 _count++;
             }
         }
 
-        ~Bucket()
-        {
-            if (!AppDomain.CurrentDomain.IsFinalizingForUnload())
-            {
-                RecyclePrivate();
-            }
-        }
-
-        /// <summary>
-        /// Gets the capacity.
-        /// </summary>
-        public int Capacity
-        {
-            get
-            {
-                return _capacity;
-            }
-        }
-
-        /// <summary>
-        /// Gets the number of items actually contained.
-        /// </summary>
         public int Count
         {
             get
@@ -84,376 +49,245 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        /// <summary>
-        /// Copies the items to a compatible one-dimensional array, starting at the specified index of the target array.
-        /// </summary>
-        /// <param name="array">The array.</param>
-        /// <param name="arrayIndex">Index of the array.</param>
-        /// <exception cref="System.ArgumentNullException">array</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException">arrayIndex;Non-negative number is required.</exception>
-        /// <exception cref="System.ArgumentException">array;The array can not contain the number of elements.</exception>
         public void CopyTo(T[] array, int arrayIndex)
         {
-            if (array == null)
+            Extensions.CopyTo(this, array, arrayIndex);
+        }
+
+        public IEnumerable<T> EnumerateRange(int indexFrom, int indexTo)
+        {
+            foreach (var value in _bucketCore.EnumerateRange(indexFrom, indexTo))
             {
-                throw new ArgumentNullException("array");
-            }
-            if (arrayIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException("arrayIndex", "Non-negative number is required.");
-            }
-            if (_count > array.Length - arrayIndex)
-            {
-                throw new ArgumentException("The array can not contain the number of elements.", "array");
-            }
-            try
-            {
-                foreach (var entry in _entries)
-                {
-                    if (entry != null)
-                    {
-                        if (ReferenceEquals(entry, BucketHelper.Null))
-                        {
-                            array[arrayIndex] = default(T);
-                        }
-                        else
-                        {
-                            array[arrayIndex] = (T)entry;
-                        }
-                        arrayIndex++;
-                    }
-                }
-            }
-            catch (IndexOutOfRangeException exception)
-            {
-                throw new ArgumentOutOfRangeException("array", exception.Message);
+                yield return value == BucketHelper.Null ? default(T) : (T)value;
             }
         }
 
-        /// <summary>
-        /// Sets the item at the specified index.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <param name="item">The item.</param>
-        /// <param name="previous">The previous item in the specified index.</param>
-        /// <returns>
-        ///   <c>true</c> if the item was new; otherwise, <c>false</c>.
-        /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public bool Exchange(int index, T item, out T previous)
         {
-            if (index < 0 || index >= _capacity)
+            var found = BucketHelper.Null;
+            previous = default(T);
+            var result = _bucketCore.DoMayIncrement
+                (
+                    index,
+                    (ref object target) =>
+                    {
+                        found = Interlocked.Exchange(ref target, (object)item ?? BucketHelper.Null);
+                        return found == null;
+                    }
+                );
+            if (result)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
+                Interlocked.Increment(ref _count);
+                return true;
             }
-            return ExchangeInternal(index, item, out previous);
+            if (found != BucketHelper.Null)
+            {
+                previous = (T)found;
+            }
+            return false;
         }
 
-        /// <summary>
-        /// Returns an <see cref="System.Collections.Generic.IEnumerator{T}" /> that allows to iterate through the collection.
-        /// </summary>
-        /// <returns>
-        /// An <see cref="System.Collections.Generic.IEnumerator{T}" /> object that can be used to iterate through the collection.
-        /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            foreach (var entry in _entries)
+            foreach (var value in _bucketCore)
             {
-                if (entry != null)
-                {
-                    if (ReferenceEquals(entry, BucketHelper.Null))
-                    {
-                        yield return default(T);
-                    }
-                    else
-                    {
-                        yield return (T)entry;
-                    }
-                }
+                yield return value == BucketHelper.Null ? default(T) : (T)value;
             }
         }
 
-        /// <summary>
-        /// Inserts the item at the specified index.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <param name="item">The item.</param>
-        /// <returns>
-        ///   <c>true</c> if the item was inserted; otherwise, <c>false</c>.
-        /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity.</exception>
-        /// <remarks>
-        /// The insertion can fail if the index is already used or is being written by another thread.
-        /// If the index is being written it can be understood that the insert operation happened before but the item was overwritten or removed.
-        /// </remarks>
-        public bool Insert(int index, T item)
-        {
-            if (index < 0 || index >= _capacity)
-            {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity.");
-            }
-            return InsertInternal(index, item);
-        }
-
-        /// <summary>
-        /// Inserts the item at the specified index.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <param name="item">The item.</param>
-        /// <param name="previous">The previous item in the specified index.</param>
-        /// <returns>
-        ///   <c>true</c> if the item was inserted; otherwise, <c>false</c>.
-        /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
-        /// <remarks>
-        /// The insertion can fail if the index is already used or is being written by another thread.
-        /// If the index is being written it can be understood that the insert operation happened before but the item was overwritten or removed.
-        /// </remarks>
-        public bool Insert(int index, T item, out T previous)
-        {
-            if (index < 0 || index >= _capacity)
-            {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
-            }
-            return InsertInternal(index, item, out previous);
-        }
-
-        /// <summary>
-        /// Removes the item at the specified index.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <returns>
-        ///   <c>true</c> if the item was removed; otherwise, <c>false</c>.
-        /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
-        public bool RemoveAt(int index)
-        {
-            if (index < 0 || index >= _capacity)
-            {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
-            }
-            object found;
-            if (RemoveAtPrivate(index, out found))
-            {
-                Interlocked.Decrement(ref _count);
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Removes the item at the specified index.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <param name="previous">The previous item in the specified index.</param>
-        /// <returns>
-        ///   <c>true</c> if the item was removed; otherwise, <c>false</c>.
-        /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
-        public bool RemoveAt(int index, out T previous)
-        {
-            if (index < 0 || index >= _capacity)
-            {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
-            }
-            return RemoveAtInternal(index, out previous);
-        }
-
-        /// <summary>
-        /// Removes the item at the specified index if it matches the specified value.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <param name="value">The value intended to remove.</param>
-        /// <returns>
-        ///   <c>true</c> if the item was removed; otherwise, <c>false</c>.
-        /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
-        public bool RemoveValueAt(int index, T value)
-        {
-            if (index < 0 || index >= _capacity)
-            {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
-            }
-            if (RemoveValueAtPrivate(index, value))
-            {
-                Interlocked.Decrement(ref _count);
-                return true;
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Sets the item at the specified index.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <param name="item">The item.</param>
-        /// <param name="isNew">if set to <c>true</c> the index was not previously used.</param>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
-        public void Set(int index, T item, out bool isNew)
-        {
-            if (index < 0 || index >= _capacity)
-            {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
-            }
-            SetInternal(index, item, out isNew);
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
-        /// <summary>
-        /// Tries to retrieve the item at the specified index.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <param name="value">The value.</param>
-        /// <returns>
-        ///   <c>true</c> if the item was retrieved; otherwise, <c>false</c>.
-        /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
-        public bool TryGet(int index, out T value)
+        public bool Insert(int index, T item)
         {
-            if (index < 0 || index >= _capacity)
+            var result = _bucketCore.DoMayIncrement
+                (
+                    index,
+                    (ref object target) =>
+                    {
+                        var found = Interlocked.CompareExchange(ref target, (object)item ?? BucketHelper.Null, null);
+                        return found == null;
+                    }
+                );
+            if (result)
             {
-                throw new ArgumentOutOfRangeException("index", "index must be greater or equal to 0 and less than capacity");
+                Interlocked.Increment(ref _count);
             }
-            return TryGetInternal(index, out value);
+            return result;
         }
 
-        internal bool ExchangeInternal(int index, T item, out T previous)
+        public bool Insert(int index, T item, out T previous)
         {
+            var found = BucketHelper.Null;
             previous = default(T);
-            object found;
-            ExchangePrivate(index, item, out found);
-            if (found == null)
+            var result = _bucketCore.DoMayIncrement
+                (
+                    index,
+                    (ref object target) =>
+                    {
+                        found = Interlocked.CompareExchange(ref target, (object)item ?? BucketHelper.Null, null);
+                        return found == null;
+                    }
+                );
+            if (result)
             {
                 Interlocked.Increment(ref _count);
                 return true;
             }
-            if (!ReferenceEquals(found, BucketHelper.Null))
+            if (found != BucketHelper.Null)
             {
                 previous = (T)found;
             }
             return false;
         }
 
-        internal bool InsertInternal(int index, T item, out T previous)
+        public bool RemoveAt(int index)
         {
-            object found;
-            if (InsertPrivate(index, item, out found))
-            {
-                previous = default(T);
-                Interlocked.Increment(ref _count);
-                return true;
-            }
-            if (ReferenceEquals(found, BucketHelper.Null))
-            {
-                previous = default(T);
-            }
-            else
-            {
-                previous = (T)found;
-            }
-            return false;
-        }
-
-        internal bool InsertInternal(int index, T item)
-        {
-            object found;
-            if (InsertPrivate(index, item, out found))
-            {
-                Interlocked.Increment(ref _count);
-                return true;
-            }
-            return false;
-        }
-
-        internal bool RemoveAtInternal(int index, out T previous)
-        {
-            object found;
-            if (RemoveAtPrivate(index, out found))
+            var result = _bucketCore.DoMayDecrement
+                (
+                    index,
+                    (ref object target) => Interlocked.Exchange(ref target, null) != null
+                );
+            if (result)
             {
                 Interlocked.Decrement(ref _count);
-                if (ReferenceEquals(found, BucketHelper.Null))
-                {
-                    previous = default(T);
-                }
-                else
-                {
-                    previous = (T)found;
-                }
-                return true;
             }
-            previous = default(T);
-            return false;
+            return result;
         }
 
-        internal void SetInternal(int index, T item, out bool isNew)
+        public bool RemoveAt(int index, out T previous)
         {
-            SetPrivate(index, item, out isNew);
+            var found = BucketHelper.Null;
+            previous = default(T);
+            var result = _bucketCore.DoMayDecrement
+                (
+                    index,
+                    (ref object target) =>
+                    {
+                        found = Interlocked.Exchange(ref target, null);
+                        return found != null;
+                    }
+                );
+            if (!result)
+            {
+                return false;
+            }
+            Interlocked.Decrement(ref _count);
+            if (found != BucketHelper.Null)
+            {
+                previous = (T)found;
+            }
+            return true;
+        }
+
+        public bool RemoveAt(int index, Predicate<T> check)
+        {
+            return _bucketCore.DoMayDecrement
+                (
+                    index,
+                    (ref object target) =>
+                    {
+                        var found = Interlocked.CompareExchange(ref target, null, null);
+                        if (found != null)
+                        {
+                            var comparisonItem = found == BucketHelper.Null ? default(T) : (T)found;
+                            if (check(comparisonItem))
+                            {
+                                var compare = Interlocked.CompareExchange(ref target, null, found);
+                                if (found == compare)
+                                {
+                                    Interlocked.Decrement(ref _count);
+                                    return true;
+                                }
+                            }
+                        }
+                        return false;
+                    }
+                );
+        }
+
+        public void Set(int index, T item, out bool isNew)
+        {
+            isNew = _bucketCore.DoMayIncrement
+                (
+                    index,
+                    (ref object target) => Interlocked.Exchange(ref target, (object)item ?? BucketHelper.Null) == null
+                );
             if (isNew)
             {
                 Interlocked.Increment(ref _count);
             }
         }
 
-        internal bool TryGetInternal(int index, out T value)
+        public bool TryGet(int index, out T value)
         {
-            var entry = Interlocked.CompareExchange(ref _entries[index], null, null);
-            if (entry == null)
+            var found = BucketHelper.Null;
+            value = default(T);
+            var done = _bucketCore.Do
+                (
+                    index,
+                    (ref object target) =>
+                    {
+                        found = Interlocked.CompareExchange(ref target, null, null);
+                        return true;
+                    }
+                );
+            if (!done || found == null)
             {
-                value = default(T);
                 return false;
             }
-            else
+            if (found != BucketHelper.Null)
             {
-                if (ReferenceEquals(entry, BucketHelper.Null))
-                {
-                    value = default(T);
-                }
-                else
-                {
-                    value = (T)entry;
-                }
-                return true;
+                value = (T)found;
             }
+            return true;
         }
 
-        private void ExchangePrivate(int index, object item, out object previous)
+        public bool Update(int index, Func<T, T> itemUpdateFactory, Predicate<T> check, out bool isEmpty)
         {
-            previous = Interlocked.Exchange(ref _entries[index], item ?? BucketHelper.Null);
-        }
-
-        private bool InsertPrivate(int index, object item, out object previous)
-        {
-            previous = Interlocked.CompareExchange(ref _entries[index], item ?? BucketHelper.Null, null);
-            return previous == null;
-        }
-
-        private void RecyclePrivate()
-        {
-            if (!AppDomain.CurrentDomain.IsFinalizingForUnload())
+            var found = BucketHelper.Null;
+            var compare = BucketHelper.Null;
+            var result = false;
+            var done = _bucketCore.Do
+                (
+                    index,
+                    (ref object target) =>
+                    {
+                        found = Interlocked.CompareExchange(ref target, null, null);
+                        if (found != null)
+                        {
+                            var comparisonItem = found == BucketHelper.Null ? default(T) : (T)found;
+                            if (check(comparisonItem))
+                            {
+                                var item = itemUpdateFactory(comparisonItem);
+                                compare = Interlocked.CompareExchange(ref target, (object)item ?? BucketHelper.Null, found);
+                                result = found == compare;
+                            }
+                        }
+                        return true;
+                    }
+                );
+            if (!done)
             {
-                ArrayReservoir<object>.DonateArray(_entries);
-                _entries = null;
+                isEmpty = true;
+                return false;
             }
+            isEmpty = found == null || compare == null;
+            return result;
         }
 
-        private bool RemoveAtPrivate(int index, out object previous)
+        public IEnumerable<T> Where(Predicate<T> check)
         {
-            previous = Interlocked.Exchange(ref _entries[index], null);
-            return previous != null;
-        }
-
-        private bool RemoveValueAtPrivate(int index, object value)
-        {
-            return Interlocked.CompareExchange(ref _entries[index], null, value) != null;
-        }
-
-        private void SetPrivate(int index, object item, out bool isNew)
-        {
-            isNew = Interlocked.Exchange(ref _entries[index], item ?? BucketHelper.Null) == null;
+            foreach (var value in _bucketCore)
+            {
+                T castedValue = value == BucketHelper.Null ? default(T) : (T)value;
+                if (check(castedValue))
+                {
+                    yield return castedValue;
+                }
+            }
         }
     }
 }

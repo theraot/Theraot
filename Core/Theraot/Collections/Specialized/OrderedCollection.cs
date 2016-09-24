@@ -69,7 +69,7 @@ namespace Theraot.Collections.Specialized
 
         public bool Contains(T item)
         {
-            return _data.Search(item) != null;
+            return _data.Get(item) != null;
         }
 
         public bool Contains(T item, IEqualityComparer<T> comparer)

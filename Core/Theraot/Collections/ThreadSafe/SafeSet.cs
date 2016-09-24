@@ -16,7 +16,7 @@ namespace Theraot.Collections.ThreadSafe
     {
         private const int INT_DefaultProbing = 1;
         private readonly IEqualityComparer<T> _comparer;
-        private Mapper<T> _mapper;
+        private Bucket<T> _bucket;
         private int _probing;
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Theraot.Collections.ThreadSafe
         public SafeSet(IEqualityComparer<T> comparer, int initialProbing)
         {
             _comparer = comparer ?? EqualityComparer<T>.Default;
-            _mapper = new Mapper<T>();
+            _bucket = new Bucket<T>();
             _probing = initialProbing;
         }
 
@@ -72,7 +72,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             get
             {
-                return _mapper.Count;
+                return _bucket.Count;
             }
         }
 
@@ -93,7 +93,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 ExtendProbingIfNeeded(attempts);
                 T found;
-                if (_mapper.Insert(hashCode + attempts, item, out found))
+                if (_bucket.Insert(hashCode + attempts, item, out found))
                 {
                     return true;
                 }
@@ -118,7 +118,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 ExtendProbingIfNeeded(attempts);
                 T found;
-                if (_mapper.Insert(hashCode + attempts, value, out found))
+                if (_bucket.Insert(hashCode + attempts, value, out found))
                 {
                     return;
                 }
@@ -135,7 +135,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public void Clear()
         {
-            _mapper = new Mapper<T>();
+            _bucket = new Bucket<T>();
         }
 
         /// <summary>
@@ -144,7 +144,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>Returns the removed pairs.</returns>
         public IEnumerable<T> ClearEnumerable()
         {
-            return Interlocked.Exchange(ref _mapper, _mapper = new Mapper<T>());
+            return Interlocked.Exchange(ref _bucket, _bucket = new Bucket<T>());
         }
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace Theraot.Collections.ThreadSafe
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 T found;
-                if (_mapper.TryGet(hashCode + attempts, out found))
+                if (_bucket.TryGet(hashCode + attempts, out found))
                 {
                     if (_comparer.Equals(found, value))
                     {
@@ -188,7 +188,7 @@ namespace Theraot.Collections.ThreadSafe
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 T found;
-                if (_mapper.TryGet(hashCode + attempts, out found))
+                if (_bucket.TryGet(hashCode + attempts, out found))
                 {
                     if (_comparer.GetHashCode(found) == hashCode && check(found))
                     {
@@ -209,7 +209,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="System.ArgumentException">array;The array can not contain the number of elements.</exception>
         public void CopyTo(T[] array, int arrayIndex)
         {
-            _mapper.CopyTo(array, arrayIndex);
+            _bucket.CopyTo(array, arrayIndex);
         }
 
         public void ExceptWith(IEnumerable<T> other)
@@ -225,7 +225,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            return _mapper.GetEnumerator();
+            return _bucket.GetEnumerator();
         }
 
         /// <summary>
@@ -234,8 +234,8 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>The pairs contained in this object</returns>
         public IList<T> GetValues()
         {
-            var result = new List<T>(_mapper.Count);
-            foreach (var pair in _mapper)
+            var result = new List<T>(_bucket.Count);
+            foreach (var pair in _bucket)
             {
                 result.Add(pair);
             }
@@ -285,21 +285,19 @@ namespace Theraot.Collections.ThreadSafe
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 var done = false;
-                T previous;
-                var result = _mapper.TryGetCheckRemoveAt
+                var result = _bucket.RemoveAt
                     (
-                                 hashCode + attempts,
-                                 found =>
-                    {
-                        if (_comparer.Equals((T)found, value))
+                        hashCode + attempts,
+                        found =>
                         {
-                            done = true;
-                            return true;
+                            if (_comparer.Equals(found, value))
+                            {
+                                done = true;
+                                return true;
+                            }
+                            return false;
                         }
-                        return false;
-                    },
-                                 out previous
-                             );
+                    );
                 if (done)
                 {
                     return result;
@@ -322,22 +320,24 @@ namespace Theraot.Collections.ThreadSafe
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 var done = false;
-                var result = _mapper.TryGetCheckRemoveAt
+                var tmp = default(T);
+                var result = _bucket.RemoveAt
                     (
-                                 hashCode + attempts,
-                                 found =>
-                    {
-                        if (_comparer.Equals((T)found, value))
+                        hashCode + attempts,
+                        found =>
                         {
-                            done = true;
-                            return true;
+                            tmp = found;
+                            if (_comparer.Equals(found, value))
+                            {
+                                done = true;
+                                return true;
+                            }
+                            return false;
                         }
-                        return false;
-                    },
-                                 out previous
-                             );
+                    );
                 if (done)
                 {
+                    previous = tmp;
                     return result;
                 }
             }
@@ -364,22 +364,21 @@ namespace Theraot.Collections.ThreadSafe
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 var done = false;
-                T previous;
-                var result = _mapper.TryGetCheckRemoveAt
+                var previous = default(T);
+                var result = _bucket.RemoveAt
                     (
-                                 hashCode + attempts,
-                                 found =>
-                    {
-                        var _found = (T)found;
-                        if (_comparer.GetHashCode(_found) == hashCode && check(_found))
+                        hashCode + attempts,
+                        found =>
                         {
-                            done = true;
-                            return true;
+                            previous = found;
+                            if (_comparer.GetHashCode(found) == hashCode && check(found))
+                            {
+                                done = true;
+                                return true;
+                            }
+                            return false;
                         }
-                        return false;
-                    },
-                                 out previous
-                             );
+                    );
                 if (done)
                 {
                     value = previous;
@@ -405,7 +404,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("check");
             }
-            var matches = _mapper.InternalWhere(check);
+            var matches = _bucket.Where(check);
             var count = 0;
             foreach (var value in matches)
             {
@@ -433,7 +432,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("check");
             }
-            var matches = _mapper.InternalWhere(check);
+            var matches = _bucket.Where(check);
             foreach (var value in matches)
             {
                 if (Remove(value))
@@ -472,7 +471,7 @@ namespace Theraot.Collections.ThreadSafe
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 T found;
-                if (_mapper.TryGet(hashCode + attempts, out found))
+                if (_bucket.TryGet(hashCode + attempts, out found))
                 {
                     if (_comparer.GetHashCode(found) == hashCode && check(found))
                     {
@@ -505,7 +504,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("check");
             }
-            return _mapper.InternalWhere(check);
+            return _bucket.Where(check);
         }
 
         void ICollection<T>.Add(T item)
@@ -537,23 +536,22 @@ namespace Theraot.Collections.ThreadSafe
             while (true)
             {
                 ExtendProbingIfNeeded(attempts);
-                Predicate<object> check = found =>
+                Predicate<T> check = found =>
                 {
-                    var _found = (T)found;
-                    if (_comparer.Equals(_found, value))
+                    if (_comparer.Equals(found, value))
                     {
                         // This is the item that has been stored with the key
                         // Throw to abort overwrite
                         throw new ArgumentException("The item has already been added");
                     }
                     // This is not the value, overwrite?
-                    return valueOverwriteCheck(_found);
+                    return valueOverwriteCheck(found);
                 };
                 try
                 {
                     bool isNew;
                     // TryGetCheckSet will add if no item is found, otherwise it calls check
-                    if (_mapper.TryGetCheckSet(hashCode + attempts, value, check, out isNew))
+                    if (_bucket.InsertOrUpdate(hashCode + attempts, value, check, out isNew))
                     {
                         // It added a new item
                         return true;

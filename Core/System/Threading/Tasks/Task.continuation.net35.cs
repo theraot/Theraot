@@ -730,7 +730,7 @@ namespace System.Threading.Tasks
             if (!continuationTask.IsCompleted)
             {
                 // Attempt to enqueue the continuation
-                var continuationQueued = AddTaskContinuation(continuation, addBeforeOthers: false);
+                var continuationQueued = AddTaskContinuation(continuation, /*addBeforeOthers:*/ false);
 
                 // If the continuation was not queued (because the task completed), then run it now.
                 if (!continuationQueued) continuation.Run(this, true);

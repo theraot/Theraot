@@ -252,7 +252,7 @@ namespace System.Threading.Tasks
         [SecurityCritical]
         internal static void UnsafeScheduleAction(Action action)
         {
-            var atc = new AwaitTaskContinuation(action, flowExecutionContext: false);
+            var atc = new AwaitTaskContinuation(action, /*flowExecutionContext:*/ false);
 
             ThreadPoolAdapter.QueueWorkItem(atc);
         }
