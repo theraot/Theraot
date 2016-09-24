@@ -74,9 +74,35 @@ namespace Theraot.Collections.Specialized
             _count = 0;
         }
 
+        public AVLNode Get(TKey key)
+        {
+            return AVLNode.Get(_root, key, _comparison);
+        }
+
         public IEnumerator<AVLNode> GetEnumerator()
         {
             return AVLNode.EnumerateRoot(_root).GetEnumerator();
+        }
+
+        public AVLNode GetNearestLeft(TKey key)
+        {
+            return AVLNode.GetNearestLeft(_root, key, _comparison);
+        }
+
+        public AVLNode GetNearestRight(TKey key)
+        {
+            return AVLNode.GetNearestRight(_root, key, _comparison);
+        }
+
+        public AVLNode GetOrAdd(TKey key, Func<TKey, TValue> factory)
+        {
+            bool isNew;
+            var result = AVLNode.GetOrAdd(ref _root, key, factory, _comparison, out isNew);
+            if (isNew)
+            {
+                _count++;
+            }
+            return result;
         }
 
         public IEnumerable<AVLNode> Range(TKey lower, TKey upper)
@@ -102,19 +128,14 @@ namespace Theraot.Collections.Specialized
             return false;
         }
 
-        public AVLNode Search(TKey key)
+        public AVLNode RemoveNearestLeft(TKey key)
         {
-            return AVLNode.Search(_root, key, _comparison);
+            return AVLNode.RemoveNearestLeft(ref _root, key, _comparison);
         }
 
-        public AVLNode SearchNearestLeft(TKey key)
+        public AVLNode RemoveNearestRight(TKey key)
         {
-            return AVLNode.SearchNearestLeft(_root, key, _comparison);
-        }
-
-        public AVLNode SearchNearestRight(TKey key)
-        {
-            return AVLNode.SearchNearestRight(_root, key, _comparison);
+            return AVLNode.RemoveNearestRight(ref _root, key, _comparison);
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

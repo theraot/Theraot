@@ -1,5 +1,3 @@
-#if FAT
-
 using System;
 using System.Globalization;
 using System.Threading;
@@ -7,13 +5,13 @@ using System.Threading;
 namespace Theraot.Threading
 {
     [System.Diagnostics.DebuggerNonUserCode]
-    public sealed class RuntimeUniqueIdProdiver
+    public static class RuntimeUniqueIdProdiver
     {
-        private int _id;
+        private static int _lastId = int.MinValue;
 
-        public UniqueId GetNextId()
+        public static UniqueId GetNextId()
         {
-            return new UniqueId(Interlocked.Increment(ref _id));
+            return new UniqueId(Interlocked.Increment(ref _lastId));
         }
 
         public struct UniqueId : IEquatable<UniqueId>
@@ -23,11 +21,6 @@ namespace Theraot.Threading
             internal UniqueId(int id)
             {
                 _id = id;
-            }
-
-            public static implicit operator int (UniqueId x)
-            {
-                return x._id;
             }
 
             public static bool operator !=(UniqueId x, UniqueId y)
@@ -66,5 +59,3 @@ namespace Theraot.Threading
         }
     }
 }
-
-#endif

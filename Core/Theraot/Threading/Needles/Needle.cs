@@ -2,13 +2,12 @@
 
 using System;
 using System.Threading;
-using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
     [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
-    public class Needle<T> : IEquatable<Needle<T>>, IRecyclableNeedle<T>
+    public class Needle<T> : IEquatable<Needle<T>>, IRecyclableNeedle<T>, IPromise<T>
     {
         private readonly int _hashCode;
         private INeedle<T> _target; // Can be null - set in SetTargetValue and SetTargetError
@@ -16,19 +15,20 @@ namespace Theraot.Threading.Needles
         public Needle()
         {
             _target = null;
-            _hashCode = NeedleHelper.GetNextHashCode();
+            _hashCode = base.GetHashCode();
         }
 
         public Needle(T target)
         {
-            _hashCode = NeedleHelper.GetNextHashCode();
             if (ReferenceEquals(target, null))
             {
                 _target = null;
+                _hashCode = base.GetHashCode();
             }
             else
             {
                 _target = new StructNeedle<T>(target);
+                _hashCode = target.GetHashCode();
             }
         }
 
@@ -42,6 +42,22 @@ namespace Theraot.Threading.Needles
                     return ((ExceptionStructNeedle<T>)target).Exception;
                 }
                 return null;
+            }
+        }
+
+        bool IPromise.IsCanceled
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        bool IPromise.IsCompleted
+        {
+            get
+            {
+                return IsAlive;
             }
         }
 
@@ -77,7 +93,11 @@ namespace Theraot.Threading.Needles
 
         public static explicit operator T(Needle<T> needle)
         {
-            return Check.NotNullArgument(needle, "needle").Value;
+            if (needle == null)
+            {
+                throw new ArgumentNullException("needle");
+            }
+            return needle.Value;
         }
 
         public static implicit operator Needle<T>(T field)

@@ -16,7 +16,7 @@ namespace Theraot.Threading.Needles
         {
             if (ReferenceEquals(context, null))
             {
-                throw new NullReferenceException("scheduler");
+                throw new NullReferenceException("context");
             }
             _context = context;
             _needleLock = new NeedleLock<Thread>(_context.Context);

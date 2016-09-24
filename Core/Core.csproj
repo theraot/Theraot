@@ -25,16 +25,23 @@
     <Prefer32Bit>false</Prefer32Bit>
     <LangVersion>5</LangVersion>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <DefineConstants>TRACE;DEBUG;NET20;FAT</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>default</LangVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>True</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>;NET35</DefineConstants>
+    <DefineConstants>NET35</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>5</LangVersion>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <LangVersion>default</LangVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET35|AnyCPU'">
     <Optimize>False</Optimize>
@@ -48,10 +55,23 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET35-CF|AnyCPU'">
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug_NET35-CF\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NET35;NETCF;FAT</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <LangVersion>default</LangVersion>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <CF>true</CF>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET40|AnyCPU'">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET40\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;FAT;NET40</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET40;FAT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -63,7 +83,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET45|AnyCPU'">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET45\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;FAT;NET45</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET45;FAT</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -81,6 +101,17 @@
     <Prefer32Bit>false</Prefer32Bit>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <LangVersion>5</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35-CF|AnyCPU' ">
+    <Optimize>True</Optimize>
+    <OutputPath>bin\NET35-CF\</OutputPath>
+    <DefineConstants>NETCF;NET35</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <LangVersion>default</LangVersion>
+    <CF>true</CF>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -111,6 +142,19 @@
     <Prefer32Bit>false</Prefer32Bit>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <LangVersion>5</LangVersion>
+    <Fat>true</Fat>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35-CF_FAT|AnyCPU' ">
+    <Optimize>True</Optimize>
+    <OutputPath>bin\NET35-CF_FAT\</OutputPath>
+    <DefineConstants>NETCF;NET35;FAT</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <LangVersion>default</LangVersion>
+    <CF>true</CF>
+    <Fat>true</Fat>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -121,6 +165,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <LangVersion>5</LangVersion>
+    <Fat>true</Fat>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET45_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
@@ -131,10 +176,17 @@
     <Prefer32Bit>false</Prefer32Bit>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <LangVersion>5</LangVersion>
+    <Fat>true</Fat>
   </PropertyGroup>
   <PropertyGroup>
-    <DefineConstants Condition=" !$(DefineConstants.Contains(';NET')) ">$(DefineConstants);$(TargetFrameworkVersion.Replace("v", "NET").Replace(".", ""))</DefineConstants>
-    <DefineConstants Condition=" $(DefineConstants.Contains(';NET')) ">$(DefineConstants.Remove($(DefineConstants.LastIndexOf(";NET"))));$(TargetFrameworkVersion.Replace("v", "NET").Replace(".", ""))</DefineConstants>
+    <DefineConstants Condition="$(TargetFrameworkVersion) == 'v2.0'">NET20</DefineConstants>
+    <DefineConstants Condition="$(TargetFrameworkVersion) == 'v3.0'">NET30</DefineConstants>
+    <DefineConstants Condition="$(TargetFrameworkVersion) == 'v3.5'">NET35</DefineConstants>
+    <DefineConstants Condition="$(TargetFrameworkVersion) == 'v4.0'">NET40</DefineConstants>
+    <DefineConstants Condition="$(TargetFrameworkVersion) == 'v4.5'">NET45</DefineConstants>
+    <DefineConstants Condition="$(CF) == 'true'">$(DefineConstants);NETCF</DefineConstants>
+    <DefineConstants Condition="$(DebugType) == 'full'">$(DefineConstants);TRACE;DEBUG;FAT</DefineConstants>
+    <DefineConstants Condition="$(Fat) == 'true'">$(DefineConstants);FAT</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -290,6 +342,7 @@
     <Compile Include="Theraot\Collections\ExtendedReadOnlySet.cs" />
     <Compile Include="Theraot\Collections\ExtendedSet.cs" />
     <Compile Include="Theraot\Collections\ExtendedStack.cs" />
+    <Compile Include="Theraot\Collections\Extensions.partition.cs" />
     <Compile Include="Theraot\Collections\Extensions.groupby.cs" />
     <Compile Include="Theraot\Collections\Extensions.add.cs" />
     <Compile Include="Theraot\Collections\Extensions.beforeafter.cs" />
@@ -361,22 +414,23 @@
     <Compile Include="Theraot\Collections\Specialized\NullAwareDictionary.extended.cs" />
     <Compile Include="Theraot\Collections\Specialized\OrderedCollection.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\ArrayReservoir.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\Branch.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\Bucket.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\DoAction.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\FixedSizeBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\BucketHelper.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\BucketStatus.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\CircularBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\FixedSizeQueue.cs" />
     <Compile Include="Theraot\Collections\Specialized\KeyCollection.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\Mapper.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\IBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\NeedleBucket.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\NeedleReservoir.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\Pool.cs" />
-    <Compile Include="Theraot\Collections\ThreadSafe\PoolHelper.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\ReentryGuardHelper.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\SafeDictionary.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\SafeQueue.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\SafeSet.cs" />
     <Compile Include="Theraot\Collections\Specialized\ValueCollection.cs" />
+    <Compile Include="Theraot\Collections\ThreadSafe\BucketCore.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\WeakCancellableEvent.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\WeakDelegateCollection.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\WeakEvent.cs" />
@@ -392,6 +446,7 @@
     <Compile Include="Theraot\Core\CharHelper.cs" />
     <Compile Include="Theraot\Core\EnvironmentHelper.cs" />
     <Compile Include="Theraot\Core\IntPtrHelper.cs" />
+    <Compile Include="Theraot\Core\RamStream.cs" />
     <Compile Include="Theraot\Core\NumericHelper.checks.cs" />
     <Compile Include="Theraot\Core\PathHelper.cs" />
     <Compile Include="Theraot\Core\StringProcessor.cs" />
@@ -537,7 +592,6 @@
     <Compile Include="Theraot\Threading\Timeout.cs" />
     <Compile Include="Theraot\Threading\RuntimeUniqueIdProdiver.cs" />
     <Compile Include="Theraot\Threading\Needles\LockableNeedle.cs" />
-    <Compile Include="Theraot\Threading\SimpleReentryGuard.cs" />
     <Compile Include="Theraot\Threading\ThreadingHelper.cs" />
     <Compile Include="Theraot\Threading\ThreadingHelper.extra.cs" />
     <Compile Include="Theraot\Threading\ThreadingHelper.SpinWait.cs" />
@@ -658,6 +712,8 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFrameworkVersion)'!='v2.0'">
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -698,6 +754,7 @@
         </Policies>
       </Properties>
     </MonoDevelop>
+    <VisualStudio />
   </ProjectExtensions>
   <ItemGroup>
     <None Include="OpenSourceKey.snk" />

@@ -12,7 +12,7 @@ namespace Theraot.Collections.ThreadSafe
         // 0  1   2   3   4    5    6    7
         // 8, 16, 32, 64, 128, 256, 512, 1024
 
-        private const int INT_CapacityCount = INT_MaxCapacityLog2 - INT_MinCapacityLog2;
+        private const int INT_CapacityCount = 1 + INT_MaxCapacityLog2 - INT_MinCapacityLog2;
         private const int INT_MaxCapacity = 1 << INT_MaxCapacityLog2;
         private const int INT_MaxCapacityLog2 = 10;
         private const int INT_MinCapacity = 1 << INT_MinCapacityLog2;

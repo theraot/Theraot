@@ -15,8 +15,8 @@ namespace Theraot.Threading.Needles
     {
         private readonly int _hashCode;
         private readonly bool _trackResurrection;
-        private GCHandle _handle;
         private volatile bool _faultExpected;
+        private GCHandle _handle;
         private int _managedDisposal;
 
         public WeakNeedle()
@@ -28,7 +28,7 @@ namespace Theraot.Threading.Needles
         public WeakNeedle(bool trackResurrection)
         {
             _trackResurrection = trackResurrection;
-            _hashCode = NeedleHelper.GetNextHashCode();
+            _hashCode = base.GetHashCode();
         }
 
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
@@ -41,9 +41,16 @@ namespace Theraot.Threading.Needles
         [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
         public WeakNeedle(T target, bool trackResurrection)
         {
+            if (target == null)
+            {
+                _hashCode = base.GetHashCode();
+            }
+            else
+            {
+                SetTargetValue(target);
+                _hashCode = target.GetHashCode();
+            }
             _trackResurrection = trackResurrection;
-            SetTargetValue(target);
-            _hashCode = NeedleHelper.GetNextHashCode();
         }
 
         public Exception Exception
@@ -285,22 +292,6 @@ namespace Theraot.Threading.Needles
             return right.IsAlive;
         }
 
-        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
-        private void ReleaseExtracted()
-        {
-            if (_handle.IsAllocated)
-            {
-                try
-                {
-                    _handle.Free(); // Throws InvalidOperationException
-                }
-                catch (InvalidOperationException)
-                {
-                    // Empty
-                }
-            }
-        }
-
         private bool ReadTarget(out object target)
         {
             target = null;
@@ -317,6 +308,27 @@ namespace Theraot.Threading.Needles
                 return true;
             }
             return false;
+        }
+
+        [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
+        private void ReleaseExtracted()
+        {
+            if (_handle.IsAllocated)
+            {
+                try
+                {
+                    _handle.Free(); // Throws InvalidOperationException
+                }
+                catch (InvalidOperationException)
+                {
+                    // Empty
+                }
+            }
+        }
+
+        private void ReportManagedDisposal()
+        {
+            Thread.VolatileWrite(ref _managedDisposal, 1);
         }
 
         private void WriteTarget(object target)
@@ -370,11 +382,6 @@ namespace Theraot.Threading.Needles
                     Interlocked.Decrement(ref _status);
                 }
             }
-        }
-
-        private void ReportManagedDisposal()
-        {
-            Thread.VolatileWrite(ref _managedDisposal, 1);
         }
     }
 }

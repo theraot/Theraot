@@ -4,9 +4,8 @@ namespace Theraot.Threading
 {
     public static partial class ThreadingHelper
     {
-        private static readonly RuntimeUniqueIdProdiver _threadIdProvider = new RuntimeUniqueIdProdiver();
         // Leaked until AppDomain unload
-        private static readonly NoTrackingThreadLocal<RuntimeUniqueIdProdiver.UniqueId> _threadRuntimeUniqueId = new NoTrackingThreadLocal<RuntimeUniqueIdProdiver.UniqueId>(_threadIdProvider.GetNextId);
+        private static readonly NoTrackingThreadLocal<RuntimeUniqueIdProdiver.UniqueId> _threadRuntimeUniqueId = new NoTrackingThreadLocal<RuntimeUniqueIdProdiver.UniqueId>(RuntimeUniqueIdProdiver.GetNextId);
 
         public static bool HasThreadUniqueId
         {

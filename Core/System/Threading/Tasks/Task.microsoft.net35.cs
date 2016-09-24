@@ -638,7 +638,7 @@ namespace System.Threading.Tasks
                 // the exception propagated from an await.
 
                 SetCancellationAcknowledged();
-                AddException(exceptionAsOce, representsCancellation: true);
+                AddException(exceptionAsOce, /*representsCancellation:*/ true);
             }
             else
             {
@@ -696,7 +696,7 @@ namespace System.Threading.Tasks
         private void AddException(object exceptionObject)
         {
             Contract.Requires(exceptionObject != null, "Task.AddException: Expected a non-null exception object");
-            AddException(exceptionObject, representsCancellation: false);
+            AddException(exceptionObject, /*representsCancellation:*/ false);
         }
     }
 }

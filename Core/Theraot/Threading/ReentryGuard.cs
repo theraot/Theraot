@@ -12,7 +12,7 @@ namespace Theraot.Threading
     [System.Diagnostics.DebuggerNonUserCode]
     public sealed class ReentryGuard
     {
-        private readonly StructNeedle<TrackingThreadLocal<bool>> _flag;
+        private readonly RuntimeUniqueIdProdiver.UniqueId _id;
         private readonly SafeQueue<Action> _workQueue;
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace Theraot.Threading
         public ReentryGuard()
         {
             _workQueue = new SafeQueue<Action>();
-            _flag = new StructNeedle<TrackingThreadLocal<bool>>(new TrackingThreadLocal<bool>());
+            _id = RuntimeUniqueIdProdiver.GetNextId();
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Theraot.Threading
         {
             get
             {
-                return _flag.Value.Value;
+                return ReentryGuardHelper.IsTaken(_id);
             }
         }
 
@@ -43,7 +43,7 @@ namespace Theraot.Threading
         public IPromise Execute(Action operation)
         {
             var result = AddExecution(operation, _workQueue);
-            ExecutePending(_workQueue, _flag.Value);
+            ExecutePending(_workQueue, _id);
             return result;
         }
 
@@ -56,7 +56,7 @@ namespace Theraot.Threading
         public IPromise<T> Execute<T>(Func<T> operation)
         {
             var result = AddExecution(operation, _workQueue);
-            ExecutePending(_workQueue, _flag.Value);
+            ExecutePending(_workQueue, _id);
             return result;
         }
 
@@ -104,20 +104,30 @@ namespace Theraot.Threading
             return result;
         }
 
-        private static void ExecutePending(SafeQueue<Action> queue, IThreadLocal<bool> flag)
+        private static void ExecutePending(SafeQueue<Action> queue, RuntimeUniqueIdProdiver.UniqueId id)
         {
-            if (flag.Value)
+            bool didEnter = false;
+            try
             {
-                // called from inside this method - skip
-                return;
+                didEnter = ReentryGuardHelper.Enter(id);
+                if (!didEnter)
+                {
+                    // called from inside this method - skip
+                    return;
+                }
+                Action action;
+                while (queue.TryTake(out action))
+                {
+                    action.Invoke();
+                }
             }
-            flag.Value = true;
-            Action action;
-            while (queue.TryTake(out action))
+            finally
             {
-                action.Invoke();
+                if (didEnter)
+                {
+                    ReentryGuardHelper.Leave(id);
+                }
             }
-            flag.Value = false;
         }
     }
 }

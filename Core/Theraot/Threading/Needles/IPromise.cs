@@ -27,7 +27,11 @@ namespace Theraot.Threading.Needles
         }
     }
 
+#if NETCF
+    public interface IPromise<T> : IPromise, IReadOnlyNeedle<T>
+#else
     public interface IPromise<out T> : IPromise, IReadOnlyNeedle<T>
+#endif
     {
         // Empty
     }
@@ -37,7 +41,11 @@ namespace Theraot.Threading.Needles
         void Wait();
     }
 
+#if NETCF
+    public interface IWaitablePromise<T> : IPromise<T>, IWaitablePromise
+#else
     public interface IWaitablePromise<out T> : IPromise<T>, IWaitablePromise
+#endif
     {
         // Empty
     }

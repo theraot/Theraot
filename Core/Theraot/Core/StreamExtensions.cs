@@ -71,6 +71,19 @@ namespace Theraot.Core
         }
 #endif
 
+        public static bool IsDisposed(this Stream stream)
+        {
+            try
+            {
+                stream.Seek(0, SeekOrigin.Current);
+                return false;
+            }
+            catch (ObjectDisposedException)
+            {
+                return true;
+            }
+        }
+
         public static void ReadComplete(this Stream stream, byte[] buffer, int offset, int length)
         {
             if (ReferenceEquals(stream, null))
