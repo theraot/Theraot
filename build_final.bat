@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 
 SET solution_name=Theraot.sln
 
-SET build_configuration=NET20 NET30 NET35 NET35-CF NET40 NET45
+SET build_configuration=NET35 NET35-CF NET40 NET45
 SET assemblies=Theraot.Core.dll
 SET recovery_path=Core\bin
 SET spec_file=Theraot.nuspec
