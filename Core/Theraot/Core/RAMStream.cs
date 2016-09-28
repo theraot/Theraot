@@ -204,6 +204,10 @@ namespace Theraot.Core
 
         public override void SetLength(long value)
         {
+            if (_position == -1)
+            {
+                throw new ObjectDisposedException(typeof(RamStream).Name);
+            }
             if (value < 0)
             {
                 throw new ArgumentOutOfRangeException("value", "Negative length");
