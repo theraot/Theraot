@@ -225,6 +225,10 @@ namespace Theraot.Core
             {
                 throw new ObjectDisposedException(typeof(RamStream).Name);
             }
+            if (offset + count > buffer.Length)
+            {
+                throw new ArgumentException("The sum of offset and count is greater than the buffer length.");
+            }
             again:
             foreach (var node in _bytes.EnumerateRange((int)(_position >> _sectorBits), int.MaxValue))
             {
