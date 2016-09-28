@@ -96,6 +96,7 @@ namespace Theraot.Core
 
         public override int Read(byte[] buffer, int offset, int count)
         {
+            var bytes = _bytes;
             if (_position == -1)
             {
                 throw new ObjectDisposedException(typeof(RamStream).Name);
@@ -106,7 +107,7 @@ namespace Theraot.Core
                 count = (int)(_length - _position);
             }
             var progress = 0;
-            foreach (var node in _bytes.EnumerateRange((int)(_position >> _sectorBits), int.MaxValue))
+            foreach (var node in bytes.EnumerateRange((int)(_position >> _sectorBits), int.MaxValue))
             {
                 var pair = node;
                 long contribution = 0;
@@ -204,6 +205,7 @@ namespace Theraot.Core
 
         public override void SetLength(long value)
         {
+            var bytes = _bytes;
             if (_position == -1)
             {
                 throw new ObjectDisposedException(typeof(RamStream).Name);
@@ -217,14 +219,15 @@ namespace Theraot.Core
                 throw new ArgumentOutOfRangeException("value", "Overflow");
             }
             _length = (int)value;
-            foreach (var node in _bytes.EnumerateRange(int.MaxValue, (int)value >> _sectorBits))
+            foreach (var node in bytes.EnumerateRange(int.MaxValue, (int)value >> _sectorBits))
             {
-                _bytes.RemoveAt((int)(node.Key >> _sectorBits));
+                bytes.RemoveAt((int)(node.Key >> _sectorBits));
             }
         }
 
         public override void Write(byte[] buffer, int offset, int count)
         {
+            var bytes = _bytes;
             if (_position == -1)
             {
                 throw new ObjectDisposedException(typeof(RamStream).Name);
@@ -234,7 +237,7 @@ namespace Theraot.Core
                 throw new ArgumentException("The sum of offset and count is greater than the buffer length.");
             }
             again:
-            foreach (var node in _bytes.EnumerateRange((int)(_position >> _sectorBits), int.MaxValue))
+            foreach (var node in bytes.EnumerateRange((int)(_position >> _sectorBits), int.MaxValue))
             {
                 var pair = node;
                 long contribution;
@@ -245,7 +248,7 @@ namespace Theraot.Core
                     contribution = (1 << _sectorBits) > count ? count : 1 << _sectorBits;
                     intContribution = (int)contribution;
                     Array.Copy(buffer, offset, left, 0, intContribution);
-                    if (!Add(left, out pair))
+                    if (!Add(bytes, left, out pair))
                     {
                         break;
                     }
@@ -297,7 +300,7 @@ namespace Theraot.Core
                 var contribution = diff > count ? count : diff;
                 var intContribution = (int) contribution;
                 Array.Copy(buffer, offset, left, index, intContribution);
-                if (!Add(left, out pair))
+                if (!Add(bytes, left, out pair))
                 {
                     goto again;
                 }
@@ -319,9 +322,9 @@ namespace Theraot.Core
             base.Dispose(disposing);
         }
 
-        private bool Add(byte[] left, out KeyValuePair<long, byte[]> previous)
+        private bool Add(Bucket<KeyValuePair<long, byte[]>> bytes, byte[] left, out KeyValuePair<long, byte[]> previous)
         {
-            return _bytes.Insert((int)(_position >> _sectorBits), new KeyValuePair<long, byte[]>((_position >> _sectorBits) << _sectorBits, left), out previous);
+            return bytes.Insert((int)(_position >> _sectorBits), new KeyValuePair<long, byte[]>((_position >> _sectorBits) << _sectorBits, left), out previous);
         }
     }
 }
