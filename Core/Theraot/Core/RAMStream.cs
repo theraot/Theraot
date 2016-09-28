@@ -61,6 +61,10 @@ namespace Theraot.Core
         {
             get
             {
+                if (_position == -1)
+                {
+                    throw new ObjectDisposedException(typeof(RamStream).Name);
+                }
                 return _length;
             }
         }
