@@ -37,7 +37,7 @@ namespace Theraot.Core
         {
             get
             {
-                return true;
+                return _position != -1;
             }
         }
 
@@ -45,7 +45,7 @@ namespace Theraot.Core
         {
             get
             {
-                return true;
+                return _position != -1;
             }
         }
 
@@ -53,7 +53,7 @@ namespace Theraot.Core
         {
             get
             {
-                return true;
+                return _position != -1;
             }
         }
 
