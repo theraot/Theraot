@@ -75,7 +75,7 @@ namespace Theraot.Core
             {
                 if (_position == -1)
                 {
-                    throw new ObjectDisposedException(typeof(FileStream).Name);
+                    throw new ObjectDisposedException(typeof(RamStream).Name);
                 }
                 if (value < 0)
                 {
@@ -98,7 +98,7 @@ namespace Theraot.Core
         {
             if (_position == -1)
             {
-                throw new ObjectDisposedException(typeof(FileStream).Name);
+                throw new ObjectDisposedException(typeof(RamStream).Name);
             }
             Extensions.CanCopyTo(buffer, offset, count);
             if (_position <= _length && _position + count > _length)
@@ -170,7 +170,7 @@ namespace Theraot.Core
         {
             if (_position == -1)
             {
-                throw new ObjectDisposedException(typeof(FileStream).Name);
+                throw new ObjectDisposedException(typeof(RamStream).Name);
             }
             var position = _position;
             switch (origin)
@@ -223,7 +223,7 @@ namespace Theraot.Core
         {
             if (_position == -1)
             {
-                throw new ObjectDisposedException(typeof(FileStream).Name);
+                throw new ObjectDisposedException(typeof(RamStream).Name);
             }
             again:
             foreach (var node in _bytes.EnumerateRange((int)(_position >> _sectorBits), int.MaxValue))
