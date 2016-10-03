@@ -8,9 +8,9 @@ using Theraot.Core;
 
 namespace Theraot.Collections
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
-    [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "By Design")]
-    public partial class ProgressiveList<T> : ProgressiveCollection<T>, IReadOnlyList<T>, IList<T>
+    [System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "By Design")]
+    public class ProgressiveList<T> : ProgressiveCollection<T>, IReadOnlyList<T>, IList<T>
     {
         private readonly IList<T> _cache;
 
@@ -20,7 +20,19 @@ namespace Theraot.Collections
             // Empty
         }
 
+        public ProgressiveList(Progressor<T> wrapped)
+            : this(wrapped, new List<T>(), null)
+        {
+            // Empty
+        }
+
         public ProgressiveList(IEnumerable<T> wrapped, IEqualityComparer<T> comparer)
+            : this(wrapped, new List<T>(), comparer)
+        {
+            // Empty
+        }
+
+        public ProgressiveList(Progressor<T> wrapped, IEqualityComparer<T> comparer)
             : this(wrapped, new List<T>(), comparer)
         {
             // Empty
@@ -50,7 +62,7 @@ namespace Theraot.Collections
             }
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
         T IList<T>.this[int index]
         {
             get
@@ -101,25 +113,25 @@ namespace Theraot.Collections
             }
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
         void ICollection<T>.Add(T item)
         {
             throw new NotSupportedException();
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
         void ICollection<T>.Clear()
         {
             throw new NotSupportedException();
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
         void IList<T>.Insert(int index, T item)
         {
             throw new NotSupportedException();
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
         void IList<T>.RemoveAt(int index)
         {
             throw new NotSupportedException();

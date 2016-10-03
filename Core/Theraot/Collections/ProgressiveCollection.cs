@@ -10,7 +10,7 @@ namespace Theraot.Collections
 {
     [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
-    public partial class ProgressiveCollection<T> : IReadOnlyCollection<T>, ICollection<T>
+    public class ProgressiveCollection<T> : IReadOnlyCollection<T>, ICollection<T>
     {
         private readonly ICollection<T> _cache;
         private readonly IEqualityComparer<T> _comparer;
@@ -22,7 +22,19 @@ namespace Theraot.Collections
             // Empty
         }
 
+        public ProgressiveCollection(Progressor<T> wrapped)
+            : this(wrapped, new HashSet<T>(), null)
+        {
+            // Empty
+        }
+
         public ProgressiveCollection(IEnumerable<T> wrapped, IEqualityComparer<T> comparer)
+            : this(wrapped, new HashSet<T>(comparer), comparer)
+        {
+            // Empty
+        }
+
+        public ProgressiveCollection(Progressor<T> wrapped, IEqualityComparer<T> comparer)
             : this(wrapped, new HashSet<T>(comparer), comparer)
         {
             // Empty
