@@ -8,7 +8,7 @@ namespace Theraot.Collections
 {
     [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ProgressiveSet<T> : ProgressiveCollection<T>, ISet<T>
+    public partial class ProgressiveSet<T> : ProgressiveCollection<T>, ISet<T>
     {
         // Note: these constructors uses ExtendedSet because HashSet is not an ISet<T> in .NET 3.5 and base class needs an ISet<T>
         public ProgressiveSet(IEnumerable<T> wrapped)
