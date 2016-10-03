@@ -64,8 +64,11 @@ namespace System.Linq
 
         internal class GroupedEnumerable<TSource, TKey, TElement, TResult> : IEnumerable<TResult>
         {
-            private readonly IDictionary<TKey, Lookup<TKey, TElement>.Grouping> _groupings;
+            private readonly IEqualityComparer<TKey> _comparer;
+            private readonly Func<TSource, TElement> _elementSelector;
+            private readonly Func<TSource, TKey> _keySelector;
             private readonly Func<TKey, IEnumerable<TElement>, TResult> _resultSelector;
+            private readonly IEnumerable<TSource> _source;
 
             public GroupedEnumerable(IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, Func<TKey, IEnumerable<TElement>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
             {
@@ -85,38 +88,50 @@ namespace System.Linq
                 {
                     throw new ArgumentNullException("resultSelector");
                 }
+                _source = source;
+                _keySelector = keySelector;
+                _elementSelector = elementSelector;
                 _resultSelector = resultSelector;
-                _groupings = new Dictionary<TKey, Lookup<TKey, TElement>.Grouping>(comparer);
-                foreach (var item in source)
-                {
-                    var key = keySelector(item);
-                    Lookup<TKey, TElement>.Grouping grouping;
-                    if (!_groupings.TryGetValue(key, out grouping))
-                    {
-                        grouping = new Lookup<TKey, TElement>.Grouping(key);
-                        _groupings.Add(key, grouping);
-                    }
-                    ((ICollection<TElement>)grouping.Items).Add(elementSelector(item));
-                }
+                _comparer = comparer;
             }
 
             public IEnumerator<TResult> GetEnumerator()
             {
-                foreach (var grouping in _groupings.Values)
+                var groupings = new Dictionary<TKey, Lookup<TKey, TElement>.Grouping>(_comparer);
+                foreach (var item in _source)
                 {
-                    yield return _resultSelector(grouping.Key, grouping.Items);
+                    var key = _keySelector(item);
+                    Lookup<TKey, TElement>.Grouping grouping;
+                    if (!groupings.TryGetValue(key, out grouping))
+                    {
+                        grouping = new Lookup<TKey, TElement>.Grouping(key);
+                        groupings.Add(key, grouping);
+                    }
+                    grouping.Items.Add(_elementSelector(item));
                 }
+                return Enumerator(groupings);
             }
 
             IEnumerator IEnumerable.GetEnumerator()
             {
                 return GetEnumerator();
             }
+
+            private IEnumerator<TResult> Enumerator(Dictionary<TKey, Lookup<TKey, TElement>.Grouping> groupings)
+            {
+                foreach (var grouping in groupings.Values)
+                {
+                    yield return _resultSelector(grouping.Key, grouping.Items);
+                }
+            }
         }
 
         internal class GroupedEnumerable<TSource, TKey, TElement> : IEnumerable<IGrouping<TKey, TElement>>
         {
-            private readonly IDictionary<TKey, Lookup<TKey, TElement>.Grouping> _groupings;
+            private readonly IEqualityComparer<TKey> _comparer;
+            private readonly Func<TSource, TElement> _elementSelector;
+            private readonly Func<TSource, TKey> _keySelector;
+            private readonly IEnumerable<TSource> _source;
 
             public GroupedEnumerable(IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer)
             {
@@ -132,31 +147,40 @@ namespace System.Linq
                 {
                     throw new ArgumentNullException("elementSelector");
                 }
-                _groupings = new Dictionary<TKey, Lookup<TKey, TElement>.Grouping>(comparer);
-                foreach (var item in source)
-                {
-                    var key = keySelector(item);
-                    Lookup<TKey, TElement>.Grouping grouping;
-                    if (!_groupings.TryGetValue(key, out grouping))
-                    {
-                        grouping = new Lookup<TKey, TElement>.Grouping(key);
-                        _groupings.Add(key, grouping);
-                    }
-                    ((ICollection<TElement>)grouping.Items).Add(elementSelector(item));
-                }
+                _source = source;
+                _keySelector = keySelector;
+                _elementSelector = elementSelector;
+                _comparer = comparer;
             }
 
             public IEnumerator<IGrouping<TKey, TElement>> GetEnumerator()
             {
-                foreach (var grouping in _groupings.Values)
+                var groupings = new Dictionary<TKey, Lookup<TKey, TElement>.Grouping>(_comparer);
+                foreach (var item in _source)
                 {
-                    yield return grouping;
+                    var key = _keySelector(item);
+                    Lookup<TKey, TElement>.Grouping grouping;
+                    if (!groupings.TryGetValue(key, out grouping))
+                    {
+                        grouping = new Lookup<TKey, TElement>.Grouping(key);
+                        groupings.Add(key, grouping);
+                    }
+                    grouping.Items.Add(_elementSelector(item));
                 }
+                return Enumerator(groupings);
             }
 
             IEnumerator IEnumerable.GetEnumerator()
             {
                 return GetEnumerator();
+            }
+
+            private static IEnumerator<IGrouping<TKey, TElement>> Enumerator(Dictionary<TKey, Lookup<TKey, TElement>.Grouping> groupings)
+            {
+                foreach (var grouping in groupings.Values)
+                {
+                    yield return grouping;
+                }
             }
         }
     }
