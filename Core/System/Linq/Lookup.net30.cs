@@ -77,13 +77,22 @@ namespace System.Linq
 
         internal static Lookup<TKey, TElement> Create<TSource>(IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer)
         {
-            var _source = Check.NotNullArgument(source, "source");
-            var _elementSelector = Check.NotNullArgument(elementSelector, "elementSelector");
-            var _keySelector = Check.NotNullArgument(keySelector, "keySelector");
-            var result = new Lookup<TKey, TElement>(comparer);
-            foreach (TSource item in _source)
+            if (source == null)
             {
-                result.GetOrCreateGrouping(_keySelector(item)).Add(_elementSelector(item));
+                throw new ArgumentNullException("source");
+            }
+            if (elementSelector == null)
+            {
+                throw new ArgumentNullException("elementSelector");
+            }
+            if (keySelector == null)
+            {
+                throw new ArgumentNullException("keySelector");
+            }
+            var result = new Lookup<TKey, TElement>(comparer);
+            foreach (var item in source)
+            {
+                result.GetOrCreateGrouping(keySelector(item)).Add(elementSelector(item));
             }
             return result;
         }
