@@ -41,13 +41,21 @@ namespace Theraot.Collections
         protected ProgressiveList(IEnumerable<T> wrapped, IList<T> cache, IEqualityComparer<T> comparer)
             : base(wrapped, cache, comparer)
         {
-            _cache = Check.NotNullArgument(cache, "cache");
+            if (cache == null)
+            {
+                throw new ArgumentNullException("cache");
+            }
+            _cache = cache;
         }
 
         protected ProgressiveList(Progressor<T> wrapped, IList<T> cache, IEqualityComparer<T> comparer)
             : base(wrapped, cache, comparer)
         {
-            _cache = Check.NotNullArgument(cache, "cache");
+            if (cache == null)
+            {
+                throw new ArgumentNullException("cache");
+            }
+            _cache = cache;
         }
 
         public T this[int index]

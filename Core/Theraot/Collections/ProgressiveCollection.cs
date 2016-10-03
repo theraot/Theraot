@@ -42,7 +42,11 @@ namespace Theraot.Collections
 
         protected ProgressiveCollection(IEnumerable<T> wrapped, ICollection<T> cache, IEqualityComparer<T> comparer)
         {
-            _cache = Check.NotNullArgument(cache, "cache");
+            if (cache == null)
+            {
+                throw new ArgumentNullException("cache");
+            }
+            _cache = cache;
             _progressor = new Progressor<T>(wrapped);
             _progressor.SubscribeAction(obj => _cache.Add(obj));
             _comparer = comparer ?? EqualityComparer<T>.Default;
@@ -50,15 +54,27 @@ namespace Theraot.Collections
 
         protected ProgressiveCollection(Progressor<T> wrapped, ICollection<T> cache, IEqualityComparer<T> comparer)
         {
-            _cache = Check.NotNullArgument(cache, "cache");
-            _progressor = new Progressor<T>(Check.NotNullArgument(wrapped, "wrapped"));
+            if (cache == null)
+            {
+                throw new ArgumentNullException("cache");
+            }
+            if (wrapped == null)
+            {
+                throw new ArgumentNullException("cache");
+            }
+            _cache = cache;
+            _progressor = new Progressor<T>(wrapped);
             _progressor.SubscribeAction(obj => _cache.Add(obj));
             _comparer = comparer ?? EqualityComparer<T>.Default;
         }
 
         protected ProgressiveCollection(TryTake<T> tryTake, ICollection<T> cache, IEqualityComparer<T> comparer)
         {
-            _cache = Check.NotNullArgument(cache, "cache");
+            if (cache == null)
+            {
+                throw new ArgumentNullException("cache");
+            }
+            _cache = cache;
             _progressor = new Progressor<T>(tryTake, false); // false because the underlaying structure may change
             _progressor.SubscribeAction(obj => _cache.Add(obj));
             _comparer = comparer ?? EqualityComparer<T>.Default;
