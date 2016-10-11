@@ -17,15 +17,8 @@ namespace Theraot.Collections
             {
                 return (ICollection<T>)(object)(source as string).ToCharArray();
             }
-            var _result = source as ICollection<T>;
-            if (_result == null)
-            {
-                return new ProgressiveCollection<T>(source);
-            }
-            else
-            {
-                return _result;
-            }
+            var result = source as ICollection<T>;
+            return result ?? new ProgressiveCollection<T>(source);
         }
 
         public static ICollection<T> AsDistinctCollection<T>(IEnumerable<T> source)
@@ -36,23 +29,17 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            var _resultHashSet = source as HashSet<T>;
-            if (_resultHashSet == null)
+            var resultHashSet = source as HashSet<T>;
+            if (resultHashSet == null)
             {
-                var _resultISet = source as ISet<T>;
-                if (_resultISet == null)
+                var resultISet = source as ISet<T>;
+                if (resultISet == null)
                 {
                     return new ProgressiveSet<T>(source);
                 }
-                else
-                {
-                    return _resultISet;
-                }
+                return resultISet;
             }
-            else
-            {
-                return _resultHashSet;
-            }
+            return resultHashSet;
 #else
             return AsSet(source);
 #endif
@@ -60,15 +47,12 @@ namespace Theraot.Collections
 
         public static IList<T> AsList<T>(IEnumerable<T> source)
         {
-            var _result = source as IList<T>;
-            if (_result == null)
+            var result = source as IList<T>;
+            if (result == null)
             {
                 return new ProgressiveList<T>(source);
             }
-            else
-            {
-                return _result;
-            }
+            return result;
         }
 
         public static ISet<T> AsSet<T>(IEnumerable<T> source)
@@ -78,15 +62,8 @@ namespace Theraot.Collections
                 throw new ArgumentNullException("source");
             }
             // Remember that On .NET 3.5 HashSet is not an ISet
-            var _resultISet = source as ISet<T>;
-            if (_resultISet == null)
-            {
-                return new ProgressiveSet<T>(source);
-            }
-            else
-            {
-                return _resultISet;
-            }
+            var resultISet = source as ISet<T>;
+            return resultISet ?? new ProgressiveSet<T>(source);
         }
 
         public static IEnumerable<T> AsUnaryEnumerable<T>(this T source)
@@ -125,26 +102,26 @@ namespace Theraot.Collections
                 return (source as string).Length >= count;
             }
             var sourceAsCollection = source as ICollection<TSource>;
-            if (sourceAsCollection == null)
+            if (sourceAsCollection != null)
             {
-                var result = 0;
-                using (var item = source.GetEnumerator())
+                return sourceAsCollection.Count >= count;
+            }
+            var result = 0;
+            using (var item = source.GetEnumerator())
+            {
+                while (item.MoveNext())
                 {
-                    while (item.MoveNext())
+                    checked
                     {
-                        checked
-                        {
-                            result++;
-                        }
-                        if (result == count)
-                        {
-                            return true;
-                        }
+                        result++;
+                    }
+                    if (result == count)
+                    {
+                        return true;
                     }
                 }
-                return false;
             }
-            return sourceAsCollection.Count >= count;
+            return false;
         }
 
         public static IEnumerable<T> SkipItems<T>(this IEnumerable<T> source, int skipCount)
@@ -162,14 +139,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            if (predicateCount == null)
-            {
-                return SkipItemsExtracted(source, skipCount);
-            }
-            else
-            {
-                return SkipItemsExtracted(source, predicateCount, skipCount);
-            }
+            return predicateCount == null ? SkipItemsExtracted(source, skipCount) : SkipItemsExtracted(source, predicateCount, skipCount);
         }
 
         public static IEnumerable<T> StepItems<T>(this IEnumerable<T> source, int stepCount)
@@ -196,14 +166,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            if (predicateCount == null)
-            {
-                return TakeItemsExtracted(source, takeCount);
-            }
-            else
-            {
-                return TakeItemsExtracted(source, predicateCount, takeCount);
-            }
+            return predicateCount == null ? TakeItemsExtracted(source, takeCount) : TakeItemsExtracted(source, predicateCount, takeCount);
         }
 
         private static IEnumerable<T> SkipItemsExtracted<T>(IEnumerable<T> source, int skipCount)
@@ -267,11 +230,8 @@ namespace Theraot.Collections
                 {
                     break;
                 }
-                else
-                {
-                    yield return item;
-                    count++;
-                }
+                yield return item;
+                count++;
             }
         }
 
@@ -284,13 +244,10 @@ namespace Theraot.Collections
                 {
                     break;
                 }
-                else
+                yield return item;
+                if (predicateCount(item))
                 {
-                    yield return item;
-                    if (predicateCount(item))
-                    {
-                        count++;
-                    }
+                    count++;
                 }
             }
         }
