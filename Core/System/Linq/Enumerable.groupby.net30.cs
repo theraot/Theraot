@@ -2,6 +2,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using Theraot.Collections.Specialized;
 using Theraot.Core;
 
 namespace System.Linq
@@ -97,7 +98,7 @@ namespace System.Linq
 
             public IEnumerator<TResult> GetEnumerator()
             {
-                var groupings = new Dictionary<TKey, Lookup<TKey, TElement>.Grouping>(_comparer);
+                var groupings = new NullAwareDictionary<TKey, Lookup<TKey, TElement>.Grouping>(_comparer);
                 foreach (var item in _source)
                 {
                     var key = _keySelector(item);
@@ -117,7 +118,7 @@ namespace System.Linq
                 return GetEnumerator();
             }
 
-            private IEnumerator<TResult> Enumerator(Dictionary<TKey, Lookup<TKey, TElement>.Grouping> groupings)
+            private IEnumerator<TResult> Enumerator(IDictionary<TKey, Lookup<TKey, TElement>.Grouping> groupings)
             {
                 foreach (var grouping in groupings.Values)
                 {
@@ -155,7 +156,7 @@ namespace System.Linq
 
             public IEnumerator<IGrouping<TKey, TElement>> GetEnumerator()
             {
-                var groupings = new Dictionary<TKey, Lookup<TKey, TElement>.Grouping>(_comparer);
+                var groupings = new NullAwareDictionary<TKey, Lookup<TKey, TElement>.Grouping>(_comparer);
                 foreach (var item in _source)
                 {
                     var key = _keySelector(item);
@@ -175,7 +176,7 @@ namespace System.Linq
                 return GetEnumerator();
             }
 
-            private static IEnumerator<IGrouping<TKey, TElement>> Enumerator(Dictionary<TKey, Lookup<TKey, TElement>.Grouping> groupings)
+            private static IEnumerator<IGrouping<TKey, TElement>> Enumerator(IDictionary<TKey, Lookup<TKey, TElement>.Grouping> groupings)
             {
                 foreach (var grouping in groupings.Values)
                 {
