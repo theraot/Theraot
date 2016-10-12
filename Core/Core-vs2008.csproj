@@ -329,6 +329,13 @@
     <Compile Include="System\Runtime\CompilerServices\YieldAwaitable.net40.cs" />
     <Compile Include="System\Runtime\ExceptionServices\ExceptionDispatchInfo.net40.cs" />
     <Compile Include="System\Runtime\TargetedPatchingOptOutAttribute.net35.cs" />
+    <Compile Include="System\Security\Permissions\SecurityAttribute.netcf.cs" />
+    <Compile Include="System\Security\SecurityElement.netcf.cs" />
+    <Compile Include="System\Security\ISecurityEncodable.netcf.cs" />
+    <Compile Include="System\Security\IPermission.netcf.cs" />
+    <Compile Include="System\Security\Permissions\CodeAccessSecurityAttribute.netcf.cs" />
+    <Compile Include="System\Security\Permissions\SecurityPermissionFlag.netcf.cs" />
+    <Compile Include="System\Security\Permissions\SecurityPermissionAttribute.netcf.cs" />
     <Compile Include="System\Security\SecurityCriticalScope.netcf.cs" />
     <Compile Include="System\Security\SecurityCriticalAttribute.netcf.cs" />
     <Compile Include="System\SR.cs" />
@@ -798,8 +805,6 @@
   <ItemGroup>
     <Reference Include="mscorlib" />
     <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFrameworkVersion)'!='v2.0' And '$(TargetFrameworkVersion)'!='v3.0'">
     <Reference Include="System.Core">
