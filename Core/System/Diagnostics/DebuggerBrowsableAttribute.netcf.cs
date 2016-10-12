@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 
 namespace System.Diagnostics
 {
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     [ComVisible(true)]
     public sealed class DebuggerBrowsableAttribute : Attribute
     {
-        private DebuggerBrowsableState _state;
+        private readonly DebuggerBrowsableState _state;
 
         public DebuggerBrowsableAttribute(DebuggerBrowsableState state)
         {

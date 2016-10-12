@@ -2,7 +2,7 @@
 
 namespace System.ComponentModel
 {
-    [AttributeUsageAttribute(AttributeTargets.All)]
+    [AttributeUsage(AttributeTargets.All)]
     public sealed class ImmutableObjectAttribute : Attribute
     {
         private readonly bool _immutable;

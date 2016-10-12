@@ -11,6 +11,12 @@ namespace System.Security.Permissions
     {
         private SecurityPermissionFlag _flags;
 
+        public SecurityPermissionAttribute(SecurityAction action)
+            : base(action)
+        {
+            // Empty
+        }
+
         public bool Assertion
         {
             get
@@ -192,14 +198,9 @@ namespace System.Security.Permissions
             }
         }
 
-        public SecurityPermissionAttribute(SecurityAction action)
-            : base(action)
-        {
-        }
-
         public override IPermission CreatePermission()
         {
-            if (_unrestricted)
+            if (Unrestricted)
             {
                 return new SecurityPermission(PermissionState.Unrestricted);
             }

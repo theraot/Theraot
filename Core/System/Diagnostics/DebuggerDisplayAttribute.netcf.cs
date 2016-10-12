@@ -1,19 +1,18 @@
 ﻿#if NETCF
 
-using System;
 using System.Runtime.InteropServices;
 
 namespace System.Diagnostics
 {
-    [AttributeUsageAttribute(AttributeTargets.Assembly | AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Enum | AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Delegate, AllowMultiple = true)]
-    [ComVisibleAttribute(true)]
+    [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Enum | AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Delegate, AllowMultiple = true)]
+    [ComVisible(true)]
     public sealed class DebuggerDisplayAttribute : Attribute
     {
+        private readonly string _value;
         private string _name;
         private Type _target;
         private string _targetTypeName;
         private string _type;
-        private string _value;
 
         public DebuggerDisplayAttribute(string value)
         {
@@ -79,7 +78,6 @@ namespace System.Diagnostics
                 return _value;
             }
         }
-
     }
 }
 

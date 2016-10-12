@@ -1,14 +1,30 @@
 ﻿#if NETCF
 
-using System.Runtime.InteropServices;
 using System.Collections;
+using System.Runtime.InteropServices;
 
 namespace System.Security
 {
+    // TODO
     [ComVisible(true)]
     [Serializable]
     public sealed class SecurityElement
     {
+        public SecurityElement(string tag)
+        {
+            throw new NotSupportedException();
+        }
+
+        public SecurityElement(string tag, string text)
+        {
+            throw new NotSupportedException();
+        }
+
+        private SecurityElement()
+        {
+            // Empty
+        }
+
         public Hashtable Attributes
         {
             get
@@ -57,47 +73,6 @@ namespace System.Security
             }
         }
 
-        private SecurityElement()
-        {
-            // Empty
-        }
-
-        public SecurityElement(string tag)
-        {
-            throw new NotSupportedException();
-        }
-
-        public SecurityElement(string tag, string text)
-        {
-            throw new NotSupportedException();
-        }
-
-        public void AddAttribute(string name, string value)
-        {
-            throw new NotSupportedException();
-        }
-
-        public void AddChild(SecurityElement child)
-        {
-            throw new NotSupportedException();
-        }
-
-        public string Attribute(string name)
-        {
-            throw new NotSupportedException();
-        }
-
-        [ComVisible(false)]
-        public SecurityElement Copy()
-        {
-            throw new NotSupportedException();
-        }
-
-        public bool Equal(SecurityElement other)
-        {
-            throw new NotSupportedException();
-        }
-
         public static string Escape(string str)
         {
             throw new NotImplementedException();
@@ -126,6 +101,32 @@ namespace System.Security
         public static bool IsValidText(string text)
         {
             throw new NotImplementedException();
+        }
+
+        public void AddAttribute(string name, string value)
+        {
+            throw new NotSupportedException();
+        }
+
+        public void AddChild(SecurityElement child)
+        {
+            throw new NotSupportedException();
+        }
+
+        public string Attribute(string name)
+        {
+            throw new NotSupportedException();
+        }
+
+        [ComVisible(false)]
+        public SecurityElement Copy()
+        {
+            throw new NotSupportedException();
+        }
+
+        public bool Equal(SecurityElement other)
+        {
+            throw new NotSupportedException();
         }
 
         public SecurityElement SearchForChildByTag(string tag)

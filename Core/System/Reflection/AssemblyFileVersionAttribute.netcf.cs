@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 
 namespace System.Reflection
 {
-    [AttributeUsageAttribute(AttributeTargets.Assembly, Inherited = false)]
-    [ComVisibleAttribute(true)]
+    [AttributeUsage(AttributeTargets.Assembly)]
+    [ComVisible(true)]
     public sealed class AssemblyFileVersionAttribute : Attribute
     {
-        private string _version;
+        private readonly string _version;
 
         public AssemblyFileVersionAttribute(string version)
         {
