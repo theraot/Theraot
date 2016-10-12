@@ -316,6 +316,10 @@
     <Compile Include="System\Runtime\CompilerServices\ConditionalWeakTable.net35.cs" />
     <Compile Include="System\Runtime\CompilerServices\ConfiguredTaskAwaitable.net40.cs" />
     <Compile Include="System\Runtime\CompilerServices\ContractHelperEx.cs" />
+    <Compile Include="System\Runtime\ConstrainedExecution\Consistency.netcf.cs" />
+    <Compile Include="System\Runtime\ConstrainedExecution\Cer.netcf.cs" />
+    <Compile Include="System\Runtime\ConstrainedExecution\ReliabilityContractAttribute.netcf.cs" />
+    <Compile Include="System\Runtime\ConstrainedExecution\CriticalFinalizerObject.netcf.cs" />
     <Compile Include="System\Runtime\CompilerServices\IAsyncMethodBuilder.cs" />
     <Compile Include="System\Runtime\CompilerServices\IAsyncStateMachine.net40.cs" />
     <Compile Include="System\Runtime\CompilerServices\ICriticalNotifyCompletion.net40.cs" />
