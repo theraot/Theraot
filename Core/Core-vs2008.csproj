@@ -182,6 +182,7 @@
     <Compile Include="System\Collections\Specialized\NotifyCollectionChangedEventArgs.net30.cs" />
     <Compile Include="System\Collections\Specialized\NotifyCollectionChangedEventHandler.net30.cs" />
     <Compile Include="System\Collections\StructuralComparisons.net35.cs" />
+    <Compile Include="System\ComponentModel\ImmutableObjectAttribute.netcf.cs" />
     <Compile Include="System\Diagnostics\Contracts\Contract.bcl.net35 .cs" />
     <Compile Include="System\Diagnostics\Contracts\Contract.net35.cs" />
     <Compile Include="System\Diagnostics\Contracts\ContractAbbreviatorAttribute.net40.cs" />
