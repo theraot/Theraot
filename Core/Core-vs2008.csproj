@@ -195,6 +195,7 @@
     <Compile Include="System\Diagnostics\Contracts\ContractReferenceAssemblyAttribute.net40.cs" />
     <Compile Include="System\Diagnostics\Contracts\ContractRuntimeIgnoredAttribute.net35.cs" />
     <Compile Include="System\Diagnostics\Contracts\ContractVerificationAttribute.net35.cs" />
+    <Compile Include="System\Diagnostics\DebuggerDisplayAttribute.netcf.cs" />
     <Compile Include="System\Dynamic\Utils\CacheDict.cs" />
     <Compile Include="System\Dynamic\Utils\ContractsUtil.cs" />
     <Compile Include="System\Dynamic\Utils\DelegateHelpers.cs" />
@@ -797,6 +798,8 @@
   <ItemGroup>
     <Reference Include="mscorlib" />
     <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFrameworkVersion)'!='v2.0' And '$(TargetFrameworkVersion)'!='v3.0'">
     <Reference Include="System.Core">
