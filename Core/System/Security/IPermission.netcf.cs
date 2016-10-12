@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if NETCF
+
+using System;
 using System.Runtime.InteropServices;
 
 namespace System.Security
@@ -17,3 +19,5 @@ namespace System.Security
         IPermission Union(IPermission target);
     }
 }
+
+#endif

@@ -1,4 +1,6 @@
-﻿using System.Runtime.InteropServices;
+﻿#if NETCF
+
+using System.Runtime.InteropServices;
 using System.Security.Permissions;
 
 namespace System.Runtime.ConstrainedExecution
@@ -20,3 +22,5 @@ namespace System.Runtime.ConstrainedExecution
         }
     }
 }
+
+#endif

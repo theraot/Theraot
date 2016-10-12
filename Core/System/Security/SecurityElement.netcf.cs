@@ -1,4 +1,6 @@
-﻿using System.Runtime.InteropServices;
+﻿#if NETCF
+
+using System.Runtime.InteropServices;
 using System.Collections;
 
 namespace System.Security
@@ -137,3 +139,5 @@ namespace System.Security
         }
     }
 }
+
+#endif

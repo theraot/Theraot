@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if NETCF
+
+using System;
 
 namespace System.Runtime.ConstrainedExecution
 {
@@ -10,3 +12,5 @@ namespace System.Runtime.ConstrainedExecution
         Success
     }
 }
+
+#endif

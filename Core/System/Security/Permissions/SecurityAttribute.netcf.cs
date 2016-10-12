@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if NETCF
+
+using System;
 using System.Runtime.InteropServices;
 using System.Security;
 
@@ -44,3 +46,5 @@ namespace System.Security.Permissions
         }
     }
 }
+
+#endif

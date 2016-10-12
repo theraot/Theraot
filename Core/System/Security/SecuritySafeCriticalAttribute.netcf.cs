@@ -1,4 +1,6 @@
-﻿namespace System.Security
+﻿#if NETCF
+
+namespace System.Security
 {
     [AttributeUsage(AttributeTargets.All, AllowMultiple=false, Inherited=false)]
     public sealed class SecuritySafeCriticalAttribute : Attribute
@@ -9,3 +11,5 @@
         }
     }
 }
+
+#endif
