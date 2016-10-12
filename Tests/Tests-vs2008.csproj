@@ -9,143 +9,137 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Tests</RootNamespace>
     <AssemblyName>Tests</AssemblyName>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-    <ReleaseVersion>1.0.2</ReleaseVersion>
+    <ProjectTypeGuids>{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PlatformFamilyName>WindowsCE</PlatformFamilyName>
+    <PlatformID>E2BECB1F-8C8C-41ba-B736-9BE7D946A398</PlatformID>
+    <OSVersion>5.00</OSVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <NativePlatformName>Windows CE</NativePlatformName>
+    <FormFactorID>
+    </FormFactorID>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET_4_5;NET_4_0;NET20;NETCF;FAT</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET_4_5;NET_4_0;NET20;NETCF;FAT;$(PlatformFamilyName)</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>default</LangVersion>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
-    <DefineConstants>NET_4_5;NET_4_0;NET20;NETCF</DefineConstants>
+    <DefineConstants>NET_4_5;NET_4_0;NET20;NETCF;$(PlatformFamilyName)</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <LangVersion>default</LangVersion>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET20-CF|AnyCPU'">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET20-CF\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET_4_5;NET_4_0;NET20;NETCF;FAT</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET_4_5;NET_4_0;NET20;NETCF;FAT;$(PlatformFamilyName)</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-    <LangVersion>default</LangVersion>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET30-CF|AnyCPU'">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET30-CF\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET_4_5;NET_4_0;NET30;NETCF;FAT</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET_4_5;NET_4_0;NET30;NETCF;FAT;$(PlatformFamilyName)</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
-    <LangVersion>default</LangVersion>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET35-CF|AnyCPU'">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET35-CF\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET_4_5;NET_4_0;NET35;NETCF;FAT</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET_4_5;NET_4_0;NET35;NETCF;FAT;$(PlatformFamilyName)</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <LangVersion>default</LangVersion>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET20-CF|AnyCPU' ">
     <Optimize>True</Optimize>
     <OutputPath>bin\NET20-CF\</OutputPath>
-    <DefineConstants>NET_4_5;NET_4_0;NET20;NETCF</DefineConstants>
+    <DefineConstants>NET_4_5;NET_4_0;NET20;NETCF;$(PlatformFamilyName)</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-    <LangVersion>default</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET30-CF|AnyCPU' ">
     <Optimize>True</Optimize>
     <OutputPath>bin\NET30-CF\</OutputPath>
-    <DefineConstants>NET_4_5;NET_4_0;NET30;NETCF</DefineConstants>
+    <DefineConstants>NET_4_5;NET_4_0;NET30;NETCF;$(PlatformFamilyName)</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
-    <LangVersion>default</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35-CF|AnyCPU' ">
     <Optimize>True</Optimize>
     <OutputPath>bin\NET35-CF\</OutputPath>
-    <DefineConstants>NET_4_5;NET_4_0;NET35;NETCF</DefineConstants>
+    <DefineConstants>NET_4_5;NET_4_0;NET35;NETCF;$(PlatformFamilyName)</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <LangVersion>default</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET20-CF_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
     <OutputPath>bin\NET20_FAT-CF\</OutputPath>
-    <DefineConstants>NET_4_5;NET_4_0;NET20;NETCF;FAT</DefineConstants>
+    <DefineConstants>NET_4_5;NET_4_0;NET20;NETCF;FAT;$(PlatformFamilyName)</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-    <LangVersion>default</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Fat>true</Fat>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET30-CF_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
     <OutputPath>bin\NET30_FAT-CF\</OutputPath>
-    <DefineConstants>NET_4_5;NET_4_0;NET30;NETCF;FAT</DefineConstants>
+    <DefineConstants>NET_4_5;NET_4_0;NET30;NETCF;FAT;$(PlatformFamilyName)</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
-    <LangVersion>default</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Fat>true</Fat>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35-CF_FAT|AnyCPU' ">
     <Optimize>True</Optimize>
     <OutputPath>bin\NET35_FAT-CF\</OutputPath>
-    <DefineConstants>NET_4_5;NET_4_0;NET35;NETCF;FAT</DefineConstants>
+    <DefineConstants>NET_4_5;NET_4_0;NET35;NETCF;FAT;$(PlatformFamilyName)</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
     <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <LangVersion>default</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Fat>true</Fat>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="nunit.framework, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
@@ -296,7 +290,7 @@
     <Compile Include="Theraot\Threading\Needles\TransactionalTests.cs" />
     <Compile Include="System\Runtime\ExceptionServices\ExceptionDispatchInfoTest.cs" />
   </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
