@@ -283,7 +283,13 @@ namespace System.Linq.Expressions.Interpreter
                 return +1;
             }
         }
-        public static Instruction Create(Type type, bool liftedToNull = false)
+
+        public static Instruction Create(Type type)
+        {
+            return Create(type, false);
+        }
+
+        public static Instruction Create(Type type, bool liftedToNull)
         {
             Debug.Assert(!type.IsEnum);
             if (liftedToNull)
@@ -604,7 +610,12 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        public static Instruction Create(Type type, bool liftedToNull = false)
+        public static Instruction Create(Type type)
+        {
+            return Create (type, false);
+        }
+
+        public static Instruction Create(Type type, bool liftedToNull)
         {
             Debug.Assert(!type.IsEnum);
             if (liftedToNull)

@@ -282,7 +282,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public int VoidGoto(int labelIndex)
         {
-            return Goto(labelIndex, Interpreter.NoValue, gotoExceptionHandler: false);
+            return Goto(labelIndex, Interpreter.NoValue, /*gotoExceptionHandler*/ false);
         }
 
         public int Goto(int labelIndex, object value, bool gotoExceptionHandler)

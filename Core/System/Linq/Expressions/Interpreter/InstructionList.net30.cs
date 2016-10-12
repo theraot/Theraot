@@ -769,12 +769,22 @@ namespace System.Linq.Expressions.Interpreter
             Emit(RightShiftInstruction.Create(type));
         }
 
-        public void EmitEqual(Type type, bool liftedToNull = false)
+        public void EmitEqual(Type type)
+        {
+            Emit(EqualInstruction.Create(type, false));
+        }
+
+        public void EmitEqual(Type type, bool liftedToNull)
         {
             Emit(EqualInstruction.Create(type, liftedToNull));
         }
 
-        public void EmitNotEqual(Type type, bool liftedToNull = false)
+        public void EmitNotEqual(Type type)
+        {
+            Emit(NotEqualInstruction.Create(type, false));
+        }
+
+        public void EmitNotEqual(Type type, bool liftedToNull)
         {
             Emit(NotEqualInstruction.Create(type, liftedToNull));
         }

@@ -166,7 +166,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
             }
             if (handler == null) { return 0; }
-            return frame.Goto(handler.LabelIndex, exception, gotoExceptionHandler: true);
+            return frame.Goto(handler.LabelIndex, exception, /*gotoExceptionHandler*/ true);
         }
     }
 
@@ -1513,7 +1513,7 @@ namespace System.Linq.Expressions.Interpreter
                             Expression.Goto(doneLabel, @case.Body),
                             AstUtils.Empty()
                         ),
-                        asVoid: true);
+                        /*asVoid*/ true);
                 }
             }
 

@@ -340,7 +340,7 @@ namespace System.Linq.Expressions.Interpreter
 
             // goto the target label or the current finally continuation:
             object value = _hasValue ? frame.Pop() : Interpreter.NoValue;
-            return frame.Goto(_labelIndex, _labelTargetGetsValue ? value : Interpreter.NoValue, gotoExceptionHandler: false);
+            return frame.Goto(_labelIndex, _labelTargetGetsValue ? value : Interpreter.NoValue, /*gotoExceptionHandler*/ false);
         }
     }
 

@@ -1,10 +1,11 @@
 @echo off
 setlocal enabledelayedexpansion
 
+REM Store path of the bat
 SET mypath=%~dp0
 
 echo ____________________________
-echo Running from %mypath:~0,-1%\build.bat
+echo Running from %mypath:~0,-1%\clear_package.bat
 echo ____________________________
 
 REM enter the path of the bat
@@ -12,11 +13,12 @@ pushd %~dp0
 cd /D %mypath:~0,3%
 cd %mypath%
 
-	call clear_package.bat
-	call build_net.bat
-	call build_netcf.bat
-	call package.bat
-
+	REM reset the package folder
+	rmdir /S /Q package
+	mkdir package
+	mkdir package\lib\
+	
+REM leave the path
 popd
 
 popd
