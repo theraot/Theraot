@@ -195,6 +195,8 @@
     <Compile Include="System\Diagnostics\Contracts\ContractReferenceAssemblyAttribute.net40.cs" />
     <Compile Include="System\Diagnostics\Contracts\ContractRuntimeIgnoredAttribute.net35.cs" />
     <Compile Include="System\Diagnostics\Contracts\ContractVerificationAttribute.net35.cs" />
+    <Compile Include="System\Diagnostics\DebuggerBrowsableAttribute.netcf.cs" />
+    <Compile Include="System\Diagnostics\DebuggerBrowsableState.netcf.cs" />
     <Compile Include="System\Diagnostics\DebuggerDisplayAttribute.netcf.cs" />
     <Compile Include="System\Dynamic\Utils\CacheDict.cs" />
     <Compile Include="System\Dynamic\Utils\ContractsUtil.cs" />
@@ -860,6 +862,7 @@
     <VisualStudio />
   </ProjectExtensions>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="OpenSourceKey.snk" />
   </ItemGroup>
   <ItemGroup>
