@@ -78,20 +78,6 @@
     <DebugType>full</DebugType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET35-CF|AnyCPU'">
-    <Optimize>False</Optimize>
-    <OutputPath>bin\Debug_NET35-CF\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET_4_5;NET_4_0;NET35;NETCF;FAT</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <LangVersion>default</LangVersion>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <CF>true</CF>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET40|AnyCPU'">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET40\</OutputPath>
@@ -151,18 +137,6 @@
     <LangVersion>default</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35-CF|AnyCPU' ">
-    <Optimize>True</Optimize>
-    <OutputPath>bin\NET35-CF\</OutputPath>
-    <DefineConstants>NET_4_5;NET_4_0;NET35;NETCF</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <LangVersion>default</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <CF>true</CF>
-  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40|AnyCPU' ">
     <Optimize>True</Optimize>
     <OutputPath>bin\NET40\</OutputPath>
@@ -219,19 +193,6 @@
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <LangVersion>default</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Fat>true</Fat>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35-CF_FAT|AnyCPU' ">
-    <Optimize>True</Optimize>
-    <OutputPath>bin\NET35-CF_FAT\</OutputPath>
-    <DefineConstants>NET_4_5;NET_4_0;NET35;NETCF;FAT</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <LangVersion>default</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <CF>true</CF>
     <Fat>true</Fat>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40_FAT|AnyCPU' ">

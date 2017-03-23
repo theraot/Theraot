@@ -72,19 +72,6 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET35-CF|AnyCPU'">
-    <Optimize>False</Optimize>
-    <OutputPath>bin\Debug_NET35-CF\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET35;NETCF;FAT</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <LangVersion>default</LangVersion>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <CF>true</CF>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET40|AnyCPU'">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET40\</OutputPath>
@@ -139,17 +126,6 @@
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <LangVersion>5</LangVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35-CF|AnyCPU' ">
-    <Optimize>True</Optimize>
-    <OutputPath>bin\NET35-CF\</OutputPath>
-    <DefineConstants>NETCF;NET35</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <LangVersion>default</LangVersion>
-    <CF>true</CF>
-  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40|AnyCPU' ">
     <Optimize>True</Optimize>
     <OutputPath>bin\NET40\</OutputPath>
@@ -201,18 +177,6 @@
     <Prefer32Bit>false</Prefer32Bit>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <LangVersion>5</LangVersion>
-    <Fat>true</Fat>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET35-CF_FAT|AnyCPU' ">
-    <Optimize>True</Optimize>
-    <OutputPath>bin\NET35-CF_FAT\</OutputPath>
-    <DefineConstants>NETCF;NET35;FAT</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <LangVersion>default</LangVersion>
-    <CF>true</CF>
     <Fat>true</Fat>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET40_FAT|AnyCPU' ">

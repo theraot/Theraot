@@ -14,7 +14,6 @@ cd %mypath%
 
 	call clear_package.bat
 	call build_net.bat
-	call build_netcf.bat
 	call package_final.bat
 
 popd
