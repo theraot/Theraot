@@ -15,14 +15,7 @@ namespace Theraot.Threading
 
         public ReadWriteLock(bool reentrant)
         {
-            if (reentrant)
-            {
-                _wrapped = new ReentrantReadWriteLock();
-            }
-            else
-            {
-                _wrapped = new NoReentrantReadWriteLock();
-            }
+            _wrapped = (IReadWriteLock)(reentrant ? (object)new ReentrantReadWriteLock() : new NoReentrantReadWriteLock());
         }
 
         public bool HasReader
