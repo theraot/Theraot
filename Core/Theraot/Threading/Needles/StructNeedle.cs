@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace Theraot.Threading.Needles
 {
@@ -10,33 +9,22 @@ namespace Theraot.Threading.Needles
     [System.Diagnostics.DebuggerNonUserCode]
     public struct StructNeedle<T> : IEquatable<StructNeedle<T>>, IRecyclableNeedle<T>
     {
-        private T _target;
-
         public StructNeedle(T target)
         {
-            _target = target;
+            Value = target;
         }
 
         public bool IsAlive
         {
             get
             {
-                return _target != null;
+                return !ReferenceEquals(Value, null);
             }
         }
 
         public T Value
         {
-            get
-            {
-                Thread.MemoryBarrier();
-                return _target;
-            }
-            set
-            {
-                _target = value;
-                Thread.MemoryBarrier();
-            }
+            get; set;
         }
 
         public static explicit operator T(StructNeedle<T> needle)
@@ -68,8 +56,8 @@ namespace Theraot.Threading.Needles
             // Keep the "is" operator
             if (obj is T)
             {
-                var target = _target;
-                return IsAlive && EqualityComparer<T>.Default.Equals(target, (T) obj);
+                var target = Value;
+                return IsAlive && EqualityComparer<T>.Default.Equals(target, (T)obj);
             }
             return false;
         }
@@ -79,14 +67,18 @@ namespace Theraot.Threading.Needles
             return EqualsExtracted(this, other);
         }
 
+#pragma warning disable RCS1132 // Remove redundant overriding member.
+
         public override int GetHashCode()
         {
             return base.GetHashCode();
         }
 
+#pragma warning restore RCS1132 // Remove redundant overriding member.
+
         void IRecyclableNeedle<T>.Free()
         {
-            _target = default(T);
+            Value = default(T);
         }
 
         public override string ToString()
