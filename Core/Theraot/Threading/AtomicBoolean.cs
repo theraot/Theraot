@@ -22,6 +22,7 @@
 
 // Needed for NET30
 
+using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
@@ -29,15 +30,15 @@ namespace Theraot.Threading
 {
     public class AtomicBoolean
     {
-        private const int INT_Set = 1;
-        private const int INT_UnSet = 0;
-        private int _flag;
+        private const int _set = 1;
+        private const int _unset = 0;
+        private int _value;
 
         public bool Value
         {
             get
             {
-                return _flag == INT_Set;
+                return _value == _set;
             }
             set
             {
@@ -47,40 +48,35 @@ namespace Theraot.Threading
 
         public static implicit operator AtomicBoolean(bool value)
         {
-            return FromValue(value);
+            return new AtomicBoolean { Value = value };
         }
 
-        public static explicit operator bool(AtomicBoolean atomicBoolean)
+        public static implicit operator bool(AtomicBoolean atomicBoolean)
         {
             return atomicBoolean.Value;
         }
 
-        public static bool operator ==(AtomicBoolean left, AtomicBoolean right)
-        {
-            return ReferenceEquals(left, null) ? ReferenceEquals(right, null) : left.Equals(right);
-        }
-
         public static bool operator !=(AtomicBoolean left, AtomicBoolean right)
         {
-            return ReferenceEquals(left, null) ? !ReferenceEquals(right, null) : !left.Equals(right);
+            return left == null ? right != null : !left.Equals(right);
         }
 
-        public static AtomicBoolean FromValue(bool value)
+        public static bool operator ==(AtomicBoolean left, AtomicBoolean right)
         {
-            return new AtomicBoolean { Value = value };
+            return left == null ? right == null : left.Equals(right);
         }
 
-        public bool CompareAndExchange(bool expected, bool newVal)
+        public bool CompareExchange(bool expected, bool newVal)
         {
-            var newTemp = newVal ? INT_Set : INT_UnSet;
-            var expectedTemp = expected ? INT_Set : INT_UnSet;
+            var newTemp = newVal ? _set : _unset;
+            var expectedTemp = expected ? _set : _unset;
 
-            return Interlocked.CompareExchange(ref _flag, newTemp, expectedTemp) == expectedTemp;
+            return Interlocked.CompareExchange(ref _value, newTemp, expectedTemp) == expectedTemp;
         }
 
         public bool Equals(AtomicBoolean obj)
         {
-            return _flag == obj._flag;
+            return _value == obj._value;
         }
 
         public override bool Equals(object obj)
@@ -90,8 +86,8 @@ namespace Theraot.Threading
 
         public bool Exchange(bool newVal)
         {
-            var newTemp = newVal ? INT_Set : INT_UnSet;
-            return Interlocked.Exchange(ref _flag, newTemp) == INT_Set;
+            var newTemp = newVal ? _set : _unset;
+            return Interlocked.Exchange(ref _value, newTemp) == _set;
         }
 
         public override int GetHashCode()
@@ -99,9 +95,14 @@ namespace Theraot.Threading
             return RuntimeHelpers.GetHashCode(this);
         }
 
-        public bool TryRelaxedSet()
+        public override string ToString()
         {
-            return _flag == INT_UnSet && !Exchange(true);
+            return Value.ToString();
+        }
+
+        internal bool TryRelaxedSet()
+        {
+            return _value == _set && !Exchange(true);
         }
 
         public bool TrySet()

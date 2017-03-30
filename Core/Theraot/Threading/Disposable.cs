@@ -28,7 +28,10 @@ namespace Theraot.Threading
 
         public bool Dispose(Func<bool> condition)
         {
-            Check.NotNullArgument(condition, "condition");
+            if (condition == null)
+            {
+                throw new ArgumentNullException("condition");
+            }
             return DisposedConditional
                    (
                        FuncHelper.GetFallacyFunc(),
