@@ -28,7 +28,6 @@ namespace Theraot.Threading
             _thread = thread;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
         ~DisposableAkin()
         {
             try
@@ -51,7 +50,6 @@ namespace Theraot.Threading
 
         public bool IsDisposed
         {
-            [System.Diagnostics.DebuggerNonUserCode]
             get
             {
                 return _thread == null;
@@ -105,13 +103,12 @@ namespace Theraot.Threading
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2004:RemoveCallsToGCKeepAlive", Justification = "By Design")]
         private void Dispose(bool disposeManagedResources)
         {
             if
             (
-                !disposeManagedResources ||
-                ReferenceEquals(Interlocked.CompareExchange(ref _thread, null, Thread.CurrentThread), Thread.CurrentThread)
+                !disposeManagedResources
+                || ReferenceEquals(Interlocked.CompareExchange(ref _thread, null, Thread.CurrentThread), Thread.CurrentThread)
             )
             {
                 try
