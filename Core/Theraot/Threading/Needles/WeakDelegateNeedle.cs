@@ -84,7 +84,6 @@ namespace Theraot.Threading.Needles
             return false;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1007:UseGenericsWhereAppropriate", Justification = "Generic Version Is Available")]
         public bool TryInvoke(object[] args, out object result)
         {
             var value = Value;
@@ -128,7 +127,7 @@ namespace Theraot.Threading.Needles
             {
                 throw new ArgumentException("methodInfo.DeclaringType is null", "methodInfo");
             }
-            return Delegate.CreateDelegate(type, target, methodInfo);
+            return methodInfo.CreateDelegate(type, target);
         }
     }
 }
