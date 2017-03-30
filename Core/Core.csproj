@@ -651,7 +651,6 @@
     <Compile Include="Theraot\Threading\LockSlot.cs" />
     <Compile Include="Theraot\Threading\NeedleLock.cs" />
     <Compile Include="Theraot\Threading\Needles\CacheNeedle.cs" />
-    <Compile Include="Theraot\Threading\Needles\CacheNeedle.disposable.cs" />
     <Compile Include="Theraot\Threading\Needles\DefaultNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\ExceptionStructNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\FutureDisposableNeedle.cs" />

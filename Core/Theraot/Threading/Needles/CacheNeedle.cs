@@ -9,23 +9,20 @@ namespace Theraot.Threading.Needles
 {
     [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
-    public partial class CacheNeedle<T> : WeakNeedle<T>, ICacheNeedle<T>, IEquatable<CacheNeedle<T>>, IWaitablePromise<T>
+    public class CacheNeedle<T> : WeakNeedle<T>, ICacheNeedle<T>, IEquatable<CacheNeedle<T>>, IWaitablePromise<T>
         where T : class
     {
-        [NonSerialized]
         private Thread _initializerThread;
 
-        private Func<T> _valueFactory; // Can be null
+        private Func<T> _valueFactory;
+
+        // Can be null
+#pragma warning disable RCS1169 // Mark field as read-only.
         private StructNeedle<ManualResetEventSlim> _waitHandle;
+#pragma warning restore RCS1169 // Mark field as read-only.
 
         public CacheNeedle(Func<T> valueFactory)
-            : this(valueFactory, false)
-        {
-            // Empty
-        }
-
-        public CacheNeedle(Func<T> valueFactory, bool trackResurrection)
-            : base(default(T), trackResurrection)
+            : base(default(T))
         {
             if (valueFactory == null)
             {
@@ -36,13 +33,7 @@ namespace Theraot.Threading.Needles
         }
 
         public CacheNeedle(Func<T> valueFactory, T target)
-            : this(valueFactory, target, false)
-        {
-            // Empty
-        }
-
-        public CacheNeedle(Func<T> valueFactory, T target, bool trackResurrection)
-            : base(target, trackResurrection)
+            : base(target)
         {
             if (valueFactory == null)
             {
@@ -52,8 +43,8 @@ namespace Theraot.Threading.Needles
             _waitHandle = new StructNeedle<ManualResetEventSlim>(new ManualResetEventSlim(false));
         }
 
-        public CacheNeedle(Func<T> valueFactory, T target, bool trackResurrection, bool cacheExceptions)
-            : base(target, trackResurrection)
+        public CacheNeedle(Func<T> valueFactory, T target, bool cacheExceptions)
+            : base(target)
         {
             if (valueFactory == null)
             {
@@ -100,11 +91,35 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        Exception IPromise.Exception
+        {
+            get
+            {
+                return Exception;
+            }
+        }
+
+        bool IPromise.IsCanceled
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public bool IsCompleted
         {
             get
             {
                 return !_waitHandle.IsAlive;
+            }
+        }
+
+        bool IPromise.IsFaulted
+        {
+            get
+            {
+                return IsFaulted;
             }
         }
 
@@ -119,32 +134,6 @@ namespace Theraot.Threading.Needles
             {
                 SetTargetValue(value);
                 ReleaseWaitHandle();
-            }
-        }
-
-        Exception IPromise.Exception
-        {
-            get
-            {
-                return Exception;
-            }
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
-        bool IPromise.IsCanceled
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
-        bool IPromise.IsFaulted
-        {
-            get
-            {
-                return IsFaulted;
             }
         }
 
@@ -171,10 +160,10 @@ namespace Theraot.Threading.Needles
             Volatile.Write(ref _valueFactory, null);
         }
 
-        public override bool TryGetValue(out T target)
+        public override bool TryGetValue(out T value)
         {
-            target = default(T);
-            return IsCompleted && base.TryGetValue(out target);
+            value = default(T);
+            return IsCompleted && base.TryGetValue(out value);
         }
 
         public void Wait()
@@ -194,6 +183,33 @@ namespace Theraot.Threading.Needles
                 {
                     // Came late to the party, initialization was done
                     GC.KeepAlive(exception);
+                }
+            }
+        }
+
+        [System.Diagnostics.DebuggerNonUserCode]
+        protected override void Dispose(bool disposeManagedResources)
+        {
+            if (TakeDisposalExecution())
+            {
+                try
+                {
+                    if (disposeManagedResources)
+                    {
+                        //Empty
+                    }
+                }
+                finally
+                {
+                    try
+                    {
+                        ReleaseWaitHandle();
+                    }
+                    finally
+                    {
+                        _valueFactory = null;
+                    }
+                    base.Dispose(disposeManagedResources);
                 }
             }
         }
@@ -226,7 +242,7 @@ namespace Theraot.Threading.Needles
 
         private void InitializeExtracted()
         {
-            back:
+        back:
             var valueFactory = Interlocked.Exchange(ref _valueFactory, null);
             if (valueFactory == null)
             {
