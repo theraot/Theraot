@@ -11,7 +11,9 @@ namespace Theraot.Threading.Needles
     {
         private readonly int _hashCode;
         private Exception _exception;
+#pragma warning disable RCS1169 // Mark field as read-only.
         private StructNeedle<ManualResetEventSlim> _waitHandle;
+#pragma warning restore RCS1169 // Mark field as read-only.
 
         public Promise(bool done)
         {
@@ -45,7 +47,6 @@ namespace Theraot.Threading.Needles
 
         bool IPromise.IsCanceled
         {
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns False")]
             get
             {
                 return false;
@@ -69,7 +70,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-        protected IRecyclableNeedle<ManualResetEventSlim> WaitHandle
+        protected StructNeedle<ManualResetEventSlim> WaitHandle
         {
             get
             {
@@ -144,7 +145,7 @@ namespace Theraot.Threading.Needles
         public override string ToString()
         {
             return IsCompleted
-                ? (ReferenceEquals(_exception, null)
+                ? (_exception == null
                     ? "[Done]"
                     : _exception.ToString())
                 : "[Not Created]";
@@ -255,7 +256,7 @@ namespace Theraot.Threading.Needles
         protected void ReleaseWaitHandle(bool done)
         {
             var waitHandle = _waitHandle.Value;
-            if (!ReferenceEquals(waitHandle, null))
+            if (waitHandle != null)
             {
                 if (done)
                 {
