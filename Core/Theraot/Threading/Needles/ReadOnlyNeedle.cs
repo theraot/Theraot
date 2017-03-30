@@ -2,11 +2,9 @@
 
 using System;
 using System.Collections.Generic;
-using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
-    [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
     public class ReadOnlyNeedle<T> : IReadOnlyNeedle<T>, IEquatable<ReadOnlyNeedle<T>>
     {
@@ -32,7 +30,7 @@ namespace Theraot.Threading.Needles
             get
             {
                 var target = _target;
-                return !ReferenceEquals(_target, null) && target.IsAlive;
+                return _target != null && target.IsAlive;
             }
         }
 
@@ -46,7 +44,11 @@ namespace Theraot.Threading.Needles
 
         public static explicit operator T(ReadOnlyNeedle<T> needle)
         {
-            return Check.NotNullArgument(needle, "needle").Value;
+            if (needle == null)
+            {
+                throw new ArgumentNullException("needle");
+            }
+            return needle.Value;
         }
 
         public static implicit operator ReadOnlyNeedle<T>(T field)
@@ -66,7 +68,7 @@ namespace Theraot.Threading.Needles
 
         public override bool Equals(object obj)
         {
-            return (obj is ReadOnlyNeedle<T>) ? EqualsExtracted(this, (ReadOnlyNeedle<T>) obj) : _target.Equals(obj);
+            return (obj is ReadOnlyNeedle<T>) ? EqualsExtracted(this, (ReadOnlyNeedle<T>)obj) : _target.Equals(obj);
         }
 
         public bool Equals(ReadOnlyNeedle<T> other)
@@ -86,18 +88,18 @@ namespace Theraot.Threading.Needles
 
         private static bool EqualsExtracted(ReadOnlyNeedle<T> left, ReadOnlyNeedle<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left == null)
             {
-                return ReferenceEquals(right, null);
+                return right == null;
             }
             return left._target.Equals(right._target);
         }
 
         private static bool NotEqualsExtracted(ReadOnlyNeedle<T> left, ReadOnlyNeedle<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left == null)
             {
-                return !ReferenceEquals(right, null);
+                return right != null;
             }
             return !left._target.Equals(right._target);
         }
