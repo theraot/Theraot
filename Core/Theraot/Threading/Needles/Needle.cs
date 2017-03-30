@@ -1,7 +1,6 @@
 // Needed for NET40
 
 using System;
-using System.Threading;
 
 namespace Theraot.Threading.Needles
 {
@@ -66,7 +65,7 @@ namespace Theraot.Threading.Needles
             get
             {
                 var target = _target;
-                return !ReferenceEquals(target, null) && target.IsAlive;
+                return target != null ? target.IsAlive : false;
             }
         }
 
@@ -82,7 +81,6 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                // Let it throw NullReferenceException
                 return _target.Value;
             }
             set
@@ -123,11 +121,11 @@ namespace Theraot.Threading.Needles
                 return EqualsExtracted(this, needle);
             }
             var target = _target;
-            if (ReferenceEquals(_target, null))
+            if (_target == null)
             {
-                return ReferenceEquals(obj, null);
+                return obj == null;
             }
-            if (ReferenceEquals(obj, null))
+            if (obj == null)
             {
                 return false;
             }
@@ -167,7 +165,6 @@ namespace Theraot.Threading.Needles
         protected void SetTargetError(Exception error)
         {
             _target = new ExceptionStructNeedle<T>(error);
-            Thread.MemoryBarrier();
         }
 
         protected void SetTargetValue(T value)
@@ -186,26 +183,25 @@ namespace Theraot.Threading.Needles
                 }
             }
             _target = new StructNeedle<T>(value);
-            Thread.MemoryBarrier();
         }
 
         private static bool EqualsExtracted(Needle<T> left, Needle<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left == null)
             {
-                return ReferenceEquals(right, null);
+                return right == null;
             }
-            if (ReferenceEquals(right, null))
+            if (right == null)
             {
                 return false;
             }
             var leftTarget = left._target;
             var rightTarget = right._target;
-            if (ReferenceEquals(leftTarget, null))
+            if (leftTarget == null)
             {
-                return ReferenceEquals(rightTarget, null);
+                return rightTarget == null;
             }
-            if (ReferenceEquals(rightTarget, null))
+            if (rightTarget == null)
             {
                 return false;
             }
@@ -214,21 +210,21 @@ namespace Theraot.Threading.Needles
 
         private static bool NotEqualsExtracted(Needle<T> left, Needle<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left == null)
             {
-                return !ReferenceEquals(right, null);
+                return right != null;
             }
-            if (ReferenceEquals(right, null))
+            if (right == null)
             {
                 return true;
             }
             var leftTarget = left._target;
             var rightTarget = right._target;
-            if (ReferenceEquals(leftTarget, null))
+            if (leftTarget == null)
             {
-                return !ReferenceEquals(rightTarget, null);
+                return rightTarget != null;
             }
-            if (ReferenceEquals(rightTarget, null))
+            if (rightTarget == null)
             {
                 return true;
             }
