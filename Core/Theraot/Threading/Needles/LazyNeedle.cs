@@ -30,7 +30,7 @@ namespace Theraot.Threading.Needles
         public LazyNeedle(Func<T> valueFactory)
             : base(false)
         {
-            if (valueFactory == null)
+            if (_valueFactory != null)
             {
                 throw new ArgumentNullException("valueFactory");
             }
@@ -40,7 +40,7 @@ namespace Theraot.Threading.Needles
         public LazyNeedle(Func<T> valueFactory, bool cacheExceptions)
             : base(false)
         {
-            if (valueFactory == null)
+            if (_valueFactory != null)
             {
                 throw new ArgumentNullException("valueFactory");
             }
@@ -86,18 +86,22 @@ namespace Theraot.Threading.Needles
 
         public override bool Equals(object obj)
         {
-            return !ReferenceEquals(null, obj as LazyNeedle<T>) && base.Equals(obj);
+            return obj is LazyNeedle<T> && base.Equals(obj);
         }
 
         public bool Equals(LazyNeedle<T> other)
         {
-            return !ReferenceEquals(other, null) && base.Equals(other);
+            return other != null && base.Equals(other);
         }
+
+#pragma warning disable RCS1132 // Remove redundant overriding member.
 
         public override int GetHashCode()
         {
             return base.GetHashCode();
         }
+
+#pragma warning restore RCS1132 // Remove redundant overriding member.
 
         public virtual void Initialize()
         {
