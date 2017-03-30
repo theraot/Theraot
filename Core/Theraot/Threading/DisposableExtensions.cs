@@ -2,8 +2,6 @@
 
 using System;
 
-using Theraot.Core;
-
 namespace Theraot.Threading
 {
     [System.Diagnostics.DebuggerNonUserCode]
@@ -17,8 +15,13 @@ namespace Theraot.Threading
                 disposable.DisposedConditional
                     (
                         null,
-                        () => action.SafeInvoke(disposable)
-                    );
+                        () =>
+                        {
+                            if (action != null)
+                            {
+                                action.Invoke(disposable);
+                            }
+                        });
             }
         }
 
@@ -30,7 +33,17 @@ namespace Theraot.Threading
                 return disposable.DisposedConditional
                     (
                         null,
-                        () => action.SafeInvoke(disposable, def)
+                        () =>
+                        {
+                            if (action == null)
+                            {
+                                return def;
+                            }
+                            else
+                            {
+                                return action.Invoke(disposable);
+                            }
+                        }
                     );
             }
             else
@@ -47,12 +60,22 @@ namespace Theraot.Threading
                 return disposable.DisposedConditional
                     (
                         null,
-                        () => action.SafeInvoke(disposable, alternative, def)
+                        () =>
+                        {
+                            if (action == null)
+                            {
+                                return def;
+                            }
+                            else
+                            {
+                                return action.Invoke(disposable);
+                            }
+                        }
                     );
             }
             else
             {
-                return alternative.SafeInvoke(def);
+                return alternative == null ? alternative.Invoke() : def;
             }
         }
 
@@ -109,11 +132,14 @@ namespace Theraot.Threading
                 }
                 finally
                 {
-                    resource = allocationCode.SafeInvoke(null);
+                    if (allocationCode != null)
+                    {
+                        resource = allocationCode.Invoke();
+                    }
                 }
-                if (resource != null)
+                if ((bodyCode != null) && (resource != null))
                 {
-                    bodyCode.SafeInvoke(resource);
+                    bodyCode.Invoke(resource);
                 }
             }
             finally
@@ -127,9 +153,9 @@ namespace Theraot.Threading
 
         public static void SafeWith<T>(this T obj, Action<T> action)
         {
-            if (!ReferenceEquals(obj, null))
+            if ((action != null) && !ReferenceEquals(obj, null))
             {
-                action.SafeInvoke(obj);
+                action.Invoke(obj);
             }
         }
 
@@ -137,7 +163,14 @@ namespace Theraot.Threading
         {
             if (!ReferenceEquals(obj, null))
             {
-                return action.SafeInvoke(obj, def);
+                if (action == null)
+                {
+                    return def;
+                }
+                else
+                {
+                    return action.Invoke(obj);
+                }
             }
             else
             {
@@ -149,22 +182,51 @@ namespace Theraot.Threading
         {
             if (!ReferenceEquals(obj, null))
             {
-                return action.SafeInvoke(obj, alternative, def);
+                if (action == null)
+                {
+                    if (alternative == null)
+                    {
+                        return def;
+                    }
+                    else
+                    {
+                        return alternative.Invoke();
+                    }
+                }
+                else
+                {
+                    return action.Invoke(obj);
+                }
             }
             else
             {
-                return alternative.SafeInvoke(def);
+                if (alternative == null)
+                {
+                    return def;
+                }
+                else
+                {
+                    return alternative.Invoke();
+                }
             }
         }
 
         public static void With<T>(this T obj, Action<T> action)
         {
-            Check.NotNullArgument(action, "action")(obj);
+            if (action == null)
+            {
+                throw new ArgumentNullException("action");
+            }
+            action.Invoke(obj);
         }
 
         public static TReturn With<T, TReturn>(this T obj, Func<T, TReturn> action)
         {
-            return Check.NotNullArgument(action, "action")(obj);
+            if (action == null)
+            {
+                throw new ArgumentNullException("action");
+            }
+            return action.Invoke(obj);
         }
     }
 }
