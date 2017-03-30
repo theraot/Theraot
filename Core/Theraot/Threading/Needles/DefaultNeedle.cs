@@ -1,12 +1,11 @@
 #if FAT
 
+using System;
 using System.Collections.Generic;
-using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
     [System.Diagnostics.DebuggerNonUserCode]
-    [System.ComponentModel.ImmutableObject(true)]
     public sealed class DefaultNeedle<T> : IReadOnlyNeedle<T>
     {
         private static readonly DefaultNeedle<T> _instance = new DefaultNeedle<T>();
@@ -16,7 +15,6 @@ namespace Theraot.Threading.Needles
             //Empty
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1000:DoNotDeclareStaticMembersOnGenericTypes", Justification = "By Design")]
         public static DefaultNeedle<T> Instance
         {
             get
@@ -43,16 +41,18 @@ namespace Theraot.Threading.Needles
 
         public static explicit operator T(DefaultNeedle<T> needle)
         {
-            return Check.NotNullArgument(needle, "needle").Value;
+            if (needle == null)
+            {
+                throw new ArgumentNullException("needle");
+            }
+            return needle.Value;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
         public static bool operator !=(DefaultNeedle<T> left, DefaultNeedle<T> right)
         {
             return false;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
         public static bool operator ==(DefaultNeedle<T> left, DefaultNeedle<T> right)
         {
             return true;
