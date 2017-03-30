@@ -10,7 +10,6 @@ namespace Theraot.Threading
         private int _status;
 
         [System.Diagnostics.DebuggerNonUserCode]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
         ~NoReentrantReadWriteLock()
         {
             try
@@ -25,7 +24,6 @@ namespace Theraot.Threading
 
         public bool IsDisposed
         {
-            [System.Diagnostics.DebuggerNonUserCode]
             get
             {
                 return _status == -1;
@@ -50,14 +48,14 @@ namespace Theraot.Threading
         {
             if (_status == -1)
             {
-                if (!ReferenceEquals(whenDisposed, null))
+                if (whenDisposed != null)
                 {
                     whenDisposed.Invoke();
                 }
             }
             else
             {
-                if (!ReferenceEquals(whenNotDisposed, null))
+                if (whenNotDisposed != null)
                 {
                     if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
                     {
@@ -72,7 +70,7 @@ namespace Theraot.Threading
                     }
                     else
                     {
-                        if (!ReferenceEquals(whenDisposed, null))
+                        if (whenDisposed != null)
                         {
                             whenDisposed.Invoke();
                         }
@@ -86,13 +84,13 @@ namespace Theraot.Threading
         {
             if (_status == -1)
             {
-                if (ReferenceEquals(whenDisposed, null))
+                if (whenDisposed == null)
                 {
                     return default(TReturn);
                 }
                 return whenDisposed.Invoke();
             }
-            if (ReferenceEquals(whenNotDisposed, null))
+            if (whenNotDisposed == null)
             {
                 return default(TReturn);
             }
@@ -107,7 +105,7 @@ namespace Theraot.Threading
                     Interlocked.Decrement(ref _status);
                 }
             }
-            if (ReferenceEquals(whenDisposed, null))
+            if (whenDisposed == null)
             {
                 return default(TReturn);
             }
@@ -115,7 +113,6 @@ namespace Theraot.Threading
         }
 
         [System.Diagnostics.DebuggerNonUserCode]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2004:RemoveCallsToGCKeepAlive", Justification = "By Design")]
         private void Dispose(bool disposeManagedResources)
         {
             if (TakeDisposalExecution())

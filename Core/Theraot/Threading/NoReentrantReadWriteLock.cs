@@ -131,11 +131,11 @@ namespace Theraot.Threading
             }
             else
             {
-                if (Thread.VolatileRead(ref _master) < 0)
+                if (Volatile.Read(ref _master) < 0)
                 {
-                    if (Interlocked.Decrement(ref _readCount) <= Thread.VolatileRead(ref _edge))
+                    if (Interlocked.Decrement(ref _readCount) <= Volatile.Read(ref _edge))
                     {
-                        Thread.VolatileWrite(ref _master, 0);
+                        Volatile.Write(ref _master, 0);
                         _freeToWrite.Set();
                     }
                 }
@@ -150,7 +150,7 @@ namespace Theraot.Threading
         {
             if (Interlocked.Decrement(ref _writeCount) == 0)
             {
-                Thread.VolatileWrite(ref _master, 0);
+                Volatile.Write(ref _master, 0);
                 Volatile.Write(ref _ownerThread, null);
                 _freeToRead.Set();
                 _freeToWrite.Set();
