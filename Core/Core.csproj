@@ -703,7 +703,6 @@
     <Compile Include="Theraot\Threading\ThreadingHelper.extra.cs" />
     <Compile Include="Theraot\Threading\ThreadingHelper.SpinWait.cs" />
     <Compile Include="Theraot\Threading\ThreadLocalHelper.cs" />
-    <Compile Include="Theraot\Threading\ThreadLocalHelper1.cs" />
     <Compile Include="Theraot\Threading\TrackingThreadLocal.cs" />
     <Compile Include="Theraot\Threading\VersionProvider.cs" />
     <Compile Include="System\Threading\Tasks\Task.net35.cs" />
