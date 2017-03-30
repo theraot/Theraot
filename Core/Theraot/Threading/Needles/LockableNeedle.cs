@@ -16,7 +16,7 @@ namespace Theraot.Threading.Needles
         {
             if (ReferenceEquals(context, null))
             {
-                throw new NullReferenceException("context");
+                throw new ArgumentNullException("context");
             }
             _context = context;
             _needleLock = new NeedleLock<Thread>(_context.Context);
@@ -26,7 +26,6 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                Thread.MemoryBarrier();
                 return base.Value;
             }
             set
@@ -35,6 +34,7 @@ namespace Theraot.Threading.Needles
                 if (_context.TryGetSlot(out slot))
                 {
                     CaptureAndWait(slot);
+                    Thread.MemoryBarrier();
                     base.Value = value;
                     Thread.MemoryBarrier();
                 }
@@ -62,6 +62,7 @@ namespace Theraot.Threading.Needles
             {
                 return false;
             }
+            Thread.MemoryBarrier();
             base.Value = newValue;
             Thread.MemoryBarrier();
             return true;
@@ -74,6 +75,7 @@ namespace Theraot.Threading.Needles
             {
                 return false;
             }
+            Thread.MemoryBarrier();
             base.Value = newValue;
             Thread.MemoryBarrier();
             return true;
@@ -81,6 +83,10 @@ namespace Theraot.Threading.Needles
 
         public T Update(Func<T, T> updateValueFactory)
         {
+            if (updateValueFactory == null)
+            {
+                throw new ArgumentNullException("updateValueFactory");
+            }
             CaptureAndWait();
             var result = updateValueFactory(base.Value);
             base.Value = result;
