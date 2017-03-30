@@ -29,7 +29,7 @@ namespace Theraot.Threading
         {
             if (callback == null)
             {
-                throw new NullReferenceException("callback");
+                throw new ArgumentNullException("callback");
             }
             _callback = callback;
             Initialize(dueTime);
@@ -40,7 +40,7 @@ namespace Theraot.Threading
         {
             if (callback == null)
             {
-                throw new NullReferenceException("callback");
+                throw new ArgumentNullException("callback");
             }
             _start = ThreadingHelper.TicksNow();
             if (token.IsCancellationRequested)
@@ -94,7 +94,7 @@ namespace Theraot.Threading
         {
             get
             {
-                return Thread.VolatileRead(ref _completed) == 0 && _wrapped == null;
+                return Volatile.Read(ref _completed) == 0 && _wrapped == null;
             }
         }
 
@@ -102,7 +102,7 @@ namespace Theraot.Threading
         {
             get
             {
-                return Thread.VolatileRead(ref _completed) == 1;
+                return Volatile.Read(ref _completed) == 1;
             }
         }
 
@@ -167,7 +167,7 @@ namespace Theraot.Threading
         {
             if (obj is Timeout)
             {
-                return ReferenceEquals(this, obj);
+                return this == obj;
             }
             return false;
         }
@@ -184,26 +184,26 @@ namespace Theraot.Threading
                 GC.KeepAlive(state);
                 _callback.Invoke();
                 Cancel();
-                Thread.VolatileWrite(ref _completed, 1);
+                Volatile.Write(ref _completed, 1);
             }
         }
 
         private void Initialize(long dueTime)
         {
-            if (Thread.VolatileRead(ref _executed) == 1)
+            if (Volatile.Read(ref _executed) == 1)
             {
                 ThreadingHelper.SpinWaitWhile(ref _completed, 1);
-                Thread.VolatileWrite(ref _executed, 0);
+                Volatile.Write(ref _executed, 0);
             }
             _start = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
             _targetTime = _start + dueTime;
             if (_wrapped == null)
             {
-                _wrapped = new Timer(Callback, null, dueTime, System.Threading.Timeout.Infinite);
+                _wrapped = new Timer(Callback, null, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
             }
             else
             {
-                _wrapped.Change(dueTime, System.Threading.Timeout.Infinite);
+                _wrapped.Change(TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
             }
         }
     }
