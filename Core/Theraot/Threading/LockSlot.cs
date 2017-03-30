@@ -8,7 +8,7 @@ namespace Theraot.Threading
 {
     public sealed class LockSlot<T> : IComparable<LockSlot<T>>, INeedle<T>
     {
-        internal readonly int Id;
+        internal readonly int _id;
         private readonly LockContext<T> _context;
         private int _free;
         private T _target;
@@ -22,7 +22,7 @@ namespace Theraot.Threading
             }
             _context = context;
             _versionToken = versionToken;
-            Id = id;
+            _id = id;
         }
 
         public T Value

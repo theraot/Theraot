@@ -4,7 +4,6 @@ using System;
 using System.Threading;
 using Theraot.Collections;
 using Theraot.Collections.Specialized;
-using Theraot.Core;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
@@ -19,7 +18,7 @@ namespace Theraot.Threading
 
         internal NeedleLock(LockContext<T> context)
         {
-            if (ReferenceEquals(context, null))
+            if (context == null)
             {
                 throw new ArgumentNullException("context");
             }
@@ -31,12 +30,12 @@ namespace Theraot.Threading
 
         internal NeedleLock(LockContext<T> context, T target)
         {
-            if (ReferenceEquals(context, null))
+            if (context == null)
             {
                 throw new ArgumentNullException("context");
             }
             _context = context;
-            if (target == null)
+            if (ReferenceEquals(target, null))
             {
                 _hashCode = base.GetHashCode();
             }
@@ -53,7 +52,7 @@ namespace Theraot.Threading
         {
             get
             {
-                return _target != null;
+                return !ReferenceEquals(_target, null);
             }
         }
 
@@ -66,14 +65,17 @@ namespace Theraot.Threading
                 {
                     _target = slot.Value;
                 }
-                Thread.MemoryBarrier();
                 return _target;
             }
         }
 
         public static explicit operator T(NeedleLock<T> needle)
         {
-            return Check.NotNullArgument(needle, "needle").Value;
+            if (needle == null)
+            {
+                throw new ArgumentNullException("needle");
+            }
+            return needle.Value;
         }
 
         public static bool operator !=(NeedleLock<T> left, NeedleLock<T> right)
@@ -91,7 +93,6 @@ namespace Theraot.Threading
             var needle = obj as NeedleLock<T>;
             if (needle == null)
             {
-                Thread.MemoryBarrier();
                 return _target.Equals(obj);
             }
             return EqualsExtracted(this, needle);
@@ -119,7 +120,7 @@ namespace Theraot.Threading
 
         internal void Capture(LockSlot<T> slot)
         {
-            _capture[slot.Id] = true;
+            _capture[slot._id] = true;
         }
 
         internal void Release()
@@ -127,37 +128,34 @@ namespace Theraot.Threading
             if (Volatile.Read(ref _capture).Flags.IsEmpty())
             {
                 _target = default(T);
-                Thread.MemoryBarrier();
             }
         }
 
         internal void Uncapture(LockSlot<T> slot)
         {
-            Interlocked.CompareExchange(ref _owner, -1, slot.Id);
-            _capture[slot.Id] = false;
+            Interlocked.CompareExchange(ref _owner, -1, slot._id);
+            _capture[slot._id] = false;
         }
 
         private static bool EqualsExtracted(NeedleLock<T> left, NeedleLock<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left == null)
             {
-                return ReferenceEquals(right, null);
+                return right == null;
             }
-            Thread.MemoryBarrier();
             return left._target.Equals(right._target);
         }
 
         private static bool NotEqualsExtracted(NeedleLock<T> left, NeedleLock<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left == null)
             {
-                if (ReferenceEquals(right, null))
+                if (right == null)
                 {
                     return false;
                 }
                 return true;
             }
-            Thread.MemoryBarrier();
             return !left._target.Equals(right._target);
         }
     }
