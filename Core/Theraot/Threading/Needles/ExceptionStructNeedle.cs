@@ -85,10 +85,14 @@ namespace Theraot.Threading.Needles
             return EqualsExtracted(this, other);
         }
 
+#pragma warning disable RCS1132 // Remove redundant overriding member.
+
         public override int GetHashCode()
         {
             return base.GetHashCode();
         }
+
+#pragma warning restore RCS1132 // Remove redundant overriding member.
 
         public override string ToString()
         {
@@ -103,9 +107,9 @@ namespace Theraot.Threading.Needles
         {
             var leftException = left._exception;
             var rightException = right._exception;
-            if (ReferenceEquals(leftException, null))
+            if (leftException == null)
             {
-                return ReferenceEquals(rightException, null);
+                return rightException == null;
             }
             return leftException.Equals(rightException);
         }
@@ -114,9 +118,9 @@ namespace Theraot.Threading.Needles
         {
             var leftException = left._exception;
             var rightException = right._exception;
-            if (ReferenceEquals(leftException, null))
+            if (leftException == null)
             {
-                return !ReferenceEquals(rightException, null);
+                return rightException != null;
             }
             return !leftException.Equals(rightException);
         }
