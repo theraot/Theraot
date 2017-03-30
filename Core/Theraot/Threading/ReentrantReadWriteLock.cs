@@ -7,7 +7,7 @@ namespace Theraot.Threading
 {
     internal sealed partial class ReentrantReadWriteLock : IReadWriteLock
     {
-        private NoTrackingThreadLocal<int> _currentReadingCount = new NoTrackingThreadLocal<int>(() => 0); // Disposed
+        private TrackingThreadLocal<int> _currentReadingCount = new TrackingThreadLocal<int>(() => 0); // Disposed
         private int _edge;
         private ManualResetEventSlim _freeToRead = new ManualResetEventSlim(false); // Disposed
         private ManualResetEventSlim _freeToWrite = new ManualResetEventSlim(false); // Disposed
@@ -129,9 +129,9 @@ namespace Theraot.Threading
             {
                 _freeToRead.Reset();
                 // --
-                if (Thread.VolatileRead(ref _readCount) <= _currentReadingCount.Value && Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null) == null)
+                if (Volatile.Read(ref _readCount) <= _currentReadingCount.Value && Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null) == null)
                 {
-                    Thread.VolatileWrite(ref _master, -1);
+                    Volatile.Write(ref _master, -1);
                     Interlocked.Increment(ref _writeCount);
                     return true;
                 }
@@ -169,12 +169,12 @@ namespace Theraot.Threading
             }
             else
             {
-                if (Thread.VolatileRead(ref _master) < 0)
+                if (Volatile.Read(ref _master) < 0)
                 {
                     _currentReadingCount.Value--;
-                    if (Interlocked.Decrement(ref _readCount) <= Thread.VolatileRead(ref _edge))
+                    if (Interlocked.Decrement(ref _readCount) <= Volatile.Read(ref _edge))
                     {
-                        Thread.VolatileWrite(ref _master, 0);
+                        Volatile.Write(ref _master, 0);
                         _freeToWrite.Set();
                     }
                 }
@@ -190,7 +190,7 @@ namespace Theraot.Threading
         {
             if (Interlocked.Decrement(ref _writeCount) == 0)
             {
-                Thread.VolatileWrite(ref _edge, 0);
+                Volatile.Write(ref _edge, 0);
                 Volatile.Write(ref _ownerThread, null);
                 _freeToRead.Set();
             }
@@ -200,7 +200,7 @@ namespace Theraot.Threading
         {
             if (Interlocked.Decrement(ref _writeCount) == 0)
             {
-                Thread.VolatileWrite(ref _master, 0);
+                Volatile.Write(ref _master, 0);
                 Volatile.Write(ref _ownerThread, null);
                 _freeToRead.Set();
                 _freeToWrite.Set();
@@ -306,14 +306,14 @@ namespace Theraot.Threading
                             if (owner == null || owner == Thread.CurrentThread)
                             {
                                 // Set the edge
-                                Thread.VolatileWrite(ref _edge, _currentReadingCount.Value);
+                                Volatile.Write(ref _edge, _currentReadingCount.Value);
                             }
                             else
                             {
                                 // It was reserved by another thread - abort mission
                                 return false;
                             }
-                            if (Thread.VolatileRead(ref _readCount) > Thread.VolatileRead(ref _edge))
+                            if (Volatile.Read(ref _readCount) > Volatile.Read(ref _edge))
                             {
                                 // We still need every other reader to finish
                                 _freeToWrite.Wait();
@@ -322,7 +322,7 @@ namespace Theraot.Threading
                             else
                             {
                                 // None to wait
-                                Thread.VolatileWrite(ref _master, -1);
+                                Volatile.Write(ref _master, -1);
                                 check = -1;
                             }
                             break;
