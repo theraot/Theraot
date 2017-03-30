@@ -3,19 +3,19 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
     public sealed partial class Transact
     {
-        public sealed partial class Needle<T> : Needles.Needle<T>, IResource
+        public sealed class Needle<T> : Needles.Needle<T>, IResource
         {
             private readonly ICloner<T> _cloner;
             private readonly IEqualityComparer<T> _comparer;
             private readonly RuntimeUniqueIdProdiver.UniqueId _id;
             private readonly NeedleLock<Thread> _needleLock;
+            private int _status;
 
             public Needle(T value)
                 : base(value)
@@ -23,7 +23,7 @@ namespace Theraot.Threading.Needles
                 _cloner = CloneHelper<T>.GetCloner();
                 if (ReferenceEquals(_cloner, null))
                 {
-                    throw new InvalidOperationException(string.Format("Unable to get a cloner for {0}", typeof(T)));
+                    throw new InvalidOperationException("Unable to get a cloner for " + typeof(T));
                 }
                 _comparer = EqualityComparer<T>.Default;
                 _needleLock = new NeedleLock<Thread>(Context);
@@ -49,7 +49,7 @@ namespace Theraot.Threading.Needles
                 _cloner = CloneHelper<T>.GetCloner();
                 if (ReferenceEquals(_cloner, null))
                 {
-                    throw new InvalidOperationException(string.Format("Unable to get a cloner for {0}", typeof(T)));
+                    throw new InvalidOperationException("Unable to get a cloner for " + typeof(T));
                 }
                 _comparer = comparer ?? EqualityComparer<T>.Default;
                 _needleLock = new NeedleLock<Thread>(Context);
@@ -69,6 +69,27 @@ namespace Theraot.Threading.Needles
                 _id = RuntimeUniqueIdProdiver.GetNextId();
             }
 
+            [System.Diagnostics.DebuggerNonUserCode]
+            ~Needle()
+            {
+                try
+                {
+                    // Empty
+                }
+                finally
+                {
+                    try
+                    {
+                        Dispose(false);
+                    }
+                    catch (Exception exception)
+                    {
+                        // Fields may be partially collected.
+                        GC.KeepAlive(exception);
+                    }
+                }
+            }
+
             public override T Value
             {
                 get
@@ -83,22 +104,32 @@ namespace Theraot.Threading.Needles
                 }
             }
 
+            [System.Diagnostics.DebuggerNonUserCode]
+            public void Dispose()
+            {
+                try
+                {
+                    Dispose(true);
+                }
+                finally
+                {
+                    GC.SuppressFinalize(this);
+                }
+            }
+
+#pragma warning disable RCS1132 // Remove redundant overriding member.
+
             public override bool Equals(object obj)
             {
                 return base.Equals(obj);
             }
 
+#pragma warning restore RCS1132 // Remove redundant overriding member.
+
             public override void Free()
             {
                 Thread.MemoryBarrier();
-                if (NeedleReservoir<T, Needle<T>>.Recycling)
-                {
-                    base.Free();
-                }
-                else
-                {
-                    Value = default(T);
-                }
+                Value = default(T);
             }
 
             public override int GetHashCode()
@@ -157,6 +188,18 @@ namespace Theraot.Threading.Needles
                 return false;
             }
 
+            [System.Diagnostics.DebuggerNonUserCode]
+            private void Dispose(bool disposeManagedResources)
+            {
+                if (TakeDisposalExecution())
+                {
+                    if (disposeManagedResources)
+                    {
+                        OnDispose();
+                    }
+                }
+            }
+
             private void OnDispose()
             {
                 var transaction = CurrentTransaction;
@@ -182,8 +225,7 @@ namespace Theraot.Threading.Needles
             {
                 if (ReferenceEquals(transaction, null))
                 {
-                    var value = base.Value;
-                    return value;
+                    return base.Value;
                 }
                 else
                 {
@@ -213,8 +255,7 @@ namespace Theraot.Threading.Needles
             {
                 if (ReferenceEquals(transaction, null))
                 {
-                    var value = base.Value;
-                    return value;
+                    return base.Value;
                 }
                 else
                 {
@@ -245,6 +286,11 @@ namespace Theraot.Threading.Needles
                 {
                     transaction._writeLog.Set(this, value);
                 }
+            }
+
+            private bool TakeDisposalExecution()
+            {
+                return _status != -1 && ThreadingHelper.SpinWaitSetUnless(ref _status, -1, 0, -1);
             }
         }
     }

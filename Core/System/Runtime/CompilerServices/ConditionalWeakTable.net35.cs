@@ -31,11 +31,11 @@ namespace System.Runtime.CompilerServices
     where TKey : class
         where TValue : class
     {
-        private WeakDictionary<TKey, TValue, WeakNeedle<TKey>> _wrapped;
+        private WeakDictionary<TKey, TValue> _wrapped;
 
         public ConditionalWeakTable()
         {
-            _wrapped = new WeakDictionary<TKey, TValue, WeakNeedle<TKey>>();
+            _wrapped = new WeakDictionary<TKey, TValue>();
         }
 
         /// <summary>

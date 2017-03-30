@@ -5,20 +5,25 @@ using Theraot.Threading.Needles;
 
 namespace Theraot.Collections.ThreadSafe
 {
-    internal static class NeedleReservoir<T, TNeedle>
+    public class NeedleReservoir<T, TNeedle>
         where TNeedle : class, IRecyclableNeedle<T>
     {
-        private static readonly Pool<TNeedle> _pool;
+        private readonly Pool<TNeedle> _pool;
+        private readonly Func<T, TNeedle> _needleFactory;
 
-        [ThreadStatic]
-        private static int _recycling;
+        private int _recycling;
 
-        static NeedleReservoir()
+        public NeedleReservoir(Func<T, TNeedle> needleFactory)
         {
+            if (needleFactory == null)
+            {
+                throw new ArgumentNullException("needleFactory");
+            }
+            _needleFactory = needleFactory;
             _pool = new Pool<TNeedle>(64, Recycle);
         }
 
-        public static bool Recycling
+        public bool Recycling
         {
             get
             {
@@ -26,7 +31,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        internal static void DonateNeedle(TNeedle donation)
+        internal void DonateNeedle(TNeedle donation)
         {
             if (!_pool.Donate(donation))
             {
@@ -38,7 +43,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        internal static TNeedle GetNeedle(T value)
+        internal TNeedle GetNeedle(T value)
         {
             TNeedle result;
             if (_pool.TryGet(out result))
@@ -47,12 +52,12 @@ namespace Theraot.Collections.ThreadSafe
             }
             else
             {
-                result = NeedleHelper.CreateNeedle<T, TNeedle>(value);
+                result = _needleFactory(value);
             }
             return result;
         }
 
-        private static void Recycle(TNeedle obj)
+        private void Recycle(TNeedle obj)
         {
             try
             {

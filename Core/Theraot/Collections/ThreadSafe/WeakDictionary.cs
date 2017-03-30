@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using Theraot.Collections.Specialized;
 using Theraot.Threading;
 using Theraot.Threading.Needles;
@@ -12,100 +13,66 @@ namespace Theraot.Collections.ThreadSafe
     // TODO: this is actually a Weak Key dictionary useful to extend objects, there could also be Weak Value dictionaries useful for caches, and fully weak dictionary useful for the combination.
     [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
-    public class WeakDictionary<TKey, TValue, TNeedle> : IDictionary<TKey, TValue>
+    public class WeakDictionary<TKey, TValue> : IDictionary<TKey, TValue>
         where TKey : class
-        where TNeedle : class, IRecyclableNeedle<TKey>
     {
         private readonly KeyCollection<TKey, TValue> _keyCollection;
         private readonly IEqualityComparer<TKey> _keyComparer;
         private readonly ValueCollection<TKey, TValue> _valueCollection;
-        private readonly SafeDictionary<TNeedle, TValue> _wrapped;
-        private StructNeedle<WeakNeedle<EventHandler>> _eventHandler;
+        private readonly SafeDictionary<WeakNeedle<TKey>, TValue> _wrapped;
+        private readonly NeedleReservoir<TKey, WeakNeedle<TKey>> _reservoir;
+        private EventHandler _handle;
 
         public WeakDictionary()
-            : this(null, true)
+            : this(null)
         {
             // Empty
         }
 
         public WeakDictionary(IEqualityComparer<TKey> comparer)
-            : this(comparer, true)
-        {
-            // Empty
-        }
-
-        public WeakDictionary(bool autoRemoveDeadItems)
-            : this(null, autoRemoveDeadItems)
-        {
-            // Empty
-        }
-
-        public WeakDictionary(IEqualityComparer<TKey> comparer, bool autoRemoveDeadItems)
         {
             _keyComparer = comparer ?? EqualityComparer<TKey>.Default;
-            var needleComparer = new NeedleConversionEqualityComparer<TNeedle, TKey>(_keyComparer);
-            _wrapped = new SafeDictionary<TNeedle, TValue>(needleComparer);
-            if (autoRemoveDeadItems)
-            {
-                RegisterForAutoRemoveDeadItemsExtracted();
-            }
-            else
-            {
-                GC.SuppressFinalize(this);
-            }
+            var needleComparer = new NeedleConversionEqualityComparer<WeakNeedle<TKey>, TKey>(_keyComparer);
+            _wrapped = new SafeDictionary<WeakNeedle<TKey>, TValue>(needleComparer);
             _keyCollection = new KeyCollection<TKey, TValue>(this);
             _valueCollection = new ValueCollection<TKey, TValue>(this);
+            _reservoir = new NeedleReservoir<TKey, WeakNeedle<TKey>>(key => new WeakNeedle<TKey>(key));
         }
 
         public WeakDictionary(IEqualityComparer<TKey> comparer, int initialProbing)
-            : this(comparer, true, initialProbing)
-        {
-            // Empty
-        }
-
-        public WeakDictionary(bool autoRemoveDeadItems, int initialProbing)
-            : this(null, autoRemoveDeadItems, initialProbing)
-        {
-            // Empty
-        }
-
-        public WeakDictionary(IEqualityComparer<TKey> comparer, bool autoRemoveDeadItems, int initialProbing)
         {
             _keyComparer = comparer ?? EqualityComparer<TKey>.Default;
-            var needleComparer = new NeedleConversionEqualityComparer<TNeedle, TKey>(_keyComparer);
-            _wrapped = new SafeDictionary<TNeedle, TValue>(needleComparer, initialProbing);
-            if (autoRemoveDeadItems)
-            {
-                RegisterForAutoRemoveDeadItemsExtracted();
-            }
-            else
-            {
-                GC.SuppressFinalize(this);
-            }
+            var needleComparer = new NeedleConversionEqualityComparer<WeakNeedle<TKey>, TKey>(_keyComparer);
+            _wrapped = new SafeDictionary<WeakNeedle<TKey>, TValue>(needleComparer, initialProbing);
             _keyCollection = new KeyCollection<TKey, TValue>(this);
             _valueCollection = new ValueCollection<TKey, TValue>(this);
-        }
-
-        ~WeakDictionary()
-        {
-            UnRegisterForAutoRemoveDeadItemsExtracted();
+            _reservoir = new NeedleReservoir<TKey, WeakNeedle<TKey>>(key => new WeakNeedle<TKey>(key));
         }
 
         public bool AutoRemoveDeadItems
         {
             get
             {
-                return _eventHandler.IsAlive;
+                return _handle != null;
             }
+
             set
             {
+                var handle = _handle;
                 if (value)
                 {
-                    RegisterForAutoRemoveDeadItems();
+                    var created = new EventHandler((sender, args) => RemoveDeadItems());
+                    if (handle == null && Interlocked.CompareExchange(ref _handle, created, null) == null)
+                    {
+                        GCMonitor.Collected += created;
+                    }
                 }
                 else
                 {
-                    UnRegisterForAutoRemoveDeadItems();
+                    if (handle != null && Interlocked.CompareExchange(ref _handle, null, handle) == handle)
+                    {
+                        GCMonitor.Collected -= handle;
+                    }
                 }
             }
         }
@@ -115,6 +82,14 @@ namespace Theraot.Collections.ThreadSafe
             get
             {
                 return _wrapped.Count;
+            }
+        }
+
+        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
+        {
+            get
+            {
+                return false;
             }
         }
 
@@ -142,16 +117,7 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
-        bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
-        {
-            get
-            {
-                return false;
-            }
-        }
-
-        protected SafeDictionary<TNeedle, TValue> Wrapped
+        protected SafeDictionary<WeakNeedle<TKey>, TValue> Wrapped
         {
             get
             {
@@ -176,6 +142,17 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
+        {
+            AddNew(key, value);
+        }
+
+        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
+        {
+            // No risk of dead needles here
+            AddNew(item.Key, item.Value);
+        }
+
         /// <summary>
         /// Adds the specified key and associated value.
         /// </summary>
@@ -191,24 +168,23 @@ namespace Theraot.Collections.ThreadSafe
             }
             catch (ArgumentException)
             {
-                NeedleReservoir<TKey, TNeedle>.DonateNeedle(needle);
+                _reservoir.DonateNeedle(needle);
                 throw;
             }
         }
 
         public TValue AddOrUpdate(TKey key, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory)
         {
-            if (ReferenceEquals(addValueFactory, null))
+            if (addValueFactory == null)
             {
                 throw new ArgumentNullException("addValueFactory");
             }
-            if (ReferenceEquals(updateValueFactory, null))
+            if (updateValueFactory == null)
             {
                 throw new ArgumentNullException("updateValueFactory");
             }
-            bool added;
-            TNeedle needle = PrivateGetNeedle(key);
-            Func<TNeedle, TValue, TValue> factory = (pairKey, foundValue) =>
+            WeakNeedle<TKey> needle = PrivateGetNeedle(key);
+            Func<WeakNeedle<TKey>, TValue, TValue> factory = (pairKey, foundValue) =>
             {
                 TKey foundKey;
                 if (PrivateTryGetValue(pairKey, out foundKey))
@@ -217,7 +193,8 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 return addValueFactory(key);
             };
-            Func<TNeedle, TValue> valueFactory = input => addValueFactory(key);
+            Func<WeakNeedle<TKey>, TValue> valueFactory = input => addValueFactory(key);
+            bool added;
             var result = _wrapped.AddOrUpdate
                 (
                     needle,
@@ -227,20 +204,19 @@ namespace Theraot.Collections.ThreadSafe
                 );
             if (!added)
             {
-                NeedleReservoir<TKey, TNeedle>.DonateNeedle(needle);
+                _reservoir.DonateNeedle(needle);
             }
             return result;
         }
 
         public TValue AddOrUpdate(TKey key, TValue addValue, Func<TKey, TValue, TValue> updateValueFactory)
         {
-            if (ReferenceEquals(updateValueFactory, null))
+            if (updateValueFactory == null)
             {
                 throw new ArgumentNullException("updateValueFactory");
             }
-            bool added;
-            TNeedle needle = PrivateGetNeedle(key);
-            Func<TNeedle, TValue, TValue> factory = (pairKey, foundValue) =>
+            WeakNeedle<TKey> needle = PrivateGetNeedle(key);
+            Func<WeakNeedle<TKey>, TValue, TValue> factory = (pairKey, foundValue) =>
             {
                 TKey foundKey;
                 if (PrivateTryGetValue(pairKey, out foundKey))
@@ -249,6 +225,7 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 return addValue;
             };
+            bool added;
             var result = _wrapped.AddOrUpdate
                 (
                     needle,
@@ -258,23 +235,23 @@ namespace Theraot.Collections.ThreadSafe
                 );
             if (!added)
             {
-                NeedleReservoir<TKey, TNeedle>.DonateNeedle(needle);
+                _reservoir.DonateNeedle(needle);
             }
             return result;
         }
 
         public TValue AddOrUpdate(TKey key, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory, out bool added)
         {
-            if (ReferenceEquals(addValueFactory, null))
+            if (addValueFactory == null)
             {
                 throw new ArgumentNullException("addValueFactory");
             }
-            if (ReferenceEquals(updateValueFactory, null))
+            if (updateValueFactory == null)
             {
                 throw new ArgumentNullException("updateValueFactory");
             }
-            TNeedle needle = PrivateGetNeedle(key);
-            Func<TNeedle, TValue, TValue> factory = (pairKey, foundValue) =>
+            WeakNeedle<TKey> needle = PrivateGetNeedle(key);
+            Func<WeakNeedle<TKey>, TValue, TValue> factory = (pairKey, foundValue) =>
             {
                 TKey foundKey;
                 if (PrivateTryGetValue(pairKey, out foundKey))
@@ -283,7 +260,7 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 return addValueFactory(key);
             };
-            Func<TNeedle, TValue> valueFactory = input => addValueFactory(key);
+            Func<WeakNeedle<TKey>, TValue> valueFactory = input => addValueFactory(key);
             var result = _wrapped.AddOrUpdate
                 (
                     needle,
@@ -293,19 +270,19 @@ namespace Theraot.Collections.ThreadSafe
                 );
             if (!added)
             {
-                NeedleReservoir<TKey, TNeedle>.DonateNeedle(needle);
+                _reservoir.DonateNeedle(needle);
             }
             return result;
         }
 
         public TValue AddOrUpdate(TKey key, TValue addValue, Func<TKey, TValue, TValue> updateValueFactory, out bool added)
         {
-            if (ReferenceEquals(updateValueFactory, null))
+            if (updateValueFactory == null)
             {
                 throw new ArgumentNullException("updateValueFactory");
             }
-            TNeedle needle = PrivateGetNeedle(key);
-            Func<TNeedle, TValue, TValue> factory = (pairKey, foundValue) =>
+            WeakNeedle<TKey> needle = PrivateGetNeedle(key);
+            Func<WeakNeedle<TKey>, TValue, TValue> factory = (pairKey, foundValue) =>
             {
                 TKey foundKey;
                 if (PrivateTryGetValue(pairKey, out foundKey))
@@ -323,7 +300,7 @@ namespace Theraot.Collections.ThreadSafe
                 );
             if (!added)
             {
-                NeedleReservoir<TKey, TNeedle>.DonateNeedle(needle);
+                _reservoir.DonateNeedle(needle);
             }
             return result;
         }
@@ -333,10 +310,9 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public void Clear()
         {
-            var displaced = _wrapped.ClearEnumerable();
-            foreach (var item in displaced)
+            foreach (var item in _wrapped.ClearEnumerable())
             {
-                NeedleReservoir<TKey, TNeedle>.DonateNeedle(item.Key);
+                _reservoir.DonateNeedle(item.Key);
             }
         }
 
@@ -346,17 +322,36 @@ namespace Theraot.Collections.ThreadSafe
         public IEnumerable<KeyValuePair<TKey, TValue>> ClearEnumerable()
         {
             // No risk of dead needles here
-            var displaced = _wrapped.ClearEnumerable();
-            foreach (var item in displaced)
+            foreach (var item in _wrapped.ClearEnumerable())
             {
                 TKey foundKey;
                 if (PrivateTryGetValue(item.Key, out foundKey))
                 {
                     var value = item.Value;
                     yield return new KeyValuePair<TKey, TValue>(foundKey, value);
-                    NeedleReservoir<TKey, TNeedle>.DonateNeedle(item.Key);
+                    _reservoir.DonateNeedle(item.Key);
                 }
             }
+        }
+
+        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
+        {
+            // No risk of dead needles here
+            Predicate<WeakNeedle<TKey>> check = input =>
+            {
+                TKey foundKey;
+                if (PrivateTryGetValue(input, out foundKey))
+                {
+                    return _keyComparer.Equals(foundKey, item.Key);
+                }
+                return false;
+            };
+            return _wrapped.ContainsKey
+                (
+                    _keyComparer.GetHashCode(item.Key),
+                    check,
+                    input => EqualityComparer<TValue>.Default.Equals(input, item.Value)
+                );
         }
 
         /// <summary>
@@ -391,9 +386,10 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the specified key is contained; otherwise, <c>false</c>.
         /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="keyCheck"/> is <c>null</c>.</exception>
         public bool ContainsKey(int hashCode, Predicate<TKey> keyCheck)
         {
-            if (ReferenceEquals(keyCheck, null))
+            if (keyCheck == null)
             {
                 throw new ArgumentNullException("keyCheck");
             }
@@ -421,13 +417,14 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the specified key is contained; otherwise, <c>false</c>.
         /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="keyCheck"/> is <c>null</c>.</exception>
         public bool ContainsKey(int hashCode, Predicate<TKey> keyCheck, Predicate<TValue> valueCheck)
         {
-            if (ReferenceEquals(keyCheck, null))
+            if (keyCheck == null)
             {
                 throw new ArgumentNullException("keyCheck");
             }
-            if (ReferenceEquals(valueCheck, null))
+            if (valueCheck == null)
             {
                 throw new ArgumentNullException("valueCheck");
             }
@@ -491,35 +488,37 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         public TValue GetOrAdd(TKey key, TValue value)
         {
             var needle = PrivateGetNeedle(key);
             TValue result;
             if (!_wrapped.TryGetOrAdd(needle, input => !input.IsAlive, value, out result))
             {
-                NeedleReservoir<TKey, TNeedle>.DonateNeedle(needle);
+                _reservoir.DonateNeedle(needle);
             }
             return result;
         }
 
         public TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)
         {
-            if (ReferenceEquals(valueFactory, null))
+            if (valueFactory == null)
             {
                 throw new ArgumentNullException("valueFactory");
             }
-            TNeedle needle = PrivateGetNeedle(key);
+            WeakNeedle<TKey> needle = PrivateGetNeedle(key);
             TValue result;
-            Func<TNeedle, TValue, TValue> factory = (pairKey, foundValue) =>
-            {
-                TKey foundKey;
-                return result = valueFactory(PrivateTryGetValue(pairKey, out foundKey) ? foundKey : key);
-            };
+            TKey foundKey;
+            Func<WeakNeedle<TKey>, TValue, TValue> factory = (pairKey, foundValue) => result = valueFactory(PrivateTryGetValue(pairKey, out foundKey) ? foundKey : key);
             if (_wrapped.TryGetOrAdd(needle, () => valueFactory(key), factory, out result))
             {
                 return result;
             }
-            NeedleReservoir<TKey, TNeedle>.DonateNeedle(needle);
+            _reservoir.DonateNeedle(needle);
             return result;
         }
 
@@ -581,19 +580,19 @@ namespace Theraot.Collections.ThreadSafe
         {
             TValue value;
             return _wrapped.Remove
-                (
-                    _keyComparer.GetHashCode(key),
-                    input =>
+            (
+                _keyComparer.GetHashCode(key),
+                input =>
+                {
+                    TKey foundKey;
+                    if (PrivateTryGetValue(input, out foundKey))
                     {
-                        TKey foundKey;
-                        if (PrivateTryGetValue(input, out foundKey))
-                        {
-                            return _keyComparer.Equals(foundKey, key);
-                        }
-                        return false;
-                    },
-                    out value
-                );
+                        return _keyComparer.Equals(foundKey, key);
+                    }
+                    return false;
+                },
+                out value
+            );
         }
 
         /// <summary>
@@ -631,9 +630,10 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the specified key was removed; otherwise, <c>false</c>.
         /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="keyCheck"/> is <c>null</c>.</exception>
         public bool Remove(int hashCode, Predicate<TKey> keyCheck, out TValue value)
         {
-            if (ReferenceEquals(keyCheck, null))
+            if (keyCheck == null)
             {
                 throw new ArgumentNullException("keyCheck");
             }
@@ -663,13 +663,14 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the specified key was removed; otherwise, <c>false</c>.
         /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="keyCheck"/> is <c>null</c>.</exception>
         public bool Remove(int hashCode, Predicate<TKey> keyCheck, Predicate<TValue> valueCheck, out TValue value)
         {
-            if (ReferenceEquals(keyCheck, null))
+            if (keyCheck == null)
             {
                 throw new ArgumentNullException("keyCheck");
             }
-            if (ReferenceEquals(valueCheck, null))
+            if (valueCheck == null)
             {
                 throw new ArgumentNullException("valueCheck");
             }
@@ -690,6 +691,28 @@ namespace Theraot.Collections.ThreadSafe
                 );
         }
 
+        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
+        {
+            // No risk of dead needles here
+            Predicate<WeakNeedle<TKey>> check = input =>
+            {
+                TKey foundKey;
+                if (PrivateTryGetValue(input, out foundKey))
+                {
+                    return _keyComparer.Equals(foundKey, item.Key);
+                }
+                return false;
+            };
+            TValue found;
+            return _wrapped.Remove
+                (
+                    _keyComparer.GetHashCode(item.Key),
+                    check,
+                    input => EqualityComparer<TValue>.Default.Equals(input, item.Value),
+                    out found
+                );
+        }
+
         public int RemoveDeadItems()
         {
             return _wrapped.RemoveWhereKey(key => !key.IsAlive);
@@ -705,9 +728,10 @@ namespace Theraot.Collections.ThreadSafe
         /// <remarks>
         /// It is not guaranteed that all the pairs of keys and associated values that satisfies the predicate will be removed.
         /// </remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="keyCheck"/> is <c>null</c>.</exception>
         public int RemoveWhereKey(Predicate<TKey> keyCheck)
         {
-            if (ReferenceEquals(keyCheck, null))
+            if (keyCheck == null)
             {
                 throw new ArgumentNullException("keyCheck");
             }
@@ -735,9 +759,10 @@ namespace Theraot.Collections.ThreadSafe
         /// <remarks>
         /// It is not guaranteed that all the pairs of keys and associated values that satisfies the predicate will be removed.
         /// </remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="keyCheck"/> is <c>null</c>.</exception>
         public IEnumerable<TValue> RemoveWhereKeyEnumerable(Predicate<TKey> keyCheck)
         {
-            if (ReferenceEquals(keyCheck, null))
+            if (keyCheck == null)
             {
                 throw new ArgumentNullException("keyCheck");
             }
@@ -765,9 +790,10 @@ namespace Theraot.Collections.ThreadSafe
         /// <remarks>
         /// It is not guaranteed that all the pairs of keys and associated values that satisfies the predicate will be removed.
         /// </remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="valueCheck"/> is <c>null</c>.</exception>
         public int RemoveWhereValue(Predicate<TValue> valueCheck)
         {
-            if (ReferenceEquals(valueCheck, null))
+            if (valueCheck == null)
             {
                 throw new ArgumentNullException("valueCheck");
             }
@@ -784,9 +810,10 @@ namespace Theraot.Collections.ThreadSafe
         /// <remarks>
         /// It is not guaranteed that all the pairs of keys and associated values that satisfies the predicate will be removed.
         /// </remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="valueCheck"/> is <c>null</c>.</exception>
         public IEnumerable<TValue> RemoveWhereValueEnumerable(Predicate<TValue> valueCheck)
         {
-            if (ReferenceEquals(valueCheck, null))
+            if (valueCheck == null)
             {
                 throw new ArgumentNullException("valueCheck");
             }
@@ -831,7 +858,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return true;
             }
-            NeedleReservoir<TKey, TNeedle>.DonateNeedle(needle);
+            _reservoir.DonateNeedle(needle);
             return false;
         }
 
@@ -848,8 +875,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             // No risk of dead needles here
             var needle = PrivateGetNeedle(key);
-            KeyValuePair<TNeedle, TValue> storedPair;
-            Predicate<TNeedle> check = found =>
+            Predicate<WeakNeedle<TKey>> check = found =>
             {
                 TKey foundKey;
                 if (PrivateTryGetValue(found, out foundKey))
@@ -864,10 +890,11 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 return true;
             };
+            KeyValuePair<WeakNeedle<TKey>, TValue> storedPair;
             var result = _wrapped.TryAdd(needle, check, value, out storedPair);
             if (!result)
             {
-                NeedleReservoir<TKey, TNeedle>.DonateNeedle(needle);
+                _reservoir.DonateNeedle(needle);
             }
             stored = new KeyValuePair<TKey, TValue>(key, storedPair.Value);
             return result;
@@ -875,21 +902,18 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool TryGetOrAdd(TKey key, Func<TKey, TValue> valueFactory, out TValue stored)
         {
-            if (ReferenceEquals(valueFactory, null))
+            if (valueFactory == null)
             {
                 throw new ArgumentNullException("valueFactory");
             }
             var needle = PrivateGetNeedle(key);
-            Func<TNeedle, TValue, TValue> factory = (pairKey, foundValue) =>
-            {
-                TKey foundKey;
-                return valueFactory(PrivateTryGetValue(pairKey, out foundKey) ? foundKey : key);
-            };
+            TKey foundKey;
+            Func<WeakNeedle<TKey>, TValue, TValue> factory = (pairKey, foundValue) => valueFactory(PrivateTryGetValue(pairKey, out foundKey) ? foundKey : key);
             if (_wrapped.TryGetOrAdd(needle, () => valueFactory(key), factory, out stored))
             {
                 return true;
             }
-            NeedleReservoir<TKey, TNeedle>.DonateNeedle(needle);
+            _reservoir.DonateNeedle(needle);
             return false;
         }
 
@@ -900,7 +924,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return true;
             }
-            NeedleReservoir<TKey, TNeedle>.DonateNeedle(needle);
+            _reservoir.DonateNeedle(needle);
             return false;
         }
 
@@ -914,7 +938,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool TryGetValue(TKey key, out TValue value)
         {
-            Predicate<TNeedle> check = found =>
+            Predicate<WeakNeedle<TKey>> check = found =>
             {
                 TKey foundKey;
                 if (PrivateTryGetValue(found, out foundKey))
@@ -935,13 +959,14 @@ namespace Theraot.Collections.ThreadSafe
         /// <returns>
         ///   <c>true</c> if the value was retrieved; otherwise, <c>false</c>.
         /// </returns>
+        /// <exception cref="ArgumentNullException"><paramref name="keyCheck"/> is <c>null</c>.</exception>
         public bool TryGetValue(int hashCode, Predicate<TKey> keyCheck, out TValue value)
         {
-            if (ReferenceEquals(keyCheck, null))
+            if (keyCheck == null)
             {
                 throw new ArgumentNullException("keyCheck");
             }
-            Predicate<TNeedle> check = found =>
+            Predicate<WeakNeedle<TKey>> check = found =>
             {
                 TKey foundKey;
                 if (PrivateTryGetValue(found, out foundKey))
@@ -960,7 +985,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return true;
             }
-            NeedleReservoir<TKey, TNeedle>.DonateNeedle(needle);
+            _reservoir.DonateNeedle(needle);
             return false;
         }
 
@@ -971,7 +996,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return true;
             }
-            NeedleReservoir<TKey, TNeedle>.DonateNeedle(needle);
+            _reservoir.DonateNeedle(needle);
             return false;
         }
 
@@ -985,9 +1010,10 @@ namespace Theraot.Collections.ThreadSafe
         /// <remarks>
         /// It is not guaranteed that all the pairs of keys and associated values that satisfies the predicate will be returned.
         /// </remarks>
+        /// <exception cref="ArgumentNullException"><paramref name="keyCheck"/> is <c>null</c>.</exception>
         public IEnumerable<TValue> Where(Predicate<TKey> keyCheck)
         {
-            if (ReferenceEquals(keyCheck, null))
+            if (keyCheck == null)
             {
                 throw new ArgumentNullException("keyCheck");
             }
@@ -1003,66 +1029,6 @@ namespace Theraot.Collections.ThreadSafe
                         return false;
                     }
                 );
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Use AddNew")]
-        void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
-        {
-            AddNew(key, value);
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Use AddNew")]
-        void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
-        {
-            // No risk of dead needles here
-            AddNew(item.Key, item.Value);
-        }
-
-        bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
-        {
-            // No risk of dead needles here
-            TValue found;
-            Predicate<TNeedle> check = input =>
-            {
-                TKey foundKey;
-                if (PrivateTryGetValue(input, out foundKey))
-                {
-                    return _keyComparer.Equals(foundKey, item.Key);
-                }
-                return false;
-            };
-            return _wrapped.Remove
-                (
-                    _keyComparer.GetHashCode(item.Key),
-                    check,
-                    input => EqualityComparer<TValue>.Default.Equals(input, item.Value),
-                    out found
-                );
-        }
-
-        bool ICollection<KeyValuePair<TKey, TValue>>.Contains(KeyValuePair<TKey, TValue> item)
-        {
-            // No risk of dead needles here
-            Predicate<TNeedle> check = input =>
-            {
-                TKey foundKey;
-                if (PrivateTryGetValue(input, out foundKey))
-                {
-                    return _keyComparer.Equals(foundKey, item.Key);
-                }
-                return false;
-            };
-            return _wrapped.ContainsKey
-                (
-                    _keyComparer.GetHashCode(item.Key),
-                    check,
-                    input => EqualityComparer<TValue>.Default.Equals(input, item.Value)
-                );
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         /// <summary>
@@ -1095,7 +1061,7 @@ namespace Theraot.Collections.ThreadSafe
             }
             catch (ArgumentException)
             {
-                NeedleReservoir<TKey, TNeedle>.DonateNeedle(needle);
+                _reservoir.DonateNeedle(needle);
                 throw;
             }
         }
@@ -1106,24 +1072,24 @@ namespace Theraot.Collections.ThreadSafe
             var needle = PrivateGetNeedle(key);
             TValue stored;
             if (
-                    !_wrapped.TryGetOrAdd
-                    (
-                        needle,
-                        input =>
+                !_wrapped.TryGetOrAdd
+                (
+                    needle,
+                    input =>
+                    {
+                        TKey foundKey;
+                        if (PrivateTryGetValue(input, out foundKey))
                         {
-                            TKey foundKey;
-                            if (PrivateTryGetValue(input, out foundKey))
-                            {
-                                return keyOverwriteCheck(foundKey);
-                            }
-                            return true;
-                        },
-                        value,
-                        out stored
-                    )
+                            return keyOverwriteCheck(foundKey);
+                        }
+                        return true;
+                    },
+                    value,
+                    out stored
                 )
+            )
             {
-                NeedleReservoir<TKey, TNeedle>.DonateNeedle(needle);
+                _reservoir.DonateNeedle(needle);
             }
             return stored;
         }
@@ -1138,12 +1104,12 @@ namespace Theraot.Collections.ThreadSafe
         {
             // NOTICE this method has no null check
             var needle = PrivateGetNeedle(key);
+            TKey foundKey;
             _wrapped.Set
                 (
                     needle,
                     input =>
                     {
-                        TKey foundKey;
                         if (PrivateTryGetValue(input, out foundKey))
                         {
                             return keyOverwriteCheck(foundKey);
@@ -1165,12 +1131,12 @@ namespace Theraot.Collections.ThreadSafe
         {
             // NOTICE this method has no null check
             var needle = PrivateGetNeedle(key);
+            TKey foundKey;
             _wrapped.Set
                 (
                     needle,
                     input =>
                     {
-                        TKey foundKey;
                         if (PrivateTryGetValue(input, out foundKey))
                         {
                             return keyOverwriteCheck(foundKey);
@@ -1195,6 +1161,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             // NOTICE this method has no null check
             var needle = PrivateGetNeedle(key);
+            TKey foundKey;
             if
                 (
                     _wrapped.TryAdd
@@ -1202,7 +1169,6 @@ namespace Theraot.Collections.ThreadSafe
                         needle,
                         input =>
                         {
-                            TKey foundKey;
                             if (PrivateTryGetValue(input, out foundKey))
                             {
                                 return keyOverwriteCheck(foundKey);
@@ -1215,7 +1181,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return true;
             }
-            NeedleReservoir<TKey, TNeedle>.DonateNeedle(needle);
+            _reservoir.DonateNeedle(needle);
             return false;
         }
 
@@ -1223,6 +1189,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             // NOTICE this method has no null check
             var needle = PrivateGetNeedle(key);
+            TKey foundKey;
             if
                 (
                     _wrapped.TryGetOrAdd
@@ -1230,7 +1197,6 @@ namespace Theraot.Collections.ThreadSafe
                         needle,
                         input =>
                         {
-                            TKey foundKey;
                             if (PrivateTryGetValue(input, out foundKey))
                             {
                                 return keyOverwriteCheck(foundKey);
@@ -1244,7 +1210,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 return true;
             }
-            NeedleReservoir<TKey, TNeedle>.DonateNeedle(needle);
+            _reservoir.DonateNeedle(needle);
             return false;
         }
 
@@ -1253,73 +1219,21 @@ namespace Theraot.Collections.ThreadSafe
             return ((ICollection<KeyValuePair<TKey, TValue>>)this).Contains(item);
         }
 
-        private static TNeedle PrivateGetNeedle(TKey key)
+        private WeakNeedle<TKey> PrivateGetNeedle(TKey key)
         {
-            return NeedleReservoir<TKey, TNeedle>.GetNeedle(key);
+            return _reservoir.GetNeedle(key);
         }
 
-        private static bool PrivateTryGetValue(TNeedle needle, out TKey foundKey)
+        private static bool PrivateTryGetValue(WeakNeedle<TKey> needle, out TKey foundKey)
         {
             return needle.TryGetValue(out foundKey);
         }
 
         private void GarbageCollected(object sender, EventArgs e)
         {
+            GC.KeepAlive(sender);
+            GC.KeepAlive(e);
             RemoveDeadItems();
-        }
-
-        private void RegisterForAutoRemoveDeadItems()
-        {
-            if (RegisterForAutoRemoveDeadItemsExtracted())
-            {
-                GC.ReRegisterForFinalize(this);
-            }
-        }
-
-        private bool RegisterForAutoRemoveDeadItemsExtracted()
-        {
-            // No risk of dead needles here
-            bool result = false;
-            EventHandler eventHandler;
-            if (ReferenceEquals(_eventHandler.Value, null))
-            {
-                eventHandler = GarbageCollected;
-                _eventHandler = new WeakNeedle<EventHandler>(eventHandler);
-                result = true;
-            }
-            else
-            {
-                if (_eventHandler.Value.TryGetValue(out eventHandler))
-                {
-                    eventHandler = GarbageCollected;
-                    _eventHandler.Value = eventHandler;
-                    result = true;
-                }
-            }
-            GCMonitor.Collected += eventHandler;
-            return result;
-        }
-
-        private void UnRegisterForAutoRemoveDeadItems()
-        {
-            if (UnRegisterForAutoRemoveDeadItemsExtracted())
-            {
-                GC.SuppressFinalize(this);
-            }
-        }
-
-        private bool UnRegisterForAutoRemoveDeadItemsExtracted()
-        {
-            // No risk of dead needles here
-            EventHandler eventHandler;
-            if (_eventHandler.Value.Retrieve(out eventHandler))
-            {
-                GCMonitor.Collected -= eventHandler;
-                _eventHandler.Value = null;
-                return true;
-            }
-            _eventHandler.Value = null;
-            return false;
         }
     }
 }

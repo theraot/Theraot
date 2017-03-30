@@ -9,7 +9,6 @@ namespace Theraot.Threading.Needles
         private int _status;
 
         [System.Diagnostics.DebuggerNonUserCode]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
         ~Transact()
         {
             try
@@ -24,7 +23,7 @@ namespace Theraot.Threading.Needles
                 }
                 catch (Exception exception)
                 {
-                    // Pokemon - fields may be partially collected.
+                    // Fields may be partially collected.
                     GC.KeepAlive(exception);
                 }
             }
@@ -51,14 +50,7 @@ namespace Theraot.Threading.Needles
 
         private bool TakeDisposalExecution()
         {
-            if (_status == -1)
-            {
-                return false;
-            }
-            else
-            {
-                return ThreadingHelper.SpinWaitSetUnless(ref _status, -1, 0, -1);
-            }
+            return _status != -1 && ThreadingHelper.SpinWaitSetUnless(ref _status, -1, 0, -1);
         }
     }
 }

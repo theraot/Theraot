@@ -684,7 +684,6 @@
     <Compile Include="Theraot\Threading\Needles\Transact.disposable.cs" />
     <Compile Include="Theraot\Threading\Needles\Transact.IResource.cs" />
     <Compile Include="Theraot\Threading\Needles\Transact.Needle.cs" />
-    <Compile Include="Theraot\Threading\Needles\Transact.Needle.disposable.cs" />
     <Compile Include="Theraot\Threading\Needles\WeakDelegateNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\WeakNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\WeakNeedle.disposable.cs" />

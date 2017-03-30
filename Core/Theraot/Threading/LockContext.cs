@@ -10,11 +10,11 @@ namespace Theraot.Threading
 {
     public class LockContext<T>
     {
-        private readonly int _capacity;
         private readonly FixedSizeQueue<LockSlot<T>> _closedSlots;
         private readonly NeedleBucket<LockSlot<T>, LazyNeedle<LockSlot<T>>> _slots;
         private readonly VersionProvider _version = new VersionProvider();
         private int _index;
+        private int _capacity;
 
         public LockContext(int capacity)
         {
@@ -27,6 +27,7 @@ namespace Theraot.Threading
                         index,
                         _version.AdvanceNewToken()
                     ),
+                    key => new LazyNeedle<LockSlot<T>>(key),
                     _capacity
                 );
             _closedSlots = new FixedSizeQueue<LockSlot<T>>(_capacity);
@@ -75,7 +76,7 @@ namespace Theraot.Threading
                 {
                     continue;
                 }
-                if (ReferenceEquals(slot, null) || slot.CompareTo(testSlot) < 0)
+                if (slot == null || slot.CompareTo(testSlot) < 0)
                 {
                     slot = testSlot;
                     resultLock = flag;
