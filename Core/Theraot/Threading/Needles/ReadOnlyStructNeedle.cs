@@ -9,18 +9,18 @@ namespace Theraot.Threading.Needles
     [System.Diagnostics.DebuggerNonUserCode]
     public struct ReadOnlyStructNeedle<T> : INeedle<T>, IEquatable<ReadOnlyStructNeedle<T>>
     {
-        private readonly T _target;
+        private readonly T _value;
 
         public ReadOnlyStructNeedle(T target)
         {
-            _target = target;
+            _value = target;
         }
 
         T INeedle<T>.Value
         {
             get
             {
-                return _target;
+                return _value;
             }
             set
             {
@@ -32,7 +32,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return _target != null;
+                return !ReferenceEquals(_value, null);
             }
         }
 
@@ -40,13 +40,13 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return _target;
+                return _value;
             }
         }
 
         public static explicit operator T(ReadOnlyStructNeedle<T> needle)
         {
-            return needle._target;
+            return needle._value;
         }
 
         public static implicit operator ReadOnlyStructNeedle<T>(T field)
@@ -73,7 +73,7 @@ namespace Theraot.Threading.Needles
             // Keep the "is" operator
             if (obj is T)
             {
-                var target = _target;
+                var target = _value;
                 return IsAlive && EqualityComparer<T>.Default.Equals(target, (T)obj);
             }
             return false;
@@ -84,26 +84,30 @@ namespace Theraot.Threading.Needles
             return EqualsExtracted(this, other);
         }
 
+#pragma warning disable RCS1132 // Remove redundant overriding member.
+
         public override int GetHashCode()
         {
             return base.GetHashCode();
         }
 
+#pragma warning restore RCS1132 // Remove redundant overriding member.
+
         public override string ToString()
         {
             if (IsAlive)
             {
-                return _target.ToString();
+                return _value.ToString();
             }
             return "<Dead Needle>";
         }
 
         private static bool EqualsExtracted(ReadOnlyStructNeedle<T> left, ReadOnlyStructNeedle<T> right)
         {
-            var leftValue = left._target;
+            var leftValue = left._value;
             if (left.IsAlive)
             {
-                var rightValue = right._target;
+                var rightValue = right._value;
                 return right.IsAlive && EqualityComparer<T>.Default.Equals(leftValue, rightValue);
             }
             return !right.IsAlive;
@@ -111,10 +115,10 @@ namespace Theraot.Threading.Needles
 
         private static bool NotEqualsExtracted(ReadOnlyStructNeedle<T> left, ReadOnlyStructNeedle<T> right)
         {
-            var leftValue = left._target;
+            var leftValue = left._value;
             if (left.IsAlive)
             {
-                var rightValue = right._target;
+                var rightValue = right._value;
                 return !right.IsAlive || !EqualityComparer<T>.Default.Equals(leftValue, rightValue);
             }
             return right.IsAlive;
