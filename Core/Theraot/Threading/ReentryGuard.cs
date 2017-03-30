@@ -70,7 +70,6 @@ namespace Theraot.Threading
                 {
                     try
                     {
-
                         action.Invoke();
                         promised.SetCompleted();
                     }
