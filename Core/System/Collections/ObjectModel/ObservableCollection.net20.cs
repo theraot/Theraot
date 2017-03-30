@@ -18,20 +18,20 @@ namespace System.Collections.ObjectModel
         public ObservableCollection()
             : base(new List<T>())
         {
-            _entryCheck = new TrackingThreadLocal<int>();
+            _entryCheck = new TrackingThreadLocal<int>(() => 0);
             _reentryBlockage = new ReentryBlockage(() => _entryCheck.Value--);
         }
 
         public ObservableCollection(IEnumerable<T> collection)
             : base(new List<T>(collection))
         {
-            _entryCheck = new TrackingThreadLocal<int>();
+            _entryCheck = new TrackingThreadLocal<int>(() => 0);
         }
 
         public ObservableCollection(List<T> list)
             : base(new List<T>(list))
         {
-            _entryCheck = new TrackingThreadLocal<int>();
+            _entryCheck = new TrackingThreadLocal<int>(() => 0);
         }
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;

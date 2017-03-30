@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Threading;
 using Theraot.Collections;
 using Theraot.Collections.ThreadSafe;
-using Theraot.Core;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
@@ -13,17 +12,11 @@ namespace Theraot.Threading
     [System.Diagnostics.DebuggerDisplay("IsValueCreated={IsValueCreated}, Value={ValueForDebugDisplay}")]
     public sealed class TrackingThreadLocal<T> : IThreadLocal<T>, IWaitablePromise<T>, ICacheNeedle<T>, IObserver<T>
     {
-        private const int INT_MaxProbingHint = 4;
+        private const int _maxProbingHint = 4;
 
         private int _disposing;
         private SafeDictionary<Thread, INeedle<T>> _slots;
         private Func<T> _valueFactory;
-
-        public TrackingThreadLocal()
-            : this(TypeHelper.GetCreateOrDefault<T>())
-        {
-            // Empty
-        }
 
         public TrackingThreadLocal(Func<T> valueFactory)
         {
@@ -32,14 +25,14 @@ namespace Theraot.Threading
                 throw new ArgumentNullException("valueFactory");
             }
             _valueFactory = valueFactory;
-            _slots = new SafeDictionary<Thread, INeedle<T>>(INT_MaxProbingHint);
+            _slots = new SafeDictionary<Thread, INeedle<T>>(_maxProbingHint);
         }
 
         public bool IsValueCreated
         {
             get
             {
-                if (Thread.VolatileRead(ref _disposing) == 1)
+                if (Volatile.Read(ref _disposing) == 1)
                 {
                     throw new ObjectDisposedException(GetType().FullName);
                 }
@@ -112,14 +105,6 @@ namespace Theraot.Threading
             }
         }
 
-        T IThreadLocal<T>.ValueForDebugDisplay
-        {
-            get
-            {
-                return ValueForDebugDisplay;
-            }
-        }
-
         [System.Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {
@@ -142,7 +127,7 @@ namespace Theraot.Threading
 
         public bool TryGetValue(Thread thread, out T target)
         {
-            if (Thread.VolatileRead(ref _disposing) == 1)
+            if (Volatile.Read(ref _disposing) == 1)
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
@@ -156,9 +141,9 @@ namespace Theraot.Threading
             return false;
         }
 
-        public bool TryGetValue(out T target)
+        public bool TryGetValue(out T value)
         {
-            return TryGetValue(Thread.CurrentThread, out target);
+            return TryGetValue(Thread.CurrentThread, out value);
         }
 
         void IObserver<T>.OnCompleted()
@@ -183,7 +168,7 @@ namespace Theraot.Threading
 
         private void EraseValue(Thread thread)
         {
-            if (Thread.VolatileRead(ref _disposing) == 1)
+            if (Volatile.Read(ref _disposing) == 1)
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
@@ -192,7 +177,7 @@ namespace Theraot.Threading
 
         private T GetValue(Thread thread)
         {
-            if (Thread.VolatileRead(ref _disposing) == 1)
+            if (Volatile.Read(ref _disposing) == 1)
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
@@ -205,7 +190,7 @@ namespace Theraot.Threading
                 }
                 catch (Exception exception)
                 {
-                    if (!ReferenceEquals(exception, ThreadLocalHelper.RecursionGuardException))
+                    if (exception != ThreadLocalHelper.RecursionGuardException)
                     {
                         needle = new ExceptionStructNeedle<T>(exception);
                     }
@@ -217,7 +202,7 @@ namespace Theraot.Threading
 
         private void SetError(Thread thread, Exception error)
         {
-            if (Thread.VolatileRead(ref _disposing) == 1)
+            if (Volatile.Read(ref _disposing) == 1)
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
@@ -226,14 +211,14 @@ namespace Theraot.Threading
 
         private void SetValue(Thread thread, T value)
         {
-            if (Thread.VolatileRead(ref _disposing) == 1)
+            if (Volatile.Read(ref _disposing) == 1)
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
             _slots.Set(thread, new ReadOnlyStructNeedle<T>(value));
         }
 
-        internal T ValueForDebugDisplay
+        T IThreadLocal<T>.ValueForDebugDisplay
         {
             get
             {

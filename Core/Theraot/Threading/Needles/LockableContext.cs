@@ -13,7 +13,7 @@ namespace Theraot.Threading.Needles
         public LockableContext(int capacity)
         {
             Context = new LockContext<Thread>(capacity);
-            _slots.Value = new TrackingThreadLocal<LockableSlot>();
+            _slots.Value = new TrackingThreadLocal<LockableSlot>(() => null);
         }
 
         internal LockableSlot Slot
