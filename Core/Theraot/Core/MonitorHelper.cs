@@ -23,13 +23,13 @@ namespace Theraot.Core
 
         public static void Enter(object obj, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             if (!Monitor.TryEnter(obj))
             {
-                ThreadingHelper.SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
         }
@@ -78,7 +78,7 @@ namespace Theraot.Core
                 Enter(millisecondsTimeout, cancellationToken);
                 return true;
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = ThreadingHelper.TicksNow();
             retry:
             cancellationToken.ThrowIfCancellationRequested();
@@ -89,7 +89,7 @@ namespace Theraot.Core
             }
             if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < millisecondsTimeout)
             {
-                ThreadingHelper.SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -104,7 +104,7 @@ namespace Theraot.Core
         public static bool TryEnter(object obj, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = ThreadingHelper.TicksNow();
             retry:
             cancellationToken.ThrowIfCancellationRequested();
@@ -115,7 +115,7 @@ namespace Theraot.Core
             }
             if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < milliseconds)
             {
-                ThreadingHelper.SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;

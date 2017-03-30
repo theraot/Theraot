@@ -101,7 +101,7 @@ namespace Theraot.Threading
 
         private bool CanRead()
         {
-            if (Thread.CurrentThread == ThreadingHelper.VolatileRead(ref _ownerThread))
+            if (Thread.CurrentThread == Volatile.Read(ref _ownerThread))
             {
                 Interlocked.Increment(ref _readCount);
                 _currentReadingCount.Value++;
@@ -119,7 +119,7 @@ namespace Theraot.Threading
 
         private bool CanUpgrade()
         {
-            if (Thread.CurrentThread == ThreadingHelper.VolatileRead(ref _ownerThread))
+            if (Thread.CurrentThread == Volatile.Read(ref _ownerThread))
             {
                 Interlocked.Increment(ref _writeCount);
                 return true;
@@ -141,7 +141,7 @@ namespace Theraot.Threading
 
         private bool CanWrite()
         {
-            if (Thread.CurrentThread == ThreadingHelper.VolatileRead(ref _ownerThread))
+            if (Thread.CurrentThread == Volatile.Read(ref _ownerThread))
             {
                 Interlocked.Increment(ref _writeCount);
                 return true;
@@ -162,7 +162,7 @@ namespace Theraot.Threading
 
         private void DoneRead()
         {
-            if (Thread.CurrentThread == ThreadingHelper.VolatileRead(ref _ownerThread))
+            if (Thread.CurrentThread == Volatile.Read(ref _ownerThread))
             {
                 Interlocked.Decrement(ref _readCount);
                 _currentReadingCount.Value--;
@@ -191,7 +191,7 @@ namespace Theraot.Threading
             if (Interlocked.Decrement(ref _writeCount) == 0)
             {
                 Thread.VolatileWrite(ref _edge, 0);
-                ThreadingHelper.VolatileWrite(ref _ownerThread, null);
+                Volatile.Write(ref _ownerThread, null);
                 _freeToRead.Set();
             }
         }
@@ -201,7 +201,7 @@ namespace Theraot.Threading
             if (Interlocked.Decrement(ref _writeCount) == 0)
             {
                 Thread.VolatileWrite(ref _master, 0);
-                ThreadingHelper.VolatileWrite(ref _ownerThread, null);
+                Volatile.Write(ref _ownerThread, null);
                 _freeToRead.Set();
                 _freeToWrite.Set();
             }
@@ -209,7 +209,7 @@ namespace Theraot.Threading
 
         private void WaitCanRead()
         {
-            if (Thread.CurrentThread != ThreadingHelper.VolatileRead(ref _ownerThread))
+            if (Thread.CurrentThread != Volatile.Read(ref _ownerThread))
             {
                 var check = Interlocked.CompareExchange(ref _master, 1, 0);
                 while (true)
@@ -244,7 +244,7 @@ namespace Theraot.Threading
 
         private void WaitCanWrite()
         {
-            if (Thread.CurrentThread != ThreadingHelper.VolatileRead(ref _ownerThread))
+            if (Thread.CurrentThread != Volatile.Read(ref _ownerThread))
             {
                 var check = Interlocked.CompareExchange(ref _master, -1, 0);
                 while (true)
@@ -290,7 +290,7 @@ namespace Theraot.Threading
 
         private bool WaitUpgrade()
         {
-            var owner = ThreadingHelper.VolatileRead(ref _ownerThread);
+            var owner = Volatile.Read(ref _ownerThread);
             if (owner == null || owner == Thread.CurrentThread)
             {
                 var check = 1;

@@ -75,7 +75,7 @@ namespace Theraot.Threading.Needles
 
         public void ReleaseAction()
         {
-            ThreadingHelper.VolatileWrite(ref _action, null);
+            Volatile.Write(ref _action, null);
         }
 
         public override void Wait()

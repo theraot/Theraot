@@ -168,7 +168,7 @@ namespace Theraot.Threading.Needles
 
         public void ReleaseValueFactory()
         {
-            ThreadingHelper.VolatileWrite(ref _valueFactory, null);
+            Volatile.Write(ref _valueFactory, null);
         }
 
         public override bool TryGetValue(out T target)
@@ -204,7 +204,7 @@ namespace Theraot.Threading.Needles
             {
                 throw new ArgumentNullException("beforeInitialize");
             }
-            if (ThreadingHelper.VolatileRead(ref _valueFactory) == null)
+            if (Volatile.Read(ref _valueFactory) == null)
             {
                 // If unable to initialize do nothing
                 // This happens if
@@ -245,7 +245,7 @@ namespace Theraot.Threading.Needles
                         // Another thread may have called ReleaseWaitHandle just before the next instruction
                         waitHandle.Wait();
                         // Finished waiting...
-                        if (ThreadingHelper.VolatileRead(ref _valueFactory) != null)
+                        if (Volatile.Read(ref _valueFactory) != null)
                         {
                             // There was an error in the initialization, go back
                             goto back;

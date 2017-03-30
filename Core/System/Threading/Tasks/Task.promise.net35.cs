@@ -112,7 +112,7 @@ namespace System.Threading.Tasks
             // TaskStatus.RanToCompletion (5) -> ok if preventDoubleExecution = false
             // TaskStatus.Canceled (6) -> not ok
             // TaskStatus.Faulted (7) -> -> ok if preventDoubleExecution = false
-            var count = 0;
+            var spinWait = new SpinWait();
             while (true)
             {
                 var lastValue = Thread.VolatileRead(ref _status);
@@ -125,7 +125,7 @@ namespace System.Threading.Tasks
                 {
                     return true;
                 }
-                ThreadingHelper.SpinOnce(ref count);
+                spinWait.SpinOnce();
             }
         }
 

@@ -885,11 +885,11 @@ namespace System.Threading.Tasks
             if (Thread.VolatileRead(ref _continuationsStatus) == 1)
             {
                 // Initializing or initilized
-                var count = 0;
+                var spinWait = new SpinWait();
                 List<object> continuations;
                 while ((continuations = Interlocked.CompareExchange(ref _continuations, null, null)) == null)
                 {
-                    ThreadingHelper.SpinOnce(ref count);
+                    spinWait.SpinOnce();
                 }
                 Monitor.Enter(continuations);
                 return continuations;
@@ -918,10 +918,10 @@ namespace System.Threading.Tasks
                     goto case 1;
                 case 1:
                     // Initializing or initilized
-                    var count = 0;
+                    var spinWait = new SpinWait();
                     while ((continuations = Interlocked.CompareExchange(ref _continuations, null, null)) == null)
                     {
-                        ThreadingHelper.SpinOnce(ref count);
+                        spinWait.SpinOnce();
                     }
                     goto default;
                 case 2:

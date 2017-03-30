@@ -9,24 +9,24 @@ namespace Theraot.Threading
     {
         public static void SpinWaitSet(ref int check, int value, int comparand)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
             if (Interlocked.CompareExchange(ref check, value, comparand) != comparand)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
         }
 
         public static void SpinWaitSet(ref int check, int value, int comparand, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
             if (Interlocked.CompareExchange(ref check, value, comparand) != comparand)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
         }
@@ -42,7 +42,7 @@ namespace Theraot.Threading
                 SpinWaitSet(ref check, value, comparand);
                 return true;
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
@@ -51,7 +51,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -68,7 +68,7 @@ namespace Theraot.Threading
                 SpinWaitSet(ref check, value, comparand, cancellationToken);
                 return true;
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
@@ -79,7 +79,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -88,7 +88,7 @@ namespace Theraot.Threading
         public static bool SpinWaitSet(ref int check, int value, int comparand, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
@@ -97,7 +97,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -106,7 +106,7 @@ namespace Theraot.Threading
         public static bool SpinWaitSet(ref int check, int value, int comparand, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
@@ -117,7 +117,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -125,7 +125,7 @@ namespace Theraot.Threading
 
         public static bool SpinWaitSet(ref int check, int value, int comparand, IComparable<TimeSpan> timeout)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
             if (Interlocked.CompareExchange(ref check, value, comparand) == comparand)
@@ -134,7 +134,7 @@ namespace Theraot.Threading
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -142,7 +142,7 @@ namespace Theraot.Threading
 
         public static bool SpinWaitSet(ref int check, int value, int comparand, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
@@ -153,35 +153,32 @@ namespace Theraot.Threading
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
         }
-    
+
         public static void SpinWaitUntil(ref int check, int comparand)
         {
-            var count = 0;
-        retry:
-            if (Thread.VolatileRead(ref check) == comparand)
+            var spinWait = new SpinWait();
+            while (Volatile.Read(ref check) != comparand)
             {
-                return;
+                spinWait.SpinOnce();
             }
-            SpinOnce(ref count);
-            goto retry;
         }
 
         public static void SpinWaitUntil(ref int check, int comparand, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            if (Thread.VolatileRead(ref check) == comparand)
+            if (Volatile.Read(ref check) == comparand)
             {
                 return;
             }
-            SpinOnce(ref count);
+            spinWait.SpinOnce();
             goto retry;
         }
 
@@ -196,16 +193,16 @@ namespace Theraot.Threading
                 SpinWaitUntil(ref check, comparand);
                 return true;
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            if (Thread.VolatileRead(ref check) == comparand)
+            if (Volatile.Read(ref check) == comparand)
             {
                 return true;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -222,18 +219,18 @@ namespace Theraot.Threading
                 SpinWaitUntil(ref check, comparand, cancellationToken);
                 return true;
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            if (Thread.VolatileRead(ref check) == comparand)
+            if (Volatile.Read(ref check) == comparand)
             {
                 return true;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -242,16 +239,16 @@ namespace Theraot.Threading
         public static bool SpinWaitUntil(ref int check, int comparand, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            if (Thread.VolatileRead(ref check) == comparand)
+            if (Volatile.Read(ref check) == comparand)
             {
                 return true;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -260,18 +257,18 @@ namespace Theraot.Threading
         public static bool SpinWaitUntil(ref int check, int comparand, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            if (Thread.VolatileRead(ref check) == comparand)
+            if (Volatile.Read(ref check) == comparand)
             {
                 return true;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -279,16 +276,16 @@ namespace Theraot.Threading
 
         public static bool SpinWaitUntil(ref int check, int comparand, IComparable<TimeSpan> timeout)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
-            if (Thread.VolatileRead(ref check) == comparand)
+            if (Volatile.Read(ref check) == comparand)
             {
                 return true;
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -296,38 +293,35 @@ namespace Theraot.Threading
 
         public static bool SpinWaitUntil(ref int check, int comparand, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            if (Thread.VolatileRead(ref check) == comparand)
+            if (Volatile.Read(ref check) == comparand)
             {
                 return true;
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
         }
-    
+
         public static void SpinWaitUntil(Func<bool> verification)
         {
-            var count = 0;
-        retry:
-            if (verification.Invoke())
+            var spinWait = new SpinWait();
+            while (!verification.Invoke())
             {
-                return;
+                spinWait.SpinOnce();
             }
-            SpinOnce(ref count);
-            goto retry;
         }
 
         public static void SpinWaitUntil(Func<bool> verification, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
@@ -335,7 +329,7 @@ namespace Theraot.Threading
             {
                 return;
             }
-            SpinOnce(ref count);
+            spinWait.SpinOnce();
             goto retry;
         }
 
@@ -350,7 +344,7 @@ namespace Theraot.Threading
                 SpinWaitUntil(verification);
                 return true;
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             if (verification.Invoke())
@@ -359,7 +353,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -376,7 +370,7 @@ namespace Theraot.Threading
                 SpinWaitUntil(verification, cancellationToken);
                 return true;
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
@@ -387,7 +381,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -396,7 +390,7 @@ namespace Theraot.Threading
         public static bool SpinWaitUntil(Func<bool> verification, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             if (verification.Invoke())
@@ -405,7 +399,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -414,7 +408,7 @@ namespace Theraot.Threading
         public static bool SpinWaitUntil(Func<bool> verification, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
@@ -425,7 +419,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -433,7 +427,7 @@ namespace Theraot.Threading
 
         public static bool SpinWaitUntil(Func<bool> verification, IComparable<TimeSpan> timeout)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
             if (verification.Invoke())
@@ -442,7 +436,7 @@ namespace Theraot.Threading
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -450,7 +444,7 @@ namespace Theraot.Threading
 
         public static bool SpinWaitUntil(Func<bool> verification, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
@@ -461,35 +455,32 @@ namespace Theraot.Threading
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
         }
-    
+
         public static void SpinWaitWhile(ref int check, int comparand)
         {
-            var count = 0;
-        retry:
-            if (Thread.VolatileRead(ref check) != comparand)
+            var spinWait = new SpinWait();
+            while(Volatile.Read(ref check) == comparand)
             {
-                return;
+                spinWait.SpinOnce();
             }
-            SpinOnce(ref count);
-            goto retry;
         }
 
         public static void SpinWaitWhile(ref int check, int comparand, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            if (Thread.VolatileRead(ref check) != comparand)
+            if (Volatile.Read(ref check) != comparand)
             {
                 return;
             }
-            SpinOnce(ref count);
+            spinWait.SpinOnce();
             goto retry;
         }
 
@@ -504,16 +495,16 @@ namespace Theraot.Threading
                 SpinWaitWhile(ref check, comparand);
                 return true;
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            if (Thread.VolatileRead(ref check) != comparand)
+            if (Volatile.Read(ref check) != comparand)
             {
                 return true;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -530,18 +521,18 @@ namespace Theraot.Threading
                 SpinWaitWhile(ref check, comparand, cancellationToken);
                 return true;
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            if (Thread.VolatileRead(ref check) != comparand)
+            if (Volatile.Read(ref check) != comparand)
             {
                 return true;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -550,16 +541,16 @@ namespace Theraot.Threading
         public static bool SpinWaitWhile(ref int check, int comparand, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            if (Thread.VolatileRead(ref check) != comparand)
+            if (Volatile.Read(ref check) != comparand)
             {
                 return true;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -568,18 +559,18 @@ namespace Theraot.Threading
         public static bool SpinWaitWhile(ref int check, int comparand, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            if (Thread.VolatileRead(ref check) != comparand)
+            if (Volatile.Read(ref check) != comparand)
             {
                 return true;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -587,16 +578,16 @@ namespace Theraot.Threading
 
         public static bool SpinWaitWhile(ref int check, int comparand, IComparable<TimeSpan> timeout)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
-            if (Thread.VolatileRead(ref check) != comparand)
+            if (Volatile.Read(ref check) != comparand)
             {
                 return true;
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -604,48 +595,45 @@ namespace Theraot.Threading
 
         public static bool SpinWaitWhile(ref int check, int comparand, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            if (Thread.VolatileRead(ref check) != comparand)
+            if (Volatile.Read(ref check) != comparand)
             {
                 return true;
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
         }
-    
+
         public static void SpinWaitWhileNull<T>(ref T check)
-        where T : class
+            where T : class
         {
-            var count = 0;
-        retry:
-            if (!ReferenceEquals(VolatileRead(ref check), null))
+            var spinWait = new SpinWait();
+            while (Volatile.Read(ref check) == null)
             {
-                return;
+                spinWait.SpinOnce();
             }
-            SpinOnce(ref count);
-            goto retry;
         }
 
         public static void SpinWaitWhileNull<T>(ref T check, CancellationToken cancellationToken)
         where T : class
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            if (!ReferenceEquals(VolatileRead(ref check), null))
+            if (Volatile.Read(ref check) != null)
             {
                 return;
             }
-            SpinOnce(ref count);
+            spinWait.SpinOnce();
             goto retry;
         }
 
@@ -661,16 +649,16 @@ namespace Theraot.Threading
                 SpinWaitWhileNull(ref check);
                 return true;
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            if (!ReferenceEquals(VolatileRead(ref check), null))
+            if (Volatile.Read(ref check) != null)
             {
                 return true;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -688,18 +676,18 @@ namespace Theraot.Threading
                 SpinWaitWhileNull(ref check, cancellationToken);
                 return true;
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            if (!ReferenceEquals(VolatileRead(ref check), null))
+            if (Volatile.Read(ref check) != null)
             {
                 return true;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -709,16 +697,16 @@ namespace Theraot.Threading
         where T : class
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            if (!ReferenceEquals(VolatileRead(ref check), null))
+            if (Volatile.Read(ref check) != null)
             {
                 return true;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -728,18 +716,18 @@ namespace Theraot.Threading
         where T : class
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            if (!ReferenceEquals(VolatileRead(ref check), null))
+            if (Volatile.Read(ref check) != null)
             {
                 return true;
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -748,16 +736,16 @@ namespace Theraot.Threading
         public static bool SpinWaitWhileNull<T>(ref T check, IComparable<TimeSpan> timeout)
         where T : class
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
-            if (!ReferenceEquals(VolatileRead(ref check), null))
+            if (Volatile.Read(ref check) != null)
             {
                 return true;
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -766,50 +754,50 @@ namespace Theraot.Threading
         public static bool SpinWaitWhileNull<T>(ref T check, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         where T : class
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            if (!ReferenceEquals(VolatileRead(ref check), null))
+            if (Volatile.Read(ref check) != null)
             {
                 return true;
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
         }
-    
+
         public static bool SpinWaitRelativeSet(ref int check, int value)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
-            var tmpA = Thread.VolatileRead(ref check);
+            var tmpA = Volatile.Read(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
             if (tmpB == tmpA)
             {
                 return true;
             }
-            SpinOnce(ref count);
+            spinWait.SpinOnce();
             goto retry;
         }
 
         public static bool SpinWaitRelativeSet(ref int check, int value, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var tmpA = Thread.VolatileRead(ref check);
+            var tmpA = Volatile.Read(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
             if (tmpB == tmpA)
             {
                 return true;
             }
-            SpinOnce(ref count);
+            spinWait.SpinOnce();
             goto retry;
         }
 
@@ -823,10 +811,10 @@ namespace Theraot.Threading
             {
                 return SpinWaitRelativeSet(ref check, value);
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            var tmpA = Thread.VolatileRead(ref check);
+            var tmpA = Volatile.Read(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
             if (tmpB == tmpA)
             {
@@ -834,7 +822,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -850,12 +838,12 @@ namespace Theraot.Threading
             {
                 return SpinWaitRelativeSet(ref check, value);
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var tmpA = Thread.VolatileRead(ref check);
+            var tmpA = Volatile.Read(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
             if (tmpB == tmpA)
             {
@@ -863,7 +851,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -872,10 +860,10 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeSet(ref int check, int value, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            var tmpA = Thread.VolatileRead(ref check);
+            var tmpA = Volatile.Read(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
             if (tmpB == tmpA)
             {
@@ -883,7 +871,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -892,12 +880,12 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeSet(ref int check, int value, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var tmpA = Thread.VolatileRead(ref check);
+            var tmpA = Volatile.Read(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
             if (tmpB == tmpA)
             {
@@ -905,7 +893,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -913,10 +901,10 @@ namespace Theraot.Threading
 
         public static bool SpinWaitRelativeSet(ref int check, int value, IComparable<TimeSpan> timeout)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
-            var tmpA = Thread.VolatileRead(ref check);
+            var tmpA = Volatile.Read(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
             if (tmpB == tmpA)
             {
@@ -924,7 +912,7 @@ namespace Theraot.Threading
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -932,12 +920,12 @@ namespace Theraot.Threading
 
         public static bool SpinWaitRelativeSet(ref int check, int value, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var tmpA = Thread.VolatileRead(ref check);
+            var tmpA = Volatile.Read(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
             if (tmpB == tmpA)
             {
@@ -945,41 +933,41 @@ namespace Theraot.Threading
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
         }
-    
+
         public static bool SpinWaitRelativeExchange(ref int check, int value, out int result)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
-            var tmpA = Thread.VolatileRead(ref check);
+            var tmpA = Volatile.Read(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
             result = tmpB + value;
             if (tmpB == tmpA)
             {
                 return true;
             }
-            SpinOnce(ref count);
+            spinWait.SpinOnce();
             goto retry;
         }
 
         public static bool SpinWaitRelativeExchange(ref int check, int value, out int result, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var tmpA = Thread.VolatileRead(ref check);
+            var tmpA = Volatile.Read(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
             result = tmpB + value;
             if (tmpB == tmpA)
             {
                 return true;
             }
-            SpinOnce(ref count);
+            spinWait.SpinOnce();
             goto retry;
         }
 
@@ -993,10 +981,10 @@ namespace Theraot.Threading
             {
                 return SpinWaitRelativeExchange(ref check, value, out result);
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            var tmpA = Thread.VolatileRead(ref check);
+            var tmpA = Volatile.Read(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
             result = tmpB + value;
             if (tmpB == tmpA)
@@ -1005,7 +993,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -1021,12 +1009,12 @@ namespace Theraot.Threading
             {
                 return SpinWaitRelativeExchange(ref check, value, out result);
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var tmpA = Thread.VolatileRead(ref check);
+            var tmpA = Volatile.Read(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
             result = tmpB + value;
             if (tmpB == tmpA)
@@ -1035,7 +1023,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -1044,10 +1032,10 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeExchange(ref int check, int value, out int result, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            var tmpA = Thread.VolatileRead(ref check);
+            var tmpA = Volatile.Read(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
             result = tmpB + value;
             if (tmpB == tmpA)
@@ -1056,7 +1044,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -1065,12 +1053,12 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeExchange(ref int check, int value, out int result, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var tmpA = Thread.VolatileRead(ref check);
+            var tmpA = Volatile.Read(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
             result = tmpB + value;
             if (tmpB == tmpA)
@@ -1079,7 +1067,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -1087,10 +1075,10 @@ namespace Theraot.Threading
 
         public static bool SpinWaitRelativeExchange(ref int check, int value, out int result, IComparable<TimeSpan> timeout)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
-            var tmpA = Thread.VolatileRead(ref check);
+            var tmpA = Volatile.Read(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
             result = tmpB + value;
             if (tmpB == tmpA)
@@ -1099,7 +1087,7 @@ namespace Theraot.Threading
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -1107,12 +1095,12 @@ namespace Theraot.Threading
 
         public static bool SpinWaitRelativeExchange(ref int check, int value, out int result, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var tmpA = Thread.VolatileRead(ref check);
+            var tmpA = Volatile.Read(ref check);
             var tmpB = Interlocked.CompareExchange(ref check, tmpA + value, tmpA);
             result = tmpB + value;
             if (tmpB == tmpA)
@@ -1121,17 +1109,17 @@ namespace Theraot.Threading
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
         }
-    
+
         public static bool SpinWaitSetUnless(ref int check, int value, int comparand, int unless)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if (lastValue == unless)
             {
                 return false;
@@ -1141,18 +1129,17 @@ namespace Theraot.Threading
             {
                 return true;
             }
-            SpinOnce(ref count);
+            spinWait.SpinOnce();
             goto retry;
-            
         }
 
         public static bool SpinWaitSetUnless(ref int check, int value, int comparand, int unless, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if (lastValue == unless)
             {
                 return false;
@@ -1162,9 +1149,8 @@ namespace Theraot.Threading
             {
                 return true;
             }
-            SpinOnce(ref count);
+            spinWait.SpinOnce();
             goto retry;
-            
         }
 
         public static bool SpinWaitSetUnless(ref int check, int value, int comparand, int unless, int milliseconds)
@@ -1177,10 +1163,10 @@ namespace Theraot.Threading
             {
                 return SpinWaitSetUnless(ref check, value, comparand, unless);
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if (lastValue == unless)
             {
                 return false;
@@ -1192,7 +1178,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -1208,12 +1194,12 @@ namespace Theraot.Threading
             {
                 return SpinWaitSetUnless(ref check, value, comparand, unless);
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if (lastValue == unless)
             {
                 return false;
@@ -1225,7 +1211,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -1234,10 +1220,10 @@ namespace Theraot.Threading
         public static bool SpinWaitSetUnless(ref int check, int value, int comparand, int unless, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if (lastValue == unless)
             {
                 return false;
@@ -1249,7 +1235,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -1258,12 +1244,12 @@ namespace Theraot.Threading
         public static bool SpinWaitSetUnless(ref int check, int value, int comparand, int unless, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if (lastValue == unless)
             {
                 return false;
@@ -1275,7 +1261,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -1283,10 +1269,10 @@ namespace Theraot.Threading
 
         public static bool SpinWaitSetUnless(ref int check, int value, int comparand, int unless, IComparable<TimeSpan> timeout)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if (lastValue == unless)
             {
                 return false;
@@ -1298,7 +1284,7 @@ namespace Theraot.Threading
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -1306,12 +1292,12 @@ namespace Theraot.Threading
 
         public static bool SpinWaitSetUnless(ref int check, int value, int comparand, int unless, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if (lastValue == unless)
             {
                 return false;
@@ -1323,17 +1309,17 @@ namespace Theraot.Threading
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
         }
-    
+
         public static bool SpinWaitRelativeSetUnless(ref int check, int value, int unless)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             var result = lastValue + value;
             if (lastValue == unless)
             {
@@ -1344,18 +1330,17 @@ namespace Theraot.Threading
             {
                 return true;
             }
-            SpinOnce(ref count);
+            spinWait.SpinOnce();
             goto retry;
-            
         }
 
         public static bool SpinWaitRelativeSetUnless(ref int check, int value, int unless, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             var result = lastValue + value;
             if (lastValue == unless)
             {
@@ -1366,9 +1351,8 @@ namespace Theraot.Threading
             {
                 return true;
             }
-            SpinOnce(ref count);
+            spinWait.SpinOnce();
             goto retry;
-            
         }
 
         public static bool SpinWaitRelativeSetUnless(ref int check, int value, int unless, int milliseconds)
@@ -1381,10 +1365,10 @@ namespace Theraot.Threading
             {
                 return SpinWaitRelativeSetUnless(ref check, value, unless);
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             var result = lastValue + value;
             if (lastValue == unless)
             {
@@ -1397,7 +1381,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -1413,12 +1397,12 @@ namespace Theraot.Threading
             {
                 return SpinWaitRelativeSetUnless(ref check, value, unless);
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             var result = lastValue + value;
             if (lastValue == unless)
             {
@@ -1431,7 +1415,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -1440,10 +1424,10 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeSetUnless(ref int check, int value, int unless, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             var result = lastValue + value;
             if (lastValue == unless)
             {
@@ -1456,7 +1440,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -1465,12 +1449,12 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeSetUnless(ref int check, int value, int unless, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             var result = lastValue + value;
             if (lastValue == unless)
             {
@@ -1483,7 +1467,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -1491,10 +1475,10 @@ namespace Theraot.Threading
 
         public static bool SpinWaitRelativeSetUnless(ref int check, int value, int unless, IComparable<TimeSpan> timeout)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             var result = lastValue + value;
             if (lastValue == unless)
             {
@@ -1507,7 +1491,7 @@ namespace Theraot.Threading
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -1515,12 +1499,12 @@ namespace Theraot.Threading
 
         public static bool SpinWaitRelativeSetUnless(ref int check, int value, int unless, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             var result = lastValue + value;
             if (lastValue == unless)
             {
@@ -1533,17 +1517,17 @@ namespace Theraot.Threading
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
         }
-    
+
         public static bool SpinWaitRelativeExchangeUnless(ref int check, int value, int unless, out int result)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             result = lastValue + value;
             if (lastValue == unless)
             {
@@ -1554,18 +1538,17 @@ namespace Theraot.Threading
             {
                 return true;
             }
-            SpinOnce(ref count);
+            spinWait.SpinOnce();
             goto retry;
-            
         }
 
         public static bool SpinWaitRelativeExchangeUnless(ref int check, int value, int unless, out int result, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             result = lastValue + value;
             if (lastValue == unless)
             {
@@ -1576,9 +1559,8 @@ namespace Theraot.Threading
             {
                 return true;
             }
-            SpinOnce(ref count);
+            spinWait.SpinOnce();
             goto retry;
-            
         }
 
         public static bool SpinWaitRelativeExchangeUnless(ref int check, int value, int unless, out int result, int milliseconds)
@@ -1591,10 +1573,10 @@ namespace Theraot.Threading
             {
                 return SpinWaitRelativeExchangeUnless(ref check, value, unless, out result);
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             result = lastValue + value;
             if (lastValue == unless)
             {
@@ -1607,7 +1589,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -1623,12 +1605,12 @@ namespace Theraot.Threading
             {
                 return SpinWaitRelativeExchangeUnless(ref check, value, unless, out result);
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             result = lastValue + value;
             if (lastValue == unless)
             {
@@ -1641,7 +1623,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -1650,10 +1632,10 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeExchangeUnless(ref int check, int value, int unless, out int result, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             result = lastValue + value;
             if (lastValue == unless)
             {
@@ -1666,7 +1648,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -1675,12 +1657,12 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeExchangeUnless(ref int check, int value, int unless, out int result, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             result = lastValue + value;
             if (lastValue == unless)
             {
@@ -1693,7 +1675,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -1701,10 +1683,10 @@ namespace Theraot.Threading
 
         public static bool SpinWaitRelativeExchangeUnless(ref int check, int value, int unless, out int result, IComparable<TimeSpan> timeout)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             result = lastValue + value;
             if (lastValue == unless)
             {
@@ -1717,7 +1699,7 @@ namespace Theraot.Threading
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -1725,12 +1707,12 @@ namespace Theraot.Threading
 
         public static bool SpinWaitRelativeExchangeUnless(ref int check, int value, int unless, out int result, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             result = lastValue + value;
             if (lastValue == unless)
             {
@@ -1743,17 +1725,17 @@ namespace Theraot.Threading
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
         }
-    
+
         public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if ((lastValue < 0) || (lastValue < -value))
             {
                 return false;
@@ -1764,18 +1746,17 @@ namespace Theraot.Threading
             {
                 return true;
             }
-            SpinOnce(ref count);
+            spinWait.SpinOnce();
             goto retry;
-            
         }
 
         public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if ((lastValue < 0) || (lastValue < -value))
             {
                 return false;
@@ -1786,9 +1767,8 @@ namespace Theraot.Threading
             {
                 return true;
             }
-            SpinOnce(ref count);
+            spinWait.SpinOnce();
             goto retry;
-            
         }
 
         public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value, int milliseconds)
@@ -1801,10 +1781,10 @@ namespace Theraot.Threading
             {
                 return SpinWaitRelativeSetUnlessNegative(ref check, value);
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if ((lastValue < 0) || (lastValue < -value))
             {
                 return false;
@@ -1817,7 +1797,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -1833,12 +1813,12 @@ namespace Theraot.Threading
             {
                 return SpinWaitRelativeSetUnlessNegative(ref check, value);
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if ((lastValue < 0) || (lastValue < -value))
             {
                 return false;
@@ -1851,7 +1831,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -1860,10 +1840,10 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if ((lastValue < 0) || (lastValue < -value))
             {
                 return false;
@@ -1876,7 +1856,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -1885,12 +1865,12 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if ((lastValue < 0) || (lastValue < -value))
             {
                 return false;
@@ -1903,7 +1883,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -1911,10 +1891,10 @@ namespace Theraot.Threading
 
         public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value, IComparable<TimeSpan> timeout)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if ((lastValue < 0) || (lastValue < -value))
             {
                 return false;
@@ -1927,7 +1907,7 @@ namespace Theraot.Threading
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -1935,12 +1915,12 @@ namespace Theraot.Threading
 
         public static bool SpinWaitRelativeSetUnlessNegative(ref int check, int value, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if ((lastValue < 0) || (lastValue < -value))
             {
                 return false;
@@ -1953,17 +1933,17 @@ namespace Theraot.Threading
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
         }
-    
+
         public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, out int lastValue)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
-            lastValue = Thread.VolatileRead(ref check);
+            lastValue = Volatile.Read(ref check);
             if ((lastValue < 0) || (lastValue < -value))
             {
                 return false;
@@ -1974,18 +1954,17 @@ namespace Theraot.Threading
             {
                 return true;
             }
-            SpinOnce(ref count);
+            spinWait.SpinOnce();
             goto retry;
-            
         }
 
         public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, out int lastValue, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            lastValue = Thread.VolatileRead(ref check);
+            lastValue = Volatile.Read(ref check);
             if ((lastValue < 0) || (lastValue < -value))
             {
                 return false;
@@ -1996,9 +1975,8 @@ namespace Theraot.Threading
             {
                 return true;
             }
-            SpinOnce(ref count);
+            spinWait.SpinOnce();
             goto retry;
-            
         }
 
         public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, out int lastValue, int milliseconds)
@@ -2011,10 +1989,10 @@ namespace Theraot.Threading
             {
                 return SpinWaitRelativeExchangeUnlessNegative(ref check, value, out lastValue);
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            lastValue = Thread.VolatileRead(ref check);
+            lastValue = Volatile.Read(ref check);
             if ((lastValue < 0) || (lastValue < -value))
             {
                 return false;
@@ -2027,7 +2005,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -2043,12 +2021,12 @@ namespace Theraot.Threading
             {
                 return SpinWaitRelativeExchangeUnlessNegative(ref check, value, out lastValue);
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            lastValue = Thread.VolatileRead(ref check);
+            lastValue = Volatile.Read(ref check);
             if ((lastValue < 0) || (lastValue < -value))
             {
                 return false;
@@ -2061,7 +2039,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -2070,10 +2048,10 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, out int lastValue, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            lastValue = Thread.VolatileRead(ref check);
+            lastValue = Volatile.Read(ref check);
             if ((lastValue < 0) || (lastValue < -value))
             {
                 return false;
@@ -2086,7 +2064,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -2095,12 +2073,12 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, out int lastValue, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            lastValue = Thread.VolatileRead(ref check);
+            lastValue = Volatile.Read(ref check);
             if ((lastValue < 0) || (lastValue < -value))
             {
                 return false;
@@ -2113,7 +2091,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -2121,10 +2099,10 @@ namespace Theraot.Threading
 
         public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, out int lastValue, IComparable<TimeSpan> timeout)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
-            lastValue = Thread.VolatileRead(ref check);
+            lastValue = Volatile.Read(ref check);
             if ((lastValue < 0) || (lastValue < -value))
             {
                 return false;
@@ -2137,7 +2115,7 @@ namespace Theraot.Threading
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -2145,12 +2123,12 @@ namespace Theraot.Threading
 
         public static bool SpinWaitRelativeExchangeUnlessNegative(ref int check, int value, out int lastValue, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            lastValue = Thread.VolatileRead(ref check);
+            lastValue = Volatile.Read(ref check);
             if ((lastValue < 0) || (lastValue < -value))
             {
                 return false;
@@ -2163,17 +2141,17 @@ namespace Theraot.Threading
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
         }
-    
+
         public static bool SpinWaitRelativeSetUnlessExcess(ref int check, int value, int maxValue)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
                 return false;
@@ -2184,18 +2162,17 @@ namespace Theraot.Threading
             {
                 return true;
             }
-            SpinOnce(ref count);
+            spinWait.SpinOnce();
             goto retry;
-            
         }
 
         public static bool SpinWaitRelativeSetUnlessExcess(ref int check, int value, int maxValue, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
                 return false;
@@ -2206,9 +2183,8 @@ namespace Theraot.Threading
             {
                 return true;
             }
-            SpinOnce(ref count);
+            spinWait.SpinOnce();
             goto retry;
-            
         }
 
         public static bool SpinWaitRelativeSetUnlessExcess(ref int check, int value, int maxValue, int milliseconds)
@@ -2221,10 +2197,10 @@ namespace Theraot.Threading
             {
                 return SpinWaitRelativeSetUnlessExcess(ref check, value, maxValue);
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
                 return false;
@@ -2237,7 +2213,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -2253,12 +2229,12 @@ namespace Theraot.Threading
             {
                 return SpinWaitRelativeSetUnlessExcess(ref check, value, maxValue);
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
                 return false;
@@ -2271,7 +2247,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -2280,10 +2256,10 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeSetUnlessExcess(ref int check, int value, int maxValue, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
                 return false;
@@ -2296,7 +2272,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -2305,12 +2281,12 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeSetUnlessExcess(ref int check, int value, int maxValue, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
                 return false;
@@ -2323,7 +2299,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -2331,10 +2307,10 @@ namespace Theraot.Threading
 
         public static bool SpinWaitRelativeSetUnlessExcess(ref int check, int value, int maxValue, IComparable<TimeSpan> timeout)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
                 return false;
@@ -2347,7 +2323,7 @@ namespace Theraot.Threading
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -2355,12 +2331,12 @@ namespace Theraot.Threading
 
         public static bool SpinWaitRelativeSetUnlessExcess(ref int check, int value, int maxValue, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
                 return false;
@@ -2373,17 +2349,17 @@ namespace Theraot.Threading
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
         }
-    
+
         public static bool SpinWaitRelativeExchangeUnlessExcess(ref int check, int value, int maxValue, out int lastValue)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
-            lastValue = Thread.VolatileRead(ref check);
+            lastValue = Volatile.Read(ref check);
             if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
                 return false;
@@ -2394,18 +2370,17 @@ namespace Theraot.Threading
             {
                 return true;
             }
-            SpinOnce(ref count);
+            spinWait.SpinOnce();
             goto retry;
-            
         }
 
         public static bool SpinWaitRelativeExchangeUnlessExcess(ref int check, int value, int maxValue, out int lastValue, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            lastValue = Thread.VolatileRead(ref check);
+            lastValue = Volatile.Read(ref check);
             if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
                 return false;
@@ -2416,9 +2391,8 @@ namespace Theraot.Threading
             {
                 return true;
             }
-            SpinOnce(ref count);
+            spinWait.SpinOnce();
             goto retry;
-            
         }
 
         public static bool SpinWaitRelativeExchangeUnlessExcess(ref int check, int value, int maxValue, out int lastValue, int milliseconds)
@@ -2431,10 +2405,10 @@ namespace Theraot.Threading
             {
                 return SpinWaitRelativeExchangeUnlessExcess(ref check, value, maxValue, out lastValue);
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            lastValue = Thread.VolatileRead(ref check);
+            lastValue = Volatile.Read(ref check);
             if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
                 return false;
@@ -2447,7 +2421,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -2463,12 +2437,12 @@ namespace Theraot.Threading
             {
                 return SpinWaitRelativeExchangeUnlessExcess(ref check, value, maxValue, out lastValue);
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            lastValue = Thread.VolatileRead(ref check);
+            lastValue = Volatile.Read(ref check);
             if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
                 return false;
@@ -2481,7 +2455,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -2490,10 +2464,10 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeExchangeUnlessExcess(ref int check, int value, int maxValue, out int lastValue, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            lastValue = Thread.VolatileRead(ref check);
+            lastValue = Volatile.Read(ref check);
             if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
                 return false;
@@ -2506,7 +2480,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -2515,12 +2489,12 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeExchangeUnlessExcess(ref int check, int value, int maxValue, out int lastValue, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            lastValue = Thread.VolatileRead(ref check);
+            lastValue = Volatile.Read(ref check);
             if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
                 return false;
@@ -2533,7 +2507,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -2541,10 +2515,10 @@ namespace Theraot.Threading
 
         public static bool SpinWaitRelativeExchangeUnlessExcess(ref int check, int value, int maxValue, out int lastValue, IComparable<TimeSpan> timeout)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
-            lastValue = Thread.VolatileRead(ref check);
+            lastValue = Volatile.Read(ref check);
             if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
                 return false;
@@ -2557,7 +2531,7 @@ namespace Theraot.Threading
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -2565,12 +2539,12 @@ namespace Theraot.Threading
 
         public static bool SpinWaitRelativeExchangeUnlessExcess(ref int check, int value, int maxValue, out int lastValue, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            lastValue = Thread.VolatileRead(ref check);
+            lastValue = Volatile.Read(ref check);
             if ((lastValue > maxValue) || (lastValue > maxValue - value))
             {
                 return false;
@@ -2583,17 +2557,17 @@ namespace Theraot.Threading
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
         }
-    
+
         public static bool SpinWaitRelativeSetBounded(ref int check, int value, int minValue, int maxValue)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
                 return false;
@@ -2604,18 +2578,17 @@ namespace Theraot.Threading
             {
                 return true;
             }
-            SpinOnce(ref count);
+            spinWait.SpinOnce();
             goto retry;
-            
         }
 
         public static bool SpinWaitRelativeSetBounded(ref int check, int value, int minValue, int maxValue, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
                 return false;
@@ -2626,9 +2599,8 @@ namespace Theraot.Threading
             {
                 return true;
             }
-            SpinOnce(ref count);
+            spinWait.SpinOnce();
             goto retry;
-            
         }
 
         public static bool SpinWaitRelativeSetBounded(ref int check, int value, int minValue, int maxValue, int milliseconds)
@@ -2641,10 +2613,10 @@ namespace Theraot.Threading
             {
                 return SpinWaitRelativeSetBounded(ref check, value, minValue, maxValue);
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
                 return false;
@@ -2657,7 +2629,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -2673,12 +2645,12 @@ namespace Theraot.Threading
             {
                 return SpinWaitRelativeSetBounded(ref check, value, minValue, maxValue);
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
                 return false;
@@ -2691,7 +2663,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -2700,10 +2672,10 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeSetBounded(ref int check, int value, int minValue, int maxValue, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
                 return false;
@@ -2716,7 +2688,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -2725,12 +2697,12 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeSetBounded(ref int check, int value, int minValue, int maxValue, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
                 return false;
@@ -2743,7 +2715,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -2751,10 +2723,10 @@ namespace Theraot.Threading
 
         public static bool SpinWaitRelativeSetBounded(ref int check, int value, int minValue, int maxValue, IComparable<TimeSpan> timeout)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
                 return false;
@@ -2767,7 +2739,7 @@ namespace Theraot.Threading
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -2775,12 +2747,12 @@ namespace Theraot.Threading
 
         public static bool SpinWaitRelativeSetBounded(ref int check, int value, int minValue, int maxValue, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            var lastValue = Thread.VolatileRead(ref check);
+            var lastValue = Volatile.Read(ref check);
             if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
                 return false;
@@ -2793,17 +2765,17 @@ namespace Theraot.Threading
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
         }
-    
+
         public static bool SpinWaitRelativeExchangeBounded(ref int check, int value, int minValue, int maxValue, out int lastValue)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
-            lastValue = Thread.VolatileRead(ref check);
+            lastValue = Volatile.Read(ref check);
             if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
                 return false;
@@ -2814,18 +2786,17 @@ namespace Theraot.Threading
             {
                 return true;
             }
-            SpinOnce(ref count);
+            spinWait.SpinOnce();
             goto retry;
-            
         }
 
         public static bool SpinWaitRelativeExchangeBounded(ref int check, int value, int minValue, int maxValue, out int lastValue, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            lastValue = Thread.VolatileRead(ref check);
+            lastValue = Volatile.Read(ref check);
             if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
                 return false;
@@ -2836,9 +2807,8 @@ namespace Theraot.Threading
             {
                 return true;
             }
-            SpinOnce(ref count);
+            spinWait.SpinOnce();
             goto retry;
-            
         }
 
         public static bool SpinWaitRelativeExchangeBounded(ref int check, int value, int minValue, int maxValue, out int lastValue, int milliseconds)
@@ -2851,10 +2821,10 @@ namespace Theraot.Threading
             {
                 return SpinWaitRelativeExchangeBounded(ref check, value, minValue, maxValue, out lastValue);
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            lastValue = Thread.VolatileRead(ref check);
+            lastValue = Volatile.Read(ref check);
             if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
                 return false;
@@ -2867,7 +2837,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -2883,12 +2853,12 @@ namespace Theraot.Threading
             {
                 return SpinWaitRelativeExchangeBounded(ref check, value, minValue, maxValue, out lastValue);
             }
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            lastValue = Thread.VolatileRead(ref check);
+            lastValue = Volatile.Read(ref check);
             if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
                 return false;
@@ -2901,7 +2871,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -2910,10 +2880,10 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeExchangeBounded(ref int check, int value, int minValue, int maxValue, out int lastValue, TimeSpan timeout)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
-            lastValue = Thread.VolatileRead(ref check);
+            lastValue = Volatile.Read(ref check);
             if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
                 return false;
@@ -2926,7 +2896,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -2935,12 +2905,12 @@ namespace Theraot.Threading
         public static bool SpinWaitRelativeExchangeBounded(ref int check, int value, int minValue, int maxValue, out int lastValue, TimeSpan timeout, CancellationToken cancellationToken)
         {
             var milliseconds = (long)timeout.TotalMilliseconds;
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = TicksNow();
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            lastValue = Thread.VolatileRead(ref check);
+            lastValue = Volatile.Read(ref check);
             if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
                 return false;
@@ -2953,7 +2923,7 @@ namespace Theraot.Threading
             }
             if (Milliseconds(TicksNow() - start) < milliseconds)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -2961,10 +2931,10 @@ namespace Theraot.Threading
 
         public static bool SpinWaitRelativeExchangeBounded(ref int check, int value, int minValue, int maxValue, out int lastValue, IComparable<TimeSpan> timeout)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
-            lastValue = Thread.VolatileRead(ref check);
+            lastValue = Volatile.Read(ref check);
             if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
                 return false;
@@ -2977,7 +2947,7 @@ namespace Theraot.Threading
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;
@@ -2985,12 +2955,12 @@ namespace Theraot.Threading
 
         public static bool SpinWaitRelativeExchangeBounded(ref int check, int value, int minValue, int maxValue, out int lastValue, IComparable<TimeSpan> timeout, CancellationToken cancellationToken)
         {
-            var count = 0;
+            var spinWait = new SpinWait();
             var start = DateTime.Now;
         retry:
             cancellationToken.ThrowIfCancellationRequested();
             GC.KeepAlive(cancellationToken.WaitHandle);
-            lastValue = Thread.VolatileRead(ref check);
+            lastValue = Volatile.Read(ref check);
             if ((lastValue < minValue || lastValue > maxValue) || (lastValue + value < minValue || lastValue > maxValue - value))
             {
                 return false;
@@ -3003,7 +2973,7 @@ namespace Theraot.Threading
             }
             if (timeout.CompareTo(DateTime.Now.Subtract(start)) > 0)
             {
-                SpinOnce(ref count);
+                spinWait.SpinOnce();
                 goto retry;
             }
             return false;

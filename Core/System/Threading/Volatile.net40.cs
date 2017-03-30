@@ -81,7 +81,9 @@ namespace System.Threading
         public static T Read<T>(ref T location)
             where T : class
         {
-            return ThreadingHelper.VolatileRead(ref location);
+            T copy = location;
+            Thread.MemoryBarrier();
+            return copy;
         }
 
         public static void Write(ref bool location, bool value)
@@ -159,7 +161,9 @@ namespace System.Threading
         public static void Write<T>(ref T location, T value)
             where T : class
         {
-            ThreadingHelper.VolatileWrite(ref location, value);
+            GC.KeepAlive(location);
+            Thread.MemoryBarrier();
+            location = value;
         }
     }
 }

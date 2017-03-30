@@ -118,7 +118,7 @@ namespace Theraot.Threading.Needles
 
         public void ReleaseValueFactory()
         {
-            ThreadingHelper.VolatileWrite(ref _valueFactory, null);
+            Volatile.Write(ref _valueFactory, null);
         }
 
         public override void Wait()

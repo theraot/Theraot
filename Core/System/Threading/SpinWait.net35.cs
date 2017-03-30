@@ -20,14 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Theraot.Core;
-
 #if NET20 || NET30 || NET35
+
+using Theraot.Core;
 
 namespace System.Threading
 {
     public struct SpinWait
     {
+        private const int _maxTime = 200;
+
         private int _count;
 
         public int Count
@@ -42,7 +44,7 @@ namespace System.Threading
         {
             get
             {
-                return EnvironmentHelper.IsSingleCPU || _count % Theraot.Threading.ThreadingHelper.INT_SleepCountHint == 0;
+                return EnvironmentHelper.IsSingleCPU || _count % Theraot.Threading.ThreadingHelper._sleepCountHint == 0;
             }
         }
 
@@ -68,7 +70,15 @@ namespace System.Threading
 
         public void SpinOnce()
         {
-            Theraot.Threading.ThreadingHelper.SpinOnce(ref _count);
+            _count++;
+            if (EnvironmentHelper.IsSingleCPU || _count % Theraot.Threading.ThreadingHelper._sleepCountHint == 0)
+            {
+                Thread.Sleep(0);
+            }
+            else
+            {
+                Thread.SpinWait(Math.Min(_count, _maxTime) << 1);
+            }
         }
     }
 }

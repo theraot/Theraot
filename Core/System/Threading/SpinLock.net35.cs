@@ -168,7 +168,7 @@ namespace System.Threading
             if (useMemoryBarrier)
             {
                 Thread.VolatileWrite(ref _isHeld, 0);
-                ThreadingHelper.VolatileWrite(ref _ownerThread, null);
+                Volatile.Write(ref _ownerThread, null);
             }
             else
             {

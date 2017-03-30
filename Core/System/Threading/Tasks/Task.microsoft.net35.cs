@@ -30,7 +30,7 @@ namespace System.Threading.Tasks
         {
             get
             {
-                var exceptionsHolder = ThreadingHelper.VolatileRead(ref _exceptionsHolder);
+                var exceptionsHolder = Volatile.Read(ref _exceptionsHolder);
                 return exceptionsHolder != null && exceptionsHolder.ContainsFaultList;
             }
         }
@@ -90,7 +90,7 @@ namespace System.Threading.Tasks
             // simultaneously on the same task from two different contexts.  This can result in m_exceptionalChildren
             // being nulled out while it is being processed, which could lead to a NullReferenceException.  To
             // protect ourselves, we'll cache m_exceptionalChildren in a local variable.
-            var tmp = ThreadingHelper.VolatileRead(ref _exceptionalChildren);
+            var tmp = Volatile.Read(ref _exceptionalChildren);
 
             if (tmp != null)
             {
@@ -105,7 +105,7 @@ namespace System.Threading.Tasks
                         Contract.Assert(task.IsCompleted, "Expected all tasks in list to be completed");
                         if (task.IsFaulted && !task.IsExceptionObservedByParent)
                         {
-                            var exceptionsHolder = ThreadingHelper.VolatileRead(ref task._exceptionsHolder);
+                            var exceptionsHolder = Volatile.Read(ref task._exceptionsHolder);
                             if (exceptionsHolder == null)
                             {
                                 Contract.Assert(false);
@@ -122,7 +122,7 @@ namespace System.Threading.Tasks
                 }
 
                 // Reduce memory pressure by getting rid of the array
-                ThreadingHelper.VolatileWrite(ref _exceptionalChildren, null);
+                Volatile.Write(ref _exceptionalChildren, null);
             }
         }
 
@@ -190,7 +190,7 @@ namespace System.Threading.Tasks
 
                 // Now is the time to prune exceptional children. We'll walk the list and removes the ones whose exceptions we might have observed after they threw.
                 // we use a local variable for exceptional children here because some other thread may be nulling out _exceptionalChildren
-                var exceptionalChildren = ThreadingHelper.VolatileRead(ref _exceptionalChildren);
+                var exceptionalChildren = Volatile.Read(ref _exceptionalChildren);
 
                 if (exceptionalChildren != null)
                 {
@@ -265,7 +265,7 @@ namespace System.Threading.Tasks
         {
             if (Interlocked.CompareExchange(ref _threadAbortedmanaged, 1, 0) == 0)
             {
-                var exceptionsHolder = ThreadingHelper.VolatileRead(ref _exceptionsHolder);
+                var exceptionsHolder = Volatile.Read(ref _exceptionsHolder);
                 if (exceptionsHolder == null)
                 {
                     return;
@@ -311,7 +311,7 @@ namespace System.Threading.Tasks
             if (childTask.IsFaulted && !childTask.IsExceptionObservedByParent)
             {
                 // Lazily initialize the child exception list
-                if (ThreadingHelper.VolatileRead(ref _exceptionalChildren) == null)
+                if (Volatile.Read(ref _exceptionalChildren) == null)
                 {
                     Interlocked.CompareExchange(ref _exceptionalChildren, new List<Task>(), null);
                 }
@@ -320,7 +320,7 @@ namespace System.Threading.Tasks
                 // multiple times for the same task.  In that case, AddExceptionsFromChildren() could be nulling m_exceptionalChildren
                 // out at the same time that we're processing it, resulting in a NullReferenceException here.  We'll protect
                 // ourselves by caching m_exceptionChildren in a local variable.
-                var tmp = ThreadingHelper.VolatileRead(ref _exceptionalChildren);
+                var tmp = Volatile.Read(ref _exceptionalChildren);
                 if (tmp != null)
                 {
                     lock (tmp)
@@ -605,7 +605,7 @@ namespace System.Threading.Tasks
                 canceledException = new TaskCanceledException(this);
             }
 
-            var exceptionsHolder = ThreadingHelper.VolatileRead(ref _exceptionsHolder);
+            var exceptionsHolder = Volatile.Read(ref _exceptionsHolder);
             if (exceptionsHolder != null && exceptionsHolder.ContainsFaultList)
             {
                 // No need to lock around this, as other logic prevents the consumption of exceptions
@@ -669,7 +669,7 @@ namespace System.Threading.Tasks
             //
 
             // Lazily initialize the holder, ensuring only one thread wins.
-            var exceptionsHolder = ThreadingHelper.VolatileRead(ref _exceptionsHolder);
+            var exceptionsHolder = Volatile.Read(ref _exceptionsHolder);
             if (exceptionsHolder == null)
             {
                 // This is the only time we write to _exceptionsHolder

@@ -124,7 +124,7 @@ namespace Theraot.Threading
 
         internal void Release()
         {
-            if (ThreadingHelper.VolatileRead(ref _capture).Flags.IsEmpty())
+            if (Volatile.Read(ref _capture).Flags.IsEmpty())
             {
                 _target = default(T);
                 Thread.MemoryBarrier();
