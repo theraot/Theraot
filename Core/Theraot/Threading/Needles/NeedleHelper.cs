@@ -85,7 +85,7 @@ namespace Theraot.Threading.Needles
         public static bool Retrieve<T, TNeedle>(this TNeedle needle, out T target)
             where TNeedle : IRecyclableNeedle<T>
         {
-            if (needle == null)
+            if (ReferenceEquals(needle, null))
             {
                 target = default(T);
                 return false;
