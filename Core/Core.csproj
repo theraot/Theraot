@@ -674,7 +674,6 @@
     <Compile Include="Theraot\Threading\Needles\Promise.cs" />
     <Compile Include="Theraot\Threading\Needles\PromiseNeedle1.cs" />
     <Compile Include="Theraot\Threading\Needles\ReadOnlyDisposableNeedle.cs" />
-    <Compile Include="Theraot\Threading\Needles\ReadOnlyDisposableNeedle.disposable.cs" />
     <Compile Include="Theraot\Threading\Needles\ReadOnlyNeedle.cs" />
     <Compile Include="Theraot\Threading\Needles\ReadOnlyPromise.cs" />
     <Compile Include="Theraot\Threading\Needles\ReadOnlyPromiseNeedle.cs" />

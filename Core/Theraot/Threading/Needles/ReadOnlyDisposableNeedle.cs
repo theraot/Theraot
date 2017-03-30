@@ -1,15 +1,16 @@
 #if FAT
 
+using System;
 using System.Collections.Generic;
-using Theraot.Core;
 
 namespace Theraot.Threading.Needles
 {
     [System.Diagnostics.DebuggerNonUserCode]
-    public sealed partial class ReadOnlyDisposableNeedle<T> : IReadOnlyNeedle<T>
+    public sealed class ReadOnlyDisposableNeedle<T> : IReadOnlyNeedle<T>
     {
         private readonly int _hashCode;
         private bool _isAlive;
+        private int _status;
         private T _target;
 
         public ReadOnlyDisposableNeedle()
@@ -33,6 +34,14 @@ namespace Theraot.Threading.Needles
             }
         }
 
+        public bool IsDisposed
+        {
+            get
+            {
+                return _status == -1;
+            }
+        }
+
         public T Value
         {
             get
@@ -43,7 +52,11 @@ namespace Theraot.Threading.Needles
 
         public static explicit operator T(ReadOnlyDisposableNeedle<T> needle)
         {
-            return Check.NotNullArgument(needle, "needle").Value;
+            if (needle == null)
+            {
+                throw new ArgumentNullException("needle");
+            }
+            return needle.Value;
         }
 
         public static implicit operator ReadOnlyDisposableNeedle<T>(T field)
@@ -77,6 +90,99 @@ namespace Theraot.Threading.Needles
             return EqualityComparer<T>.Default.Equals(left._target, right._target);
         }
 
+        [System.Diagnostics.DebuggerNonUserCode]
+        public void Dispose()
+        {
+            if (TakeDisposalExecution())
+            {
+                Kill();
+            }
+        }
+
+        [System.Diagnostics.DebuggerNonUserCode]
+        public void DisposedConditional(Action whenDisposed, Action whenNotDisposed)
+        {
+            if (_status == -1)
+            {
+                if (whenDisposed == null)
+                {
+                    whenDisposed.Invoke();
+                }
+            }
+            else
+            {
+                if (whenNotDisposed != null)
+                {
+                    if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
+                    {
+                        try
+                        {
+                            whenNotDisposed.Invoke();
+                        }
+                        finally
+                        {
+                            System.Threading.Interlocked.Decrement(ref _status);
+                        }
+                    }
+                    else
+                    {
+                        if (whenDisposed == null)
+                        {
+                            whenDisposed.Invoke();
+                        }
+                    }
+                }
+            }
+        }
+
+        [System.Diagnostics.DebuggerNonUserCode]
+        public TReturn DisposedConditional<TReturn>(Func<TReturn> whenDisposed, Func<TReturn> whenNotDisposed)
+        {
+            if (_status == -1)
+            {
+                if (whenDisposed == null)
+                {
+                    return default(TReturn);
+                }
+                else
+                {
+                    return whenDisposed.Invoke();
+                }
+            }
+            else
+            {
+                if (whenNotDisposed == null)
+                {
+                    return default(TReturn);
+                }
+                else
+                {
+                    if (ThreadingHelper.SpinWaitRelativeSet(ref _status, 1, -1))
+                    {
+                        try
+                        {
+                            return whenNotDisposed.Invoke();
+                        }
+                        finally
+                        {
+                            System.Threading.Interlocked.Decrement(ref _status);
+                        }
+                    }
+                    else
+                    {
+                        if (whenDisposed == null)
+                        {
+                            return default(TReturn);
+                        }
+                        else
+                        {
+                            return whenDisposed.Invoke();
+                        }
+                    }
+                }
+            }
+        }
+
         public override bool Equals(object obj)
         {
             var needle = obj as ReadOnlyDisposableNeedle<T>;
@@ -94,7 +200,7 @@ namespace Theraot.Threading.Needles
 
         public bool Equals(ReadOnlyDisposableNeedle<T> other)
         {
-            return !ReferenceEquals(null, other) && EqualityComparer<T>.Default.Equals(_target, other.Value);
+            return !ReferenceEquals(_target, null) && EqualityComparer<T>.Default.Equals(_target, other.Value);
         }
 
         public override int GetHashCode()
@@ -116,6 +222,18 @@ namespace Theraot.Threading.Needles
         {
             _isAlive = false;
             _target = default(T);
+        }
+
+        private bool TakeDisposalExecution()
+        {
+            if (_status == -1)
+            {
+                return false;
+            }
+            else
+            {
+                return ThreadingHelper.SpinWaitSetUnless(ref _status, -1, 0, -1);
+            }
         }
     }
 }
