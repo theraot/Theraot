@@ -4,7 +4,6 @@ using System;
 
 namespace Theraot.Threading.Needles
 {
-    [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
     public class ReadOnlyPromiseNeedle<T> : ReadOnlyPromise, IWaitablePromise<T>, ICacheNeedle<T>, IEquatable<ReadOnlyPromiseNeedle<T>>
     {
@@ -22,7 +21,6 @@ namespace Theraot.Threading.Needles
             {
                 return _promised.Value;
             }
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
             set
             {
                 throw new NotSupportedException();
@@ -67,7 +65,7 @@ namespace Theraot.Threading.Needles
         public override bool Equals(object obj)
         {
             var needle = obj as ReadOnlyPromiseNeedle<T>;
-            if (!ReferenceEquals(null, needle))
+            if (obj != null)
             {
                 return EqualsExtracted(this, needle);
             }
@@ -89,25 +87,25 @@ namespace Theraot.Threading.Needles
             return string.Format("{{Promise: {0}}}", _promised);
         }
 
-        public bool TryGetValue(out T target)
+        public bool TryGetValue(out T value)
         {
-            return _promised.TryGetValue(out target);
+            return _promised.TryGetValue(out value);
         }
 
         private static bool EqualsExtracted(ReadOnlyPromiseNeedle<T> left, ReadOnlyPromiseNeedle<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left == null)
             {
-                return ReferenceEquals(right, null);
+                return right == null;
             }
             return left.Equals(right);
         }
 
         private static bool NotEqualsExtracted(ReadOnlyPromiseNeedle<T> left, ReadOnlyPromiseNeedle<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left == null)
             {
-                return !ReferenceEquals(right, null);
+                return right != null;
             }
             return !left.Equals(right);
         }
