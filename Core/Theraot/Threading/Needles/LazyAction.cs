@@ -24,13 +24,21 @@ namespace Theraot.Threading.Needles
         public LazyAction(Action action)
             : base(false)
         {
-            _action = Check.NotNullArgument(action, "action");
+            if (action == null)
+            {
+                throw new ArgumentNullException("action");
+            }
+            _action = action;
         }
 
         public LazyAction(Action action, bool cacheExceptions)
            : base(false)
         {
-            _action = Check.NotNullArgument(action, "action");
+            if (action == null)
+            {
+                throw new ArgumentNullException("action");
+            }
+            _action = action;
             if (cacheExceptions)
             {
                 _action = () =>
