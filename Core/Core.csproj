@@ -818,6 +818,8 @@
     <Compile Include="System\Collections\Generic\IReadOnlyList.net40.cs" />
     <Compile Include="System\Tuple1.net35.cs" />
     <Compile Include="System\Tuple.net35.cs" />
+    <Compile Include="Theraot\Threading\VersionProvider.Target.cs" />
+    <Compile Include="Theraot\Threading\VersionProvider.VersionToken.cs" />
     <Compile Include="Theraot\VoidStruct.cs" />
     <None Include="packages.config" />
     <None Include="Theraot\Collections\Extensions.interleave.tt">
