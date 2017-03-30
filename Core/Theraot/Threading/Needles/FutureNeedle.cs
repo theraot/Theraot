@@ -105,7 +105,7 @@ namespace Theraot.Threading.Needles
             {
                 var start = ThreadingHelper.TicksNow();
                 base.Initialize();
-                milliseconds = milliseconds - (int)ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
+                milliseconds -= (int)ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
                 if (milliseconds > 0)
                 {
                     base.Wait(milliseconds);
@@ -128,7 +128,7 @@ namespace Theraot.Threading.Needles
             {
                 var start = ThreadingHelper.TicksNow();
                 base.Initialize();
-                milliseconds = milliseconds - (int)ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
+                milliseconds -= (int)ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
                 if (milliseconds > 0)
                 {
                     base.Wait(milliseconds, cancellationToken);
