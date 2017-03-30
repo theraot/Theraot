@@ -4,9 +4,8 @@ using System;
 
 namespace Theraot.Threading.Needles
 {
-    [Serializable]
     [System.Diagnostics.DebuggerNonUserCode]
-    public class PromiseNeedle<T> : Promise, ICacheNeedle<T>, IWaitablePromise<T>, IRecyclableNeedle<T>
+    public class PromiseNeedle<T> : Promise, IWaitablePromise<T>, IRecyclableNeedle<T>, ICacheNeedle<T>
     {
         private readonly int _hashCode;
         private T _target;
@@ -36,7 +35,7 @@ namespace Theraot.Threading.Needles
         {
             get
             {
-                return _target != null;
+                return !ReferenceEquals(_target, null);
             }
         }
 
@@ -45,7 +44,7 @@ namespace Theraot.Threading.Needles
             get
             {
                 var exception = Exception;
-                if (ReferenceEquals(exception, null))
+                if (exception == null)
                 {
                     return _target;
                 }
@@ -58,7 +57,10 @@ namespace Theraot.Threading.Needles
             }
         }
 
+#pragma warning disable RCS1158 // Avoid static members in generic types.
+
         public static PromiseNeedle<T> CreateFromValue(T target)
+#pragma warning restore RCS1158 // Avoid static members in generic types.
         {
             return new PromiseNeedle<T>(target);
         }
@@ -85,7 +87,7 @@ namespace Theraot.Threading.Needles
         public override bool Equals(object obj)
         {
             var needle = obj as PromiseNeedle<T>;
-            if (!ReferenceEquals(null, needle))
+            if (needle != null)
             {
                 return EqualsExtracted(this, needle);
             }
@@ -111,33 +113,33 @@ namespace Theraot.Threading.Needles
         public override string ToString()
         {
             return IsCompleted
-                ? (ReferenceEquals(Exception, null)
+                ? (Exception == null
                     ? _target.ToString()
                     : Exception.ToString())
                 : "[Not Created]";
         }
 
-        public bool TryGetValue(out T target)
+        public bool TryGetValue(out T value)
         {
             var result = IsCompleted;
-            target = _target;
+            value = _target;
             return result;
         }
 
         private static bool EqualsExtracted(PromiseNeedle<T> left, PromiseNeedle<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left == null)
             {
-                return ReferenceEquals(right, null);
+                return right == null;
             }
             return left.Equals(right);
         }
 
         private static bool NotEqualsExtracted(PromiseNeedle<T> left, PromiseNeedle<T> right)
         {
-            if (ReferenceEquals(left, null))
+            if (left == null)
             {
-                return !ReferenceEquals(right, null);
+                return right != null;
             }
             return !left.Equals(right);
         }
