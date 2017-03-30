@@ -29,7 +29,7 @@ namespace Theraot.Threading.Needles
 
         public override void Initialize()
         {
-            if (Thread.VolatileRead(ref _status) == 1)
+            if (Volatile.Read(ref _status) == 1)
             {
                 base.Wait();
             }
