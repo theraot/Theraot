@@ -125,9 +125,6 @@ namespace System.Linq.Expressions
 #endif
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitLambda(this);
@@ -192,9 +189,6 @@ namespace System.Linq.Expressions
             return Expression.Lambda<TDelegate>(body, Name, TailCall, parameters);
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitLambda(this);
@@ -226,10 +220,6 @@ public class ExpressionCreator<TDelegate>
 
     public partial class Expression
     {
-        /// <summary>
-        /// Creates an Expression{T} given the delegate type. Caches the
-        /// factory method to speed up repeated creations for the same T.
-        /// </summary>
         internal static LambdaExpression CreateLambda(Type delegateType, Expression body, string name, bool tailCall, ReadOnlyCollection<ParameterExpression> parameters)
         {
             // Get or create a delegate to the public Expression.Lambda<T>
@@ -467,12 +457,12 @@ public class ExpressionCreator<TDelegate>
 
             var parameterList = parameters.ToReadOnly();
 
-            int paramCount = parameterList.Count;
-            Type[] typeArgs = new Type[paramCount + 1];
+            var paramCount = parameterList.Count;
+            var typeArgs = new Type[paramCount + 1];
             if (paramCount > 0)
             {
                 var set = new Set<ParameterExpression>(parameterList.Count);
-                for (int i = 0; i < paramCount; i++)
+                for (var i = 0; i < paramCount; i++)
                 {
                     var param = parameterList[i];
                     ContractUtils.RequiresNotNull(param, "parameter");
@@ -486,7 +476,7 @@ public class ExpressionCreator<TDelegate>
             }
             typeArgs[paramCount] = body.Type;
 
-            Type delegateType = Compiler.DelegateHelpers.MakeDelegateType(typeArgs);
+            var delegateType = Compiler.DelegateHelpers.MakeDelegateType(typeArgs);
 
             return CreateLambda(delegateType, body, name, tailCall, parameterList);
         }
@@ -543,7 +533,7 @@ public class ExpressionCreator<TDelegate>
                 }
             }
 
-            ParameterInfo[] pis = mi.GetParameters();
+            var pis = mi.GetParameters();
 
             if (pis.Length > 0)
             {
@@ -552,12 +542,13 @@ public class ExpressionCreator<TDelegate>
                     throw Error.IncorrectNumberOfLambdaDeclarationParameters();
                 }
                 var set = new Set<ParameterExpression>(pis.Length);
-                for (int i = 0, n = pis.Length; i < n; i++)
+                var n = pis.Length;
+                for (int i = 0; i < n; i++)
                 {
-                    ParameterExpression pex = parameters[i];
-                    ParameterInfo pi = pis[i];
+                    var pex = parameters[i];
+                    var pi = pis[i];
                     RequiresCanRead(pex, "parameters");
-                    Type pType = pi.ParameterType;
+                    var pType = pi.ParameterType;
                     if (pex.IsByRef)
                     {
                         if (!pType.IsByRef)
@@ -597,7 +588,8 @@ public class ExpressionCreator<TDelegate>
             {
                 throw new ArgumentNullException("typeArgs");
             }
-            for (int i = 0, n = typeArgs.Length; i < n; i++)
+            var n = typeArgs.Length;
+            for (int i = 0; i < n; i++)
             {
                 var a = typeArgs[i];
                 if (a == null)
@@ -622,7 +614,7 @@ public class ExpressionCreator<TDelegate>
         {
             if (!ValidateTryGetFuncActionArgs(typeArgs)) throw Error.TypeMustNotBeByRef();
 
-            Type result = Compiler.DelegateHelpers.GetFuncType(typeArgs);
+            var result = Compiler.DelegateHelpers.GetFuncType(typeArgs);
             if (result == null)
             {
                 throw Error.IncorrectNumberOfTypeArgsForFunc();
@@ -656,7 +648,7 @@ public class ExpressionCreator<TDelegate>
         {
             if (!ValidateTryGetFuncActionArgs(typeArgs)) throw Error.TypeMustNotBeByRef();
 
-            Type result = Compiler.DelegateHelpers.GetActionType(typeArgs);
+            var result = Compiler.DelegateHelpers.GetActionType(typeArgs);
             if (result == null)
             {
                 throw Error.IncorrectNumberOfTypeArgsForAction();

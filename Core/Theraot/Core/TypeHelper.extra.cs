@@ -15,10 +15,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("assembly");
             }
-            else
-            {
-                return ProgressiveLookup<string, Type>.Create(assembly.GetTypes(), type => type.Namespace);
-            }
+            return ProgressiveLookup<string, Type>.Create(assembly.GetTypes(), type => type.Namespace);
         }
     }
 }

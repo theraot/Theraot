@@ -79,12 +79,12 @@ namespace System.Linq.Expressions
                 {
                     return false;
                 }
-                bool operandIsNullable = TypeHelper.IsNullableType(_operand.Type);
-                bool resultIsNullable = TypeHelper.IsNullableType(this.Type);
+                var operandIsNullable = TypeHelper.IsNullableType(_operand.Type);
+                var resultIsNullable = TypeHelper.IsNullableType(this.Type);
                 if (_method != null)
                 {
-                    return (operandIsNullable && !TypeHelper.AreEquivalent(_method.GetParameters()[0].ParameterType, _operand.Type)) ||
-                           (resultIsNullable && !TypeHelper.AreEquivalent(_method.ReturnType, this.Type));
+                    return (operandIsNullable && _method.GetParameters()[0].ParameterType != _operand.Type) ||
+                           (resultIsNullable && _method.ReturnType != this.Type);
                 }
                 return operandIsNullable || resultIsNullable;
             }
@@ -102,9 +102,6 @@ namespace System.Linq.Expressions
             }
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitUnary(this);
@@ -253,14 +250,14 @@ namespace System.Linq.Expressions
             // tempObj[tempArg0, ... tempArgN] = op(tempValue)
             // tempValue
 
-            bool prefix = IsPrefix;
+            var prefix = IsPrefix;
             var index = (IndexExpression)_operand;
-            int count = index.Arguments.Count;
+            var count = index.Arguments.Count;
             var block = new Expression[count + (prefix ? 2 : 4)];
             var temps = new ParameterExpression[count + (prefix ? 1 : 2)];
             var args = new ParameterExpression[count];
 
-            int i = 0;
+            var i = 0;
             temps[i] = Parameter(index.Object.Type, null);
             block[i] = Assign(temps[i], index.Object);
             i++;
@@ -385,7 +382,7 @@ namespace System.Linq.Expressions
 
         private static UnaryExpression GetUserDefinedUnaryOperatorOrThrow(ExpressionType unaryType, string name, Expression operand)
         {
-            UnaryExpression u = GetUserDefinedUnaryOperator(unaryType, name, operand);
+            var u = GetUserDefinedUnaryOperator(unaryType, name, operand);
             if (u != null)
             {
                 ValidateParamswithOperandsOrThrow(u.Method.GetParameters()[0].ParameterType, operand.Type, unaryType, name);
@@ -396,10 +393,10 @@ namespace System.Linq.Expressions
 
         private static UnaryExpression GetUserDefinedUnaryOperator(ExpressionType unaryType, string name, Expression operand)
         {
-            Type operandType = operand.Type;
-            Type[] types = new Type[] { operandType };
-            Type nnOperandType = TypeHelper.GetNonNullableType(operandType);
-            MethodInfo method = nnOperandType.GetAnyStaticMethodValidated(name, types);
+            var operandType = operand.Type;
+            var types = new Type[] { operandType };
+            var nnOperandType = TypeHelper.GetNonNullableType(operandType);
+            var method = nnOperandType.GetStaticMethod(name, types);
             if (method != null)
             {
                 return new UnaryExpression(unaryType, operand, method.ReturnType, method);
@@ -408,7 +405,7 @@ namespace System.Linq.Expressions
             if (TypeHelper.IsNullableType(operandType))
             {
                 types[0] = nnOperandType;
-                method = nnOperandType.GetAnyStaticMethodValidated(name, types);
+                method = nnOperandType.GetStaticMethod(name, types);
                 if (method != null && method.ReturnType.IsValueType && !TypeHelper.IsNullableType(method.ReturnType))
                 {
                     return new UnaryExpression(unaryType, operand, TypeHelper.GetNullableType(method.ReturnType), method);
@@ -421,7 +418,7 @@ namespace System.Linq.Expressions
         {
             System.Diagnostics.Debug.Assert(method != null);
             ValidateOperator(method);
-            ParameterInfo[] pms = method.GetParameters();
+            var pms = method.GetParameters();
             if (pms.Length != 1)
                 throw Error.IncorrectNumberOfMethodCallArguments(method);
             if (ParameterIsAssignable(pms[0], operand.Type))
@@ -442,7 +439,7 @@ namespace System.Linq.Expressions
 
         private static UnaryExpression GetUserDefinedCoercionOrThrow(ExpressionType coercionType, Expression expression, Type convertToType)
         {
-            UnaryExpression u = GetUserDefinedCoercion(coercionType, expression, convertToType);
+            var u = GetUserDefinedCoercion(coercionType, expression, convertToType);
             if (u != null)
             {
                 return u;
@@ -452,7 +449,7 @@ namespace System.Linq.Expressions
 
         private static UnaryExpression GetUserDefinedCoercion(ExpressionType coercionType, Expression expression, Type convertToType)
         {
-            MethodInfo method = TypeHelper.GetUserDefinedCoercionMethod(expression.Type, convertToType, false);
+            var method = TypeHelper.GetUserDefinedCoercionMethod(expression.Type, convertToType, false);
             if (method != null)
             {
                 return new UnaryExpression(coercionType, expression, convertToType, method);
@@ -467,19 +464,19 @@ namespace System.Linq.Expressions
         {
             System.Diagnostics.Debug.Assert(method != null);
             ValidateOperator(method);
-            ParameterInfo[] pms = method.GetParameters();
+            var pms = method.GetParameters();
             if (pms.Length != 1)
             {
                 throw Error.IncorrectNumberOfMethodCallArguments(method);
             }
-            if (ParameterIsAssignable(pms[0], operand.Type) && TypeHelper.AreEquivalent(method.ReturnType, convertToType))
+            if (ParameterIsAssignable(pms[0], operand.Type) && method.ReturnType == convertToType)
             {
                 return new UnaryExpression(unaryType, operand, method.ReturnType, method);
             }
             // check for lifted call
             if ((TypeHelper.IsNullableType(operand.Type) || TypeHelper.IsNullableType(convertToType)) &&
                 ParameterIsAssignable(pms[0], TypeHelper.GetNonNullableType(operand.Type)) &&
-                TypeHelper.AreEquivalent(method.ReturnType, TypeHelper.GetNonNullableType(convertToType)))
+                method.ReturnType == TypeHelper.GetNonNullableType(convertToType))
             {
                 return new UnaryExpression(unaryType, operand, convertToType, method);
             }
@@ -621,7 +618,7 @@ namespace System.Linq.Expressions
                 {
                     return new UnaryExpression(ExpressionType.Not, expression, expression.Type, null);
                 }
-                UnaryExpression u = GetUserDefinedUnaryOperator(ExpressionType.Not, "op_LogicalNot", expression);
+                var u = GetUserDefinedUnaryOperator(ExpressionType.Not, "op_LogicalNot", expression);
                 if (u != null)
                 {
                     return u;
@@ -873,7 +870,7 @@ namespace System.Linq.Expressions
         public static UnaryExpression Quote(Expression expression)
         {
             RequiresCanRead(expression, "expression");
-            bool validQuote = expression is LambdaExpression;
+            var validQuote = expression is LambdaExpression;
             if (!validQuote) throw Error.QuotedExpressionMustBeLambda();
             return new UnaryExpression(ExpressionType.Quote, expression, expression.GetType(), null);
         }

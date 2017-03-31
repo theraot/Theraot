@@ -703,7 +703,7 @@ namespace System.Linq.Expressions.Compiler
 
         internal static void EmitConvertToType(this ILGenerator il, Type typeFrom, Type typeTo, bool isChecked)
         {
-            if (TypeHelper.AreEquivalent(typeFrom, typeTo))
+            if (typeFrom == typeTo)
             {
                 return;
             }

@@ -23,7 +23,6 @@ namespace Theraot.Collections.ThreadSafe
         private readonly FixedSizeBucket<TNeedle> _entries;
         private readonly Func<int, TNeedle> _needleFactory;
         private readonly NeedleReservoir<T, TNeedle> _reservoir;
-        private EventHandler _handle;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NeedleBucket{T, TNeedle}" /> class.

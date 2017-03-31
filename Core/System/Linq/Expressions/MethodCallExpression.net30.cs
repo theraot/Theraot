@@ -605,7 +605,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(method, "method");
             ContractUtils.RequiresNotNull(arg0, "arg0");
 
-            ParameterInfo[] pis = ValidateMethodAndGetParameters(null, method);
+            var pis = ValidateMethodAndGetParameters(null, method);
 
             ValidateArgumentCount(method, ExpressionType.Call, 1, pis);
 
@@ -627,7 +627,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(arg0, "arg0");
             ContractUtils.RequiresNotNull(arg1, "arg1");
 
-            ParameterInfo[] pis = ValidateMethodAndGetParameters(null, method);
+            var pis = ValidateMethodAndGetParameters(null, method);
 
             ValidateArgumentCount(method, ExpressionType.Call, 2, pis);
 
@@ -652,7 +652,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(arg1, "arg1");
             ContractUtils.RequiresNotNull(arg2, "arg2");
 
-            ParameterInfo[] pis = ValidateMethodAndGetParameters(null, method);
+            var pis = ValidateMethodAndGetParameters(null, method);
 
             ValidateArgumentCount(method, ExpressionType.Call, 3, pis);
 
@@ -680,7 +680,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(arg2, "arg2");
             ContractUtils.RequiresNotNull(arg3, "arg3");
 
-            ParameterInfo[] pis = ValidateMethodAndGetParameters(null, method);
+            var pis = ValidateMethodAndGetParameters(null, method);
 
             ValidateArgumentCount(method, ExpressionType.Call, 4, pis);
 
@@ -712,7 +712,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(arg3, "arg3");
             ContractUtils.RequiresNotNull(arg4, "arg4");
 
-            ParameterInfo[] pis = ValidateMethodAndGetParameters(null, method);
+            var pis = ValidateMethodAndGetParameters(null, method);
 
             ValidateArgumentCount(method, ExpressionType.Call, 5, pis);
 
@@ -784,7 +784,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(arg0, "arg0");
             ContractUtils.RequiresNotNull(arg1, "arg1");
 
-            ParameterInfo[] pis = ValidateMethodAndGetParameters(instance, method);
+            var pis = ValidateMethodAndGetParameters(instance, method);
 
             ValidateArgumentCount(method, ExpressionType.Call, 2, pis);
 
@@ -815,7 +815,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(arg1, "arg1");
             ContractUtils.RequiresNotNull(arg2, "arg2");
 
-            ParameterInfo[] pis = ValidateMethodAndGetParameters(instance, method);
+            var pis = ValidateMethodAndGetParameters(instance, method);
 
             ValidateArgumentCount(method, ExpressionType.Call, 3, pis);
 
@@ -851,7 +851,7 @@ namespace System.Linq.Expressions
                 arguments = ArrayReservoir<Expression>.EmptyArray;
             }
 
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
+            var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
             return InternalCall(instance, FindMethod(instance.Type, methodName, typeArguments, arguments, flags), arguments);
         }
 
@@ -873,7 +873,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(methodName, "methodName");
 
             if (arguments == null) arguments = ArrayReservoir<Expression>.EmptyArray;
-            BindingFlags flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
+            var flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
             return InternalCall(null, FindMethod(type, methodName, typeArguments, arguments, flags), arguments);
         }
 
@@ -890,7 +890,7 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(method, "method");
 
-            ReadOnlyCollection<Expression> argList = arguments.ToReadOnly();
+            var argList = arguments.ToReadOnly();
 
             ValidateMethodInfo(method);
             ValidateStaticOrInstanceMethod(instance, method);
@@ -910,7 +910,7 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(method, "method");
 
-            ReadOnlyCollection<Expression> argList = arguments.ToReadOnly();
+            var argList = arguments.ToReadOnly();
 
             ValidateMethodInfo(method);
             ValidateStaticOrInstanceMethodAlternative(instance, method);
@@ -1005,7 +1005,7 @@ namespace System.Linq.Expressions
             MethodInfo method;
 
             var methodInfos = members.Map(t => (MethodInfo)t);
-            int count = FindBestMethod(methodInfos, typeArgs, args, out method);
+            var count = FindBestMethod(methodInfos, typeArgs, args, out method);
 
             if (count == 0)
             {
@@ -1025,11 +1025,11 @@ namespace System.Linq.Expressions
 
         private static int FindBestMethod(IEnumerable<MethodInfo> methods, Type[] typeArgs, Expression[] args, out MethodInfo method)
         {
-            int count = 0;
+            var count = 0;
             method = null;
             foreach (MethodInfo mi in methods)
             {
-                MethodInfo moo = ApplyTypeArgs(mi, typeArgs);
+                var moo = ApplyTypeArgs(mi, typeArgs);
                 if (moo != null && IsCompatible(moo, args))
                 {
                     // favor public over non-public methods
@@ -1050,27 +1050,27 @@ namespace System.Linq.Expressions
 
         private static bool IsCompatible(MethodBase m, Expression[] args)
         {
-            ParameterInfo[] parms = m.GetParameters();
+            var parms = m.GetParameters();
             if (parms.Length != args.Length)
                 return false;
-            for (int i = 0; i < args.Length; i++)
+            for (var i = 0; i < args.Length; i++)
             {
-                Expression arg = args[i];
+                var arg = args[i];
                 ContractUtils.RequiresNotNull(arg, "argument");
-                Type argType = arg.Type;
-                Type pType = parms[i].ParameterType;
+                var argType = arg.Type;
+                var pType = parms[i].ParameterType;
                 if (pType.IsByRef)
                 {
                     pType = pType.GetElementType();
                 }
                 if (!TypeHelper.AreReferenceAssignable(pType, argType) &&
-                    !(TypeHelper.IsSameOrSubclass(typeof(LambdaExpression), pType) && pType.IsAssignableFrom(arg.GetType())))
+                    !(TypeHelper.IsSameOrSubclassOf(pType, typeof(LambdaExpression)) && pType.IsAssignableFrom(arg.GetType())))
                 {
                     if (pType.IsExpression())
                     {
                         argType = arg.GetType();
                         if (!TypeHelper.AreReferenceAssignable(pType, argType) &&
-                            !(TypeHelper.IsSameOrSubclass(typeof (LambdaExpression), pType) &&
+                            !(TypeHelper.IsSameOrSubclassOf(pType, typeof(LambdaExpression)) &&
                               pType.IsAssignableFrom(arg.GetType())))
                         {
                             return false;
@@ -1127,13 +1127,13 @@ namespace System.Linq.Expressions
             RequiresCanRead(array, "array");
             ContractUtils.RequiresNotNull(indexes, "indexes");
 
-            Type arrayType = array.Type;
+            var arrayType = array.Type;
             if (!arrayType.IsArray)
             {
                 throw Error.ArgumentMustBeArray();
             }
 
-            ReadOnlyCollection<Expression> indexList = indexes.ToReadOnly();
+            var indexList = indexes.ToReadOnly();
             if (arrayType.GetArrayRank() != indexList.Count)
             {
                 throw Error.IncorrectNumberOfIndexes();
@@ -1148,7 +1148,7 @@ namespace System.Linq.Expressions
                 }
             }
 
-            MethodInfo mi = array.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance);
+            var mi = array.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance);
             return Call(array, mi, indexList);
         }
 #endregion

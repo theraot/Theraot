@@ -187,11 +187,11 @@ namespace Theraot.Threading.Needles
 
         private static bool EqualsExtracted(Needle<T> left, Needle<T> right)
         {
-            if (left == null)
+            if (ReferenceEquals(left, null))
             {
-                return right == null;
+                return ReferenceEquals(right, null);
             }
-            if (right == null)
+            if (ReferenceEquals(right, null))
             {
                 return false;
             }
@@ -210,11 +210,11 @@ namespace Theraot.Threading.Needles
 
         private static bool NotEqualsExtracted(Needle<T> left, Needle<T> right)
         {
-            if (left == null)
+            if (ReferenceEquals(left, null))
             {
-                return right != null;
+                return !ReferenceEquals(right, null);
             }
-            if (right == null)
+            if (ReferenceEquals(right, null))
             {
                 return true;
             }

@@ -1170,7 +1170,7 @@ namespace System.Linq.Expressions
         {
             if (before.IsValueType)
             {
-                if (TypeHelper.AreEquivalent(before, after))
+                if (before == after)
                 {
                     // types are the same value type
                     return;

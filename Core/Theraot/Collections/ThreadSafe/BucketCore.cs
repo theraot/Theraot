@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using Theraot.Core;
 
@@ -8,15 +9,14 @@ namespace Theraot.Collections.ThreadSafe
 {
     internal class BucketCore : IEnumerable<object>
     {
-        private const int INT_Capacity = 32;
-        private const int INT_Capacity_Final = 2;
-        private const int INT_Lvl1 = INT_Capacity;
-        private const int INT_Lvl2 = INT_Lvl1 * INT_Capacity;
-        private const int INT_Lvl3 = INT_Lvl2 * INT_Capacity;
-        private const int INT_Lvl4 = INT_Lvl3 * INT_Capacity;
-        private const int INT_Lvl5 = INT_Lvl4 * INT_Capacity;
-        private const int INT_Lvl6 = INT_Lvl5 * INT_Capacity;
-        private const int INT_Lvl7 = INT_Lvl6 + (INT_Lvl6 - 1);
+        private const int _capacity = 32;
+        private const long _lvl1 = _capacity;
+        private const long _lvl2 = _lvl1 * _capacity;
+        private const long _lvl3 = _lvl2 * _capacity;
+        private const long _lvl4 = _lvl3 * _capacity;
+        private const long _lvl5 = _lvl4 * _capacity;
+        private const long _lvl6 = _lvl5 * _capacity;
+        private const long _lvl7 = _lvl6 * _capacity;
         private readonly object[] _arrayFirst;
         private readonly object[] _arraySecond;
         private readonly int[] _arrayUse;
@@ -29,46 +29,37 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentOutOfRangeException("level", "level < 0 || level > 7");
             }
             _level = level;
-            if (_level == 7)
-            {
-                _arrayFirst = new object[INT_Capacity_Final];
-                _arraySecond = new object[INT_Capacity_Final];
-                _arrayUse = new int[INT_Capacity_Final];
-            }
-            else
-            {
-                _arrayFirst = new object[INT_Capacity];
-                _arraySecond = new object[INT_Capacity];
-                _arrayUse = new int[INT_Capacity];
-            }
+            _arrayFirst = new object[_capacity];
+            _arraySecond = new object[_capacity];
+            _arrayUse = new int[_capacity];
         }
 
-        public int Length
+        public long Length
         {
             get
             {
                 switch (_level)
                 {
                     case 1:
-                        return INT_Lvl1;
+                        return _lvl1;
 
                     case 2:
-                        return INT_Lvl2;
+                        return _lvl2;
 
                     case 3:
-                        return INT_Lvl3;
+                        return _lvl3;
 
                     case 4:
-                        return INT_Lvl4;
+                        return _lvl4;
 
                     case 5:
-                        return INT_Lvl5;
+                        return _lvl5;
 
                     case 6:
-                        return INT_Lvl6;
+                        return _lvl6;
 
                     case 7:
-                        return INT_Lvl7;
+                        return _lvl7;
 
                     default:
                         return 0;
@@ -78,10 +69,6 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool Do(int index, DoAction callback)
         {
-            if (index < 0)
-            {
-                throw new ArgumentOutOfRangeException("index", "index < 0");
-            }
             if (_level == 1)
             {
                 var subIndex = SubIndex(index);
@@ -118,10 +105,6 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool DoMayDecrement(int index, DoAction callback)
         {
-            if (index < 0)
-            {
-                throw new ArgumentOutOfRangeException("index", "index < 0");
-            }
             if (_level == 1)
             {
                 var subIndex = SubIndex(index);
@@ -158,10 +141,6 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool DoMayIncrement(int index, DoAction callback)
         {
-            if (index < 0)
-            {
-                throw new ArgumentOutOfRangeException("index", "index < 0");
-            }
             if (_level == 1)
             {
                 var subIndex = SubIndex(index);
@@ -238,7 +217,7 @@ namespace Theraot.Collections.ThreadSafe
                             continue;
                         }
                         var subIndexFrom = subindex == startSubIndex ? core.SubIndex(indexFrom) : 0;
-                        var subIndexTo = subindex == endSubIndex ? core.SubIndex(indexTo) : (_level == 7 ? INT_Capacity_Final : INT_Capacity) - 1;
+                        var subIndexTo = subindex == endSubIndex ? core.SubIndex(indexTo) : _capacity - 1;
                         foreach (var item in core.PrivateEnumerableRange(indexFrom, indexTo, subIndexFrom, subIndexTo))
                         {
                             yield return item;
@@ -254,7 +233,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public IEnumerator<object> GetEnumerator()
         {
-            for (var subindex = 0; subindex < (_level == 7 ? INT_Capacity_Final : INT_Capacity); subindex++)
+            for (var subindex = 0; subindex < _capacity; subindex++)
             {
                 var foundFirst = Interlocked.CompareExchange(ref _arrayFirst[subindex], null, null);
                 if (foundFirst == null)
@@ -403,7 +382,9 @@ namespace Theraot.Collections.ThreadSafe
 
         private int SubIndex(int index)
         {
-            return (index >> (5 * (_level - 1))) & 0x1F;
+            var result = (index >> (5*(_level - 1))) & 0x1F;
+            Debug.Print(result.ToString());
+            return result;
         }
     }
 }

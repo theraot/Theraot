@@ -86,9 +86,6 @@ namespace System.Linq.Expressions
             get { return _comparison; }
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitSwitch(this);
@@ -101,7 +98,7 @@ namespace System.Linq.Expressions
                 if (_switchValue.Type.IsNullableType())
                 {
                     return (_comparison == null) ||
-                        !TypeHelper.AreEquivalent(_switchValue.Type, _comparison.GetParameters()[0].ParameterType.GetNonRefType());
+                        _switchValue.Type != _comparison.GetParameters()[0].ParameterType.GetNonRefType();
                 }
                 return false;
             }
@@ -210,8 +207,8 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNullItems(caseList, "cases");
 
             // Type of the result. Either provided, or it is type of the branches.
-            Type resultType = type ?? caseList[0].Body.Type;
-            bool customType = type != null;
+            var resultType = type ?? caseList[0].Body.Type;
+            var customType = type != null;
 
             if (comparison != null)
             {
@@ -223,7 +220,7 @@ namespace System.Linq.Expressions
                 // Validate that the switch value's type matches the comparison method's 
                 // left hand side parameter type.
                 var leftParam = pms[0];
-                bool liftedCall = false;
+                var liftedCall = false;
                 if (!ParameterIsAssignable(leftParam, switchValue.Type))
                 {
                     liftedCall = ParameterIsAssignable(leftParam, switchValue.Type.GetNonNullableType());
@@ -238,11 +235,11 @@ namespace System.Linq.Expressions
                 {
                     ContractUtils.RequiresNotNull(c, "cases");
                     ValidateSwitchCaseType(c.Body, customType, resultType, "cases");
-                    for (int i = 0; i < c.TestValues.Count; i++)
+                    for (var i = 0; i < c.TestValues.Count; i++)
                     {
                         // When a comparison method is provided, test values can have different type but have to
                         // be reference assignable to the right hand side parameter of the method.
-                        Type rightOperandType = c.TestValues[i].Type;
+                        var rightOperandType = c.TestValues[i].Type;
                         if (liftedCall)
                         {
                             if (!rightOperandType.IsNullableType())
@@ -268,9 +265,9 @@ namespace System.Linq.Expressions
                     ContractUtils.RequiresNotNull(c, "cases");
                     ValidateSwitchCaseType(c.Body, customType, resultType, "cases");
                     // When no comparison method is provided, require all test values to have the same type.
-                    for (int i = 0; i < c.TestValues.Count; i++)
+                    for (var i = 0; i < c.TestValues.Count; i++)
                     {
-                        if (!TypeHelper.AreEquivalent(firstTestValue.Type, c.TestValues[i].Type))
+                        if (firstTestValue.Type != c.TestValues[i].Type)
                         {
                             throw new ArgumentException(Strings.AllTestValuesMustHaveSameType, "cases");
                         }
@@ -305,10 +302,6 @@ namespace System.Linq.Expressions
         }
 
 
-        /// <summary>
-        /// If custom type is provided, all branches must be reference assignable to the result type.
-        /// If no custom type is provided, all branches must have the same type - resultType.
-        /// </summary>
         private static void ValidateSwitchCaseType(Expression @case, bool customType, Type resultType, string parameterName)
         {
             if (customType)
@@ -323,7 +316,7 @@ namespace System.Linq.Expressions
             }
             else
             {
-                if (!TypeHelper.AreEquivalent(resultType, @case.Type))
+                if (resultType != @case.Type)
                 {
                     throw new ArgumentException(Strings.AllCaseBodiesMustHaveSameType, parameterName);
                 }

@@ -85,7 +85,7 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(node != null);
 
-            CompilationFlags startEmitted = EmitExpressionStart(node);
+            var startEmitted = EmitExpressionStart(node);
 
             switch (node.NodeType)
             {
@@ -131,7 +131,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 // if the node is emitted as a different type, CastClass IL is emitted at the end,
                 // should not emit with tail calls.
-                if (!TypeHelper.AreEquivalent(node.Type, type))
+                if (node.Type != type)
                 {
                     EmitExpression(node);
                     Debug.Assert(TypeHelper.AreReferenceAssignable(type, node.Type));
@@ -203,7 +203,7 @@ namespace System.Linq.Expressions.Compiler
             // stack it is entirely doable.
 
             // 1. Emit invoke arguments
-            List<WriteBack> wb = EmitArguments(lambda.Type.GetMethod("Invoke"), invoke);
+            var wb = EmitArguments(lambda.Type.GetMethod("Invoke"), invoke);
 
             // 2. Create the nested LambdaCompiler
             var inner = new LambdaCompiler(this, lambda);
@@ -378,10 +378,10 @@ namespace System.Linq.Expressions.Compiler
         private void EmitMethodCall(MethodInfo mi, IArgumentProvider args, Type objectType, CompilationFlags flags)
         {
             // Emit arguments
-            List<WriteBack> wb = EmitArguments(mi, args);
+            var wb = EmitArguments(mi, args);
 
             // Emit the actual call
-            OpCode callOp = UseVirtual(mi) ? OpCodes.Callvirt : OpCodes.Call;
+            var callOp = UseVirtual(mi) ? OpCodes.Callvirt : OpCodes.Call;
             if (callOp == OpCodes.Callvirt && objectType.IsValueType)
             {
                 // This automatically boxes value types if necessary.
@@ -398,9 +398,9 @@ namespace System.Linq.Expressions.Compiler
             }
             if (mi.CallingConvention == CallingConventions.VarArgs)
             {
-                int count = args.ArgumentCount;
+                var count = args.ArgumentCount;
                 Type[] types = new Type[count];
-                for (int i = 0; i < count; i++)
+                for (var i = 0; i < count; i++)
                 {
                     types[i] = args.GetArgument(i).Type;
                 }
@@ -435,7 +435,7 @@ namespace System.Linq.Expressions.Compiler
                 throw Error.UnexpectedVarArgsCall(method);
             }
 
-            OpCode callOp = UseVirtual(method) ? OpCodes.Callvirt : OpCodes.Call;
+            var callOp = UseVirtual(method) ? OpCodes.Callvirt : OpCodes.Call;
             if (callOp == OpCodes.Callvirt && objectType.IsValueType)
             {
                 _ilg.Emit(OpCodes.Constrained, objectType);
@@ -492,21 +492,21 @@ namespace System.Linq.Expressions.Compiler
         /// </summary>
         private List<WriteBack> EmitArguments(MethodBase method, IArgumentProvider args, int skipParameters)
         {
-            ParameterInfo[] pis = method.GetParameters();
+            var pis = method.GetParameters();
             Debug.Assert(args.ArgumentCount + skipParameters == pis.Length);
 
             var writeBacks = new List<WriteBack>();
             for (int i = skipParameters, n = pis.Length; i < n; i++)
             {
-                ParameterInfo parameter = pis[i];
-                Expression argument = args.GetArgument(i - skipParameters);
-                Type type = parameter.ParameterType;
+                var parameter = pis[i];
+                var argument = args.GetArgument(i - skipParameters);
+                var type = parameter.ParameterType;
 
                 if (type.IsByRef)
                 {
                     type = type.GetElementType();
 
-                    WriteBack wb = EmitAddressWriteBack(argument, type);
+                    var wb = EmitAddressWriteBack(argument, type);
                     if (wb != null)
                     {
                         writeBacks.Add(wb);
@@ -559,7 +559,7 @@ namespace System.Linq.Expressions.Compiler
             var node = (IDynamicExpression)expr;
 
             var site = node.CreateCallSite();
-            Type siteType = site.GetType();
+            var siteType = site.GetType();
 
             var invoke = node.DelegateType.GetMethod("Invoke");
 
@@ -574,7 +574,7 @@ namespace System.Linq.Expressions.Compiler
             _ilg.Emit(OpCodes.Ldloc, siteTemp);
             FreeLocal(siteTemp);
 
-            List<WriteBack> wb = EmitArguments(invoke, node, 1);
+            var wb = EmitArguments(invoke, node, 1);
             _ilg.Emit(OpCodes.Callvirt, invoke);
             EmitWriteBack(wb);
         }
@@ -585,7 +585,7 @@ namespace System.Linq.Expressions.Compiler
 
             if (node.Constructor != null)
             {
-                List<WriteBack> wb = EmitArguments(node.Constructor, node);
+                var wb = EmitArguments(node.Constructor, node);
                 _ilg.Emit(OpCodes.Newobj, node.Constructor);
                 EmitWriteBack(wb);
             }
@@ -593,7 +593,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 Debug.Assert(node.Arguments.Count == 0, "Node with arguments must have a constructor.");
                 Debug.Assert(node.Type.IsValueType, "Only value type may have constructor not set.");
-                LocalBuilder temp = GetLocal(node.Type);
+                var temp = GetLocal(node.Type);
                 _ilg.Emit(OpCodes.Ldloca, temp);
                 _ilg.Emit(OpCodes.Initobj, node.Type);
                 _ilg.Emit(OpCodes.Ldloc, temp);
@@ -611,10 +611,10 @@ namespace System.Linq.Expressions.Compiler
                 return;
             }
 
-            Type type = node.Expression.Type;
+            var type = node.Expression.Type;
 
             // Try to determine the result statically
-            AnalyzeTypeIsResult result = ConstantCheck.AnalyzeTypeIs(node);
+            var result = ConstantCheck.AnalyzeTypeIs(node);
 
             if (result == AnalyzeTypeIsResult.KnownTrue ||
                 result == AnalyzeTypeIsResult.KnownFalse)
@@ -677,7 +677,7 @@ namespace System.Linq.Expressions.Compiler
                 // byref parameter. We already make this same tradeoff for
                 // hoisted variables, see ElementStorage.EmitStore
 
-                LocalBuilder value = GetLocal(variable.Type);
+                var value = GetLocal(variable.Type);
                 _ilg.Emit(OpCodes.Stloc, value);
                 _scope.EmitGet(variable);
                 _ilg.Emit(OpCodes.Ldloc, value);
@@ -738,7 +738,7 @@ namespace System.Linq.Expressions.Compiler
         private void EmitMemberAssignment(BinaryExpression node, CompilationFlags flags)
         {
             MemberExpression lvalue = (MemberExpression)node.Left;
-            MemberInfo member = lvalue.Member;
+            var member = lvalue.Member;
 
             // emit "this", if any
             Type objectType = null;
@@ -878,10 +878,10 @@ namespace System.Linq.Expressions.Compiler
             }
             else
             {
-                ReadOnlyCollection<Expression> bounds = node.Expressions;
-                for (int i = 0; i < bounds.Count; i++)
+                var bounds = node.Expressions;
+                for (var i = 0; i < bounds.Count; i++)
                 {
-                    Expression x = bounds[i];
+                    var x = bounds[i];
                     EmitExpression(x);
                     _ilg.EmitConvertToType(x.Type, typeof(int), true);
                 }
@@ -954,7 +954,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitMemberMemberBinding(MemberMemberBinding binding)
         {
-            Type type = GetMemberType(binding.Member);
+            var type = GetMemberType(binding.Member);
             if (binding.Member is PropertyInfo && type.IsValueType)
             {
                 throw Error.CannotAutoInitializeValueTypeMemberThroughProperty(binding.Member);
@@ -972,7 +972,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitMemberListBinding(MemberListBinding binding)
         {
-            Type type = GetMemberType(binding.Member);
+            var type = GetMemberType(binding.Member);
             if (binding.Member is PropertyInfo && type.IsValueType)
             {
                 throw Error.CannotAutoInitializeValueTypeElementThroughProperty(binding.Member);
@@ -1009,7 +1009,7 @@ namespace System.Linq.Expressions.Compiler
         // to either leave the instance on the stack, or pop it.
         private void EmitMemberInit(ReadOnlyCollection<MemberBinding> bindings, bool keepOnStack, Type objectType)
         {
-            int n = bindings.Count;
+            var n = bindings.Count;
             if (n == 0)
             {
                 // If there are no initializers and instance is not to be kept on the stack, we must pop explicitly.
@@ -1020,7 +1020,7 @@ namespace System.Linq.Expressions.Compiler
             }
             else
             {
-                for (int i = 0; i < n; i++)
+                for (var i = 0; i < n; i++)
                 {
                     if (keepOnStack || i < n - 1)
                     {
@@ -1052,7 +1052,7 @@ namespace System.Linq.Expressions.Compiler
         // to either leave the list instance on the stack, or pop it.
         private void EmitListInit(ReadOnlyCollection<ElementInit> initializers, bool keepOnStack, Type objectType)
         {
-            int n = initializers.Count;
+            var n = initializers.Count;
 
             if (n == 0)
             {
@@ -1064,7 +1064,7 @@ namespace System.Linq.Expressions.Compiler
             }
             else
             {
-                for (int i = 0; i < n; i++)
+                for (var i = 0; i < n; i++)
                 {
                     if (keepOnStack || i < n - 1)
                     {
@@ -1115,7 +1115,7 @@ namespace System.Linq.Expressions.Compiler
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private void EmitLift(ExpressionType nodeType, Type resultType, MethodCallExpression mc, ParameterExpression[] paramList, Expression[] argList)
         {
-            Debug.Assert(TypeHelper.AreEquivalent(TypeHelper.GetNonNullableType(resultType), TypeHelper.GetNonNullableType(mc.Type)));
+            Debug.Assert(TypeHelper.GetNonNullableType(resultType) == TypeHelper.GetNonNullableType(mc.Type));
 
             switch (nodeType)
             {
@@ -1125,13 +1125,13 @@ namespace System.Linq.Expressions.Compiler
                 case ExpressionType.GreaterThan:
                 case ExpressionType.GreaterThanOrEqual:
                     {
-                        Label exit = _ilg.DefineLabel();
-                        Label exitNull = _ilg.DefineLabel();
-                        LocalBuilder anyNull = _ilg.DeclareLocal(typeof(bool));
+                        var exit = _ilg.DefineLabel();
+                        var exitNull = _ilg.DefineLabel();
+                        var anyNull = _ilg.DeclareLocal(typeof(bool));
                         for (int i = 0, n = paramList.Length; i < n; i++)
                         {
-                            ParameterExpression v = paramList[i];
-                            Expression arg = argList[i];
+                            var v = paramList[i];
+                            var arg = argList[i];
                             if (TypeHelper.IsNullableType(arg.Type))
                             {
                                 _scope.AddLocal(this, v);
@@ -1161,18 +1161,18 @@ namespace System.Linq.Expressions.Compiler
                             _ilg.Emit(OpCodes.Brtrue, exitNull);
                         }
                         EmitMethodCallExpression(mc);
-                        if (TypeHelper.IsNullableType(resultType) && !TypeHelper.AreEquivalent(resultType, mc.Type))
+                        if (TypeHelper.IsNullableType(resultType) && resultType != mc.Type)
                         {
-                            ConstructorInfo ci = resultType.GetConstructor(new Type[] { mc.Type });
+                            var ci = resultType.GetConstructor(new Type[] { mc.Type });
                             _ilg.Emit(OpCodes.Newobj, ci);
                         }
                         _ilg.Emit(OpCodes.Br_S, exit);
                         _ilg.MarkLabel(exitNull);
-                        if (TypeHelper.AreEquivalent(resultType, TypeHelper.GetNullableType(mc.Type)))
+                        if (resultType == TypeHelper.GetNullableType(mc.Type))
                         {
                             if (resultType.IsValueType)
                             {
-                                LocalBuilder result = GetLocal(resultType);
+                                var result = GetLocal(resultType);
                                 _ilg.Emit(OpCodes.Ldloca, result);
                                 _ilg.Emit(OpCodes.Initobj, resultType);
                                 _ilg.Emit(OpCodes.Ldloc, result);
@@ -1203,16 +1203,16 @@ namespace System.Linq.Expressions.Compiler
                 case ExpressionType.Equal:
                 case ExpressionType.NotEqual:
                     {
-                        if (TypeHelper.AreEquivalent(resultType, TypeHelper.GetNullableType(mc.Type)))
+                        if (resultType == TypeHelper.GetNullableType(mc.Type))
                         {
                             goto default;
                         }
-                        Label exit = _ilg.DefineLabel();
-                        Label exitAllNull = _ilg.DefineLabel();
-                        Label exitAnyNull = _ilg.DefineLabel();
+                        var exit = _ilg.DefineLabel();
+                        var exitAllNull = _ilg.DefineLabel();
+                        var exitAnyNull = _ilg.DefineLabel();
 
-                        LocalBuilder anyNull = _ilg.DeclareLocal(typeof(bool));
-                        LocalBuilder allNull = _ilg.DeclareLocal(typeof(bool));
+                        var anyNull = _ilg.DeclareLocal(typeof(bool));
+                        var allNull = _ilg.DeclareLocal(typeof(bool));
                         _ilg.Emit(OpCodes.Ldc_I4_0);
                         _ilg.Emit(OpCodes.Stloc, anyNull);
                         _ilg.Emit(OpCodes.Ldc_I4_1);
@@ -1220,8 +1220,8 @@ namespace System.Linq.Expressions.Compiler
 
                         for (int i = 0, n = paramList.Length; i < n; i++)
                         {
-                            ParameterExpression v = paramList[i];
-                            Expression arg = argList[i];
+                            var v = paramList[i];
+                            var arg = argList[i];
                             _scope.AddLocal(this, v);
                             if (TypeHelper.IsNullableType(arg.Type))
                             {
@@ -1269,9 +1269,9 @@ namespace System.Linq.Expressions.Compiler
                         _ilg.Emit(OpCodes.Brtrue, exitAnyNull);
 
                         EmitMethodCallExpression(mc);
-                        if (TypeHelper.IsNullableType(resultType) && !TypeHelper.AreEquivalent(resultType, mc.Type))
+                        if (TypeHelper.IsNullableType(resultType) && resultType != mc.Type)
                         {
-                            ConstructorInfo ci = resultType.GetConstructor(new Type[] { mc.Type });
+                            var ci = resultType.GetConstructor(new Type[] { mc.Type });
                             _ilg.Emit(OpCodes.Newobj, ci);
                         }
                         _ilg.Emit(OpCodes.Br_S, exit);

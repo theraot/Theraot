@@ -241,7 +241,7 @@ namespace System.Linq.Expressions
                 type = tryBody.Type;
                 foreach (CatchBlock cb in handlers)
                 {
-                    if (cb.Body == null || !TypeHelper.AreEquivalent(cb.Body.Type, type))
+                    if (cb.Body == null || cb.Body.Type != type)
                     {
                         throw Error.BodyOfCatchMustHaveSameTypeAsBodyOfTry();
                     }

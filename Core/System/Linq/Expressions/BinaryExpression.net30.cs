@@ -197,9 +197,9 @@ namespace System.Linq.Expressions
             // v (op)= r
             // ... is reduced into ...
             // v = v (op) r
-            ExpressionType op = GetBinaryOpFromAssignmentOp(NodeType);
+            var op = GetBinaryOpFromAssignmentOp(NodeType);
             Expression r = Expression.MakeBinary(op, _left, _right, false, Method);
-            LambdaExpression conversion = GetConversion();
+            var conversion = GetConversion();
             if (conversion != null)
             {
                 r = Expression.Invoke(conversion, r);
@@ -209,7 +209,7 @@ namespace System.Linq.Expressions
 
         private Expression ReduceMember()
         {
-            MemberExpression member = (MemberExpression)_left;
+            var member = (MemberExpression)_left;
 
             if (member.Expression == null)
             {
@@ -224,20 +224,20 @@ namespace System.Linq.Expressions
                 // temp2 = temp1.b (op) r
                 // temp1.b = temp2
                 // temp2
-                ParameterExpression temp1 = Variable(member.Expression.Type, "temp1");
+                var temp1 = Variable(member.Expression.Type, "temp1");
 
                 // 1. temp1 = left
                 Expression e1 = Expression.Assign(temp1, member.Expression);
 
                 // 2. temp2 = temp1.b (op) r
-                ExpressionType op = GetBinaryOpFromAssignmentOp(NodeType);
+                var op = GetBinaryOpFromAssignmentOp(NodeType);
                 Expression e2 = Expression.MakeBinary(op, Expression.MakeMemberAccess(temp1, member.Member), _right, false, Method);
-                LambdaExpression conversion = GetConversion();
+                var conversion = GetConversion();
                 if (conversion != null)
                 {
                     e2 = Expression.Invoke(conversion, e2);
                 }
-                ParameterExpression temp2 = Variable(e2.Type, "temp2");
+                var temp2 = Variable(e2.Type, "temp2");
                 e2 = Expression.Assign(temp2, e2);
 
                 // 3. temp1.b = temp2
@@ -287,9 +287,9 @@ namespace System.Linq.Expressions
             var tempIndex = Expression.MakeIndex(tempObj, index.Indexer, tempArgs);
 
             // tempValue = tempObj[tempArg0, ... tempArgN] (op) r
-            ExpressionType binaryOp = GetBinaryOpFromAssignmentOp(NodeType);
+            var binaryOp = GetBinaryOpFromAssignmentOp(NodeType);
             Expression op = Expression.MakeBinary(binaryOp, tempIndex, _right, false, Method);
-            LambdaExpression conversion = GetConversion();
+            var conversion = GetConversion();
             if (conversion != null)
             {
                 op = Expression.Invoke(conversion, op);
@@ -330,9 +330,8 @@ namespace System.Linq.Expressions
                 }
                 if (TypeHelper.IsNullableType(_left.Type))
                 {
-                    MethodInfo method = GetMethod();
-                    return method == null ||
-                        !TypeHelper.AreEquivalent(method.GetParameters()[0].ParameterType.GetNonRefType(), _left.Type);
+                    var method = GetMethod();
+                    return method == null || method.GetParameters()[0].ParameterType.GetNonRefType() != _left.Type;
                 }
                 return false;
             }
@@ -348,9 +347,6 @@ namespace System.Linq.Expressions
             }
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitBinary(this);
@@ -360,12 +356,12 @@ namespace System.Linq.Expressions
         {
             if (nodeType == ExpressionType.Assign)
             {
-                Debug.Assert(method == null && TypeHelper.AreEquivalent(type, left.Type));
+                Debug.Assert(method == null && type == left.Type);
                 return new AssignBinaryExpression(left, right);
             }
             if (conversion != null)
             {
-                Debug.Assert(method == null && TypeHelper.AreEquivalent(type, right.Type) && nodeType == ExpressionType.Coalesce);
+                Debug.Assert(method == null && type == right.Type && nodeType == ExpressionType.Coalesce);
                 return new CoalesceConversionBinaryExpression(left, right, conversion);
             }
             if (method != null)
@@ -383,17 +379,17 @@ namespace System.Linq.Expressions
         {
             get
             {
-                Type left = _left.Type;
-                Type right = _right.Type;
-                MethodInfo method = GetMethod();
-                ExpressionType kind = NodeType;
+                var left = _left.Type;
+                var right = _right.Type;
+                var method = GetMethod();
+                var kind = NodeType;
 
                 return
                     (kind == ExpressionType.AndAlso || kind == ExpressionType.OrElse) &&
-                    TypeHelper.AreEquivalent(right, left) &&
+                    right == left &&
                     TypeHelper.IsNullableType(left) &&
                     method != null &&
-                    TypeHelper.AreEquivalent(method.ReturnType, TypeHelper.GetNonNullableType(left));
+                    method.ReturnType == TypeHelper.GetNonNullableType(left);
             }
         }
 
@@ -401,10 +397,10 @@ namespace System.Linq.Expressions
         {
             get
             {
-                Type left = _left.Type;
-                Type right = _right.Type;
-                MethodInfo method = GetMethod();
-                ExpressionType kind = NodeType;
+                var left = _left.Type;
+                var right = _right.Type;
+                var method = GetMethod();
+                var kind = NodeType;
 
                 return (kind == ExpressionType.Equal || kind == ExpressionType.NotEqual) &&
                     method == null && !left.IsValueType && !right.IsValueType;
@@ -446,8 +442,8 @@ namespace System.Linq.Expressions
 
             var left = Parameter(_left.Type, "left");
             var right = Parameter(Right.Type, "right");
-            string opName = NodeType == ExpressionType.AndAlso ? "op_False" : "op_True";
-            MethodInfo opTrueFalse = TypeHelper.GetBooleanOperator(Method.DeclaringType, opName);
+            var opName = NodeType == ExpressionType.AndAlso ? "op_False" : "op_True";
+            var opTrueFalse = TypeHelper.GetBooleanOperator(Method.DeclaringType, opName);
             Debug.Assert(opTrueFalse != null);
 
             return Block(
@@ -645,7 +641,7 @@ namespace System.Linq.Expressions
         private static BinaryExpression GetUserDefinedBinaryOperator(ExpressionType binaryType, string name, Expression left, Expression right, bool liftToNull)
         {
             // try exact match first
-            MethodInfo method = GetUserDefinedBinaryOperator(binaryType, left.Type, right.Type, name);
+            var method = GetUserDefinedBinaryOperator(binaryType, left.Type, right.Type, name);
             if (method != null)
             {
                 return new MethodBinaryExpression(binaryType, left, right, method.ReturnType, method);
@@ -653,8 +649,8 @@ namespace System.Linq.Expressions
             // try lifted call
             if (TypeHelper.IsNullableType(left.Type) && TypeHelper.IsNullableType(right.Type))
             {
-                Type nnLeftType = TypeHelper.GetNonNullableType(left.Type);
-                Type nnRightType = TypeHelper.GetNonNullableType(right.Type);
+                var nnLeftType = TypeHelper.GetNonNullableType(left.Type);
+                var nnRightType = TypeHelper.GetNonNullableType(right.Type);
                 method = GetUserDefinedBinaryOperator(binaryType, nnLeftType, nnRightType, name);
                 if (method != null && method.ReturnType.IsValueType && !TypeHelper.IsNullableType(method.ReturnType))
                 {
@@ -676,7 +672,7 @@ namespace System.Linq.Expressions
         {
             System.Diagnostics.Debug.Assert(method != null);
             ValidateOperator(method);
-            ParameterInfo[] pms = method.GetParameters();
+            var pms = method.GetParameters();
             if (pms.Length != 2)
                 throw Error.IncorrectNumberOfMethodCallArguments(method);
             if (ParameterIsAssignable(pms[0], left.Type) && ParameterIsAssignable(pms[1], right.Type))
@@ -705,7 +701,7 @@ namespace System.Linq.Expressions
 
         private static BinaryExpression GetMethodBasedAssignOperator(ExpressionType binaryType, Expression left, Expression right, MethodInfo method, LambdaExpression conversion, bool liftToNull)
         {
-            BinaryExpression b = GetMethodBasedBinaryOperator(binaryType, left, right, method, liftToNull);
+            var b = GetMethodBasedBinaryOperator(binaryType, left, right, method, liftToNull);
             if (conversion == null)
             {
                 // return type must be assignable back to the left type
@@ -726,10 +722,10 @@ namespace System.Linq.Expressions
 
         private static BinaryExpression GetUserDefinedBinaryOperatorOrThrow(ExpressionType binaryType, string name, Expression left, Expression right, bool liftToNull)
         {
-            BinaryExpression b = GetUserDefinedBinaryOperator(binaryType, name, left, right, liftToNull);
+            var b = GetUserDefinedBinaryOperator(binaryType, name, left, right, liftToNull);
             if (b != null)
             {
-                ParameterInfo[] pis = b.Method.GetParameters();
+                var pis = b.Method.GetParameters();
                 ValidateParamswithOperandsOrThrow(pis[0].ParameterType, left.Type, binaryType, name);
                 ValidateParamswithOperandsOrThrow(pis[1].ParameterType, right.Type, binaryType, name);
                 return b;
@@ -739,7 +735,7 @@ namespace System.Linq.Expressions
 
         private static BinaryExpression GetUserDefinedAssignOperatorOrThrow(ExpressionType binaryType, string name, Expression left, Expression right, LambdaExpression conversion, bool liftToNull)
         {
-            BinaryExpression b = GetUserDefinedBinaryOperatorOrThrow(binaryType, name, left, right, liftToNull);
+            var b = GetUserDefinedBinaryOperatorOrThrow(binaryType, name, left, right, liftToNull);
             if (conversion == null)
             {
                 // return type must be assignable back to the left type
@@ -762,13 +758,13 @@ namespace System.Linq.Expressions
         {
             // This algorithm is wrong, we should be checking for uniqueness and erroring if
             // it is defined on both types.
-            Type[] types = new Type[] { leftType, rightType };
-            Type nnLeftType = TypeHelper.GetNonNullableType(leftType);
-            Type nnRightType = TypeHelper.GetNonNullableType(rightType);
-            MethodInfo method = nnLeftType.GetAnyStaticMethodValidated(name, types);
-            if (method == null && !TypeHelper.AreEquivalent(leftType, rightType))
+            var types = new Type[] { leftType, rightType };
+            var nnLeftType = TypeHelper.GetNonNullableType(leftType);
+            var nnRightType = TypeHelper.GetNonNullableType(rightType);
+            var method = nnLeftType.GetStaticMethod(name, types);
+            if (method == null && leftType != rightType)
             {
-                method = nnRightType.GetAnyStaticMethodValidated(name, types);
+                method = nnRightType.GetStaticMethod(name, types);
             }
 
             if (IsLiftingConditionalLogicalOperator(leftType, rightType, method, binaryType))
@@ -790,7 +786,7 @@ namespace System.Linq.Expressions
 
         internal static bool ParameterIsAssignable(ParameterInfo pi, Type argType)
         {
-            Type pType = pi.ParameterType;
+            var pType = pi.ParameterType;
             if (pType.IsByRef)
                 pType = pType.GetElementType();
             return TypeHelper.AreReferenceAssignable(pType, argType);
@@ -859,7 +855,7 @@ namespace System.Linq.Expressions
         private static void ValidateUserDefinedConditionalLogicOperator(ExpressionType nodeType, Type left, Type right, MethodInfo method)
         {
             ValidateOperator(method);
-            ParameterInfo[] pms = method.GetParameters();
+            var pms = method.GetParameters();
             if (pms.Length != 2)
                 throw Error.IncorrectNumberOfMethodCallArguments(method);
             if (!ParameterIsAssignable(pms[0], left))
@@ -885,8 +881,8 @@ namespace System.Linq.Expressions
                 left = TypeHelper.GetNonNullableType(left);
                 right = TypeHelper.GetNonNullableType(left);
             }
-            MethodInfo opTrue = TypeHelper.GetBooleanOperator(method.DeclaringType, "op_True");
-            MethodInfo opFalse = TypeHelper.GetBooleanOperator(method.DeclaringType, "op_False");
+            var opTrue = TypeHelper.GetBooleanOperator(method.DeclaringType, "op_True");
+            var opFalse = TypeHelper.GetBooleanOperator(method.DeclaringType, "op_False");
             if (opTrue == null || opTrue.ReturnType != typeof(bool) ||
                 opFalse == null || opFalse.ReturnType != typeof(bool))
             {
@@ -898,7 +894,7 @@ namespace System.Linq.Expressions
 
         private static void VerifyOpTrueFalse(ExpressionType nodeType, Type left, MethodInfo opTrue)
         {
-            ParameterInfo[] pmsOpTrue = opTrue.GetParameters();
+            var pmsOpTrue = opTrue.GetParameters();
             if (pmsOpTrue.Length != 1)
                 throw Error.IncorrectNumberOfMethodCallArguments(opTrue);
 
@@ -911,9 +907,9 @@ namespace System.Linq.Expressions
 
         private static bool IsValidLiftedConditionalLogicalOperator(Type left, Type right, ParameterInfo[] pms)
         {
-            return TypeHelper.AreEquivalent(left, right) &&
+            return left == right &&
                    TypeHelper.IsNullableType(right) &&
-                   TypeHelper.AreEquivalent(pms[1].ParameterType, TypeHelper.GetNonNullableType(right));
+                   pms[1].ParameterType == TypeHelper.GetNonNullableType(right);
         }
 
 
@@ -1167,7 +1163,7 @@ namespace System.Linq.Expressions
                 }
             }
             // look for user defined operator
-            BinaryExpression b = GetUserDefinedBinaryOperator(binaryType, opName, left, right, liftToNull);
+            var b = GetUserDefinedBinaryOperator(binaryType, opName, left, right, liftToNull);
             if (b != null)
             {
                 return b;
@@ -1391,13 +1387,13 @@ namespace System.Linq.Expressions
                 if (method != null)
                 {
                     ValidateUserDefinedConditionalLogicOperator(ExpressionType.AndAlso, left.Type, right.Type, method);
-                    returnType = (TypeHelper.IsNullableType(left.Type) && TypeHelper.AreEquivalent(method.ReturnType, TypeHelper.GetNonNullableType(left.Type))) ? left.Type : method.ReturnType;
+                    returnType = (TypeHelper.IsNullableType(left.Type) && method.ReturnType == TypeHelper.GetNonNullableType(left.Type)) ? left.Type : method.ReturnType;
                     return new MethodBinaryExpression(ExpressionType.AndAlso, left, right, returnType, method);
                 }
                 throw Error.BinaryOperatorNotDefined(ExpressionType.AndAlso, left.Type, right.Type);
             }
             ValidateUserDefinedConditionalLogicOperator(ExpressionType.AndAlso, left.Type, right.Type, method);
-            returnType = (TypeHelper.IsNullableType(left.Type) && TypeHelper.AreEquivalent(method.ReturnType, TypeHelper.GetNonNullableType(left.Type))) ? left.Type : method.ReturnType;
+            returnType = (TypeHelper.IsNullableType(left.Type) && method.ReturnType == TypeHelper.GetNonNullableType(left.Type)) ? left.Type : method.ReturnType;
             return new MethodBinaryExpression(ExpressionType.AndAlso, left, right, returnType, method);
         }
 
@@ -1487,7 +1483,7 @@ namespace System.Linq.Expressions
 
             if (conversion == null)
             {
-                Type resultType = ValidateCoalesceArgTypes(left.Type, right.Type);
+                var resultType = ValidateCoalesceArgTypes(left.Type, right.Type);
                 return new SimpleBinaryExpression(ExpressionType.Coalesce, left, right, resultType);
             }
 
@@ -1496,14 +1492,14 @@ namespace System.Linq.Expressions
                 throw Error.CoalesceUsedOnNonNullType();
             }
 
-            Type delegateType = conversion.Type;
+            var delegateType = conversion.Type;
             Debug.Assert(typeof(System.MulticastDelegate).IsAssignableFrom(delegateType) && delegateType != typeof(System.MulticastDelegate));
-            MethodInfo method = delegateType.GetMethod("Invoke");
+            var method = delegateType.GetMethod("Invoke");
             if (method.ReturnType == typeof(void))
             {
                 throw Error.UserDefinedOperatorMustNotBeVoid(conversion);
             }
-            ParameterInfo[] pms = method.GetParameters();
+            var pms = method.GetParameters();
             Debug.Assert(pms.Length == conversion.Parameters.Count);
             if (pms.Length != 1)
             {
@@ -1513,7 +1509,7 @@ namespace System.Linq.Expressions
             // We could weaken this restriction and
             // say that the return type must be assignable to from
             // the return type of the lambda.
-            if (!TypeHelper.AreEquivalent(method.ReturnType, right.Type))
+            if (method.ReturnType != right.Type)
             {
                 throw Error.OperandTypesDoNotMatchParameters(ExpressionType.Coalesce, conversion.ToString());
             }
@@ -1530,7 +1526,7 @@ namespace System.Linq.Expressions
 
         private static Type ValidateCoalesceArgTypes(Type left, Type right)
         {
-            Type leftStripped = TypeHelper.GetNonNullableType(left);
+            var leftStripped = TypeHelper.GetNonNullableType(left);
             if (left.IsValueType && !TypeHelper.IsNullableType(left))
             {
                 throw Error.CoalesceUsedOnNonNullType();
@@ -1658,23 +1654,23 @@ namespace System.Linq.Expressions
 
         private static void ValidateOpAssignConversionLambda(LambdaExpression conversion, Expression left, MethodInfo method, ExpressionType nodeType)
         {
-            Type delegateType = conversion.Type;
+            var delegateType = conversion.Type;
             Debug.Assert(typeof(System.MulticastDelegate).IsAssignableFrom(delegateType) && delegateType != typeof(System.MulticastDelegate));
-            MethodInfo mi = delegateType.GetMethod("Invoke");
-            ParameterInfo[] pms = mi.GetParameters();
+            var mi = delegateType.GetMethod("Invoke");
+            var pms = mi.GetParameters();
             Debug.Assert(pms.Length == conversion.Parameters.Count);
             if (pms.Length != 1)
             {
                 throw Error.IncorrectNumberOfMethodCallArguments(conversion);
             }
-            if (!TypeHelper.AreEquivalent(mi.ReturnType, left.Type))
+            if (mi.ReturnType != left.Type)
             {
                 throw Error.OperandTypesDoNotMatchParameters(nodeType, conversion.ToString());
             }
             if (method != null)
             {
                 // The parameter type of conversion lambda must be the same as the return type of the overload method
-                if (!TypeHelper.AreEquivalent(pms[0].ParameterType, method.ReturnType))
+                if (pms[0].ParameterType != method.ReturnType)
                 {
                     throw Error.OverloadOperatorTypeDoesNotMatchConversionType(nodeType, conversion.ToString());
                 }
@@ -2402,7 +2398,7 @@ namespace System.Linq.Expressions
             {
                 if (IsSimpleShift(left.Type, right.Type))
                 {
-                    Type resultType = GetResultTypeOfShift(left.Type, right.Type);
+                    var resultType = GetResultTypeOfShift(left.Type, right.Type);
                     return new SimpleBinaryExpression(ExpressionType.LeftShift, left, right, resultType);
                 }
                 return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.LeftShift, "op_LeftShift", left, right, true);
@@ -2462,7 +2458,7 @@ namespace System.Linq.Expressions
                     {
                         throw Error.ConversionIsNotSupportedForArithmeticTypes();
                     }
-                    Type resultType = GetResultTypeOfShift(left.Type, right.Type);
+                    var resultType = GetResultTypeOfShift(left.Type, right.Type);
                     return new SimpleBinaryExpression(ExpressionType.LeftShiftAssign, left, right, resultType);
                 }
                 return GetUserDefinedAssignOperatorOrThrow(ExpressionType.LeftShiftAssign, "op_LeftShift", left, right, conversion, true);
@@ -2500,7 +2496,7 @@ namespace System.Linq.Expressions
             {
                 if (IsSimpleShift(left.Type, right.Type))
                 {
-                    Type resultType = GetResultTypeOfShift(left.Type, right.Type);
+                    var resultType = GetResultTypeOfShift(left.Type, right.Type);
                     return new SimpleBinaryExpression(ExpressionType.RightShift, left, right, resultType);
                 }
                 return GetUserDefinedBinaryOperatorOrThrow(ExpressionType.RightShift, "op_RightShift", left, right, true);
@@ -2560,7 +2556,7 @@ namespace System.Linq.Expressions
                     {
                         throw Error.ConversionIsNotSupportedForArithmeticTypes();
                     }
-                    Type resultType = GetResultTypeOfShift(left.Type, right.Type);
+                    var resultType = GetResultTypeOfShift(left.Type, right.Type);
                     return new SimpleBinaryExpression(ExpressionType.RightShiftAssign, left, right, resultType);
                 }
                 return GetUserDefinedAssignOperatorOrThrow(ExpressionType.RightShiftAssign, "op_RightShift", left, right, conversion, true);
@@ -2881,7 +2877,7 @@ namespace System.Linq.Expressions
             RequiresCanRead(right, "right");
             if (method == null)
             {
-                Type mathType = typeof(System.Math);
+                var mathType = typeof(System.Math);
                 method = mathType.GetMethod("Pow", BindingFlags.Static | BindingFlags.Public);
                 if (method == null)
                 {
@@ -2936,7 +2932,7 @@ namespace System.Linq.Expressions
             RequiresCanRead(right, "right");
             if (method == null)
             {
-                Type mathType = typeof(System.Math);
+                var mathType = typeof(System.Math);
                 method = mathType.GetMethod("Pow", BindingFlags.Static | BindingFlags.Public);
                 if (method == null)
                 {
@@ -2966,7 +2962,7 @@ namespace System.Linq.Expressions
                 throw Error.ArgumentMustBeArrayIndexType();
             }
 
-            Type arrayType = array.Type;
+            var arrayType = array.Type;
             if (!arrayType.IsArray)
             {
                 throw Error.ArgumentMustBeArray();

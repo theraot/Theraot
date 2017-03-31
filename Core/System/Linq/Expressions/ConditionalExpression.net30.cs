@@ -167,7 +167,7 @@ namespace System.Linq.Expressions
             {
                 throw Error.ArgumentMustBeBoolean();
             }
-            if (!TypeHelper.AreEquivalent(ifTrue.Type, ifFalse.Type))
+            if (ifTrue.Type != ifFalse.Type)
             {
                 throw Error.ArgumentTypesMustMatch();
             }

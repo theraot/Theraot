@@ -16,10 +16,10 @@ namespace System.Dynamic.Utils
     {
         public static ReadOnlyCollection<T> ReturnReadOnly<T>(ref IList<T> collection)
         {
-            IList<T> value = collection;
+            var value = collection;
 
             // if it's already read-only just return it.
-            ReadOnlyCollection<T> res = value as ReadOnlyCollection<T>;
+            var res = value as ReadOnlyCollection<T>;
             if (res != null)
             {
                 return res;
@@ -36,23 +36,9 @@ namespace System.Dynamic.Utils
             return (ReadOnlyCollection<T>)collection;
         }
 
-        /// <summary>
-        /// Helper used for ensuring we only return 1 instance of a ReadOnlyCollection of T.
-        /// 
-        /// This is similar to the ReturnReadOnly of T. This version supports nodes which hold 
-        /// onto multiple Expressions where one is typed to object.  That object field holds either
-        /// an expression or a ReadOnlyCollection of Expressions.  When it holds a ReadOnlyCollection
-        /// the IList which backs it is a ListArgumentProvider which uses the Expression which
-        /// implements IArgumentProvider to get 2nd and additional values.  The ListArgumentProvider 
-        /// continues to hold onto the 1st expression.  
-        /// 
-        /// This enables users to get the ReadOnlyCollection w/o it consuming more memory than if 
-        /// it was just an array.  Meanwhile The DLR internally avoids accessing  which would force 
-        /// the readonly collection to be created resulting in a typical memory savings.
-        /// </summary>
         public static ReadOnlyCollection<Expression> ReturnReadOnly(IArgumentProvider provider, ref object collection)
         {
-            Expression tObj = collection as Expression;
+            var tObj = collection as Expression;
             if (tObj != null)
             {
                 // otherwise make sure only one readonly collection ever gets exposed
@@ -67,18 +53,9 @@ namespace System.Dynamic.Utils
             return (ReadOnlyCollection<Expression>)collection;
         }
 
-
-        /// <summary>
-        /// Helper which is used for specialized subtypes which use ReturnReadOnly(ref object, ...). 
-        /// This is the reverse version of ReturnReadOnly which takes an IArgumentProvider.
-        /// 
-        /// This is used to return the 1st argument.  The 1st argument is typed as object and either
-        /// contains a ReadOnlyCollection or the Expression.  We check for the Expression and if it's
-        /// present we return that, otherwise we return the 1st element of the ReadOnlyCollection.
-        /// </summary>
         public static T ReturnObject<T>(object collectionOrT) where T : class
         {
-            T t = collectionOrT as T;
+            var t = collectionOrT as T;
             if (t != null)
             {
                 return t;
@@ -95,21 +72,21 @@ namespace System.Dynamic.Utils
             Debug.Assert(nodeKind == ExpressionType.Invoke || nodeKind == ExpressionType.Call || nodeKind == ExpressionType.Dynamic || nodeKind == ExpressionType.New); 
 #endif
 
-            ParameterInfo[] pis = GetParametersForValidation(method, nodeKind);
+            var pis = GetParametersForValidation(method, nodeKind);
 
             ValidateArgumentCount(method, nodeKind, arguments.Count, pis);
 
             Expression[] newArgs = null;
             for (int i = 0, n = pis.Length; i < n; i++)
             {
-                Expression arg = arguments[i];
-                ParameterInfo pi = pis[i];
+                var arg = arguments[i];
+                var pi = pis[i];
                 arg = ValidateOneArgument(method, nodeKind, arg, pi);
 
                 if (newArgs == null && arg != arguments[i])
                 {
                     newArgs = new Expression[arguments.Count];
-                    for (int j = 0; j < i; j++)
+                    for (var j = 0; j < i; j++)
                     {
                         newArgs[j] = arguments[j];
                     }
@@ -150,7 +127,7 @@ namespace System.Dynamic.Utils
         public static Expression ValidateOneArgument(MethodBase method, ExpressionType nodeKind, Expression arg, ParameterInfo pi)
         {
             RequiresCanRead(arg, "arguments");
-            Type pType = pi.ParameterType;
+            var pType = pi.ParameterType;
             if (pType.IsByRef)
             {
                 pType = pType.GetElementType();
@@ -192,7 +169,7 @@ namespace System.Dynamic.Utils
             {
 #if !NET35
                 case ExpressionType.Index:
-                    IndexExpression index = (IndexExpression)expression;
+                    var index = (IndexExpression)expression;
                     if (index.Indexer != null && !index.Indexer.CanRead)
                     {
                         throw new ArgumentException(Strings.ExpressionMustBeReadable, paramName);
@@ -200,8 +177,8 @@ namespace System.Dynamic.Utils
                     break;
 #endif
                 case ExpressionType.MemberAccess:
-                    MemberExpression member = (MemberExpression)expression;
-                    PropertyInfo prop = member.Member as PropertyInfo;
+                    var member = (MemberExpression)expression;
+                    var prop = member.Member as PropertyInfo;
                     if (prop != null)
                     {
                         if (!prop.CanRead)
@@ -219,9 +196,9 @@ namespace System.Dynamic.Utils
             // We used to allow quoting of any expression, but the behavior of
             // quote (produce a new tree closed over parameter values), only
             // works consistently for lambdas
-            Type quoteable = typeof(LambdaExpression);
+            var quoteable = typeof(LambdaExpression);
             // TODO: check generics?
-            if (TypeHelper.IsSameOrSubclass(quoteable, parameterType) &&
+            if (TypeHelper.IsSameOrSubclassOf(parameterType, quoteable) &&
                 parameterType.IsAssignableFrom(argument.GetType()))
             {
                 argument = Expression.Quote(argument);
@@ -232,7 +209,7 @@ namespace System.Dynamic.Utils
 
         internal static ParameterInfo[] GetParametersForValidation(MethodBase method, ExpressionType nodeKind)
         {
-            ParameterInfo[] pis = method.GetParameters();
+            var pis = method.GetParameters();
 #if !NET35
             if (nodeKind == ExpressionType.Dynamic)
             {

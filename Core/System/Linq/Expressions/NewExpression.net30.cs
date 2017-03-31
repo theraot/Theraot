@@ -250,11 +250,11 @@ namespace System.Linq.Expressions
                 MemberInfo[] newMembers = null;
                 for (int i = 0, n = arguments.Count; i < n; i++)
                 {
-                    Expression arg = arguments[i];
+                    var arg = arguments[i];
                     RequiresCanRead(arg, "argument");
-                    MemberInfo member = members[i];
+                    var member = members[i];
                     ContractUtils.RequiresNotNull(member, "member");
-                    if (!TypeHelper.AreEquivalent(member.DeclaringType, constructor.DeclaringType))
+                    if (member.DeclaringType != constructor.DeclaringType)
                     {
                         throw Error.ArgumentMemberNotDeclOnType(member.Name, constructor.DeclaringType.Name);
                     }
@@ -267,8 +267,8 @@ namespace System.Linq.Expressions
                             throw Error.ArgumentTypeDoesNotMatchMember(arg.Type, memberType);
                         }
                     }
-                    ParameterInfo pi = pis[i];
-                    Type pType = pi.ParameterType;
+                    var pi = pis[i];
+                    var pType = pi.ParameterType;
                     if (pType.IsByRef)
                     {
                         pType = pType.GetElementType();
@@ -283,7 +283,7 @@ namespace System.Linq.Expressions
                     if (newArguments == null && arg != arguments[i])
                     {
                         newArguments = new Expression[arguments.Count];
-                        for (int j = 0; j < i; j++)
+                        for (var j = 0; j < i; j++)
                         {
                             newArguments[j] = arguments[j];
                         }
@@ -296,7 +296,7 @@ namespace System.Linq.Expressions
                     if (newMembers == null && member != members[i])
                     {
                         newMembers = new MemberInfo[members.Count];
-                        for (int j = 0; j < i; j++)
+                        for (var j = 0; j < i; j++)
                         {
                             newMembers[j] = members[j];
                         }
@@ -362,7 +362,7 @@ namespace System.Linq.Expressions
                     throw Error.ArgumentMustBeInstanceMember();
                 }
 
-                PropertyInfo prop = GetProperty(method);
+                var prop = GetProperty(method);
                 member = prop;
                 memberType = prop.PropertyType;
                 return;

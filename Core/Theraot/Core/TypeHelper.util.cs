@@ -13,25 +13,10 @@ namespace Theraot.Core
 {
     public static partial class TypeHelper
     {
-        private static Assembly _corlib;
-
-        private static Assembly Corlib
-        {
-            get
-            {
-                return _corlib ?? (_corlib = typeof(object).Assembly);
-            }
-        }
-
-        public static bool AreEquivalent(Type t1, Type t2)
-        {
-            return t1.IsEquivalentTo(t2);
-        }
-
         public static bool AreReferenceAssignable(Type target, Type source)
         {
             // This actually implements "Is this identity assignable and/or reference assignable?"
-            if (AreEquivalent(target, source))
+            if (target == source)
             {
                 return true;
             }
@@ -42,33 +27,57 @@ namespace Theraot.Core
             return false;
         }
 
-        /// <summary>
-        /// We can cache references to types, as long as they aren't in
-        /// collectable assemblies. Unfortunately, we can't really distinguish
-        /// between different flavors of assemblies. But, we can at least
-        /// create a cache for types in mscorlib (so we get the primitives, etc).
-        /// </summary>
-        /// <param name="type">The type to test cache for.</param>
-        public static bool CanCache(this Type type)
-        {
-            // Note: we don't have to scan base or declaring types here.
-            // There's no way for a type in mscorlib to derive from or be
-            // contained in a type from another assembly. The only thing we
-            // need to look at is the generic arguments, which are the thing
-            // that allows mscorlib types to be specialized by types in other
-            // assemblies.
+        private static readonly Type[] _known = {
+            typeof(object),
+            typeof(BitConverter),
+            typeof(System.Collections.StructuralComparisons),
+            typeof(System.ComponentModel.CancelEventArgs),
+            typeof(Console),
+            typeof(Debug),
+            typeof(System.IO.BufferedStream),
+            typeof(System.IO.File),
+            typeof(System.IO.FileAccess),
+            typeof(System.Resources.ResourceReader),
+            typeof(System.Runtime.CompilerServices.IStrongBox),
+            typeof(System.Security.Cryptography.AsnEncodedData),
+            typeof(System.Security.Cryptography.AsymmetricAlgorithm),
+            typeof(System.Security.Principal.IIdentity),
+            typeof(System.Threading.BarrierPostPhaseException),
+            typeof(System.Threading.Tasks.TaskExtensions),
+            typeof(Uri),
+            typeof(TypeHelper)
+        };
 
-            var asm = type.Assembly;
-            if (!Equals(asm, Corlib) || !Equals(asm, Assembly.GetExecutingAssembly()))
+        private static readonly Assembly[] _knownAssembies;
+
+        static TypeHelper()
+        {
+            var knownAssembies = new List<Assembly>();
+            foreach (var type in _known)
             {
-                // Not in mscorlib or our assembly
+                var assembly = type.Assembly;
+                if (!knownAssembies.Contains(assembly))
+                {
+                    knownAssembies.Add(assembly);
+                }
+            }
+            _knownAssembies = knownAssembies.ToArray();
+        }
+
+
+        internal static bool CanCache(this Type type)
+        {
+            var typeInfo = type;
+            var assembly = typeInfo.Assembly;
+            if (Array.IndexOf(_knownAssembies, assembly) == -1)
+            {
                 return false;
             }
-            if (type.IsGenericType)
+            if (typeInfo.IsGenericType)
             {
-                foreach (var g in type.GetGenericArguments())
+                foreach (Type genericArgument in type.GetGenericArguments())
                 {
-                    if (!CanCache(g))
+                    if (!CanCache(genericArgument))
                     {
                         return false;
                     }
@@ -77,55 +86,24 @@ namespace Theraot.Core
             return true;
         }
 
-        /// <summary>
-        /// Creates a closed delegate for the given (dynamic)method.
-        /// </summary>
-        /// <param name="methodInfo">The MethodInfo for the target method.</param>
-        /// <param name="delegateType">Delegate type with a matching signature.</param>
-        public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType)
-        {
-            var dynamicMethod = methodInfo as DynamicMethod;
-            if (dynamicMethod != null)
-            {
-                return dynamicMethod.CreateDelegate(delegateType);
-            }
-            return Delegate.CreateDelegate(delegateType, methodInfo);
-        }
-
-        /// <summary>
-        /// Creates a closed delegate for the given (dynamic)method.
-        /// </summary>
-        /// <param name="methodInfo">The MethodInfo for the target method.</param>
-        /// <param name="delegateType">Delegate type with a matching signature.</param>
-        /// <param name="target">The object to which the delegate is bound, or null to treat method as static.</param>
-        public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType, object target)
-        {
-            var dynamicMethod = methodInfo as DynamicMethod;
-            if (dynamicMethod != null)
-            {
-                return dynamicMethod.CreateDelegate(delegateType, target);
-            }
-            return Delegate.CreateDelegate(delegateType, target, methodInfo);
-        }
-
         public static MethodInfo FindConversionOperator(MethodInfo[] methods, Type typeFrom, Type typeTo, bool implicitOnly)
         {
-            foreach (var mi in methods)
+            foreach (var method in methods)
             {
-                if (mi.Name != "op_Implicit" && (implicitOnly || mi.Name != "op_Explicit"))
+                if (method.Name != "op_Implicit" && (implicitOnly || method.Name != "op_Explicit"))
                 {
                     continue;
                 }
-                if (!AreEquivalent(mi.ReturnType, typeTo))
+                if (method.ReturnType != typeTo)
                 {
                     continue;
                 }
-                var pis = mi.GetParameters();
-                if (!AreEquivalent(pis[0].ParameterType, typeFrom))
+                var parameters = method.GetParameters();
+                if (parameters[0].ParameterType != typeFrom)
                 {
                     continue;
                 }
-                return mi;
+                return method;
             }
             return null;
         }
@@ -134,15 +112,15 @@ namespace Theraot.Core
         {
             while (type != null && type != typeof(object))
             {
-                if (IsConstructedGenericType(type) && AreEquivalent(type.GetGenericTypeDefinition(), definition))
+                if (IsConstructedGenericType(type) && type.GetGenericTypeDefinition() == definition)
                 {
                     return type;
                 }
                 if (definition.IsInterface)
                 {
-                    foreach (var itype in type.GetInterfaces())
+                    foreach (var interfaceType in type.GetInterfaces())
                     {
-                        var found = FindGenericType(definition, itype);
+                        var found = FindGenericType(definition, interfaceType);
                         if (found != null)
                         {
                             return found;
@@ -154,11 +132,12 @@ namespace Theraot.Core
             return null;
         }
 
-        public static MethodInfo GetAnyStaticMethod(this Type type, string name)
+        public static MethodInfo GetStaticMethod(this Type type, string name)
         {
+            // Don't use BindingFlags.Static
             foreach (var method in type.GetMethods())
             {
-                if (method.IsStatic && method.Name == name)
+                if (method.Name == name && method.IsStatic)
                 {
                     return method;
                 }
@@ -166,14 +145,17 @@ namespace Theraot.Core
             return null;
         }
 
-        public static MethodInfo GetAnyStaticMethodValidated(
-            this Type type,
-            string name,
-            Type[] types)
+        public static MethodInfo GetStaticMethod(this Type type, string name, Type[] types)
         {
-            var method = type.GetAnyStaticMethod(name);
-
-            return method.MatchesArgumentTypes(types) ? method : null;
+            // Don't use BindingFlags.Static
+            foreach (var method in type.GetMethods())
+            {
+                if (method.Name == name && method.IsStatic && method.MatchesArgumentTypes(types))
+                {
+                    return method;
+                }
+            }
+            return null;
         }
 
         /// <summary>
@@ -192,7 +174,7 @@ namespace Theraot.Core
         {
             do
             {
-                var result = type.GetAnyStaticMethodValidated(name, new[] { type });
+                var result = type.GetStaticMethod(name, new[] { type });
                 if (result != null && result.IsSpecialName && !result.ContainsGenericParameters)
                 {
                     return result;
@@ -347,7 +329,7 @@ namespace Theraot.Core
                 return method;
             }
             // try lifted conversion
-            if (AreEquivalent(nnExprType, convertFrom) && AreEquivalent(nnConvType, convertToType))
+            if (nnExprType == convertFrom && nnConvType == convertToType)
             {
                 return null;
             }
@@ -357,8 +339,6 @@ namespace Theraot.Core
 
         public static bool HasBuiltInEqualityOperator(Type left, Type right)
         {
-            // If we have an interface and a reference type then we can do
-            // reference equality.
             if (left.IsInterface && !right.IsValueType)
             {
                 return true;
@@ -367,32 +347,54 @@ namespace Theraot.Core
             {
                 return true;
             }
-            // If we have two reference types and one is assignable to the
-            // other then we can do reference equality.
             if (!left.IsValueType && !right.IsValueType)
             {
-                if (AreReferenceAssignable(left, right) || AreReferenceAssignable(right, left))
+                if (IsReferenceAssignableFrom(left, right) || IsReferenceAssignableFrom(right, left))
                 {
                     return true;
                 }
             }
-            // Otherwise, if the types are not the same then we definitely
-            // do not have a built-in equality operator.
-            if (!AreEquivalent(left, right))
+            if (left != right)
             {
                 return false;
             }
-            // We have two identical value types, modulo nullability.  (If they were both the
-            // same reference type then we would have returned true earlier.)
-            Debug.Assert(left.IsValueType);
-            // Equality between struct types is only defined for numerics, bools, enums,
-            // and their nullable equivalents.
-            var nnType = GetNonNullableType(left);
-            if (nnType == typeof(bool) || IsNumeric(nnType) || nnType.IsEnum)
+            var notNullable = GetNonNullableType(left);
+            if (notNullable == typeof(bool) || IsNumeric(notNullable) || notNullable.IsEnum)
             {
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// Creates a closed delegate for the given (dynamic)method.
+        /// </summary>
+        /// <param name="methodInfo">The MethodInfo for the target method.</param>
+        /// <param name="delegateType">Delegate type with a matching signature.</param>
+        public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType)
+        {
+            var dynamicMethod = methodInfo as DynamicMethod;
+            if (dynamicMethod != null)
+            {
+                return dynamicMethod.CreateDelegate(delegateType);
+            }
+            return Delegate.CreateDelegate(delegateType, methodInfo);
+        }
+
+        /// <summary>
+        /// Creates a closed delegate for the given (dynamic)method.
+        /// </summary>
+        /// <param name="methodInfo">The MethodInfo for the target method.</param>
+        /// <param name="delegateType">Delegate type with a matching signature.</param>
+        /// <param name="target">The object to which the delegate is bound, or null to treat method as static.</param>
+        public static Delegate CreateDelegate(this MethodInfo methodInfo, Type delegateType, object target)
+        {
+            var dynamicMethod = methodInfo as DynamicMethod;
+            if (dynamicMethod != null)
+            {
+                return dynamicMethod.CreateDelegate(delegateType, target);
+            }
+            return Delegate.CreateDelegate(delegateType, target, methodInfo);
         }
 
         public static bool HasIdentityPrimitiveOrNullableConversion(Type source, Type target)
@@ -407,17 +409,17 @@ namespace Theraot.Core
             }
 
             // Identity conversion
-            if (AreEquivalent(source, target))
+            if (source == target)
             {
                 return true;
             }
 
             // Nullable conversions
-            if (IsNullableType(source) && AreEquivalent(target, GetNonNullableType(source)))
+            if (IsNullableType(source) && target == GetNonNullableType(source))
             {
                 return true;
             }
-            if (IsNullableType(target) && AreEquivalent(source, GetNonNullableType(target)))
+            if (IsNullableType(target) && source == GetNonNullableType(target))
             {
                 return true;
             }
@@ -444,25 +446,20 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("target");
             }
-
-            // void -> void conversion is handled elsewhere
-            // (it's an identity conversion)
-            // All other void conversions are disallowed.
+            // void -> void is  an identity conversion, not a reference conversion
             if (source == typeof(void) || target == typeof(void))
             {
                 return false;
             }
-
-            var nnSourceType = GetNonNullableType(source);
-            var nnDestType = GetNonNullableType(target);
-
+            var nonNullableSource = GetNonNullableType(source);
+            var nonNullableTarget = GetNonNullableType(target);
             // Down conversion
-            if (nnSourceType.IsAssignableFrom(nnDestType))
+            if (nonNullableSource.IsAssignableFrom(nonNullableTarget))
             {
                 return true;
             }
             // Up conversion
-            if (nnDestType.IsAssignableFrom(nnSourceType))
+            if (nonNullableTarget.IsAssignableFrom(nonNullableSource))
             {
                 return true;
             }
@@ -473,8 +470,9 @@ namespace Theraot.Core
             }
             // Variant delegate conversion
             if (IsLegalExplicitVariantDelegateConversion(source, target))
+            {
                 return true;
-
+            }
             // Object conversion
             if (source == typeof(object) || target == typeof(object))
             {
@@ -489,16 +487,14 @@ namespace Theraot.Core
             {
                 return false;
             }
-
             // If we have an interface and a reference type then we can do
             // reference equality.
-
             // If we have two reference types and one is assignable to the
             // other then we can do reference equality.
-
-            return left.IsInterface || right.IsInterface ||
-                AreReferenceAssignable(left, right) ||
-                AreReferenceAssignable(right, left);
+            return left.IsInterface
+                || right.IsInterface
+                || IsReferenceAssignableFrom(left, right)
+                || IsReferenceAssignableFrom(right, left);
         }
 
         public static bool IsArithmetic(this Type type)
@@ -586,18 +582,13 @@ namespace Theraot.Core
             return PrivateIsDelegate(type);
         }
 
-        public static bool IsEquivalentTo(this Type t1, Type t2)
-        {
-            return t1 == t2;
-        }
-
         public static bool IsImplicitBoxingConversion(Type source, Type target)
         {
-            if (source.IsValueType && (target == typeof (object) || target == typeof (ValueType)))
+            if (source.IsValueType && (target == typeof(object) || target == typeof(ValueType)))
             {
                 return true;
             }
-            if (source.IsEnum && target == typeof (Enum))
+            if (source.IsEnum && target == typeof(Enum))
             {
                 return true;
             }
@@ -606,11 +597,11 @@ namespace Theraot.Core
 
         public static bool IsImplicitlyConvertible(Type source, Type target)
         {
-            return AreEquivalent(source, target) ||                // identity conversion
-                IsImplicitNumericConversion(source, target) ||
-                IsImplicitReferenceConversion(source, target) ||
-                IsImplicitBoxingConversion(source, target) ||
-                IsImplicitNullableConversion(source, target);
+            return source == target
+                || IsImplicitNumericConversion(source, target)
+                || IsImplicitReferenceConversion(source, target)
+                || IsImplicitBoxingConversion(source, target)
+                || IsImplicitNullableConversion(source, target);
         }
 
         public static bool IsImplicitNullableConversion(Type source, Type target)
@@ -626,63 +617,117 @@ namespace Theraot.Core
         {
             if (source == typeof(sbyte))
             {
-                if (target == typeof(short) || target == typeof(int) || target == typeof(long) || target == typeof(float) || target == typeof(double) || target == typeof(decimal))
+                if (
+                    target == typeof(short)
+                    || target == typeof(int)
+                    || target == typeof(long)
+                    || target == typeof(float)
+                    || target == typeof(double)
+                    || target == typeof(decimal)
+                    )
                 {
                     return true;
                 }
             }
             else if (source == typeof(byte))
             {
-                if (target == typeof(short) || target == typeof(ushort) || target == typeof(int) || target == typeof(uint) || target == typeof(long) || target == typeof(ulong) || target == typeof(float) || target == typeof(double) || target == typeof(decimal))
+                if (
+                    target == typeof(short)
+                    || target == typeof(ushort)
+                    || target == typeof(int)
+                    || target == typeof(uint)
+                    || target == typeof(long)
+                    || target == typeof(ulong)
+                    || target == typeof(float)
+                    || target == typeof(double)
+                    || target == typeof(decimal)
+                    )
                 {
                     return true;
                 }
             }
             else if (source == typeof(short))
             {
-                if (target == typeof(int) || target == typeof(long) || target == typeof(float) || target == typeof(double) || target == typeof(decimal))
+                if (
+                    target == typeof(int)
+                    || target == typeof(long)
+                    || target == typeof(float)
+                    || target == typeof(double)
+                    || target == typeof(decimal)
+                    )
                 {
                     return true;
                 }
             }
             else if (source == typeof(ushort))
             {
-                if (target == typeof(int) || target == typeof(uint) || target == typeof(long) || target == typeof(ulong) || target == typeof(float) || target == typeof(double) || target == typeof(decimal))
+                if (
+                    target == typeof(int)
+                    || target == typeof(uint)
+                    || target == typeof(long)
+                    || target == typeof(ulong)
+                    || target == typeof(float)
+                    || target == typeof(double)
+                    || target == typeof(decimal)
+                    )
                 {
                     return true;
                 }
             }
             else if (source == typeof(int))
             {
-                if (target == typeof(long) || target == typeof(float) || target == typeof(double) || target == typeof(decimal))
+                if (
+                    target == typeof(long)
+                    || target == typeof(float)
+                    || target == typeof(double)
+                    || target == typeof(decimal)
+                    )
                 {
                     return true;
                 }
             }
             else if (source == typeof(uint))
             {
-                if (target == typeof(ulong) || target == typeof(float) || target == typeof(double) || target == typeof(decimal))
+                if (
+                    target == typeof(ulong)
+                    || target == typeof(float)
+                    || target == typeof(double)
+                    || target == typeof(decimal)
+                    )
                 {
                     return true;
                 }
             }
             else if (source == typeof(long) || target == typeof(ulong))
             {
-                if (target == typeof(float) || target == typeof(double) || target == typeof(decimal))
+                if (
+                    target == typeof(float)
+                    || target == typeof(double)
+                    || target == typeof(decimal)
+                    )
                 {
                     return true;
                 }
             }
             else if (source == typeof(char))
             {
-                if (target == typeof(ushort) || target == typeof(int) || target == typeof(uint) || target == typeof(long) || target == typeof(ulong) || target == typeof(float) || target == typeof(double) || target == typeof(decimal))
+                if (
+                    target == typeof(ushort)
+                    || target == typeof(int)
+                    || target == typeof(uint)
+                    || target == typeof(long)
+                    || target == typeof(ulong)
+                    || target == typeof(float)
+                    || target == typeof(double)
+                    || target == typeof(decimal)
+                    )
                 {
                     return true;
                 }
             }
             else if (source == typeof(float))
             {
-                return (target == typeof(double));
+                return target == typeof(double);
             }
             return false;
         }
@@ -763,29 +808,15 @@ namespace Theraot.Core
             var sourceArguments = source.GetGenericArguments();
             var destArguments = target.GetGenericArguments();
 
-            Debug.Assert(genericParameters != null);
-            Debug.Assert(sourceArguments != null);
-            Debug.Assert(destArguments != null);
-            Debug.Assert(genericParameters.Length == sourceArguments.Length);
-            Debug.Assert(genericParameters.Length == destArguments.Length);
-
-            for (var iParam = 0; iParam < genericParameters.Length; ++iParam)
+            for (var index = 0; index < genericParameters.Length; index++)
             {
-                var sourceArgument = sourceArguments[iParam];
-                var destArgument = destArguments[iParam];
-
-                Debug.Assert(sourceArgument != null && destArgument != null);
-
-                // If the arguments are identical then this one is automatically good, so skip it.
-                if (AreEquivalent(sourceArgument, destArgument))
+                var sourceArgument = sourceArguments[index];
+                var destArgument = destArguments[index];
+                if (sourceArgument == destArgument)
                 {
                     continue;
                 }
-
-                var genericParameter = genericParameters[iParam];
-
-                Debug.Assert(genericParameter != null);
-
+                var genericParameter = genericParameters[index];
                 if (PrivateIsInvariant(genericParameter))
                 {
                     return false;
@@ -837,7 +868,7 @@ namespace Theraot.Core
             return false;
         }
 
-        public static bool IsUnsignedInteger(this Type type)
+        internal static bool IsUnsignedInteger(this Type type)
         {
             // Not including byte or char, by design - use IsUnsigned instead
             type = GetNonNullableType(type);
@@ -862,21 +893,21 @@ namespace Theraot.Core
                 // Can this happen?
                 return false;
             }
-            if (AreReferenceAssignable(targetType, instanceType))
+            if (IsReferenceAssignableFrom(targetType, instanceType))
             {
                 return true;
             }
             if (instanceType.IsValueType)
             {
-                if (AreReferenceAssignable(targetType, typeof(Object)))
+                if (IsReferenceAssignableFrom(targetType, typeof(object)))
                 {
                     return true;
                 }
-                if (AreReferenceAssignable(targetType, typeof(ValueType)))
+                if (IsReferenceAssignableFrom(targetType, typeof(ValueType)))
                 {
                     return true;
                 }
-                if (instanceType.IsEnum && AreReferenceAssignable(targetType, typeof(Enum)))
+                if (instanceType.IsEnum && IsReferenceAssignableFrom(targetType, typeof(Enum)))
                 {
                     return true;
                 }
@@ -886,7 +917,7 @@ namespace Theraot.Core
                 {
                     foreach (var interfaceType in instanceType.GetInterfaces())
                     {
-                        if (AreReferenceAssignable(targetType, interfaceType))
+                        if (IsReferenceAssignableFrom(targetType, interfaceType))
                         {
                             return true;
                         }
@@ -896,22 +927,37 @@ namespace Theraot.Core
             return false;
         }
 
-        public static bool MatchesArgumentTypes(this MethodInfo mi, Type[] argTypes)
+        public static bool IsReferenceAssignableFrom(this Type type, Type source)
         {
-            if (mi == null || argTypes == null)
+            if (type == source)
+            {
+                return true;
+            }
+            if (
+                !type.IsValueType
+                && !source.IsValueType
+                && type.IsAssignableFrom(source)
+                )
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public static bool MatchesArgumentTypes(this MethodInfo method, Type[] argTypes)
+        {
+            if (method == null || argTypes == null)
             {
                 return false;
             }
-            var ps = mi.GetParameters();
-
-            if (ps.Length != argTypes.Length)
+            var parameters = method.GetParameters();
+            if (parameters.Length != argTypes.Length)
             {
                 return false;
             }
-
-            for (var i = 0; i < ps.Length; i++)
+            for (var index = 0; index < parameters.Length; index++)
             {
-                if (!AreReferenceAssignable(ps[i].ParameterType, argTypes[i]))
+                if (!IsReferenceAssignableFrom(parameters[index].ParameterType, argTypes[index]))
                 {
                     return false;
                 }

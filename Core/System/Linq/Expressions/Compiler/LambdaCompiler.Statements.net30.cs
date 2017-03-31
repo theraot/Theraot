@@ -25,11 +25,11 @@ namespace System.Linq.Expressions.Compiler
         {
             EnterScope(node);
 
-            CompilationFlags emitAs = flags & CompilationFlags.EmitAsTypeMask;
+            var emitAs = flags & CompilationFlags.EmitAsTypeMask;
 
-            int count = node.ExpressionCount;
-            CompilationFlags tailCall = flags & CompilationFlags.EmitAsTailCallMask;
-            for (int index = 0; index < count - 1; index++)
+            var count = node.ExpressionCount;
+            var tailCall = flags & CompilationFlags.EmitAsTailCallMask;
+            for (var index = 0; index < count - 1; index++)
             {
                 var e = node.GetExpression(index);
                 var next = node.GetExpression(index + 1);
@@ -136,8 +136,8 @@ namespace System.Linq.Expressions.Compiler
             LoopExpression node = (LoopExpression)expr;
 
             PushLabelBlock(LabelScopeKind.Statement);
-            LabelInfo breakTarget = DefineLabel(node.BreakLabel);
-            LabelInfo continueTarget = DefineLabel(node.ContinueLabel);
+            var breakTarget = DefineLabel(node.BreakLabel);
+            var continueTarget = DefineLabel(node.ContinueLabel);
 
             continueTarget.MarkWithEmptyStack();
 
@@ -199,8 +199,8 @@ namespace System.Linq.Expressions.Compiler
             }
 
             // Define labels
-            Label end = _ilg.DefineLabel();
-            Label @default = (node.DefaultBody == null) ? end : _ilg.DefineLabel();
+            var end = _ilg.DefineLabel();
+            var @default = (node.DefaultBody == null) ? end : _ilg.DefineLabel();
 
             // Emit the case and default bodies
             EmitSwitchCases(node, labels, isGoto, @default, end, flags);
@@ -219,7 +219,7 @@ namespace System.Linq.Expressions.Compiler
             }
 
             // Otherwise, get the type from the method.
-            Type result = node.Comparison.GetParameters()[1].ParameterType.GetNonRefType();
+            var result = node.Comparison.GetParameters()[1].ParameterType.GetNonRefType();
             if (node.IsLifted)
             {
                 result = TypeHelper.GetNullableType(result);
@@ -267,7 +267,7 @@ namespace System.Linq.Expressions.Compiler
         private static bool FitsInBucket(List<SwitchLabel> buckets, decimal key, int count)
         {
             Debug.Assert(key > buckets[buckets.Count - 1].Key);
-            decimal jumpTableSlots = key - buckets[0].Key + 1;
+            var jumpTableSlots = key - buckets[0].Key + 1;
             if (jumpTableSlots > int.MaxValue)
             {
                 return false;
@@ -280,8 +280,8 @@ namespace System.Linq.Expressions.Compiler
         {
             while (buckets.Count > 1)
             {
-                List<SwitchLabel> first = buckets[buckets.Count - 2];
-                List<SwitchLabel> second = buckets[buckets.Count - 1];
+                var first = buckets[buckets.Count - 2];
+                var second = buckets[buckets.Count - 1];
 
                 if (!FitsInBucket(first, second[second.Count - 1].Key, second.Count))
                 {
@@ -299,7 +299,7 @@ namespace System.Linq.Expressions.Compiler
         {
             if (buckets.Count > 0)
             {
-                List<SwitchLabel> last = buckets[buckets.Count - 1];
+                var last = buckets[buckets.Count - 1];
                 if (FitsInBucket(last, key.Key, 1))
                 {
                     last.Add(key);
@@ -344,9 +344,9 @@ namespace System.Linq.Expressions.Compiler
 
             // Make sure the switch value type and the right side type
             // are types we can optimize
-            Type type = node.SwitchValue.Type;
+            var type = node.SwitchValue.Type;
             if (!CanOptimizeSwitchType(type) ||
-                !TypeHelper.AreEquivalent(type, node.Cases[0].TestValues[0].Type))
+                type != node.Cases[0].TestValues[0].Type)
             {
                 return false;
             }
@@ -368,7 +368,7 @@ namespace System.Linq.Expressions.Compiler
 
             var uniqueKeys = new Set<decimal>();
             var keys = new List<SwitchLabel>();
-            for (int i = 0; i < node.Cases.Count; i++)
+            for (var i = 0; i < node.Cases.Count; i++)
             {
                 DefineSwitchCaseLabel(node.Cases[i], out labels[i], out isGoto[i]);
 
@@ -378,7 +378,7 @@ namespace System.Linq.Expressions.Compiler
                     //
                     // Use decimal because it can hold Int64 or UInt64 without
                     // precision loss or signed/unsigned conversions.
-                    decimal key = ConvertSwitchValue(test.Value);
+                    var key = ConvertSwitchValue(test.Value);
 
                     // Only add each key once. If it appears twice, it's
                     // allowed, but can't be reached.
@@ -399,13 +399,13 @@ namespace System.Linq.Expressions.Compiler
             }
 
             // Emit the switchValue
-            LocalBuilder value = GetLocal(node.SwitchValue.Type);
+            var value = GetLocal(node.SwitchValue.Type);
             EmitExpression(node.SwitchValue);
             _ilg.Emit(OpCodes.Stloc, value);
 
             // Create end label, and default label if needed
-            Label end = _ilg.DefineLabel();
-            Label @default = (node.DefaultBody == null) ? end : _ilg.DefineLabel();
+            var end = _ilg.DefineLabel();
+            var @default = (node.DefaultBody == null) ? end : _ilg.DefineLabel();
 
             // Emit the switch
             var info = new SwitchInfo(node, value, @default);
@@ -440,7 +440,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 // Reference the label from the switch. This will cause us to
                 // analyze the jump target and determine if it is safe.
-                LabelInfo jumpInfo = ReferenceLabel(jump.Target);
+                var jumpInfo = ReferenceLabel(jump.Target);
 
                 // If we have are allowed to emit the "branch" opcode, then we
                 // can jump directly there from the switch's jump table.
@@ -522,7 +522,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 // If the first half contains more than one, we need to emit an
                 // explicit guard
-                Label secondHalf = _ilg.DefineLabel();
+                var secondHalf = _ilg.DefineLabel();
                 _ilg.Emit(OpCodes.Ldloc, info.Value);
                 _ilg.EmitConstant(buckets[mid - 1].Last().Constant);
                 _ilg.Emit(info.IsUnsigned ? OpCodes.Bgt_Un : OpCodes.Bgt, secondHalf);
@@ -564,7 +564,7 @@ namespace System.Linq.Expressions.Compiler
             _ilg.Emit(OpCodes.Ldloc, info.Value);
 
             // Normalize key
-            decimal key = bucket[0].Key;
+            var key = bucket[0].Key;
             if (key != 0)
             {
                 _ilg.EmitConstant(bucket[0].Constant);
@@ -581,7 +581,7 @@ namespace System.Linq.Expressions.Compiler
             Label[] jmpLabels = new Label[len];
 
             // Initialize all labels to the default
-            int slot = 0;
+            var slot = 0;
             foreach (SwitchLabel label in bucket)
             {
                 while (key++ != label.Key)
@@ -607,7 +607,7 @@ namespace System.Linq.Expressions.Compiler
         private bool TryEmitHashtableSwitch(SwitchExpression node, CompilationFlags flags)
         {
             // If we have a comparison other than string equality, bail
-            MethodInfo equality = typeof(string).GetMethod("op_Equality", new[] { typeof(string), typeof(string) });
+            var equality = typeof(string).GetMethod("op_Equality", new[] { typeof(string), typeof(string) });
             if (!equality.IsStatic)
             {
                 equality = null;
@@ -619,7 +619,7 @@ namespace System.Linq.Expressions.Compiler
             }
 
             // All test values must be constant.
-            int tests = 0;
+            var tests = 0;
             foreach (SwitchCase c in node.Cases)
             {
                 foreach (Expression t in c.TestValues)
@@ -644,8 +644,8 @@ namespace System.Linq.Expressions.Compiler
             var initializers = new List<ElementInit>(tests);
             var cases = new List<SwitchCase>(node.Cases.Count);
 
-            int nullCase = -1;
-            MethodInfo add = typeof(Dictionary<string, int>).GetMethod("Add", new[] { typeof(string), typeof(int) });
+            var nullCase = -1;
+            var add = typeof(Dictionary<string, int>).GetMethod("Add", new[] { typeof(string), typeof(int) });
             for (int i = 0, n = node.Cases.Count; i < n; i++)
             {
                 foreach (ConstantExpression t in node.Cases[i].TestValues)
@@ -663,7 +663,7 @@ namespace System.Linq.Expressions.Compiler
             }
 
             // Create the field to hold the lazily initialized dictionary
-            MemberExpression dictField = CreateLazyInitializedField<Dictionary<string, int>>("dictionarySwitch");
+            var dictField = CreateLazyInitializedField<Dictionary<string, int>>("dictionarySwitch");
 
             // If we happen to initialize it twice (multithreaded case), it's
             // not the end of the world. The C# compiler does better here by
@@ -730,7 +730,7 @@ namespace System.Linq.Expressions.Compiler
         private void CheckRethrow()
         {
             // Rethrow is only valid inside a catch.
-            for (LabelScopeInfo j = _labelBlock; j != null; j = j.Parent)
+            for (var j = _labelBlock; j != null; j = j.Parent)
             {
                 if (j.Kind == LabelScopeKind.Catch)
                 {
@@ -750,7 +750,7 @@ namespace System.Linq.Expressions.Compiler
         private void CheckTry()
         {
             // Try inside a filter is not verifiable
-            for (LabelScopeInfo j = _labelBlock; j != null; j = j.Parent)
+            for (var j = _labelBlock; j != null; j = j.Parent)
             {
                 if (j.Kind == LabelScopeKind.Filter)
                 {
@@ -793,7 +793,7 @@ namespace System.Linq.Expressions.Compiler
 
             EmitExpression(node.Body);
 
-            Type tryType = expr.Type;
+            var tryType = expr.Type;
             LocalBuilder value = null;
             if (tryType != typeof(void))
             {
@@ -889,8 +889,8 @@ namespace System.Linq.Expressions.Compiler
 
             // emit filter block. Filter blocks are untyped so we need to do
             // the type check ourselves.  
-            Label endFilter = _ilg.DefineLabel();
-            Label rightType = _ilg.DefineLabel();
+            var endFilter = _ilg.DefineLabel();
+            var rightType = _ilg.DefineLabel();
 
             // skip if it's not our exception type, but save
             // the exception if it is so it's available to the

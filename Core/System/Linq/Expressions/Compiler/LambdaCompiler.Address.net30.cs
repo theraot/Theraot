@@ -26,8 +26,8 @@ namespace System.Linq.Expressions.Compiler
         private void EmitAddress(Expression node, Type type, CompilationFlags flags)
         {
             Debug.Assert(node != null);
-            bool emitStart = (flags & CompilationFlags.EmitExpressionStartMask) == CompilationFlags.EmitExpressionStart;
-            CompilationFlags startEmitted = emitStart ? EmitExpressionStart(node) : CompilationFlags.EmitNoExpressionStart;
+            var emitStart = (flags & CompilationFlags.EmitExpressionStartMask) == CompilationFlags.EmitExpressionStart;
+            var startEmitted = emitStart ? EmitExpressionStart(node) : CompilationFlags.EmitNoExpressionStart;
 
             switch (node.NodeType)
             {
@@ -71,20 +71,20 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(node.NodeType == ExpressionType.ArrayIndex && node.Method == null);
 
-            if (TypeHelper.AreEquivalent(type, node.Type))
+            if (type == node.Type)
             {
                 EmitExpression(node.Left);
                 EmitExpression(node.Right);
-                Type rightType = node.Right.Type;
+                var rightType = node.Right.Type;
                 if (TypeHelper.IsNullableType(rightType))
                 {
-                    LocalBuilder loc = GetLocal(rightType);
+                    var loc = GetLocal(rightType);
                     _ilg.Emit(OpCodes.Stloc, loc);
                     _ilg.Emit(OpCodes.Ldloca, loc);
                     _ilg.EmitGetValue(rightType);
                     FreeLocal(loc);
                 }
-                Type indexType = TypeHelper.GetNonNullableType(rightType);
+                var indexType = TypeHelper.GetNonNullableType(rightType);
                 if (indexType != typeof(int))
                 {
                     _ilg.EmitConvertToType(indexType, typeof(int), true);
@@ -99,7 +99,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void AddressOf(ParameterExpression node, Type type)
         {
-            if (TypeHelper.AreEquivalent(type, node.Type))
+            if (type == node.Type)
             {
                 if (node.IsByRef)
                 {
@@ -119,7 +119,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void AddressOf(MemberExpression node, Type type)
         {
-            if (TypeHelper.AreEquivalent(type, node.Type))
+            if (type == node.Type)
             {
                 // emit "this", if any
                 Type objectType = null;
@@ -165,7 +165,7 @@ namespace System.Linq.Expressions.Compiler
             }
 
             EmitMemberGet(member, objectType);
-            LocalBuilder temp = GetLocal(GetMemberType(member));
+            var temp = GetLocal(GetMemberType(member));
             _ilg.Emit(OpCodes.Stloc, temp);
             _ilg.Emit(OpCodes.Ldloca, temp);
         }
@@ -182,7 +182,7 @@ namespace System.Linq.Expressions.Compiler
                 node.Object.Type.IsArray &&
                 node.Method == node.Object.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance))
             {
-                MethodInfo mi = node.Object.Type.GetMethod("Address", BindingFlags.Public | BindingFlags.Instance);
+                var mi = node.Object.Type.GetMethod("Address", BindingFlags.Public | BindingFlags.Instance);
 
                 EmitMethodCall(node.Object, mi, node);
             }
@@ -194,7 +194,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void AddressOf(IndexExpression node, Type type)
         {
-            if (!TypeHelper.AreEquivalent(type, node.Type) || node.Indexer != null)
+            if (type != node.Type || node.Indexer != null)
             {
                 EmitExpressionAddress(node, type);
                 return;
@@ -228,7 +228,7 @@ namespace System.Linq.Expressions.Compiler
             Debug.Assert(TypeHelper.AreReferenceAssignable(type, node.Type));
 
             EmitExpression(node, CompilationFlags.EmitAsNoTail | CompilationFlags.EmitNoExpressionStart);
-            LocalBuilder tmp = GetLocal(type);
+            var tmp = GetLocal(type);
             _ilg.Emit(OpCodes.Stloc, tmp);
             _ilg.Emit(OpCodes.Ldloca, tmp);
         }
@@ -240,10 +240,10 @@ namespace System.Linq.Expressions.Compiler
         // passed byref.
         private WriteBack EmitAddressWriteBack(Expression node, Type type)
         {
-            CompilationFlags startEmitted = EmitExpressionStart(node);
+            var startEmitted = EmitExpressionStart(node);
 
             WriteBack result = null;
-            if (TypeHelper.AreEquivalent(type, node.Type))
+            if (type == node.Type)
             {
                 switch (node.NodeType)
                 {

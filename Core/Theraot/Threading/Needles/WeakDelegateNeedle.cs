@@ -127,7 +127,7 @@ namespace Theraot.Threading.Needles
             {
                 throw new ArgumentException("methodInfo.DeclaringType is null", "methodInfo");
             }
-            return methodInfo.CreateDelegate(type, target);
+            return TypeHelper.CreateDelegate(methodInfo, type, target);
         }
     }
 }

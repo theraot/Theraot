@@ -594,7 +594,7 @@ namespace System.Linq.Expressions
                 return 0;
             }
 
-            for (int i = 1; i < _block.ExpressionCount; i++)
+            for (var i = 1; i < _block.ExpressionCount; i++)
             {
                 if (_block.GetExpression(i) == item)
                 {
@@ -654,7 +654,7 @@ namespace System.Linq.Expressions
         public void CopyTo(Expression[] array, int arrayIndex)
         {
             array[arrayIndex++] = _arg0;
-            for (int i = 1; i < _block.ExpressionCount; i++)
+            for (var i = 1; i < _block.ExpressionCount; i++)
             {
                 array[arrayIndex++] = _block.GetExpression(i);
             }
@@ -683,7 +683,7 @@ namespace System.Linq.Expressions
         {
             yield return _arg0;
 
-            for (int i = 1; i < _block.ExpressionCount; i++)
+            for (var i = 1; i < _block.ExpressionCount; i++)
             {
                 yield return _block.GetExpression(i);
             }
@@ -697,7 +697,7 @@ namespace System.Linq.Expressions
         {
             yield return _arg0;
 
-            for (int i = 1; i < _block.ExpressionCount; i++)
+            for (var i = 1; i < _block.ExpressionCount; i++)
             {
                 yield return _block.GetExpression(i);
             }
@@ -887,7 +887,7 @@ namespace System.Linq.Expressions
             RequiresCanRead(expressionList, "expressions");
             ValidateVariables(variableList, "variables");
 
-            Expression last = expressionList.Last();
+            var last = expressionList.Last();
             if (type != typeof(void))
             {
                 if (!TypeHelper.AreReferenceAssignable(type, last.Type))
@@ -896,7 +896,7 @@ namespace System.Linq.Expressions
                 }
             }
 
-            if (!TypeHelper.AreEquivalent(type, last.Type))
+            if (type != last.Type)
             {
                 return new ScopeWithType(variableList, expressionList, type);
             }
@@ -921,11 +921,11 @@ namespace System.Linq.Expressions
                 return;
             }
 
-            int count = varList.Count;
+            var count = varList.Count;
             var set = new Set<ParameterExpression>(count);
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
-                ParameterExpression v = varList[i];
+                var v = varList[i];
                 if (v == null)
                 {
                     throw new ArgumentNullException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "{0}[{1}]", collectionName, set.Count));
