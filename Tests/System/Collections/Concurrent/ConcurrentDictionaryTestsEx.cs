@@ -20,6 +20,7 @@ namespace MonoTests.System.Collections.Concurrent
             Assert.AreEqual(expectedCount, d.Count);
             string a = null;
             var foundCount = 0;
+            bool didAdd = false;
             // MSDN says: "it does not represent a moment-in-time snapshot of the dictionary."
             // And also "The contents exposed through the enumerator may contain modifications made to the dictionary after GetEnumerator was called."
             foreach (var item in d)
@@ -37,21 +38,32 @@ namespace MonoTests.System.Collections.Concurrent
                     Assert.IsFalse(didRemove);
                 }
                 Assert.AreEqual(expectedCount, d.Count);
-                var didAdd = d.TryAdd("c", "d");
+                var added = d.TryAdd("c", "d");
                 if (foundCount == 1)
                 {
-                    Assert.IsTrue(didAdd);
-                    expectedCount++;
+                    Assert.IsTrue(added);
                 }
                 else
                 {
-                    Assert.IsFalse(didAdd);
+                    Assert.IsFalse(added);
                 }
+                if (!didAdd && added)
+                {
+                    expectedCount++;
+                }
+                didAdd = didAdd || added;
                 Assert.AreEqual(expectedCount, d.Count);
             }
             Assert.IsNull(a);
-            Assert.AreEqual(2, foundCount);
-            Assert.AreEqual(2, d.Count);
+            if (didAdd)
+            {
+                Assert.AreEqual(3, foundCount);
+            }
+            else
+            {
+                Assert.AreEqual(2, foundCount);
+            }
+            Assert.AreEqual(expectedCount, d.Count);
         }
 
         [Test]
@@ -64,6 +76,7 @@ namespace MonoTests.System.Collections.Concurrent
             Assert.AreEqual(expectedCount[0], d.Count);
             string a = null;
             var foundCount = 0;
+            int didadd = 0;
 
             ThreadStart remover = () =>
             {
@@ -81,15 +94,22 @@ namespace MonoTests.System.Collections.Concurrent
 
             ThreadStart adder = () =>
             {
-                var didAdd = d.TryAdd("c", "d");
-                if (didAdd)
+                var added = d.TryAdd("c", "d");
+                if (added)
                 {
-                    Assert.IsTrue(didAdd);
-                    expectedCount[0]++;
+                    Assert.IsTrue(added);
                 }
                 else
                 {
-                    Assert.IsFalse(didAdd);
+                    Assert.IsFalse(added);
+                }
+                if (Thread.VolatileRead(ref didadd) == 0 && added)
+                {
+                    expectedCount[0]++;
+                }
+                if (added)
+                {
+                    Interlocked.CompareExchange(ref didadd, 1, 0);
                 }
             };
 
@@ -131,8 +151,15 @@ namespace MonoTests.System.Collections.Concurrent
                 Assert.AreEqual(expectedCount[0], d.Count);
             }
             Assert.IsNull(a);
-            Assert.AreEqual(2, foundCount);
-            Assert.AreEqual(2, d.Count);
+            if (didadd == 1)
+            {
+                Assert.AreEqual(3, foundCount);
+            }
+            else
+            {
+                Assert.AreEqual(2, foundCount);
+            }
+            Assert.AreEqual(expectedCount[0], d.Count);
         }
 
 
