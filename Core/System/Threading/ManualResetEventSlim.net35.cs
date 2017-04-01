@@ -110,7 +110,14 @@ namespace System.Threading
                 {
                     handle.Set();
                 }
-                Thread.VolatileWrite(ref _state, 1);
+                if (Interlocked.CompareExchange(ref _state, 1, 0) == 0)
+                {
+                    handle = GetWaitHandle();
+                    if (handle != null)
+                    {
+                        handle.Set();
+                    }
+                }
             }
         }
 
