@@ -354,21 +354,14 @@ namespace System.Threading
                 if (!SpinWait(cancellationToken))
                 {
                     var handle = RetriveWaitHandle();
-                    while
-                    (
-                        WaitHandle.WaitTimeout == WaitHandle.WaitAny
+                    WaitHandle.WaitAny
                         (
                             new[]
                             {
                                 handle,
                                 cancellationToken.WaitHandle
-                            },
-                            10000
-                        )
-                    )
-                    {
-                        Thread.Sleep(1);
-                    }
+                            }
+                        );
                 }
                 cancellationToken.ThrowIfCancellationRequested();
                 GC.KeepAlive(cancellationToken.WaitHandle);
