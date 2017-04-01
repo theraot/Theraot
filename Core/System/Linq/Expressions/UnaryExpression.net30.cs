@@ -437,9 +437,9 @@ namespace System.Linq.Expressions
             throw Error.OperandTypesDoNotMatchParameters(unaryType, method.Name);
         }
 
-        private static UnaryExpression GetUserDefinedCoercionOrThrow(ExpressionType coercionType, Expression expression, Type convertToType)
+        private static UnaryExpression GetUserDefinedConversionOrThrow(ExpressionType coercionType, Expression expression, Type convertToType)
         {
-            var u = GetUserDefinedCoercion(coercionType, expression, convertToType);
+            var u = GetUserDefinedConversion(coercionType, expression, convertToType);
             if (u != null)
             {
                 return u;
@@ -447,9 +447,9 @@ namespace System.Linq.Expressions
             throw Error.CoercionOperatorNotDefined(expression.Type, convertToType);
         }
 
-        private static UnaryExpression GetUserDefinedCoercion(ExpressionType coercionType, Expression expression, Type convertToType)
+        private static UnaryExpression GetUserDefinedConversion(ExpressionType coercionType, Expression expression, Type convertToType)
         {
-            var method = TypeHelper.GetUserDefinedCoercionMethod(expression.Type, convertToType, false);
+            var method = TypeHelper.GetUserDefinedConversionMethod(expression.Type, convertToType, false);
             if (method != null)
             {
                 return new UnaryExpression(coercionType, expression, convertToType, method);
@@ -792,7 +792,7 @@ namespace System.Linq.Expressions
                 {
                     return new UnaryExpression(ExpressionType.Convert, expression, type, null);
                 }
-                return GetUserDefinedCoercionOrThrow(ExpressionType.Convert, expression, type);
+                return GetUserDefinedConversionOrThrow(ExpressionType.Convert, expression, type);
             }
             return GetMethodBasedCoercionOperator(ExpressionType.Convert, expression, type, method);
         }
@@ -836,7 +836,7 @@ namespace System.Linq.Expressions
                 {
                     return new UnaryExpression(ExpressionType.Convert, expression, type, null);
                 }
-                return GetUserDefinedCoercionOrThrow(ExpressionType.ConvertChecked, expression, type);
+                return GetUserDefinedConversionOrThrow(ExpressionType.ConvertChecked, expression, type);
             }
             return GetMethodBasedCoercionOperator(ExpressionType.ConvertChecked, expression, type, method);
         }

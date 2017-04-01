@@ -310,31 +310,39 @@ namespace Theraot.Core
             return TypeCode.Object;
         }
 
-        public static MethodInfo GetUserDefinedCoercionMethod(Type convertFrom, Type convertToType, bool implicitOnly)
+        public static MethodInfo GetUserDefinedConversionMethod(Type source, Type target, bool implicitOnly)
         {
-            // check for implicit coercions first
-            var nnExprType = GetNonNullableType(convertFrom);
-            var nnConvType = GetNonNullableType(convertToType);
-            // try exact match on types
-            var eMethods = nnExprType.GetStaticMethods();
-            var method = FindConversionOperator(eMethods, convertFrom, convertToType, implicitOnly);
-            if (method != null)
+            var nonNullableSource = GetNonNullableType(source);
+            var nonNullableTarget = GetNonNullableType(target);
+            MethodInfo[] sourceStaticMethods = null;
+            MethodInfo[] targetStaticMethods = null;
+            if (nonNullableSource == source)
             {
-                return method;
+                if (nonNullableTarget == target)
+                {
+                    return FindConversionOperator(sourceStaticMethods = nonNullableSource.GetStaticMethods(), source, target, implicitOnly)
+                        ?? FindConversionOperator(targetStaticMethods = nonNullableTarget.GetStaticMethods(), source, target, implicitOnly);
+                }
+                return FindConversionOperator(sourceStaticMethods = nonNullableSource.GetStaticMethods(), source, target, implicitOnly)
+                    ?? FindConversionOperator(targetStaticMethods = nonNullableTarget.GetStaticMethods(), source, target, implicitOnly)
+                    ?? FindConversionOperator(sourceStaticMethods, source, nonNullableTarget, implicitOnly)
+                    ?? FindConversionOperator(targetStaticMethods, source, nonNullableTarget, implicitOnly);
             }
-            var cMethods = nnConvType.GetStaticMethods();
-            method = FindConversionOperator(cMethods, convertFrom, convertToType, implicitOnly);
-            if (method != null)
+            if (nonNullableTarget == target)
             {
-                return method;
+                return FindConversionOperator(sourceStaticMethods = nonNullableSource.GetStaticMethods(), source, target, implicitOnly)
+                    ?? FindConversionOperator(targetStaticMethods = nonNullableTarget.GetStaticMethods(), source, target, implicitOnly)
+                    ?? FindConversionOperator(sourceStaticMethods, nonNullableSource, target, implicitOnly)
+                    ?? FindConversionOperator(targetStaticMethods, nonNullableSource, target, implicitOnly);
             }
-            // try lifted conversion
-            if (nnExprType == convertFrom && nnConvType == convertToType)
-            {
-                return null;
-            }
-            method = FindConversionOperator(eMethods, nnExprType, nnConvType, implicitOnly) ?? FindConversionOperator(cMethods, nnExprType, nnConvType, implicitOnly);
-            return method;
+            return FindConversionOperator(sourceStaticMethods = nonNullableSource.GetStaticMethods(), source, target, implicitOnly)
+                ?? FindConversionOperator(targetStaticMethods = nonNullableTarget.GetStaticMethods(), source, target, implicitOnly)
+                ?? FindConversionOperator(sourceStaticMethods, nonNullableSource, target, implicitOnly)
+                ?? FindConversionOperator(targetStaticMethods, nonNullableSource, target, implicitOnly)
+                ?? FindConversionOperator(sourceStaticMethods, source, nonNullableTarget, implicitOnly)
+                ?? FindConversionOperator(targetStaticMethods, source, nonNullableTarget, implicitOnly)
+                ?? FindConversionOperator(sourceStaticMethods, nonNullableSource, nonNullableTarget, implicitOnly)
+                ?? FindConversionOperator(targetStaticMethods, nonNullableSource, nonNullableTarget, implicitOnly);
         }
 
         public static bool HasBuiltInEqualityOperator(Type left, Type right)
