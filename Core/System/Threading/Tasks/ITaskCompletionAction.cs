@@ -105,7 +105,6 @@ namespace System.Threading.Tasks
 
             public void Invoke(Task completingTask)
             {
-                Debug.Print("Running continuation on task: " + completingTask.Id);
                 var index = Array.IndexOf(_tasks, completingTask);
                 if (index >= 0)
                 {

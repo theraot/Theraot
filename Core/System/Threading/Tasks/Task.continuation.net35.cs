@@ -13,7 +13,6 @@ namespace System.Threading.Tasks
         private const int _continuationsNotInitialized = 0;
         private const int _runningContinuations = 3;
         private const int _takingContinuations = 2;
-        private CircularBucket<string> _continuationOwnerHistory = new CircularBucket<string>(128);
         private List<object> _continuations;
         private Thread _continuationsOwner;
         private int _continuationsStatus;
@@ -764,13 +763,13 @@ namespace System.Threading.Tasks
                 try
                 {
                     var spinWait = new SpinWait();
-                    LockEnter(spinWait, "FinishContinuations");
+                    LockEnter(spinWait);
                     Interlocked.CompareExchange(ref _continuations, null, continuations);
                     Thread.VolatileWrite(ref _continuationsStatus, _runningContinuations);
                 }
                 finally
                 {
-                    LockExit("FinishContinuations");
+                    LockExit();
                 }
 
                 // Skip synchronous execution of continuations if this task's thread was aborted
@@ -855,7 +854,7 @@ namespace System.Threading.Tasks
             }
             finally
             {
-                LockExit("RemoveContinuation");
+                LockExit();
             }
         }
 
@@ -884,7 +883,7 @@ namespace System.Threading.Tasks
             }
             finally
             {
-                LockExit("AddTaskContinuation");
+                LockExit();
             }
         }
 
@@ -1022,7 +1021,7 @@ namespace System.Threading.Tasks
                 {
                     spinWait.SpinOnce();
                 }
-                LockEnter(spinWait, "GetContinuations");
+                LockEnter(spinWait);
                 if (Thread.VolatileRead(ref _continuationsStatus) == _continuationsInitialization)
                 {
                     return continuations;
@@ -1033,41 +1032,26 @@ namespace System.Threading.Tasks
             return null;
         }
 
-        private void LockEnter(SpinWait spinWait, string source)
+        private void LockEnter(SpinWait spinWait)
         {
             while (true)
             {
                 if (Interlocked.CompareExchange(ref _continuations, null, null) == null)
                 {
-                    _continuationOwnerHistory.Add("failet to enter " + Thread.CurrentThread.ManagedThreadId + " on " + source + "." + " task status = " + Status.ToString());
                     return;
                 }
                 var thread = Interlocked.CompareExchange(ref _continuationsOwner, Thread.CurrentThread, null);
                 if (thread == null)
                 {
-                    _continuationOwnerHistory.Add("owned by " + Thread.CurrentThread.ManagedThreadId + " on " + source + "." + " task status = " + Status.ToString());
                     return;
                 }
-                _continuationOwnerHistory.Add("failet attempt to enter by " + Thread.CurrentThread.ManagedThreadId + " on " + source + ". Current Owner = " + thread.ManagedThreadId.ToString() + " task status = " + Status.ToString());
                 spinWait.SpinOnce();
             }
         }
 
-        private void LockExit(string source)
+        private void LockExit()
         {
-            var thread = Interlocked.CompareExchange(ref _continuationsOwner, null, Thread.CurrentThread);
-            if (thread == Thread.CurrentThread)
-            {
-                _continuationOwnerHistory.Add("no longer owned by " + Thread.CurrentThread.ManagedThreadId + " on " + source + " task status = " + Status.ToString());
-            }
-            else if (thread == null)
-            {
-                _continuationOwnerHistory.Add("failed to leave " + Thread.CurrentThread.ManagedThreadId + " on " + source + ". Current Owner = null" + " task status = " + Status.ToString());
-            }
-            else
-            {
-                _continuationOwnerHistory.Add("failed to leave " + Thread.CurrentThread.ManagedThreadId + " on " + source + ". Current Owner = " + thread.ManagedThreadId.ToString() + " task status = " + Status.ToString());
-            }
+            Interlocked.CompareExchange(ref _continuationsOwner, null, Thread.CurrentThread);
         }
 
         private List<object> RetrieveContinuations()
@@ -1113,7 +1097,7 @@ namespace System.Threading.Tasks
 
                 default:
                     // The continuations may have already executed at this point
-                    LockEnter(spinWait, "RetrieveContinuations");
+                    LockEnter(spinWait);
                     if (Thread.VolatileRead(ref _continuationsStatus) == _continuationsInitialization)
                     {
                         return continuations;
