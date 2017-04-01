@@ -762,7 +762,7 @@ namespace System.Threading.Tasks
                     var spinWait = new SpinWait();
                     while (Interlocked.CompareExchange(ref _continuations, null, null) != null && Interlocked.CompareExchange(ref _continuationsOwner, Thread.CurrentThread, null) != null)
                     {
-                        _continuationOwnerHistory.Add("owned by " + Thread.CurrentThread.ManagedThreadId);
+                        _continuationOwnerHistory.Add("owned by " + Thread.CurrentThread.ManagedThreadId + " on FinishContinuations");
                         spinWait.SpinOnce();
                     }
                     Interlocked.CompareExchange(ref _continuations, null, continuations);
@@ -770,8 +770,10 @@ namespace System.Threading.Tasks
                 }
                 finally
                 {
-                    Interlocked.CompareExchange(ref _continuationsOwner, null, Thread.CurrentThread);
-                    _continuationOwnerHistory.Add("no longer owned by " + Thread.CurrentThread.ManagedThreadId);
+                    if (Interlocked.CompareExchange(ref _continuationsOwner, null, Thread.CurrentThread) == Thread.CurrentThread)
+                    {
+                        _continuationOwnerHistory.Add("no longer owned by " + Thread.CurrentThread.ManagedThreadId + " on FinishContinuations");
+                    }
                 }
 
                 // Skip synchronous execution of continuations if this task's thread was aborted
@@ -856,8 +858,10 @@ namespace System.Threading.Tasks
             }
             finally
             {
-                Interlocked.CompareExchange(ref _continuationsOwner, null, Thread.CurrentThread);
-                _continuationOwnerHistory.Add("no longer owned by " + Thread.CurrentThread.ManagedThreadId);
+                if (Interlocked.CompareExchange(ref _continuationsOwner, null, Thread.CurrentThread) == Thread.CurrentThread)
+                {
+                    _continuationOwnerHistory.Add("no longer owned by " + Thread.CurrentThread.ManagedThreadId + " on AddTaskContinuation");
+                }
             }
         }
 
@@ -886,8 +890,10 @@ namespace System.Threading.Tasks
             }
             finally
             {
-                Interlocked.CompareExchange(ref _continuationsOwner, null, Thread.CurrentThread);
-                _continuationOwnerHistory.Add("no longer owned by " + Thread.CurrentThread.ManagedThreadId);
+                if (Interlocked.CompareExchange(ref _continuationsOwner, null, Thread.CurrentThread) == Thread.CurrentThread)
+                {
+                    _continuationOwnerHistory.Add("no longer owned by " + Thread.CurrentThread.ManagedThreadId + " on AddTaskContinuation");
+                }
             }
         }
 
@@ -1027,7 +1033,7 @@ namespace System.Threading.Tasks
                 }
                 while (Interlocked.CompareExchange(ref _continuations, null, null) != null && Interlocked.CompareExchange(ref _continuationsOwner, Thread.CurrentThread, null) != null)
                 {
-                    _continuationOwnerHistory.Add("owned by " + Thread.CurrentThread.ManagedThreadId);
+                    _continuationOwnerHistory.Add("owned by " + Thread.CurrentThread.ManagedThreadId + "on GetContinuations");
                     spinWait.SpinOnce();
                 }
                 if (Thread.VolatileRead(ref _continuationsStatus) == _continuationsInitialization)
@@ -1081,7 +1087,7 @@ namespace System.Threading.Tasks
                     // The continuations may have already executed at this point
                     while (Interlocked.CompareExchange(ref _continuations, null, null) != null && Interlocked.CompareExchange(ref _continuationsOwner, Thread.CurrentThread, null) != null)
                     {
-                        _continuationOwnerHistory.Add("owned by " + Thread.CurrentThread.ManagedThreadId);
+                        _continuationOwnerHistory.Add("owned by " + Thread.CurrentThread.ManagedThreadId + "on RetrieveContinuations");
                         spinWait.SpinOnce();
                     }
                     if (Thread.VolatileRead(ref _continuationsStatus) == _continuationsInitialization)
