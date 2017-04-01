@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
+using Theraot.Collections.ThreadSafe;
 
 namespace System.Threading.Tasks
 {
@@ -15,6 +16,7 @@ namespace System.Threading.Tasks
         private Thread _continuationsOwner;
         private List<object> _continuations;
         private int _continuationsStatus;
+        private CircularBucket<string> _continuationOwnerHistory = new CircularBucket<string>(128);
 
         /// <summary>
         /// Creates a continuation that executes when the target <see cref="Task"/> completes.
@@ -760,6 +762,7 @@ namespace System.Threading.Tasks
                     var spinWait = new SpinWait();
                     while (Interlocked.CompareExchange(ref _continuations, null, null) != null && Interlocked.CompareExchange(ref _continuationsOwner, Thread.CurrentThread, null) != null)
                     {
+                        _continuationOwnerHistory.Add("owned by " + Thread.CurrentThread.ManagedThreadId);
                         spinWait.SpinOnce();
                     }
                     Interlocked.CompareExchange(ref _continuations, null, continuations);
@@ -768,6 +771,7 @@ namespace System.Threading.Tasks
                 finally
                 {
                     Interlocked.CompareExchange(ref _continuationsOwner, null, Thread.CurrentThread);
+                    _continuationOwnerHistory.Add("no longer owned by " + Thread.CurrentThread.ManagedThreadId);
                 }
 
                 // Skip synchronous execution of continuations if this task's thread was aborted
@@ -852,10 +856,8 @@ namespace System.Threading.Tasks
             }
             finally
             {
-                if (continuations != null)
-                {
-                    Interlocked.CompareExchange(ref _continuationsOwner, null, Thread.CurrentThread);
-                }
+                Interlocked.CompareExchange(ref _continuationsOwner, null, Thread.CurrentThread);
+                _continuationOwnerHistory.Add("no longer owned by " + Thread.CurrentThread.ManagedThreadId);
             }
         }
 
@@ -884,10 +886,8 @@ namespace System.Threading.Tasks
             }
             finally
             {
-                if (continuations != null)
-                {
-                    Interlocked.CompareExchange(ref _continuationsOwner, null, Thread.CurrentThread);
-                }
+                Interlocked.CompareExchange(ref _continuationsOwner, null, Thread.CurrentThread);
+                _continuationOwnerHistory.Add("no longer owned by " + Thread.CurrentThread.ManagedThreadId);
             }
         }
 
@@ -1027,6 +1027,7 @@ namespace System.Threading.Tasks
                 }
                 while (Interlocked.CompareExchange(ref _continuations, null, null) != null && Interlocked.CompareExchange(ref _continuationsOwner, Thread.CurrentThread, null) != null)
                 {
+                    _continuationOwnerHistory.Add("owned by " + Thread.CurrentThread.ManagedThreadId);
                     spinWait.SpinOnce();
                 }
                 if (Thread.VolatileRead(ref _continuationsStatus) == _continuationsInitialization)
@@ -1080,6 +1081,7 @@ namespace System.Threading.Tasks
                     // The continuations may have already executed at this point
                     while (Interlocked.CompareExchange(ref _continuations, null, null) != null && Interlocked.CompareExchange(ref _continuationsOwner, Thread.CurrentThread, null) != null)
                     {
+                        _continuationOwnerHistory.Add("owned by " + Thread.CurrentThread.ManagedThreadId);
                         spinWait.SpinOnce();
                     }
                     if (Thread.VolatileRead(ref _continuationsStatus) == _continuationsInitialization)

@@ -1,6 +1,7 @@
 #if NET20 || NET30 || NET35
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Runtime.ExceptionServices;
 using Theraot;
@@ -56,15 +57,15 @@ namespace System.Threading.Tasks
             private int _count;
             private Action _done;
             private int _ready;
-            private ICollection<Task> _tasks;
+            private Task[] _tasks;
 
             internal WhenAllCore(ICollection<Task> tasks, Action done)
             {
                 Contract.Requires(tasks != null, "Expected non-null collection of tasks");
                 Contract.Requires(tasks.Count > 0, "Expected a non-zero length task array");
                 _done = done;
-                _tasks = tasks;
-                foreach (var task in _tasks)
+                _tasks = new Task[tasks.Count];
+                foreach (var task in tasks)
                 {
                     AddTask(task);
                 }
@@ -104,14 +105,19 @@ namespace System.Threading.Tasks
 
             public void Invoke(Task completingTask)
             {
-                GC.KeepAlive(completingTask);
-                var count = Interlocked.Decrement(ref _count);
-                if (count == 0)
+                var index = Array.IndexOf(_tasks, completingTask);
+                if (index >= 0)
                 {
-                    if (Thread.VolatileRead(ref _ready) == 1)
+                    _tasks[index] = null;
+                    var count = Interlocked.Decrement(ref _count);
+                    if (count == 0 && Thread.VolatileRead(ref _ready) == 1)
                     {
                         Done();
                     }
+                }
+                else
+                {
+                    Debug.Print("removing task that wasn't added");
                 }
             }
 
@@ -121,7 +127,15 @@ namespace System.Threading.Tasks
                 if (awaitedTask.Status != TaskStatus.RanToCompletion)
                 {
                     Interlocked.Increment(ref _count);
-                    if (!awaitedTask.AddTaskContinuation(this, /*addBeforeOthers:*/ true))
+                    if (awaitedTask.AddTaskContinuation(this, /*addBeforeOthers:*/ true))
+                    {
+                        var index = Array.IndexOf(_tasks, null);
+                        while (Interlocked.CompareExchange(ref _tasks[index], awaitedTask, null) != null)
+                        {
+                            index = (index + 1) % _tasks.Length;
+                        }
+                    }
+                    else
                     {
                         Interlocked.Decrement(ref _count);
                     }
