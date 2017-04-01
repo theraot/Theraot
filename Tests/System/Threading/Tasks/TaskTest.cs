@@ -318,7 +318,7 @@ namespace MonoTests.System.Threading.Tasks
                 Task.WaitAll(tasks);
                 Assert.AreEqual(max, achieved, "#1");
             };
-            ParallelTestHelper.Repeat(action, 200);
+            ParallelTestHelper.Repeat(action, 100000);
         }
 
         [Test]
