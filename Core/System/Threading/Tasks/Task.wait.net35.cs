@@ -426,7 +426,14 @@ namespace System.Threading.Tasks
             {
                 mres = new ManualResetEventSlim(false);
                 core = new WhenAllCore(tasks, mres.Set);
-                waitCompleted = mres.Wait(millisecondsTimeout, cancellationToken);
+                if (core.IsDone)
+                {
+                    waitCompleted = true;
+                }
+                else
+                {
+                    waitCompleted = mres.Wait(millisecondsTimeout, cancellationToken);
+                }
             }
             finally
             {

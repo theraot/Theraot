@@ -102,8 +102,9 @@ namespace System.Threading.Tasks
                 }
             }
 
-            public void Invoke(Task ignored)
+            public void Invoke(Task completingTask)
             {
+                GC.KeepAlive(completingTask);
                 var count = Interlocked.Decrement(ref _count);
                 if (count == 0)
                 {
@@ -117,10 +118,13 @@ namespace System.Threading.Tasks
             private void AddTask(Task awaitedTask)
             {
                 Contract.Requires(Thread.VolatileRead(ref _ready) == 0);
-                Interlocked.Increment(ref _count);
-                if (!awaitedTask.AddTaskContinuation(this, /*addBeforeOthers:*/ true))
+                if (awaitedTask.Status != TaskStatus.RanToCompletion)
                 {
-                    Interlocked.Decrement(ref _count);
+                    Interlocked.Increment(ref _count);
+                    if (!awaitedTask.AddTaskContinuation(this, /*addBeforeOthers:*/ true))
+                    {
+                        Interlocked.Decrement(ref _count);
+                    }
                 }
             }
 

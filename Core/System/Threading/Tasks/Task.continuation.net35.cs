@@ -3,12 +3,16 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
-using Theraot.Threading;
 
 namespace System.Threading.Tasks
 {
     public partial class Task
     {
+        private const int _continuationsInitialization = 1;
+        private const int _continuationsNotInitialized = 0;
+        private const int _runningContinuations = 3;
+        private const int _takingContinuations = 2;
+        private Thread _continuationsOwner;
         private List<object> _continuations;
         private int _continuationsStatus;
 
@@ -733,7 +737,8 @@ namespace System.Threading.Tasks
                 var continuationQueued = AddTaskContinuation(continuation, /*addBeforeOthers:*/ false);
 
                 // If the continuation was not queued (because the task completed), then run it now.
-                if (!continuationQueued) continuation.Run(this, true);
+                if (!continuationQueued)
+                    continuation.Run(this, true);
             }
         }
 
@@ -742,18 +747,27 @@ namespace System.Threading.Tasks
         /// </summary>
         internal void FinishContinuations()
         {
-            if (Interlocked.CompareExchange(ref _continuationsStatus, 2, 1) == 1)
+            if (Interlocked.CompareExchange(ref _continuationsStatus, _takingContinuations, _continuationsInitialization) == _continuationsInitialization)
             {
-                var continuations = _continuations;
+                var continuations = Interlocked.CompareExchange(ref _continuations, null, null);
                 if (continuations == null)
                 {
                     return;
                 }
                 // Wait for any concurrent adds or removes to be retired
-                lock (continuations)
+                try
                 {
-                    _continuations = null;
-                    Thread.VolatileWrite(ref _continuationsStatus, 3);
+                    var spinWait = new SpinWait();
+                    while (Interlocked.CompareExchange(ref _continuations, null, null) != null && Interlocked.CompareExchange(ref _continuationsOwner, Thread.CurrentThread, null) != null)
+                    {
+                        spinWait.SpinOnce();
+                    }
+                    Interlocked.CompareExchange(ref _continuations, null, continuations);
+                    Thread.VolatileWrite(ref _continuationsStatus, _runningContinuations);
+                }
+                finally
+                {
+                    Interlocked.CompareExchange(ref _continuationsOwner, null, Thread.CurrentThread);
                 }
 
                 // Skip synchronous execution of continuations if this task's thread was aborted
@@ -788,7 +802,8 @@ namespace System.Threading.Tasks
                 for (var index = 0; index < continuationCount; index++)
                 {
                     var currentContinuation = continuations[index];
-                    if (currentContinuation == null) continue;
+                    if (currentContinuation == null)
+                        continue;
                     continuations[index] = null; // to enable free'ing up memory earlier
                     // If the continuation is an Action delegate, it came from an await continuation,
                     // and we should use AwaitTaskContinuation to run it.
@@ -839,7 +854,7 @@ namespace System.Threading.Tasks
             {
                 if (continuations != null)
                 {
-                    Monitor.Exit(continuations);
+                    Interlocked.CompareExchange(ref _continuationsOwner, null, Thread.CurrentThread);
                 }
             }
         }
@@ -871,75 +886,8 @@ namespace System.Threading.Tasks
             {
                 if (continuations != null)
                 {
-                    Monitor.Exit(continuations);
+                    Interlocked.CompareExchange(ref _continuationsOwner, null, Thread.CurrentThread);
                 }
-            }
-        }
-
-        private List<object> GetContinuations()
-        {
-            if (IsCompleted)
-            {
-                return null;
-            }
-            if (Thread.VolatileRead(ref _continuationsStatus) == 1)
-            {
-                // Initializing or initilized
-                var spinWait = new SpinWait();
-                List<object> continuations;
-                while ((continuations = Interlocked.CompareExchange(ref _continuations, null, null)) == null)
-                {
-                    spinWait.SpinOnce();
-                }
-                Monitor.Enter(continuations);
-                return continuations;
-            }
-            return null;
-        }
-
-        private List<object> RetrieveContinuations()
-        {
-            if (IsCompleted)
-            {
-                return null;
-            }
-            var found = Thread.VolatileRead(ref _continuationsStatus);
-            List<object> continuations = null;
-            switch (found)
-            {
-                case 0:
-                    // Not initialized
-                    if (Interlocked.CompareExchange(ref _continuationsStatus, 1, 0) == 0)
-                    {
-                        continuations = new List<object>();
-                        Interlocked.Exchange(ref _continuations, continuations);
-                        goto default;
-                    }
-                    goto case 1;
-                case 1:
-                    // Initializing or initilized
-                    var spinWait = new SpinWait();
-                    while ((continuations = Interlocked.CompareExchange(ref _continuations, null, null)) == null)
-                    {
-                        spinWait.SpinOnce();
-                    }
-                    goto default;
-                case 2:
-                    // Being taken for execution
-                    return null;
-                case 3:
-                    // Already taken for execution
-                    return null;
-                default:
-                    // The continuations may have already executed at this point
-                    Monitor.Enter(continuations);
-                    if (Thread.VolatileRead(ref _continuationsStatus) == 1)
-                    {
-                        return continuations;
-                    }
-                    // It is being taken or has already been taken for execution
-                    Interlocked.CompareExchange(ref _continuations, null, continuations);
-                    return null;
             }
         }
 
@@ -1060,6 +1008,87 @@ namespace System.Threading.Tasks
             // actually invoke the continuation before returning.
             ContinueWithCore(continuationTask, scheduler, cancellationToken, continuationOptions);
             return continuationTask;
+        }
+
+        private List<object> GetContinuations()
+        {
+            if (IsCompleted)
+            {
+                return null;
+            }
+            if (Thread.VolatileRead(ref _continuationsStatus) == _continuationsInitialization)
+            {
+                // Initializing or initilized
+                var spinWait = new SpinWait();
+                List<object> continuations;
+                while ((continuations = Interlocked.CompareExchange(ref _continuations, null, null)) == null)
+                {
+                    spinWait.SpinOnce();
+                }
+                while (Interlocked.CompareExchange(ref _continuations, null, null) != null && Interlocked.CompareExchange(ref _continuationsOwner, Thread.CurrentThread, null) != null)
+                {
+                    spinWait.SpinOnce();
+                }
+                if (Thread.VolatileRead(ref _continuationsStatus) == _continuationsInitialization)
+                {
+                    return continuations;
+                }
+                // It is being taken or has already been taken for execution
+                return null;
+            }
+            return null;
+        }
+
+        private List<object> RetrieveContinuations()
+        {
+            if (IsCompleted)
+            {
+                return null;
+            }
+            List<object> continuations = null;
+            var found = Thread.VolatileRead(ref _continuationsStatus);
+            var spinWait = new SpinWait();
+            switch (found)
+            {
+                case _continuationsNotInitialized:
+                    // Not initialized
+                    if (Interlocked.CompareExchange(ref _continuationsStatus, _continuationsInitialization, _continuationsNotInitialized) == _continuationsNotInitialized)
+                    {
+                        var created = new List<object>();
+                        continuations = Interlocked.CompareExchange(ref _continuations, created, null);
+                        if (continuations == null)
+                        {
+                            continuations = created;
+                        }
+                        goto default;
+                    }
+                    goto case _continuationsInitialization;
+                case _continuationsInitialization:
+                    // Initializing or initilized
+                    while ((continuations = Interlocked.CompareExchange(ref _continuations, null, null)) == null)
+                    {
+                        spinWait.SpinOnce();
+                    }
+                    goto default;
+                case _takingContinuations:
+                case _runningContinuations:
+                    // Being taken for execution, or
+                    // Already taken for execution
+                    return null;
+
+                default:
+                    // The continuations may have already executed at this point
+                    while (Interlocked.CompareExchange(ref _continuations, null, null) != null && Interlocked.CompareExchange(ref _continuationsOwner, Thread.CurrentThread, null) != null)
+                    {
+                        spinWait.SpinOnce();
+                    }
+                    if (Thread.VolatileRead(ref _continuationsStatus) == _continuationsInitialization)
+                    {
+                        return continuations;
+                    }
+                    // It is being taken or has already been taken for execution
+                    return null;
+            }
         }
     }
 
