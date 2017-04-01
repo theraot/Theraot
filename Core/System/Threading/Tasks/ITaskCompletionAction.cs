@@ -105,19 +105,16 @@ namespace System.Threading.Tasks
 
             public void Invoke(Task completingTask)
             {
+                Debug.Print("Running continuation on task: " + completingTask.Id);
                 var index = Array.IndexOf(_tasks, completingTask);
                 if (index >= 0)
                 {
                     _tasks[index] = null;
-                    var count = Interlocked.Decrement(ref _count);
-                    if (count == 0 && Thread.VolatileRead(ref _ready) == 1)
-                    {
-                        Done();
-                    }
                 }
-                else
+                var count = Interlocked.Decrement(ref _count);
+                if (count == 0 && Thread.VolatileRead(ref _ready) == 1)
                 {
-                    Debug.Print("removing task that wasn't added");
+                    Done();
                 }
             }
 
