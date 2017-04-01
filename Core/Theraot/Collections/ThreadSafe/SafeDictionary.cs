@@ -1352,7 +1352,6 @@ namespace Theraot.Collections.ThreadSafe
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 KeyValuePair<TKey, TValue> found;
-                Debug.Print(": " + (hashCode + attempts).ToString());
                 if (_bucket.TryGet(hashCode + attempts, out found))
                 {
                     if (GetHashCode(found.Key) == hashCode && keyCheck(found.Key))
