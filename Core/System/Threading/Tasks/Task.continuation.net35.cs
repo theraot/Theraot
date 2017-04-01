@@ -749,6 +749,10 @@ namespace System.Threading.Tasks
         /// </summary>
         internal void FinishContinuations()
         {
+            if (Interlocked.CompareExchange(ref _continuationsStatus, _takingContinuations, _continuationsNotInitialized) == _continuationsNotInitialized)
+            {
+                return;
+            }
             if (Interlocked.CompareExchange(ref _continuationsStatus, _takingContinuations, _continuationsInitialization) == _continuationsInitialization)
             {
                 var continuations = Interlocked.CompareExchange(ref _continuations, null, null);
@@ -839,7 +843,7 @@ namespace System.Threading.Tasks
             try
             {
                 continuations = GetContinuations();
-                if (continuations == null)
+                if (continuations == null || Status == TaskStatus.RanToCompletion)
                 {
                     return;
                 }
@@ -864,7 +868,7 @@ namespace System.Threading.Tasks
             try
             {
                 continuations = RetrieveContinuations();
-                if (continuations == null)
+                if (continuations == null || Status == TaskStatus.RanToCompletion)
                 {
                     return false;
                 }
@@ -1092,9 +1096,13 @@ namespace System.Threading.Tasks
                     goto case _continuationsInitialization;
                 case _continuationsInitialization:
                     // Initializing or initilized
-                    while ((continuations = Interlocked.CompareExchange(ref _continuations, null, null)) == null)
+                    while (Thread.VolatileRead(ref _continuationsStatus) == _continuationsInitialization && (continuations = Interlocked.CompareExchange(ref _continuations, null, null)) == null)
                     {
                         spinWait.SpinOnce();
+                    }
+                    if (Thread.VolatileRead(ref _continuationsStatus) == _takingContinuations)
+                    {
+                        return null;
                     }
                     goto default;
                 case _takingContinuations:
