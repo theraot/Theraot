@@ -308,12 +308,17 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WaitAllTest()
         {
-            ParallelTestHelper.Repeat(delegate {
+            Action action = delegate
+            {
                 int achieved = 0;
-                InitWithDelegate(delegate { Interlocked.Increment(ref achieved); });
+                InitWithDelegate(delegate
+                {
+                    Interlocked.Increment(ref achieved);
+                });
                 Task.WaitAll(tasks);
                 Assert.AreEqual(max, achieved, "#1");
-            });
+            };
+            ParallelTestHelper.Repeat(action, 200);
         }
 
         [Test]
