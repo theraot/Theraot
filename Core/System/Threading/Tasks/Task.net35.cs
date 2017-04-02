@@ -1,7 +1,6 @@
 #if NET20 || NET30 || NET35
 
 using System.Diagnostics.Contracts;
-using Microsoft.Win32;
 using Theraot.Core;
 using Theraot.Threading;
 using Theraot.Threading.Needles;
@@ -11,9 +10,9 @@ namespace System.Threading.Tasks
     public partial class Task : IDisposable, IAsyncResult, IThreadPoolWorkItem
     {
         [ThreadStatic]
-        internal static Task Current;
+        internal static Task InternalCurrent;
 
-        internal TaskScheduler Scheduler;
+        internal TaskScheduler ExecutingTaskScheduler;
         protected readonly object State;
         protected object Action;
         private static int _lastId;
@@ -106,7 +105,7 @@ namespace System.Threading.Tasks
             }
             Action = action;
             State = state;
-            Scheduler = scheduler;
+            ExecutingTaskScheduler = scheduler;
             _waitHandle = new ManualResetEventSlim(false);
             if ((creationOptions &
                     ~(TaskCreationOptions.AttachedToParent |
@@ -149,7 +148,7 @@ namespace System.Threading.Tasks
         {
             get
             {
-                var current = Current;
+                var current = InternalCurrent;
                 if (current != null)
                 {
                     return current.Id;
@@ -323,7 +322,7 @@ namespace System.Threading.Tasks
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
-            PrivateRunSynchronously(Scheduler);
+            PrivateRunSynchronously(ExecutingTaskScheduler);
         }
 
         public void RunSynchronously(TaskScheduler scheduler)
@@ -357,7 +356,7 @@ namespace System.Threading.Tasks
             {
                 throw new ObjectDisposedException(GetType().FullName);
             }
-            if (!InternalStart(Scheduler, false, true))
+            if (!InternalStart(ExecutingTaskScheduler, false, true))
             {
                 throw new InvalidOperationException("Start may not be called on a task that was already started.");
             }
@@ -431,7 +430,7 @@ namespace System.Threading.Tasks
                 {
                     case TaskStatus.WaitingForActivation:
                         WaitAntecedent(cancellationToken, milliseconds, start);
-                        Scheduler.InernalTryExecuteTaskInline(this, true);
+                        ExecutingTaskScheduler.InernalTryExecuteTaskInline(this, true);
                         break;
 
                     case TaskStatus.Created:
@@ -484,7 +483,7 @@ namespace System.Threading.Tasks
 
         internal static Task InternalCurrentIfAttached(TaskCreationOptions creationOptions)
         {
-            return (creationOptions & TaskCreationOptions.AttachedToParent) != 0 ? Current : null;
+            return (creationOptions & TaskCreationOptions.AttachedToParent) != 0 ? InternalCurrent : null;
         }
 
         internal bool ExecuteEntry(bool preventDoubleExecution)
@@ -527,7 +526,7 @@ namespace System.Threading.Tasks
             if (status <= (int)TaskStatus.WaitingToRun)
             {
                 // Note: status may advance to TaskStatus.Running or even TaskStatus.RanToCompletion during the execution of this method
-                var scheduler = Scheduler;
+                var scheduler = ExecutingTaskScheduler;
                 var requiresAtomicStartTransition = scheduler.RequiresAtomicStartTransition;
                 var popSucceeded = scheduler.InernalTryDequeue(this, ref requiresAtomicStartTransition);
                 if (!popSucceeded && requiresAtomicStartTransition)
@@ -560,7 +559,7 @@ namespace System.Threading.Tasks
 
         internal bool InternalStart(TaskScheduler scheduler, bool inline, bool throwSchedulerExceptions)
         {
-            Scheduler = scheduler;
+            ExecutingTaskScheduler = scheduler;
             var result = Interlocked.CompareExchange(ref _status, (int)TaskStatus.WaitingForActivation, (int)TaskStatus.Created);
             if (result != (int)TaskStatus.Created && result != (int)TaskStatus.WaitingForActivation)
             {
@@ -711,7 +710,7 @@ namespace System.Threading.Tasks
                 {
                     case TaskStatus.WaitingToRun:
                         WaitAntecedent(CancellationToken);
-                        Scheduler.InernalTryExecuteTaskInline(this, true);
+                        ExecutingTaskScheduler.InernalTryExecuteTaskInline(this, true);
                         break;
 
                     case TaskStatus.Created:
@@ -742,7 +741,7 @@ namespace System.Threading.Tasks
 #if DEBUG
             if (!IsCompleted)
             {
-                System.Diagnostics.Debugger.Break();
+                Diagnostics.Debugger.Break();
             }
 #endif
         }

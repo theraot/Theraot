@@ -56,7 +56,7 @@ namespace System.Threading.Tasks
             // running arbitrary amounts of work in suspected "bad locations", like UI threads.
             if (canInlineContinuationTask && IsValidLocationForInlining)
             {
-                RunCallback(GetInvokeActionCallback(), Action, ref Task.Current); // any exceptions from Action will be handled by s_callbackRunAction
+                RunCallback(GetInvokeActionCallback(), Action, ref Task.InternalCurrent); // any exceptions from Action will be handled by s_callbackRunAction
             }
             else
             {
@@ -166,7 +166,7 @@ namespace System.Threading.Tasks
         protected void RunCallback(ContextCallback callback, object state, ref Task currentTask)
         {
             Contract.Requires(callback != null);
-            Contract.Assert(currentTask == Task.Current);
+            Contract.Assert(currentTask == Task.InternalCurrent);
 
             // Pretend there's no current task, so that no task is seen as a parent
             // and TaskScheduler.Current does not reflect false information
@@ -224,7 +224,7 @@ namespace System.Threading.Tasks
         [SecurityCritical]
         internal static void RunOrScheduleAction(Action action, bool allowInlining, ref Task currentTask)
         {
-            Contract.Assert(currentTask == Task.Current);
+            Contract.Assert(currentTask == Task.InternalCurrent);
 
             // If we're not allowed to run here, schedule the action
             if (!allowInlining || !IsValidLocationForInlining)

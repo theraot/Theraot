@@ -16,7 +16,7 @@ namespace System.Threading.Tasks
             var result = new Task(action, cancellationToken, TaskCreationOptions.DenyChildAttach);
             if (!cancellationToken.IsCancellationRequested)
             {
-                result.Start(result.Scheduler, false);
+                result.Start(result.ExecutingTaskScheduler, false);
             }
             return result;
         }
@@ -32,7 +32,7 @@ namespace System.Threading.Tasks
                     () =>
                     {
                         var task = action();
-                        task.Start(task.Scheduler, false);
+                        task.Start(task.ExecutingTaskScheduler, false);
                         task.Wait();
                         if (task.IsFaulted)
                         {
@@ -61,7 +61,7 @@ namespace System.Threading.Tasks
                     () =>
                     {
                         var task = action();
-                        task.Start(task.Scheduler, false);
+                        task.Start(task.ExecutingTaskScheduler, false);
                         task.Wait(cancellationToken);
                         if (task.IsFaulted)
                         {
@@ -77,7 +77,7 @@ namespace System.Threading.Tasks
                 );
             if (!cancellationToken.IsCancellationRequested)
             {
-                result.Start(result.Scheduler, false);
+                result.Start(result.ExecutingTaskScheduler, false);
             }
             return result;
         }
@@ -94,7 +94,7 @@ namespace System.Threading.Tasks
             var result = new Task<TResult>(function, cancellationToken, TaskCreationOptions.DenyChildAttach);
             if (!cancellationToken.IsCancellationRequested)
             {
-                result.Start(result.Scheduler, false);
+                result.Start(result.ExecutingTaskScheduler, false);
             }
             return result;
         }
@@ -119,7 +119,7 @@ namespace System.Threading.Tasks
             var result = new Task<TResult>(() => function().Result, cancellationToken, TaskCreationOptions.DenyChildAttach);
             if (!cancellationToken.IsCancellationRequested)
             {
-                result.Start(result.Scheduler, false);
+                result.Start(result.ExecutingTaskScheduler, false);
             }
             return result;
         }

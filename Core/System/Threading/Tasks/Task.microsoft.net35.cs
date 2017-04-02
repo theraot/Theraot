@@ -155,7 +155,7 @@ namespace System.Threading.Tasks
         // We need to subtract that child from m_completionCountdown, or the parent will never complete.
         internal void DisregardChild()
         {
-            Contract.Assert(Current == this, "Task.DisregardChild(): Called from an external context");
+            Contract.Assert(InternalCurrent == this, "Task.DisregardChild(): Called from an external context");
             Contract.Assert(Thread.VolatileRead(ref _completionCountdown) >= 2, "Task.DisregardChild(): Expected parent count to be >= 2");
             Interlocked.Decrement(ref _completionCountdown);
         }
@@ -373,7 +373,7 @@ namespace System.Threading.Tasks
         /// </summary>
         internal void UpdateExceptionObservedStatus()
         {
-            if ((_parent != null) && ((_creationOptions & TaskCreationOptions.AttachedToParent) != 0) && ((_parent._creationOptions & TaskCreationOptions.DenyChildAttach) == 0) && Current == _parent)
+            if ((_parent != null) && ((_creationOptions & TaskCreationOptions.AttachedToParent) != 0) && ((_parent._creationOptions & TaskCreationOptions.DenyChildAttach) == 0) && InternalCurrent == _parent)
             {
                 Thread.VolatileWrite(ref _exceptionObservedByParent, 1);
             }
@@ -421,7 +421,7 @@ namespace System.Threading.Tasks
         /// </summary>
         private void AddNewChild()
         {
-            Contract.Assert(Current == this || IsSelfReplicatingRoot, "Task.AddNewChild(): Called from an external context");
+            Contract.Assert(InternalCurrent == this || IsSelfReplicatingRoot, "Task.AddNewChild(): Called from an external context");
 
             if (_completionCountdown == 1 && !IsSelfReplicatingRoot)
             {
@@ -522,11 +522,11 @@ namespace System.Threading.Tasks
         private void ExecuteWithThreadLocal()
         {
             // Remember the current task so we can restore it after running, and then
-            var previousTask = Current;
+            var previousTask = InternalCurrent;
             try
             {
                 // place the current task into TLS.
-                Current = this;
+                InternalCurrent = this;
                 var executionContext = CapturedContext;
                 if (executionContext == null)
                 {
@@ -545,7 +545,7 @@ namespace System.Threading.Tasks
             }
             finally
             {
-                Current = previousTask;
+                InternalCurrent = previousTask;
             }
         }
 

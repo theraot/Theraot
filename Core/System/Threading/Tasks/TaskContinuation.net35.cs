@@ -11,13 +11,13 @@ namespace System.Threading.Tasks
         protected static void InlineIfPossibleOrElseQueue(Task task)
         {
             Contract.Requires(task != null);
-            var scheduler = task.Scheduler;
+            var scheduler = task.ExecutingTaskScheduler;
             if (scheduler == null)
             {
                 Contract.Assert(false);
                 throw new InvalidOperationException();
             }
-            task.Start(task.Scheduler, true, false);
+            task.Start(task.ExecutingTaskScheduler, true, false);
         }
     }
 }

@@ -53,7 +53,7 @@ namespace System.Threading.Tasks
             var continuationTask = Task;
             if (isRightKind)
             {
-                continuationTask.Scheduler = _scheduler;
+                continuationTask.ExecutingTaskScheduler = _scheduler;
                 // Either run directly or just queue it up for execution, depending
                 // on whether synchronous or asynchronous execution is wanted.
                 if (canInlineContinuationTask && (options & TaskContinuationOptions.ExecuteSynchronously) != 0)
@@ -65,7 +65,7 @@ namespace System.Threading.Tasks
                 {
                     try
                     {
-                        continuationTask.TryStart(continuationTask.Scheduler, false);
+                        continuationTask.TryStart(continuationTask.ExecutingTaskScheduler, false);
                     }
                     catch (TaskSchedulerException exception)
                     {

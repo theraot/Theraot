@@ -34,12 +34,12 @@ namespace System.Threading.Tasks
             // If we're allowed to inline, run the action on this thread.
             if (canInlineContinuationTask && _syncContext == SynchronizationContext.Current)
             {
-                RunCallback(GetInvokeActionCallback(), Action, ref Task.Current);
+                RunCallback(GetInvokeActionCallback(), Action, ref Task.InternalCurrent);
             }
             else
             {
                 // Otherwise, Post the action back to the SynchronizationContext.
-                RunCallback(GetPostActionCallback(), this, ref Task.Current);
+                RunCallback(GetPostActionCallback(), this, ref Task.InternalCurrent);
             }
             // Any exceptions will be handled by RunCallback.
         }

@@ -4,7 +4,6 @@ using System;
 
 namespace Theraot.Core
 {
-    [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerStepThrough]
     public static partial class NumericHelper
     {
@@ -39,7 +38,7 @@ namespace Theraot.Core
         {
             if (number < 0)
             {
-                throw new ArgumentOutOfRangeException("number" ,"The logarithm of a negative number is imaginary.");
+                throw new ArgumentOutOfRangeException("number", "The logarithm of a negative number is imaginary.");
             }
             return Log2(unchecked((ulong)number));
         }
@@ -162,6 +161,173 @@ namespace Theraot.Core
                 }
                 _x = x;
             }
+        }
+
+        public static void Swap<T>(ref T a, ref T b)
+        {
+            var tmp = a;
+            a = b;
+            b = tmp;
+        }
+
+        internal static uint GCD(uint u1, uint u2)
+        {
+            const int cvMax = 32;
+            if (u1 < u2)
+            {
+                goto LOther;
+            }
+            LTop:
+            if (u2 == 0)
+            {
+                return u1;
+            }
+            for (int cv = cvMax; ;)
+            {
+                u1 -= u2;
+                if (u1 < u2)
+                {
+                    break;
+                }
+
+                if (--cv == 0)
+                {
+                    u1 %= u2;
+                    break;
+                }
+            }
+            LOther:
+            if (u1 == 0)
+            {
+                return u2;
+            }
+            for (int cv = cvMax; ;)
+            {
+                u2 -= u1;
+                if (u2 < u1)
+                {
+                    break;
+                }
+
+                if (--cv == 0)
+                {
+                    u2 %= u1;
+                    break;
+                }
+            }
+            goto LTop;
+        }
+
+        internal static ulong GCD(ulong uu1, ulong uu2)
+        {
+            const int cvMax = 32;
+            if (uu1 < uu2)
+            {
+                goto LOther;
+            }
+            LTop:
+            if (uu1 <= uint.MaxValue)
+            {
+                goto LSmall;
+            }
+            if (uu2 == 0)
+            {
+                return uu1;
+            }
+            for (int cv = cvMax; ;)
+            {
+                uu1 -= uu2;
+                if (uu1 < uu2)
+                {
+                    break;
+                }
+
+                if (--cv == 0)
+                {
+                    uu1 %= uu2;
+                    break;
+                }
+            }
+            LOther:
+            if (uu2 <= uint.MaxValue)
+            {
+                goto LSmall;
+            }
+            if (uu1 == 0)
+            {
+                return uu2;
+            }
+            for (int cv = cvMax; ;)
+            {
+                uu2 -= uu1;
+                if (uu2 < uu1)
+                {
+                    break;
+                }
+
+                if (--cv == 0)
+                {
+                    uu2 %= uu1;
+                    break;
+                }
+            }
+            goto LTop;
+            LSmall:
+            var u1 = (uint)uu1;
+            var u2 = (uint)uu2;
+            if (u1 < u2)
+            {
+                goto LOtherSmall;
+            }
+            LTopSmall:
+            if (u2 == 0)
+            {
+                return u1;
+            }
+            for (int cv = cvMax; ;)
+            {
+                u1 -= u2;
+                if (u1 < u2)
+                {
+                    break;
+                }
+
+                if (--cv == 0)
+                {
+                    u1 %= u2;
+                    break;
+                }
+            }
+            LOtherSmall:
+            if (u1 == 0)
+            {
+                return u2;
+            }
+            for (int cv = cvMax; ;)
+            {
+                u2 -= u1;
+                if (u2 < u1)
+                {
+                    break;
+                }
+
+                if (--cv == 0)
+                {
+                    u2 %= u1;
+                    break;
+                }
+            }
+            goto LTopSmall;
+        }
+
+        internal static uint GetHi(ulong uu)
+        {
+            return (uint)(uu >> 32);
+        }
+
+        internal static uint GetLo(ulong uu)
+        {
+            return (uint)uu;
         }
     }
 }
