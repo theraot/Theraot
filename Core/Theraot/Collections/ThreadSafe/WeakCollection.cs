@@ -41,11 +41,7 @@ namespace Theraot.Collections.ThreadSafe
         public WeakCollection(IEqualityComparer<T> comparer, bool autoRemoveDeadItems)
         {
             _maxIndex = -1;
-#if FAT
-            _comparer = comparer ?? EqualityComparerHelper<T>.Default;
-#else
             _comparer = comparer ?? EqualityComparer<T>.Default;
-#endif
             _wrapped = new SafeDictionary<int, TNeedle>();
             if (autoRemoveDeadItems)
             {
@@ -73,7 +69,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             _maxIndex = -1;
 #if FAT
-            _comparer = comparer ?? EqualityComparerHelper<T>.Default;
+            _comparer = comparer ?? EqualityComparer<T>.Default;
 #else
             _comparer = comparer ?? EqualityComparer<T>.Default;
 #endif
