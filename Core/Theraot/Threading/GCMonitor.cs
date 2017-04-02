@@ -65,6 +65,7 @@ namespace Theraot.Threading
         {
             get
             {
+                // If you need to get rid of this, just set this property to return false
                 return AppDomain.CurrentDomain.IsFinalizingForUnload();
             }
         }

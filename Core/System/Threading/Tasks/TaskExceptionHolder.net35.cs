@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.ExceptionServices;
+using Theraot.Threading;
 
 namespace System.Threading.Tasks
 {
@@ -84,7 +85,7 @@ namespace System.Threading.Tasks
             // regardles of reachability of the task (i.e. even if the user code was about to observe the task's exception),
             // which can otherwise lead to spurious crashes during shutdown.
             if (m_faultExceptions != null && !m_isHandled &&
-                !Environment.HasShutdownStarted && !AppDomain.CurrentDomain.IsFinalizingForUnload() && !s_domainUnloadStarted)
+                !Environment.HasShutdownStarted && !GCMonitor.FinalizingForUnload && !s_domainUnloadStarted)
             {
                 // We don't want to crash the finalizer thread if any ThreadAbortExceptions 
                 // occur in the list or in any nested AggregateExceptions.  
