@@ -94,7 +94,7 @@ namespace Theraot.Threading.Needles
             var cacheNeedle = needle as ICacheNeedle<T>;
             if (cacheNeedle == null)
             {
-                target = needle.Value;
+                target = ((INeedle<T>)needle).Value;
                 done = needle.IsAlive;
             }
             else
@@ -120,7 +120,7 @@ namespace Theraot.Threading.Needles
             {
                 return cacheNeedle.TryGetValue(out target);
             }
-            target = needle.Value;
+            target = ((INeedle<T>)needle).Value;
             return needle.IsAlive;
         }
 
