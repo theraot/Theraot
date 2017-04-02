@@ -17,7 +17,12 @@ namespace Theraot.Core
             return new CustomEqualityComparer<T>(equalityComparison, getHashCode);
         }
     }
+}
 
+#if FAT
+
+namespace Theraot.Core
+{
     public static class EqualityComparerHelper<T>
     {
         private static readonly IEqualityComparer<T> _default;
@@ -122,3 +127,5 @@ namespace Theraot.Core
         }
     }
 }
+
+#endif
