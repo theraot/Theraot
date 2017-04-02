@@ -19,11 +19,11 @@ using Theraot.Threading.Needles;
 //                                             ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
 //
 // The above means that we keep a weak reference to the key but an strong reference to the value
-// This is the kind of dictionary that Theraot.Collections.ThreadSafe.WeakDictionary<TKey, TValue, TNeedle> is
-// Since microsoft's is failing tests, I'll replace their implementation with WeakDictionary<TKey, TValue, TNeedle>...
-// Because at least I know how to maintain WeakDictionary<TKey, TValue, TNeedle> also...
-// Having WeakDictionary<TKey, TValue, TNeedle> and ConditionalWeakTable<TKey, TValue> is kind of redundant.
-// In fact this was one of the intentions behind creating WeakDictionary<TKey, TValue, TNeedle> in the first place
+// This is the kind of dictionary that Theraot.Collections.ThreadSafe.WeakDictionary<TKey, TValue> is
+// Since microsoft's is failing tests, I'll replace their implementation with WeakDictionary<TKey, TValue>...
+// Because at least I know how to maintain WeakDictionary<TKey, TValue> also...
+// Having WeakDictionary<TKey, TValue> and ConditionalWeakTable<TKey, TValue> is kind of redundant.
+// In fact this was one of the intentions behind creating WeakDictionary<TKey, TValue> in the first place
 
 namespace System.Runtime.CompilerServices
 {
