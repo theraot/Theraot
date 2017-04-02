@@ -48,7 +48,7 @@ namespace Theraot.Collections.ThreadSafe
             TNeedle result;
             if (_pool.TryGet(out result))
             {
-                result.Value = value;
+                ((INeedle<T>)result).Value = value;
             }
             else
             {
