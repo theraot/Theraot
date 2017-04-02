@@ -6,8 +6,7 @@ namespace System.Threading
 {
     public class ManualResetEventSlim : IDisposable
     {
-        private const int INT_DefaultSpinCount = 10;
-        private const int INT_LongTimeOutHint = 160;
+        private const int _defaultSpinCount = 10;
 
         private readonly int _spinCount;
         private ManualResetEvent _handle;
@@ -27,7 +26,7 @@ namespace System.Threading
         public ManualResetEventSlim(bool initialState)
         {
             _state = initialState ? 1 : 0;
-            _spinCount = INT_DefaultSpinCount;
+            _spinCount = _defaultSpinCount;
         }
 
         public ManualResetEventSlim(bool initialState, int spinCount)
@@ -129,14 +128,16 @@ namespace System.Threading
                 throw new ObjectDisposedException(GetType().FullName);
             }
             var spinWait = new SpinWait();
+            var spinCount = _spinCount;
             if (!IsSet)
             {
                 var start = ThreadingHelper.TicksNow();
                 retry:
                 if (!IsSet)
                 {
-                    if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < INT_LongTimeOutHint)
+                    if (spinCount > 0)
                     {
+                        spinCount--;
                         spinWait.SpinOnce();
                         goto retry;
                     }
@@ -267,7 +268,11 @@ namespace System.Threading
                     // Found 0, was set to 1, create the wait handle
                     var isSet = Thread.VolatileRead(ref _state) != 0;
                     // State may have been set here
-                    Interlocked.Exchange(ref _handle, new ManualResetEvent(isSet));
+                    var created = new ManualResetEvent(isSet);
+                    if (Interlocked.CompareExchange(ref _handle, created, null) != null)
+                    {
+                        created.Close();
+                    }
                     Thread.VolatileWrite(ref _requested, 2);
                     goto default;
                 case 1:
@@ -299,46 +304,31 @@ namespace System.Threading
         private bool WaitExtracted(int millisecondsTimeout)
         {
             var spinWait = new SpinWait();
+            var spinCount = _spinCount;
             if (IsSet)
             {
                 return true;
             }
             var start = ThreadingHelper.TicksNow();
-            if (millisecondsTimeout > INT_LongTimeOutHint)
+            retry_longTimeout:
+            if (IsSet)
             {
-                retry_longTimeout:
-                if (IsSet)
-                {
-                    return true;
-                }
-                var elapsed = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
-                if (elapsed < millisecondsTimeout)
-                {
-                    if (elapsed < INT_LongTimeOutHint)
-                    {
-                        spinWait.SpinOnce();
-                        goto retry_longTimeout;
-                    }
-                    var handle = RetriveWaitHandle();
-                    var remaining = millisecondsTimeout - (int) elapsed;
-                    if (remaining > 0)
-                    {
-                        return handle.WaitOne(remaining);
-                    }
-                }
+                return true;
             }
-            else
+            var elapsed = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
+            if (elapsed < millisecondsTimeout)
             {
-                retry_shortTimeout:
-                if (IsSet)
+                if (spinCount > 0)
                 {
-                    return true;
-                }
-                var elapsed = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
-                if (elapsed < millisecondsTimeout)
-                {
+                    spinCount--;
                     spinWait.SpinOnce();
-                    goto retry_shortTimeout;
+                    goto retry_longTimeout;
+                }
+                var handle = RetriveWaitHandle();
+                var remaining = millisecondsTimeout - (int)elapsed;
+                if (remaining > 0)
+                {
+                    return handle.WaitOne(remaining);
                 }
             }
             return false;
@@ -347,81 +337,64 @@ namespace System.Threading
         private bool WaitExtracted(int millisecondsTimeout, CancellationToken cancellationToken)
         {
             var spinWait = new SpinWait();
+            var spinCount = _spinCount;
             if (IsSet)
             {
                 return true;
             }
             var start = ThreadingHelper.TicksNow();
-            if (millisecondsTimeout > INT_LongTimeOutHint)
+            retry_longTimeout:
+            if (IsSet)
             {
-                retry_longTimeout:
-                if (IsSet)
+                return true;
+            }
+            cancellationToken.ThrowIfCancellationRequested();
+            GC.KeepAlive(cancellationToken.WaitHandle);
+            var elapsed = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
+            if (elapsed < millisecondsTimeout)
+            {
+                if (spinCount > 0)
                 {
-                    return true;
+                    spinCount--;
+                    spinWait.SpinOnce();
+                    goto retry_longTimeout;
                 }
-                cancellationToken.ThrowIfCancellationRequested();
-                GC.KeepAlive(cancellationToken.WaitHandle);
-                var elapsed = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
-                if (elapsed < millisecondsTimeout)
+                var handle = RetriveWaitHandle();
+                var remaining = millisecondsTimeout - (int)elapsed;
+                if (remaining > 0)
                 {
-                    if (elapsed < INT_LongTimeOutHint)
-                    {
-                        spinWait.SpinOnce();
-                        goto retry_longTimeout;
-                    }
-                    var handle = RetriveWaitHandle();
-                    var remaining = millisecondsTimeout - (int) elapsed;
-                    if (remaining > 0)
-                    {
-                        var result = WaitHandle.WaitAny
-                            (
-                                new[]
-                                {
+                    var result = WaitHandle.WaitAny
+                        (
+                            new[]
+                            {
                                     handle,
                                     cancellationToken.WaitHandle
-                                },
-                                remaining
-                            );
-                        cancellationToken.ThrowIfCancellationRequested();
-                        GC.KeepAlive(cancellationToken.WaitHandle);
-                        return result != WaitHandle.WaitTimeout;
-                    }
+                            },
+                            remaining
+                        );
+                    cancellationToken.ThrowIfCancellationRequested();
+                    GC.KeepAlive(cancellationToken.WaitHandle);
+                    return result != WaitHandle.WaitTimeout;
                 }
-                cancellationToken.ThrowIfCancellationRequested();
-                GC.KeepAlive(cancellationToken.WaitHandle);
             }
-            else
-            {
-                retry_shortTimeout:
-                if (IsSet)
-                {
-                    return true;
-                }
-                cancellationToken.ThrowIfCancellationRequested();
-                GC.KeepAlive(cancellationToken.WaitHandle);
-                var elapsed = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start);
-                if (elapsed < millisecondsTimeout)
-                {
-                    spinWait.SpinOnce();
-                    goto retry_shortTimeout;
-                }
-                cancellationToken.ThrowIfCancellationRequested();
-                GC.KeepAlive(cancellationToken.WaitHandle);
-            }
+            cancellationToken.ThrowIfCancellationRequested();
+            GC.KeepAlive(cancellationToken.WaitHandle);
             return false;
         }
 
         private void WaitExtracted(CancellationToken cancellationToken)
         {
             var spinWait = new SpinWait();
+            var spinCount = _spinCount;
             var start = ThreadingHelper.TicksNow();
             retry:
             if (!IsSet)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 GC.KeepAlive(cancellationToken.WaitHandle);
-                if (ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow() - start) < INT_LongTimeOutHint)
+                if (spinCount > 0)
                 {
+                    spinCount--;
                     spinWait.SpinOnce();
                     goto retry;
                 }
