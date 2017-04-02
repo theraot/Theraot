@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Theraot.Threading;
 
 namespace Theraot.Collections.ThreadSafe
 {
@@ -78,13 +79,10 @@ namespace Theraot.Collections.ThreadSafe
 
         ~FixedSizeBucket()
         {
-            if (!AppDomain.CurrentDomain.IsFinalizingForUnload())
+            if (!GCMonitor.FinalizingForUnload)
             {
-                if (!AppDomain.CurrentDomain.IsFinalizingForUnload())
-                {
-                    ArrayReservoir<object>.DonateArray(_entries);
-                    _entries = null;
-                }
+                ArrayReservoir<object>.DonateArray(_entries);
+                _entries = null;
             }
         }
 
