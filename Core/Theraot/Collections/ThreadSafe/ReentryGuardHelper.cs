@@ -13,14 +13,16 @@ namespace Theraot.Collections.ThreadSafe
 
         public static bool Enter(RuntimeUniqueIdProdiver.UniqueId id)
         {
-            if (_guard == null)
+            // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
+            var guard = _guard;
+            if (guard == null)
             {
                 _guard = new HashSet<RuntimeUniqueIdProdiver.UniqueId> { id };
                 return true;
             }
-            if (!_guard.Contains(id))
+            if (!guard.Contains(id))
             {
-                _guard.Add(id);
+                guard.Add(id);
                 return true;
             }
             return false;
@@ -33,7 +35,12 @@ namespace Theraot.Collections.ThreadSafe
 
         public static void Leave(RuntimeUniqueIdProdiver.UniqueId id)
         {
-            _guard.Remove(id);
+            // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
+            var guard = _guard;
+            if (guard != null)
+            {
+                guard.Remove(id);
+            }
         }
     }
 }
