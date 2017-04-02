@@ -812,7 +812,7 @@ namespace System.Threading.Tasks
                     var ad = currentContinuation as Action;
                     if (ad != null)
                     {
-                        AwaitTaskContinuation.RunOrScheduleAction(ad, canInlineContinuations, ref Current);
+                        AwaitTaskContinuation.RunOrScheduleAction(ad, canInlineContinuations, ref InternalCurrent);
                     }
                     else
                     {

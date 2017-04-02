@@ -1057,14 +1057,14 @@ namespace System.Numerics
 
         private static void ModPowSquareModValue(ref BigIntegerBuilder regVal, ref BigIntegerBuilder regMod, ref BigIntegerBuilder regTmp)
         {
-            NumericsHelpers.Swap(ref regVal, ref regTmp);
+            NumericHelper.Swap(ref regVal, ref regTmp);
             regVal.Mul(ref regTmp, ref regTmp);
             regVal.Mod(ref regMod);
         }
 
         private static void ModPowUpdateResult(ref BigIntegerBuilder regRes, ref BigIntegerBuilder regVal, ref BigIntegerBuilder regMod, ref BigIntegerBuilder regTmp)
         {
-            NumericsHelpers.Swap(ref regRes, ref regTmp);
+            NumericHelper.Swap(ref regRes, ref regTmp);
             regRes.Mul(ref regTmp, ref regVal);
             regRes.Mod(ref regMod);
         }
@@ -1072,10 +1072,10 @@ namespace System.Numerics
         private static void MulLower(ref uint uHiRes, ref int cuRes, uint uHiMul, int cuMul)
         {
             var num = uHiRes * (ulong)uHiMul;
-            var hi = NumericsHelpers.GetHi(num);
+            var hi = NumericHelper.GetHi(num);
             if (hi == 0)
             {
-                uHiRes = NumericsHelpers.GetLo(num);
+                uHiRes = NumericHelper.GetLo(num);
                 cuRes = cuRes + (cuMul - 1);
             }
             else
@@ -1097,15 +1097,15 @@ namespace System.Numerics
         private static void MulUpper(ref uint uHiRes, ref int cuRes, uint uHiMul, int cuMul)
         {
             var num = uHiRes * (ulong)uHiMul;
-            var hi = NumericsHelpers.GetHi(num);
+            var hi = NumericHelper.GetHi(num);
             if (hi == 0)
             {
-                uHiRes = NumericsHelpers.GetLo(num);
+                uHiRes = NumericHelper.GetLo(num);
                 cuRes = cuRes + (cuMul - 1);
             }
             else
             {
-                if (NumericsHelpers.GetLo(num) != 0)
+                if (NumericHelper.GetLo(num) != 0)
                 {
                     var num1 = hi + 1;
                     hi = num1;
@@ -2078,7 +2078,7 @@ namespace System.Numerics
             {
                 if ((expTmp & 1) != 0)
                 {
-                    NumericsHelpers.Swap(ref regResult, ref regTmp);
+                    NumericHelper.Swap(ref regResult, ref regTmp);
                     regResult.Mul(ref regSquare, ref regTmp);
                 }
                 expTmp = expTmp >> 1;
@@ -2086,7 +2086,7 @@ namespace System.Numerics
                 {
                     break;
                 }
-                NumericsHelpers.Swap(ref regSquare, ref regTmp);
+                NumericHelper.Swap(ref regSquare, ref regTmp);
                 regSquare.Mul(ref regTmp, ref regTmp);
             }
             return regResult.GetInteger(sign);

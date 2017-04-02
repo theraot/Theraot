@@ -302,7 +302,7 @@ namespace System.Threading.Tasks
                     else
                     {
                         // We are eligible for inlining.  If it doesn't work, we'll do a full wait.
-                        taskIsCompleted = task.TryStart(task.Scheduler, true) && task.IsCompleted; // A successful TryRunInline doesn't guarantee completion
+                        taskIsCompleted = task.TryStart(task.ExecutingTaskScheduler, true) && task.IsCompleted; // A successful TryRunInline doesn't guarantee completion
                         if (!taskIsCompleted)
                         {
                             AddToList(task, ref waitedOnTaskList, /*initSize:*/ tasks.Length);
@@ -463,7 +463,7 @@ namespace System.Threading.Tasks
                     // We'll do a second pass to do actual wait on each task, and to aggregate their exceptions.
                     // If the task is inlined here, it will register as IsCompleted in the second pass
                     // and will just give us the exception.
-                    tasks[taskIndex].TryStart(tasks[taskIndex].Scheduler, true);
+                    tasks[taskIndex].TryStart(tasks[taskIndex].ExecutingTaskScheduler, true);
                 }
             }
             // Wait on the tasks.

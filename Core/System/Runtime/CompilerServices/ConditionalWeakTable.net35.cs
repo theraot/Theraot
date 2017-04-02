@@ -1,5 +1,6 @@
 ﻿#if NET20 || NET30 || NET35
 
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Threading.Needles;
@@ -44,6 +45,14 @@ namespace System.Runtime.CompilerServices
         /// <param name="key">The key that belongs to the value to create.</param>
         /// <returns>An instance of a reference type that represents the value to attach to the specified key.</returns>
         public delegate TValue CreateValueCallback(TKey key);
+
+        internal ICollection<TKey> Keys
+        {
+            get
+            {
+                return _wrapped.Keys;
+            }
+        }
 
         /// <summary>
         /// Adds a key to the table.

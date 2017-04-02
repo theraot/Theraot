@@ -1,5 +1,7 @@
 #if NET20 || NET30 || NET35
 
+using Theraot.Core;
+
 namespace System.Numerics
 {
     internal struct BigIntegerBuilder
@@ -258,14 +260,14 @@ namespace System.Numerics
                 {
                     return 0;
                 }
-                return NumericsHelpers.CbitLowZero(_uSmall);
+                return NumericHelper.CbitLowZero(_uSmall);
             }
             var num = 0;
             while (_bits[num] == 0)
             {
                 num++;
             }
-            var num1 = NumericsHelpers.CbitLowZero(_bits[num]);
+            var num1 = NumericHelper.CbitLowZero(_bits[num]);
             return num1 + num * 32;
         }
 
@@ -283,7 +285,7 @@ namespace System.Numerics
             }
             var bigIntegerBuilder = new BigIntegerBuilder();
             ModDivCore(ref this, ref regDen, true, ref bigIntegerBuilder);
-            NumericsHelpers.Swap(ref this, ref bigIntegerBuilder);
+            NumericHelper.Swap(ref this, ref bigIntegerBuilder);
         }
 
         public uint DivMod(uint num5)
@@ -465,18 +467,18 @@ namespace System.Numerics
                 var num2 = reg2._iuLast + 1;
                 if (num1 < num2)
                 {
-                    NumericsHelpers.Swap(ref reg1, ref reg2);
-                    NumericsHelpers.Swap(ref num1, ref num2);
+                    NumericHelper.Swap(ref reg1, ref reg2);
+                    NumericHelper.Swap(ref num1, ref num2);
                 }
                 if (num2 == 1)
                 {
                     if (num1 == 1)
                     {
-                        reg1._uSmall = NumericsHelpers.GCD(reg1._uSmall, reg2._uSmall);
+                        reg1._uSmall = NumericHelper.GCD(reg1._uSmall, reg2._uSmall);
                     }
                     else if (reg2._uSmall != 0)
                     {
-                        reg1.Set(NumericsHelpers.GCD(Mod(ref reg1, reg2._uSmall), reg2._uSmall));
+                        reg1.Set(NumericHelper.GCD(Mod(ref reg1, reg2._uSmall), reg2._uSmall));
                     }
                     return;
                 }
@@ -496,8 +498,8 @@ namespace System.Numerics
                     }
                     if (high2 < high21)
                     {
-                        NumericsHelpers.Swap(ref high2, ref high21);
-                        NumericsHelpers.Swap(ref reg1, ref reg2);
+                        NumericHelper.Swap(ref high2, ref high21);
+                        NumericHelper.Swap(ref reg1, ref reg2);
                     }
                     if (high2 == ulong.MaxValue || high21 == ulong.MaxValue)
                     {
@@ -508,7 +510,7 @@ namespace System.Numerics
                     {
                         reg1.Sub(ref num, ref reg2);
                     }
-                    else if (NumericsHelpers.GetHi(high21) != 0)
+                    else if (NumericHelper.GetHi(high21) != 0)
                     {
                         uint num4 = 1;
                         uint num5 = 0;
@@ -636,7 +638,7 @@ namespace System.Numerics
                     reg1.Mod(ref reg2);
                 }
             }
-            reg1.Set(NumericsHelpers.GCD(reg1.GetHigh2(2), reg2.GetHigh2(2)));
+            reg1.Set(NumericHelper.GCD(reg1.GetHigh2(2), reg2.GetHigh2(2)));
         }
 
         public void Load(ref BigIntegerBuilder reg)
@@ -712,7 +714,7 @@ namespace System.Numerics
             if (regDen._iuLast == 0)
             {
                 regQuo.Set(DivMod(regDen._uSmall));
-                NumericsHelpers.Swap(ref this, ref regQuo);
+                NumericHelper.Swap(ref this, ref regQuo);
                 return;
             }
             if (_iuLast == 0)
@@ -1015,7 +1017,7 @@ namespace System.Numerics
 
         public void Set(ulong uu)
         {
-            var hi = NumericsHelpers.GetHi(uu);
+            var hi = NumericHelper.GetHi(uu);
             if (hi != 0)
             {
                 SetSizeLazy(2);
@@ -1024,7 +1026,7 @@ namespace System.Numerics
             }
             else
             {
-                _uSmall = NumericsHelpers.GetLo(uu);
+                _uSmall = NumericHelper.GetLo(uu);
                 _iuLast = 0;
             }
         }

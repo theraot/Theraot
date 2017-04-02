@@ -20,10 +20,10 @@ namespace System.Threading.Tasks
         {
             get
             {
-                var currentTask = Task.Current;
+                var currentTask = Task.InternalCurrent;
                 if (currentTask != null)
                 {
-                    return currentTask.Scheduler;
+                    return currentTask.ExecutingTaskScheduler;
                 }
                 return Default;
             }
@@ -94,11 +94,6 @@ namespace System.Threading.Tasks
             return TryExecuteTaskInline(task, taskWasPreviouslyQueued);
         }
 
-        internal virtual void NotifyWorkItemProgress()
-        {
-            // Empty
-        }
-
         protected internal abstract void QueueTask(Task task);
 
         protected abstract IEnumerable<Task> GetScheduledTasks();
@@ -111,7 +106,7 @@ namespace System.Threading.Tasks
 
         protected bool TryExecuteTask(Task task)
         {
-            if (task.Scheduler != this)
+            if (task.ExecutingTaskScheduler != this)
             {
                 throw new InvalidOperationException("Wrong Task Scheduler");
             }

@@ -153,5 +153,39 @@ namespace Theraot.Core
             System.Numerics.NumericsHelpers.GetDoubleParts(value, out sign, out exponent, out tmpMantissa, out finite);
             mantissa = (long)tmpMantissa;
         }
+
+        internal static int CbitLowZero(uint u)
+        {
+            if (u == 0)
+            {
+                return 32;
+            }
+            var cbit = 0;
+            if ((u & 0x0000FFFF) == 0)
+            {
+                cbit += 16;
+                u >>= 16;
+            }
+            if ((u & 0x000000FF) == 0)
+            {
+                cbit += 8;
+                u >>= 8;
+            }
+            if ((u & 0x0000000F) == 0)
+            {
+                cbit += 4;
+                u >>= 4;
+            }
+            if ((u & 0x00000003) == 0)
+            {
+                cbit += 2;
+                u >>= 2;
+            }
+            if ((u & 0x00000001) == 0)
+            {
+                cbit += 1;
+            }
+            return cbit;
+        }
     }
 }

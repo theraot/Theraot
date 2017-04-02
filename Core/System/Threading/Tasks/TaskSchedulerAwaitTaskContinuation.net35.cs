@@ -70,7 +70,7 @@ namespace System.Threading.Tasks
                     // We need to run asynchronously, so just schedule the task.
                     try
                     {
-                        task.TryStart(task.Scheduler, false);
+                        task.TryStart(task.ExecutingTaskScheduler, false);
                     }
                     catch (TaskSchedulerException exception)
                     {

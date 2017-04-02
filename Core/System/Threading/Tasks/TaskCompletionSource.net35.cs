@@ -1,20 +1,8 @@
 ﻿#if NET20 || NET30 || NET35
 
-// ==++==
-//
-//   Copyright (c) Microsoft Corporation.  All rights reserved.
-// 
-// ==--==
-// =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
-//
-// TaskCompletionSource.cs
-//
-// <OWNER>[....]</OWNER>
-//
-// TaskCompletionSource<TResult> is the producer end of an unbound future.  Its
-// Task member may be distributed as the consumer end of the future.
-//
-// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
 using System.Security.Permissions;
@@ -202,22 +190,6 @@ namespace System.Threading.Tasks
             if (!rval && !_task.IsCompleted) SpinUntilCompleted();
             return rval;
         }
-
-        /*/// <summary>Attempts to transition the underlying task to the faulted state.</summary>
-        /// <param name="exceptions">The collection of exception dispatch infos to bind to this task.</param>
-        /// <returns>True if the operation was successful; otherwise, false.</returns>
-        /// <remarks>Unlike the public methods, this method doesn't currently validate that its arguments are correct.</remarks>
-        internal bool TrySetException(IEnumerable<ExceptionDispatchInfo> exceptions)
-        {
-            Contract.Assert(exceptions != null);
-#if DEBUG
-            foreach (var edi in exceptions) Contract.Assert(edi != null, "Contents must be non-null");
-#endif
-
-            var rval = _task.TrySetException(exceptions);
-            if (!rval && !_task.IsCompleted) SpinUntilCompleted();
-            return rval;
-        }*/
 
         /// <summary>
         /// Transitions the underlying
