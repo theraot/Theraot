@@ -50,6 +50,7 @@ namespace Theraot.Collections.Specialized
 
         ~FlagArray()
         {
+            // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
             if (!GCMonitor.FinalizingForUnload)
             {
                 RecycleExtracted();
@@ -272,8 +273,13 @@ namespace Theraot.Collections.Specialized
 
         private void RecycleExtracted()
         {
-            ArrayReservoir<int>.DonateArray(_entries);
-            _entries = null;
+            // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
+            var entries = _entries;
+            if (entries != null)
+            {
+                ArrayReservoir<int>.DonateArray(entries);
+                _entries = null;
+            }
         }
 
         private void SetBit(int index, int mask)

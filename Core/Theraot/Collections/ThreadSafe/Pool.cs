@@ -32,13 +32,20 @@ namespace Theraot.Collections.ThreadSafe
 
         internal bool Donate(T entry)
         {
-            if (!ReferenceEquals(entry, null) && ReentryGuardHelper.Enter(_id))
+            // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
+            if (entry != null && ReentryGuardHelper.Enter(_id))
             {
                 try
                 {
-                    _recycler.Invoke(entry);
-                    _entries.Add(entry);
-                    return true;
+                    var entries = _entries;
+                    var recycler = _recycler;
+                    if (entries != null && recycler != null)
+                    {
+                        recycler.Invoke(entry);
+                        entries.Add(entry);
+                        return true;
+                    }
+                    return false;
                 }
                 catch (NullReferenceException exception)
                 {

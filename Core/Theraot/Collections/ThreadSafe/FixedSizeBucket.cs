@@ -79,10 +79,15 @@ namespace Theraot.Collections.ThreadSafe
 
         ~FixedSizeBucket()
         {
+            // Assume anything could have been set to null, start no sync operation, this could be running during DomainUnload
             if (!GCMonitor.FinalizingForUnload)
             {
-                ArrayReservoir<object>.DonateArray(_entries);
-                _entries = null;
+                var entries = _entries;
+                if (entries != null)
+                {
+                    ArrayReservoir<object>.DonateArray(entries);
+                    _entries = null;
+                }
             }
         }
 
