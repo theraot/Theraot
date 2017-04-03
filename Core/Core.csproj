@@ -154,7 +154,7 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
-    <LangVersion>5</LangVersion>
+    <LangVersion>4</LangVersion>
     <Fat>true</Fat>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'NET30_FAT|AnyCPU' ">
