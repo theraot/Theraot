@@ -383,6 +383,7 @@
     <Compile Include="System\Runtime\CompilerServices\IteratorStateMachineAttribute.net40.cs" />
     <Compile Include="System\Runtime\CompilerServices\StateMachineAttribute.net40.cs" />
     <Compile Include="System\Runtime\CompilerServices\TaskAwaiter.net40.cs" />
+    <Compile Include="System\Runtime\CompilerServices\TupleElementNamesAttribute.net45.cs" />
     <Compile Include="System\Runtime\CompilerServices\VoidTaskResult.cs" />
     <Compile Include="System\Runtime\CompilerServices\YieldAwaitable.net40.cs" />
     <Compile Include="System\Runtime\ExceptionServices\ExceptionDispatchInfo.net40.cs" />
@@ -433,6 +434,8 @@
     <Compile Include="System\Threading\Tasks\TaskSchedulerException.net35.cs" />
     <Compile Include="System\Threading\Tasks\ThreadPoolTaskScheduler.net35.cs" />
     <Compile Include="System\Threading\Tasks\UnobservedTaskExceptionEventArgs.net35.cs" />
+    <Compile Include="System\ValueTuple.net45.cs" />
+    <Compile Include="System\TupleExtensions.net45.cs" />
     <Compile Include="Theraot\Collections\ConversionSet.cs" />
     <Compile Include="Theraot\Collections\ConvertedObserver.cs" />
     <Compile Include="Theraot\Collections\CustomObserver.cs" />
