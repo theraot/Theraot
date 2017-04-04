@@ -19,3 +19,7 @@ cd %mypath%
 popd
 
 popd
+
+echo DONE
+
+exit /b

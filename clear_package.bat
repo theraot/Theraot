@@ -8,6 +8,8 @@ echo ____________________________
 echo Running from %mypath:~0,-1%\clear_package.bat
 echo ____________________________
 
+echo Attempting to remove old package
+
 REM enter the path of the bat
 pushd %~dp0
 cd /D %mypath:~0,3%
@@ -22,3 +24,5 @@ REM leave the path
 popd
 
 popd
+
+exit /b
