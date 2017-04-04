@@ -27,24 +27,24 @@ namespace Theraot.Threading
                 _number = number;
             }
 
-            public static bool operator !=(VersionToken a, VersionToken b)
+            public static bool operator !=(VersionToken left, VersionToken right)
             {
-                return a.Equals(b);
+                return left.Equals(right);
             }
 
-            public static bool operator <(VersionToken a, VersionToken b)
+            public static bool operator <(VersionToken left, VersionToken right)
             {
-                return a.CompareTo(b) < 0;
+                return left.CompareTo(right) < 0;
             }
 
-            public static bool operator ==(VersionToken a, VersionToken b)
+            public static bool operator ==(VersionToken left, VersionToken right)
             {
-                return a.Equals(b);
+                return left.Equals(right);
             }
 
-            public static bool operator >(VersionToken a, VersionToken b)
+            public static bool operator >(VersionToken left, VersionToken right)
             {
-                return a.CompareTo(b) > 0;
+                return left.CompareTo(right) > 0;
             }
 
             /// <summary>
@@ -54,10 +54,6 @@ namespace Theraot.Threading
             /// <returns>A 32-bit signed integer indicating whether this instances precedes, follows, or represents the same version.</returns>
             public int CompareTo(VersionToken other)
             {
-                if (_target == other._target)
-                {
-                    return _number.CompareTo(other._number);
-                }
                 if (_target == null)
                 {
                     return -1;
@@ -66,16 +62,16 @@ namespace Theraot.Threading
                 {
                     return 1;
                 }
+                if (_target == other._target)
+                {
+                    return _number.CompareTo(other._number);
+                }
                 var check = _target.CompareToExtracted(other._target);
                 return check == 0 ? _number.CompareTo(other._number) : check;
             }
 
             public bool Equals(VersionToken other)
             {
-                if (_target == other._target)
-                {
-                    return _number == other._number;
-                }
                 if (_target == null)
                 {
                     return false;
@@ -84,8 +80,12 @@ namespace Theraot.Threading
                 {
                     return false;
                 }
+                if (_target == other._target)
+                {
+                    return _number == other._number;
+                }
                 var check = _target.EqualsExtracted(other._target);
-                return check ? _number == other._number : check;
+                return check && _number == other._number;
             }
 
             /// <summary>

@@ -128,18 +128,18 @@ namespace Theraot.Threading.Needles
 
         private static bool EqualsExtracted(PromiseNeedle<T> left, PromiseNeedle<T> right)
         {
-            if (left == null)
+            if (ReferenceEquals(left, null))
             {
-                return right == null;
+                return ReferenceEquals(right, null);
             }
             return left.Equals(right);
         }
 
         private static bool NotEqualsExtracted(PromiseNeedle<T> left, PromiseNeedle<T> right)
         {
-            if (left == null)
+            if (ReferenceEquals(left, null))
             {
-                return right != null;
+                return !ReferenceEquals(right, null);
             }
             return !left.Equals(right);
         }
