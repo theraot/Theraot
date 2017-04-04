@@ -588,7 +588,7 @@ namespace Tests.Theraot.Threading.Needles
                                     set[index] = got[index] * 2;
                                     bucket.GetNeedle(index).Value = set[index];
                                 }
-                                info.Add(string.Format("Work A - Got: [{0}, {1}, {2}, {3}, {4}] - Set: [{5}, {6}, {7}, {8}, {9}]", got[0], got[1], got[2], got[3], got[4], set[0], set[1], set[2], set[3], set[4]));
+                                info.Add(string.Format("Work B - Got: [{0}, {1}, {2}, {3}, {4}] - Set: [{5}, {6}, {7}, {8}, {9}]", got[0], got[1], got[2], got[3], got[4], set[0], set[1], set[2], set[3], set[4]));
                                 if (!bucket.SequenceEqual(set))
                                 {
                                     info.Add("Work B - ??");
