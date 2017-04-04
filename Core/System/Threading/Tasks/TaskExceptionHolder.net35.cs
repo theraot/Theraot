@@ -26,20 +26,25 @@ namespace System.Threading.Tasks
     {
         /// <summary>Whether we should propagate exceptions on the finalizer.</summary>
         private readonly static bool s_failFastOnUnobservedException = ShouldFailFastOnUnobservedException();
+
         /// <summary>Whether the AppDomain has started to unload.</summary>
         private static volatile bool s_domainUnloadStarted;
+
         /// <summary>An event handler used to notify of domain unload.</summary>
-        private static volatile EventHandler s_adUnloadEventHandler;
+        private static EventHandler s_adUnloadEventHandler;
 
         /// <summary>The task with which this holder is associated.</summary>
         private readonly Task m_task;
+
         /// <summary>
         /// The lazily-initialized list of faulting exceptions.  Volatile
         /// so that it may be read to determine whether any exceptions were stored.
         /// </summary>
         private volatile List<ExceptionDispatchInfo> m_faultExceptions;
+
         /// <summary>An exception that triggered the task to cancel.</summary>
         private ExceptionDispatchInfo m_cancellationException;
+
         /// <summary>Whether the holder was "observed" and thus doesn't cause finalization behavior.</summary>
         private volatile bool m_isHandled;
 
@@ -61,12 +66,13 @@ namespace System.Threading.Tasks
 
         private static void EnsureADUnloadCallbackRegistered()
         {
-            if (s_adUnloadEventHandler == null &&
-                Interlocked.CompareExchange(ref s_adUnloadEventHandler,
-                                             AppDomainUnloadCallback,
-                                             null) == null)
+            if (Volatile.Read(ref s_adUnloadEventHandler) == null)
             {
-                AppDomain.CurrentDomain.DomainUnload += s_adUnloadEventHandler;
+                EventHandler handler = AppDomainUnloadCallback;
+                if (Interlocked.CompareExchange(ref s_adUnloadEventHandler, handler, null) == null)
+                {
+                    AppDomain.CurrentDomain.DomainUnload += handler;
+                }
             }
         }
 
@@ -87,8 +93,8 @@ namespace System.Threading.Tasks
             if (m_faultExceptions != null && !m_isHandled &&
                 !Environment.HasShutdownStarted && !GCMonitor.FinalizingForUnload && !s_domainUnloadStarted)
             {
-                // We don't want to crash the finalizer thread if any ThreadAbortExceptions 
-                // occur in the list or in any nested AggregateExceptions.  
+                // We don't want to crash the finalizer thread if any ThreadAbortExceptions
+                // occur in the list or in any nested AggregateExceptions.
                 // (Don't rethrow ThreadAbortExceptions.)
                 foreach (ExceptionDispatchInfo edi in m_faultExceptions)
                 {
@@ -134,7 +140,13 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>Gets whether the exception holder is currently storing any exceptions for faults.</summary>
-        internal bool ContainsFaultList { get { return m_faultExceptions != null; } }
+        internal bool ContainsFaultList
+        {
+            get
+            {
+                return m_faultExceptions != null;
+            }
+        }
 
         /// <summary>
         /// Add an exception to the holder.  This will ensure the holder is
@@ -145,7 +157,7 @@ namespace System.Threading.Tasks
         /// </param>
         /// <param name="exceptionObject">
         /// An exception object (either an Exception, an ExceptionDispatchInfo,
-        /// an IEnumerable{Exception}, or an IEnumerable{ExceptionDispatchInfo}) 
+        /// an IEnumerable{Exception}, or an IEnumerable{ExceptionDispatchInfo})
         /// to add to the list.
         /// </param>
         /// <remarks>
@@ -159,8 +171,10 @@ namespace System.Threading.Tasks
                 exceptionObject is ExceptionDispatchInfo || exceptionObject is IEnumerable<ExceptionDispatchInfo>,
                 "TaskExceptionHolder.Add(): Expected Exception, IEnumerable<Exception>, ExceptionDispatchInfo, or IEnumerable<ExceptionDispatchInfo>");
 
-            if (representsCancellation) SetCancellationException(exceptionObject);
-            else AddFaultException(exceptionObject);
+            if (representsCancellation)
+                SetCancellationException(exceptionObject);
+            else
+                AddFaultException(exceptionObject);
         }
 
         /// <summary>Sets the cancellation exception.</summary>
@@ -211,8 +225,10 @@ namespace System.Threading.Tasks
 
             // Initialize the exceptions list if necessary.  The list should be non-null iff it contains exceptions.
             var exceptions = m_faultExceptions;
-            if (exceptions == null) m_faultExceptions = exceptions = new List<ExceptionDispatchInfo>(1);
-            else Debug.Assert(exceptions.Count > 0, "Expected existing exceptions list to have > 0 exceptions.");
+            if (exceptions == null)
+                m_faultExceptions = exceptions = new List<ExceptionDispatchInfo>(1);
+            else
+                Debug.Assert(exceptions.Count > 0, "Expected existing exceptions list to have > 0 exceptions.");
 
             // Handle Exception by capturing it into an ExceptionDispatchInfo and storing that
             var exception = exceptionObject as Exception;
@@ -273,7 +289,6 @@ namespace System.Threading.Tasks
                 }
             }
 
-
             // If all of the exceptions are ThreadAbortExceptions and/or
             // AppDomainUnloadExceptions, we do not want the finalization
             // probe to propagate them, so we consider the holder to be
@@ -315,7 +330,7 @@ namespace System.Threading.Tasks
         /// A private helper method that ensures the holder is considered
         /// handled, i.e. it is not registered for finalization.
         /// </summary>
-        /// <param name="calledFromFinalizer">Whether this is called from the finalizer thread.</param> 
+        /// <param name="calledFromFinalizer">Whether this is called from the finalizer thread.</param>
         internal void MarkAsHandled(bool calledFromFinalizer)
         {
             if (!m_isHandled)
@@ -346,12 +361,12 @@ namespace System.Threading.Tasks
             // Mark as handled and aggregate the exceptions.
             MarkAsHandled(calledFromFinalizer);
 
-            // If we're only including the previously captured exceptions, 
+            // If we're only including the previously captured exceptions,
             // return them immediately in an aggregate.
             if (includeThisException == null)
                 return new AggregateException(exceptions.Select(exceptionDispatchInfo => exceptionDispatchInfo.SourceException));
 
-            // Otherwise, the caller wants a specific exception to be included, 
+            // Otherwise, the caller wants a specific exception to be included,
             // so return an aggregate containing that exception and the rest.
             Exception[] combinedExceptions = new Exception[exceptions.Count + 1];
             for (int i = 0; i < combinedExceptions.Length - 1; i++)
@@ -363,8 +378,8 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Wraps the exception dispatch infos into a new read-only collection. By calling this method, 
-        /// the holder assumes exceptions to have been "observed", such that the finalization 
+        /// Wraps the exception dispatch infos into a new read-only collection. By calling this method,
+        /// the holder assumes exceptions to have been "observed", such that the finalization
         /// check will be subsequently skipped.
         /// </summary>
         internal ReadOnlyCollection<ExceptionDispatchInfo> GetExceptionDispatchInfos()
@@ -377,7 +392,7 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Gets the ExceptionDispatchInfo representing the singular exception 
+        /// Gets the ExceptionDispatchInfo representing the singular exception
         /// that was the cause of the task's cancellation.
         /// </summary>
         /// <returns>

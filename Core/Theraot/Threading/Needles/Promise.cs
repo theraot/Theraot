@@ -11,9 +11,7 @@ namespace Theraot.Threading.Needles
     {
         private readonly int _hashCode;
         private Exception _exception;
-#pragma warning disable RCS1169 // Mark field as read-only.
         private StructNeedle<ManualResetEventSlim> _waitHandle;
-#pragma warning restore RCS1169 // Mark field as read-only.
 
         public Promise(bool done)
         {

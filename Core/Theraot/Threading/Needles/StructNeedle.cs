@@ -9,9 +9,11 @@ namespace Theraot.Threading.Needles
     [System.Diagnostics.DebuggerNonUserCode]
     public struct StructNeedle<T> : IEquatable<StructNeedle<T>>, IRecyclableNeedle<T>
     {
+        private T _value;
+
         public StructNeedle(T target)
         {
-            Value = target;
+            _value = target;
         }
 
         public bool IsAlive
@@ -24,7 +26,16 @@ namespace Theraot.Threading.Needles
 
         public T Value
         {
-            get; set;
+            get
+            {
+                // Keep backing field
+                return _value;
+            }
+            set
+            {
+                // Keep backing field
+                _value = value;
+            }
         }
 
         public static explicit operator T(StructNeedle<T> needle)
@@ -67,14 +78,10 @@ namespace Theraot.Threading.Needles
             return EqualsExtracted(this, other);
         }
 
-#pragma warning disable RCS1132 // Remove redundant overriding member.
-
         public override int GetHashCode()
         {
             return base.GetHashCode();
         }
-
-#pragma warning restore RCS1132 // Remove redundant overriding member.
 
         void IRecyclableNeedle<T>.Free()
         {

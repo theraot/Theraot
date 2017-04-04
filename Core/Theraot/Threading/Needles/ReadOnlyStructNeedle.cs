@@ -84,14 +84,10 @@ namespace Theraot.Threading.Needles
             return EqualsExtracted(this, other);
         }
 
-#pragma warning disable RCS1132 // Remove redundant overriding member.
-
         public override int GetHashCode()
         {
             return base.GetHashCode();
         }
-
-#pragma warning restore RCS1132 // Remove redundant overriding member.
 
         public override string ToString()
         {
