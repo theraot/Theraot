@@ -31,7 +31,6 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 
 using NUnit.Framework;
 
@@ -72,23 +71,24 @@ namespace MonoTests.System.Linq
             AssertAreSame(result, first.Union(second));
         }
 
-        class Foo { }
-        class Bar : Foo { }
+        private class Foo { }
+
+        private class Bar : Foo { }
 
         [Test]
         public void TestCast()
         {
-            Bar a = new Bar();
-            Bar b = new Bar();
-            Bar c = new Bar();
+            var a = new Bar();
+            var b = new Bar();
+            var c = new Bar();
 
-            Foo[] foos = new Foo[] { a, b, c };
-            Bar[] result = new Bar[] { a, b, c };
+            var foos = new Foo[] { a, b, c };
+            var result = new Bar[] { a, b, c };
 
             AssertAreSame(result, foos.Cast<Bar>());
         }
 
-        class Bingo : IEnumerable<int>, IEnumerable<string>
+        private class Bingo : IEnumerable<int>, IEnumerable<string>
         {
 
             IEnumerator<int> IEnumerable<int>.GetEnumerator()
@@ -361,8 +361,8 @@ namespace MonoTests.System.Linq
         public void TestAverageInt32()
         {
             // This does not overflow, computation is done with longs
-            var x = new int[] { Int32.MaxValue, Int32.MaxValue };
-            Assert.AreEqual((double)Int32.MaxValue, x.Average());
+            var x = new int[] { int.MaxValue, int.MaxValue };
+            Assert.AreEqual((double)int.MaxValue, x.Average());
         }
 
         [Test]
@@ -376,7 +376,7 @@ namespace MonoTests.System.Linq
         [Test]
         public void TestAverageOnLongNullable()
         {
-            List<long?> list = new List<long?>();
+            var list = new List<long?>();
             list.Add(2);
             list.Add(3);
             Assert.AreEqual(2.5d, list.Average());
@@ -401,7 +401,7 @@ namespace MonoTests.System.Linq
             AssertAreSame(new int[0], Enumerable.Range(int.MinValue, 0));
         }
 
-        static void AssertThrows<T>(Action action) where T : Exception
+        private static void AssertThrows<T>(Action action) where T : Exception
         {
             try
             {
@@ -425,16 +425,20 @@ namespace MonoTests.System.Linq
             Assert.AreEqual(0, stream.Position);
 
             foreach (byte b in AsEnumerable(stream).Take(2))
+            {
                 ;
+            }
 
             Assert.AreEqual(2, stream.Position);
         }
 
-        static IEnumerable<byte> AsEnumerable(Stream stream)
+        private static IEnumerable<byte> AsEnumerable(Stream stream)
         {
             byte b;
             while ((b = (byte)stream.ReadByte()) >= 0)
+            {
                 yield return b;
+            }
         }
 
         [Test]
@@ -447,17 +451,19 @@ namespace MonoTests.System.Linq
             AssertIsOrdered(q);
         }
 
-        class Baz
+        private class Baz
         {
-            string name;
-            int age;
+            private string name;
+            private int age;
 
             public string Name
             {
                 get
                 {
                     if (string.IsNullOrEmpty(name))
+                    {
                         return Age.ToString();
+                    }
 
                     return name + " (" + Age + ")";
                 }
@@ -476,25 +482,27 @@ namespace MonoTests.System.Linq
 
             public override int GetHashCode()
             {
-                return this.Age ^ this.Name.GetHashCode();
+                return Age ^ Name.GetHashCode();
             }
 
             public override bool Equals(object obj)
             {
-                Baz b = obj as Baz;
+                var b = obj as Baz;
                 if (b == null)
+                {
                     return false;
+                }
 
-                return b.Age == this.Age && b.Name == this.Name;
+                return b.Age == Age && b.Name == Name;
             }
 
             public override string ToString()
             {
-                return this.Name;
+                return Name;
             }
         }
 
-        static IEnumerable<Baz> CreateBazCollection()
+        private static IEnumerable<Baz> CreateBazCollection()
         {
             return new[] {
 				new Baz ("jb", 25),
@@ -523,7 +531,7 @@ namespace MonoTests.System.Linq
             AssertAreSame(expected, q);
         }
 
-        class Data
+        private class Data
         {
             public int ID { get; set; }
             public string Name { get; set; }
@@ -534,7 +542,7 @@ namespace MonoTests.System.Linq
             }
         }
 
-        IEnumerable<Data> CreateData()
+        private IEnumerable<Data> CreateData()
         {
             return new[] {
 				new Data { ID = 10, Name = "bcd" },
@@ -591,9 +599,9 @@ namespace MonoTests.System.Linq
             AssertAreSame(expected, data.OrderByDescending(x => x.Key));
         }
 
-        static void AssertIsOrdered(IEnumerable<int> e)
+        private static void AssertIsOrdered(IEnumerable<int> e)
         {
-            int f = int.MinValue;
+            var f = int.MinValue;
             foreach (int i in e)
             {
                 Assert.IsTrue(f <= i);
@@ -601,7 +609,7 @@ namespace MonoTests.System.Linq
             }
         }
 
-        static void AssertAreSame<T>(IEnumerable<T> expected, IEnumerable<T> actual)
+        private static void AssertAreSame<T>(IEnumerable<T> expected, IEnumerable<T> actual)
         {
             if (expected == null)
             {
@@ -611,8 +619,8 @@ namespace MonoTests.System.Linq
 
             Assert.IsNotNull(actual);
 
-            IEnumerator<T> ee = expected.GetEnumerator();
-            IEnumerator<T> ea = actual.GetEnumerator();
+            var ee = expected.GetEnumerator();
+            var ea = actual.GetEnumerator();
 
             while (ee.MoveNext())
             {
@@ -621,7 +629,9 @@ namespace MonoTests.System.Linq
             }
 
             if (ea.MoveNext())
+            {
                 Assert.Fail("Unexpected element: " + ea.Current);
+            }
         }
     }
 }

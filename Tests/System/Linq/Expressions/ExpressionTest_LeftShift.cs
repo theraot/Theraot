@@ -21,14 +21,12 @@
 //		Jb Evain <jbevain@novell.com>
 
 using System;
-using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_LeftShift
 	{
 		[Test]
@@ -76,8 +74,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void Integer ()
 		{
-			BinaryExpression expr = Expression.LeftShift (Expression.Constant (2), Expression.Constant (1));
-			Assert.AreEqual (ExpressionType.LeftShift, expr.NodeType, "LeftShift#01");
+			var expr = Expression.LeftShift (Expression.Constant (2), Expression.Constant (1));
+            Assert.AreEqual (ExpressionType.LeftShift, expr.NodeType, "LeftShift#01");
 			Assert.AreEqual (typeof (int), expr.Type, "LeftShift#02");
 			Assert.IsNull (expr.Method, "LeftShift#03");
 			Assert.AreEqual ("(2 << 1)", expr.ToString(), "LeftShift#04");
@@ -89,8 +87,8 @@ namespace MonoTests.System.Linq.Expressions
 			int? a = 1;
 			int? b = 2;
 
-			BinaryExpression expr = Expression.LeftShift (Expression.Constant (a), Expression.Constant (b));
-			Assert.AreEqual (ExpressionType.LeftShift, expr.NodeType, "LeftShift#05");
+			var expr = Expression.LeftShift (Expression.Constant (a), Expression.Constant (b));
+            Assert.AreEqual (ExpressionType.LeftShift, expr.NodeType, "LeftShift#05");
 			Assert.AreEqual (typeof (int), expr.Type, "LeftShift#06");
 			Assert.IsNull (expr.Method, "LeftShift#07");
 			Assert.AreEqual ("(1 << 2)", expr.ToString(), "LeftShift#08");
@@ -101,9 +99,9 @@ namespace MonoTests.System.Linq.Expressions
 		{
 			// We can use the simplest version of GetMethod because we already know only one
 			// exists in the very simple class we're using for the tests.
-			MethodInfo mi = typeof (OpClass).GetMethod ("op_LeftShift");
+			var mi = typeof (OpClass).GetMethod ("op_LeftShift");
 
-			BinaryExpression expr = Expression.LeftShift (Expression.Constant (new OpClass ()), Expression.Constant (1));
+            BinaryExpression expr = Expression.LeftShift (Expression.Constant (new OpClass ()), Expression.Constant (1));
 			Assert.AreEqual (ExpressionType.LeftShift, expr.NodeType, "LeftShift#09");
 			Assert.AreEqual (typeof (OpClass), expr.Type, "LeftShift#10");
 			Assert.AreEqual (mi, expr.Method, "LeftShift#11");
@@ -115,9 +113,10 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void CompileLeftShift ()
 		{
-			ParameterExpression l = Expression.Parameter (typeof (int), "l"), r = Expression.Parameter (typeof (int), "r");
+			var l = Expression.Parameter (typeof (int), "l");
+            var r = Expression.Parameter (typeof (int), "r");
 
-			var ls = Expression.Lambda<Func<int, int, int>> (
+            var ls = Expression.Lambda<Func<int, int, int>> (
 				Expression.LeftShift (l, r), l, r).Compile ();
 
 			Assert.AreEqual (12, ls (6, 1));

@@ -129,9 +129,15 @@ namespace Tests.Theraot.Collections
                 Value = value;
             }
 
-            public string Name { get; private set; }
+            public string Name
+            {
+                get; private set;
+            }
 
-            public int Value { get; private set; }
+            public int Value
+            {
+                get; private set;
+            }
         }
     }
 }

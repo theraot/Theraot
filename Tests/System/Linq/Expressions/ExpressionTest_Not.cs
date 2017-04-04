@@ -27,14 +27,12 @@
 //
 
 using System;
-using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_Not
 	{
 		[Test]
@@ -148,12 +146,12 @@ namespace MonoTests.System.Linq.Expressions
 			Assert.AreEqual ((bool?) true, not (false));
 		}
 
-		struct Slot {
+        private struct Slot {
 			public int Value;
 
 			public Slot (int value)
 			{
-				this.Value = value;
+                Value = value;
 			}
 
 			public static bool operator ! (Slot s)

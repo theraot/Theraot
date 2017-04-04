@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using NUnit.Framework;
 using Theraot.Collections.ThreadSafe;
 
 namespace Tests.Theraot.Collections.ThreadSafe
 {
     [TestFixture]
-    class FixesSizeQueueTest
+    internal class FixesSizeQueueTest
     {
         [Test]
         public void Fill()

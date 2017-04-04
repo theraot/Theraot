@@ -46,7 +46,7 @@ namespace MonoTests.System.Collections.Specialized
              */
 
             // Trying with Reset
-            NotifyCollectionChangedEventArgs args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
+            var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
 
             CollectionChangedEventValidators.ValidateResetOperation(args, "#A01");
 
@@ -107,7 +107,7 @@ namespace MonoTests.System.Collections.Specialized
             IList changedItems = new List<object>();
 
             // Trying with Add
-            NotifyCollectionChangedEventArgs args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changedItems);
+            var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changedItems);
 
             CollectionChangedEventValidators.ValidateAddOperation(args, changedItems, "#B01");
 
@@ -189,10 +189,10 @@ namespace MonoTests.System.Collections.Specialized
              * If action is Move or Replace, throw an Argument Exception
              */
 
-            object changedItem = new object();
+            var changedItem = new object();
 
             // Trying with Add
-            NotifyCollectionChangedEventArgs args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changedItem);
+            var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changedItem);
 
             CollectionChangedEventValidators.ValidateAddOperation(args, new object[] { changedItem }, "#C01");
 
@@ -253,7 +253,7 @@ namespace MonoTests.System.Collections.Specialized
             IList oldItems = new List<object>();
 
             // Trying with Replace
-            NotifyCollectionChangedEventArgs args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItems, oldItems);
+            var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItems, oldItems);
 
             CollectionChangedEventValidators.ValidateReplaceOperation(args, oldItems, newItems, "#D01");
 
@@ -354,10 +354,10 @@ namespace MonoTests.System.Collections.Specialized
              */
 
             IList changedItems = new List<object>();
-            int startingIndex = 5; // Doesn't matter what the value of this is.
+            var startingIndex = 5; // Doesn't matter what the value of this is.
 
             // Trying with Add
-            NotifyCollectionChangedEventArgs args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changedItems, startingIndex);
+            var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changedItems, startingIndex);
 
             CollectionChangedEventValidators.ValidateAddOperation(args, changedItems, startingIndex, "#E01");
 
@@ -471,11 +471,11 @@ namespace MonoTests.System.Collections.Specialized
         [Test]
         public void NotifyCollectionChangedEventArgsConstructor6Test()
         {
-            object changedItem = new object();
-            int startingIndex = 5; // Doesn't matter what the value of this is.
+            var changedItem = new object();
+            var startingIndex = 5; // Doesn't matter what the value of this is.
 
             // Trying with Add
-            NotifyCollectionChangedEventArgs args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changedItem, startingIndex);
+            var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changedItem, startingIndex);
 
             CollectionChangedEventValidators.ValidateAddOperation(args, new object[] { changedItem }, startingIndex, "#F01");
 
@@ -540,11 +540,11 @@ namespace MonoTests.System.Collections.Specialized
         [Test]
         public void NotifyCollectionChangedEventArgsConstructor7Test()
         {
-            object oldItem = new object();
-            object newItem = new object(); // Doesn't matter what the value of this is.
+            var oldItem = new object();
+            var newItem = new object(); // Doesn't matter what the value of this is.
 
             // Trying with Add
-            NotifyCollectionChangedEventArgs args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem, oldItem);
+            var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem, oldItem);
             CollectionChangedEventValidators.ValidateReplaceOperation(args, new object[] { oldItem }, new object[] { newItem }, "#G01");
 
             // Trying null items
@@ -600,10 +600,10 @@ namespace MonoTests.System.Collections.Specialized
         {
             IList newItems = new List<object>();
             IList oldItems = new List<object>();
-            int startIndex = 5;
+            var startIndex = 5;
 
             // Trying with Replace
-            NotifyCollectionChangedEventArgs args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItems, oldItems, startIndex);
+            var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItems, oldItems, startIndex);
 
             CollectionChangedEventValidators.ValidateReplaceOperation(args, oldItems, newItems, startIndex, "#H01");
 
@@ -691,11 +691,11 @@ namespace MonoTests.System.Collections.Specialized
         public void NotifyCollectionChangedEventArgsConstructor9Test()
         {
             IList changed = new List<object>();
-            int newIndex = 2;
-            int oldIndex = 5;
+            var newIndex = 2;
+            var oldIndex = 5;
 
             // Trying with Replace
-            NotifyCollectionChangedEventArgs args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, changed, newIndex, oldIndex);
+            var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, changed, newIndex, oldIndex);
 
             CollectionChangedEventValidators.ValidateMoveOperation(args, changed, newIndex, oldIndex, "#I01");
 
@@ -763,12 +763,12 @@ namespace MonoTests.System.Collections.Specialized
         [Test]
         public void NotifyCollectionChangedEventArgsConstructor10Test()
         {
-            object changed = new object();
-            int newIndex = 2;
-            int oldIndex = 5;
+            var changed = new object();
+            var newIndex = 2;
+            var oldIndex = 5;
 
             // Trying with Replace
-            NotifyCollectionChangedEventArgs args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, changed, newIndex, oldIndex);
+            var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, changed, newIndex, oldIndex);
 
             CollectionChangedEventValidators.ValidateMoveOperation(args, new object[] { changed }, newIndex, oldIndex, "#J01");
 
@@ -826,12 +826,12 @@ namespace MonoTests.System.Collections.Specialized
         [Test]
         public void NotifyCollectionChangedEventArgsConstructor11Test()
         {
-            object newItem = new object();
-            object oldItem = new object();
-            int startIndex = 5;
+            var newItem = new object();
+            var oldItem = new object();
+            var startIndex = 5;
 
             // Trying with Replace
-            NotifyCollectionChangedEventArgs args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem, oldItem, startIndex);
+            var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem, oldItem, startIndex);
 
             CollectionChangedEventValidators.ValidateReplaceOperation(args, new object[] { oldItem }, new object[] { newItem }, startIndex, "#K01");
 

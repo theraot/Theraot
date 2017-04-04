@@ -7,10 +7,10 @@ namespace MonoTests.System.Threading.Tasks
 {
     internal class TaskContinuationChainLeakTester
     {
-        volatile bool m_bStop;
-        int counter;
-        ManualResetEvent mre = new ManualResetEvent(false);
-        WeakReference<Task> headTaskWeakRef;
+        private volatile bool m_bStop;
+        private int counter;
+        private ManualResetEvent mre = new ManualResetEvent(false);
+        private WeakReference<Task> headTaskWeakRef;
 
         public ManualResetEvent TasksPilledUp
         {
@@ -28,10 +28,14 @@ namespace MonoTests.System.Threading.Tasks
         public Task StartNewTask()
         {
             if (m_bStop)
+            {
                 return null;
+            }
 
             if (++counter == 50)
+            {
                 mre.Set();
+            }
 
             return Task.Factory.StartNew(DummyWorker).ContinueWith(task => StartNewTask());
         }
@@ -47,7 +51,7 @@ namespace MonoTests.System.Threading.Tasks
             Assert.IsFalse(headTaskWeakRef.TryGetTarget(out task));
         }
 
-        void DummyWorker()
+        private void DummyWorker()
         {
             Thread.Sleep(0);
         }

@@ -27,14 +27,12 @@
 //
 
 using System;
-using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_UnaryPlus
 	{
 		[Test]

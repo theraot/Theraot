@@ -55,7 +55,7 @@ namespace MonoTests.System.Threading
         public void EnsureInitialized_Simple()
         {
             C c = null;
-            c = LazyInitializer.EnsureInitialized(ref c);
+            LazyInitializer.EnsureInitialized(ref c);
 
             Assert.IsNotNull(c, "#1");
             Assert.AreEqual(1, c.Counter, "#2");
@@ -70,8 +70,9 @@ namespace MonoTests.System.Threading
                 LazyInitializer.EnsureInitialized(ref c, () => (C)null);
                 Assert.Fail();
             }
-            catch (InvalidOperationException)
+            catch (InvalidOperationException ex)
             {
+                GC.KeepAlive(ex);
             }
         }
 
@@ -79,7 +80,7 @@ namespace MonoTests.System.Threading
         public void EnsureInitialized_NullLock()
         {
             C c = null;
-            bool init = false;
+            var init = false;
             object sync_lock = null;
             c = LazyInitializer.EnsureInitialized(ref c, ref init, ref sync_lock);
 

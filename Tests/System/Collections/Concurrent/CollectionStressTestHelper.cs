@@ -26,18 +26,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
 
 using System.Threading;
 using System.Linq;
-using MonoTests.System.Threading.Tasks;
-
-using NUnit;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
+using System.Text;
 
 namespace MonoTests.System.Collections.Concurrent
 {
@@ -54,19 +49,21 @@ namespace MonoTests.System.Collections.Concurrent
         {
             ParallelTestHelper.Repeat(delegate
             {
-                int amount = -1;
+                var amount = -1;
                 const int count = 10;
                 const int threads = 5;
 
                 ParallelTestHelper.ParallelStressTest(coll, (q) =>
                 {
-                    int t = Interlocked.Increment(ref amount);
+                    var t = Interlocked.Increment(ref amount);
                     for (int i = 0; i < count; i++)
+                    {
                         coll.TryAdd(t);
+                    }
                 }, threads);
 
                 Assert.AreEqual(threads * count, coll.Count, "#-1");
-                int[] values = new int[threads];
+                var values = new int[threads];
                 int temp;
                 while (coll.TryTake(out temp))
                 {
@@ -74,7 +71,9 @@ namespace MonoTests.System.Collections.Concurrent
                 }
 
                 for (int i = 0; i < threads; i++)
+                {
                     Assert.AreEqual(count, values[i], "#" + i);
+                }
             });
         }
 
@@ -87,16 +86,19 @@ namespace MonoTests.System.Collections.Concurrent
                 const int delta = 5;
 
                 for (int i = 0; i < (count + delta) * threads; i++)
+                {
                     while (!coll.TryAdd(i))
-                        ;
+                    {
+                    }
+                }
 
-                bool state = true;
+                var state = true;
 
                 Assert.AreEqual((count + delta) * threads, coll.Count, "#0");
 
                 ParallelTestHelper.ParallelStressTest(coll, (q) =>
                 {
-                    bool s = true;
+                    var s = true;
                     int t;
 
                     for (int i = 0; i < count; i++)
@@ -104,34 +106,43 @@ namespace MonoTests.System.Collections.Concurrent
                         s &= coll.TryTake(out t);
                         // try again in case it was a transient failure
                         if (!s && coll.TryTake(out t))
+                        {
                             s = true;
+                        }
                     }
 
-                    if (!s)
-                        state = false;
+                    state &= s;
                 }, threads);
 
                 Assert.IsTrue(state, "#1");
                 Assert.AreEqual(delta * threads, coll.Count, "#2");
 
-                string actual = string.Empty;
+                var actual = string.Empty;
                 int temp;
+                var builder = new StringBuilder();
+                builder.Append(actual);
                 while (coll.TryTake(out temp))
                 {
-                    actual += temp.ToString();
-                    ;
+                    builder.Append(temp.ToString());
+                }
+                actual = builder.ToString();
+
+                var range = Enumerable.Range(order == CheckOrderingType.Reversed ? 0 : count * threads, delta * threads);
+                if (order == CheckOrderingType.Reversed)
+                {
+                    range = range.Reverse();
                 }
 
-                IEnumerable<int> range = Enumerable.Range(order == CheckOrderingType.Reversed ? 0 : count * threads, delta * threads);
-                if (order == CheckOrderingType.Reversed)
-                    range = range.Reverse();
-
-                string expected = range.Aggregate(string.Empty, (acc, v) => acc + v);
+                var expected = range.Aggregate(string.Empty, (acc, v) => acc + v);
 
                 if (order == CheckOrderingType.DontCare)
+                {
                     Assert.That(actual, new CollectionEquivalentConstraint(expected), "#3");
+                }
                 else
+                {
                     Assert.AreEqual(expected, actual, "#3");
+                }
             }, 10);
         }
     }

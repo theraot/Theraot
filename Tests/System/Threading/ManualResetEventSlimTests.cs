@@ -35,26 +35,24 @@ using System.Threading;
 
 using NUnit.Framework;
 
-//using MonoTests.System.Threading.Tasks;
-
 namespace MonoTests.System.Threading
 {
     [TestFixture]
     public class ManualResetEventSlimTests
     {
-        private ManualResetEventSlim mre;
+        private ManualResetEventSlim _mre;
 
         [SetUp]
         public void Setup()
         {
-            mre = new ManualResetEventSlim();
+            _mre = new ManualResetEventSlim();
         }
 
         [Test]
         public void Constructor_Defaults()
         {
-            Assert.IsFalse(mre.IsSet, "#1");
-            Assert.AreEqual(10, mre.SpinCount, "#2");
+            Assert.IsFalse(_mre.IsSet, "#1");
+            Assert.AreEqual(10, _mre.SpinCount, "#2");
         }
 
         [Test]
@@ -62,40 +60,46 @@ namespace MonoTests.System.Threading
         {
             try
             {
-                new ManualResetEventSlim(true, -1);
-                Assert.Fail("#1");
+                using (new ManualResetEventSlim(true, -1))
+                {
+                    Assert.Fail("#1");
+                }
             }
-            catch (ArgumentException)
+            catch (ArgumentException ex)
             {
+                GC.KeepAlive(ex);
             }
 
             try
             {
-                new ManualResetEventSlim(true, 2048);
-                Assert.Fail("#2");
+                using (new ManualResetEventSlim(true, 2048))
+                {
+                    Assert.Fail("#2");
+                }
             }
-            catch (ArgumentException)
+            catch (ArgumentException ex)
             {
+                GC.KeepAlive(ex);
             }
         }
 
         [Test]
         public void IsSetTestCase()
         {
-            Assert.IsFalse(mre.IsSet, "#1");
-            mre.Set();
-            Assert.IsTrue(mre.IsSet, "#2");
-            mre.Reset();
-            Assert.IsFalse(mre.IsSet, "#3");
+            Assert.IsFalse(_mre.IsSet, "#1");
+            _mre.Set();
+            Assert.IsTrue(_mre.IsSet, "#2");
+            _mre.Reset();
+            Assert.IsFalse(_mre.IsSet, "#3");
         }
 
         [Test]
         public void WaitTest()
         {
-            int count = 0;
-            bool s = false;
+            var count = 0;
+            var s = false;
 
-            ParallelTestHelper.ParallelStressTest(mre, delegate (ManualResetEventSlim m)
+            ParallelTestHelper.ParallelStressTest(_mre, (ManualResetEventSlim m) =>
             {
                 if (Interlocked.Increment(ref count) % 2 == 0)
                 {
@@ -103,9 +107,13 @@ namespace MonoTests.System.Threading
                     for (int i = 0; i < 10; i++)
                     {
                         if (i % 2 == 0)
+                        {
                             m.Reset();
+                        }
                         else
+                        {
                             m.Set();
+                        }
                     }
                 }
                 else
@@ -116,7 +124,7 @@ namespace MonoTests.System.Threading
             }, 2);
 
             Assert.IsTrue(s, "#1");
-            Assert.IsTrue(mre.IsSet, "#2");
+            Assert.IsTrue(_mre.IsSet, "#2");
         }
 
         [Test]
@@ -124,57 +132,55 @@ namespace MonoTests.System.Threading
         {
             for (int i = 0; i < 10000; ++i)
             {
-                var mre = new ManualResetEventSlim();
-                bool b = true;
-
-                ThreadPool.QueueUserWorkItem(delegate
+                using (var mre = new ManualResetEventSlim())
                 {
-                    mre.Set();
-                });
+                    var b = true;
 
-                ThreadPool.QueueUserWorkItem(delegate
-                {
-                    b &= mre.Wait(1000);
-                });
+                    ThreadPool.QueueUserWorkItem(state => mre.Set());
 
-                Assert.IsTrue(mre.Wait(1000), i.ToString());
-                Assert.IsTrue(b, i.ToString());
+                    ThreadPool.QueueUserWorkItem(state => b &= mre.Wait(1000));
+
+                    Assert.IsTrue(mre.Wait(1000), i.ToString());
+                    Assert.IsTrue(b, i.ToString());
+                }
             }
         }
 
         [Test]
         public void Wait_DisposeWithCancel()
         {
-            var token = new CancellationTokenSource();
-            ThreadPool.QueueUserWorkItem(delegate
+            using (var token = new CancellationTokenSource())
             {
-                Thread.Sleep(10);
-                mre.Dispose();
-                token.Cancel();
-            });
+                ThreadPool.QueueUserWorkItem(delegate
+                {
+                    Thread.Sleep(10);
+                    _mre.Dispose();
+                    token.Cancel();
+                });
 
-            try
-            {
-                mre.Wait(10000, token.Token);
-                Assert.Fail("#0");
-            }
-            catch (OperationCanceledException exception)
-            {
-                GC.KeepAlive(exception);
+                try
+                {
+                    _mre.Wait(10000, token.Token);
+                    Assert.Fail("#0");
+                }
+                catch (OperationCanceledException exception)
+                {
+                    GC.KeepAlive(exception);
+                }
             }
         }
 
         [Test]
         public void Wait_Expired()
         {
-            Assert.IsFalse(mre.Wait(10));
+            Assert.IsFalse(_mre.Wait(10));
         }
 
         [Test, ExpectedException(typeof(ObjectDisposedException))]
         public void WaitAfterDisposeTest()
         {
-            mre.Dispose();
-            mre.Wait();
+            _mre.Dispose();
+            _mre.Wait();
         }
 
         [Test]
@@ -184,8 +190,8 @@ namespace MonoTests.System.Threading
             {
                 Exception disp = null, setting = null;
 
-                CountdownEvent evt = new CountdownEvent(2);
-                CountdownEvent evtFinish = new CountdownEvent(2);
+                var evt = new CountdownEvent(2);
+                var evtFinish = new CountdownEvent(2);
 
                 ThreadPool.QueueUserWorkItem(delegate
                 {
@@ -193,7 +199,7 @@ namespace MonoTests.System.Threading
                     {
                         evt.Signal();
                         evt.Wait(1000);
-                        mre.Dispose();
+                        _mre.Dispose();
                     }
                     catch (Exception e)
                     {
@@ -207,7 +213,7 @@ namespace MonoTests.System.Threading
                     {
                         evt.Signal();
                         evt.Wait(1000);
-                        mre.Set();
+                        _mre.Set();
                     }
                     catch (Exception e)
                     {
@@ -216,9 +222,11 @@ namespace MonoTests.System.Threading
                     evtFinish.Signal();
                 });
 
-                bool bb = evtFinish.Wait(1000);
+                var bb = evtFinish.Wait(1000);
                 if (!bb)
+                {
                     Assert.AreEqual(true, evtFinish.IsSet);
+                }
 
                 Assert.IsTrue(bb, "#0");
                 Assert.IsNull(disp, "#1");
@@ -232,90 +240,112 @@ namespace MonoTests.System.Threading
         [Test]
         public void WaitHandle_Initialized()
         {
-            var mre = new ManualResetEventSlim(true);
-            Assert.IsTrue(mre.WaitHandle.WaitOne(0), "#1");
-            mre.Reset();
-            Assert.IsFalse(mre.WaitHandle.WaitOne(0), "#2");
-            Assert.AreEqual(mre.WaitHandle, mre.WaitHandle, "#3");
+            using (var mre = new ManualResetEventSlim(true))
+            {
+                Assert.IsTrue(mre.WaitHandle.WaitOne(0), "#1");
+                mre.Reset();
+                Assert.IsFalse(mre.WaitHandle.WaitOne(0), "#2");
+                Assert.AreEqual(mre.WaitHandle, mre.WaitHandle, "#3");
+            }
         }
 
         [Test]
         public void WaitHandle_NotInitialized()
         {
-            var mre = new ManualResetEventSlim(false);
-            Assert.IsFalse(mre.WaitHandle.WaitOne(0), "#1");
-            mre.Set();
-            Assert.IsTrue(mre.WaitHandle.WaitOne(0), "#2");
+            using (var mre = new ManualResetEventSlim(false))
+            {
+                Assert.IsFalse(mre.WaitHandle.WaitOne(0), "#1");
+                mre.Set();
+                Assert.IsTrue(mre.WaitHandle.WaitOne(0), "#2");
+            }
         }
 
         [Test]
         [Category("NotDotNet")] // Running this test against .NET 4.0 or .NET 4.5 fails
         public void WaitHandleConsistencyTest()
         {
-            var mre = new ManualResetEventSlim();
-            mre.WaitHandle.WaitOne(0);
-
-            for (int i = 0; i < 10000; i++)
+            using (var mre = new ManualResetEventSlim())
             {
-                int count = 2;
-                SpinWait wait = new SpinWait();
+                mre.WaitHandle.WaitOne(0);
 
-                ThreadPool.QueueUserWorkItem(_ =>
+                for (int i = 0; i < 10000; i++)
                 {
-                    mre.Set();
-                    Interlocked.Decrement(ref count);
-                });
-                ThreadPool.QueueUserWorkItem(_ =>
-                {
-                    mre.Reset();
-                    Interlocked.Decrement(ref count);
-                });
+                    var count = 2;
+                    var wait = new SpinWait();
 
-                while (count > 0)
-                    wait.SpinOnce();
-                Assert.AreEqual(mre.IsSet, mre.WaitHandle.WaitOne(0));
+                    ThreadPool.QueueUserWorkItem(_ =>
+                    {
+                        mre.Set();
+                        Interlocked.Decrement(ref count);
+                    });
+                    ThreadPool.QueueUserWorkItem(_ =>
+                    {
+                        mre.Reset();
+                        Interlocked.Decrement(ref count);
+                    });
+
+                    while (count > 0)
+                    {
+                        wait.SpinOnce();
+                    }
+
+                    Assert.AreEqual(mre.IsSet, mre.WaitHandle.WaitOne(0));
+                }
             }
         }
 
         [Test]
         public void WaitWithCancellationTokenAndNotImmediateSetTest()
         {
-            var mres = new ManualResetEventSlim();
-            var cts = new CancellationTokenSource();
-            ThreadPool.QueueUserWorkItem(x =>
+            using (var mres = new ManualResetEventSlim())
             {
-                Thread.Sleep(1000);
-                mres.Set();
-            });
-            Assert.IsTrue(mres.Wait(TimeSpan.FromSeconds(10), cts.Token), "Wait returned false despite event was set.");
+                using (var cts = new CancellationTokenSource())
+                {
+                    ThreadPool.QueueUserWorkItem(x =>
+                    {
+                        Thread.Sleep(1000);
+                        mres.Set();
+                    });
+                    Assert.IsTrue(mres.Wait(TimeSpan.FromSeconds(10), cts.Token), "Wait returned false despite event was set.");
+                }
+            }
         }
 
         [Test]
         public void WaitWithCancellationTokenAndCancel()
         {
-            var mres = new ManualResetEventSlim();
-            var cts = new CancellationTokenSource();
-            ThreadPool.QueueUserWorkItem(x =>
+            using (var mres = new ManualResetEventSlim())
             {
-                Thread.Sleep(1000);
-                cts.Cancel();
-            });
-            try
-            {
-                mres.Wait(TimeSpan.FromSeconds(10), cts.Token);
-                Assert.Fail("Wait did not throw an exception despite cancellation token was cancelled.");
-            }
-            catch (OperationCanceledException)
-            {
+                using (var cts = new CancellationTokenSource())
+                {
+                    ThreadPool.QueueUserWorkItem(x =>
+                    {
+                        Thread.Sleep(1000);
+                        cts.Cancel();
+                    });
+                    try
+                    {
+                        mres.Wait(TimeSpan.FromSeconds(10), cts.Token);
+                        Assert.Fail("Wait did not throw an exception despite cancellation token was cancelled.");
+                    }
+                    catch (OperationCanceledException ex)
+                    {
+                        GC.KeepAlive(ex);
+                    }
+                }
             }
         }
 
         [Test]
         public void WaitWithCancellationTokenAndTimeout()
         {
-            var mres = new ManualResetEventSlim();
-            var cts = new CancellationTokenSource();
-            Assert.IsFalse(mres.Wait(TimeSpan.FromSeconds(1), cts.Token), "Wait returned true despite timeout.");
+            using (var mres = new ManualResetEventSlim())
+            {
+                using (var cts = new CancellationTokenSource())
+                {
+                    Assert.IsFalse(mres.Wait(TimeSpan.FromSeconds(1), cts.Token), "Wait returned true despite timeout.");
+                }
+            }
         }
 
         [Test]
@@ -330,8 +360,9 @@ namespace MonoTests.System.Threading
                 mre.Reset();
                 Assert.Fail("#1");
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException ex)
             {
+                GC.KeepAlive(ex);
             }
 
             mre.Set();
@@ -341,8 +372,9 @@ namespace MonoTests.System.Threading
                 mre.Wait(0);
                 Assert.Fail("#3");
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException ex)
             {
+                GC.KeepAlive(ex);
             }
 
             try
@@ -350,8 +382,9 @@ namespace MonoTests.System.Threading
                 var v = mre.WaitHandle;
                 Assert.Fail("#4");
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException ex)
             {
+                GC.KeepAlive(ex);
             }
         }
 

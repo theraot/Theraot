@@ -21,14 +21,12 @@
 //		Jb Evain <jbevain@novell.com>
 
 using System;
-using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_And
 	{
 		[Test]
@@ -69,8 +67,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void Integer ()
 		{
-			BinaryExpression expr = Expression.And (Expression.Constant (1), Expression.Constant (2));
-			Assert.AreEqual (ExpressionType.And, expr.NodeType, "And#01");
+			var expr = Expression.And (Expression.Constant (1), Expression.Constant (2));
+            Assert.AreEqual (ExpressionType.And, expr.NodeType, "And#01");
 			Assert.AreEqual (typeof (int), expr.Type, "And#02");
 			Assert.IsNull (expr.Method, "And#03");
 			Assert.AreEqual ("(1 & 2)", expr.ToString(), "And#04");
@@ -79,8 +77,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void Boolean ()
 		{
-			BinaryExpression expr = Expression.And (Expression.Constant (true), Expression.Constant (false));
-			Assert.AreEqual (ExpressionType.And, expr.NodeType, "And#05");
+			var expr = Expression.And (Expression.Constant (true), Expression.Constant (false));
+            Assert.AreEqual (ExpressionType.And, expr.NodeType, "And#05");
 			Assert.AreEqual (typeof (bool), expr.Type, "And#06");
 			Assert.IsNull (expr.Method, "And#07");
 			Assert.AreEqual ("(True And False)", expr.ToString(), "And#08");
@@ -91,9 +89,9 @@ namespace MonoTests.System.Linq.Expressions
 		{
 			// We can use the simplest version of GetMethod because we already know only one
 			// exists in the very simple class we're using for the tests.
-			MethodInfo mi = typeof (OpClass).GetMethod ("op_BitwiseAnd");
+			var mi = typeof (OpClass).GetMethod ("op_BitwiseAnd");
 
-			BinaryExpression expr = Expression.And (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
+            BinaryExpression expr = Expression.And (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
 			Assert.AreEqual (ExpressionType.And, expr.NodeType, "And#09");
 			Assert.AreEqual (typeof (OpClass), expr.Type, "And#10");
 			Assert.AreEqual (mi, expr.Method, "And#11");

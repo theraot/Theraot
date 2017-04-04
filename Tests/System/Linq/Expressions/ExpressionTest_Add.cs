@@ -21,14 +21,12 @@
 //		Jb Evain <jbevain@novell.com>
 
 using System;
-using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_Add
 	{
 		[Test]
@@ -69,8 +67,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void Numeric ()
 		{
-			BinaryExpression expr = Expression.Add (Expression.Constant (1), Expression.Constant (2));
-			Assert.AreEqual (ExpressionType.Add, expr.NodeType, "Add#01");
+			var expr = Expression.Add (Expression.Constant (1), Expression.Constant (2));
+            Assert.AreEqual (ExpressionType.Add, expr.NodeType, "Add#01");
 			Assert.AreEqual (typeof (int), expr.Type, "Add#02");
 			Assert.IsNull (expr.Method, "Add#03");
 			Assert.AreEqual ("(1 + 2)", expr.ToString(), "Add#04");
@@ -82,9 +80,9 @@ namespace MonoTests.System.Linq.Expressions
 			int? a = 1;
 			int? b = 2;
 
-			BinaryExpression expr = Expression.Add (Expression.Constant (a,typeof(int?)),
+			var expr = Expression.Add (Expression.Constant (a,typeof(int?)),
 								Expression.Constant (b, typeof(int?)));
-			Assert.AreEqual (ExpressionType.Add, expr.NodeType, "Add#05");
+            Assert.AreEqual (ExpressionType.Add, expr.NodeType, "Add#05");
 			Assert.AreEqual (typeof (int?), expr.Type, "Add#06");
 			Assert.IsNull (expr.Method, "Add#07");
 			Assert.AreEqual ("(1 + 2)", expr.ToString(), "Add#08");
@@ -95,11 +93,11 @@ namespace MonoTests.System.Linq.Expressions
 		{
 			// We can use the simplest version of GetMethod because we already know only one
 			// exists in the very simple class we're using for the tests.
-			MethodInfo mi = typeof (OpClass).GetMethod ("op_Addition");
+			var mi = typeof (OpClass).GetMethod ("op_Addition");
 
-			OpClass left = new OpClass ();
-			BinaryExpression expr = Expression.Add (Expression.Constant (left), Expression.Constant (new OpClass ()));
-			Assert.AreEqual (ExpressionType.Add, expr.NodeType, "Add#09");
+            var left = new OpClass ();
+			var expr = Expression.Add (Expression.Constant (left), Expression.Constant (new OpClass ()));
+            Assert.AreEqual (ExpressionType.Add, expr.NodeType, "Add#09");
 			Assert.AreEqual (typeof (OpClass), expr.Type, "Add#10");
 			Assert.AreEqual (mi, expr.Method, "Add#11");
 			Assert.AreEqual ("op_Addition", expr.Method.Name, "Add#12");
@@ -130,11 +128,11 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void TestMethodAddition ()
 		{
-			BinaryExpression expr = Expression.Add (Expression.Constant (1), Expression.Constant (2), typeof(S).GetMethod("MyAdder"));
-			Expression<Func<int>> l = Expression.Lambda<Func<int>> (expr);
+			var expr = Expression.Add (Expression.Constant (1), Expression.Constant (2), typeof(S).GetMethod("MyAdder"));
+            Expression<Func<int>> l = Expression.Lambda<Func<int>> (expr);
 
-			Func<int> compiled = l.Compile ();
-			Assert.AreEqual (1000, compiled ());
+			var compiled = l.Compile ();
+            Assert.AreEqual (1000, compiled ());
 		}
 
 		[Test]
@@ -204,12 +202,12 @@ namespace MonoTests.System.Linq.Expressions
 			Assert.AreEqual (3,    c (1, 2), "a4");
 		}
 
-		struct Slot {
+        private struct Slot {
 			public int Value;
 
 			public Slot (int value)
 			{
-				this.Value = value;
+                Value = value;
 			}
 
 			public static Slot operator + (Slot a, Slot b)
@@ -254,12 +252,12 @@ namespace MonoTests.System.Linq.Expressions
 			Assert.AreEqual ((Slot?) new Slot (42), add ((Slot?) new Slot (21), (Slot?) new Slot (21)));
 		}
 
-		struct SlotToNullable {
+        private struct SlotToNullable {
 			public int Value;
 
 			public SlotToNullable (int value)
 			{
-				this.Value = value;
+                Value = value;
 			}
 
 			public static SlotToNullable? operator + (SlotToNullable a, SlotToNullable b)

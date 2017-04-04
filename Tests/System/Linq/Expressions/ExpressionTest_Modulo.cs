@@ -20,14 +20,12 @@
 //		Federico Di Gregorio <fog@initd.org>
 
 using System;
-using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_Modulo
 	{
 		[Test]
@@ -68,8 +66,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void Double ()
 		{
-			BinaryExpression expr = Expression.Modulo (Expression.Constant (1.0), Expression.Constant (2.0));
-			Assert.AreEqual (ExpressionType.Modulo, expr.NodeType, "Modulo#14");
+			var expr = Expression.Modulo (Expression.Constant (1.0), Expression.Constant (2.0));
+            Assert.AreEqual (ExpressionType.Modulo, expr.NodeType, "Modulo#14");
 			Assert.AreEqual (typeof (double), expr.Type, "Modulo#15");
 			Assert.IsNull (expr.Method, "Modulo#16");
 			Assert.AreEqual ("(1 % 2)", expr.ToString(), "Modulo#17");
@@ -78,8 +76,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void Numeric ()
 		{
-			BinaryExpression expr = Expression.Modulo (Expression.Constant (1), Expression.Constant (2));
-			Assert.AreEqual (ExpressionType.Modulo, expr.NodeType, "Modulo#01");
+			var expr = Expression.Modulo (Expression.Constant (1), Expression.Constant (2));
+            Assert.AreEqual (ExpressionType.Modulo, expr.NodeType, "Modulo#01");
 			Assert.AreEqual (typeof (int), expr.Type, "Modulo#02");
 			Assert.IsNull (expr.Method, "Modulo#03");
 			Assert.AreEqual ("(1 % 2)", expr.ToString(), "Modulo#04");
@@ -91,8 +89,8 @@ namespace MonoTests.System.Linq.Expressions
 			int? a = 1;
 			int? b = 2;
 
-			BinaryExpression expr = Expression.Modulo (Expression.Constant (a), Expression.Constant (b));
-			Assert.AreEqual (ExpressionType.Modulo, expr.NodeType, "Modulo#05");
+			var expr = Expression.Modulo (Expression.Constant (a), Expression.Constant (b));
+            Assert.AreEqual (ExpressionType.Modulo, expr.NodeType, "Modulo#05");
 			Assert.AreEqual (typeof (int), expr.Type, "Modulo#06");
 			Assert.IsNull (expr.Method, "Modulo#07");
 			Assert.AreEqual ("(1 % 2)", expr.ToString(), "Modulo#08");
@@ -103,9 +101,9 @@ namespace MonoTests.System.Linq.Expressions
 		{
 			// We can use the simplest version of GetMethod because we already know only one
 			// exists in the very simple class we're using for the tests.
-			MethodInfo mi = typeof (OpClass).GetMethod ("op_Modulus");
+			var mi = typeof (OpClass).GetMethod ("op_Modulus");
 
-			BinaryExpression expr = Expression.Modulo (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
+            BinaryExpression expr = Expression.Modulo (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
 			Assert.AreEqual (ExpressionType.Modulo, expr.NodeType, "Modulo#09");
 			Assert.AreEqual (typeof (OpClass), expr.Type, "Modulo#10");
 			Assert.AreEqual (mi, expr.Method, "Modulo#11");

@@ -21,14 +21,12 @@
 //		Jb Evain <jbevain@novell.com>
 
 using System;
-using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_AndAlso
 	{
 		[Test]
@@ -76,8 +74,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void Boolean ()
 		{
-			BinaryExpression expr = Expression.AndAlso (Expression.Constant (true), Expression.Constant (false));
-			Assert.AreEqual (ExpressionType.AndAlso, expr.NodeType, "AndAlso#01");
+			var expr = Expression.AndAlso (Expression.Constant (true), Expression.Constant (false));
+            Assert.AreEqual (ExpressionType.AndAlso, expr.NodeType, "AndAlso#01");
 			Assert.AreEqual (typeof (bool), expr.Type, "AndAlso#02");
 			Assert.IsNull (expr.Method, "AndAlso#03");
 #if !NET_4_0
@@ -90,9 +88,9 @@ namespace MonoTests.System.Linq.Expressions
 		{
 			// We can use the simplest version of GetMethod because we already know only one
 			// exists in the very simple class we're using for the tests.
-			MethodInfo mi = typeof (OpClass).GetMethod ("op_BitwiseAnd");
+			var mi = typeof (OpClass).GetMethod ("op_BitwiseAnd");
 
-			BinaryExpression expr = Expression.AndAlso (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
+            BinaryExpression expr = Expression.AndAlso (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
 			Assert.AreEqual (ExpressionType.AndAlso, expr.NodeType, "AndAlso#05");
 			Assert.AreEqual (typeof (OpClass), expr.Type, "AndAlso#06");
 			Assert.AreEqual (mi, expr.Method, "AndAlso#07");
@@ -207,13 +205,13 @@ namespace MonoTests.System.Linq.Expressions
 			Assert.IsFalse (item.RightCalled);
 		}
 
-		struct Slot {
+        private struct Slot {
 
 			public int Value;
 
 			public Slot (int val)
 			{
-				this.Value = val;
+                Value = val;
 			}
 
 			public static Slot operator & (Slot a, Slot b)
@@ -311,7 +309,7 @@ namespace MonoTests.System.Linq.Expressions
 			Assert.AreEqual (null, andalso (null, null));
 		}
 
-		struct Incomplete {
+        private struct Incomplete {
 			public int Value;
 
 			public Incomplete (int val)
@@ -337,7 +335,7 @@ namespace MonoTests.System.Linq.Expressions
 			Expression.AndAlso (l, r, method);
 		}
 
-		class A {
+        private class A {
 			public static bool operator true (A x)
 			{
 				return true;
@@ -349,7 +347,7 @@ namespace MonoTests.System.Linq.Expressions
 			}
 		}
 
-		class B : A {
+        private class B : A {
 			public static B operator & (B x, B y)
 			{
 				return new B ();

@@ -35,7 +35,6 @@ using NUnit.Framework;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System;
-using System.Collections;
 using MonoTests.System.Collections.Specialized;
 
 namespace MonoTests.System.Collections.ObjectModel
@@ -47,12 +46,16 @@ namespace MonoTests.System.Collections.ObjectModel
         public void Constructor()
         {
             var list = new List<int> { 3 };
-            var col = new ObservableCollection<int>(list);
-            col.Add(5);
+            var col = new ObservableCollection<int>(list)
+            {
+                5
+            };
             Assert.AreEqual(1, list.Count, "#1");
 
-            col = new ObservableCollection<int>((IEnumerable<int>)list);
-            col.Add(5);
+            col = new ObservableCollection<int>((IEnumerable<int>)list)
+            {
+                5
+            };
             Assert.AreEqual(1, list.Count, "#2");
         }
 
@@ -61,30 +64,35 @@ namespace MonoTests.System.Collections.ObjectModel
         {
             try
             {
-                new ObservableCollection<int>((List<int>)null);
+                var x = new ObservableCollection<int>((List<int>)null);
+                GC.KeepAlive(x);
                 Assert.Fail("#1");
             }
-            catch (ArgumentNullException)
+            catch (ArgumentNullException ex)
             {
+                GC.KeepAlive(ex);
             }
 
             try
             {
-                new ObservableCollection<int>((IEnumerable<int>)null);
+                var x = new ObservableCollection<int>((IEnumerable<int>)null);
+                GC.KeepAlive(x);
                 Assert.Fail("#2");
             }
-            catch (ArgumentNullException)
+            catch (ArgumentNullException ex)
             {
+                GC.KeepAlive(ex);
             }
         }
 
         [Test]
         public void Insert()
         {
-            bool reached = false;
-            ObservableCollection<int> col = new ObservableCollection<int>();
-            col.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
+            var reached = false;
+            var col = new ObservableCollection<int>();
+            col.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
             {
+                GC.KeepAlive(sender);
                 reached = true;
                 Assert.AreEqual(NotifyCollectionChangedAction.Add, e.Action, "INS_1");
                 Assert.AreEqual(0, e.NewStartingIndex, "INS_2");
@@ -100,11 +108,12 @@ namespace MonoTests.System.Collections.ObjectModel
         [Test]
         public void RemoveAt()
         {
-            bool reached = false;
-            ObservableCollection<int> col = new ObservableCollection<int>();
+            var reached = false;
+            var col = new ObservableCollection<int>();
             col.Insert(0, 5);
-            col.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
+            col.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
             {
+                GC.KeepAlive(sender);
                 reached = true;
                 Assert.AreEqual(NotifyCollectionChangedAction.Remove, e.Action, "REMAT_1");
                 Assert.AreEqual(-1, e.NewStartingIndex, "REMAT_2");
@@ -120,14 +129,15 @@ namespace MonoTests.System.Collections.ObjectModel
         [Test]
         public void Move()
         {
-            bool reached = false;
-            ObservableCollection<int> col = new ObservableCollection<int>();
+            var reached = false;
+            var col = new ObservableCollection<int>();
             col.Insert(0, 0);
             col.Insert(1, 1);
             col.Insert(2, 2);
             col.Insert(3, 3);
-            col.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
+            col.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
             {
+                GC.KeepAlive(sender);
                 reached = true;
                 Assert.AreEqual(NotifyCollectionChangedAction.Move, e.Action, "MOVE_1");
                 Assert.AreEqual(3, e.NewStartingIndex, "MOVE_2");
@@ -144,19 +154,21 @@ namespace MonoTests.System.Collections.ObjectModel
         [Test]
         public void Add()
         {
-            ObservableCollection<char> collection = new ObservableCollection<char>();
-            bool propertyChanged = false;
-            List<string> changedProps = new List<string>();
+            var collection = new ObservableCollection<char>();
+            var propertyChanged = false;
+            var changedProps = new List<string>();
             NotifyCollectionChangedEventArgs args = null;
 
-            ((INotifyPropertyChanged)collection).PropertyChanged += delegate (object sender, PropertyChangedEventArgs e)
+            ((INotifyPropertyChanged)collection).PropertyChanged += (object sender, PropertyChangedEventArgs e) =>
             {
+                GC.KeepAlive(sender);
                 propertyChanged = true;
                 changedProps.Add(e.PropertyName);
             };
 
-            collection.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
+            collection.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
             {
+                GC.KeepAlive(sender);
                 args = e;
             };
 
@@ -172,23 +184,25 @@ namespace MonoTests.System.Collections.ObjectModel
         [Test]
         public void Remove()
         {
-            ObservableCollection<char> collection = new ObservableCollection<char>();
-            bool propertyChanged = false;
-            List<string> changedProps = new List<string>();
+            var collection = new ObservableCollection<char>();
+            var propertyChanged = false;
+            var changedProps = new List<string>();
             NotifyCollectionChangedEventArgs args = null;
 
             collection.Add('A');
             collection.Add('B');
             collection.Add('C');
 
-            ((INotifyPropertyChanged)collection).PropertyChanged += delegate (object sender, PropertyChangedEventArgs e)
+            ((INotifyPropertyChanged)collection).PropertyChanged += (object sender, PropertyChangedEventArgs e) =>
             {
+                GC.KeepAlive(sender);
                 propertyChanged = true;
                 changedProps.Add(e.PropertyName);
             };
 
-            collection.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
+            collection.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
             {
+                GC.KeepAlive(sender);
                 args = e;
             };
 
@@ -204,23 +218,25 @@ namespace MonoTests.System.Collections.ObjectModel
         [Test]
         public void Set()
         {
-            ObservableCollection<char> collection = new ObservableCollection<char>();
-            bool propertyChanged = false;
-            List<string> changedProps = new List<string>();
+            var collection = new ObservableCollection<char>();
+            var propertyChanged = false;
+            var changedProps = new List<string>();
             NotifyCollectionChangedEventArgs args = null;
 
             collection.Add('A');
             collection.Add('B');
             collection.Add('C');
 
-            ((INotifyPropertyChanged)collection).PropertyChanged += delegate (object sender, PropertyChangedEventArgs e)
+            ((INotifyPropertyChanged)collection).PropertyChanged += (object sender, PropertyChangedEventArgs e) =>
             {
+                GC.KeepAlive(sender);
                 propertyChanged = true;
                 changedProps.Add(e.PropertyName);
             };
 
-            collection.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
+            collection.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
             {
+                GC.KeepAlive(sender);
                 args = e;
             };
 
@@ -235,17 +251,18 @@ namespace MonoTests.System.Collections.ObjectModel
         [Test]
         public void Reentrant()
         {
-            ObservableCollection<char> collection = new ObservableCollection<char>();
-            bool propertyChanged = false;
-            List<string> changedProps = new List<string>();
+            var collection = new ObservableCollection<char>();
+            var propertyChanged = false;
+            var changedProps = new List<string>();
             NotifyCollectionChangedEventArgs args = null;
 
             collection.Add('A');
             collection.Add('B');
             collection.Add('C');
 
-            PropertyChangedEventHandler pceh = delegate (object sender, PropertyChangedEventArgs e)
+            PropertyChangedEventHandler pceh = (object sender, PropertyChangedEventArgs e) =>
             {
+                GC.KeepAlive(sender);
                 propertyChanged = true;
                 changedProps.Add(e.PropertyName);
             };
@@ -253,21 +270,25 @@ namespace MonoTests.System.Collections.ObjectModel
             // Adding a PropertyChanged event handler
             ((INotifyPropertyChanged)collection).PropertyChanged += pceh;
 
-            collection.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
+            collection.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
             {
+                GC.KeepAlive(sender);
                 args = e;
             };
 
-            collection.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
+            collection.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
             {
+                GC.KeepAlive(sender);
+                GC.KeepAlive(e);
                 // This one will attempt to break reentrancy
                 try
                 {
                     collection.Add('X');
                     Assert.Fail("Reentrancy should not be allowed.");
                 }
-                catch (InvalidOperationException)
+                catch (InvalidOperationException ex)
                 {
+                    GC.KeepAlive(ex);
                 }
             };
 
@@ -287,22 +308,25 @@ namespace MonoTests.System.Collections.ObjectModel
         {
             internal void DoubleEnterReentrant()
             {
-                IDisposable object1 = BlockReentrancy();
-                IDisposable object2 = BlockReentrancy();
+                var object1 = BlockReentrancy();
+                var object2 = BlockReentrancy();
 
                 Assert.AreSame(object1, object2);
 
                 //With double block, try the reentrant:
                 NotifyCollectionChangedEventArgs args = null;
 
-                CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
+                CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
                 {
+                    GC.KeepAlive(sender);
                     args = e;
                 };
 
                 // We need a second callback for reentrancy to matter
-                CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
+                CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
                 {
+                    GC.KeepAlive(sender);
+                    GC.KeepAlive(e);
                     // Doesn't need to do anything; just needs more than one callback registered.
                 };
 
@@ -312,8 +336,9 @@ namespace MonoTests.System.Collections.ObjectModel
                     Add('I');
                     Assert.Fail("Reentrancy should not be allowed. -- #2");
                 }
-                catch (InvalidOperationException)
+                catch (InvalidOperationException ex)
                 {
+                    GC.KeepAlive(ex);
                 }
 
                 // Release the first reentrant
@@ -325,8 +350,9 @@ namespace MonoTests.System.Collections.ObjectModel
                     Add('J');
                     Assert.Fail("Reentrancy should not be allowed. -- #3");
                 }
-                catch (InvalidOperationException)
+                catch (InvalidOperationException ex)
                 {
+                    GC.KeepAlive(ex);
                 }
 
                 // Release the reentrant a second time
@@ -341,7 +367,7 @@ namespace MonoTests.System.Collections.ObjectModel
         [Test]
         public void ReentrantReuseObject()
         {
-            ObservableCollectionTestHelper helper = new ObservableCollectionTestHelper();
+            var helper = new ObservableCollectionTestHelper();
 
             helper.DoubleEnterReentrant();
         }
@@ -349,25 +375,28 @@ namespace MonoTests.System.Collections.ObjectModel
         [Test]
         public void Clear()
         {
-            List<char> initial = new List<char>();
+            var initial = new List<char>
+            {
+                'A',
+                'B',
+                'C'
+            };
 
-            initial.Add('A');
-            initial.Add('B');
-            initial.Add('C');
-
-            ObservableCollection<char> collection = new ObservableCollection<char>(initial);
-            bool propertyChanged = false;
-            List<string> changedProps = new List<string>();
+            var collection = new ObservableCollection<char>(initial);
+            var propertyChanged = false;
+            var changedProps = new List<string>();
             NotifyCollectionChangedEventArgs args = null;
 
-            ((INotifyPropertyChanged)collection).PropertyChanged += delegate (object sender, PropertyChangedEventArgs e)
+            ((INotifyPropertyChanged)collection).PropertyChanged += (object sender, PropertyChangedEventArgs e) =>
             {
+                GC.KeepAlive(sender);
                 propertyChanged = true;
                 changedProps.Add(e.PropertyName);
             };
 
-            collection.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
+            collection.CollectionChanged += (object sender, NotifyCollectionChangedEventArgs e) =>
             {
+                GC.KeepAlive(sender);
                 args = e;
             };
 

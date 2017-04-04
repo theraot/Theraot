@@ -27,14 +27,12 @@
 //
 
 using System;
-using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_LessThan
 	{
 		[Test]
@@ -95,12 +93,12 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void UserDefinedClass ()
 		{
-			MethodInfo mi = typeof (OpClass).GetMethod ("op_LessThan");
+			var mi = typeof (OpClass).GetMethod ("op_LessThan");
 
-			Assert.IsNotNull (mi);
+            Assert.IsNotNull (mi);
 
-			BinaryExpression expr = Expression.LessThan (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
-			Assert.AreEqual (ExpressionType.LessThan, expr.NodeType);
+			var expr = Expression.LessThan (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
+            Assert.AreEqual (ExpressionType.LessThan, expr.NodeType);
 			Assert.AreEqual (typeof (bool), expr.Type);
 			Assert.AreEqual (mi, expr.Method);
 			Assert.AreEqual ("op_LessThan", expr.Method.Name);
@@ -145,7 +143,7 @@ namespace MonoTests.System.Linq.Expressions
 			Assert.AreEqual ((bool?) false, lt (1, 1));
 		}
 
-		struct Slot {
+        private struct Slot {
 			public int Value;
 
 			public Slot (int val)

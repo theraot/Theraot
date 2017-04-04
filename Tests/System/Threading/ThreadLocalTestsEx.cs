@@ -4,8 +4,6 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Diagnostics;
-using Theraot.Collections;
 
 namespace MonoTests.System.Threading
 {
@@ -132,9 +130,9 @@ namespace MonoTests.System.Threading
 
         private static void LaunchAndWaitThread(ThreadLocal<int> threadLocal)
         {
-            
+
             var thread = new Thread(() =>
-            {                
+            {
                 try
                 {
                     GC.KeepAlive(threadLocal.Value);
@@ -153,7 +151,7 @@ namespace MonoTests.System.Threading
 #if NET20 || NET30 || NET35 || NET45
         private static void TestException(bool tracking)
         {
-            int callTime = 0;
+            var callTime = 0;
             using (var threadLocal = new ThreadLocal<int>(() =>
             {
                 Interlocked.Increment(ref callTime);

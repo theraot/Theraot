@@ -30,7 +30,6 @@
 #if NET_4_0
 
 using System;
-using System.Reflection;
 using System.Threading;
 using NUnit.Framework;
 
@@ -46,14 +45,16 @@ namespace MonoTests.System
         [ExpectedException(typeof(ArgumentNullException))]
         public void Ctor_Null_1()
         {
-            new Lazy<int>(null);
+            var lazy = new Lazy<int>(null);
+            GC.KeepAlive(lazy);
         }
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Ctor_Null_2()
         {
-            new Lazy<int>(null, false);
+            var lazy = new Lazy<int>(null, false);
+            GC.KeepAlive(lazy);
         }
 
         [Test]
@@ -63,7 +64,7 @@ namespace MonoTests.System
 
             Assert.IsFalse(l1.IsValueCreated);
 
-            int i = l1.Value;
+            var i = l1.Value;
 
             Assert.IsTrue(l1.IsValueCreated);
         }
@@ -101,8 +102,9 @@ namespace MonoTests.System
                 var o = l1.Value;
                 Assert.Fail();
             }
-            catch (MissingMemberException)
+            catch (MissingMemberException ex)
             {
+                GC.KeepAlive(ex);
             }
         }
 
@@ -110,6 +112,7 @@ namespace MonoTests.System
         {
             public NoDefaultCtorClass(int i)
             {
+                GC.KeepAlive(i);
             }
         }
 
@@ -120,43 +123,42 @@ namespace MonoTests.System
 
             Assert.AreEqual(0, l1.Value);
 
-            var l2 = new Lazy<int>(delegate ()
-            {
-                return 42;
-            });
+            var l2 = new Lazy<int>(() => 42);
 
             Assert.AreEqual(42, l2.Value);
         }
 
-        private static int counter;
+        private static int _counter;
 
         [Test]
         public void EnsureSingleThreadSafeExecution()
         {
-            counter = 42;
+            _counter = 42;
 
-            var l = new Lazy<int>(delegate ()
-            {
-                return counter++;
-            }, true);
+            var l = new Lazy<int>(() => _counter++, true);
 
-            object monitor = new object();
+            var monitor = new object();
             var threads = new Thread[10];
             for (int i = 0; i < 10; ++i)
             {
-                threads[i] = new Thread(delegate ()
+                threads[i] = new Thread(() =>
                 {
                     lock (monitor)
                     {
                         Monitor.Wait(monitor);
                     }
-                    int val = l.Value;
+                    var val = l.Value;
                 });
             }
             for (int i = 0; i < 10; ++i)
+            {
                 threads[i].Start();
+            }
+
             lock (monitor)
+            {
                 Monitor.PulseAll(monitor);
+            }
 
             Assert.AreEqual(42, l.Value);
         }
@@ -164,20 +166,23 @@ namespace MonoTests.System
         [Test]
         public void InitRecursion()
         {
-            Lazy<DefaultCtorClass> c = null;
-            c = new Lazy<DefaultCtorClass>(() =>
-            {
-                Console.WriteLine(c.Value);
-                return null;
-            });
-
+            Lazy<DefaultCtorClass> c = null; // Do not inline
+            c = new Lazy<DefaultCtorClass>
+            (
+                () =>
+                {
+                    Console.WriteLine(c.Value);
+                    return null;
+                }
+            );
             try
             {
                 var r = c.Value;
                 Assert.Fail();
             }
-            catch (InvalidOperationException)
+            catch (InvalidOperationException ex)
             {
+                GC.KeepAlive(ex);
             }
         }
 
@@ -185,13 +190,17 @@ namespace MonoTests.System
         public void ModeNone()
         {
             int x;
-            bool fail = true;
-            Lazy<int> lz = new Lazy<int>(() =>
+            var fail = true;
+            var lz = new Lazy<int>(() =>
             {
                 if (fail)
+                {
                     throw new Exception();
+                }
                 else
+                {
                     return 99;
+                }
             }, LazyThreadSafetyMode.None);
             try
             {
@@ -199,14 +208,20 @@ namespace MonoTests.System
                 Assert.Fail("#1");
                 Console.WriteLine(x);
             }
-            catch (Exception ex) { }
+            catch (Exception ex)
+            {
+                GC.KeepAlive(ex);
+            }
 
             try
             {
                 x = lz.Value;
                 Assert.Fail("#2");
             }
-            catch (Exception ex) { }
+            catch (Exception ex)
+            {
+                GC.KeepAlive(ex);
+            }
 
             fail = false;
             try
@@ -214,9 +229,12 @@ namespace MonoTests.System
                 x = lz.Value;
                 Assert.Fail("#3");
             }
-            catch (Exception ex) { }
+            catch (Exception ex)
+            {
+                GC.KeepAlive(ex);
+            }
 
-            bool rec = true;
+            var rec = true;
             lz = new Lazy<int>(() => rec ? lz.Value : 99, LazyThreadSafetyMode.None);
 
             try
@@ -224,7 +242,10 @@ namespace MonoTests.System
                 x = lz.Value;
                 Assert.Fail("#4");
             }
-            catch (InvalidOperationException ex) { }
+            catch (InvalidOperationException ex)
+            {
+                GC.KeepAlive(ex);
+            }
 
             rec = false;
             try
@@ -232,37 +253,50 @@ namespace MonoTests.System
                 x = lz.Value;
                 Assert.Fail("#5");
             }
-            catch (InvalidOperationException ex) { }
+            catch (InvalidOperationException ex)
+            {
+                GC.KeepAlive(ex);
+            }
         }
 
         [Test]
         public void ModePublicationOnly()
         {
-            bool fail = true;
-            int invoke = 0;
-            Lazy<int> lz = new Lazy<int>(() =>
+            var fail = true;
+            var invoke = 0;
+            var lz = new Lazy<int>(() =>
             {
                 ++invoke;
                 if (fail)
+                {
                     throw new Exception();
+                }
                 else
+                {
                     return 99;
+                }
             }, LazyThreadSafetyMode.PublicationOnly);
 
             try
             {
-                int x = lz.Value;
+                var x = lz.Value;
                 Assert.Fail("#1");
                 Console.WriteLine(x);
             }
-            catch (Exception ex) { }
+            catch (Exception ex)
+            {
+                GC.KeepAlive(ex);
+            }
 
             try
             {
-                int x = lz.Value;
+                var x = lz.Value;
                 Assert.Fail("#2");
             }
-            catch (Exception ex) { }
+            catch (Exception ex)
+            {
+                GC.KeepAlive(ex);
+            }
 
             Assert.AreEqual(2, invoke, "#3");
             fail = false;
@@ -270,11 +304,11 @@ namespace MonoTests.System
             Assert.AreEqual(3, invoke, "#5");
 
             invoke = 0;
-            bool rec = true;
+            var rec = true;
             lz = new Lazy<int>(() =>
             {
                 ++invoke;
-                bool r = rec;
+                var r = rec;
                 rec = false;
                 return r ? lz.Value : 88;
             }, LazyThreadSafetyMode.PublicationOnly);
@@ -286,60 +320,79 @@ namespace MonoTests.System
         [Test]
         public void ModeExecutionAndPublication()
         {
-            int invoke = 0;
-            bool fail = true;
-            Lazy<int> lz = new Lazy<int>(() =>
+            var invoke = 0;
+            var fail = true;
+            var lz = new Lazy<int>(() =>
             {
                 ++invoke;
                 if (fail)
+                {
                     throw new Exception();
+                }
                 else
+                {
                     return 99;
+                }
             }, LazyThreadSafetyMode.ExecutionAndPublication);
 
             try
             {
-                int x = lz.Value;
+                var x = lz.Value;
                 Assert.Fail("#1");
                 Console.WriteLine(x);
             }
-            catch (Exception ex) { }
+            catch (Exception ex)
+            {
+                GC.KeepAlive(ex);
+            }
             Assert.AreEqual(1, invoke, "#2");
 
             try
             {
-                int x = lz.Value;
+                var x = lz.Value;
                 Assert.Fail("#3");
             }
-            catch (Exception ex) { }
+            catch (Exception ex)
+            {
+                GC.KeepAlive(ex);
+            }
             Assert.AreEqual(1, invoke, "#4");
 
             fail = false;
             try
             {
-                int x = lz.Value;
+                var x = lz.Value;
                 Assert.Fail("#5");
             }
-            catch (Exception ex) { }
+            catch (Exception ex)
+            {
+                GC.KeepAlive(ex);
+            }
             Assert.AreEqual(1, invoke, "#6");
 
-            bool rec = true;
+            var rec = true;
             lz = new Lazy<int>(() => rec ? lz.Value : 99, LazyThreadSafetyMode.ExecutionAndPublication);
 
             try
             {
-                int x = lz.Value;
+                var x = lz.Value;
                 Assert.Fail("#7");
             }
-            catch (InvalidOperationException ex) { }
+            catch (InvalidOperationException ex)
+            {
+                GC.KeepAlive(ex);
+            }
 
             rec = false;
             try
             {
-                int x = lz.Value;
+                var x = lz.Value;
                 Assert.Fail("#8");
             }
-            catch (InvalidOperationException ex) { }
+            catch (InvalidOperationException ex)
+            {
+                GC.KeepAlive(ex);
+            }
         }
 
         private static int Return22()
@@ -357,56 +410,59 @@ namespace MonoTests.System
         [Test]
         public void ConcurrentInitialization()
         {
-            var init = new AutoResetEvent(false);
-            var e1_set = new AutoResetEvent(false);
-
-            var lazy = new Lazy<string>(() =>
+            using (var init = new AutoResetEvent(false))
             {
-                init.Set();
-                Thread.Sleep(10);
-                throw new ApplicationException();
-            });
-
-            Exception e1 = null;
-            var thread = new Thread(() =>
-            {
-                try
+                using (var e1_set = new AutoResetEvent(false))
                 {
-                    string value = lazy.Value;
+                    var lazy = new Lazy<string>(() =>
+                    {
+                        init.Set();
+                        Thread.Sleep(10);
+                        throw new ApplicationException();
+                    });
+
+                    Exception e1 = null;
+                    var thread = new Thread(() =>
+                    {
+                        try
+                        {
+                            var value = lazy.Value;
+                        }
+                        catch (Exception ex)
+                        {
+                            e1 = ex;
+                            e1_set.Set();
+                        }
+                    });
+                    thread.Start();
+
+                    Assert.IsTrue(init.WaitOne(3000), "#1");
+
+                    Exception e2 = null;
+                    try
+                    {
+                        var value = lazy.Value;
+                    }
+                    catch (Exception ex)
+                    {
+                        e2 = ex;
+                    }
+
+                    Exception e3 = null;
+                    try
+                    {
+                        var value = lazy.Value;
+                    }
+                    catch (Exception ex)
+                    {
+                        e3 = ex;
+                    }
+
+                    Assert.IsTrue(e1_set.WaitOne(3000), "#2");
+                    Assert.AreSame(e1, e2, "#3");
+                    Assert.AreSame(e1, e3, "#4");
                 }
-                catch (Exception ex)
-                {
-                    e1 = ex;
-                    e1_set.Set();
-                }
-            });
-            thread.Start();
-
-            Assert.IsTrue(init.WaitOne(3000), "#1");
-
-            Exception e2 = null;
-            try
-            {
-                string value = lazy.Value;
             }
-            catch (Exception ex)
-            {
-                e2 = ex;
-            }
-
-            Exception e3 = null;
-            try
-            {
-                string value = lazy.Value;
-            }
-            catch (Exception ex)
-            {
-                e3 = ex;
-            }
-
-            Assert.IsTrue(e1_set.WaitOne(3000), "#2");
-            Assert.AreSame(e1, e2, "#3");
-            Assert.AreSame(e1, e3, "#4");
         }
     }
 }

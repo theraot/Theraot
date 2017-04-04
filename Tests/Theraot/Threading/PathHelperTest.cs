@@ -17,7 +17,7 @@ namespace Tests.Theraot.Threading
         [Test]
         public void Combine_3Params()
         {
-            string sep = Path.DirectorySeparatorChar.ToString();
+            var sep = Path.DirectorySeparatorChar.ToString();
 
             try
             {
@@ -68,7 +68,7 @@ namespace Tests.Theraot.Threading
         [Test]
         public void Combine_4Params()
         {
-            string sep = Path.DirectorySeparatorChar.ToString();
+            var sep = Path.DirectorySeparatorChar.ToString();
 
             try
             {
@@ -132,7 +132,7 @@ namespace Tests.Theraot.Threading
         [Test]
         public void Combine_ManyParams()
         {
-            string sep = Path.DirectorySeparatorChar.ToString();
+            var sep = Path.DirectorySeparatorChar.ToString();
 
             try
             {

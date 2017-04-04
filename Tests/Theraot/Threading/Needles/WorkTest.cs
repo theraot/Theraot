@@ -36,14 +36,14 @@ namespace Tests.Theraot.Threading.Needles
         [Category("RaceToDeadLock")] // This test creates a race condition, that when resolved sequentially will be stuck
         public void ManualResetEventSlim_SetAfterDisposeTest()
         {
-            ManualResetEventSlim mre = new ManualResetEventSlim();
+            var mre = new ManualResetEventSlim();
 
             ParallelTestHelper.Repeat(delegate
             {
                 Exception disp = null, setting = null;
 
-                CountdownEvent evt = new CountdownEvent(2);
-                CountdownEvent evtFinish = new CountdownEvent(2);
+                var evt = new CountdownEvent(2);
+                var evtFinish = new CountdownEvent(2);
 
                 Task.Factory.StartNew(delegate
                 {
@@ -74,9 +74,11 @@ namespace Tests.Theraot.Threading.Needles
                     evtFinish.Signal();
                 });
 
-                bool bb = evtFinish.Wait(1000);
+                var bb = evtFinish.Wait(1000);
                 if (!bb)
+                {
                     Assert.AreEqual(true, evtFinish.IsSet);
+                }
 
                 Assert.IsTrue(bb, "#0");
                 Assert.IsNull(disp, "#1");
@@ -93,7 +95,7 @@ namespace Tests.Theraot.Threading.Needles
             for (int i = 0; i < 10000; ++i)
             {
                 var mre = new ManualResetEventSlim();
-                bool b = true;
+                var b = true;
 
                 Task.Factory.StartNew(delegate
                 {

@@ -21,7 +21,9 @@ namespace MonoTests.System.Threading.Tasks
         protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
         {
             if (TryExecuteTaskInlineHandler != null)
+            {
                 TryExecuteTaskInlineHandler(task, taskWasPreviouslyQueued);
+            }
 
             return base.TryExecuteTask(task);
         }

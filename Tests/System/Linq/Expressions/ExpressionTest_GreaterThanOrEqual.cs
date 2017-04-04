@@ -27,14 +27,12 @@
 //
 
 using System;
-using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_GreaterThanOrEqual
 	{
 		[Test]
@@ -95,12 +93,12 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void UserDefinedClass ()
 		{
-			MethodInfo mi = typeof (OpClass).GetMethod ("op_GreaterThanOrEqual");
+			var mi = typeof (OpClass).GetMethod ("op_GreaterThanOrEqual");
 
-			Assert.IsNotNull (mi);
+            Assert.IsNotNull (mi);
 
-			BinaryExpression expr = Expression.GreaterThanOrEqual (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
-			Assert.AreEqual (ExpressionType.GreaterThanOrEqual, expr.NodeType);
+			var expr = Expression.GreaterThanOrEqual (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
+            Assert.AreEqual (ExpressionType.GreaterThanOrEqual, expr.NodeType);
 			Assert.AreEqual (typeof (bool), expr.Type);
 			Assert.AreEqual (mi, expr.Method);
 			Assert.AreEqual ("op_GreaterThanOrEqual", expr.Method.Name);
@@ -145,7 +143,7 @@ namespace MonoTests.System.Linq.Expressions
 			Assert.AreEqual ((bool?) true, gte (1, 1));
 		}
 
-		struct Slot {
+        private struct Slot {
 			public int Value;
 
 			public Slot (int val)

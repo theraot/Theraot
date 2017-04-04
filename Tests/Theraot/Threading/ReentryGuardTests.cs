@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 using Theraot.Threading;
 
 namespace Tests.Theraot.Threading
@@ -14,7 +13,7 @@ namespace Tests.Theraot.Threading
         public void SingleThreadReentry()
         {
             var guard = new ReentryGuard();
-            int count = 0;
+            var count = 0;
             Action action = null;
             action = () =>
             {
@@ -32,7 +31,7 @@ namespace Tests.Theraot.Threading
         public void ThreadedReentry()
         {
             var guard = new ReentryGuard();
-            int count = 0;
+            var count = 0;
             Action action = null;
             action = () =>
             {

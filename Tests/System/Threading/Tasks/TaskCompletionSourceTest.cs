@@ -27,32 +27,38 @@
 #define NET_4_0
 #if NET_4_0
 
+using NUnit.Framework;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-
-using NUnit.Framework;
 
 namespace MonoTests.System.Threading.Tasks
 {
     [TestFixture]
     public class TaskCompletionSourceTests
     {
-        private TaskCompletionSource<int> completionSource;
-        private object state;
+        private TaskCompletionSource<int> _completionSource;
+        private object _state;
 
-        [SetUp]
-        public void Setup()
+        [Test]
+        [Category("RaceCondition")]
+        public void ContinuationTest()
         {
-            state = new object();
-            completionSource = new TaskCompletionSource<int>(state, TaskCreationOptions.None);
+            var result = false;
+            var t = _completionSource.Task.ContinueWith((p) => result |= ((Task<int>)p).Result == 2);
+            Assert.AreEqual(TaskStatus.WaitingForActivation, _completionSource.Task.Status, "#A");
+            _completionSource.SetResult(2);
+            t.Wait();
+            Assert.AreEqual(TaskStatus.RanToCompletion, _completionSource.Task.Status, "#1");
+            Assert.AreEqual(TaskStatus.RanToCompletion, t.Status, "#2");
+            Assert.IsTrue(result);
         }
 
         [Test]
         public void CreationCheckTest()
         {
-            Assert.IsNotNull(completionSource.Task, "#1");
-            Assert.AreEqual(TaskCreationOptions.None, completionSource.Task.CreationOptions, "#2");
+            Assert.IsNotNull(_completionSource.Task, "#1");
+            Assert.AreEqual(TaskCreationOptions.None, _completionSource.Task.CreationOptions, "#2");
         }
 
         [Test]
@@ -60,130 +66,25 @@ namespace MonoTests.System.Threading.Tasks
         {
             try
             {
-                new TaskCompletionSource<long>(TaskCreationOptions.LongRunning);
+                var taskCompletionSource = new TaskCompletionSource<long>(TaskCreationOptions.LongRunning);
+                GC.KeepAlive(taskCompletionSource);
                 Assert.Fail("#1");
             }
-            catch (ArgumentOutOfRangeException)
+            catch (ArgumentOutOfRangeException ex)
             {
+                GC.KeepAlive(ex);
             }
 
             try
             {
-                new TaskCompletionSource<long>(TaskCreationOptions.PreferFairness);
+                var taskCompletionSource = new TaskCompletionSource<long>(TaskCreationOptions.PreferFairness);
+                GC.KeepAlive(taskCompletionSource);
                 Assert.Fail("#2");
             }
-            catch (ArgumentOutOfRangeException)
+            catch (ArgumentOutOfRangeException ex)
             {
+                GC.KeepAlive(ex);
             }
-        }
-
-        [Test]
-        public void SetResultTest()
-        {
-            Assert.IsNotNull(completionSource.Task, "#1");
-            Assert.IsTrue(completionSource.TrySetResult(42), "#2");
-            Assert.AreEqual(TaskStatus.RanToCompletion, completionSource.Task.Status, "#3");
-            Assert.AreEqual(42, completionSource.Task.Result, "#4");
-            Assert.IsFalse(completionSource.TrySetResult(43), "#5");
-            Assert.AreEqual(TaskStatus.RanToCompletion, completionSource.Task.Status, "#6");
-            Assert.AreEqual(42, completionSource.Task.Result, "#7");
-            Assert.IsFalse(completionSource.TrySetCanceled(), "#8");
-            Assert.AreEqual(TaskStatus.RanToCompletion, completionSource.Task.Status, "#9");
-        }
-
-        [Test]
-        public void SetCanceledTest()
-        {
-            Assert.IsNotNull(completionSource.Task, "#1");
-            Assert.IsTrue(completionSource.TrySetCanceled(), "#2");
-            Assert.AreEqual(TaskStatus.Canceled, completionSource.Task.Status, "#3");
-            Assert.IsFalse(completionSource.TrySetResult(42), "#4");
-            Assert.AreEqual(TaskStatus.Canceled, completionSource.Task.Status, "#5");
-
-            try
-            {
-                Console.WriteLine(completionSource.Task.Result);
-                Assert.Fail("#6");
-            }
-            catch (AggregateException e)
-            {
-                var details = (TaskCanceledException)e.InnerException;
-                Assert.AreEqual(completionSource.Task, details.Task, "#6e");
-                Assert.IsNull(details.Task.Exception, "#6e2");
-            }
-        }
-
-        [Test]
-        public void SetExceptionTest()
-        {
-            Exception e = new Exception("foo");
-
-            Assert.IsNotNull(completionSource.Task, "#1");
-            Assert.IsTrue(completionSource.TrySetException(e), "#2");
-            Assert.AreEqual(TaskStatus.Faulted, completionSource.Task.Status, "#3");
-            Assert.That(completionSource.Task.Exception, Is.TypeOf(typeof(AggregateException)), "#4.1");
-
-            AggregateException aggr = (AggregateException)completionSource.Task.Exception;
-            Assert.AreEqual(1, aggr.InnerExceptions.Count, "#4.2");
-            Assert.AreEqual(e, aggr.InnerExceptions[0], "#4.3");
-
-            Assert.IsFalse(completionSource.TrySetResult(42), "#5");
-            Assert.AreEqual(TaskStatus.Faulted, completionSource.Task.Status, "#6");
-            Assert.IsFalse(completionSource.TrySetCanceled(), "#8");
-            Assert.AreEqual(TaskStatus.Faulted, completionSource.Task.Status, "#9");
-        }
-
-        [Test]
-        public void SetExceptionInvalid()
-        {
-            try
-            {
-                completionSource.TrySetException(new ApplicationException[0]);
-                Assert.Fail("#1");
-            }
-            catch (ArgumentException)
-            {
-            }
-
-            try
-            {
-                completionSource.TrySetException(new[] { new ApplicationException(), null });
-                Assert.Fail("#2");
-            }
-            catch (ArgumentException)
-            {
-            }
-
-            Assert.AreEqual(TaskStatus.WaitingForActivation, completionSource.Task.Status, "r1");
-        }
-
-        [Test, ExpectedException(typeof(InvalidOperationException))]
-        public void SetResultExceptionTest()
-        {
-            Assert.IsNotNull(completionSource.Task, "#1");
-            Assert.IsTrue(completionSource.TrySetResult(42), "#2");
-            Assert.AreEqual(TaskStatus.RanToCompletion, completionSource.Task.Status, "#3");
-            Assert.AreEqual(42, completionSource.Task.Result, "#4");
-
-            completionSource.SetResult(43);
-        }
-
-        [Test]
-        [Category("RaceCondition")]
-        public void ContinuationTest()
-        {
-            bool result = false;
-            var t = completionSource.Task.ContinueWith((p) =>
-            {
-                if (((Task<int>)p).Result == 2)
-                    result = true;
-            });
-            Assert.AreEqual(TaskStatus.WaitingForActivation, completionSource.Task.Status, "#A");
-            completionSource.SetResult(2);
-            t.Wait();
-            Assert.AreEqual(TaskStatus.RanToCompletion, completionSource.Task.Status, "#1");
-            Assert.AreEqual(TaskStatus.RanToCompletion, t.Status, "#2");
-            Assert.IsTrue(result);
         }
 
         [Test]
@@ -225,32 +126,127 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
+        public void SetCanceledTest()
+        {
+            Assert.IsNotNull(_completionSource.Task, "#1");
+            Assert.IsTrue(_completionSource.TrySetCanceled(), "#2");
+            Assert.AreEqual(TaskStatus.Canceled, _completionSource.Task.Status, "#3");
+            Assert.IsFalse(_completionSource.TrySetResult(42), "#4");
+            Assert.AreEqual(TaskStatus.Canceled, _completionSource.Task.Status, "#5");
+
+            try
+            {
+                Console.WriteLine(_completionSource.Task.Result);
+                Assert.Fail("#6");
+            }
+            catch (AggregateException e)
+            {
+                var details = (TaskCanceledException)e.InnerException;
+                Assert.AreEqual(_completionSource.Task, details.Task, "#6e");
+                Assert.IsNull(details.Task.Exception, "#6e2");
+            }
+        }
+
+        [Test]
         [Ignore("#4550, Mono GC is lame")]
         public void SetExceptionAndUnobservedEvent()
         {
-            bool notFromMainThread = false;
-            var mre = new ManualResetEvent(false);
-            int mainThreadId = Thread.CurrentThread.ManagedThreadId;
-            TaskScheduler.UnobservedTaskException += (o, args) =>
+            var notFromMainThread = false;
+            using (var mre = new ManualResetEvent(false))
             {
-                notFromMainThread = Thread.CurrentThread.ManagedThreadId != mainThreadId;
-                args.SetObserved();
-                mre.Set();
-            };
-            var inner = new ApplicationException();
-            CreateFaultedTaskCompletionSource(inner);
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
+                var mainThreadId = Thread.CurrentThread.ManagedThreadId;
+                TaskScheduler.UnobservedTaskException += (o, args) =>
+                {
+                    notFromMainThread = Thread.CurrentThread.ManagedThreadId != mainThreadId;
+                    args.SetObserved();
+                    mre.Set();
+                };
+                var inner = new ApplicationException();
+                CreateFaultedTaskCompletionSource(inner);
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
 
-            Assert.IsTrue(mre.WaitOne(5000), "#1");
-            Assert.IsTrue(notFromMainThread, "#2");
+                Assert.IsTrue(mre.WaitOne(5000), "#1");
+                Assert.IsTrue(notFromMainThread, "#2");
+            }
         }
 
-        private void CreateFaultedTaskCompletionSource(Exception inner)
+        [Test]
+        public void SetExceptionInvalid()
         {
-            var tcs = new TaskCompletionSource<int>();
-            tcs.SetException(inner);
-            tcs = null;
+            try
+            {
+                _completionSource.TrySetException(new ApplicationException[0]);
+                Assert.Fail("#1");
+            }
+            catch (ArgumentException ex)
+            {
+                GC.KeepAlive(ex);
+            }
+
+            try
+            {
+                _completionSource.TrySetException(new[] { new ApplicationException(), null });
+                Assert.Fail("#2");
+            }
+            catch (ArgumentException ex)
+            {
+                GC.KeepAlive(ex);
+            }
+
+            Assert.AreEqual(TaskStatus.WaitingForActivation, _completionSource.Task.Status, "r1");
+        }
+
+        [Test]
+        public void SetExceptionTest()
+        {
+            var e = new Exception("foo");
+
+            Assert.IsNotNull(_completionSource.Task, "#1");
+            Assert.IsTrue(_completionSource.TrySetException(e), "#2");
+            Assert.AreEqual(TaskStatus.Faulted, _completionSource.Task.Status, "#3");
+            Assert.That(_completionSource.Task.Exception, Is.TypeOf(typeof(AggregateException)), "#4.1");
+
+            var aggr = (AggregateException)_completionSource.Task.Exception;
+            Assert.AreEqual(1, aggr.InnerExceptions.Count, "#4.2");
+            Assert.AreEqual(e, aggr.InnerExceptions[0], "#4.3");
+
+            Assert.IsFalse(_completionSource.TrySetResult(42), "#5");
+            Assert.AreEqual(TaskStatus.Faulted, _completionSource.Task.Status, "#6");
+            Assert.IsFalse(_completionSource.TrySetCanceled(), "#8");
+            Assert.AreEqual(TaskStatus.Faulted, _completionSource.Task.Status, "#9");
+        }
+
+        [Test, ExpectedException(typeof(InvalidOperationException))]
+        public void SetResultExceptionTest()
+        {
+            Assert.IsNotNull(_completionSource.Task, "#1");
+            Assert.IsTrue(_completionSource.TrySetResult(42), "#2");
+            Assert.AreEqual(TaskStatus.RanToCompletion, _completionSource.Task.Status, "#3");
+            Assert.AreEqual(42, _completionSource.Task.Result, "#4");
+
+            _completionSource.SetResult(43);
+        }
+
+        [Test]
+        public void SetResultTest()
+        {
+            Assert.IsNotNull(_completionSource.Task, "#1");
+            Assert.IsTrue(_completionSource.TrySetResult(42), "#2");
+            Assert.AreEqual(TaskStatus.RanToCompletion, _completionSource.Task.Status, "#3");
+            Assert.AreEqual(42, _completionSource.Task.Result, "#4");
+            Assert.IsFalse(_completionSource.TrySetResult(43), "#5");
+            Assert.AreEqual(TaskStatus.RanToCompletion, _completionSource.Task.Status, "#6");
+            Assert.AreEqual(42, _completionSource.Task.Result, "#7");
+            Assert.IsFalse(_completionSource.TrySetCanceled(), "#8");
+            Assert.AreEqual(TaskStatus.RanToCompletion, _completionSource.Task.Status, "#9");
+        }
+
+        [SetUp]
+        public void Setup()
+        {
+            _state = new object();
+            _completionSource = new TaskCompletionSource<int>(_state, TaskCreationOptions.None);
         }
 
         [Test]
@@ -258,9 +254,16 @@ namespace MonoTests.System.Threading.Tasks
         {
             var tcs = new TaskCompletionSource<int>();
             var task = tcs.Task;
-            bool result = task.Wait(50);
+            var result = task.Wait(50);
 
             Assert.IsFalse(result);
+        }
+
+        private static void CreateFaultedTaskCompletionSource(Exception inner)
+        {
+            var tcs = new TaskCompletionSource<int>();
+            tcs.SetException(inner);
+            tcs = null;
         }
     }
 }

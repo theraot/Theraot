@@ -250,7 +250,7 @@ namespace MonoTests.System.Linq.Expressions {
 		{
 			Expression.Call (
 				Expression.Constant ("la la la"),
-				this.GetType ().GetMethod ("OneStaticMethod"));
+                GetType().GetMethod ("OneStaticMethod"));
 		}
 
 		public static int DoSomethingWith (ref int a)
@@ -288,7 +288,7 @@ namespace MonoTests.System.Linq.Expressions {
 			Assert.AreEqual ("foo42", lamda (42, "foo"));
 		}
 
-		static bool fout_called = false;
+		private static bool fout_called = false;
 
 		public static int FooOut (out int x)
 		{

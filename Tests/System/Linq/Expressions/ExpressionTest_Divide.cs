@@ -20,14 +20,12 @@
 //		Federico Di Gregorio <fog@initd.org>
 
 using System;
-using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_Divide
 	{
 		[Test]
@@ -68,8 +66,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void Numeric ()
 		{
-			BinaryExpression expr = Expression.Divide (Expression.Constant (1), Expression.Constant (2));
-			Assert.AreEqual (ExpressionType.Divide, expr.NodeType, "Divide#01");
+			var expr = Expression.Divide (Expression.Constant (1), Expression.Constant (2));
+            Assert.AreEqual (ExpressionType.Divide, expr.NodeType, "Divide#01");
 			Assert.AreEqual (typeof (int), expr.Type, "Divide#02");
 			Assert.IsNull (expr.Method, "Divide#03");
 			Assert.AreEqual ("(1 / 2)", expr.ToString(), "Divide#04");
@@ -81,8 +79,8 @@ namespace MonoTests.System.Linq.Expressions
 			int? a = 1;
 			int? b = 2;
 
-			BinaryExpression expr = Expression.Divide (Expression.Constant (a), Expression.Constant (b));
-			Assert.AreEqual (ExpressionType.Divide, expr.NodeType, "Divide#05");
+			var expr = Expression.Divide (Expression.Constant (a), Expression.Constant (b));
+            Assert.AreEqual (ExpressionType.Divide, expr.NodeType, "Divide#05");
 			Assert.AreEqual (typeof (int), expr.Type, "Divide#06");
 			Assert.IsNull (expr.Method, "Divide#07");
 			Assert.AreEqual ("(1 / 2)", expr.ToString(), "Divide#08");
@@ -93,9 +91,9 @@ namespace MonoTests.System.Linq.Expressions
 		{
 			// We can use the simplest version of GetMethod because we already know only one
 			// exists in the very simple class we're using for the tests.
-			MethodInfo mi = typeof (OpClass).GetMethod ("op_Division");
+			var mi = typeof (OpClass).GetMethod ("op_Division");
 
-			BinaryExpression expr = Expression.Divide (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
+            BinaryExpression expr = Expression.Divide (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
 			Assert.AreEqual (ExpressionType.Divide, expr.NodeType, "Divide#09");
 			Assert.AreEqual (typeof (OpClass), expr.Type, "Divide#10");
 			Assert.AreEqual (mi, expr.Method, "Divide#11");

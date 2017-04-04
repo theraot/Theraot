@@ -20,14 +20,12 @@
 //		Federico Di Gregorio <fog@initd.org>
 
 using System;
-using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_PropertyOrField
 	{
 		[Test]
@@ -54,8 +52,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void InstanceProperty ()
 		{
-			MemberExpression expr = Expression.PropertyOrField (Expression.Constant (new MemberClass()), "TestProperty1");
-			Assert.AreEqual (ExpressionType.MemberAccess, expr.NodeType, "PropertyOrField#01");
+			var expr = Expression.PropertyOrField (Expression.Constant (new MemberClass()), "TestProperty1");
+            Assert.AreEqual (ExpressionType.MemberAccess, expr.NodeType, "PropertyOrField#01");
 			Assert.AreEqual (typeof (int), expr.Type, "PropertyOrField#02");
 			Assert.AreEqual ("value(MonoTests.System.Linq.Expressions.MemberClass).TestProperty1", expr.ToString(), "PropertyOrField#04");
 		}

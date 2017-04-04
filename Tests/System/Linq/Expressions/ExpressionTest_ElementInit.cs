@@ -27,15 +27,13 @@
 //
 
 using System;
-using System.Reflection;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
-namespace MonoTests.System.Linq.Expressions {
+namespace MonoTests.System.Linq.Expressions
+{
 
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_ElementInit {
 
 		[Test]

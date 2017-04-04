@@ -27,14 +27,13 @@
 //
 
 using System;
-using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
-namespace MonoTests.System.Linq.Expressions {
+namespace MonoTests.System.Linq.Expressions
+{
 
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_Convert {
 
 		[Test]
@@ -58,12 +57,15 @@ namespace MonoTests.System.Linq.Expressions {
 			Expression.Convert (1.ToConstant (), typeof (string));
 		}
 
-		interface IFoo { }
-		class Foo : IFoo { }
-		class Bar : Foo { }
-		class Baz { }
+        private interface IFoo { }
 
-		interface ITzap { }
+        private class Foo : IFoo { }
+
+        private class Bar : Foo { }
+
+        private class Baz { }
+
+        private interface ITzap { }
 
 		[Test]
 		public void ConvertBackwardAssignability ()
@@ -119,7 +121,7 @@ namespace MonoTests.System.Linq.Expressions {
 			Expression.Convert (Expression.Parameter (typeof (Baz), ""), typeof (Foo));
 		}
 
-		struct EineStrukt { }
+        private struct EineStrukt { }
 
 		[Test]
 		[ExpectedException (typeof (InvalidOperationException))]
@@ -185,7 +187,7 @@ namespace MonoTests.System.Linq.Expressions {
 			Assert.IsNull (c.Method);
 		}
 
-		enum EineEnum {
+        private enum EineEnum {
 			EineValue,
 		}
 
@@ -219,9 +221,8 @@ namespace MonoTests.System.Linq.Expressions {
 			Assert.IsNull (c.Method);
 		}
 
-
-		class Klang {
-			int i;
+        private class Klang {
+            private int i;
 
 			public Klang (int i)
 			{
@@ -264,8 +265,8 @@ namespace MonoTests.System.Linq.Expressions {
 			Assert.IsNotNull (c.Method);
 		}
 
-		struct Kling {
-			int i;
+        private struct Kling {
+            private int i;
 
 			public Kling (int i)
 			{
@@ -348,9 +349,9 @@ namespace MonoTests.System.Linq.Expressions {
 
 			IFoo foo = new Bar ();
 
-			Bar b = c (foo);
+			var b = c (foo);
 
-			Assert.AreEqual (b, foo);
+            Assert.AreEqual (b, foo);
 		}
 
 		[Test]
@@ -442,8 +443,8 @@ namespace MonoTests.System.Linq.Expressions {
 			Assert.AreEqual (null, test (null));
 		}
 
-		struct ImplicitToShort {
-			short value;
+        private struct ImplicitToShort {
+            private short value;
 
 			public ImplicitToShort (short v)
 			{
@@ -546,8 +547,8 @@ namespace MonoTests.System.Linq.Expressions {
 			Assert.IsNull (node.Method);
 		}
 
-		struct ImplicitToInt {
-			int Value;
+        private struct ImplicitToInt {
+            private int Value;
 
 			public ImplicitToInt (int v)
 			{

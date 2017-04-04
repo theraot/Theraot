@@ -22,14 +22,12 @@
 //
 
 using System;
-using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_NotEqual
 	{
 		[Test]
@@ -72,8 +70,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void Numeric ()
 		{
-			BinaryExpression expr = Expression.NotEqual (Expression.Constant (1), Expression.Constant (2));
-			Assert.AreEqual (ExpressionType.NotEqual, expr.NodeType);
+			var expr = Expression.NotEqual (Expression.Constant (1), Expression.Constant (2));
+            Assert.AreEqual (ExpressionType.NotEqual, expr.NodeType);
 			Assert.AreEqual (typeof (bool), expr.Type);
 			Assert.IsNull (expr.Method);
 			Assert.AreEqual ("(1 != 2)", expr.ToString ());
@@ -85,10 +83,10 @@ namespace MonoTests.System.Linq.Expressions
 			int? a = 1;
 			int? b = 2;
 
-			BinaryExpression expr = Expression.NotEqual (Expression.Constant (a, typeof(int?)),
+			var expr = Expression.NotEqual (Expression.Constant (a, typeof(int?)),
 								  Expression.Constant (b, typeof(int?)),
 								  false, null);
-			Assert.AreEqual (ExpressionType.NotEqual, expr.NodeType);
+            Assert.AreEqual (ExpressionType.NotEqual, expr.NodeType);
 			Assert.AreEqual (typeof (bool), expr.Type);
 			Assert.AreEqual (true, expr.IsLifted);
 			Assert.AreEqual (false, expr.IsLiftedToNull);
@@ -102,10 +100,10 @@ namespace MonoTests.System.Linq.Expressions
 			int? a = 1;
 			int? b = 2;
 
-			BinaryExpression expr = Expression.NotEqual (Expression.Constant (a, typeof(int?)),
+			var expr = Expression.NotEqual (Expression.Constant (a, typeof(int?)),
 								  Expression.Constant (b, typeof(int?)),
 								  true, null);
-			Assert.AreEqual (ExpressionType.NotEqual, expr.NodeType);
+            Assert.AreEqual (ExpressionType.NotEqual, expr.NodeType);
 			Assert.AreEqual (typeof (bool?), expr.Type);
 			Assert.AreEqual (true, expr.IsLifted);
 			Assert.AreEqual (true, expr.IsLiftedToNull);
@@ -118,9 +116,9 @@ namespace MonoTests.System.Linq.Expressions
 		public void Nullable_Mixed ()
 		{
 			int? a = 1;
-			int b = 2;
+			var b = 2;
 
-			Expression.NotEqual (Expression.Constant (a, typeof (int?)),
+            Expression.NotEqual (Expression.Constant (a, typeof (int?)),
 					  Expression.Constant (b, typeof (int)));
 		}
 
@@ -129,9 +127,9 @@ namespace MonoTests.System.Linq.Expressions
 		{
 			// We can use the simplest version of GetMethod because we already know only one
 			// exists in the very simple class we're using for the tests.
-			MethodInfo mi = typeof (OpClass).GetMethod ("op_Inequality");
+			var mi = typeof (OpClass).GetMethod ("op_Inequality");
 
-			BinaryExpression expr = Expression.NotEqual (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
+            BinaryExpression expr = Expression.NotEqual (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
 			Assert.AreEqual (ExpressionType.NotEqual, expr.NodeType);
 			Assert.AreEqual (typeof (bool), expr.Type);
 			Assert.AreEqual (mi, expr.Method);

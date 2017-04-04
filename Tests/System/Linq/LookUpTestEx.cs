@@ -29,8 +29,8 @@ namespace MonoTests.System.Linq
             var r = _src.ToLookup(i => i > 5, null);
             var _r = r.ToArray();
             Assert.AreEqual(_r.Length, 2);
-            int index = 0;
-            bool first = true;
+            var index = 0;
+            var first = true;
             foreach (var g in _r)
             {
                 Assert.AreEqual(g.Key, !first);
@@ -54,7 +54,7 @@ namespace MonoTests.System.Linq
             var r = _src.ToLookup(i => i > 5, null);
             var _r = r.ToArray();
             Assert.AreEqual(_r.Length, 2);
-            bool first = true;
+            var first = true;
             foreach (var g in _r)
             {
                 Assert.AreEqual(g.Key, !first);
@@ -70,8 +70,8 @@ namespace MonoTests.System.Linq
             var r = _src.ToLookup(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
             var _r = r.ToArray();
             Assert.AreEqual(_r.Length, 2);
-            int index = 0;
-            bool first = true;
+            var index = 0;
+            var first = true;
             foreach (var g in _r)
             {
                 Assert.AreEqual(g.Key, !first);
@@ -95,7 +95,7 @@ namespace MonoTests.System.Linq
             var r = _src.ToLookup(i => i > 5, j => "str: " + j.ToString(CultureInfo.InvariantCulture), null);
             var _r = r.ToArray();
             Assert.AreEqual(_r.Length, 2);
-            bool first = true;
+            var first = true;
             foreach (var g in _r)
             {
                 Assert.AreEqual(g.Key, !first);

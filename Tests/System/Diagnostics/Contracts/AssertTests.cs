@@ -11,7 +11,7 @@ namespace System.Diagnostics.Contracts.Tests
         [Test]
         public static void AssertTrueDoesNotRaiseEvent()
         {
-            bool eventRaised = false;
+            var eventRaised = false;
             EventHandler<ContractFailedEventArgs> handler = (s, e) =>
             {
                 eventRaised = true;
@@ -27,7 +27,7 @@ namespace System.Diagnostics.Contracts.Tests
         [Test]
         public static void AssertFalseRaisesEvent()
         {
-            bool eventRaised = false;
+            var eventRaised = false;
             EventHandler<ContractFailedEventArgs> handler = (s, e) =>
             {
                 eventRaised = true;
@@ -47,7 +47,7 @@ namespace System.Diagnostics.Contracts.Tests
         [Test]
         public static void AssertFalseThrows()
         {
-            bool eventRaised = false;
+            var eventRaised = false;
             EventHandler<ContractFailedEventArgs> handler = (s, e) =>
             {
                 eventRaised = true;

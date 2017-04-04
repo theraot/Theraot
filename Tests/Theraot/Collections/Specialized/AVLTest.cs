@@ -73,8 +73,8 @@ namespace Tests.Theraot.Collections.Specialized
 						var duplicates = new List<int>();
 						foreach (var item in values)
 						{
-								bool duplicate = expected.Contains(item);
-								if (duplicate)
+								var duplicate = expected.Contains(item);
+                if (duplicate)
 								{
 										duplicates.Add(item);
 								}
@@ -459,31 +459,31 @@ namespace Tests.Theraot.Collections.Specialized
 						AddAndIterateNonDuplicate(new[] { 1, 1, 2, 2, 3, 3, 5, 6, 9, 10, 10, 10 });
 				}
 
-				private static void AddAndIterate(int[] data)
-				{
-						var avl = new AVLTree<int, int>();
-						foreach (var item in data)
-						{
-								avl.Add(item, item);
-						}
-						Assert.AreEqual(avl.Count, data.Length);
-						Array.Sort(data);
-						var index = 0;
-						foreach (var item in avl)
-						{
-								Assert.AreEqual(item.Key, data[index]);
-								index++;
-						}
-				}
+        private static void AddAndIterate(int[] data)
+        {
+            var avl = new AVLTree<int, int>();
+            foreach (var item in data)
+            {
+                avl.Add(item, item);
+            }
+            Assert.AreEqual(avl.Count, data.Length);
+            Array.Sort(data);
+            var index = 0;
+            foreach (var item in avl)
+            {
+                Assert.AreEqual(item.Key, data[index]);
+                index++;
+            }
+        }
 
-				private static void AddAndIterateNonDuplicate(int[] data)
+        private static void AddAndIterateNonDuplicate(int[] data)
 				{
 						var avl = new AVLTree<int, int>();
 						var copy = new List<int>();
 						foreach (var item in data)
 						{
-								bool duplicate = copy.Contains(item);
-								Assert.AreNotEqual(avl.AddNonDuplicate(item, item), duplicate);
+								var duplicate = copy.Contains(item);
+                Assert.AreNotEqual(avl.AddNonDuplicate(item, item), duplicate);
 								if (!duplicate)
 								{
 										copy.Add(item);

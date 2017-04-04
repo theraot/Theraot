@@ -29,7 +29,6 @@
 #define NET_4_0
 #if NET_4_0
 
-using System;
 using System.Threading;
 
 using NUnit.Framework;
@@ -42,7 +41,7 @@ namespace MonoTests.System.Threading
         [Test]
         public void InitedWithFalseToken()
         {
-            CancellationToken tk = new CancellationToken(false);
+            var tk = new CancellationToken(false);
             Assert.IsFalse(tk.CanBeCanceled, "#1");
             Assert.IsFalse(tk.IsCancellationRequested, "#2");
         }
@@ -50,7 +49,7 @@ namespace MonoTests.System.Threading
         [Test]
         public void InitedWithTrueToken()
         {
-            CancellationToken tk = new CancellationToken(true);
+            var tk = new CancellationToken(true);
             Assert.IsTrue(tk.CanBeCanceled, "#1");
             Assert.IsTrue(tk.IsCancellationRequested, "#2");
         }
@@ -58,22 +57,26 @@ namespace MonoTests.System.Threading
         [Test]
         public void CancellationSourceNotCanceled()
         {
-            var src = new CancellationTokenSource();
-            var tk = src.Token;
+            using (var src = new CancellationTokenSource())
+            {
+                var tk = src.Token;
 
-            Assert.IsTrue(tk.CanBeCanceled);
-            Assert.IsFalse(tk.IsCancellationRequested);
+                Assert.IsTrue(tk.CanBeCanceled);
+                Assert.IsFalse(tk.IsCancellationRequested);
+            }
         }
 
         [Test]
         public void CancellationSourceCanceled()
         {
-            var src = new CancellationTokenSource();
-            var tk = src.Token;
-            src.Cancel();
+            using (var src = new CancellationTokenSource())
+            {
+                var tk = src.Token;
+                src.Cancel();
 
-            Assert.IsTrue(tk.CanBeCanceled, "#1");
-            Assert.IsTrue(tk.IsCancellationRequested, "#2");
+                Assert.IsTrue(tk.CanBeCanceled, "#1");
+                Assert.IsTrue(tk.IsCancellationRequested, "#2");
+            }
         }
 
         [Test]

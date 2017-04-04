@@ -1,5 +1,4 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,7 +27,7 @@ namespace MonoTests.System.Threading
             var cts = new CancellationTokenSource();
             var mre = new ManualResetEvent(false);
             var mre2 = new ManualResetEvent(false);
-            int called = 0;
+            var called = 0;
 
             cts.Token.Register(() =>
             {
@@ -39,10 +38,10 @@ namespace MonoTests.System.Threading
                 called += 11;
             });
 
-            var t = Task.Factory.StartNew(() => { cts.Cancel(); });
+            var t = Task.Factory.StartNew(() => cts.Cancel());
 
             Assert.IsTrue(mre2.WaitOne(1000), "#0");
-            cts.Token.Register(() => { called++; });
+            cts.Token.Register(() => called++);
             Assert.AreEqual(1, called, "#1");
             Assert.IsFalse(t.IsCompleted, "#2");
 

@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace MonoTests.System.Collections.Generic
 {
     [TestFixture]
-    class HashSetTestEx
+    internal class HashSetTestEx
     {
         [Test]
         public void NotSafeEnumerator()

@@ -21,13 +21,12 @@
 //
 using System;
 using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_MakeBinary {
 
 		public static int GoodMethod (string a, double d)
@@ -50,16 +49,20 @@ namespace MonoTests.System.Linq.Expressions
 			return 1;
 		}
 
-		static MethodInfo GM (string n)
+		private static MethodInfo GM (string n)
 		{
-			MethodInfo [] methods = typeof (ExpressionTest_MakeBinary).GetMethods (
+			var methods = typeof (ExpressionTest_MakeBinary).GetMethods (
 				BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public);
 
-			foreach (MethodInfo m in methods)
-				if (m.Name == n)
-					return m;
+            foreach (MethodInfo m in methods)
+            {
+                if (m.Name == n)
+                {
+                    return m;
+                }
+            }
 
-			throw new Exception (String.Format ("Method {0} not found", n));
+            throw new Exception (String.Format ("Method {0} not found", n));
 		}
 
 		[Test]
@@ -68,8 +71,8 @@ namespace MonoTests.System.Linq.Expressions
 			Expression left = Expression.Constant ("");
 			Expression right = Expression.Constant (1.0);
 
-			BinaryExpression r = Expression.Add (left, right, GM ("GoodMethod"));
-			Assert.AreEqual (r.Type, typeof (int));
+			var r = Expression.Add (left, right, GM ("GoodMethod"));
+            Assert.AreEqual (r.Type, typeof (int));
 		}
 
 		[Test]
@@ -102,7 +105,7 @@ namespace MonoTests.System.Linq.Expressions
 			Expression.Add (left, right, GM ("BadMethodSig_3"));
 		}
 
-		static void PassInt (ExpressionType nt)
+		private static void PassInt (ExpressionType nt)
 		{
 			Expression left = Expression.Constant (1);
 			Expression right = Expression.Constant (1);
@@ -110,7 +113,7 @@ namespace MonoTests.System.Linq.Expressions
 			Expression.MakeBinary (nt, left, right);
 		}
 
-		static void FailInt (ExpressionType nt)
+		private static void FailInt (ExpressionType nt)
 		{
 			Expression left = Expression.Constant (1);
 			Expression right = Expression.Constant (1);
@@ -197,23 +200,23 @@ namespace MonoTests.System.Linq.Expressions
 			Assert.AreEqual (100.0/3, CodeGen<double> ((a, b) => Expression.Divide (a, b), 100, 3));
 		}
 
-		void CTest<T> (ExpressionType node, bool r, T a, T b)
+        private void CTest<T> (ExpressionType node, bool r, T a, T b)
 		{
-			ParameterExpression pa = Expression.Parameter(typeof(T), "a");
-			ParameterExpression pb = Expression.Parameter(typeof(T), "b");
+			var pa = Expression.Parameter(typeof(T), "a");
+            ParameterExpression pb = Expression.Parameter(typeof(T), "b");
 
-			BinaryExpression p = Expression.MakeBinary (node, Expression.Constant (a), Expression.Constant(b));
-			Expression<Func<T,T,bool>> pexpr = Expression.Lambda<Func<T,T,bool>> (
+			var p = Expression.MakeBinary (node, Expression.Constant (a), Expression.Constant(b));
+            Expression<Func<T,T,bool>> pexpr = Expression.Lambda<Func<T,T,bool>> (
 				p, new ParameterExpression [] { pa, pb });
 
-			Func<T,T,bool> compiled = pexpr.Compile ();
-			Assert.AreEqual (r, compiled (a, b), String.Format ("{0} ({1},{2}) == {3}", node, a, b, r));
+			var compiled = pexpr.Compile ();
+            Assert.AreEqual (r, compiled (a, b), String.Format ("{0} ({1},{2}) == {3}", node, a, b, r));
 		}
 
 		[Test]
 		public void ComparisonTests ()
 		{
-			ExpressionType t = ExpressionType.Equal;
+			var t = ExpressionType.Equal;
 
 			CTest<byte>   (t, true,   10,  10);
 			CTest<sbyte>  (t, false,   1,   5);

@@ -28,29 +28,23 @@
 
 using System;
 using System.Threading;
-
-using NUnit;
 using NUnit.Framework;
-
-#if !MOBILE
-//using NUnit.Framework.SyntaxHelpers;
-#endif
 
 namespace MonoTests.System.Threading
 {
     [TestFixtureAttribute]
     public class ThreadLocalTests
     {
-        private ThreadLocal<int> threadLocal;
-        private int nTimes;
+        private ThreadLocal<int> _threadLocal;
+        private int _nTimes;
 
         [SetUp]
         public void Setup()
         {
-            nTimes = 0;
-            threadLocal = new ThreadLocal<int>(() =>
+            _nTimes = 0;
+            _threadLocal = new ThreadLocal<int>(() =>
             {
-                Interlocked.Increment(ref nTimes);
+                Interlocked.Increment(ref _nTimes);
                 return 42;
             });
         }
@@ -66,9 +60,9 @@ namespace MonoTests.System.Threading
         {
             AssertThreadLocal();
 
-            Thread t = new Thread((object o) =>
+            var t = new Thread((object o) =>
             {
-                Interlocked.Decrement(ref nTimes);
+                Interlocked.Decrement(ref _nTimes);
                 AssertThreadLocal();
             });
             t.Start();
@@ -79,8 +73,8 @@ namespace MonoTests.System.Threading
         [Category("NotDotNet")] // Running this test against .NET 4.0 or .NET 4.5 fails
         public void InitializeThrowingTest()
         {
-            int callTime = 0;
-            threadLocal = new ThreadLocal<int>(() =>
+            var callTime = 0;
+            _threadLocal = new ThreadLocal<int>(() =>
             {
                 Interlocked.Increment(ref callTime);
                 throw new ApplicationException("foo");
@@ -90,7 +84,7 @@ namespace MonoTests.System.Threading
 
             try
             {
-                var foo = threadLocal.Value;
+                var foo = _threadLocal.Value;
             }
             catch (Exception e)
             {
@@ -105,7 +99,7 @@ namespace MonoTests.System.Threading
 
             try
             {
-                var foo = threadLocal.Value;
+                var foo = _threadLocal.Value;
             }
             catch (Exception e)
             {
@@ -125,19 +119,22 @@ namespace MonoTests.System.Threading
             {
                 throw new NotSupportedException("Results in stack overflow - blame Microsoft");
             }
-            threadLocal = new ThreadLocal<int>(() => threadLocal.Value + 1);
+            _threadLocal = new ThreadLocal<int>(() => _threadLocal.Value + 1);
 
-            var value = threadLocal.Value;
+            var value = _threadLocal.Value;
         }
 
         [Test]
         public void DefaultThreadLocalInitTest()
         {
-            var local = new ThreadLocal<DateTime>();
-            var local2 = new ThreadLocal<object>();
-
-            Assert.AreEqual(default(DateTime), local.Value);
-            Assert.AreEqual(default(object), local2.Value);
+            using (var local = new ThreadLocal<DateTime>())
+            {
+                using (var local2 = new ThreadLocal<object>())
+                {
+                    Assert.AreEqual(default(DateTime), local.Value);
+                    Assert.AreEqual(default(object), local2.Value);
+                }
+            }
         }
 
         [Test, ExpectedException(typeof(ObjectDisposedException))]
@@ -159,32 +156,35 @@ namespace MonoTests.System.Threading
         [Test]
         public void PerThreadException()
         {
-            int callTime = 0;
-            threadLocal = new ThreadLocal<int>(() =>
+            var callTime = 0;
+            _threadLocal = new ThreadLocal<int>(() =>
             {
                 if (callTime == 1)
+                {
                     throw new ApplicationException("foo");
+                }
+
                 Interlocked.Increment(ref callTime);
                 return 43;
             });
 
             Exception exception = null;
 
-            var foo = threadLocal.Value;
-            bool thread_value_created = false;
+            var foo = _threadLocal.Value;
+            var thread_value_created = false;
             Assert.AreEqual(43, foo, "#3");
-            Thread t = new Thread((object o) =>
+            var t = new Thread((object o) =>
             {
                 try
                 {
-                    var foo2 = threadLocal.Value;
+                    var foo2 = _threadLocal.Value;
                 }
                 catch (Exception e)
                 {
                     exception = e;
                 }
                 // should be false and not throw
-                thread_value_created = threadLocal.IsValueCreated;
+                thread_value_created = _threadLocal.IsValueCreated;
             });
             t.Start();
             t.Join();
@@ -195,11 +195,11 @@ namespace MonoTests.System.Threading
 
         private void AssertThreadLocal()
         {
-            Assert.IsFalse(threadLocal.IsValueCreated, "#1");
-            Assert.AreEqual(42, threadLocal.Value, "#2");
-            Assert.IsTrue(threadLocal.IsValueCreated, "#3");
-            Assert.AreEqual(42, threadLocal.Value, "#4");
-            Assert.AreEqual(1, nTimes, "#5");
+            Assert.IsFalse(_threadLocal.IsValueCreated, "#1");
+            Assert.AreEqual(42, _threadLocal.Value, "#2");
+            Assert.IsTrue(_threadLocal.IsValueCreated, "#3");
+            Assert.AreEqual(42, _threadLocal.Value, "#4");
+            Assert.AreEqual(1, _nTimes, "#5");
         }
     }
 }
