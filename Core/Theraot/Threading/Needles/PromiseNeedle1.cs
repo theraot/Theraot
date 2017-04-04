@@ -57,10 +57,7 @@ namespace Theraot.Threading.Needles
             }
         }
 
-#pragma warning disable RCS1158 // Avoid static members in generic types.
-
         public static PromiseNeedle<T> CreateFromValue(T target)
-#pragma warning restore RCS1158 // Avoid static members in generic types.
         {
             return new PromiseNeedle<T>(target);
         }
