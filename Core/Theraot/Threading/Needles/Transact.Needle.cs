@@ -205,7 +205,7 @@ namespace Theraot.Threading.Needles
                 var transaction = CurrentTransaction;
                 if (transaction != null)
                 {
-                    if (transaction._lockSlot != null)
+                    if (!ReferenceEquals(transaction._lockSlot, null))
                     {
                         _needleLock.Uncapture(transaction._lockSlot);
                     }

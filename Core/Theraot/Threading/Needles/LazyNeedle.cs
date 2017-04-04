@@ -30,7 +30,7 @@ namespace Theraot.Threading.Needles
         public LazyNeedle(Func<T> valueFactory)
             : base(false)
         {
-            if (_valueFactory != null)
+            if (valueFactory == null)
             {
                 throw new ArgumentNullException("valueFactory");
             }
@@ -40,7 +40,7 @@ namespace Theraot.Threading.Needles
         public LazyNeedle(Func<T> valueFactory, bool cacheExceptions)
             : base(false)
         {
-            if (_valueFactory != null)
+            if (valueFactory == null)
             {
                 throw new ArgumentNullException("valueFactory");
             }

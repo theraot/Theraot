@@ -45,24 +45,40 @@ namespace Theraot.Threading
             }
         }
 
-        public static bool operator !=(LockSlot<T> a, LockSlot<T> b)
+        public static bool operator !=(LockSlot<T> left, LockSlot<T> right)
         {
-            return a.Equals(b);
+            if (ReferenceEquals(left, null))
+            {
+                return !ReferenceEquals(right, null);
+            }
+            return !left.Equals(right);
         }
 
-        public static bool operator <(LockSlot<T> a, LockSlot<T> b)
+        public static bool operator <(LockSlot<T> left, LockSlot<T> right)
         {
-            return a.CompareTo(b) < 0;
+            if (ReferenceEquals(left, null))
+            {
+                return true;
+            }
+            return left.CompareTo(right) < 0;
         }
 
-        public static bool operator ==(LockSlot<T> a, LockSlot<T> b)
+        public static bool operator ==(LockSlot<T> left, LockSlot<T> right)
         {
-            return a.Equals(b);
+            if (ReferenceEquals(left, null))
+            {
+                return ReferenceEquals(right, null);
+            }
+            return left.Equals(right);
         }
 
-        public static bool operator >(LockSlot<T> a, LockSlot<T> b)
+        public static bool operator >(LockSlot<T> left, LockSlot<T> right)
         {
-            return a.CompareTo(b) > 0;
+            if (ReferenceEquals(left, null))
+            {
+                return false;
+            }
+            return left.CompareTo(right) > 0;
         }
 
         public void Close()
@@ -76,7 +92,7 @@ namespace Theraot.Threading
 
         public int CompareTo(LockSlot<T> other)
         {
-            if (other == null)
+            if (ReferenceEquals(other, null))
             {
                 return 1;
             }
