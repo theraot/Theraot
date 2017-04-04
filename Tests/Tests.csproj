@@ -42,7 +42,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET20|AnyCPU'">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET20\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET20;FAT</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;FAT;NET20</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -55,7 +55,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET30|AnyCPU'">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET30\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET30;FAT</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;FAT;NET30</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -81,7 +81,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET40|AnyCPU'">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET40\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET40;FAT</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;FAT;NET40</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -94,7 +94,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug_NET45|AnyCPU'">
     <Optimize>False</Optimize>
     <OutputPath>bin\Debug_NET45\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;NET45;FAT</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;FAT;NET45</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
