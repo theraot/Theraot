@@ -132,7 +132,7 @@ namespace MonoTests.System.Linq.Expressions
             var p = Expression.Parameter(typeof(string), null);
             Assert.AreEqual(null, p.Name);
             Assert.AreEqual(typeof(string), p.Type);
-#if !NET_4_0
+#if NET35
             Assert.AreEqual("<param>", p.ToString());
 #endif
         }
@@ -143,7 +143,7 @@ namespace MonoTests.System.Linq.Expressions
             var p = Expression.Parameter(typeof(string), "");
             Assert.AreEqual("", p.Name);
             Assert.AreEqual(typeof(string), p.Type);
-#if !NET_4_0
+#if NET35
             Assert.AreEqual("", p.ToString());
 #endif
         }
@@ -229,7 +229,7 @@ namespace MonoTests.System.Linq.Expressions
             var l = Expression.Lambda<Func<string>>(
                 Expression.Call(
                     typeof(string).GetMethod("Concat", new[] { typeof(string), typeof(string) }),
-                    Expression.Field(Expression.Constant(foo), typeof(Foo).GetField("gazonk")),
+                    Expression.Field(Expression.Constant(foo), typeof(Foo).GetField("Gazonk")),
                     Expression.Call(Expression.Constant(bar), typeof(Bar).GetMethod("ToString"))));
 
             var del = l.Compile();

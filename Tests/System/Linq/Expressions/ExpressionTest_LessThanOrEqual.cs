@@ -33,177 +33,178 @@ using NUnit.Framework;
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-	public class ExpressionTest_LessThanOrEqual
-	{
-		[Test]
-		[ExpectedException (typeof (ArgumentNullException))]
-		public void Arg1Null ()
-		{
-			Expression.LessThanOrEqual (null, Expression.Constant (1));
-		}
+    public class ExpressionTest_LessThanOrEqual
+    {
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Arg1Null()
+        {
+            Expression.LessThanOrEqual(null, Expression.Constant(1));
+        }
 
-		[Test]
-		[ExpectedException (typeof (ArgumentNullException))]
-		public void Arg2Null ()
-		{
-			Expression.LessThanOrEqual (Expression.Constant (1), null);
-		}
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Arg2Null()
+        {
+            Expression.LessThanOrEqual(Expression.Constant(1), null);
+        }
 
-		[Test]
-		[ExpectedException (typeof (InvalidOperationException))]
-		public void NoOperatorClass ()
-		{
-			Expression.LessThanOrEqual (Expression.Constant (new NoOpClass ()), Expression.Constant (new NoOpClass ()));
-		}
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void NoOperatorClass()
+        {
+            Expression.LessThanOrEqual(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass()));
+        }
 
-		[Test]
-		public void Double ()
-		{
-			var expr = Expression.LessThanOrEqual (Expression.Constant (2.0), Expression.Constant (1.0));
-			Assert.AreEqual (ExpressionType.LessThanOrEqual, expr.NodeType);
-			Assert.AreEqual (typeof (bool), expr.Type);
-			Assert.IsNull (expr.Method);
-			Assert.AreEqual ("(2 <= 1)", expr.ToString ());
-		}
+        [Test]
+        public void Double()
+        {
+            var expr = Expression.LessThanOrEqual(Expression.Constant(2.0), Expression.Constant(1.0));
+            Assert.AreEqual(ExpressionType.LessThanOrEqual, expr.NodeType);
+            Assert.AreEqual(typeof(bool), expr.Type);
+            Assert.IsNull(expr.Method);
+            Assert.AreEqual("(2 <= 1)", expr.ToString());
+        }
 
-		[Test]
-		public void Integer ()
-		{
-			var expr = Expression.LessThanOrEqual (Expression.Constant (2), Expression.Constant (1));
-			Assert.AreEqual (ExpressionType.LessThanOrEqual, expr.NodeType);
-			Assert.AreEqual (typeof (bool), expr.Type);
-			Assert.IsNull (expr.Method);
-			Assert.AreEqual ("(2 <= 1)", expr.ToString ());
-		}
+        [Test]
+        public void Integer()
+        {
+            var expr = Expression.LessThanOrEqual(Expression.Constant(2), Expression.Constant(1));
+            Assert.AreEqual(ExpressionType.LessThanOrEqual, expr.NodeType);
+            Assert.AreEqual(typeof(bool), expr.Type);
+            Assert.IsNull(expr.Method);
+            Assert.AreEqual("(2 <= 1)", expr.ToString());
+        }
 
-		[Test]
-		[ExpectedException (typeof (InvalidOperationException))]
-		public void MismatchedTypes ()
-		{
-			Expression.LessThanOrEqual (Expression.Constant (new OpClass ()), Expression.Constant (true));
-		}
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void MismatchedTypes()
+        {
+            Expression.LessThanOrEqual(Expression.Constant(new OpClass()), Expression.Constant(true));
+        }
 
-		[Test]
-		[ExpectedException (typeof (InvalidOperationException))]
-		public void Boolean ()
-		{
-			Expression.LessThanOrEqual (Expression.Constant (true), Expression.Constant (false));
-		}
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void Boolean()
+        {
+            Expression.LessThanOrEqual(Expression.Constant(true), Expression.Constant(false));
+        }
 
-		[Test]
-		public void UserDefinedClass ()
-		{
-			var mi = typeof (OpClass).GetMethod ("op_LessThanOrEqual");
+        [Test]
+        public void UserDefinedClass()
+        {
+            var mi = typeof(OpClass).GetMethod("op_LessThanOrEqual");
 
-            Assert.IsNotNull (mi);
+            Assert.IsNotNull(mi);
 
-			var expr = Expression.LessThanOrEqual (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
-            Assert.AreEqual (ExpressionType.LessThanOrEqual, expr.NodeType);
-			Assert.AreEqual (typeof (bool), expr.Type);
-			Assert.AreEqual (mi, expr.Method);
-			Assert.AreEqual ("op_LessThanOrEqual", expr.Method.Name);
-			Assert.AreEqual ("(value(MonoTests.System.Linq.Expressions.OpClass) <= value(MonoTests.System.Linq.Expressions.OpClass))", expr.ToString ());
-		}
+            var expr = Expression.LessThanOrEqual(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
+            Assert.AreEqual(ExpressionType.LessThanOrEqual, expr.NodeType);
+            Assert.AreEqual(typeof(bool), expr.Type);
+            Assert.AreEqual(mi, expr.Method);
+            Assert.AreEqual("op_LessThanOrEqual", expr.Method.Name);
+            Assert.AreEqual("(value(MonoTests.System.Linq.Expressions.OpClass) <= value(MonoTests.System.Linq.Expressions.OpClass))", expr.ToString());
+        }
 
-		[Test]
-		public void NullableInt32LessThanOrEqual ()
-		{
-			var l = Expression.Parameter (typeof (int?), "l");
-			var r = Expression.Parameter (typeof (int?), "r");
+        [Test]
+        public void NullableInt32LessThanOrEqual()
+        {
+            var l = Expression.Parameter(typeof(int?), "l");
+            var r = Expression.Parameter(typeof(int?), "r");
 
-			var lte = Expression.Lambda<Func<int?, int?, bool>> (
-				Expression.LessThanOrEqual (l, r), l, r).Compile ();
+            var lte = Expression.Lambda<Func<int?, int?, bool>>(
+                Expression.LessThanOrEqual(l, r), l, r).Compile();
 
-			Assert.IsFalse (lte (null, null));
-			Assert.IsFalse (lte (null, 1));
-			Assert.IsFalse (lte (null, -1));
-			Assert.IsFalse (lte (1, null));
-			Assert.IsFalse (lte (-1, null));
-			Assert.IsTrue (lte (1, 2));
-			Assert.IsFalse (lte (2, 1));
-			Assert.IsTrue (lte (1, 1));
-		}
+            Assert.IsFalse(lte(null, null));
+            Assert.IsFalse(lte(null, 1));
+            Assert.IsFalse(lte(null, -1));
+            Assert.IsFalse(lte(1, null));
+            Assert.IsFalse(lte(-1, null));
+            Assert.IsTrue(lte(1, 2));
+            Assert.IsFalse(lte(2, 1));
+            Assert.IsTrue(lte(1, 1));
+        }
 
-		[Test]
-		public void NullableInt32LessThanOrEqualLiftedToNull ()
-		{
-			var l = Expression.Parameter (typeof (int?), "l");
-			var r = Expression.Parameter (typeof (int?), "r");
+        [Test]
+        public void NullableInt32LessThanOrEqualLiftedToNull()
+        {
+            var l = Expression.Parameter(typeof(int?), "l");
+            var r = Expression.Parameter(typeof(int?), "r");
 
-			var lte = Expression.Lambda<Func<int?, int?, bool?>> (
-				Expression.LessThanOrEqual (l, r, true, null), l, r).Compile ();
+            var lte = Expression.Lambda<Func<int?, int?, bool?>>(
+                Expression.LessThanOrEqual(l, r, true, null), l, r).Compile();
 
-			Assert.AreEqual ((bool?) null, lte (null, null));
-			Assert.AreEqual ((bool?) null, lte (null, 1));
-			Assert.AreEqual ((bool?) null, lte (null, -1));
-			Assert.AreEqual ((bool?) null, lte (1, null));
-			Assert.AreEqual ((bool?) null, lte (-1, null));
-			Assert.AreEqual ((bool?) true, lte (1, 2));
-			Assert.AreEqual ((bool?) false, lte (2, 1));
-			Assert.AreEqual ((bool?) true, lte (1, 1));
-		}
+            Assert.AreEqual((bool?)null, lte(null, null));
+            Assert.AreEqual((bool?)null, lte(null, 1));
+            Assert.AreEqual((bool?)null, lte(null, -1));
+            Assert.AreEqual((bool?)null, lte(1, null));
+            Assert.AreEqual((bool?)null, lte(-1, null));
+            Assert.AreEqual((bool?)true, lte(1, 2));
+            Assert.AreEqual((bool?)false, lte(2, 1));
+            Assert.AreEqual((bool?)true, lte(1, 1));
+        }
 
-        private struct Slot {
-			public int Value;
+        private struct Slot
+        {
+            public int Value;
 
-			public Slot (int val)
-			{
-				Value = val;
-			}
+            public Slot(int val)
+            {
+                Value = val;
+            }
 
-			public static bool operator >= (Slot a, Slot b)
-			{
-				return a.Value >= b.Value;
-			}
+            public static bool operator >=(Slot a, Slot b)
+            {
+                return a.Value >= b.Value;
+            }
 
-			public static bool operator <= (Slot a, Slot b)
-			{
-				return a.Value <= b.Value;
-			}
-		}
+            public static bool operator <=(Slot a, Slot b)
+            {
+                return a.Value <= b.Value;
+            }
+        }
 
-		[Test]
-		public void UserDefinedLessThanOrEqualLifted ()
-		{
-			var l = Expression.Parameter (typeof (Slot?), "l");
-			var r = Expression.Parameter (typeof (Slot?), "r");
+        [Test]
+        public void UserDefinedLessThanOrEqualLifted()
+        {
+            var l = Expression.Parameter(typeof(Slot?), "l");
+            var r = Expression.Parameter(typeof(Slot?), "r");
 
-			var node = Expression.LessThanOrEqual (l, r);
-			Assert.IsTrue (node.IsLifted);
-			Assert.IsFalse (node.IsLiftedToNull);
-			Assert.AreEqual (typeof (bool), node.Type);
-			Assert.IsNotNull (node.Method);
+            var node = Expression.LessThanOrEqual(l, r);
+            Assert.IsTrue(node.IsLifted);
+            Assert.IsFalse(node.IsLiftedToNull);
+            Assert.AreEqual(typeof(bool), node.Type);
+            Assert.IsNotNull(node.Method);
 
-			var lte = Expression.Lambda<Func<Slot?, Slot?, bool>> (node, l, r).Compile ();
+            var lte = Expression.Lambda<Func<Slot?, Slot?, bool>>(node, l, r).Compile();
 
-			Assert.AreEqual (false, lte (new Slot (1), new Slot (0)));
-			Assert.AreEqual (true, lte (new Slot (-1), new Slot (1)));
-			Assert.AreEqual (true, lte (new Slot (1), new Slot (1)));
-			Assert.AreEqual (false, lte (null, new Slot (1)));
-			Assert.AreEqual (false, lte (new Slot (1), null));
-			Assert.AreEqual (false, lte (null, null));
-		}
+            Assert.AreEqual(false, lte(new Slot(1), new Slot(0)));
+            Assert.AreEqual(true, lte(new Slot(-1), new Slot(1)));
+            Assert.AreEqual(true, lte(new Slot(1), new Slot(1)));
+            Assert.AreEqual(false, lte(null, new Slot(1)));
+            Assert.AreEqual(false, lte(new Slot(1), null));
+            Assert.AreEqual(false, lte(null, null));
+        }
 
-		[Test]
-		public void UserDefinedLessThanOrEqualLiftedToNull ()
-		{
-			var l = Expression.Parameter (typeof (Slot?), "l");
-			var r = Expression.Parameter (typeof (Slot?), "r");
+        [Test]
+        public void UserDefinedLessThanOrEqualLiftedToNull()
+        {
+            var l = Expression.Parameter(typeof(Slot?), "l");
+            var r = Expression.Parameter(typeof(Slot?), "r");
 
-			var node = Expression.LessThanOrEqual (l, r, true, null);
-			Assert.IsTrue (node.IsLifted);
-			Assert.IsTrue (node.IsLiftedToNull);
-			Assert.AreEqual (typeof (bool?), node.Type);
-			Assert.IsNotNull (node.Method);
+            var node = Expression.LessThanOrEqual(l, r, true, null);
+            Assert.IsTrue(node.IsLifted);
+            Assert.IsTrue(node.IsLiftedToNull);
+            Assert.AreEqual(typeof(bool?), node.Type);
+            Assert.IsNotNull(node.Method);
 
-			var lte = Expression.Lambda<Func<Slot?, Slot?, bool?>> (node, l, r).Compile ();
+            var lte = Expression.Lambda<Func<Slot?, Slot?, bool?>>(node, l, r).Compile();
 
-			Assert.AreEqual (false, lte (new Slot (1), new Slot (0)));
-			Assert.AreEqual (true, lte (new Slot (-1), new Slot (1)));
-			Assert.AreEqual (true, lte (new Slot (1), new Slot (1)));
-			Assert.AreEqual (null, lte (null, new Slot (1)));
-			Assert.AreEqual (null, lte (new Slot (1), null));
-			Assert.AreEqual (null, lte (null, null));
-		}
-	}
+            Assert.AreEqual(false, lte(new Slot(1), new Slot(0)));
+            Assert.AreEqual(true, lte(new Slot(-1), new Slot(1)));
+            Assert.AreEqual(true, lte(new Slot(1), new Slot(1)));
+            Assert.AreEqual(null, lte(null, new Slot(1)));
+            Assert.AreEqual(null, lte(new Slot(1), null));
+            Assert.AreEqual(null, lte(null, null));
+        }
+    }
 }

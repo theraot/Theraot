@@ -12,53 +12,52 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void ContinueWithInvalidArguments()
         {
-            using (var task = new Task(ActionHelper.GetNoopAction()))
+            // Do not dispose Task
+            var task = new Task(ActionHelper.GetNoopAction());
+            try
             {
-                try
-                {
-                    task.ContinueWith(null);
-                    Assert.Fail("#1");
-                }
-                catch (ArgumentNullException e)
-                {
-                    GC.KeepAlive(e);
-                }
+                task.ContinueWith(null);
+                Assert.Fail("#1");
+            }
+            catch (ArgumentNullException e)
+            {
+                GC.KeepAlive(e);
+            }
 
-                try
+            try
+            {
+                task.ContinueWith(delegate
                 {
-                    task.ContinueWith(delegate
-                    {
-                    }, null);
-                    Assert.Fail("#2");
-                }
-                catch (ArgumentNullException e)
-                {
-                    GC.KeepAlive(e);
-                }
+                }, null);
+                Assert.Fail("#2");
+            }
+            catch (ArgumentNullException e)
+            {
+                GC.KeepAlive(e);
+            }
 
-                try
+            try
+            {
+                task.ContinueWith(delegate
                 {
-                    task.ContinueWith(delegate
-                    {
-                    }, TaskContinuationOptions.OnlyOnCanceled | TaskContinuationOptions.NotOnCanceled);
-                    Assert.Fail("#3");
-                }
-                catch (ArgumentOutOfRangeException ex)
-                {
-                    GC.KeepAlive(ex);
-                }
+                }, TaskContinuationOptions.OnlyOnCanceled | TaskContinuationOptions.NotOnCanceled);
+                Assert.Fail("#3");
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                GC.KeepAlive(ex);
+            }
 
-                try
+            try
+            {
+                task.ContinueWith(delegate
                 {
-                    task.ContinueWith(delegate
-                    {
-                    }, TaskContinuationOptions.OnlyOnRanToCompletion | TaskContinuationOptions.NotOnRanToCompletion);
-                    Assert.Fail("#4");
-                }
-                catch (ArgumentOutOfRangeException ex)
-                {
-                    GC.KeepAlive(ex);
-                }
+                }, TaskContinuationOptions.OnlyOnRanToCompletion | TaskContinuationOptions.NotOnRanToCompletion);
+                Assert.Fail("#4");
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                GC.KeepAlive(ex);
             }
         }
 
@@ -154,41 +153,38 @@ namespace MonoTests.System.Threading.Tasks
         [Category("ThreadPool")]
         public void ContinueWithOnFailedTestCase()
         {
-            ParallelTestHelper.Repeat(delegate
-            {
-                var result = false;
-
-                var t = Task.Factory.StartNew(delegate
+            ParallelTestHelper.Repeat
+            (
+                () =>
                 {
-                    throw new Exception("foo");
-                });
-                var cont = t.ContinueWith(delegate
-                {
-                    result = true;
-                }, TaskContinuationOptions.OnlyOnFaulted);
-
-                Assert.IsTrue(cont.Wait(1000), "#0");
-                Assert.IsNotNull(t.Exception, "#1");
-                Assert.IsNotNull(cont, "#2");
-                Assert.IsTrue(result, "#3");
-            });
+                    var result = false;
+                    var t = Task.Factory.StartNew(() =>
+                    {
+                        throw new Exception("foo");
+                    });
+                    var cont = t.ContinueWith(obj => result = true, TaskContinuationOptions.OnlyOnFaulted);
+                    Assert.IsTrue(cont.Wait(1000), "#0");
+                    Assert.IsNotNull(t.Exception, "#1");
+                    Assert.IsNotNull(cont, "#2");
+                    Assert.IsTrue(result, "#3");
+                }
+            );
         }
 
         [Test]
         public void ContinueWithWithStart()
         {
-            using (Task t = new Task<int>(() => 1))
+            // Do not dispose Task
+            Task t = new Task<int>(() => 1);
+            var u = t.ContinueWith(ActionHelper.GetNoopAction<Task>());
+            try
             {
-                var u = t.ContinueWith(ActionHelper.GetNoopAction<Task>());
-                try
-                {
-                    u.Start();
-                    Assert.Fail();
-                }
-                catch (InvalidOperationException ex)
-                {
-                    GC.KeepAlive(ex);
-                }
+                u.Start();
+                Assert.Fail();
+            }
+            catch (InvalidOperationException ex)
+            {
+                GC.KeepAlive(ex);
             }
         }
 
@@ -333,18 +329,17 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void RunSynchronouslyOnContinuation()
         {
-            using (Task t = new Task<int>(() => 1))
+            // Do not dispose Task
+            Task t = new Task<int>(() => 1);
+            var u = t.ContinueWith(ActionHelper.GetNoopAction<Task>());
+            try
             {
-                var u = t.ContinueWith(ActionHelper.GetNoopAction<Task>());
-                try
-                {
-                    u.RunSynchronously();
-                    Assert.Fail("#1");
-                }
-                catch (InvalidOperationException ex)
-                {
-                    GC.KeepAlive(ex);
-                }
+                u.RunSynchronously();
+                Assert.Fail("#1");
+            }
+            catch (InvalidOperationException ex)
+            {
+                GC.KeepAlive(ex);
             }
         }
 

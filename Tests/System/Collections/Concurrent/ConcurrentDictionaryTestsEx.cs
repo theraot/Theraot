@@ -55,14 +55,7 @@ namespace MonoTests.System.Collections.Concurrent
                 Assert.AreEqual(expectedCount, d.Count);
             }
             Assert.IsNull(a);
-            if (didAdd)
-            {
-                Assert.AreEqual(3, foundCount);
-            }
-            else
-            {
-                Assert.AreEqual(2, foundCount);
-            }
+            Assert.AreEqual(2, foundCount);
             Assert.AreEqual(expectedCount, d.Count);
         }
 
@@ -151,17 +144,9 @@ namespace MonoTests.System.Collections.Concurrent
                 Assert.AreEqual(expectedCount[0], d.Count);
             }
             Assert.IsNull(a);
-            if (didadd == 1)
-            {
-                Assert.AreEqual(3, foundCount);
-            }
-            else
-            {
-                Assert.AreEqual(2, foundCount);
-            }
+            Assert.AreEqual(2, foundCount);
             Assert.AreEqual(expectedCount[0], d.Count);
         }
-
 
         [Test]
         public void InitWithConflictingData()
@@ -206,6 +191,7 @@ namespace MonoTests.System.Collections.Concurrent
             map["foobar"] = 3;
             Assert.AreEqual(3, map.Count);
         }
+
         [Test]
         public void UnexpectedAddAndRemove()
         {
