@@ -47,6 +47,10 @@ namespace Theraot.Collections.ThreadSafe
                     }
                     return false;
                 }
+                catch (InvalidOperationException exception)
+                {
+                    GC.KeepAlive(exception);
+                }
                 catch (NullReferenceException exception)
                 {
                     GC.KeepAlive(exception);

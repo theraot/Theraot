@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Theraot.Collections.ThreadSafe;
 using Theraot.Core;
 
 namespace Theraot.Threading.Needles
@@ -16,6 +17,7 @@ namespace Theraot.Threading.Needles
             private readonly RuntimeUniqueIdProdiver.UniqueId _id;
             private readonly NeedleLock<Thread> _needleLock;
             private int _status;
+            private int _inUse;
 
             public Needle(T value)
                 : base(value)
@@ -99,8 +101,19 @@ namespace Theraot.Threading.Needles
                 }
                 set
                 {
-                    var transaction = CurrentTransaction;
-                    StoreValue(transaction, value);
+                    if (NeedleReservoir.Recycling)
+                    {
+                        if (Volatile.Read(ref _inUse) == 1)
+                        {
+                            throw new InvalidOperationException("The Needle has been used in a transaction.");
+                        }
+                        StoreValue(null, value);
+                    }
+                    else
+                    {
+                        var transaction = CurrentTransaction;
+                        StoreValue(transaction, value);
+                    }
                 }
             }
 
@@ -128,7 +141,6 @@ namespace Theraot.Threading.Needles
 
             public override void Free()
             {
-                Thread.MemoryBarrier();
                 Value = default(T);
             }
 
@@ -162,6 +174,7 @@ namespace Theraot.Threading.Needles
 
             bool IResource.CheckValue()
             {
+                Volatile.Write(ref _inUse, 1);
                 var transaction = CurrentTransaction;
                 object value;
                 if (transaction._readLog.TryGetValue(this, out value))
@@ -179,6 +192,7 @@ namespace Theraot.Threading.Needles
                 if (_needleLock.Value == Thread.CurrentThread)
                 {
                     object value;
+                    Volatile.Write(ref _inUse, 1);
                     if (transaction._writeLog.TryGetValue(this, out value))
                     {
                         StoreValue(transaction._parentTransaction, (T)value);
@@ -230,6 +244,7 @@ namespace Theraot.Threading.Needles
                 else
                 {
                     object value;
+                    Volatile.Write(ref _inUse, 1);
                     if (transaction._writeLog.TryGetValue(this, out value))
                     {
                         return (T)value;
@@ -260,6 +275,7 @@ namespace Theraot.Threading.Needles
                 else
                 {
                     object value;
+                    Volatile.Write(ref _inUse, 1);
                     if (transaction._writeLog.TryGetValue(this, out value))
                     {
                         return (T)value;
@@ -284,6 +300,7 @@ namespace Theraot.Threading.Needles
                 }
                 else
                 {
+                    Volatile.Write(ref _inUse, 1);
                     transaction._writeLog.Set(this, value);
                 }
             }
