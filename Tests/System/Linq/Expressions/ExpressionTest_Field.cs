@@ -21,13 +21,12 @@
 
 using System;
 using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_Field
 	{
 		[Test]
@@ -61,8 +60,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void InstanceField ()
 		{
-			MemberExpression expr = Expression.Field (Expression.Constant (new MemberClass()), "TestField1");
-			Assert.AreEqual (ExpressionType.MemberAccess, expr.NodeType, "Field#01");
+			var expr = Expression.Field (Expression.Constant (new MemberClass()), "TestField1");
+            Assert.AreEqual (ExpressionType.MemberAccess, expr.NodeType, "Field#01");
 			Assert.AreEqual (typeof (int), expr.Type, "Field#02");
 			Assert.AreEqual ("value(MonoTests.System.Linq.Expressions.MemberClass).TestField1", expr.ToString(), "Field#03");
 		}
@@ -79,8 +78,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void StaticField2 ()
 		{
-			MemberExpression expr = Expression.Field (null, MemberClass.GetStaticFieldInfo());
-			Assert.AreEqual (ExpressionType.MemberAccess, expr.NodeType, "Field#07");
+			var expr = Expression.Field (null, MemberClass.GetStaticFieldInfo());
+            Assert.AreEqual (ExpressionType.MemberAccess, expr.NodeType, "Field#07");
 			Assert.AreEqual (typeof (int), expr.Type, "Field#08");
 			Assert.AreEqual ("MemberClass.StaticField", expr.ToString(), "Field#09");
 		}

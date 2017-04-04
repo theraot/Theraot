@@ -38,8 +38,7 @@ namespace MonoTests.System.Linq
     [TestFixture]
     public class LookupTest
     {
-
-        class Color
+        private class Color
         {
 
             public string Name { get; set; }
@@ -52,7 +51,7 @@ namespace MonoTests.System.Linq
             }
         }
 
-        static IEnumerable<Color> GetColors()
+        private static IEnumerable<Color> GetColors()
         {
             yield return new Color("Red", 0xff0000);
             yield return new Color("Green", 0x00ff00);
@@ -131,7 +130,7 @@ namespace MonoTests.System.Linq
 
             var l = lookup["notexist"];
             Assert.IsNotNull(l);
-            int[] values = (int[])l;
+            var values = (int[])l;
             Assert.AreEqual(values.Length, 0);
         }
     }

@@ -20,14 +20,12 @@
 //		Federico Di Gregorio <fog@initd.org>
 
 using System;
-using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_AddChecked
 	{
 		[Test]
@@ -68,8 +66,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void Numeric ()
 		{
-			BinaryExpression expr = Expression.AddChecked (Expression.Constant (1), Expression.Constant (2));
-			Assert.AreEqual (ExpressionType.AddChecked, expr.NodeType, "AddChecked#01");
+			var expr = Expression.AddChecked (Expression.Constant (1), Expression.Constant (2));
+            Assert.AreEqual (ExpressionType.AddChecked, expr.NodeType, "AddChecked#01");
 			Assert.AreEqual (typeof (int), expr.Type, "AddChecked#02");
 			Assert.IsNull (expr.Method, "AddChecked#03");
 			Assert.AreEqual ("(1 + 2)", expr.ToString(), "AddChecked#15");
@@ -81,8 +79,8 @@ namespace MonoTests.System.Linq.Expressions
 			int? a = 1;
 			int? b = 2;
 
-			BinaryExpression expr = Expression.AddChecked (Expression.Constant (a), Expression.Constant (b));
-			Assert.AreEqual (ExpressionType.AddChecked, expr.NodeType, "AddChecked#04");
+			var expr = Expression.AddChecked (Expression.Constant (a), Expression.Constant (b));
+            Assert.AreEqual (ExpressionType.AddChecked, expr.NodeType, "AddChecked#04");
 			Assert.AreEqual (typeof (int), expr.Type, "AddChecked#05");
 			Assert.IsNull (expr.Method, null, "AddChecked#06");
 			Assert.AreEqual ("(1 + 2)", expr.ToString(), "AddChecked#16");
@@ -93,9 +91,9 @@ namespace MonoTests.System.Linq.Expressions
 		{
 			// We can use the simplest version of GetMethod because we already know only one
 			// exists in the very simple class we're using for the tests.
-			MethodInfo mi = typeof (OpClass).GetMethod ("op_Addition");
+			var mi = typeof (OpClass).GetMethod ("op_Addition");
 
-			BinaryExpression expr = Expression.AddChecked (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
+            BinaryExpression expr = Expression.AddChecked (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
 			Assert.AreEqual (ExpressionType.AddChecked, expr.NodeType, "AddChecked#07");
 			Assert.AreEqual (typeof (OpClass), expr.Type, "AddChecked#08");
 			Assert.AreEqual (mi, expr.Method, "AddChecked#09");
@@ -109,9 +107,9 @@ namespace MonoTests.System.Linq.Expressions
 		{
 			// We can use the simplest version of GetMethod because we already know only one
 			// exists in the very simple class we're using for the tests.
-			MethodInfo mi = typeof (OpStruct).GetMethod ("op_Addition");
+			var mi = typeof (OpStruct).GetMethod ("op_Addition");
 
-			BinaryExpression expr = Expression.AddChecked (Expression.Constant (new OpStruct ()), Expression.Constant (new OpStruct ()));
+            BinaryExpression expr = Expression.AddChecked (Expression.Constant (new OpStruct ()), Expression.Constant (new OpStruct ()));
 			Assert.AreEqual (ExpressionType.AddChecked, expr.NodeType, "AddChecked#11");
 			Assert.AreEqual (typeof (OpStruct), expr.Type, "AddChecked#12");
 			Assert.AreEqual (mi, expr.Method, "AddChecked#13");
@@ -124,12 +122,12 @@ namespace MonoTests.System.Linq.Expressions
 		// This method makes sure that compiling an AddChecked on two values
 		// throws an OverflowException, if it doesnt, it fails
 		//
-		static void MustOverflow<T> (T v1, T v2)
+		private static void MustOverflow<T> (T v1, T v2)
 		{
-			Expression<Func<T>> l = Expression.Lambda<Func<T>> (
+			var l = Expression.Lambda<Func<T>> (
 				Expression.AddChecked (Expression.Constant (v1), Expression.Constant (v2)));
-			Func<T> del = l.Compile ();
-			T res = default (T);
+            Func<T> del = l.Compile ();
+			var res = default (T);
 			try {
 				res = del ();
 			} catch (OverflowException){
@@ -144,18 +142,18 @@ namespace MonoTests.System.Linq.Expressions
 		// This routine should execute the code, but not throw an
 		// overflow exception
 		//
-		static void MustNotOverflow<T> (T v1, T v2)
+		private static void MustNotOverflow<T> (T v1, T v2)
 		{
-			Expression<Func<T>> l = Expression.Lambda<Func<T>> (
+			var l = Expression.Lambda<Func<T>> (
 				Expression.AddChecked (Expression.Constant (v1), Expression.Constant (v2)));
-			Func<T> del = l.Compile ();
+            Func<T> del = l.Compile ();
 			del ();
 		}
 
 		//
 		// SubtractChecked is not defined for small types (byte, sbyte)
 		//
-		static void InvalidOperation<T> (T v1, T v2)
+		private static void InvalidOperation<T> (T v1, T v2)
 		{
 			try {
 				Expression.Lambda<Func<T>> (
@@ -172,8 +170,8 @@ namespace MonoTests.System.Linq.Expressions
 		{
 			// These should overflow, check the various types and codepaths
 			// in BinaryExpression:
-			MustOverflow<int> (Int32.MaxValue, 1);
-			MustOverflow<int> (Int32.MinValue, -11);
+			MustOverflow<int> (int.MaxValue, 1);
+			MustOverflow<int> (int.MinValue, -11);
 			MustOverflow<long> (Int64.MaxValue, 1);
 			MustOverflow<long> (Int64.MinValue, -1);
 

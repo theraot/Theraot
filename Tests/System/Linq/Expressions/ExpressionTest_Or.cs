@@ -21,14 +21,12 @@
 //		Jb Evain <jbevain@novell.com>
 
 using System;
-using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_Or
 	{
 		[Test]
@@ -69,8 +67,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void Integer ()
 		{
-			BinaryExpression expr = Expression.Or (Expression.Constant (1), Expression.Constant (2));
-			Assert.AreEqual (ExpressionType.Or, expr.NodeType, "Or#01");
+			var expr = Expression.Or (Expression.Constant (1), Expression.Constant (2));
+            Assert.AreEqual (ExpressionType.Or, expr.NodeType, "Or#01");
 			Assert.AreEqual (typeof (int), expr.Type, "Or#02");
 			Assert.IsNull (expr.Method, "Or#03");
 			Assert.AreEqual ("(1 | 2)", expr.ToString(), "Or#04");
@@ -79,8 +77,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void Boolean ()
 		{
-			BinaryExpression expr = Expression.Or (Expression.Constant (true), Expression.Constant (false));
-			Assert.AreEqual (ExpressionType.Or, expr.NodeType, "Or#05");
+			var expr = Expression.Or (Expression.Constant (true), Expression.Constant (false));
+            Assert.AreEqual (ExpressionType.Or, expr.NodeType, "Or#05");
 			Assert.AreEqual (typeof (bool), expr.Type, "Or#06");
 			Assert.IsNull (expr.Method, "Or#07");
 			Assert.AreEqual ("(True Or False)", expr.ToString(), "Or#08");
@@ -91,9 +89,9 @@ namespace MonoTests.System.Linq.Expressions
 		{
 			// We can use the simplest version of GetMethod because we already know only one
 			// exists in the very simple class we're using for the tests.
-			MethodInfo mi = typeof (OpClass).GetMethod ("op_BitwiseOr");
+			var mi = typeof (OpClass).GetMethod ("op_BitwiseOr");
 
-			BinaryExpression expr = Expression.Or (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
+            BinaryExpression expr = Expression.Or (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
 			Assert.AreEqual (ExpressionType.Or, expr.NodeType, "Or#09");
 			Assert.AreEqual (typeof (OpClass), expr.Type, "Or#10");
 			Assert.AreEqual (mi, expr.Method, "Or#11");

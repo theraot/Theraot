@@ -27,10 +27,7 @@
 
 using System;
 using System.Linq;
-using System.Threading;
 using System.Collections.Generic;
-
-using NUnit;
 using NUnit.Framework;
 
 namespace MonoTests.System
@@ -38,18 +35,18 @@ namespace MonoTests.System
     [TestFixture]
     public class AggregateExceptionTest
     {
-        private AggregateException e;
+        private AggregateException _e;
 
         [SetUpAttribute]
         public void Setup()
         {
-            e = new AggregateException(new Exception("foo"), new AggregateException(new Exception("bar"), new Exception("foobar")));
+            _e = new AggregateException(new Exception("foo"), new AggregateException(new Exception("bar"), new Exception("foobar")));
         }
 
         [Test]
         public void SimpleInnerExceptionTestCase()
         {
-            var message = "Foo";
+            const string message = "Foo";
             var inner = new ApplicationException(message);
             var ex = new AggregateException(inner);
 
@@ -66,10 +63,10 @@ namespace MonoTests.System
         [TestAttribute]
         public void FlattenTestCase()
         {
-            AggregateException ex = e.Flatten();
+            var ex = _e.Flatten();
 
             Assert.AreEqual(3, ex.InnerExceptions.Count, "#1");
-            Assert.AreEqual(3, ex.InnerExceptions.Where((exception) => !(exception is AggregateException)).Count(), "#2");
+            Assert.AreEqual(3, ex.InnerExceptions.Count((exception) => !(exception is AggregateException)), "#2");
         }
 
         [Test, ExpectedException(typeof(ArgumentException))]
@@ -89,13 +86,13 @@ namespace MonoTests.System
         [ExpectedException(typeof(ArgumentNullException))]
         public void Handle_Invalid()
         {
-            e.Handle(null);
+            _e.Handle(null);
         }
 
         [Test]
         public void Handle_AllHandled()
         {
-            e.Handle(l => true);
+            _e.Handle(l => true);
         }
 
         [Test]
@@ -103,7 +100,7 @@ namespace MonoTests.System
         {
             try
             {
-                e.Handle(l => l is AggregateException);
+                _e.Handle(l => l is AggregateException);
                 Assert.Fail();
             }
             catch (AggregateException e)
@@ -133,6 +130,10 @@ namespace MonoTests.System
 
         private static void Throws(Type t, Action action)
         {
+            if (action == null)
+            {
+                return;
+            }
             Exception e = null;
             try
             {
@@ -144,7 +145,9 @@ namespace MonoTests.System
             }
 
             if (e == null || e.GetType() != t)
+            {
                 Assert.Fail();
+            }
         }
     }
 }

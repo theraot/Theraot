@@ -16,11 +16,11 @@ namespace MonoTests.System.Collections.Concurrent
             var d = new ConcurrentDictionary<string, string>();
             Assert.IsTrue(d.TryAdd("0", "1"));
             Assert.IsTrue(d.TryAdd("a", "b"));
-            int expectedCount = 2;
+            var expectedCount = 2;
             Assert.AreEqual(expectedCount, d.Count);
             string a = null;
             var foundCount = 0;
-            bool didAdd = false;
+            var didAdd = false;
             // MSDN says: "it does not represent a moment-in-time snapshot of the dictionary."
             // And also "The contents exposed through the enumerator may contain modifications made to the dictionary after GetEnumerator was called."
             foreach (var item in d)
@@ -76,11 +76,11 @@ namespace MonoTests.System.Collections.Concurrent
             Assert.AreEqual(expectedCount[0], d.Count);
             string a = null;
             var foundCount = 0;
-            int didadd = 0;
+            var didadd = 0;
 
             ThreadStart remover = () =>
             {
-                bool didRemove = d.TryRemove("a", out a);
+                var didRemove = d.TryRemove("a", out a);
                 if (didRemove)
                 {
                     Assert.IsTrue(didRemove);

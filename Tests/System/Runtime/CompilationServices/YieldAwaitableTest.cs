@@ -26,7 +26,8 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#define NET_4_5 #if NET_4_5
+#define NET_4_5
+#if NET_4_5
 
 using System;
 using System.Collections.Generic;
@@ -40,7 +41,7 @@ namespace MonoTests.System.Runtime.CompilerServices
     [TestFixture]
     public class YieldAwaitableTest
     {
-        class MyScheduler : TaskScheduler
+        private class MyScheduler : TaskScheduler
         {
             protected override IEnumerable<Task> GetScheduledTasks()
             {
@@ -58,7 +59,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             }
         }
 
-        class MyContext : SynchronizationContext
+        private class MyContext : SynchronizationContext
         {
             public int Started;
             public int Completed;
@@ -90,28 +91,28 @@ namespace MonoTests.System.Runtime.CompilerServices
             }
         }
 
-        YieldAwaitable.YieldAwaiter a;
-        SynchronizationContext sc;
+        private YieldAwaitable.YieldAwaiter _a;
+        private SynchronizationContext _sc;
 
         [SetUp]
         public void Setup()
         {
-            sc = SynchronizationContext.Current;
-            a = new YieldAwaitable().GetAwaiter();
+            _sc = SynchronizationContext.Current;
+            _a = new YieldAwaitable().GetAwaiter();
         }
 
         [TearDown]
         public void TearDown()
         {
-            SynchronizationContext.SetSynchronizationContext(sc);
+            SynchronizationContext.SetSynchronizationContext(_sc);
         }
 
         [Test]
         public void IsCompleted()
         {
-            Assert.IsFalse(a.IsCompleted, "#1");
-            a.GetResult();
-            Assert.IsFalse(a.IsCompleted, "#1");
+            Assert.IsFalse(_a.IsCompleted, "#1");
+            _a.GetResult();
+            Assert.IsFalse(_a.IsCompleted, "#1");
         }
 
         [Test]
@@ -119,11 +120,12 @@ namespace MonoTests.System.Runtime.CompilerServices
         {
             try
             {
-                a.OnCompleted(null);
+                _a.OnCompleted(null);
                 Assert.Fail("#1");
             }
-            catch (ArgumentException)
+            catch (ArgumentException ex)
             {
+                GC.KeepAlive(ex);
             }
         }
 
@@ -133,15 +135,17 @@ namespace MonoTests.System.Runtime.CompilerServices
             TaskScheduler scheduler = null;
             SynchronizationContext.SetSynchronizationContext(null);
 
-            var mre = new ManualResetEvent(false);
+            using (var mre = new ManualResetEvent(false))
+            {
+                _a.OnCompleted(() =>
+                {
+                    scheduler = TaskScheduler.Current;
+                    mre.Set();
+                });
 
-            a.OnCompleted(() => {
-                scheduler = TaskScheduler.Current;
-                mre.Set();
-            });
-
-            Assert.IsTrue(mre.WaitOne(1000), "#1");
-            Assert.AreEqual(TaskScheduler.Current, scheduler, "#2");
+                Assert.IsTrue(mre.WaitOne(1000), "#1");
+                Assert.AreEqual(TaskScheduler.Current, scheduler, "#2");
+            }
         }
 
         [Test]
@@ -151,16 +155,18 @@ namespace MonoTests.System.Runtime.CompilerServices
             TaskScheduler ran_scheduler = null;
             SynchronizationContext.SetSynchronizationContext(null);
 
-            var t = Task.Factory.StartNew(() => {
-                var mre = new ManualResetEvent(false);
+            var t = Task.Factory.StartNew(() =>
+            {
+                using (var mre = new ManualResetEvent(false))
+                {
+                    _a.OnCompleted(() =>
+                    {
+                        ran_scheduler = TaskScheduler.Current;
+                        mre.Set();
+                    });
 
-                a.OnCompleted(() => {
-                    ran_scheduler = TaskScheduler.Current;
-                    mre.Set();
-                });
-
-                mre.WaitOne(1000);
-
+                    mre.WaitOne(1000);
+                }
             }, CancellationToken.None, TaskCreationOptions.None, scheduler);
 
             Assert.IsTrue(t.Wait(1000), "#1");
@@ -171,17 +177,19 @@ namespace MonoTests.System.Runtime.CompilerServices
         public void OnCompleted_4()
         {
             SynchronizationContext context_ran = null;
-            var mre = new ManualResetEvent(false);
+            using (var mre = new ManualResetEvent(false))
+            {
+                var context = new MyContext();
+                SynchronizationContext.SetSynchronizationContext(context);
+                _a.OnCompleted(() =>
+                {
+                    context_ran = SynchronizationContext.Current;
+                    mre.Set();
+                });
 
-            var context = new MyContext();
-            SynchronizationContext.SetSynchronizationContext(context);
-            a.OnCompleted(() => {
-                context_ran = SynchronizationContext.Current;
-                mre.Set();
-            });
-
-            Assert.IsTrue(mre.WaitOne(1000), "#1");
-            Assert.IsNull(context_ran, "#2");
+                Assert.IsTrue(mre.WaitOne(1000), "#1");
+                Assert.IsNull(context_ran, "#2");
+            }
         }
     }
 }

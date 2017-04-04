@@ -29,13 +29,13 @@
 using System;
 using System.Reflection;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
-namespace MonoTests.System.Linq.Expressions {
+namespace MonoTests.System.Linq.Expressions
+{
 
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_ListBind {
 
 		[Test]
@@ -127,10 +127,9 @@ namespace MonoTests.System.Linq.Expressions {
 			public string str;
 
 			public int baz;
+            private List<string> list = new List<string>();
 
-			private List<string> list = new List<string> ();
-
-			public List<string> List {
+            public List<string> List {
 				get { return list; }
 			}
 

@@ -31,8 +31,6 @@ using NUnit.Framework;
 using System.Threading;
 using System.Linq;
 
-//using System.Threading.Tasks;
-
 namespace MonoTests.System.Threading
 {
     [TestFixture]
@@ -407,7 +405,7 @@ namespace MonoTests.System.Threading
         public void EnterReadLock_MultiRead()
         {
             var v = new ReaderWriterLockSlim();
-            int local = 10;
+            var local = 10;
 
             var r = from i in Enumerable.Range(1, 30)
                     select new Thread(() =>
@@ -439,10 +437,10 @@ namespace MonoTests.System.Threading
         public void TryEnterWriteLock_WhileReading()
         {
             var v = new ReaderWriterLockSlim();
-            AutoResetEvent ev = new AutoResetEvent(false);
-            AutoResetEvent ev2 = new AutoResetEvent(false);
+            var ev = new AutoResetEvent(false);
+            var ev2 = new AutoResetEvent(false);
 
-            Thread t1 = new Thread(() =>
+            var t1 = new Thread(() =>
             {
                 v.EnterReadLock();
                 ev2.Set();
@@ -464,9 +462,9 @@ namespace MonoTests.System.Threading
         public void EnterWriteLock_MultiRead()
         {
             var v = new ReaderWriterLockSlim();
-            int local = 10;
-            int ready_count = 0;
-            int entered_count = 0;
+            var local = 10;
+            var ready_count = 0;
+            var entered_count = 0;
             const int thread_count = 10;
 
             var r = from i in Enumerable.Range(1, thread_count)
@@ -488,11 +486,16 @@ namespace MonoTests.System.Threading
             }
 
             while (ready_count != thread_count)
+            {
                 Thread.Sleep(10);
+            }
 
             /* Extra up to 2s of sleep to ensure all threads got the chance to enter the lock */
             for (int i = 0; i < 200 && v.WaitingReadCount != thread_count; ++i)
+            {
                 Thread.Sleep(10);
+            }
+
             local = 11;
 
             Assert.AreEqual(0, v.WaitingWriteCount, "in waiting write");
@@ -523,13 +526,7 @@ namespace MonoTests.System.Threading
         //[Test]
         //public void EnterWriteLockWhileInUpgradeAndOtherWaiting()
         //{
-        //    var v = new ReaderWriterLockSlim();
 
-        //    var task2 = new Task(() =>
-        //    {
-        //        v.EnterWriteLock();
-        //        v.ExitWriteLock();
-        //    });
 
         //    var task1 = new Task(() =>
         //    {
@@ -649,10 +646,11 @@ namespace MonoTests.System.Threading
             Assert.AreEqual(1, v.CurrentReadCount, "#2a");
             Assert.AreEqual(2, v.RecursiveReadCount, "#3a");
 
-            bool rLock = true;
-            int cReadCount = -1, rReadCount = -1;
+            var rLock = true;
+            var cReadCount = -1;
+            var rReadCount = -1;
 
-            Thread t = new Thread((_) =>
+            var t = new Thread((_) =>
             {
                 rLock = v.IsReadLockHeld;
                 cReadCount = v.CurrentReadCount;
@@ -680,10 +678,12 @@ namespace MonoTests.System.Threading
             Assert.AreEqual(0, v.CurrentReadCount, "#2a");
             Assert.AreEqual(2, v.RecursiveUpgradeCount, "#3a");
 
-            bool upLock = false, rLock = false;
-            int rCount = -1, rUCount = -1;
+            var upLock = false;
+            var rLock = false;
+            var rCount = -1;
+            var rUCount = -1;
 
-            Thread t = new Thread((_) =>
+            var t = new Thread((_) =>
             {
                 upLock = v.IsUpgradeableReadLockHeld;
                 rLock = v.IsReadLockHeld;
@@ -711,10 +711,10 @@ namespace MonoTests.System.Threading
             Assert.AreEqual(true, v.IsWriteLockHeld, "#1a");
             Assert.AreEqual(2, v.RecursiveWriteCount, "#3a");
 
-            bool wLock = false;
-            int rWrite = -1;
+            var wLock = false;
+            var rWrite = -1;
 
-            Thread t = new Thread((_) =>
+            var t = new Thread((_) =>
             {
                 wLock = v.IsWriteLockHeld;
                 rWrite = v.RecursiveWriteCount;
@@ -805,7 +805,7 @@ namespace MonoTests.System.Threading
         [Test]
         public void RecursiveWriteUpgradeTest()
         {
-            ReaderWriterLockSlim rwlock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+            var rwlock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
             rwlock.EnterWriteLock();
             Assert.IsTrue(rwlock.IsWriteLockHeld);
@@ -828,20 +828,14 @@ namespace MonoTests.System.Threading
             v.EnterWriteLock();
             Assert.IsTrue(v.IsWriteLockHeld, "#1");
 
-            bool result = true;
-            var t = new Thread(delegate ()
-            {
-                result = v.TryEnterReadLock(100);
-            });
+            var result = true;
+            var t = new Thread(() => result = v.TryEnterReadLock(100));
             t.Start();
             t.Join();
             Assert.IsFalse(result, "#2");
 
             v.ExitWriteLock();
-            t = new Thread(delegate ()
-            {
-                result = v.TryEnterReadLock(100);
-            });
+            t = new Thread(() => result = v.TryEnterReadLock(100));
             t.Start();
             t.Join();
             Assert.IsTrue(result, "#3");

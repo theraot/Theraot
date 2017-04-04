@@ -21,14 +21,12 @@
 //		Jb Evain <jbevain@novell.com>
 
 using System;
-using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_Coalesce
 	{
 		[Test]
@@ -148,8 +146,8 @@ namespace MonoTests.System.Linq.Expressions
 			Assert.AreEqual (42, coalesce (null));
 		}
 
-		struct Slot {
-			int Value;
+        private struct Slot {
+            private int Value;
 
 			public Slot (int v)
 			{

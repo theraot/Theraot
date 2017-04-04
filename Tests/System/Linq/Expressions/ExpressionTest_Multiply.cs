@@ -20,14 +20,12 @@
 //		Federico Di Gregorio <fog@initd.org>
 
 using System;
-using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_Multiply
 	{
 		[Test]
@@ -68,8 +66,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void Numeric ()
 		{
-			BinaryExpression expr = Expression.Multiply (Expression.Constant (1), Expression.Constant (2));
-			Assert.AreEqual (ExpressionType.Multiply, expr.NodeType, "Multiply#01");
+			var expr = Expression.Multiply (Expression.Constant (1), Expression.Constant (2));
+            Assert.AreEqual (ExpressionType.Multiply, expr.NodeType, "Multiply#01");
 			Assert.AreEqual (typeof (int), expr.Type, "Multiply#02");
 			Assert.IsNull (expr.Method, "Multiply#03");
 			Assert.AreEqual ("(1 * 2)", expr.ToString(), "Multiply#04");
@@ -81,8 +79,8 @@ namespace MonoTests.System.Linq.Expressions
 			int? a = 1;
 			int? b = 2;
 
-			BinaryExpression expr = Expression.Multiply (Expression.Constant (a), Expression.Constant (b));
-			Assert.AreEqual (ExpressionType.Multiply, expr.NodeType, "Multiply#05");
+			var expr = Expression.Multiply (Expression.Constant (a), Expression.Constant (b));
+            Assert.AreEqual (ExpressionType.Multiply, expr.NodeType, "Multiply#05");
 			Assert.AreEqual (typeof (int), expr.Type, "Multiply#06");
 			Assert.IsNull (expr.Method, "Multiply#07");
 			Assert.AreEqual ("(1 * 2)", expr.ToString(), "Multiply#08");
@@ -93,9 +91,9 @@ namespace MonoTests.System.Linq.Expressions
 		{
 			// We can use the simplest version of GetMethod because we already know only one
 			// exists in the very simple class we're using for the tests.
-			MethodInfo mi = typeof (OpClass).GetMethod ("op_Multiply");
+			var mi = typeof (OpClass).GetMethod ("op_Multiply");
 
-			BinaryExpression expr = Expression.Multiply (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
+            BinaryExpression expr = Expression.Multiply (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
 			Assert.AreEqual (ExpressionType.Multiply, expr.NodeType, "Multiply#09");
 			Assert.AreEqual (typeof (OpClass), expr.Type, "Multiply#10");
 			Assert.AreEqual (mi, expr.Method, "Multiply#11");

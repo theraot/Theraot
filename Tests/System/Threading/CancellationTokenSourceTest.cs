@@ -47,7 +47,7 @@ namespace MonoTests.System.Threading
             Assert.AreEqual(1, called[0], "#1");
 
             called[0] = 0;
-            cts.Token.Register(() => { called[0] += 12; });
+            cts.Token.Register(() => called[0] += 12);
             cts.Cancel();
             Assert.AreEqual(12, called[0], "#2");
         }
@@ -78,7 +78,7 @@ namespace MonoTests.System.Threading
         public void Cancel_MultipleException_Recursive()
         {
             var cts = new CancellationTokenSource();
-            CancellationToken c = cts.Token;
+            var c = cts.Token;
             c.Register(cts.Cancel);
 
             c.Register(() =>
@@ -199,7 +199,7 @@ namespace MonoTests.System.Threading
         public void CancelLinkedTokenSource()
         {
             var cts = new CancellationTokenSource();
-            bool canceled = false;
+            var canceled = false;
             cts.Token.Register(() => canceled = true);
 
             using (CancellationTokenSource.CreateLinkedTokenSource(cts.Token))
@@ -219,14 +219,11 @@ namespace MonoTests.System.Threading
         public void CancelWithDispose()
         {
             var cts = new CancellationTokenSource();
-            CancellationToken c = cts.Token;
+            var c = cts.Token;
             c.Register(cts.Dispose);
 
-            int called = 0;
-            c.Register(() =>
-            {
-                called++;
-            });
+            var called = 0;
+            c.Register(() => called++);
 
             cts.Cancel();
             Assert.AreEqual(1, called, "#1");
@@ -244,13 +241,19 @@ namespace MonoTests.System.Threading
                 var t1 = new Thread(() =>
                 {
                     if (!cntd.Signal())
+                    {
                         cntd.Wait(200);
+                    }
+
                     src.Cancel();
                 });
                 var t2 = new Thread(() =>
                 {
                     if (!cntd.Signal())
+                    {
                         cntd.Wait(200);
+                    }
+
                     linked.Dispose();
                 });
 
@@ -371,7 +374,7 @@ namespace MonoTests.System.Threading
         public void DisposeAfterRegistrationTest()
         {
             var source = new CancellationTokenSource();
-            bool ran = false;
+            var ran = false;
             var req = source.Token.Register(() => ran = true);
             source.Dispose();
             req.Dispose();
@@ -381,8 +384,8 @@ namespace MonoTests.System.Threading
         [Test]
         public void ReEntrantRegistrationTest()
         {
-            bool unregister = false;
-            bool register = false;
+            var unregister = false;
+            var register = false;
             var source = new CancellationTokenSource();
             var token = source.Token;
 
@@ -433,10 +436,6 @@ namespace MonoTests.System.Threading
         //[Test]
         //public void RegisterWhileCancelling()
         //{
-        //    var cts = new CancellationTokenSource();
-        //    var mre = new ManualResetEvent(false);
-        //    var mre2 = new ManualResetEvent(false);
-        //    int called = 0;
 
         //    cts.Token.Register(() =>
         //    {
@@ -447,7 +446,6 @@ namespace MonoTests.System.Threading
         //        called += 11;
         //    });
 
-        //    var t = Task.Factory.StartNew(() => { cts.Cancel(); });
 
         //    Assert.IsTrue(mre2.WaitOne(1000), "#0");
         //    cts.Token.Register(() => { called++; });
@@ -467,7 +465,7 @@ namespace MonoTests.System.Threading
         [Test]
         public void CancelAfter()
         {
-            int called = 0;
+            var called = 0;
             var cts = new CancellationTokenSource();
             cts.Token.Register(() => called++);
             cts.CancelAfter(20);
@@ -478,7 +476,7 @@ namespace MonoTests.System.Threading
         [Test]
         public void CancelAfter_Disposed()
         {
-            int called = 0;
+            var called = 0;
             var cts = new CancellationTokenSource();
             cts.Token.Register(() => called++);
             cts.CancelAfter(50);
@@ -517,7 +515,7 @@ namespace MonoTests.System.Threading
         [Test]
         public void Ctor_Timeout()
         {
-            int called = 0;
+            var called = 0;
             var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(20));
             cts.Token.Register(() => called++);
             Thread.Sleep(50);

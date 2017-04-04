@@ -23,7 +23,10 @@ namespace Tests.Theraot.Threading.Needles
                     count[0]++;
                     throw new InvalidOperationException();
                 }
-                else return count[0];
+                else
+                {
+                    return count[0];
+                }
             });
             Assert.Throws(typeof(InvalidOperationException), () => GC.KeepAlive(a.Value));
             Assert.IsTrue(a.IsFaulted);
@@ -41,7 +44,10 @@ namespace Tests.Theraot.Threading.Needles
                     count[0]++;
                     throw new InvalidOperationException();
                 }
-                else return count[0];
+                else
+                {
+                    return count[0];
+                }
             }, true);
             Assert.Throws(typeof(InvalidOperationException), () => GC.KeepAlive(a.Value));
             Assert.IsTrue(a.IsFaulted);
@@ -190,7 +196,7 @@ namespace Tests.Theraot.Threading.Needles
         {
             //Alive version
             //Not nullable
-            var a = (new LazyNeedle<int>());
+            var a = new LazyNeedle<int>();
             Assert.IsTrue(a.IsAlive);   // Not nullable is always alive
             Assert.IsTrue(a.IsCompleted);   // Nothing to run
             a.Value = 5;
@@ -198,7 +204,7 @@ namespace Tests.Theraot.Threading.Needles
             Assert.IsTrue(a.IsAlive);
             Assert.IsTrue(a.IsCompleted);
             //Nullable
-            var b = (new LazyNeedle<int?>());
+            var b = new LazyNeedle<int?>();
             Assert.IsFalse(b.IsAlive);
             Assert.IsTrue(b.IsCompleted);   // Nothing to run
             b.Value = 5;
@@ -206,7 +212,7 @@ namespace Tests.Theraot.Threading.Needles
             Assert.IsTrue(b.IsAlive);
             Assert.IsTrue(b.IsCompleted);
             //object
-            var c = (new LazyNeedle<string>());
+            var c = new LazyNeedle<string>();
             Assert.IsFalse(c.IsAlive);
             Assert.IsTrue(c.IsCompleted);   // Nothing to run
             c.Value = String.Empty;

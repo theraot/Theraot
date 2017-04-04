@@ -10,7 +10,7 @@ using Theraot.Threading.Needles;
 namespace Tests.Theraot.Threading.Needles
 {
     [TestFixture]
-    class LockableNeedleTest
+    internal class LockableNeedleTest
     {
         [Test]
         public void SimpleTest()

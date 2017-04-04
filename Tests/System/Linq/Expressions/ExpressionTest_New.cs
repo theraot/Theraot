@@ -28,14 +28,14 @@
 
 using System;
 using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 
 using NUnit.Framework;
 
-namespace MonoTests.System.Linq.Expressions {
+namespace MonoTests.System.Linq.Expressions
+{
 
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_New {
 
 		[Test]
@@ -136,8 +136,7 @@ namespace MonoTests.System.Linq.Expressions {
 		}
 
 		public class Gazonk {
-
-			string value;
+            private string value;
 
 			public Gazonk (string s)
 			{
@@ -148,9 +147,11 @@ namespace MonoTests.System.Linq.Expressions {
 			{
 				var o = obj as Gazonk;
 				if (o == null)
-					return false;
+                {
+                    return false;
+                }
 
-				return value == o.value;
+                return value == o.value;
 			}
 
 			public override int GetHashCode ()

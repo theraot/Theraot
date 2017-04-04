@@ -15,8 +15,8 @@ namespace Tests.Theraot.Collections
         {
             var source = new Progressor<int>(new[] { 0, 1, 2, 3, 4, 5 });
             var progresor = Progressor<string>.CreateConverted(source, input => input.ToString(CultureInfo.InvariantCulture));
-            int indexA = 0;
-            int indexB = 0;
+            var indexA = 0;
+            var indexB = 0;
             progresor.SubscribeAction
             (
                 value =>
@@ -40,8 +40,8 @@ namespace Tests.Theraot.Collections
         {
             var source = new Progressor<int>(new[] { 0, 8, 1, 8, 2, 3, 4, 8, 5 });
             var progresor = Progressor<string>.CreatedFilteredConverted(source, input => input != 8, input => input.ToString(CultureInfo.InvariantCulture));
-            int indexA = 0;
-            int indexB = 0;
+            var indexA = 0;
+            var indexB = 0;
             progresor.SubscribeAction
             (
                 value =>
@@ -65,8 +65,8 @@ namespace Tests.Theraot.Collections
         {
             var source = new Progressor<int>(new[] { 0, 0, 1, 1, 2, 0, 1, 3, 4, 4, 4, 4, 5, 5, 5, 0, 1, 3 });
             var progresor = Progressor<int>.CreateDistinct(source);
-            int indexA = 0;
-            int indexB = 0;
+            var indexA = 0;
+            var indexB = 0;
             progresor.SubscribeAction
             (
                 value =>
@@ -90,8 +90,8 @@ namespace Tests.Theraot.Collections
         {
             var source = new[] { 0, 1, 2, 3, 4, 5 };
             var progresor = new Progressor<int>(source);
-            int indexA = 0;
-            int indexB = 0;
+            var indexA = 0;
+            var indexB = 0;
             progresor.SubscribeAction
             (
                 value =>
@@ -115,8 +115,8 @@ namespace Tests.Theraot.Collections
         {
             var source = new Progressor<int>(new[] { 0, 8, 1, 8, 2, 3, 4, 8, 5 });
             var progresor = Progressor<int>.CreatedFiltered(source, input => input != 8);
-            int indexA = 0;
-            int indexB = 0;
+            var indexA = 0;
+            var indexB = 0;
             progresor.SubscribeAction
             (
                 value =>
@@ -139,10 +139,10 @@ namespace Tests.Theraot.Collections
         public void ObservableProgressor()
         {
             var source = new Progressor<int>(new[] { 0, 1, 2, 3, 4, 5 });
-            var progresor = new Progressor<int>(((IObservable<int>) source));
+            var progresor = new Progressor<int>((IObservable<int>) source);
             source.AsEnumerable().Consume();
-            int indexA = 0;
-            int indexB = 0;
+            var indexA = 0;
+            var indexB = 0;
             progresor.SubscribeAction
             (
                 value =>
@@ -167,8 +167,8 @@ namespace Tests.Theraot.Collections
             var preface = new[] { 0, 1, 2, 3, 4, 5 };
             var source = new Progressor<int>(new[] { 6, 7, 8, 9 });
             var progresor = new Progressor<int>(preface, source);
-            int indexA = 0;
-            int indexB = 0;
+            var indexA = 0;
+            var indexB = 0;
             progresor.SubscribeAction
             (
                 value =>
@@ -192,8 +192,8 @@ namespace Tests.Theraot.Collections
         {
             var source = new Progressor<int>(new[] { 0, 1, 2, 3, 4, 5 });
             var progresor = new Progressor<int>(source);
-            int indexA = 0;
-            int indexB = 0;
+            var indexA = 0;
+            var indexB = 0;
             progresor.SubscribeAction
             (
                 value =>
@@ -379,8 +379,8 @@ namespace Tests.Theraot.Collections
                 },
                 false
             );
-            int indexA = 0;
-            int indexB = 0;
+            var indexA = 0;
+            var indexB = 0;
             progresor.SubscribeAction
             (
                 value =>

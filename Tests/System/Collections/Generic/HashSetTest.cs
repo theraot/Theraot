@@ -80,7 +80,9 @@ namespace MonoTests.System.Collections.Generic
 
             var massive = Enumerable.Range(0, 10000).ToArray();
             foreach (var item in massive)
+            {
                 Assert.IsTrue(set.Add(item));
+            }
 
             AssertContainsOnly(massive, set);
         }
@@ -92,7 +94,9 @@ namespace MonoTests.System.Collections.Generic
             var set = new HashSet<int>(massive);
 
             foreach (var item in massive)
+            {
                 Assert.IsTrue(set.Remove(item));
+            }
 
             AssertIsEmpty(set);
         }
@@ -127,7 +131,9 @@ namespace MonoTests.System.Collections.Generic
             var set = new HashSet<int>(data);
 
             foreach (var item in data)
+            {
                 Assert.IsTrue(set.Contains(item));
+            }
         }
 
         [Test, ExpectedException(typeof(InvalidOperationException))]
@@ -135,7 +141,9 @@ namespace MonoTests.System.Collections.Generic
         {
             var set = new HashSet<int>(new[] { 1, 2, 3, 4 });
             foreach (var item in set)
+            {
                 set.Add(item + 2);
+            }
         }
 
         [Test]
@@ -145,7 +153,7 @@ namespace MonoTests.System.Collections.Generic
             var result = new[] { 2, 4, 6, 8 };
 
             var set = new HashSet<int>(data);
-            int removed = set.RemoveWhere(i => (i % 2) != 0);
+            var removed = set.RemoveWhere(i => (i % 2) != 0);
 
             Assert.AreEqual(data.Length - result.Length, removed);
             AssertContainsOnly(result, set);
@@ -451,7 +459,7 @@ namespace MonoTests.System.Collections.Generic
             Assert.IsFalse(comparer.Equals(set1, null));
         }
 
-        static void AssertContainsOnly<T>(IEnumerable<T> result, IEnumerable<T> data)
+        private static void AssertContainsOnly<T>(IEnumerable<T> result, IEnumerable<T> data)
         {
             Assert.AreEqual(result.Count(), data.Count());
 
@@ -465,14 +473,14 @@ namespace MonoTests.System.Collections.Generic
             AssertIsEmpty(store);
         }
 
-        static void AssertIsEmpty<T>(IEnumerable<T> source)
+        private static void AssertIsEmpty<T>(IEnumerable<T> source)
         {
             Assert.AreEqual(0, source.Count());
         }
 
+        private delegate void D();
 
-        delegate void D();
-        bool Throws(D d)
+        private bool Throws(D d)
         {
             try
             {
@@ -555,7 +563,10 @@ namespace MonoTests.System.Collections.Generic
             public int GetHashCode(string str)
             {
                 if (str != null)
+                {
                     return str.GetHashCode();
+                }
+
                 throw new ArgumentNullException();  // Important aspect for test (same as what StringComparer.Ordinal does, and different from GenericEqualityComparer<string>)
             }
         }

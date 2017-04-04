@@ -43,7 +43,7 @@ namespace MonoTests.System.Threading.Tasks
         {
             var src = new CancellationTokenSource();
 
-            Task t = new Task(delegate { }, src.Token);
+            var t = new Task(delegate { }, src.Token);
             src.Cancel();
             Assert.AreEqual(TaskStatus.Canceled, t.Status, "#1");
 
@@ -63,9 +63,7 @@ namespace MonoTests.System.Threading.Tasks
             bool? previouslyQueued = null;
 
             var scheduler = new MockScheduler();
-            scheduler.TryExecuteTaskInlineHandler += (task, b) => {
-                previouslyQueued = b;
-            };
+            scheduler.TryExecuteTaskInlineHandler += (task, b) => previouslyQueued = b;
 
             var tf = new TaskFactory(scheduler);
             var t = tf.StartNew(() => { });
@@ -78,15 +76,17 @@ namespace MonoTests.System.Threading.Tasks
         public void MultipleTasks()
         {
             ParallelTestHelper.Repeat(delegate {
-                bool r1 = false, r2 = false, r3 = false;
+                var r1 = false;
+                var r2 = false;
+                var r3 = false;
 
-                Task t1 = Task.Factory.StartNew(delegate {
+                var t1 = Task.Factory.StartNew(delegate {
                     r1 = true;
                 });
-                Task t2 = Task.Factory.StartNew(delegate {
+                var t2 = Task.Factory.StartNew(delegate {
                     r2 = true;
                 });
-                Task t3 = Task.Factory.StartNew(delegate {
+                var t3 = Task.Factory.StartNew(delegate {
                     r3 = true;
                 });
 
@@ -104,11 +104,13 @@ namespace MonoTests.System.Threading.Tasks
         public void WaitChildTestCase()
         {
             ParallelTestHelper.Repeat(delegate {
-                bool r1 = false, r2 = false, r3 = false;
+                var r1 = false;
+                var r2 = false;
+                var r3 = false;
                 var mre = new ManualResetEventSlim(false);
                 var mreStart = new ManualResetEventSlim(false);
 
-                Task t = Task.Factory.StartNew(delegate {
+                var t = Task.Factory.StartNew(delegate {
                     Task.Factory.StartNew(delegate {
                         mre.Wait(300);
                         r1 = true;
@@ -155,7 +157,7 @@ namespace MonoTests.System.Threading.Tasks
             ParallelTestHelper.Repeat(delegate {
                 var evt = new ManualResetEventSlim();
                 var monitor = new object();
-                int finished = 0;
+                var finished = 0;
                 var t = Task.Factory.StartNew(delegate {
                     var r = evt.Wait(5000);
                     lock (monitor)
@@ -168,15 +170,23 @@ namespace MonoTests.System.Threading.Tasks
                 var cntd = new CountdownEvent(2);
                 var cntd2 = new CountdownEvent(2);
 
-                int r1 = 0, r2 = 0;
+                var r1 = 0;
+                var r2 = 0;
                 ThreadPool.QueueUserWorkItem(delegate {
                     cntd.Signal();
                     if (!t.Wait(1000))
+                    {
                         r1 = 20; // 20 -> task wait failed
+                    }
                     else if (t.Result != 1)
+                    {
                         r1 = 30 + t.Result; // 30 -> task result is bad
+                    }
                     else
+                    {
                         r1 = 2; //2 -> ok
+                    }
+
                     cntd2.Signal();
                     lock (monitor)
                     {
@@ -187,11 +197,17 @@ namespace MonoTests.System.Threading.Tasks
                 ThreadPool.QueueUserWorkItem(delegate {
                     cntd.Signal();
                     if (!t.Wait(1000))
+                    {
                         r2 = 40; // 40 -> task wait failed
+                    }
                     else if (t.Result != 1)
+                    {
                         r2 = 50 + t.Result; // 50 -> task result is bad
+                    }
                     else
+                    {
                         r2 = 3; //3 -> ok
+                    }
 
                     cntd2.Signal();
                     lock (monitor)
@@ -212,9 +228,13 @@ namespace MonoTests.System.Threading.Tasks
                     while (true)
                     {
                         if (finished == 3)
+                        {
                             break;
+                        }
                         else
+                        {
                             Monitor.Wait(monitor);
+                        }
                     }
                 }
             }, 10);
@@ -227,7 +247,8 @@ namespace MonoTests.System.Threading.Tasks
             var t = new Task(delegate { });
             var cntd = new CountdownEvent(2);
 
-            bool r1 = false, r2 = false;
+            var r1 = false;
+            var r2 = false;
             ThreadPool.QueueUserWorkItem(delegate { r1 = !t.Wait(100); cntd.Signal(); });
             ThreadPool.QueueUserWorkItem(delegate { r2 = !t.Wait(100); cntd.Signal(); });
 
@@ -240,7 +261,7 @@ namespace MonoTests.System.Threading.Tasks
         public void RunSynchronously()
         {
             var val = 0;
-            Task t = new Task(() => { Thread.Sleep(100); val = 1; });
+            var t = new Task(() => { Thread.Sleep(100); val = 1; });
             t.RunSynchronously();
 
             Assert.AreEqual(1, val, "#1");
@@ -250,9 +271,7 @@ namespace MonoTests.System.Threading.Tasks
             bool? previouslyQueued = null;
 
             var scheduler = new MockScheduler();
-            scheduler.TryExecuteTaskInlineHandler += (task, b) => {
-                previouslyQueued = b;
-            };
+            scheduler.TryExecuteTaskInlineHandler += (task, b) => previouslyQueued = b;
 
             t.RunSynchronously(scheduler);
 
@@ -263,7 +282,7 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void RunSynchronouslyArgumentChecks()
         {
-            Task t = new Task(() => { });
+            var t = new Task(() => { });
             try
             {
                 t.RunSynchronously(null);
@@ -282,7 +301,7 @@ namespace MonoTests.System.Threading.Tasks
                 throw new ApplicationException();
             };
 
-            Task t = new Task(() => { });
+            var t = new Task(() => { });
             try
             {
                 t.RunSynchronously(scheduler);
@@ -298,9 +317,11 @@ namespace MonoTests.System.Threading.Tasks
         public void RunSynchronouslyWithAttachedChildren()
         {
             var result = false;
-            var t = new Task(() => {
-                Task.Factory.StartNew(() => { Thread.Sleep(500); result = true; }, TaskCreationOptions.AttachedToParent);
-            });
+            var t = new Task(() => Task.Factory.StartNew(() =>
+            {
+                Thread.Sleep(500);
+                result = true;
+            }, TaskCreationOptions.AttachedToParent));
             t.RunSynchronously();
             Assert.IsTrue(result);
         }
@@ -308,14 +329,18 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void UnobservedExceptionOnFinalizerThreadTest()
         {
-            bool wasCalled = false;
+            var wasCalled = false;
             TaskScheduler.UnobservedTaskException += (o, args) => {
                 wasCalled = true;
                 args.SetObserved();
             };
             var inner = new ApplicationException();
-            Thread t = new Thread(delegate () {
-                Task.Factory.StartNew(() => { throw inner; });
+            var t = new Thread(() =>
+            {
+                Task.Factory.StartNew(() =>
+                {
+                    throw inner;
+                });
             });
             t.Start();
             t.Join();
@@ -330,7 +355,9 @@ namespace MonoTests.System.Threading.Tasks
         [Test, ExpectedException(typeof(InvalidOperationException))]
         public void StartFinishedTaskTest()
         {
-            var t = Task.Factory.StartNew(delegate () { });
+            var t = Task.Factory.StartNew(() =>
+            {
+            });
             t.Wait();
 
             t.Start();
@@ -483,10 +510,7 @@ namespace MonoTests.System.Threading.Tasks
         {
             var mre = new ManualResetEventSlim();
             Task nested = null;
-            Action innerAction = () =>
-            {
-                mre.Wait(2000);
-            };
+            Action innerAction = () => mre.Wait(2000);
             Action outerAction = () =>
             {
                 nested = Task.Factory.StartNew
@@ -495,7 +519,7 @@ namespace MonoTests.System.Threading.Tasks
                     TaskCreationOptions.AttachedToParent
                 );
             };
-            Task parent = Task.Factory.StartNew
+            var parent = Task.Factory.StartNew
                 (
                     outerAction,
                     TaskCreationOptions.DenyChildAttach
@@ -504,9 +528,11 @@ namespace MonoTests.System.Threading.Tasks
             mre.Set();
             Assert.IsTrue(nested.Wait(2000), "#2");
         }
+
+        private
 #endif
 
-        class SynchronousScheduler : TaskScheduler
+                class SynchronousScheduler : TaskScheduler
         {
             protected override IEnumerable<Task> GetScheduledTasks()
             {
@@ -532,7 +558,7 @@ namespace MonoTests.System.Threading.Tasks
             var ranOnDefault = false;
             var scheduler = new SynchronousScheduler();
 
-            Task parent = Task.Factory.StartNew(() => {
+            var parent = Task.Factory.StartNew(() => {
                 Task.Factory.StartNew(() => {
                     ranOnDefault = Thread.CurrentThread.IsThreadPoolThread;
                     mre.Set();

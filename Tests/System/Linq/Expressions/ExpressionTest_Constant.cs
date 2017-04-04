@@ -20,13 +20,12 @@
 //		Federico Di Gregorio <fog@initd.org>
 
 using System;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_Constant
 	{
 		[Test]
@@ -46,8 +45,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void NullValue ()
 		{
-			ConstantExpression expr = Expression.Constant (null);
-			Assert.AreEqual (ExpressionType.Constant, expr.NodeType, "Constant#01");
+			var expr = Expression.Constant (null);
+            Assert.AreEqual (ExpressionType.Constant, expr.NodeType, "Constant#01");
 			Assert.IsNull (expr.Value, "Constant#02");
 			Assert.AreEqual (typeof (object), expr.Type, "Constant#03");
 			Assert.AreEqual ("null", expr.ToString(), "Constant#04");
@@ -56,8 +55,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void NullableValue1 ()
 		{
-			ConstantExpression expr = Expression.Constant (null, typeof(int?));
-			Assert.AreEqual (ExpressionType.Constant, expr.NodeType, "Constant#05");
+			var expr = Expression.Constant (null, typeof(int?));
+            Assert.AreEqual (ExpressionType.Constant, expr.NodeType, "Constant#05");
 			Assert.IsNull (expr.Value, "Constant#06");
 			Assert.AreEqual (typeof (int?), expr.Type, "Constant#07");
 			Assert.AreEqual ("null", expr.ToString(), "Constant#08");
@@ -66,8 +65,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void NullableValue2 ()
 		{
-			ConstantExpression expr = Expression.Constant (1, typeof (int?));
-			Assert.AreEqual (ExpressionType.Constant, expr.NodeType, "Constant#09");
+			var expr = Expression.Constant (1, typeof (int?));
+            Assert.AreEqual (ExpressionType.Constant, expr.NodeType, "Constant#09");
 			Assert.AreEqual (1, expr.Value, "Constant#10");
 			Assert.AreEqual (typeof (int?), expr.Type, "Constant#11");
 			Assert.AreEqual ("1", expr.ToString(), "Constant#12");
@@ -76,8 +75,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void NullableValue3 ()
 		{
-			ConstantExpression expr = Expression.Constant ((int?)1);
-			Assert.AreEqual (ExpressionType.Constant, expr.NodeType, "Constant#13");
+			var expr = Expression.Constant ((int?)1);
+            Assert.AreEqual (ExpressionType.Constant, expr.NodeType, "Constant#13");
 			Assert.AreEqual (1, expr.Value, "Constant#14");
 			Assert.AreEqual (typeof (int), expr.Type, "Constant#15");
 			Assert.AreEqual ("1", expr.ToString(), "Constant#16");
@@ -86,8 +85,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void IntegerValue ()
 		{
-			ConstantExpression expr = Expression.Constant (0);
-			Assert.AreEqual (ExpressionType.Constant, expr.NodeType, "Constant#17");
+			var expr = Expression.Constant (0);
+            Assert.AreEqual (ExpressionType.Constant, expr.NodeType, "Constant#17");
 			Assert.AreEqual (0, expr.Value, "Constant#18");
 			Assert.AreEqual (typeof (int), expr.Type, "Constant#19");
 			Assert.AreEqual ("0", expr.ToString(), "Constant#20");
@@ -96,8 +95,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void StringValue ()
 		{
-			ConstantExpression expr = Expression.Constant ("a string");
-			Assert.AreEqual (ExpressionType.Constant, expr.NodeType, "Constant#21");
+			var expr = Expression.Constant ("a string");
+            Assert.AreEqual (ExpressionType.Constant, expr.NodeType, "Constant#21");
 			Assert.AreEqual ("a string", expr.Value, "Constant#22");
 			Assert.AreEqual (typeof (string), expr.Type, "Constant#23");
 			Assert.AreEqual ("\"a string\"", expr.ToString(), "Constant#24");
@@ -106,8 +105,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void DateTimeValue ()
 		{
-			ConstantExpression expr = Expression.Constant (new DateTime(1971, 10, 19));
-			Assert.AreEqual (ExpressionType.Constant, expr.NodeType, "Constant#25");
+			var expr = Expression.Constant (new DateTime(1971, 10, 19));
+            Assert.AreEqual (ExpressionType.Constant, expr.NodeType, "Constant#25");
 			Assert.AreEqual (new DateTime(1971, 10, 19), expr.Value, "Constant#26");
 			Assert.AreEqual (typeof (DateTime), expr.Type, "Constant#27");
 			Assert.AreEqual (new DateTime(1971, 10, 19).ToString(), expr.ToString(), "Constant#28");
@@ -116,9 +115,9 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void UserClassValue ()
 		{
-			OpClass oc = new OpClass ();
-			ConstantExpression expr = Expression.Constant (oc);
-			Assert.AreEqual (ExpressionType.Constant, expr.NodeType, "Constant#29");
+			var oc = new OpClass ();
+			var expr = Expression.Constant (oc);
+            Assert.AreEqual (ExpressionType.Constant, expr.NodeType, "Constant#29");
 			Assert.AreEqual (oc, expr.Value, "Constant#30");
 			Assert.AreEqual (typeof (OpClass), expr.Type, "Constant#31");
 			Assert.AreEqual ("value(MonoTests.System.Linq.Expressions.OpClass)", expr.ToString(), "Constant#32");
@@ -147,10 +146,10 @@ namespace MonoTests.System.Linq.Expressions
 			Expression.Constant (null, typeof (void));
 		}
 
-		static T Check<T> (T val)
+		private static T Check<T> (T val)
 		{
-			Expression<Func<T>> l = Expression.Lambda<Func<T>> (Expression.Constant (val), new ParameterExpression [0]);
-			Func<T> fi = l.Compile ();
+			var l = Expression.Lambda<Func<T>> (Expression.Constant (val), new ParameterExpression [0]);
+            Func<T> fi = l.Compile ();
 			return fi ();
 		}
 
@@ -158,8 +157,8 @@ namespace MonoTests.System.Linq.Expressions
 		public void NullableConstant_ToConstant ()
 		{
 			int? a = 1;
-			ConstantExpression c = Expression.Constant (a);
-			Assert.AreEqual (typeof (int), c.Type, "#1");
+			var c = Expression.Constant (a);
+            Assert.AreEqual (typeof (int), c.Type, "#1");
 			Assert.AreEqual (1, c.Value, "#2");
 		}
 
@@ -169,8 +168,8 @@ namespace MonoTests.System.Linq.Expressions
 			Assert.AreEqual (Check<int> (0), 0, "int");
 			Assert.AreEqual (Check<int> (128), 128, "int2");
 			Assert.AreEqual (Check<int> (-128), -128, "int3");
-			Assert.AreEqual (Check<int> (Int32.MinValue), Int32.MinValue, "int4");
-			Assert.AreEqual (Check<int> (Int32.MaxValue), Int32.MaxValue, "int5");
+			Assert.AreEqual (Check<int> (int.MinValue), int.MinValue, "int4");
+			Assert.AreEqual (Check<int> (int.MaxValue), int.MaxValue, "int5");
 			Assert.AreEqual (Check<uint> (128), 128, "uint");
 			Assert.AreEqual (Check<uint> (0), 0, "uint2");
 			Assert.AreEqual (Check<uint> (UInt32.MinValue), UInt32.MinValue, "uint3");
@@ -201,7 +200,7 @@ namespace MonoTests.System.Linq.Expressions
 			Assert.AreEqual (Check<decimal> (3147483647m), 3147483647m, "decimal");
 		}
 
-		delegate void Foo ();
+        private delegate void Foo ();
 
 		[Test]
 		public void DelegateTypeConstant ()
@@ -263,13 +262,15 @@ namespace MonoTests.System.Linq.Expressions
 			Assert.AreEqual ((Chose?) Chose.Moche, e ());
 		}
 
-		enum Chose { Moche }
+        private enum Chose { Moche }
 
-		interface IBar {}
-		class Bar : IBar {}
+        private interface IBar {}
 
-		interface IBaz<T> {}
-		class Baz<T> : IBaz<T> {}
+        private class Bar : IBar {}
+
+        private interface IBaz<T> {}
+
+        private class Baz<T> : IBaz<T> {}
 
 		[Test]
 		public void ConstantInterface ()

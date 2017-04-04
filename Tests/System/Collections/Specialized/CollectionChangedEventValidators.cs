@@ -42,12 +42,16 @@ namespace MonoTests.System.Collections.Specialized
                 return;
             }
             else
+            {
                 Assert.IsNotNull(actual, "LISTEQ_1B::" + message);
+            }
 
             Assert.AreEqual(expected.Count, actual.Count, "LISTEQ_2::" + message);
 
             for (int i = 0; i < expected.Count; i++)
+            {
                 Assert.AreEqual(expected[i], actual[i], "LISTEQ_3::" + message);
+            }
         }
 
         private static void ValidateCommon(NotifyCollectionChangedEventArgs args, NotifyCollectionChangedAction action, IList newItems, IList oldItems, int newIndex, int oldIndex, string message)

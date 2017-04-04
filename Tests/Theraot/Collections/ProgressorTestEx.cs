@@ -18,8 +18,8 @@ namespace Tests.Theraot.Collections
             var source = new SlowObservable<int>(new[] { 0, 1, 2, 3, 4, 5 });
             var progresor = new Progressor<int>(source);
             Assert.IsFalse(progresor.IsClosed);
-            int indexA = 0;
-            int indexB = 0;
+            var indexA = 0;
+            var indexB = 0;
             progresor.SubscribeAction
             (
                 value =>

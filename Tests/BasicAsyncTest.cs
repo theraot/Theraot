@@ -1,4 +1,5 @@
 ﻿#if !NETCF
+
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,15 +8,15 @@ using NUnit.Framework;
 namespace Tests
 {
     [TestFixture]
-    class BasicAsyncTest
+    internal class BasicAsyncTest
     {
-        private static async Task<string> GetData()
+        private static async Task<string> GetDataAsync()
         {
-            var data = await SlowOperation();
+            var data = await SlowOperationAsync().ConfigureAwait(false);
             return data.ToString(CultureInfo.InvariantCulture);
         }
 
-        private static Task<int> SlowOperation()
+        private static Task<int> SlowOperationAsync()
         {
             Thread.Sleep(1);
             // FromResult does not exist in .NET 4.0 - TaskEx offer a consistent interface from .NET 2.0 to .NET 4.5
@@ -25,8 +26,9 @@ namespace Tests
         [Test]
         public void SimpleTest()
         {
-            Assert.AreEqual("7", GetData().Result);
+            Assert.AreEqual("7", GetDataAsync().Result);
         }
     }
 }
+
 #endif

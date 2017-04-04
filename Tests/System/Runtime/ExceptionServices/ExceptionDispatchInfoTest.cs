@@ -44,8 +44,9 @@ namespace MonoTests.System.Runtime.ExceptionServices
                 ExceptionDispatchInfo.Capture(null);
                 Assert.Fail();
             }
-            catch (ArgumentNullException)
+            catch (ArgumentNullException ex)
             {
+                GC.KeepAlive(ex);
             }
         }
 
@@ -58,11 +59,13 @@ namespace MonoTests.System.Runtime.ExceptionServices
         }
 
 #if FAT
+
         [Test]
         public void Throw()
         {
             Exception orig = null;
-            var t = Task.Factory.StartNew(() => {
+            var t = Task.Factory.StartNew(() =>
+            {
                 try
                 {
                     throw new ApplicationException("aaa");
@@ -89,6 +92,7 @@ namespace MonoTests.System.Runtime.ExceptionServices
                 Assert.AreNotEqual(orig_stack, e.StackTrace, "#3");
             }
         }
+
 #endif
 
         [Test]
@@ -128,8 +132,9 @@ namespace MonoTests.System.Runtime.ExceptionServices
             {
                 edi.Throw();
             }
-            catch
+            catch (Exception ex)
             {
+                GC.KeepAlive(ex);
             }
 
             try
@@ -138,6 +143,7 @@ namespace MonoTests.System.Runtime.ExceptionServices
             }
             catch (Exception ex)
             {
+                GC.KeepAlive(ex);
             }
 
             try

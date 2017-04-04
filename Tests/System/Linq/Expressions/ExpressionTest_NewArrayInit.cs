@@ -27,15 +27,15 @@
 //
 
 using System;
-using System.Reflection;
 using System.Linq;
 using System.Linq.Expressions;
 
 using NUnit.Framework;
 
-namespace MonoTests.System.Linq.Expressions {
+namespace MonoTests.System.Linq.Expressions
+{
 
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_NewArrayInit {
 
 		[Test]
@@ -83,7 +83,7 @@ namespace MonoTests.System.Linq.Expressions {
 			Assert.AreEqual ("new [] {1, 2, 3}", a.ToString ());
 		}
 
-		static Func<T []> CreateArrayInit<T> (T [] ts)
+		private static Func<T []> CreateArrayInit<T> (T [] ts)
 		{
 			return Expression.Lambda<Func<T []>> (
 				Expression.NewArrayInit (
@@ -91,7 +91,7 @@ namespace MonoTests.System.Linq.Expressions {
 					(from t in ts select t.ToConstant ()).ToArray ())).Compile ();
 		}
 
-		static void AssertCreatedArrayIsEqual<T> (params T [] ts)
+		private static void AssertCreatedArrayIsEqual<T> (params T [] ts)
 		{
 			var creator = CreateArrayInit (ts);
 			var array = creator ();
@@ -105,7 +105,7 @@ namespace MonoTests.System.Linq.Expressions {
 			AssertCreatedArrayIsEqual (new int [] { 1, 2, 3, 4 });
 		}
 
-		enum Months { Jan, Feb, Mar, Apr };
+        private enum Months { Jan, Feb, Mar, Apr };
 
 		[Test]
 		public void CompileInitArrayOfEnums ()
@@ -113,7 +113,7 @@ namespace MonoTests.System.Linq.Expressions {
 			AssertCreatedArrayIsEqual (new Months [] { Months.Jan, Months.Feb, Months.Mar, Months.Apr });
 		}
 
-		class Foo {
+        private class Foo {
 		}
 
 		[Test]
@@ -122,7 +122,7 @@ namespace MonoTests.System.Linq.Expressions {
 			AssertCreatedArrayIsEqual (new Foo [] { new Foo (), new Foo (), new Foo (), new Foo () });
 		}
 
-		struct Bar {
+        private struct Bar {
 			public int bar;
 			public Bar (int b) { bar = b; }
 		}

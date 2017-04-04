@@ -21,13 +21,12 @@
 
 using System;
 using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_Property
 	{
 		[Test]
@@ -68,8 +67,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void InstanceProperty1 ()
 		{
-			MemberExpression expr = Expression.Property (Expression.Constant (new MemberClass()), "TestProperty1");
-			Assert.AreEqual (ExpressionType.MemberAccess, expr.NodeType, "Property#01");
+			var expr = Expression.Property (Expression.Constant (new MemberClass()), "TestProperty1");
+            Assert.AreEqual (ExpressionType.MemberAccess, expr.NodeType, "Property#01");
 			Assert.AreEqual (typeof (int), expr.Type, "Property#02");
 			Assert.AreEqual ("value(MonoTests.System.Linq.Expressions.MemberClass).TestProperty1", expr.ToString(), "Property#03");
 		}
@@ -77,8 +76,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void InstanceProperty2 ()
 		{
-			MemberExpression expr = Expression.Property (Expression.Constant (new MemberClass()), MemberClass.GetRoPropertyInfo());
-			Assert.AreEqual (ExpressionType.MemberAccess, expr.NodeType, "Property#04");
+			var expr = Expression.Property (Expression.Constant (new MemberClass()), MemberClass.GetRoPropertyInfo());
+            Assert.AreEqual (ExpressionType.MemberAccess, expr.NodeType, "Property#04");
 			Assert.AreEqual (typeof (int), expr.Type, "Property#05");
 			Assert.AreEqual ("value(MonoTests.System.Linq.Expressions.MemberClass).TestProperty1", expr.ToString(), "Property#06");
 		}
@@ -86,9 +85,9 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void InstanceProperty3 ()
 		{
-			MethodInfo mi = typeof(MemberClass).GetMethod("get_TestProperty1");
+			var mi = typeof(MemberClass).GetMethod("get_TestProperty1");
 
-			MemberExpression expr = Expression.Property (Expression.Constant (new MemberClass()), mi);
+            MemberExpression expr = Expression.Property (Expression.Constant (new MemberClass()), mi);
 			Assert.AreEqual (ExpressionType.MemberAccess, expr.NodeType, "Property#07");
 			Assert.AreEqual (typeof (int), expr.Type, "Property#08");
 			Assert.AreEqual ("value(MonoTests.System.Linq.Expressions.MemberClass).TestProperty1", expr.ToString(), "Property#09");
@@ -107,8 +106,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void StaticProperty2 ()
 		{
-			MemberExpression expr = Expression.Property (null, MemberClass.GetStaticPropertyInfo());
-			Assert.AreEqual (ExpressionType.MemberAccess, expr.NodeType, "Property#11");
+			var expr = Expression.Property (null, MemberClass.GetStaticPropertyInfo());
+            Assert.AreEqual (ExpressionType.MemberAccess, expr.NodeType, "Property#11");
 			Assert.AreEqual (typeof (int), expr.Type, "Property#12");
 			Assert.AreEqual ("MemberClass.StaticProperty", expr.ToString(), "Property#13");
 		}
@@ -116,9 +115,9 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void StaticProperty3 ()
 		{
-			MethodInfo mi = typeof(MemberClass).GetMethod("get_StaticProperty");
+			var mi = typeof(MemberClass).GetMethod("get_StaticProperty");
 
-			MemberExpression expr = Expression.Property (null, mi);
+            MemberExpression expr = Expression.Property (null, mi);
 			Assert.AreEqual (ExpressionType.MemberAccess, expr.NodeType, "Property#14");
 			Assert.AreEqual (typeof (int), expr.Type, "Property#15");
 			Assert.AreEqual ("MemberClass.StaticProperty", expr.ToString(), "Property#16");
@@ -155,9 +154,9 @@ namespace MonoTests.System.Linq.Expressions
 		}
 
 		public struct Bar {
-			private string slot;
+            private string slot;
 
-			public string Prop {
+            public string Prop {
 				get { return slot; }
 				set { slot = value; }
 			}

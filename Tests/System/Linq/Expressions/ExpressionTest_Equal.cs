@@ -22,14 +22,12 @@
 //
 
 using System;
-using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_Equal
 	{
 		[Test]
@@ -72,8 +70,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void Numeric ()
 		{
-			BinaryExpression expr = Expression.Equal (Expression.Constant (1), Expression.Constant (2));
-			Assert.AreEqual (ExpressionType.Equal, expr.NodeType);
+			var expr = Expression.Equal (Expression.Constant (1), Expression.Constant (2));
+            Assert.AreEqual (ExpressionType.Equal, expr.NodeType);
 			Assert.AreEqual (typeof (bool), expr.Type);
 			Assert.IsNull (expr.Method);
 #if !NET_4_0
@@ -84,8 +82,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void PrimitiveNonNumeric ()
 		{
-			BinaryExpression expr = Expression.Equal (Expression.Constant ('a'), Expression.Constant ('b'));
-			Assert.AreEqual (ExpressionType.Equal, expr.NodeType);
+			var expr = Expression.Equal (Expression.Constant ('a'), Expression.Constant ('b'));
+            Assert.AreEqual (ExpressionType.Equal, expr.NodeType);
 			Assert.AreEqual (typeof (bool), expr.Type);
 			Assert.IsNull (expr.Method);
 
@@ -99,10 +97,10 @@ namespace MonoTests.System.Linq.Expressions
 			int? a = 1;
 			int? b = 2;
 
-			BinaryExpression expr = Expression.Equal (Expression.Constant (a, typeof(int?)),
+			var expr = Expression.Equal (Expression.Constant (a, typeof(int?)),
 								  Expression.Constant (b, typeof(int?)),
 								  false, null);
-			Assert.AreEqual (ExpressionType.Equal, expr.NodeType);
+            Assert.AreEqual (ExpressionType.Equal, expr.NodeType);
 			Assert.AreEqual (typeof (bool), expr.Type);
 			Assert.AreEqual (true, expr.IsLifted);
 			Assert.AreEqual (false, expr.IsLiftedToNull);
@@ -118,10 +116,10 @@ namespace MonoTests.System.Linq.Expressions
 			int? a = 1;
 			int? b = 2;
 
-			BinaryExpression expr = Expression.Equal (Expression.Constant (a, typeof(int?)),
+			var expr = Expression.Equal (Expression.Constant (a, typeof(int?)),
 								  Expression.Constant (b, typeof(int?)),
 								  true, null);
-			Assert.AreEqual (ExpressionType.Equal, expr.NodeType);
+            Assert.AreEqual (ExpressionType.Equal, expr.NodeType);
 			Assert.AreEqual (typeof (bool?), expr.Type);
 			Assert.AreEqual (true, expr.IsLifted);
 			Assert.AreEqual (true, expr.IsLiftedToNull);
@@ -136,9 +134,9 @@ namespace MonoTests.System.Linq.Expressions
 		public void Nullable_Mixed ()
 		{
 			int? a = 1;
-			int b = 2;
+			var b = 2;
 
-			Expression.Equal (Expression.Constant (a, typeof (int?)),
+            Expression.Equal (Expression.Constant (a, typeof (int?)),
 					  Expression.Constant (b, typeof (int)));
 		}
 
@@ -147,9 +145,9 @@ namespace MonoTests.System.Linq.Expressions
 		{
 			// We can use the simplest version of GetMethod because we already know only one
 			// exists in the very simple class we're using for the tests.
-			MethodInfo mi = typeof (OpClass).GetMethod ("op_Equality");
+			var mi = typeof (OpClass).GetMethod ("op_Equality");
 
-			BinaryExpression expr = Expression.Equal (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
+            BinaryExpression expr = Expression.Equal (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
 			Assert.AreEqual (ExpressionType.Equal, expr.NodeType);
 			Assert.AreEqual (typeof (bool), expr.Type);
 			Assert.AreEqual (mi, expr.Method);
@@ -195,21 +193,23 @@ namespace MonoTests.System.Linq.Expressions
 			Assert.AreEqual ((bool?) null, eq (0, null));
 		}
 
-		struct Slot {
+        private struct Slot {
 			public int Value;
 
 			public Slot (int value)
 			{
-				this.Value = value;
+                Value = value;
 			}
 
 			public override bool Equals (object obj)
 			{
 				if (!(obj is Slot))
-					return false;
+                {
+                    return false;
+                }
 
-				var other = (Slot) obj;
-				return other.Value == this.Value;
+                var other = (Slot) obj;
+				return other.Value == Value;
 			}
 
 			public override int GetHashCode ()
@@ -290,12 +290,12 @@ namespace MonoTests.System.Linq.Expressions
 			Assert.AreEqual ((bool?) false, eq ((Slot?) new Slot (21), (Slot?) new Slot (-21)));
 		}
 
-		struct SlotToNullable {
+        private struct SlotToNullable {
 			public int Value;
 
 			public SlotToNullable (int value)
 			{
-				this.Value = value;
+                Value = value;
 			}
 
 			public override int GetHashCode ()
@@ -306,10 +306,12 @@ namespace MonoTests.System.Linq.Expressions
 			public override bool Equals (object obj)
 			{
 				if (!(obj is SlotToNullable))
-					return false;
+                {
+                    return false;
+                }
 
-				var other = (SlotToNullable) obj;
-				return other.Value == this.Value;
+                var other = (SlotToNullable) obj;
+				return other.Value == Value;
 			}
 
 			public static bool? operator == (SlotToNullable a, SlotToNullable b)

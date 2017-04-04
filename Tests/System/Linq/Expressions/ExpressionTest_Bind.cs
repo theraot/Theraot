@@ -21,14 +21,12 @@
 
 using System;
 using System.Reflection;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_Bind
 	{
 		[Test]
@@ -80,49 +78,49 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void FieldRo ()
 		{
-			MemberAssignment expr = Expression.Bind (MemberClass.GetRoFieldInfo (), Expression.Constant (1));
-			Assert.AreEqual (MemberBindingType.Assignment, expr.BindingType, "Bind#01");
+			var expr = Expression.Bind (MemberClass.GetRoFieldInfo (), Expression.Constant (1));
+            Assert.AreEqual (MemberBindingType.Assignment, expr.BindingType, "Bind#01");
 			Assert.AreEqual ("TestField1 = 1", expr.ToString(), "Bind#02");
 		}
 
 		[Test]
 		public void FieldRw ()
 		{
-			MemberAssignment expr = Expression.Bind (MemberClass.GetRwFieldInfo (), Expression.Constant (1));
-			Assert.AreEqual (MemberBindingType.Assignment, expr.BindingType, "Bind#03");
+			var expr = Expression.Bind (MemberClass.GetRwFieldInfo (), Expression.Constant (1));
+            Assert.AreEqual (MemberBindingType.Assignment, expr.BindingType, "Bind#03");
 			Assert.AreEqual ("TestField2 = 1", expr.ToString(), "Bind#04");
 		}
 
 		[Test]
 		public void FieldStatic ()
 		{
-			MemberAssignment expr = Expression.Bind (MemberClass.GetStaticFieldInfo (), Expression.Constant (1));
-			Assert.AreEqual (MemberBindingType.Assignment, expr.BindingType, "Bind#05");
+			var expr = Expression.Bind (MemberClass.GetStaticFieldInfo (), Expression.Constant (1));
+            Assert.AreEqual (MemberBindingType.Assignment, expr.BindingType, "Bind#05");
 			Assert.AreEqual ("StaticField = 1", expr.ToString(), "Bind#06");
 		}
 
 		[Test]
 		public void PropertyRw ()
 		{
-			MemberAssignment expr = Expression.Bind (MemberClass.GetRwPropertyInfo (), Expression.Constant (1));
-			Assert.AreEqual (MemberBindingType.Assignment, expr.BindingType, "Bind#07");
+			var expr = Expression.Bind (MemberClass.GetRwPropertyInfo (), Expression.Constant (1));
+            Assert.AreEqual (MemberBindingType.Assignment, expr.BindingType, "Bind#07");
 			Assert.AreEqual ("TestProperty2 = 1", expr.ToString(), "Bind#08");
 		}
 
 		[Test]
 		public void PropertyStatic ()
 		{
-			MemberAssignment expr = Expression.Bind (MemberClass.GetStaticPropertyInfo (), Expression.Constant (1));
-			Assert.AreEqual (MemberBindingType.Assignment, expr.BindingType, "Bind#09");
+			var expr = Expression.Bind (MemberClass.GetStaticPropertyInfo (), Expression.Constant (1));
+            Assert.AreEqual (MemberBindingType.Assignment, expr.BindingType, "Bind#09");
 			Assert.AreEqual ("StaticProperty = 1", expr.ToString(), "Bind#10");
 		}
 
 		[Test]
 		public void PropertyAccessor ()
 		{
-			MethodInfo mi = typeof(MemberClass).GetMethod("get_TestProperty2");
+			var mi = typeof(MemberClass).GetMethod("get_TestProperty2");
 
-			MemberAssignment expr = Expression.Bind (mi, Expression.Constant (1));
+            MemberAssignment expr = Expression.Bind (mi, Expression.Constant (1));
 			Assert.AreEqual (MemberBindingType.Assignment, expr.BindingType, "Bind#11");
 			Assert.AreEqual ("TestProperty2 = 1", expr.ToString(), "Bind#12");
 			Assert.AreEqual (MemberClass.GetRwPropertyInfo(), expr.Member, "Bind#13");
@@ -131,15 +129,15 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void PropertyAccessorStatic ()
 		{
-			MethodInfo mi = typeof(MemberClass).GetMethod("get_StaticProperty");
+			var mi = typeof(MemberClass).GetMethod("get_StaticProperty");
 
-			MemberAssignment expr = Expression.Bind (mi, Expression.Constant (1));
+            MemberAssignment expr = Expression.Bind (mi, Expression.Constant (1));
 			Assert.AreEqual (MemberBindingType.Assignment, expr.BindingType, "Bind#14");
 			Assert.AreEqual ("StaticProperty = 1", expr.ToString(), "Bind#15");
 			Assert.AreEqual (MemberClass.GetStaticPropertyInfo(), expr.Member, "Bind#16");
 		}
 
-		struct Slot {
+        private struct Slot {
 			public int Integer { get; set; }
 			public short Short { get; set; }
 		}

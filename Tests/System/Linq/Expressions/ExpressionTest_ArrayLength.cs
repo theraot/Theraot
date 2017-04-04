@@ -28,15 +28,12 @@
 //
 
 using System;
-using System.Reflection;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_ArrayLength
 	{
 		[Test]
@@ -58,8 +55,8 @@ namespace MonoTests.System.Linq.Expressions
 		{
 			string[] array = { "a", "b", "c" };
 
-			UnaryExpression expr = Expression.ArrayLength (Expression.Constant (array));
-			Assert.AreEqual (ExpressionType.ArrayLength, expr.NodeType, "ArrayLength#01");
+			var expr = Expression.ArrayLength (Expression.Constant (array));
+            Assert.AreEqual (ExpressionType.ArrayLength, expr.NodeType, "ArrayLength#01");
 			Assert.AreEqual (typeof (int), expr.Type, "ArrayLength#02");
 			Assert.IsNull (expr.Method, "ArrayLength#03");
 			Assert.AreEqual ("ArrayLength(value(System.String[]))", expr.ToString(), "ArrayLength#04");

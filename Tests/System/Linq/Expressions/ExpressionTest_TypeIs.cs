@@ -20,14 +20,12 @@
 //		Federico Di Gregorio <fog@initd.org>
 
 using System;
-using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_TypeIs
 	{
 		[Test]
@@ -47,8 +45,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void Numeric ()
 		{
-			TypeBinaryExpression expr = Expression.TypeIs (Expression.Constant (1), typeof (int));
-			Assert.AreEqual (ExpressionType.TypeIs, expr.NodeType, "TypeIs#01");
+			var expr = Expression.TypeIs (Expression.Constant (1), typeof (int));
+            Assert.AreEqual (ExpressionType.TypeIs, expr.NodeType, "TypeIs#01");
 			Assert.AreEqual (typeof (bool), expr.Type, "TypeIs#02");
 			Assert.AreEqual ("(1 Is Int32)", expr.ToString(), "TypeIs#03");
 		}
@@ -56,8 +54,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void String ()
 		{
-			TypeBinaryExpression expr = Expression.TypeIs (Expression.Constant (1), typeof (string));
-			Assert.AreEqual (ExpressionType.TypeIs, expr.NodeType, "TypeIs#04");
+			var expr = Expression.TypeIs (Expression.Constant (1), typeof (string));
+            Assert.AreEqual (ExpressionType.TypeIs, expr.NodeType, "TypeIs#04");
 			Assert.AreEqual (typeof (bool), expr.Type, "TypeIs#05");
 			Assert.AreEqual ("(1 Is String)", expr.ToString(), "TypeIs#06");
 		}
@@ -65,22 +63,22 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void UserDefinedClass ()
 		{
-			TypeBinaryExpression expr = Expression.TypeIs (Expression.Constant (new OpClass()), typeof (OpClass));
-			Assert.AreEqual (ExpressionType.TypeIs, expr.NodeType, "TypeIs#07");
+			var expr = Expression.TypeIs (Expression.Constant (new OpClass()), typeof (OpClass));
+            Assert.AreEqual (ExpressionType.TypeIs, expr.NodeType, "TypeIs#07");
 			Assert.AreEqual (typeof (bool), expr.Type, "TypeIs#08");
 			Assert.AreEqual ("(value(MonoTests.System.Linq.Expressions.OpClass) Is OpClass)", expr.ToString(), "TypeIs#09");
 		}
 
-		struct Foo {
+        private struct Foo {
 		}
 
-		class Bar {
+        private class Bar {
 		}
 
-		class Baz : Bar {
+        private class Baz : Bar {
 		}
 
-		static Func<TType, bool> CreateTypeIs<TType, TCandidate> ()
+		private static Func<TType, bool> CreateTypeIs<TType, TCandidate> ()
 		{
 			var p = Expression.Parameter (typeof (TType), "p");
 

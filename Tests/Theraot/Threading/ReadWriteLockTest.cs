@@ -154,10 +154,7 @@ namespace Tests.Theraot.Threading
                         IDisposable engagement = null;
                         try
                         {
-                            if (x.TryEnterRead(out engagement))
-                            {
-                                ok = false;
-                            }
+                            ok &= !x.TryEnterRead(out engagement);
                         }
                         finally
                         {
@@ -195,10 +192,7 @@ namespace Tests.Theraot.Threading
                             IDisposable engagementB = null;
                             try
                             {
-                                if (x.TryEnterRead(out engagementB))
-                                {
-                                    ok = false;
-                                }
+                                ok &= !x.TryEnterRead(out engagementB);
                             }
                             finally
                             {
@@ -252,10 +246,7 @@ namespace Tests.Theraot.Threading
                 IDisposable engagement = null;
                 try
                 {
-                    if (x.TryEnterWrite(out engagement))
-                    {
-                        ok = false;
-                    }
+                    ok &= !x.TryEnterWrite(out engagement);
                 }
                 finally
                 {
@@ -293,10 +284,7 @@ namespace Tests.Theraot.Threading
                         IDisposable engagement = null;
                         try
                         {
-                            if (x.TryEnterWrite(out engagement))
-                            {
-                                ok = false;
-                            }
+                            ok &= !x.TryEnterWrite(out engagement);
                         }
                         finally
                         {
@@ -334,10 +322,7 @@ namespace Tests.Theraot.Threading
                             IDisposable engagementB = null;
                             try
                             {
-                                if (x.TryEnterWrite(out engagementB))
-                                {
-                                    ok = false;
-                                }
+                                ok &= !x.TryEnterWrite(out engagementB);
                             }
                             finally
                             {
@@ -381,10 +366,7 @@ namespace Tests.Theraot.Threading
                         IDisposable engagement = null;
                         try
                         {
-                            if (x.TryEnterWrite(out engagement))
-                            {
-                                ok = false;
-                            }
+                            ok &= !x.TryEnterWrite(out engagement);
                         }
                         finally
                         {
@@ -422,10 +404,7 @@ namespace Tests.Theraot.Threading
                             IDisposable engagementB = null;
                             try
                             {
-                                if (x.TryEnterWrite(out engagementB))
-                                {
-                                    ok = false;
-                                }
+                                ok &= !x.TryEnterWrite(out engagementB);
                             }
                             finally
                             {
@@ -891,10 +870,7 @@ namespace Tests.Theraot.Threading
                 IDisposable engagementA = null;
                 try
                 {
-                    if (x.TryEnterWrite(out engagementA))
-                    {
-                        ok = false;
-                    }
+                    ok &= !x.TryEnterWrite(out engagementA);
                 }
                 finally
                 {

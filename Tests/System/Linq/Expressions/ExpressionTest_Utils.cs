@@ -29,13 +29,12 @@
 
 using System;
 using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	public class OpClass
+    public class OpClass
 	{
 		public static OpClass operator + (OpClass a, OpClass b)
 		{
@@ -196,8 +195,10 @@ namespace MonoTests.System.Linq.Expressions
 		{
 			// Just to avoid a compiler warning
 			if (TestEvent != null)
-				return;
-		}
+            {
+                return;
+            }
+        }
 
 		public static int StaticField = 0;
 		public static int StaticProperty { get { return StaticField; } set { StaticField = value; }}
@@ -269,7 +270,7 @@ namespace MonoTests.System.Linq.Expressions
 		}
 	}
 
-	static class ExpressionExtensions {
+	internal static class ExpressionExtensions {
 
 		public static ConstantExpression ToConstant<T> (this T t)
 		{
@@ -283,15 +284,16 @@ namespace MonoTests.System.Linq.Expressions
 				Assert.Fail ();
 			} catch (Exception e) {
 				if (e.GetType () != type)
-					Assert.Fail ();
-			}
+                {
+                    Assert.Fail ();
+                }
+            }
 		}
 	}
 
-	class Item<T> {
-
-		bool left_called;
-		T left;
+    internal class Item<T> {
+        private bool left_called;
+        private T left;
 
 		public T Left {
 			get {
@@ -304,8 +306,8 @@ namespace MonoTests.System.Linq.Expressions
 			get { return left_called; }
 		}
 
-		bool right_called;
-		T right;
+        private bool right_called;
+        private T right;
 
 		public T Right {
 			get {

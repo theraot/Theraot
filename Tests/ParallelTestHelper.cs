@@ -32,14 +32,14 @@ namespace MonoTests
 {
     public static class ParallelTestHelper
     {
-        private const int NumRun = 50;
+        private const int _numRun = 50;
 
         public static void ParallelAdder(IProducerConsumerCollection<int> collection, int numThread)
         {
-            int startIndex = -10;
-            ParallelStressTest(collection, delegate (IProducerConsumerCollection<int> c)
+            var startIndex = -10;
+            ParallelStressTest(collection, (IProducerConsumerCollection<int> c) =>
             {
-                int start = Interlocked.Add(ref startIndex, 10);
+                var start = Interlocked.Add(ref startIndex, 10);
                 for (int i = start; i < start + 10; i++)
                 {
                     c.TryAdd(i);
@@ -49,10 +49,10 @@ namespace MonoTests
 
         public static void ParallelRemover(IProducerConsumerCollection<int> collection, int numThread, int times)
         {
-            int t = -1;
-            ParallelStressTest(collection, delegate (IProducerConsumerCollection<int> c)
+            var t = -1;
+            ParallelStressTest(collection, (IProducerConsumerCollection<int> c) =>
             {
-                int num = Interlocked.Increment(ref t);
+                var num = Interlocked.Increment(ref t);
                 if (num < times)
                 {
                     int value;
@@ -68,6 +68,10 @@ namespace MonoTests
 
         public static void ParallelStressTest<TSource>(TSource obj, Action<TSource> action, int numThread)
         {
+            if (action == null)
+            {
+                return;
+            }
             var threads = new Thread[numThread];
             for (int i = 0; i < numThread; i++)
             {
@@ -84,11 +88,15 @@ namespace MonoTests
 
         public static void Repeat(Action action)
         {
-            Repeat(action, NumRun);
+            Repeat(action, _numRun);
         }
 
         public static void Repeat(Action action, int numRun)
         {
+            if (action == null)
+            {
+                return;
+            }
             for (int i = 0; i < numRun; i++)
             {
                 action();

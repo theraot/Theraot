@@ -6,7 +6,7 @@ using Theraot.Core;
 namespace Tests.System
 {
     [TestFixture]
-    class IntPtrTest
+    internal class IntPtrTest
     {
         [Test]
         public void IntPtrAddTest()
@@ -16,13 +16,13 @@ namespace Tests.System
             {
                 fixed (int* parr = arr)
                 {
-                    IntPtr ptr = new IntPtr(parr);
+                    var ptr = new IntPtr(parr);
                     // Get the size of an array element.
-                    int size = sizeof(int);
-                    int index = 0;
+                    const int size = sizeof(int);
+                    var index = 0;
                     for (int ctr = 0; ctr < arr.Length; ctr++)
                     {
-                        IntPtr newPtr = IntPtrHelper.Add(ptr, ctr*size);
+                        var newPtr = IntPtrHelper.Add(ptr, ctr * size);
                         Assert.AreEqual(arr[index], Marshal.ReadInt32(newPtr));
                         index++;
                     }
@@ -39,12 +39,12 @@ namespace Tests.System
                 fixed (int* parr = arr)
                 {
                     // Get the size of an array element.
-                    int size = sizeof(int);
-                    IntPtr ptr = IntPtrHelper.Add(new IntPtr(parr), size * (arr.Length  - 1));
-                    int index = arr.Length - 1;
+                    const int size = sizeof(int);
+                    var ptr = IntPtrHelper.Add(new IntPtr(parr), size * (arr.Length - 1));
+                    var index = arr.Length - 1;
                     for (int ctr = 0; ctr < arr.Length; ctr++)
                     {
-                        IntPtr newPtr = IntPtrHelper.Subtract(ptr, ctr * size);
+                        var newPtr = IntPtrHelper.Subtract(ptr, ctr * size);
                         Assert.AreEqual(arr[index], Marshal.ReadInt32(newPtr));
                         index--;
                     }

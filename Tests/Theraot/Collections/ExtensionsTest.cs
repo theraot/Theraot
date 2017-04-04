@@ -9,7 +9,7 @@ using Theraot.Collections;
 namespace Tests.Theraot.Collections
 {
     [TestFixture]
-    class ExtensionsTest
+    internal class ExtensionsTest
     {
         [Test]
         public void AddRange()

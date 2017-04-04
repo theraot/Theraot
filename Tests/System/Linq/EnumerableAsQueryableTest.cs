@@ -29,10 +29,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using NUnit.Framework;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using System.Reflection;
 using System.Collections;
 
@@ -42,9 +40,8 @@ namespace MonoTests.System.Linq
     [TestFixture]
     public class EnumerableAsQueryableTest
     {
-
-        int[] _array;
-        IQueryable<int> _src;
+        private int[] _array;
+        private IQueryable<int> _src;
 
         [SetUp]
         public void MyTestCleanup()
@@ -102,7 +99,9 @@ namespace MonoTests.System.Linq
         {
 
             for (int i = 1; i < 20; ++i)
+            {
                 Assert.AreEqual(_src.Contains<int>(i), _array.Contains<int>(i));
+            }
         }
 
         [Test]
@@ -122,14 +121,19 @@ namespace MonoTests.System.Linq
         public void ElementAt()
         {
             for (int i = 0; i < 10; ++i)
+            {
                 Assert.AreEqual(_src.ElementAt<int>(i), _array.ElementAt<int>(i));
+            }
         }
 
         [Test]
         public void ElementAtOrDefault()
         {
             for (int i = 0; i < 10; ++i)
+            {
                 Assert.AreEqual(_src.ElementAtOrDefault<int>(i), _array.ElementAtOrDefault<int>(i));
+            }
+
             Assert.AreEqual(_src.ElementAtOrDefault<int>(100), _array.ElementAtOrDefault<int>(100));
         }
 
@@ -156,7 +160,7 @@ namespace MonoTests.System.Linq
         [Test]
         public void GroupBy()
         {
-            IQueryable<IGrouping<bool, int>> grouping = _src.GroupBy<int, bool>((n) => n > 5);
+            var grouping = _src.GroupBy<int, bool>((n) => n > 5);
             Assert.AreEqual(grouping.Count(), 2);
             foreach (IGrouping<bool, int> group in grouping)
             {
@@ -168,7 +172,7 @@ namespace MonoTests.System.Linq
         public void Intersect()
         {
             int[] subset = { 1, 2, 3 };
-            int[] intersection = _src.Intersect<int>(subset.AsQueryable()).ToArray();
+            var intersection = _src.Intersect<int>(subset.AsQueryable()).ToArray();
             Assert.AreEqual(subset, intersection);
         }
 
@@ -211,40 +215,40 @@ namespace MonoTests.System.Linq
         [Test]
         public void OrderBy()
         {
-            int[] arr1 = _array.OrderBy<int, int>((n) => n * -1).ToArray();
-            int[] arr2 = _src.OrderBy<int, int>((n) => n * -1).ToArray();
+            var arr1 = _array.OrderBy<int, int>((n) => n * -1).ToArray();
+            var arr2 = _src.OrderBy<int, int>((n) => n * -1).ToArray();
             Assert.AreEqual(arr1, arr2);
         }
 
         [Test]
         public void OrderByDescending()
         {
-            int[] arr1 = _array.OrderBy<int, int>((n) => n).ToArray();
-            int[] arr2 = _src.OrderBy<int, int>((n) => n).ToArray();
+            var arr1 = _array.OrderBy<int, int>((n) => n).ToArray();
+            var arr2 = _src.OrderBy<int, int>((n) => n).ToArray();
             Assert.AreEqual(arr1, arr2);
         }
 
         [Test]
         public void Reverse()
         {
-            int[] arr1 = _array.Reverse<int>().Reverse().ToArray();
-            int[] arr2 = _src.Reverse<int>().Reverse().ToArray();
+            var arr1 = _array.Reverse<int>().Reverse().ToArray();
+            var arr2 = _src.Reverse<int>().Reverse().ToArray();
             Assert.AreEqual(arr1, arr2);
         }
 
         [Test]
         public void Select()
         {
-            int[] arr1 = _array.Select<int, int>((n) => n - 1).ToArray();
-            int[] arr2 = _src.Select<int, int>((n) => n - 1).ToArray();
+            var arr1 = _array.Select<int, int>((n) => n - 1).ToArray();
+            var arr2 = _src.Select<int, int>((n) => n - 1).ToArray();
             Assert.AreEqual(arr1, arr2);
         }
 
         [Test]
         public void SelectMany()
         {
-            int[] arr1 = _array.SelectMany<int, int>((n) => new int[] { n, n, n }).ToArray();
-            int[] arr2 = _src.SelectMany<int, int>((n) => new int[] { n, n, n }).ToArray();
+            var arr1 = _array.SelectMany<int, int>((n) => new int[] { n, n, n }).ToArray();
+            var arr2 = _src.SelectMany<int, int>((n) => new int[] { n, n, n }).ToArray();
             Assert.AreEqual(arr1, arr2);
         }
 
@@ -270,16 +274,16 @@ namespace MonoTests.System.Linq
         [Test]
         public void Skip()
         {
-            int[] arr1 = _array.Skip<int>(5).ToArray();
-            int[] arr2 = _src.Skip<int>(5).ToArray();
+            var arr1 = _array.Skip<int>(5).ToArray();
+            var arr2 = _src.Skip<int>(5).ToArray();
             Assert.AreEqual(arr1, arr2);
         }
 
         [Test]
         public void SkipWhile()
         {
-            int[] arr1 = _src.SkipWhile<int>((n) => n < 6).ToArray();
-            int[] arr2 = _src.Skip<int>(5).ToArray();
+            var arr1 = _src.SkipWhile<int>((n) => n < 6).ToArray();
+            var arr2 = _src.Skip<int>(5).ToArray();
             Assert.AreEqual(arr1, arr2);
         }
 
@@ -293,24 +297,24 @@ namespace MonoTests.System.Linq
         [Test]
         public void Take()
         {
-            int[] arr1 = _array.Take<int>(3).ToArray();
-            int[] arr2 = _src.Take<int>(3).ToArray();
+            var arr1 = _array.Take<int>(3).ToArray();
+            var arr2 = _src.Take<int>(3).ToArray();
             Assert.AreEqual(arr1, arr2);
         }
 
         [Test]
         public void TakeWhile()
         {
-            int[] arr1 = _array.TakeWhile<int>(n => n < 6).ToArray();
-            int[] arr2 = _src.TakeWhile<int>(n => n < 6).ToArray();
+            var arr1 = _array.TakeWhile<int>(n => n < 6).ToArray();
+            var arr2 = _src.TakeWhile<int>(n => n < 6).ToArray();
             Assert.AreEqual(arr1, arr2);
         }
 
         [Test]
         public void Union()
         {
-            int[] arr1 = _src.ToArray();
-            int[] arr2 = _src.Union(_src).ToArray();
+            var arr1 = _src.ToArray();
+            var arr2 = _src.Union(_src).ToArray();
             Assert.AreEqual(arr1, arr2);
 
             int[] arr = { 11, 12, 13 };
@@ -320,16 +324,16 @@ namespace MonoTests.System.Linq
         [Test]
         public void Where()
         {
-            int[] oddArray1 = _array.Where<int>((n) => (n % 2) == 1).ToArray();
-            int[] oddArray2 = _src.Where<int>((n) => (n % 2) == 1).ToArray();
+            var oddArray1 = _array.Where<int>((n) => (n % 2) == 1).ToArray();
+            var oddArray2 = _src.Where<int>((n) => (n % 2) == 1).ToArray();
             Assert.AreEqual(oddArray1, oddArray2);
         }
 
         [Test]
         public void UserExtensionMethod()
         {
-            BindingFlags extensionFlags = BindingFlags.Static | BindingFlags.Public;
-            MethodInfo method = (from m in typeof(Ext).GetMethods(extensionFlags)
+            var extensionFlags = BindingFlags.Static | BindingFlags.Public;
+            var method = (from m in typeof(Ext).GetMethods(extensionFlags)
                                  where (m.Name == "UserQueryableExt1" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
                                  select m).FirstOrDefault().MakeGenericMethod(typeof(int));
             Expression<Func<int, int>> exp = i => i;
@@ -351,8 +355,8 @@ namespace MonoTests.System.Linq
         [ExpectedException(typeof(InvalidOperationException))]
         public void UserExtensionMethodNegative()
         {
-            BindingFlags extensionFlags = BindingFlags.Static | BindingFlags.Public;
-            MethodInfo method = (from m in typeof(Ext).GetMethods(extensionFlags)
+            var extensionFlags = BindingFlags.Static | BindingFlags.Public;
+            var method = (from m in typeof(Ext).GetMethods(extensionFlags)
                                  where (m.Name == "UserQueryableExt3" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
                                  select m).FirstOrDefault().MakeGenericMethod(typeof(int));
             Expression<Func<int, int>> exp = i => i;
@@ -363,8 +367,8 @@ namespace MonoTests.System.Linq
         [Test]
         public void NonGenericMethod()
         {
-            BindingFlags extensionFlags = BindingFlags.Static | BindingFlags.Public;
-            MethodInfo method = (from m in typeof(Ext).GetMethods(extensionFlags)
+            var extensionFlags = BindingFlags.Static | BindingFlags.Public;
+            var method = (from m in typeof(Ext).GetMethods(extensionFlags)
                                  where (m.Name == "NonGenericMethod" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
                                  select m).FirstOrDefault();
 
@@ -376,8 +380,8 @@ namespace MonoTests.System.Linq
         [ExpectedException(typeof(InvalidOperationException))]
         public void InstantiatedGenericMethod()
         {
-            BindingFlags extensionFlags = BindingFlags.Static | BindingFlags.Public;
-            MethodInfo method = (from m in typeof(Ext).GetMethods(extensionFlags)
+            var extensionFlags = BindingFlags.Static | BindingFlags.Public;
+            var method = (from m in typeof(Ext).GetMethods(extensionFlags)
                                  where (m.Name == "InstantiatedGenericMethod" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
                                  select m).FirstOrDefault().MakeGenericMethod(typeof(int));
 
@@ -407,7 +411,7 @@ namespace MonoTests.System.Linq
             Assert.IsTrue(nonGen.AsQueryable() is IQueryable<int>);
         }
 
-        class Bar<T1, T2> : IEnumerable<T2>
+        private class Bar<T1, T2> : IEnumerable<T2>
         {
 
             public IEnumerator<T2> GetEnumerator()
@@ -425,13 +429,13 @@ namespace MonoTests.System.Linq
         public void NonGenericAsQueryableInstantiateProperQueryable()
         {
             IEnumerable bar = new Bar<int, string>();
-            IQueryable queryable = bar.AsQueryable();
+            var queryable = bar.AsQueryable();
 
             Assert.IsTrue(queryable is IQueryable<string>);
         }
     }
 
-    class MyEnum : IEnumerable
+    internal class MyEnum : IEnumerable
     {
         public IEnumerator GetEnumerator()
         {
@@ -439,7 +443,7 @@ namespace MonoTests.System.Linq
         }
     }
 
-    class CustomEqualityComparer : IEqualityComparer<int>
+    internal class CustomEqualityComparer : IEqualityComparer<int>
     {
 
         public bool Equals(int x, int y)

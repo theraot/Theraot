@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
 using System;
-using System.Linq;
 using Theraot.Core;
 
 namespace Tests.Theraot.Core

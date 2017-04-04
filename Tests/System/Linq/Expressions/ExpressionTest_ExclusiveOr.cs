@@ -20,14 +20,12 @@
 //		Federico Di Gregorio <fog@initd.org>
 
 using System;
-using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_ExclusiveOr
 	{
 		[Test]
@@ -68,8 +66,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void Integer ()
 		{
-			BinaryExpression expr = Expression.ExclusiveOr (Expression.Constant (1), Expression.Constant (2));
-			Assert.AreEqual (ExpressionType.ExclusiveOr, expr.NodeType, "ExclusiveOr#01");
+			var expr = Expression.ExclusiveOr (Expression.Constant (1), Expression.Constant (2));
+            Assert.AreEqual (ExpressionType.ExclusiveOr, expr.NodeType, "ExclusiveOr#01");
 			Assert.AreEqual (typeof (int), expr.Type, "ExclusiveOr#02");
 			Assert.IsNull (expr.Method, "ExclusiveOr#03");
 			Assert.AreEqual ("(1 ^ 2)", expr.ToString(), "ExclusiveOr#04");
@@ -78,8 +76,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void Boolean ()
 		{
-			BinaryExpression expr = Expression.ExclusiveOr (Expression.Constant (true), Expression.Constant (false));
-			Assert.AreEqual (ExpressionType.ExclusiveOr, expr.NodeType, "ExclusiveOr#05");
+			var expr = Expression.ExclusiveOr (Expression.Constant (true), Expression.Constant (false));
+            Assert.AreEqual (ExpressionType.ExclusiveOr, expr.NodeType, "ExclusiveOr#05");
 			Assert.AreEqual (typeof (bool), expr.Type, "ExclusiveOr#06");
 			Assert.IsNull (expr.Method, "ExclusiveOr#07");
 			Assert.AreEqual ("(True ^ False)", expr.ToString(), "ExclusiveOr#08");
@@ -90,9 +88,9 @@ namespace MonoTests.System.Linq.Expressions
 		{
 			// We can use the simplest version of GetMethod because we already know only one
 			// exists in the very simple class we're using for the tests.
-			MethodInfo mi = typeof (OpClass).GetMethod ("op_ExclusiveOr");
+			var mi = typeof (OpClass).GetMethod ("op_ExclusiveOr");
 
-			BinaryExpression expr = Expression.ExclusiveOr (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
+            BinaryExpression expr = Expression.ExclusiveOr (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
 			Assert.AreEqual (ExpressionType.ExclusiveOr, expr.NodeType, "ExclusiveOr#09");
 			Assert.AreEqual (typeof (OpClass), expr.Type, "ExclusiveOr#10");
 			Assert.AreEqual (mi, expr.Method, "ExclusiveOr#11");

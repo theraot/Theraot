@@ -27,18 +27,17 @@
 //
 
 using System;
-using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 
 using NUnit.Framework;
 
-namespace MonoTests.System.Linq.Expressions {
+namespace MonoTests.System.Linq.Expressions
+{
 
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_Invoke {
 
-		static Expression CreateInvokable<T> ()
+		private static Expression CreateInvokable<T> ()
 		{
 			return Expression.Parameter (typeof (T), "invokable");
 		}
@@ -111,9 +110,9 @@ namespace MonoTests.System.Linq.Expressions {
 			Assert.AreEqual ("Invoke(i => i, 1)", invoke.ToString ());
 		}
 
-		delegate string StringAction (string s);
+        private delegate string StringAction (string s);
 
-		static string Identity (string s)
+		private static string Identity (string s)
 		{
 			return s;
 		}

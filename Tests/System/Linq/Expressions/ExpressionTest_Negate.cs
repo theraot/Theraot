@@ -27,14 +27,12 @@
 //
 
 using System;
-using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_Negate
 	{
 		[Test]
@@ -125,12 +123,12 @@ namespace MonoTests.System.Linq.Expressions
 			Assert.AreEqual ((int?) 3, negate (-3));
 		}
 
-		struct Slot {
+        private struct Slot {
 			public int Value;
 
 			public Slot (int value)
 			{
-				this.Value = value;
+                Value = value;
 			}
 
 			public static Slot operator - (Slot s)
@@ -170,12 +168,12 @@ namespace MonoTests.System.Linq.Expressions
 			Assert.AreEqual (new Slot (-2), negate (new Slot (2)));
 		}
 
-		struct SlotToNullable {
+        private struct SlotToNullable {
 			public int Value;
 
 			public SlotToNullable (int value)
 			{
-				this.Value = value;
+                Value = value;
 			}
 
 			public static SlotToNullable? operator - (SlotToNullable s)
@@ -206,21 +204,25 @@ namespace MonoTests.System.Linq.Expressions
 			Assert.AreEqual ((SlotToNullable?) new SlotToNullable (-2), negate (new SlotToNullable (2)));
 		}
 
-		struct SlotFromNullable {
+        private struct SlotFromNullable {
 			public int Value;
 
 			public SlotFromNullable (int value)
 			{
-				this.Value = value;
+                Value = value;
 			}
 
 			public static SlotFromNullable operator - (SlotFromNullable? s)
 			{
 				if (s.HasValue)
-					return new SlotFromNullable (-s.Value.Value);
-				else
-					return new SlotFromNullable (-1);
-			}
+                {
+                    return new SlotFromNullable (-s.Value.Value);
+                }
+                else
+                {
+                    return new SlotFromNullable (-1);
+                }
+            }
 		}
 
 		[Test]
@@ -239,21 +241,25 @@ namespace MonoTests.System.Linq.Expressions
 			Assert.AreEqual (new SlotFromNullable (-1), negate (null));
 		}
 
-		struct SlotFromNullableToNullable {
+        private struct SlotFromNullableToNullable {
 			public int Value;
 
 			public SlotFromNullableToNullable (int value)
 			{
-				this.Value = value;
+                Value = value;
 			}
 
 			public static SlotFromNullableToNullable? operator - (SlotFromNullableToNullable? s)
 			{
 				if (s.HasValue)
-					return new SlotFromNullableToNullable (-s.Value.Value);
-				else
-					return s;
-			}
+                {
+                    return new SlotFromNullableToNullable (-s.Value.Value);
+                }
+                else
+                {
+                    return s;
+                }
+            }
 		}
 
 		[Test]

@@ -20,14 +20,12 @@
 //		Federico Di Gregorio <fog@initd.org>
 
 using System;
-using System.Reflection;
-using System.Linq;
 using System.Linq.Expressions;
 using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
-	[TestFixture]
+    [TestFixture]
 	public class ExpressionTest_Subtract
 	{
 		[Test]
@@ -68,8 +66,8 @@ namespace MonoTests.System.Linq.Expressions
 		[Test]
 		public void Numeric ()
 		{
-			BinaryExpression expr = Expression.Subtract (Expression.Constant (1), Expression.Constant (2));
-			Assert.AreEqual (ExpressionType.Subtract, expr.NodeType, "Subtract#01");
+			var expr = Expression.Subtract (Expression.Constant (1), Expression.Constant (2));
+            Assert.AreEqual (ExpressionType.Subtract, expr.NodeType, "Subtract#01");
 			Assert.AreEqual (typeof (int), expr.Type, "Subtract#02");
 			Assert.IsNull (expr.Method, "Subtract#03");
 			Assert.AreEqual ("(1 - 2)", expr.ToString(), "Subtract#04");
@@ -81,8 +79,8 @@ namespace MonoTests.System.Linq.Expressions
 			int? a = 1;
 			int? b = 2;
 
-			BinaryExpression expr = Expression.Subtract (Expression.Constant (a), Expression.Constant (b));
-			Assert.AreEqual (ExpressionType.Subtract, expr.NodeType, "Subtract#05");
+			var expr = Expression.Subtract (Expression.Constant (a), Expression.Constant (b));
+            Assert.AreEqual (ExpressionType.Subtract, expr.NodeType, "Subtract#05");
 			Assert.AreEqual (typeof (int), expr.Type, "Subtract#06");
 			Assert.IsNull (expr.Method, "Subtract#07");
 			Assert.AreEqual ("(1 - 2)", expr.ToString(), "Subtract#08");
@@ -93,9 +91,9 @@ namespace MonoTests.System.Linq.Expressions
 		{
 			// We can use the simplest version of GetMethod because we already know only one
 			// exists in the very simple class we're using for the tests.
-			MethodInfo mi = typeof (OpClass).GetMethod ("op_Subtraction");
+			var mi = typeof (OpClass).GetMethod ("op_Subtraction");
 
-			BinaryExpression expr = Expression.Subtract (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
+            BinaryExpression expr = Expression.Subtract (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
 			Assert.AreEqual (ExpressionType.Subtract, expr.NodeType, "Subtract#09");
 			Assert.AreEqual (typeof (OpClass), expr.Type, "Subtract#10");
 			Assert.AreEqual (mi, expr.Method, "Subtract#11");

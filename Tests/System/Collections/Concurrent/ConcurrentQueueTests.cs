@@ -25,28 +25,26 @@
 //
 
 using System;
-using System.Linq;
 using System.Threading;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
 
 using NUnit.Framework;
-using MonoTests.System.Threading.Tasks;
+using System.Text;
 
 namespace MonoTests.System.Collections.Concurrent
 {
     [TestFixture()]
     public class ConcurrentQueueTests
     {
-        private ConcurrentQueue<int> queue;
+        private ConcurrentQueue<int> _queue;
 
         [SetUpAttribute]
         public void Setup()
         {
-            queue = new ConcurrentQueue<int>();
+            _queue = new ConcurrentQueue<int>();
             for (int i = 0; i < 10; i++)
             {
-                queue.Enqueue(i);
+                _queue.Enqueue(i);
             }
         }
 
@@ -125,18 +123,19 @@ namespace MonoTests.System.Collections.Concurrent
                 queue.Enqueue(new object());
 
                 const int threads = 10;
-                int threadCounter = 0;
-                bool success = true;
+                var threadCounter = 0;
+                var success = true;
 
                 ParallelTestHelper.ParallelStressTest(queue, (q) =>
                 {
-                    int threadId = Interlocked.Increment(ref threadCounter);
+                    var threadId = Interlocked.Increment(ref threadCounter);
                     object temp;
                     if (threadId < threads)
                     {
                         while (queue.TryPeek(out temp))
-                            if (temp == null)
-                                success = false;
+                        {
+                            success &= temp != null;
+                        }
                     }
                     else
                     {
@@ -151,23 +150,26 @@ namespace MonoTests.System.Collections.Concurrent
         [Test]
         public void CountTestCase()
         {
-            Assert.AreEqual(10, queue.Count, "#1");
+            Assert.AreEqual(10, _queue.Count, "#1");
             int value;
-            queue.TryPeek(out value);
-            queue.TryDequeue(out value);
-            queue.TryDequeue(out value);
-            Assert.AreEqual(8, queue.Count, "#2");
+            _queue.TryPeek(out value);
+            _queue.TryDequeue(out value);
+            _queue.TryDequeue(out value);
+            Assert.AreEqual(8, _queue.Count, "#2");
         }
 
         //[Ignore]
         [Test]
         public void EnumerateTestCase()
         {
-            string s = string.Empty;
-            foreach (int i in queue)
+            var s = string.Empty;
+            var builder = new StringBuilder();
+            builder.Append(s);
+            foreach (int i in _queue)
             {
-                s += i;
+                builder.Append(i);
             }
+            s = builder.ToString();
             Assert.AreEqual("0123456789", s, "#1 : " + s);
         }
 
@@ -175,15 +177,15 @@ namespace MonoTests.System.Collections.Concurrent
         public void TryPeekTestCase()
         {
             int value;
-            queue.TryPeek(out value);
+            _queue.TryPeek(out value);
             Assert.AreEqual(0, value, "#1 : " + value);
-            queue.TryDequeue(out value);
+            _queue.TryDequeue(out value);
             Assert.AreEqual(0, value, "#2 : " + value);
-            queue.TryDequeue(out value);
+            _queue.TryDequeue(out value);
             Assert.AreEqual(1, value, "#3 : " + value);
-            queue.TryPeek(out value);
+            _queue.TryPeek(out value);
             Assert.AreEqual(2, value, "#4 : " + value);
-            queue.TryPeek(out value);
+            _queue.TryPeek(out value);
             Assert.AreEqual(2, value, "#5 : " + value);
         }
 
@@ -191,10 +193,10 @@ namespace MonoTests.System.Collections.Concurrent
         public void TryDequeueTestCase()
         {
             int value;
-            queue.TryPeek(out value);
+            _queue.TryPeek(out value);
             Assert.AreEqual(0, value, "#1");
-            Assert.IsTrue(queue.TryDequeue(out value), "#2");
-            Assert.IsTrue(queue.TryDequeue(out value), "#3");
+            Assert.IsTrue(_queue.TryDequeue(out value), "#2");
+            Assert.IsTrue(_queue.TryDequeue(out value), "#3");
             Assert.AreEqual(1, value, "#4");
         }
 
@@ -202,54 +204,60 @@ namespace MonoTests.System.Collections.Concurrent
         public void TryDequeueEmptyTestCase()
         {
             int value;
-            queue = new ConcurrentQueue<int>();
-            queue.Enqueue(1);
-            Assert.IsTrue(queue.TryDequeue(out value), "#1");
-            Assert.IsFalse(queue.TryDequeue(out value), "#2");
-            Assert.IsTrue(queue.IsEmpty, "#3");
+            _queue = new ConcurrentQueue<int>();
+            _queue.Enqueue(1);
+            Assert.IsTrue(_queue.TryDequeue(out value), "#1");
+            Assert.IsFalse(_queue.TryDequeue(out value), "#2");
+            Assert.IsTrue(_queue.IsEmpty, "#3");
         }
 
         [Test]
         public void ToArrayTest()
         {
-            int[] array = queue.ToArray();
-            string s = string.Empty;
+            var array = _queue.ToArray();
+            var s = string.Empty;
+            var builder = new StringBuilder();
+            builder.Append(s);
             foreach (int i in array)
             {
-                s += i;
+                builder.Append(i);
             }
+            s = builder.ToString();
             Assert.AreEqual("0123456789", s, "#1 : " + s);
-            queue.CopyTo(array, 0);
+            _queue.CopyTo(array, 0);
             s = string.Empty;
+            builder = new StringBuilder();
+            builder.Append(s);
             foreach (int i in array)
             {
-                s += i;
+                builder.Append(i);
             }
+            s = builder.ToString();
             Assert.AreEqual("0123456789", s, "#2 : " + s);
         }
 
         [Test, ExpectedException(typeof(ArgumentNullException))]
         public void ToExistingArray_Null()
         {
-            queue.CopyTo(null, 0);
+            _queue.CopyTo(null, 0);
         }
 
         [Test, ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void ToExistingArray_OutOfRange()
         {
-            queue.CopyTo(new int[3], -1);
+            _queue.CopyTo(new int[3], -1);
         }
 
         [Test, ExpectedException(typeof(ArgumentException))]
         public void ToExistingArray_IndexOverflow()
         {
-            queue.CopyTo(new int[3], 4);
+            _queue.CopyTo(new int[3], 4);
         }
 
         [Test, ExpectedException(typeof(ArgumentException))]
         public void ToExistingArray_Overflow()
         {
-            queue.CopyTo(new int[3], 0);
+            _queue.CopyTo(new int[3], 0);
         }
 
         private static WeakReference CreateWeakReference(object obj)
@@ -260,7 +268,7 @@ namespace MonoTests.System.Collections.Concurrent
         [Test]
         public void TryDequeueReferenceTest()
         {
-            var obj = new Object();
+            var obj = new object();
             var weakReference = CreateWeakReference(obj);
             var queue = new ConcurrentQueue<object>();
 
