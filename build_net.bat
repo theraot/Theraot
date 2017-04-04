@@ -91,3 +91,5 @@ if EXIST %msbuild:~1,-1% (
 )
 
 popd
+
+exit /b

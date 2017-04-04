@@ -80,3 +80,5 @@ if EXIST !nuget:~1,-1! (
 )
 
 popd
+
+exit /b
