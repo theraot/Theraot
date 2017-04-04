@@ -13,10 +13,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -26,6 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#define NET_4_0
 #if NET_4_0
 
 using NUnit.Framework;
@@ -39,14 +40,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 
-
 namespace MonoTests.System.Runtime.CompilerServices
 {
-
     [TestFixture]
     public class ConditionalWeakTableTest
     {
-
         public class Link
         {
             public object obj;
@@ -57,24 +55,25 @@ namespace MonoTests.System.Runtime.CompilerServices
             }
         }
 
-        class Key
+        private class Key
         {
             public int Foo;
+
             public override string ToString()
             {
                 return "key-" + Foo;
             }
         }
 
-        class Val
+        private class Val
         {
             public int Foo;
+
             public override string ToString()
             {
                 return "value-" + Foo;
             }
         }
-
 
         [Test]
         public void GetValue()
@@ -95,7 +94,6 @@ namespace MonoTests.System.Runtime.CompilerServices
             }
             catch (ArgumentNullException) { }
 
-
             object key = "foo";
             object val = cwt.GetValue(key, k => new Link(k));
             Assert.IsTrue(val != null, "#2");
@@ -115,7 +113,6 @@ namespace MonoTests.System.Runtime.CompilerServices
                 Assert.Fail("#0");
             }
             catch (ArgumentNullException) { }
-
 
             object key = "foo";
             object val = cwt.GetOrCreateValue(key);
@@ -147,7 +144,6 @@ namespace MonoTests.System.Runtime.CompilerServices
                 Assert.Fail("#0");
             }
             catch (ArgumentNullException) { }
-
 
             Assert.IsFalse(cwt.Remove("x"), "#1");
             Assert.IsTrue(cwt.Remove(c), "#2");
@@ -200,11 +196,9 @@ namespace MonoTests.System.Runtime.CompilerServices
             Assert.AreEqual("foo", res, "#3");
         }
 
-
-        static void FillStuff(ConditionalWeakTable<object, object> cwt,
+        private static void FillStuff(ConditionalWeakTable<object, object> cwt,
                 out List<object> keepAlive, out List<WeakReference> keys)
         {
-
             keepAlive = new List<object>();
             keys = new List<WeakReference>();
 
@@ -231,7 +225,8 @@ namespace MonoTests.System.Runtime.CompilerServices
             var cwt = new ConditionalWeakTable<object, object>();
             List<object> keepAlive = null;
             List<WeakReference> keys = null;
-            Thread t = new Thread(delegate () {
+            Thread t = new Thread(delegate ()
+            {
                 FillStuff(cwt, out keepAlive, out keys);
             });
             t.Start();
@@ -252,8 +247,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             Assert.AreEqual("str0", res, "ka3");
         }
 
-
-        static List<WeakReference> FillWithNetwork(ConditionalWeakTable<object, object> cwt)
+        private static List<WeakReference> FillWithNetwork(ConditionalWeakTable<object, object> cwt)
         {
             const int K = 500;
             object[] keys = new object[K];
@@ -291,7 +285,10 @@ namespace MonoTests.System.Runtime.CompilerServices
             cwt.Add(b, new object());
 
             List<WeakReference> res = null;
-            ThreadStart dele = () => { res = FillWithNetwork(cwt); };
+            ThreadStart dele = () =>
+            {
+                res = FillWithNetwork(cwt);
+            };
             var th = new Thread(dele);
             th.Start();
             th.Join();
@@ -303,7 +300,7 @@ namespace MonoTests.System.Runtime.CompilerServices
                 Assert.IsFalse(res[i].IsAlive, "#r" + i);
         }
 
-        static List<WeakReference> FillWithNetwork2(ConditionalWeakTable<object, object>[] cwt)
+        private static List<WeakReference> FillWithNetwork2(ConditionalWeakTable<object, object>[] cwt)
         {
             if (cwt[0] == null)
                 cwt[0] = new ConditionalWeakTable<object, object>();
@@ -312,7 +309,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             return res;
         }
 
-        static void ForcePromotion()
+        private static void ForcePromotion()
         {
             var o = new object[64000];
 
@@ -320,7 +317,7 @@ namespace MonoTests.System.Runtime.CompilerServices
                 o[i] = new int[10];
         }
 
-        static List<object> FillReachable(ConditionalWeakTable<object, object>[] cwt)
+        private static List<object> FillReachable(ConditionalWeakTable<object, object>[] cwt)
         {
             var res = new List<object>();
             for (int i = 0; i < 10; ++i)
@@ -344,7 +341,8 @@ namespace MonoTests.System.Runtime.CompilerServices
             List<WeakReference> res, res2;
             res = res2 = null;
 
-            ThreadStart dele = () => {
+            ThreadStart dele = () =>
+            {
                 res = FillWithNetwork2(cwt);
                 ForcePromotion();
                 k = FillReachable(cwt);
@@ -370,8 +368,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             }
         }
 
-
-        static List<GCHandle> FillTable3(ConditionalWeakTable<object, object> cwt)
+        private static List<GCHandle> FillTable3(ConditionalWeakTable<object, object> cwt)
         {
             var handles = new List<GCHandle>();
 
@@ -388,11 +385,10 @@ namespace MonoTests.System.Runtime.CompilerServices
             cwt.Add(a, k1);
             cwt.Add(b, k2);
 
-
             return handles;
         }
 
-        static void MakeObjMovable(List<GCHandle> handles)
+        private static void MakeObjMovable(List<GCHandle> handles)
         {
             for (int i = 0; i < handles.Count; ++i)
             {
@@ -402,7 +398,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             }
         }
 
-        static void ForceMinor()
+        private static void ForceMinor()
         {
             for (int i = 0; i < 64000; ++i)
                 new object();
@@ -444,18 +440,18 @@ namespace MonoTests.System.Runtime.CompilerServices
             cwt.GetHashCode();
         }
 
-        static object _lock1 = new object();
-        static object _lock2 = new object();
-        static int reachable = 0;
+        private static object _lock1 = new object();
+        private static object _lock2 = new object();
+        private static int reachable = 0;
 
         public class FinalizableLink
         {
             // The sole purpose of this object is to keep a reference to another object, so it is fine to not use it.
 #pragma warning disable 414
-            object obj;
-            int id;
+            private object obj;
+            private int id;
 #pragma warning restore 414
-            ConditionalWeakTable<object, object> cwt;
+            private ConditionalWeakTable<object, object> cwt;
 
             public FinalizableLink(int id, object obj, ConditionalWeakTable<object, object> cwt)
             {
@@ -466,17 +462,23 @@ namespace MonoTests.System.Runtime.CompilerServices
 
             ~FinalizableLink()
             {
-                lock (_lock1) {; }
+                lock (_lock1)
+                {
+                    ;
+                }
                 object obj;
                 bool res = cwt.TryGetValue(this, out obj);
                 if (res)
                     ++reachable;
                 if (reachable == 20)
-                    lock (_lock2) { Monitor.Pulse(_lock2); }
+                    lock (_lock2)
+                    {
+                        Monitor.Pulse(_lock2);
+                    }
             }
         }
 
-        static void FillWithFinalizable(ConditionalWeakTable<object, object> cwt)
+        private static void FillWithFinalizable(ConditionalWeakTable<object, object> cwt)
         {
             object a = new object();
             object b = new FinalizableLink(0, a, cwt);
@@ -500,7 +502,10 @@ namespace MonoTests.System.Runtime.CompilerServices
             lock (_lock1)
             {
                 var cwt = new ConditionalWeakTable<object, object>();
-                ThreadStart dele = () => { FillWithFinalizable(cwt); };
+                ThreadStart dele = () =>
+                {
+                    FillWithFinalizable(cwt);
+                };
                 var th = new Thread(dele);
                 th.Start();
                 th.Join();
@@ -512,7 +517,10 @@ namespace MonoTests.System.Runtime.CompilerServices
 
             GC.Collect();
             GC.Collect();
-            lock (_lock2) { Monitor.Wait(_lock2, 1000); }
+            lock (_lock2)
+            {
+                Monitor.Wait(_lock2, 1000);
+            }
 
             Assert.AreEqual(20, reachable, "#1");
         }
@@ -528,7 +536,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             List<Key> keys = new List<Key>();
 
             //
-            // This list references all keys for the duration of the program, so none 
+            // This list references all keys for the duration of the program, so none
             // should be collected ever.
             //
             for (int x = 0; x < 1000; x++)

@@ -22,6 +22,7 @@
 //
 //
 
+#define NET_4_0
 #if NET_4_0
 
 using System;
@@ -37,7 +38,7 @@ namespace MonoTests.System
     [TestFixture]
     public class AggregateExceptionTest
     {
-        AggregateException e;
+        private AggregateException e;
 
         [SetUpAttribute]
         public void Setup()
@@ -130,7 +131,7 @@ namespace MonoTests.System
             Assert.AreEqual(outer, new AggregateException(outer).GetBaseException());
         }
 
-        static void Throws(Type t, Action action)
+        private static void Throws(Type t, Action action)
         {
             Exception e = null;
             try
@@ -147,4 +148,5 @@ namespace MonoTests.System
         }
     }
 }
+
 #endif

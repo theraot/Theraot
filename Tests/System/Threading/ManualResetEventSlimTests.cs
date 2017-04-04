@@ -27,6 +27,7 @@
 //
 //
 
+#define NET_4_0
 #if NET_4_0
 
 using System;
@@ -38,11 +39,10 @@ using NUnit.Framework;
 
 namespace MonoTests.System.Threading
 {
-
     [TestFixture]
     public class ManualResetEventSlimTests
     {
-        ManualResetEventSlim mre;
+        private ManualResetEventSlim mre;
 
         [SetUp]
         public void Setup()
@@ -95,7 +95,7 @@ namespace MonoTests.System.Threading
             int count = 0;
             bool s = false;
 
-            ParallelTestHelper.ParallelStressTest(mre, delegate(ManualResetEventSlim m)
+            ParallelTestHelper.ParallelStressTest(mre, delegate (ManualResetEventSlim m)
             {
                 if (Interlocked.Increment(ref count) % 2 == 0)
                 {
@@ -260,8 +260,16 @@ namespace MonoTests.System.Threading
                 int count = 2;
                 SpinWait wait = new SpinWait();
 
-                ThreadPool.QueueUserWorkItem(_ => { mre.Set(); Interlocked.Decrement(ref count); });
-                ThreadPool.QueueUserWorkItem(_ => { mre.Reset(); Interlocked.Decrement(ref count); });
+                ThreadPool.QueueUserWorkItem(_ =>
+                {
+                    mre.Set();
+                    Interlocked.Decrement(ref count);
+                });
+                ThreadPool.QueueUserWorkItem(_ =>
+                {
+                    mre.Reset();
+                    Interlocked.Decrement(ref count);
+                });
 
                 while (count > 0)
                     wait.SpinOnce();
@@ -274,7 +282,11 @@ namespace MonoTests.System.Threading
         {
             var mres = new ManualResetEventSlim();
             var cts = new CancellationTokenSource();
-            ThreadPool.QueueUserWorkItem(x => { Thread.Sleep(1000); mres.Set(); });
+            ThreadPool.QueueUserWorkItem(x =>
+            {
+                Thread.Sleep(1000);
+                mres.Set();
+            });
             Assert.IsTrue(mres.Wait(TimeSpan.FromSeconds(10), cts.Token), "Wait returned false despite event was set.");
         }
 
@@ -283,7 +295,11 @@ namespace MonoTests.System.Threading
         {
             var mres = new ManualResetEventSlim();
             var cts = new CancellationTokenSource();
-            ThreadPool.QueueUserWorkItem(x => { Thread.Sleep(1000); cts.Cancel(); });
+            ThreadPool.QueueUserWorkItem(x =>
+            {
+                Thread.Sleep(1000);
+                cts.Cancel();
+            });
             try
             {
                 mres.Wait(TimeSpan.FromSeconds(10), cts.Token);
@@ -348,4 +364,5 @@ namespace MonoTests.System.Threading
         }
     }
 }
+
 #endif

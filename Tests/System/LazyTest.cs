@@ -13,10 +13,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -26,6 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#define NET_4_0
 #if NET_4_0
 
 using System;
@@ -47,7 +48,6 @@ namespace MonoTests.System
         {
             new Lazy<int>(null);
         }
-
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -77,7 +77,7 @@ namespace MonoTests.System
             Assert.AreEqual(5, o.Prop);
         }
 
-        class DefaultCtorClass
+        private class DefaultCtorClass
         {
             public DefaultCtorClass()
             {
@@ -106,7 +106,7 @@ namespace MonoTests.System
             }
         }
 
-        class NoDefaultCtorClass
+        private class NoDefaultCtorClass
         {
             public NoDefaultCtorClass(int i)
             {
@@ -120,25 +120,31 @@ namespace MonoTests.System
 
             Assert.AreEqual(0, l1.Value);
 
-            var l2 = new Lazy<int>(delegate() { return 42; });
+            var l2 = new Lazy<int>(delegate ()
+            {
+                return 42;
+            });
 
             Assert.AreEqual(42, l2.Value);
         }
 
-        static int counter;
+        private static int counter;
 
         [Test]
         public void EnsureSingleThreadSafeExecution()
         {
             counter = 42;
 
-            var l = new Lazy<int>(delegate() { return counter++; }, true);
+            var l = new Lazy<int>(delegate ()
+            {
+                return counter++;
+            }, true);
 
             object monitor = new object();
             var threads = new Thread[10];
             for (int i = 0; i < 10; ++i)
             {
-                threads[i] = new Thread(delegate()
+                threads[i] = new Thread(delegate ()
                 {
                     lock (monitor)
                     {
@@ -159,7 +165,11 @@ namespace MonoTests.System
         public void InitRecursion()
         {
             Lazy<DefaultCtorClass> c = null;
-            c = new Lazy<DefaultCtorClass>(() => { Console.WriteLine(c.Value); return null; });
+            c = new Lazy<DefaultCtorClass>(() =>
+            {
+                Console.WriteLine(c.Value);
+                return null;
+            });
 
             try
             {
@@ -176,7 +186,13 @@ namespace MonoTests.System
         {
             int x;
             bool fail = true;
-            Lazy<int> lz = new Lazy<int>(() => { if (fail) throw new Exception(); else return 99; }, LazyThreadSafetyMode.None);
+            Lazy<int> lz = new Lazy<int>(() =>
+            {
+                if (fail)
+                    throw new Exception();
+                else
+                    return 99;
+            }, LazyThreadSafetyMode.None);
             try
             {
                 x = lz.Value;
@@ -224,7 +240,14 @@ namespace MonoTests.System
         {
             bool fail = true;
             int invoke = 0;
-            Lazy<int> lz = new Lazy<int>(() => { ++invoke; if (fail) throw new Exception(); else return 99; }, LazyThreadSafetyMode.PublicationOnly);
+            Lazy<int> lz = new Lazy<int>(() =>
+            {
+                ++invoke;
+                if (fail)
+                    throw new Exception();
+                else
+                    return 99;
+            }, LazyThreadSafetyMode.PublicationOnly);
 
             try
             {
@@ -241,7 +264,6 @@ namespace MonoTests.System
             }
             catch (Exception ex) { }
 
-
             Assert.AreEqual(2, invoke, "#3");
             fail = false;
             Assert.AreEqual(99, lz.Value, "#4");
@@ -249,7 +271,13 @@ namespace MonoTests.System
 
             invoke = 0;
             bool rec = true;
-            lz = new Lazy<int>(() => { ++invoke; bool r = rec; rec = false; return r ? lz.Value : 88; }, LazyThreadSafetyMode.PublicationOnly);
+            lz = new Lazy<int>(() =>
+            {
+                ++invoke;
+                bool r = rec;
+                rec = false;
+                return r ? lz.Value : 88;
+            }, LazyThreadSafetyMode.PublicationOnly);
 
             Assert.AreEqual(88, lz.Value, "#6");
             Assert.AreEqual(2, invoke, "#7");
@@ -260,7 +288,14 @@ namespace MonoTests.System
         {
             int invoke = 0;
             bool fail = true;
-            Lazy<int> lz = new Lazy<int>(() => { ++invoke; if (fail) throw new Exception(); else return 99; }, LazyThreadSafetyMode.ExecutionAndPublication);
+            Lazy<int> lz = new Lazy<int>(() =>
+            {
+                ++invoke;
+                if (fail)
+                    throw new Exception();
+                else
+                    return 99;
+            }, LazyThreadSafetyMode.ExecutionAndPublication);
 
             try
             {
@@ -307,7 +342,7 @@ namespace MonoTests.System
             catch (InvalidOperationException ex) { }
         }
 
-        static int Return22()
+        private static int Return22()
         {
             return 22;
         }
@@ -373,7 +408,6 @@ namespace MonoTests.System
             Assert.AreSame(e1, e2, "#3");
             Assert.AreSame(e1, e3, "#4");
         }
-
     }
 }
 

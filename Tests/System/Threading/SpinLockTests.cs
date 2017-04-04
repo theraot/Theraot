@@ -1,4 +1,5 @@
-﻿#if NET_4_0
+﻿#define NET_4_0
+#if NET_4_0
 //
 // SpinLockTests.cs
 //
@@ -37,7 +38,7 @@ namespace MonoTests.System.Threading
     [TestFixture]
     public class SpinLockTests
     {
-        SpinLock sl;
+        private SpinLock sl;
 
         [SetUp]
         public void Setup()
@@ -156,4 +157,5 @@ namespace MonoTests.System.Threading
         }
     }
 }
+
 #endif

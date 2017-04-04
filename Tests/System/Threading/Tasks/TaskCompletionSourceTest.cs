@@ -1,21 +1,21 @@
-﻿// 
+﻿//
 // TaskCompletionSourceTests.cs
-//  
+//
 // Author:
 //       Jérémie "Garuma" Laval <jeremie.laval@gmail.com>
-// 
+//
 // Copyright (c) 2009 Jérémie "Garuma" Laval
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#define NET_4_0
 #if NET_4_0
 
 using System;
@@ -37,8 +38,8 @@ namespace MonoTests.System.Threading.Tasks
     [TestFixture]
     public class TaskCompletionSourceTests
     {
-        TaskCompletionSource<int> completionSource;
-        object state;
+        private TaskCompletionSource<int> completionSource;
+        private object state;
 
         [SetUp]
         public void Setup()
@@ -172,7 +173,11 @@ namespace MonoTests.System.Threading.Tasks
         public void ContinuationTest()
         {
             bool result = false;
-            var t = completionSource.Task.ContinueWith((p) => { if (((Task<int>) p).Result == 2) result = true; });
+            var t = completionSource.Task.ContinueWith((p) =>
+            {
+                if (((Task<int>)p).Result == 2)
+                    result = true;
+            });
             Assert.AreEqual(TaskStatus.WaitingForActivation, completionSource.Task.Status, "#A");
             completionSource.SetResult(2);
             t.Wait();
@@ -226,7 +231,8 @@ namespace MonoTests.System.Threading.Tasks
             bool notFromMainThread = false;
             var mre = new ManualResetEvent(false);
             int mainThreadId = Thread.CurrentThread.ManagedThreadId;
-            TaskScheduler.UnobservedTaskException += (o, args) => {
+            TaskScheduler.UnobservedTaskException += (o, args) =>
+            {
                 notFromMainThread = Thread.CurrentThread.ManagedThreadId != mainThreadId;
                 args.SetObserved();
                 mre.Set();
@@ -240,7 +246,7 @@ namespace MonoTests.System.Threading.Tasks
             Assert.IsTrue(notFromMainThread, "#2");
         }
 
-        void CreateFaultedTaskCompletionSource(Exception inner)
+        private void CreateFaultedTaskCompletionSource(Exception inner)
         {
             var tcs = new TaskCompletionSource<int>();
             tcs.SetException(inner);
@@ -258,4 +264,5 @@ namespace MonoTests.System.Threading.Tasks
         }
     }
 }
+
 #endif
