@@ -427,6 +427,26 @@ namespace Theraot.Core
             return typeof(Nullable<>).MakeGenericType(self);
         }
 
+        internal static bool CanCache(this Type type)
+        {
+            var assembly = type.Assembly;
+            if (Array.IndexOf(_knownAssembies, assembly) == -1)
+            {
+                return false;
+            }
+            if (type.IsGenericType)
+            {
+                foreach (Type genericArgument in type.GetGenericArguments())
+                {
+                    if (!CanCache(genericArgument))
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
         private static bool GetBinaryPortableResult(Type type)
         {
             if (type.IsPrimitive)
@@ -500,20 +520,44 @@ namespace Theraot.Core
 
         private static bool IsBinaryPortableExtracted(Type type)
         {
-            var property = typeof(BinaryPortableInfo<>).MakeGenericType(type).GetProperty("Result", BindingFlags.Public | BindingFlags.Static);
-            return (bool)property.GetValue(null, null);
+            if (!type.IsValueType)
+            {
+                return false;
+            }
+            if (CanCache(type))
+            {
+                var property = typeof(BinaryPortableInfo<>).MakeGenericType(type).GetProperty("Result", BindingFlags.Public | BindingFlags.Static);
+                return (bool)property.GetValue(null, null);
+            }
+            return GetBinaryPortableResult(type);
         }
 
         private static bool IsBlittableExtracted(Type type)
         {
-            var property = typeof(BlittableInfo<>).MakeGenericType(type).GetProperty("Result", BindingFlags.Public | BindingFlags.Static);
-            return (bool)property.GetValue(null, null);
+            if (!type.IsValueType)
+            {
+                return false;
+            }
+            if (CanCache(type))
+            {
+                var property = typeof(BlittableInfo<>).MakeGenericType(type).GetProperty("Result", BindingFlags.Public | BindingFlags.Static);
+                return (bool)property.GetValue(null, null);
+            }
+            return GetBlittableResult(type);
         }
 
         private static bool IsValueTypeRecursiveExtracted(Type type)
         {
-            var property = typeof(ValueTypeRecursiveInfo<>).MakeGenericType(type).GetProperty("Result", BindingFlags.Public | BindingFlags.Static);
-            return (bool)property.GetValue(null, null);
+            if (!type.IsValueType)
+            {
+                return false;
+            }
+            if (CanCache(type))
+            {
+                var property = typeof(ValueTypeRecursiveInfo<>).MakeGenericType(type).GetProperty("Result", BindingFlags.Public | BindingFlags.Static);
+                return (bool)property.GetValue(null, null);
+            }
+            return GetValueTypeRecursiveResult(type);
         }
 
         private static class BinaryPortableInfo<T>

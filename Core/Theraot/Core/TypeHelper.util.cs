@@ -64,28 +64,6 @@ namespace Theraot.Core
             _knownAssembies = knownAssembies.ToArray();
         }
 
-
-        internal static bool CanCache(this Type type)
-        {
-            var typeInfo = type;
-            var assembly = typeInfo.Assembly;
-            if (Array.IndexOf(_knownAssembies, assembly) == -1)
-            {
-                return false;
-            }
-            if (typeInfo.IsGenericType)
-            {
-                foreach (Type genericArgument in type.GetGenericArguments())
-                {
-                    if (!CanCache(genericArgument))
-                    {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-
         public static MethodInfo FindConversionOperator(MethodInfo[] methods, Type typeFrom, Type typeTo, bool implicitOnly)
         {
             foreach (var method in methods)
@@ -978,7 +956,8 @@ namespace Theraot.Core
         internal static bool IsByRefParameter(this ParameterInfo pi)
         {
             // not using IsIn/IsOut properties as they are not available in Silverlight:
-            if (pi.ParameterType.IsByRef) return true;
+            if (pi.ParameterType.IsByRef)
+                return true;
 
             return (pi.Attributes & (ParameterAttributes.Out)) == ParameterAttributes.Out;
         }
