@@ -1,4 +1,5 @@
-﻿#if NET_4_0
+﻿#define NET_4_0
+#if NET_4_0
 // TestHelper.cs
 //
 // Copyright (c) 2008 Jérémie "Garuma" Laval
@@ -36,7 +37,7 @@ namespace MonoTests
         public static void ParallelAdder(IProducerConsumerCollection<int> collection, int numThread)
         {
             int startIndex = -10;
-            ParallelStressTest(collection, delegate(IProducerConsumerCollection<int> c)
+            ParallelStressTest(collection, delegate (IProducerConsumerCollection<int> c)
             {
                 int start = Interlocked.Add(ref startIndex, 10);
                 for (int i = start; i < start + 10; i++)
@@ -49,7 +50,7 @@ namespace MonoTests
         public static void ParallelRemover(IProducerConsumerCollection<int> collection, int numThread, int times)
         {
             int t = -1;
-            ParallelStressTest(collection, delegate(IProducerConsumerCollection<int> c)
+            ParallelStressTest(collection, delegate (IProducerConsumerCollection<int> c)
             {
                 int num = Interlocked.Increment(ref t);
                 if (num < times)

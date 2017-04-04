@@ -5,10 +5,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -26,6 +26,7 @@
 //	Marek Safar (marek.safar@gmail.com)
 //
 
+#define NET_4_0
 #if NET_4_0
 
 using System.Collections.ObjectModel;
@@ -39,7 +40,6 @@ using MonoTests.System.Collections.Specialized;
 
 namespace MonoTests.System.Collections.ObjectModel
 {
-
     [TestFixture]
     public class ObservableCollectionTest
     {
@@ -83,7 +83,8 @@ namespace MonoTests.System.Collections.ObjectModel
         {
             bool reached = false;
             ObservableCollection<int> col = new ObservableCollection<int>();
-            col.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e) {
+            col.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
+            {
                 reached = true;
                 Assert.AreEqual(NotifyCollectionChangedAction.Add, e.Action, "INS_1");
                 Assert.AreEqual(0, e.NewStartingIndex, "INS_2");
@@ -102,7 +103,8 @@ namespace MonoTests.System.Collections.ObjectModel
             bool reached = false;
             ObservableCollection<int> col = new ObservableCollection<int>();
             col.Insert(0, 5);
-            col.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e) {
+            col.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
+            {
                 reached = true;
                 Assert.AreEqual(NotifyCollectionChangedAction.Remove, e.Action, "REMAT_1");
                 Assert.AreEqual(-1, e.NewStartingIndex, "REMAT_2");
@@ -124,7 +126,8 @@ namespace MonoTests.System.Collections.ObjectModel
             col.Insert(1, 1);
             col.Insert(2, 2);
             col.Insert(3, 3);
-            col.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e) {
+            col.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
+            {
                 reached = true;
                 Assert.AreEqual(NotifyCollectionChangedAction.Move, e.Action, "MOVE_1");
                 Assert.AreEqual(3, e.NewStartingIndex, "MOVE_2");
@@ -146,12 +149,14 @@ namespace MonoTests.System.Collections.ObjectModel
             List<string> changedProps = new List<string>();
             NotifyCollectionChangedEventArgs args = null;
 
-            ((INotifyPropertyChanged)collection).PropertyChanged += delegate (object sender, PropertyChangedEventArgs e) {
+            ((INotifyPropertyChanged)collection).PropertyChanged += delegate (object sender, PropertyChangedEventArgs e)
+            {
                 propertyChanged = true;
                 changedProps.Add(e.PropertyName);
             };
 
-            collection.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e) {
+            collection.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
+            {
                 args = e;
             };
 
@@ -176,12 +181,14 @@ namespace MonoTests.System.Collections.ObjectModel
             collection.Add('B');
             collection.Add('C');
 
-            ((INotifyPropertyChanged)collection).PropertyChanged += delegate (object sender, PropertyChangedEventArgs e) {
+            ((INotifyPropertyChanged)collection).PropertyChanged += delegate (object sender, PropertyChangedEventArgs e)
+            {
                 propertyChanged = true;
                 changedProps.Add(e.PropertyName);
             };
 
-            collection.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e) {
+            collection.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
+            {
                 args = e;
             };
 
@@ -206,12 +213,14 @@ namespace MonoTests.System.Collections.ObjectModel
             collection.Add('B');
             collection.Add('C');
 
-            ((INotifyPropertyChanged)collection).PropertyChanged += delegate (object sender, PropertyChangedEventArgs e) {
+            ((INotifyPropertyChanged)collection).PropertyChanged += delegate (object sender, PropertyChangedEventArgs e)
+            {
                 propertyChanged = true;
                 changedProps.Add(e.PropertyName);
             };
 
-            collection.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e) {
+            collection.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
+            {
                 args = e;
             };
 
@@ -235,7 +244,8 @@ namespace MonoTests.System.Collections.ObjectModel
             collection.Add('B');
             collection.Add('C');
 
-            PropertyChangedEventHandler pceh = delegate (object sender, PropertyChangedEventArgs e) {
+            PropertyChangedEventHandler pceh = delegate (object sender, PropertyChangedEventArgs e)
+            {
                 propertyChanged = true;
                 changedProps.Add(e.PropertyName);
             };
@@ -243,11 +253,13 @@ namespace MonoTests.System.Collections.ObjectModel
             // Adding a PropertyChanged event handler
             ((INotifyPropertyChanged)collection).PropertyChanged += pceh;
 
-            collection.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e) {
+            collection.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
+            {
                 args = e;
             };
 
-            collection.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e) {
+            collection.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
+            {
                 // This one will attempt to break reentrancy
                 try
                 {
@@ -283,12 +295,14 @@ namespace MonoTests.System.Collections.ObjectModel
                 //With double block, try the reentrant:
                 NotifyCollectionChangedEventArgs args = null;
 
-                CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e) {
+                CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
+                {
                     args = e;
                 };
 
                 // We need a second callback for reentrancy to matter
-                CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e) {
+                CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
+                {
                     // Doesn't need to do anything; just needs more than one callback registered.
                 };
 
@@ -346,12 +360,14 @@ namespace MonoTests.System.Collections.ObjectModel
             List<string> changedProps = new List<string>();
             NotifyCollectionChangedEventArgs args = null;
 
-            ((INotifyPropertyChanged)collection).PropertyChanged += delegate (object sender, PropertyChangedEventArgs e) {
+            ((INotifyPropertyChanged)collection).PropertyChanged += delegate (object sender, PropertyChangedEventArgs e)
+            {
                 propertyChanged = true;
                 changedProps.Add(e.PropertyName);
             };
 
-            collection.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e) {
+            collection.CollectionChanged += delegate (object sender, NotifyCollectionChangedEventArgs e)
+            {
                 args = e;
             };
 

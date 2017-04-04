@@ -135,7 +135,7 @@ namespace MonoTests.System
             Assert.IsFalse(Foo.failed);
         }
 
-#if NET_4_5
+#define NET_4_5 #if NET_4_5
         [Test]
         public void WeakReferenceT_TryGetTarget_NullTarget()
         {

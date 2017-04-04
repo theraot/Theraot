@@ -1,4 +1,5 @@
-﻿#if NET_4_0
+﻿#define NET_4_0
+#if NET_4_0
 // ConcurrentDictionaryTests.cs
 //
 // Copyright (c) 2008 Jérémie "Garuma" Laval
@@ -26,6 +27,7 @@
 using System;
 using System.Linq;
 using System.Threading;
+
 // using MonoTests.System.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
@@ -33,6 +35,7 @@ using System.Collections.Concurrent;
 
 using NUnit;
 using NUnit.Framework;
+
 #if !MOBILE
 // using NUnit.Framework.SyntaxHelpers;
 #endif
@@ -42,7 +45,7 @@ namespace MonoTests.System.Collections.Concurrent
     [TestFixture]
     public class ConcurrentDictionaryTests
     {
-        ConcurrentDictionary<string, int> map;
+        private ConcurrentDictionary<string, int> map;
 
         [SetUp]
         public void Setup()
@@ -51,7 +54,7 @@ namespace MonoTests.System.Collections.Concurrent
             AddStuff();
         }
 
-        void AddStuff()
+        private void AddStuff()
         {
             map.TryAdd("foo", 1);
             map.TryAdd("bar", 2);
@@ -73,15 +76,17 @@ namespace MonoTests.System.Collections.Concurrent
         [Test]
         public void AddParallelWithoutDuplicateTest()
         {
-            ParallelTestHelper.Repeat(delegate {
+            ParallelTestHelper.Repeat(delegate
+            {
                 Setup();
                 int index = 0;
 
-                ParallelTestHelper.ParallelStressTest(map, delegate {
+                ParallelTestHelper.ParallelStressTest(map, delegate
+                {
                     int own = Interlocked.Increment(ref index);
 
-                    while (!map.TryAdd("monkey" + own.ToString(), own)) ;
-
+                    while (!map.TryAdd("monkey" + own.ToString(), own))
+                        ;
                 }, 4);
 
                 Assert.AreEqual(7, map.Count);
@@ -104,22 +109,26 @@ namespace MonoTests.System.Collections.Concurrent
         [Test]
         public void RemoveParallelTest()
         {
-            ParallelTestHelper.Repeat(delegate {
+            ParallelTestHelper.Repeat(delegate
+            {
                 Setup();
                 int index = 0;
                 bool r1 = false, r2 = false, r3 = false;
                 int val;
 
-                ParallelTestHelper.ParallelStressTest(map, delegate {
+                ParallelTestHelper.ParallelStressTest(map, delegate
+                {
                     int own = Interlocked.Increment(ref index);
                     switch (own)
                     {
                         case 1:
                             r1 = map.TryRemove("foo", out val);
                             break;
+
                         case 2:
                             r2 = map.TryRemove("bar", out val);
                             break;
+
                         case 3:
                             r3 = map.TryRemove("foobar", out val);
                             break;
@@ -220,9 +229,9 @@ namespace MonoTests.System.Collections.Concurrent
             Assert.IsFalse(map.ContainsKey("oof"));
         }
 
-        class DumbClass : IEquatable<DumbClass>
+        private class DumbClass : IEquatable<DumbClass>
         {
-            int foo;
+            private int foo;
 
             public DumbClass(int foo)
             {
@@ -329,7 +338,10 @@ namespace MonoTests.System.Collections.Concurrent
         [Test]
         public void NullArgumentsTest()
         {
-            AssertThrowsArgumentNullException(() => { var x = map[null]; });
+            AssertThrowsArgumentNullException(() =>
+            {
+                var x = map[null];
+            });
             AssertThrowsArgumentNullException(() => map[null] = 0);
             AssertThrowsArgumentNullException(() => map.AddOrUpdate(null, k => 0, (k, v) => v));
             AssertThrowsArgumentNullException(() => map.AddOrUpdate("", null, (k, v) => v));
@@ -352,7 +364,7 @@ namespace MonoTests.System.Collections.Concurrent
             Assert.IsNull(val);
         }
 
-        void AssertThrowsArgumentNullException(Action action)
+        private void AssertThrowsArgumentNullException(Action action)
         {
             try
             {
@@ -378,4 +390,5 @@ namespace MonoTests.System.Collections.Concurrent
         }
     }
 }
+
 #endif

@@ -26,6 +26,7 @@
 //
 //
 
+#define NET_4_0
 #if NET_4_0
 
 using System;
@@ -122,7 +123,7 @@ namespace MonoTests.System.Threading
             var evt = new CountdownEvent(5);
 
             int count = 0;
-            ParallelTestHelper.ParallelStressTest(evt, delegate(CountdownEvent e)
+            ParallelTestHelper.ParallelStressTest(evt, delegate (CountdownEvent e)
             {
                 int num = Interlocked.Increment(ref count);
                 if (num % 2 == 0)
@@ -419,7 +420,7 @@ namespace MonoTests.System.Threading
             int count = 0;
             bool s = false;
 
-            ParallelTestHelper.ParallelStressTest(evt, delegate(CountdownEvent e)
+            ParallelTestHelper.ParallelStressTest(evt, delegate (CountdownEvent e)
             {
                 if (Interlocked.Increment(ref count) % 2 == 0)
                 {
@@ -459,4 +460,5 @@ namespace MonoTests.System.Threading
         }
     }
 }
+
 #endif

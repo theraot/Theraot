@@ -13,10 +13,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -26,6 +26,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#define NET_4_0
 #if NET_4_0
 
 using System;
@@ -37,14 +38,17 @@ namespace MonoTests.System.Threading
     [TestFixture]
     public class LazyInitializerTest
     {
-        class C
+        private class C
         {
             public C()
             {
                 ++Counter;
             }
 
-            public int Counter { get; private set; }
+            public int Counter
+            {
+                get; private set;
+            }
         }
 
         [Test]
@@ -96,4 +100,3 @@ namespace MonoTests.System.Threading
 }
 
 #endif
-
