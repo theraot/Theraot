@@ -3,7 +3,6 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Theraot.Collections.ThreadSafe;
-using Theraot.Threading.Needles;
 
 // Note: the class ConditionalWeakTable is meant to be a weak key dictionary (not a weak value dictionary)
 //

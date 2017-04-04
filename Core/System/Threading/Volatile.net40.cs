@@ -1,6 +1,5 @@
 ﻿#if NET20 || NET30 || NET35 || NET40
 
-using Theraot.Threading;
 
 namespace System.Threading
 {

@@ -1,12 +1,10 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System.Collections.Generic;
 using System.Dynamic.Utils;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Security;
-using System.Security.Policy;
 using System.Text;
 using System.Threading;
 using Theraot.Collections.ThreadSafe;

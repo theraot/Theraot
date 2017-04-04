@@ -2,7 +2,6 @@
 
 using System;
 using System.Globalization;
-using System.Threading;
 using Theraot.Core;
 
 namespace Theraot.Threading.Needles

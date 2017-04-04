@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Dynamic.Utils;
 using System.Runtime.CompilerServices;
-using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
@@ -37,6 +36,7 @@ namespace System.Linq.Expressions
                 case ExpressionType.Quote:
                 case ExpressionType.TypeAs:
                     return VisitUnary((UnaryExpression)node);
+
                 case ExpressionType.Add:
                 case ExpressionType.AddChecked:
                 case ExpressionType.Subtract:
@@ -61,31 +61,44 @@ namespace System.Linq.Expressions
                 case ExpressionType.LeftShift:
                 case ExpressionType.ExclusiveOr:
                     return VisitBinary((BinaryExpression)node);
+
                 case ExpressionType.TypeIs:
                     return VisitTypeBinary((TypeBinaryExpression)node);
+
                 case ExpressionType.Conditional:
                     return VisitConditional((ConditionalExpression)node);
+
                 case ExpressionType.Constant:
                     return VisitConstant((ConstantExpression)node);
+
                 case ExpressionType.Parameter:
                     return VisitParameter((ParameterExpression)node);
+
                 case ExpressionType.MemberAccess:
                     return VisitMember((MemberExpression)node);
+
                 case ExpressionType.Call:
                     return VisitMethodCall((MethodCallExpression)node);
+
                 case ExpressionType.Lambda:
                     return VisitLambda((LambdaExpression)node);
+
                 case ExpressionType.New:
                     return VisitNew((NewExpression)node);
+
                 case ExpressionType.NewArrayInit:
                 case ExpressionType.NewArrayBounds:
                     return VisitNewArray((NewArrayExpression)node);
+
                 case ExpressionType.Invoke:
                     return VisitInvocation((InvocationExpression)node);
+
                 case ExpressionType.MemberInit:
                     return VisitMemberInit((MemberInitExpression)node);
+
                 case ExpressionType.ListInit:
                     return VisitListInit((ListInitExpression)node);
+
                 default:
                     throw new Exception(string.Format("Unhandled expression type: '{0}'", node.NodeType));
             }
@@ -326,7 +339,7 @@ namespace System.Linq.Expressions
                 }
                 else if (b != original[i])
                 {
-                   list = new List<MemberBinding>(n);
+                    list = new List<MemberBinding>(n);
                     for (int j = 0; j < i; j++)
                     {
                         list.Add(original[j]);
@@ -347,10 +360,13 @@ namespace System.Linq.Expressions
             {
                 case MemberBindingType.Assignment:
                     return VisitMemberAssignment((MemberAssignment)binding);
+
                 case MemberBindingType.MemberBinding:
                     return VisitMemberMemberBinding((MemberMemberBinding)binding);
+
                 case MemberBindingType.ListBinding:
                     return VisitMemberListBinding((MemberListBinding)binding);
+
                 default:
                     throw new Exception(string.Format("Unhandled binding type '{0}'", binding.BindingType));
             }
@@ -464,6 +480,7 @@ namespace System.Linq.Expressions
             return node;
         }
     }
+
 #else
     public abstract partial class ExpressionVisitor
     {
@@ -1114,10 +1131,13 @@ namespace System.Linq.Expressions
             {
                 case MemberBindingType.Assignment:
                     return VisitMemberAssignment((MemberAssignment)node);
+
                 case MemberBindingType.MemberBinding:
                     return VisitMemberMemberBinding((MemberMemberBinding)node);
+
                 case MemberBindingType.ListBinding:
                     return VisitMemberListBinding((MemberListBinding)node);
+
                 default:
                     throw Error.UnhandledBindingType(node.BindingType);
             }

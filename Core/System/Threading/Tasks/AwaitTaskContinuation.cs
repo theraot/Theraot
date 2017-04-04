@@ -100,7 +100,7 @@ namespace System.Threading.Tasks
 
         /// <summary>IThreadPoolWorkItem override, which is the entry function for this when the ThreadPool scheduler decides to run it.</summary>
         [SecurityCritical]
-        void ExecuteWorkItemHelper()
+        private void ExecuteWorkItemHelper()
         {
             // We're not inside of a task, so t_currentTask doesn't need to be specially maintained.
             // We're on a thread pool thread with no higher-level callers, so exceptions can just propagate.

@@ -5,7 +5,6 @@ using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using Theraot.Core;
-using Theraot.Threading;
 
 namespace System.Threading.Tasks
 {

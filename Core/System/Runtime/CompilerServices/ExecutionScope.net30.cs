@@ -22,6 +22,8 @@ namespace System.Runtime.CompilerServices
     {
         public Delegate CreateDelegate(int indexLambda, object[] locals)
         {
+            GC.KeepAlive(indexLambda);
+            GC.KeepAlive(locals);
             throw new NotSupportedException();
         }
 
@@ -32,6 +34,8 @@ namespace System.Runtime.CompilerServices
 
         public Expression IsolateExpression(Expression expression, object[] locals)
         {
+            GC.KeepAlive(expression);
+            GC.KeepAlive(locals);
             throw new NotSupportedException();
         }
     }

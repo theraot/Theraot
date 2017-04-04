@@ -15,14 +15,14 @@ namespace System.Threading
         /* Position of each bit isn't really important 
         * but their relative order is
         */
-        const int RwReadBit = 3;
+        private const int RwReadBit = 3;
 
         /* These values are used to manipulate the corresponding flags in _rwlock field
         */
-        const int RwWait = 1;
-        const int RwWaitUpgrade = 2;
-        const int RwWrite = 4;
-        const int RwRead = 8;
+        private const int RwWait = 1;
+        private const int RwWaitUpgrade = 2;
+        private const int RwWrite = 4;
+        private const int RwRead = 8;
 
         /* Some explanations: this field is the central point of the lock and keep track of all the requests
         * that are being made. The 3 lowest bits are used as flag to track "destructive" lock entries
@@ -33,29 +33,31 @@ namespace System.Threading
         */
         private int _rwlock;
 
-        readonly LockRecursionPolicy _recursionPolicy;
-        readonly bool _noRecursion;
+        private readonly LockRecursionPolicy _recursionPolicy;
+        private readonly bool _noRecursion;
 
-        readonly AtomicBoolean _upgradableTaken = new AtomicBoolean();
+        private readonly AtomicBoolean _upgradableTaken = new AtomicBoolean();
+        private
 
-        /* These events are just here for the sake of having a CPU-efficient sleep
-        * when the wait for acquiring the lock is too long
-        */
-        ManualResetEventSlim upgradableEvent = new ManualResetEventSlim(true);
-        ManualResetEventSlim writerDoneEvent = new ManualResetEventSlim(true);
-        ManualResetEventSlim readerDoneEvent = new ManualResetEventSlim(true);
+                /* These events are just here for the sake of having a CPU-efficient sleep
+                * when the wait for acquiring the lock is too long
+                */
+                ManualResetEventSlim upgradableEvent = new ManualResetEventSlim(true);
+        private ManualResetEventSlim writerDoneEvent = new ManualResetEventSlim(true);
+        private ManualResetEventSlim readerDoneEvent = new ManualResetEventSlim(true);
 
         // This Stopwatch instance is used for all threads since .Elapsed is thread-safe
-        readonly static Stopwatch sw = Stopwatch.StartNew();
+        private readonly static Stopwatch sw = Stopwatch.StartNew();
+        private
 
-        /* For performance sake, these numbers are manipulated via classic increment and
-        * decrement operations and thus are (as hinted by MSDN) not meant to be precise
-        */
-        int numReadWaiters, numUpgradeWaiters, numWriteWaiters;
-        bool disposed;
+                /* For performance sake, these numbers are manipulated via classic increment and
+                * decrement operations and thus are (as hinted by MSDN) not meant to be precise
+                */
+                int numReadWaiters, numUpgradeWaiters, numWriteWaiters;
+        private bool disposed;
 
-        static int idPool = int.MinValue;
-        readonly int id = Interlocked.Increment(ref idPool);
+        private static int idPool = int.MinValue;
+        private readonly int id = Interlocked.Increment(ref idPool);
 
         /* This dictionary is instanciated per thread for all existing ReaderWriterLockSlim instance.
         * Each instance is defined by an internal integer id value used as a key in the dictionary.
@@ -64,14 +66,15 @@ namespace System.Threading
         * instance are kept here.
         */
         [ThreadStatic]
-        static Dictionary<int, ThreadLockState> currentThreadState;
+        private static Dictionary<int, ThreadLockState> currentThreadState;
+        private
 
-        /* Rwls tries to use this array as much as possible to quickly retrieve the thread-local
-        * informations so that it ends up being only an array lookup. When the number of thread
-        * using the instance goes past the length of the array, the code fallback to the normal
-        * dictionary
-        */
-        ThreadLockState[] fastStateCache = new ThreadLockState[64];
+                /* Rwls tries to use this array as much as possible to quickly retrieve the thread-local
+                * informations so that it ends up being only an array lookup. When the number of thread
+                * using the instance goes past the length of the array, the code fallback to the normal
+                * dictionary
+                */
+                ThreadLockState[] fastStateCache = new ThreadLockState[64];
 
         public ReaderWriterLockSlim()
             : this(LockRecursionPolicy.NoRecursion)
@@ -95,7 +98,7 @@ namespace System.Threading
             return TryEnterReadLock(millisecondsTimeout, ref dummy);
         }
 
-        bool TryEnterReadLock(int millisecondsTimeout, ref bool success)
+        private bool TryEnterReadLock(int millisecondsTimeout, ref bool success)
         {
             var ctstate = CurrentThreadState;
 
@@ -587,7 +590,7 @@ namespace System.Threading
             }
         }
 
-        ThreadLockState CurrentThreadState
+        private ThreadLockState CurrentThreadState
         {
             get
             {
@@ -609,7 +612,7 @@ namespace System.Threading
             return state;
         }
 
-        bool CheckState(ThreadLockState state, int millisecondsTimeout, LockState validState)
+        private bool CheckState(ThreadLockState state, int millisecondsTimeout, LockState validState)
         {
             if (disposed)
                 throw new ObjectDisposedException("ReaderWriterLockSlim");
@@ -637,7 +640,7 @@ namespace System.Threading
             return false;
         }
 
-        static int CheckTimeout(TimeSpan timeout)
+        private static int CheckTimeout(TimeSpan timeout)
         {
             try
             {
@@ -649,7 +652,7 @@ namespace System.Threading
             }
         }
 
-        static int ComputeTimeout(int millisecondsTimeout, long start)
+        private static int ComputeTimeout(int millisecondsTimeout, long start)
         {
             return millisecondsTimeout == -1 ? -1 : (int)Math.Max(sw.ElapsedMilliseconds - start - millisecondsTimeout, 1);
         }
