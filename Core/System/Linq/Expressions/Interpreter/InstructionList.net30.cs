@@ -6,12 +6,10 @@
 // Enables instruction counting and displaying stats at process exit.
 // #define STATS
 
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Dynamic.Utils;
 
 namespace System.Linq.Expressions.Interpreter
 {

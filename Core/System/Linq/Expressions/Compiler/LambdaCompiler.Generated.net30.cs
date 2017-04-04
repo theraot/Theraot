@@ -8,7 +8,7 @@ using System.Dynamic.Utils;
 
 namespace System.Linq.Expressions.Compiler
 {
-    partial class LambdaCompiler
+    internal partial class LambdaCompiler
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private void EmitExpression(Expression node, CompilationFlags flags)

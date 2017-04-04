@@ -6,7 +6,6 @@
 
 using System.Collections.ObjectModel;
 using System.Dynamic.Utils;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace System.Linq.Expressions.Compiler

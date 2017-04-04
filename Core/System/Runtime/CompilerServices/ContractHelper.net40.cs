@@ -103,7 +103,7 @@ namespace System.Runtime.CompilerServices
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         [DebuggerNonUserCode]
         [SecuritySafeCritical]
-        static void RaiseContractFailedEventImplementation(ContractFailureKind failureKind, string userMessage,
+        private static void RaiseContractFailedEventImplementation(ContractFailureKind failureKind, string userMessage,
             string conditionText, Exception innerException, ref string resultFailureMessage)
         {
             if (failureKind < ContractFailureKind.Precondition || failureKind > ContractFailureKind.Assume)
@@ -171,7 +171,7 @@ namespace System.Runtime.CompilerServices
         [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "innerException")]
         [DebuggerNonUserCode]
         [SecuritySafeCritical]
-        static void TriggerFailureImplementation(ContractFailureKind kind, string displayMessage,
+        private static void TriggerFailureImplementation(ContractFailureKind kind, string displayMessage,
             string userMessage, string conditionText, Exception innerException)
         {
             // If we're here, our intent is to pop up a dialog box (if we can).  For developers
