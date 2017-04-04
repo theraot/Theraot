@@ -309,6 +309,7 @@
     </Compile>
     <Compile Include="Theraot\Collections\ProgressorTestEx.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\FixesSizeQueueTest.cs" />
+    <Compile Include="Theraot\Core\CloneHelperTests.cs" />
     <Compile Include="Theraot\Core\RamStreamTests.cs" />
     <Compile Include="Theraot\Core\PrimeHelperTest.cs" />
     <Compile Include="Theraot\Core\NumericHelperTest.cs" />
