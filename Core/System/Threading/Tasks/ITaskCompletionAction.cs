@@ -108,15 +108,19 @@ namespace System.Threading.Tasks
 
             public void Invoke(Task completingTask)
             {
-                var index = Array.IndexOf(_tasks, completingTask);
-                if (index >= 0)
+                var tasks = _tasks;
+                if (tasks != null)
                 {
-                    _tasks[index] = null;
-                }
-                var count = Interlocked.Decrement(ref _count);
-                if (count == 0 && Thread.VolatileRead(ref _ready) == 1)
-                {
-                    Done();
+                    var index = Array.IndexOf(tasks, completingTask);
+                    if (index >= 0)
+                    {
+                        tasks[index] = null;
+                    }
+                    var count = Interlocked.Decrement(ref _count);
+                    if (count == 0 && Thread.VolatileRead(ref _ready) == 1)
+                    {
+                        Done();
+                    }
                 }
             }
 
