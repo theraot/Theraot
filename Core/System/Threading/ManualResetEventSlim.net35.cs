@@ -105,18 +105,26 @@ namespace System.Threading
             }
             else
             {
-                var handle = GetWaitHandle();
-                if (handle != null)
+                try
                 {
-                    handle.Set();
-                }
-                if (Interlocked.CompareExchange(ref _state, 1, 0) == 0)
-                {
-                    handle = GetWaitHandle();
+                    var handle = GetWaitHandle();
                     if (handle != null)
                     {
                         handle.Set();
                     }
+                    if (Interlocked.CompareExchange(ref _state, 1, 0) == 0)
+                    {
+                        handle = GetWaitHandle();
+                        if (handle != null)
+                        {
+                            handle.Set();
+                        }
+                    }
+                }
+                catch (ObjectDisposedException ex)
+                {
+                    GC.KeepAlive(ex);
+                    // Silent fail
                 }
             }
         }
