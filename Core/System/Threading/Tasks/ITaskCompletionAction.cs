@@ -116,7 +116,7 @@ namespace System.Threading.Tasks
                 var index = -1;
                 try
                 {
-                    Console.WriteLine((tasks);
+                    Console.WriteLine(tasks);
                     index = Array.IndexOf(tasks, completingTask);
                 }
                 catch (NullReferenceException ex)
