@@ -108,15 +108,16 @@ namespace System.Threading.Tasks
 
             public void Invoke(Task completingTask)
             {
-                Task[] tasks = null;
+                var tasks = Interlocked.CompareExchange(ref _tasks, null, null);
+                if (tasks == null)
+                {
+                    return;
+                }
                 var index = -1;
                 try
                 {
-                    tasks = Interlocked.CompareExchange(ref _tasks, null, null);
-                    if (tasks == null)
-                    {
-                        return;
-                    }
+                    Console.WriteLine(tasks.ToString());
+                    Console.WriteLine(completingTask.ToString());
                     index = Array.IndexOf(tasks, completingTask);
                 }
                 catch (NullReferenceException ex)
@@ -127,29 +128,14 @@ namespace System.Threading.Tasks
                     Console.WriteLine(ex.StackTrace);
                     // Eat it
                 }
-                try
+                if (index >= 0)
                 {
-                    if (tasks == null)
-                    {
-                        return;
-                    }
-                    if (index >= 0)
-                    {
-                        tasks[index] = null;
-                    }
-                    var count = Interlocked.Decrement(ref _count);
-                    if (count == 0 && Thread.VolatileRead(ref _ready) == 1)
-                    {
-                        Done();
-                    }
+                    tasks[index] = null;
                 }
-                catch (NullReferenceException ex)
+                var count = Interlocked.Decrement(ref _count);
+                if (count == 0 && Thread.VolatileRead(ref _ready) == 1)
                 {
-                    Console.WriteLine("-B-");
-                    Console.WriteLine(ex);
-                    Console.WriteLine("---");
-                    Console.WriteLine(ex.StackTrace);
-                    // Eat it
+                    Done();
                 }
             }
 
