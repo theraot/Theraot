@@ -109,18 +109,19 @@ namespace System.Threading.Tasks
             public void Invoke(Task completingTask)
             {
                 var tasks = _tasks;
-                if (tasks != null)
+                if (tasks == null || completingTask == null)
                 {
-                    var index = Array.IndexOf(tasks, completingTask);
-                    if (index >= 0)
-                    {
-                        tasks[index] = null;
-                    }
-                    var count = Interlocked.Decrement(ref _count);
-                    if (count == 0 && Thread.VolatileRead(ref _ready) == 1)
-                    {
-                        Done();
-                    }
+                    return;
+                }
+                var index = Array.IndexOf(tasks, completingTask);
+                if (index >= 0)
+                {
+                    tasks[index] = null;
+                }
+                var count = Interlocked.Decrement(ref _count);
+                if (count == 0 && Thread.VolatileRead(ref _ready) == 1)
+                {
+                    Done();
                 }
             }
 
@@ -132,6 +133,11 @@ namespace System.Threading.Tasks
                     Interlocked.Increment(ref _count);
                     if (awaitedTask.AddTaskContinuation(this, /*addBeforeOthers:*/ true))
                     {
+                        var tasks = _tasks;
+                        if (tasks == null)
+                        {
+                            return;
+                        }
                         var index = Array.IndexOf(_tasks, null);
                         while (Interlocked.CompareExchange(ref _tasks[index], awaitedTask, null) != null)
                         {
