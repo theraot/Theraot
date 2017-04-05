@@ -116,8 +116,14 @@ namespace System.Threading.Tasks
                 var index = -1;
                 try
                 {
-                    Thread.MemoryBarrier();
-                    index = Array.IndexOf(tasks, completingTask);
+                    for (int currentIndex = 0; currentIndex < tasks.Length; currentIndex++)
+                    {
+                        if (tasks[currentIndex] == completingTask)
+                        {
+                            index = currentIndex;
+                            break;
+                        }
+                    }
                 }
                 catch (NullReferenceException ex)
                 {
