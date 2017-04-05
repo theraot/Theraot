@@ -108,8 +108,8 @@ namespace System.Threading.Tasks
 
             public void Invoke(Task completingTask)
             {
-                var tasks = _tasks;
-                if (tasks == null || completingTask == null)
+                var tasks = Interlocked.CompareExchange(ref _tasks, null, null);
+                if (tasks == null)
                 {
                     return;
                 }
@@ -133,15 +133,15 @@ namespace System.Threading.Tasks
                     Interlocked.Increment(ref _count);
                     if (awaitedTask.AddTaskContinuation(this, /*addBeforeOthers:*/ true))
                     {
-                        var tasks = _tasks;
+                        var tasks = Interlocked.CompareExchange(ref _tasks, null, null);
                         if (tasks == null)
                         {
                             return;
                         }
-                        var index = Array.IndexOf(_tasks, null);
-                        while (Interlocked.CompareExchange(ref _tasks[index], awaitedTask, null) != null)
+                        var index = Array.IndexOf(tasks, null);
+                        while (Interlocked.CompareExchange(ref tasks[index], awaitedTask, null) != null)
                         {
-                            index = (index + 1) % _tasks.Length;
+                            index = (index + 1) % tasks.Length;
                         }
                     }
                     else
