@@ -113,29 +113,14 @@ namespace System.Threading.Tasks
                 {
                     return;
                 }
-                var index = -1;
-                try
+                // Do not use IndexOf
+                for (int index = 0; index < tasks.Length; index++)
                 {
-                    for (int currentIndex = 0; currentIndex < tasks.Length; currentIndex++)
+                    if (tasks[index] == completingTask)
                     {
-                        if (tasks[currentIndex] == completingTask)
-                        {
-                            index = currentIndex;
-                            break;
-                        }
+                        tasks[index] = null;
+                        break;
                     }
-                }
-                catch (NullReferenceException ex)
-                {
-                    Console.WriteLine("-A-");
-                    Console.WriteLine(ex);
-                    Console.WriteLine("---");
-                    Console.WriteLine(ex.StackTrace);
-                    // Eat it
-                }
-                if (index >= 0)
-                {
-                    tasks[index] = null;
                 }
                 var count = Interlocked.Decrement(ref _count);
                 if (count == 0 && Thread.VolatileRead(ref _ready) == 1)
