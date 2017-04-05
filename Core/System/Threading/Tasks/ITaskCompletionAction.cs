@@ -108,20 +108,48 @@ namespace System.Threading.Tasks
 
             public void Invoke(Task completingTask)
             {
-                var tasks = Interlocked.CompareExchange(ref _tasks, null, null);
-                if (tasks == null)
+                Task[] tasks = null;
+                var index = -1;
+                try
                 {
-                    return;
+                    tasks = Interlocked.CompareExchange(ref _tasks, null, null);
+                    if (tasks == null)
+                    {
+                        return;
+                    }
+                    index = Array.IndexOf(tasks, completingTask);
                 }
-                var index = Array.IndexOf(tasks, completingTask);
-                if (index >= 0)
+                catch (NullReferenceException ex)
                 {
-                    tasks[index] = null;
+                    Console.WriteLine("-A-");
+                    Console.WriteLine(ex);
+                    Console.WriteLine("---");
+                    Console.WriteLine(ex.StackTrace);
+                    // Eat it
                 }
-                var count = Interlocked.Decrement(ref _count);
-                if (count == 0 && Thread.VolatileRead(ref _ready) == 1)
+                try
                 {
-                    Done();
+                    if (tasks == null)
+                    {
+                        return;
+                    }
+                    if (index >= 0)
+                    {
+                        tasks[index] = null;
+                    }
+                    var count = Interlocked.Decrement(ref _count);
+                    if (count == 0 && Thread.VolatileRead(ref _ready) == 1)
+                    {
+                        Done();
+                    }
+                }
+                catch (NullReferenceException ex)
+                {
+                    Console.WriteLine("-B-");
+                    Console.WriteLine(ex);
+                    Console.WriteLine("---");
+                    Console.WriteLine(ex.StackTrace);
+                    // Eat it
                 }
             }
 
