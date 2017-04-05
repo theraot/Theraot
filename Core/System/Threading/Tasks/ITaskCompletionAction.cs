@@ -116,6 +116,7 @@ namespace System.Threading.Tasks
                 var index = -1;
                 try
                 {
+                    GC.KeepAlive(tasks);
                     index = Array.IndexOf(tasks, completingTask);
                 }
                 catch (NullReferenceException ex)
