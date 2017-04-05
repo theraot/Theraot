@@ -132,17 +132,15 @@ namespace MonoTests.System.Threading
         {
             for (int i = 0; i < 10000; ++i)
             {
-                using (var mre = new ManualResetEventSlim())
-                {
-                    var b = true;
+                var mre = new ManualResetEventSlim(); // Leaked
+                var b = true;
 
-                    ThreadPool.QueueUserWorkItem(state => mre.Set());
+                ThreadPool.QueueUserWorkItem(state => mre.Set());
 
-                    ThreadPool.QueueUserWorkItem(state => b &= mre.Wait(1000));
+                ThreadPool.QueueUserWorkItem(state => b &= mre.Wait(1000));
 
-                    Assert.IsTrue(mre.Wait(1000), i.ToString());
-                    Assert.IsTrue(b, i.ToString());
-                }
+                Assert.IsTrue(mre.Wait(1000), i.ToString());
+                Assert.IsTrue(b, i.ToString());
             }
         }
 
