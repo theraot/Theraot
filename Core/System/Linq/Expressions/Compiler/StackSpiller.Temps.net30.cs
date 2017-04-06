@@ -166,7 +166,8 @@ namespace System.Linq.Expressions.Compiler
 
             internal void Add(IList<Expression> expressions)
             {
-                for (int i = 0, count = expressions.Count; i < count; i++)
+                var count = expressions.Count;
+                for (int i = 0; i < count; i++)
                 {
                     Add(expressions[i]);
                 }
@@ -174,7 +175,8 @@ namespace System.Linq.Expressions.Compiler
 
             internal void AddArguments(IArgumentProvider expressions)
             {
-                for (int i = 0, count = expressions.ArgumentCount; i < count; i++)
+                var count = expressions.ArgumentCount;
+                for (int i = 0; i < count; i++)
                 {
                     Add(expressions.GetArgument(i));
                 }
