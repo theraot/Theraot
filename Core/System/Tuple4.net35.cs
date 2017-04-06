@@ -64,7 +64,6 @@ namespace System
             return ((IStructuralEquatable)this).GetHashCode(EqualityComparer<object>.Default);
         }
 
-        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Microsoft's Design")]
         int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
             return CompareTo(other, comparer);
@@ -93,7 +92,6 @@ namespace System
             return hash;
         }
 
-        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Microsoft's Design")]
         int IComparable.CompareTo(object obj)
         {
             return CompareTo(obj, Comparer<object>.Default);

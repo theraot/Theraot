@@ -12,11 +12,13 @@ namespace Theraot.Core
         {
             // Empty
         }
+
         public InternalSpecialCancelException(string message)
             : base(message)
         {
             // Empty
         }
+
         public InternalSpecialCancelException(string message, Exception inner)
             : base(message, inner)
         {

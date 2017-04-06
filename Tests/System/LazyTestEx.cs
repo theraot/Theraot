@@ -93,7 +93,8 @@ namespace MonoTests.System
             var threadDone = 0;
             var needle = new Lazy<int>(() =>
             {
-                Interlocked.Increment(ref control); return 5;
+                Interlocked.Increment(ref control);
+                return 5;
             });
             var manual = new ManualResetEvent(false);
             var threadA = new Thread(() =>

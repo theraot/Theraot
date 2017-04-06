@@ -50,17 +50,20 @@ namespace System.Threading.Tasks
                 taskArray = new Task[taskCollection.Count];
                 foreach (var task in tasks)
                 {
-                    if (task == null) throw new ArgumentException("The tasks argument included a null value.", "tasks");
+                    if (task == null)
+                        throw new ArgumentException("The tasks argument included a null value.", "tasks");
                     taskArray[index++] = task;
                 }
                 return InternalWhenAll(taskArray);
             }
             // Do some argument checking and convert tasks to a List (and later an array).
-            if (tasks == null) throw new ArgumentNullException("tasks");
+            if (tasks == null)
+                throw new ArgumentNullException("tasks");
             var taskList = new List<Task>();
             foreach (var task in tasks)
             {
-                if (task == null) throw new ArgumentException("The tasks argument included a null value.", "tasks");
+                if (task == null)
+                    throw new ArgumentException("The tasks argument included a null value.", "tasks");
                 taskList.Add(task);
             }
             // Delegate the rest to InternalWhenAll()
@@ -97,15 +100,18 @@ namespace System.Threading.Tasks
         public static Task WhenAll(params Task[] tasks)
         {
             // Do some argument checking and make a defensive copy of the tasks array
-            if (tasks == null) throw new ArgumentNullException("tasks");
+            if (tasks == null)
+                throw new ArgumentNullException("tasks");
             Contract.EndContractBlock();
             var taskCount = tasks.Length;
-            if (taskCount == 0) return InternalWhenAll(tasks); // Small optimization in the case of an empty array.
+            if (taskCount == 0)
+                return InternalWhenAll(tasks); // Small optimization in the case of an empty array.
             var tasksCopy = new Task[taskCount];
             for (var i = 0; i < taskCount; i++)
             {
                 var task = tasks[i];
-                if (task == null) throw new ArgumentException("The tasks argument included a null value.", "tasks");
+                if (task == null)
+                    throw new ArgumentException("The tasks argument included a null value.", "tasks");
                 tasksCopy[i] = task;
             }
             // The rest can be delegated to InternalWhenAll()
@@ -158,17 +164,20 @@ namespace System.Threading.Tasks
                 taskArray = new Task<TResult>[taskCollection.Count];
                 foreach (var task in tasks)
                 {
-                    if (task == null) throw new ArgumentException("The tasks argument included a null value.", "tasks");
+                    if (task == null)
+                        throw new ArgumentException("The tasks argument included a null value.", "tasks");
                     taskArray[index++] = task;
                 }
                 return InternalWhenAll(taskArray);
             }
             // Do some argument checking and convert tasks into a List (later an array)
-            if (tasks == null) throw new ArgumentNullException("tasks");
+            if (tasks == null)
+                throw new ArgumentNullException("tasks");
             var taskList = new List<Task<TResult>>();
             foreach (var task in tasks)
             {
-                if (task == null) throw new ArgumentException("Task_MultiTaskContinuation_NullTask", "tasks");
+                if (task == null)
+                    throw new ArgumentException("Task_MultiTaskContinuation_NullTask", "tasks");
                 taskList.Add(task);
             }
             // Delegate the rest to InternalWhenAll<TResult>().
@@ -208,15 +217,18 @@ namespace System.Threading.Tasks
         public static Task<TResult[]> WhenAll<TResult>(params Task<TResult>[] tasks)
         {
             // Do some argument checking and make a defensive copy of the tasks array
-            if (tasks == null) throw new ArgumentNullException("tasks");
+            if (tasks == null)
+                throw new ArgumentNullException("tasks");
             Contract.EndContractBlock();
             var taskCount = tasks.Length;
-            if (taskCount == 0) return InternalWhenAll(tasks); // small optimization in the case of an empty task array
+            if (taskCount == 0)
+                return InternalWhenAll(tasks); // small optimization in the case of an empty task array
             var tasksCopy = new Task<TResult>[taskCount];
             for (var i = 0; i < taskCount; i++)
             {
                 var task = tasks[i];
-                if (task == null) throw new ArgumentException("The tasks argument included a null value.", "tasks");
+                if (task == null)
+                    throw new ArgumentException("The tasks argument included a null value.", "tasks");
                 tasksCopy[i] = task;
             }
             // Delegate the rest to InternalWhenAll<TResult>()
@@ -279,7 +291,7 @@ namespace System.Threading.Tasks
         /// <param name="tasks">The tasks to wait on for completion.</param>
         /// <returns>A task that represents the completion of one of the supplied tasks.  The return Task's Result is the task that completed.</returns>
         /// <remarks>
-        /// The returned task will complete when any of the supplied tasks has completed.  The returned task will always end in the RanToCompletion state 
+        /// The returned task will complete when any of the supplied tasks has completed.  The returned task will always end in the RanToCompletion state
         /// with its Result set to the first task to complete.  This is true even if the first task to complete ended in the Canceled or Faulted state.
         /// </remarks>
         /// <exception cref="T:System.ArgumentNullException">
@@ -322,7 +334,7 @@ namespace System.Threading.Tasks
         /// <param name="tasks">The tasks to wait on for completion.</param>
         /// <returns>A task that represents the completion of one of the supplied tasks.  The return Task's Result is the task that completed.</returns>
         /// <remarks>
-        /// The returned task will complete when any of the supplied tasks has completed.  The returned task will always end in the RanToCompletion state 
+        /// The returned task will complete when any of the supplied tasks has completed.  The returned task will always end in the RanToCompletion state
         /// with its Result set to the first task to complete.  This is true even if the first task to complete ended in the Canceled or Faulted state.
         /// </remarks>
         /// <exception cref="T:System.ArgumentNullException">
@@ -363,7 +375,7 @@ namespace System.Threading.Tasks
         /// <param name="tasks">The tasks to wait on for completion.</param>
         /// <returns>A task that represents the completion of one of the supplied tasks.  The return Task's Result is the task that completed.</returns>
         /// <remarks>
-        /// The returned task will complete when any of the supplied tasks has completed.  The returned task will always end in the RanToCompletion state 
+        /// The returned task will complete when any of the supplied tasks has completed.  The returned task will always end in the RanToCompletion state
         /// with its Result set to the first task to complete.  This is true even if the first task to complete ended in the Canceled or Faulted state.
         /// </remarks>
         /// <exception cref="T:System.ArgumentNullException">
@@ -389,7 +401,7 @@ namespace System.Threading.Tasks
         /// <param name="tasks">The tasks to wait on for completion.</param>
         /// <returns>A task that represents the completion of one of the supplied tasks.  The return Task's Result is the task that completed.</returns>
         /// <remarks>
-        /// The returned task will complete when any of the supplied tasks has completed.  The returned task will always end in the RanToCompletion state 
+        /// The returned task will complete when any of the supplied tasks has completed.  The returned task will always end in the RanToCompletion state
         /// with its Result set to the first task to complete.  This is true even if the first task to complete ended in the Canceled or Faulted state.
         /// </remarks>
         /// <exception cref="T:System.ArgumentNullException">

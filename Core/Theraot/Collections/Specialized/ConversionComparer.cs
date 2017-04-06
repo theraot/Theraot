@@ -7,7 +7,7 @@ using Theraot.Core;
 
 namespace Theraot.Collections.Specialized
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ConversionComparer<TInput, TOutput> : IComparer<TInput>
     {
         private readonly IComparer<TOutput> _comparer;

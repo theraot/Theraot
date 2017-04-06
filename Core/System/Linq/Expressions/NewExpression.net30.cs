@@ -17,7 +17,7 @@ namespace System.Linq.Expressions
     /// <summary>
     /// Represents a constructor call.
     /// </summary>
-    [DebuggerTypeProxy(typeof(Expression.NewExpressionProxy))]
+    [DebuggerTypeProxy(typeof(NewExpressionProxy))]
     public class NewExpression : Expression, IArgumentProvider
     {
         private readonly ConstructorInfo _constructor;
@@ -37,7 +37,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public override Type Type
         {
-            get { return _constructor.DeclaringType; }
+            get
+            {
+                return _constructor.DeclaringType;
+            }
         }
 
         /// <summary>
@@ -46,7 +49,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get { return ExpressionType.New; }
+            get
+            {
+                return ExpressionType.New;
+            }
         }
 
         /// <summary>
@@ -54,7 +60,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public ConstructorInfo Constructor
         {
-            get { return _constructor; }
+            get
+            {
+                return _constructor;
+            }
         }
 
         /// <summary>
@@ -62,7 +71,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<Expression> Arguments
         {
-            get { return ReturnReadOnly(ref _arguments); }
+            get
+            {
+                return ReturnReadOnly(ref _arguments);
+            }
         }
 
         public Expression GetArgument(int index)
@@ -83,7 +95,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<MemberInfo> Members
         {
-            get { return _members; }
+            get
+            {
+                return _members;
+            }
         }
 
         /// <summary>
@@ -109,9 +124,9 @@ namespace System.Linq.Expressions
             }
             if (Members != null)
             {
-                return Expression.New(Constructor, arguments, Members);
+                return New(Constructor, arguments, Members);
             }
-            return Expression.New(Constructor, arguments);
+            return New(Constructor, arguments);
         }
     }
 
@@ -127,14 +142,17 @@ namespace System.Linq.Expressions
 
         public sealed override Type Type
         {
-            get { return _valueType; }
+            get
+            {
+                return _valueType;
+            }
         }
     }
 
     public partial class Expression
     {
         /// <summary>
-        /// Creates a new <see cref="NewExpression"/> that represents calling the specified constructor that takes no arguments. 
+        /// Creates a new <see cref="NewExpression"/> that represents calling the specified constructor that takes no arguments.
         /// </summary>
         /// <param name="constructor">The <see cref="ConstructorInfo"/> to set the <see cref="P:Constructor"/> property equal to.</param>
         /// <returns>A <see cref="NewExpression"/> that has the <see cref="NodeType"/> property equal to <see cref="P:New"/> and the <see cref="P:Constructor"/> property set to the specified value.</returns>
@@ -143,9 +161,8 @@ namespace System.Linq.Expressions
             return New(constructor, (IEnumerable<Expression>)null);
         }
 
-
         /// <summary>
-        /// Creates a new <see cref="NewExpression"/> that represents calling the specified constructor that takes no arguments. 
+        /// Creates a new <see cref="NewExpression"/> that represents calling the specified constructor that takes no arguments.
         /// </summary>
         /// <param name="constructor">The <see cref="ConstructorInfo"/> to set the <see cref="P:Constructor"/> property equal to.</param>
         /// <param name="arguments">An array of <see cref="Expression"/> objects to use to populate the Arguments collection.</param>
@@ -155,9 +172,8 @@ namespace System.Linq.Expressions
             return New(constructor, (IEnumerable<Expression>)arguments);
         }
 
-
         /// <summary>
-        /// Creates a new <see cref="NewExpression"/> that represents calling the specified constructor that takes no arguments. 
+        /// Creates a new <see cref="NewExpression"/> that represents calling the specified constructor that takes no arguments.
         /// </summary>
         /// <param name="constructor">The <see cref="ConstructorInfo"/> to set the <see cref="P:Constructor"/> property equal to.</param>
         /// <param name="arguments">An <see cref="IEnumerable{T}"/> of <see cref="Expression"/> objects to use to populate the Arguments collection.</param>
@@ -173,9 +189,8 @@ namespace System.Linq.Expressions
             return new NewExpression(constructor, argList, null);
         }
 
-
         /// <summary>
-        /// Creates a new <see cref="NewExpression"/> that represents calling the specified constructor with the specified arguments. The members that access the constructor initialized fields are specified. 
+        /// Creates a new <see cref="NewExpression"/> that represents calling the specified constructor with the specified arguments. The members that access the constructor initialized fields are specified.
         /// </summary>
         /// <param name="constructor">The <see cref="ConstructorInfo"/> to set the <see cref="P:Constructor"/> property equal to.</param>
         /// <param name="arguments">An <see cref="IEnumerable{T}"/> of <see cref="Expression"/> objects to use to populate the Arguments collection.</param>
@@ -190,9 +205,8 @@ namespace System.Linq.Expressions
             return new NewExpression(constructor, argList, memberList);
         }
 
-
         /// <summary>
-        /// Creates a new <see cref="NewExpression"/> that represents calling the specified constructor with the specified arguments. The members that access the constructor initialized fields are specified. 
+        /// Creates a new <see cref="NewExpression"/> that represents calling the specified constructor with the specified arguments. The members that access the constructor initialized fields are specified.
         /// </summary>
         /// <param name="constructor">The <see cref="ConstructorInfo"/> to set the <see cref="P:Constructor"/> property equal to.</param>
         /// <param name="arguments">An <see cref="IEnumerable{T}"/> of <see cref="Expression"/> objects to use to populate the Arguments collection.</param>
@@ -203,9 +217,8 @@ namespace System.Linq.Expressions
             return New(constructor, arguments, (IEnumerable<MemberInfo>)members);
         }
 
-
         /// <summary>
-        /// Creates a <see cref="NewExpression"/> that represents calling the parameterless constructor of the specified type. 
+        /// Creates a <see cref="NewExpression"/> that represents calling the parameterless constructor of the specified type.
         /// </summary>
         /// <param name="type">A <see cref="Type"/> that has a constructor that takes no arguments. </param>
         /// <returns>A <see cref="NewExpression"/> that has the <see cref="NodeType"/> property equal to New and the Constructor property set to the ConstructorInfo that represents the parameterless constructor of the specified type.</returns>
@@ -229,9 +242,6 @@ namespace System.Linq.Expressions
             return new NewValueTypeExpression(type, EmptyCollection<Expression>.Instance, null);
         }
 
-
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private static void ValidateNewArgs(ConstructorInfo constructor, ref ReadOnlyCollection<Expression> arguments, ref ReadOnlyCollection<MemberInfo> members)
         {
             ParameterInfo[] pis;
@@ -323,7 +333,6 @@ namespace System.Linq.Expressions
                 throw Error.IncorrectNumberOfMembersForGivenConstructor();
             }
         }
-
 
         private static void ValidateAnonymousTypeMember(ref MemberInfo member, out Type memberType)
         {

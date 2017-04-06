@@ -21,7 +21,7 @@ namespace System.Threading.Tasks
         /// <summary>
         /// Specifies that a task will be a long-running, course-grained operation. It provides a hint to the
         /// <see cref="System.Threading.Tasks.TaskScheduler">TaskScheduler</see> that oversubscription may be
-        /// warranted. 
+        /// warranted.
         /// </summary>
         LongRunning = 0x02,
 

@@ -20,7 +20,6 @@ namespace System.Linq.Expressions.Compiler
     /// contain multiple lambdas, the Compiler class is responsible for compiling the whole tree, individual
     /// lambdas are then compiled by the LambdaCompiler.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
     internal sealed partial class LambdaCompiler
     {
         private delegate void WriteBack();
@@ -37,6 +36,7 @@ namespace System.Linq.Expressions.Compiler
 
         // Currently active LabelTargets and their mapping to IL labels
         private LabelScopeInfo _labelBlock = new LabelScopeInfo(null, LabelScopeKind.Lambda);
+
         // Mapping of labels used for "long" jumps (jumping out and into blocks)
         private readonly Dictionary<LabelTarget, LabelInfo> _labelInfo = new Dictionary<LabelTarget, LabelInfo>();
 
@@ -68,12 +68,12 @@ namespace System.Linq.Expressions.Compiler
             _lambda = lambda;
             _method = method;
 
-            // In a Win8 immersive process user code is not allowed to access non-W8P framework APIs through 
+            // In a Win8 immersive process user code is not allowed to access non-W8P framework APIs through
             // reflection or RefEmit. Framework code, however, is given an exemption.
             // This is to make sure that user code cannot access non-W8P framework APIs via ExpressionTree.
 
             // TODO: This API is not available, is there an alternative way to achieve the same.
-            // method.ProfileAPICheck = true; 
+            // method.ProfileAPICheck = true;
 
             _ilg = method.GetILGenerator();
 
@@ -151,20 +151,29 @@ namespace System.Linq.Expressions.Compiler
 
         internal ILGenerator IL
         {
-            get { return _ilg; }
+            get
+            {
+                return _ilg;
+            }
         }
 
         internal ReadOnlyCollection<ParameterExpression> Parameters
         {
-            get { return _lambda.Parameters; }
+            get
+            {
+                return _lambda.Parameters;
+            }
         }
 
         internal bool CanEmitBoundConstants
         {
-            get { return _method is DynamicMethod; }
+            get
+            {
+                return _method is DynamicMethod;
+            }
         }
 
-#region Compiler entry points
+        #region Compiler entry points
 
         /// <summary>
         /// Compiler entry point
@@ -187,7 +196,7 @@ namespace System.Linq.Expressions.Compiler
             return c.CreateDelegate();
         }
 
-#endregion
+        #endregion Compiler entry points
 
         private static AnalyzedTree AnalyzeLambda(ref LambdaExpression lambda)
         {

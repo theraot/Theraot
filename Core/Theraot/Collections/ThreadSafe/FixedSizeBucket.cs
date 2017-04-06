@@ -310,7 +310,7 @@ namespace Theraot.Collections.ThreadSafe
             var found = Interlocked.CompareExchange(ref _entries[index], null, null);
             if (found != null)
             {
-                var comparisonItem = found == BucketHelper.Null ? default(T) : (T) found;
+                var comparisonItem = found == BucketHelper.Null ? default(T) : (T)found;
                 if (check(comparisonItem))
                 {
                     var compare = Interlocked.CompareExchange(ref _entries[index], null, found);
@@ -516,7 +516,7 @@ namespace Theraot.Collections.ThreadSafe
                 if (check(comparisonItem))
                 {
                     var item = itemUpdateFactory(comparisonItem);
-                    compare = Interlocked.CompareExchange(ref _entries[index], (object) item ?? BucketHelper.Null, found);
+                    compare = Interlocked.CompareExchange(ref _entries[index], (object)item ?? BucketHelper.Null, found);
                     result = found == compare;
                 }
             }

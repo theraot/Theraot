@@ -5,8 +5,8 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Reflection.Emit;
 using System.Globalization;
+using System.Reflection.Emit;
 using Theraot.Core;
 
 namespace System.Linq.Expressions.Compiler
@@ -148,7 +148,7 @@ namespace System.Linq.Expressions.Compiler
             breakTarget.MarkWithEmptyStack();
         }
 
-#region SwitchExpression
+        #region SwitchExpression
 
         private void EmitSwitchExpression(Expression expr, CompilationFlags flags)
         {
@@ -326,6 +326,7 @@ namespace System.Linq.Expressions.Compiler
                 case TypeCode.Int64:
                 case TypeCode.UInt64:
                     return true;
+
                 default:
                     return false;
             }
@@ -542,7 +543,7 @@ namespace System.Linq.Expressions.Compiler
                 return;
             }
 
-            // 
+            //
             // If we're switching off of Int64/UInt64, we need more guards here
             // because we'll have to narrow the switch value to an Int32, and
             // we can't do that unless the value is in the right range.
@@ -723,7 +724,7 @@ namespace System.Linq.Expressions.Compiler
             return true;
         }
 
-#endregion
+        #endregion SwitchExpression
 
         private void CheckRethrow()
         {
@@ -743,7 +744,7 @@ namespace System.Linq.Expressions.Compiler
             throw Error.RethrowRequiresCatch();
         }
 
-#region TryStatement
+        #region TryStatement
 
         private void CheckTry()
         {
@@ -886,7 +887,7 @@ namespace System.Linq.Expressions.Compiler
             }
 
             // emit filter block. Filter blocks are untyped so we need to do
-            // the type check ourselves.  
+            // the type check ourselves.
             var endFilter = _ilg.DefineLabel();
             var rightType = _ilg.DefineLabel();
 
@@ -907,14 +908,14 @@ namespace System.Linq.Expressions.Compiler
             EmitExpression(cb.Filter);
             PopLabelBlock(LabelScopeKind.Filter);
 
-            // begin the catch, clear the exception, we've 
+            // begin the catch, clear the exception, we've
             // already saved it
             _ilg.MarkLabel(endFilter);
             _ilg.BeginCatchBlock(null);
             _ilg.Emit(OpCodes.Pop);
         }
 
-#endregion
+        #endregion TryStatement
     }
 }
 

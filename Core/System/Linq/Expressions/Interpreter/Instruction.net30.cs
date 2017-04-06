@@ -17,26 +17,62 @@ namespace System.Linq.Expressions.Interpreter
     {
         public const int UnknownInstrIndex = int.MaxValue;
 
-        public virtual int ConsumedStack { get { return 0; } }
-        public virtual int ProducedStack { get { return 0; } }
-        public virtual int ConsumedContinuations { get { return 0; } }
-        public virtual int ProducedContinuations { get { return 0; } }
+        public virtual int ConsumedStack
+        {
+            get
+            {
+                return 0;
+            }
+        }
+
+        public virtual int ProducedStack
+        {
+            get
+            {
+                return 0;
+            }
+        }
+
+        public virtual int ConsumedContinuations
+        {
+            get
+            {
+                return 0;
+            }
+        }
+
+        public virtual int ProducedContinuations
+        {
+            get
+            {
+                return 0;
+            }
+        }
 
         public int StackBalance
         {
-            get { return ProducedStack - ConsumedStack; }
+            get
+            {
+                return ProducedStack - ConsumedStack;
+            }
         }
 
         public int ContinuationsBalance
         {
-            get { return ProducedContinuations - ConsumedContinuations; }
+            get
+            {
+                return ProducedContinuations - ConsumedContinuations;
+            }
         }
 
         public abstract int Run(InterpretedFrame frame);
 
         public virtual string InstructionName
         {
-            get { return "<Unknown>"; }
+            get
+            {
+                return "<Unknown>";
+            }
         }
 
         public override string ToString()
@@ -59,13 +95,32 @@ namespace System.Linq.Expressions.Interpreter
     {
         public static Instruction _Bool, _Int64, _Int32, _Int16, _UInt64, _UInt32, _UInt16, _Byte, _SByte;
 
-        private NotInstruction() { }
-        public override int ConsumedStack { get { return 1; } }
-        public override int ProducedStack { get { return 1; } }
+        private NotInstruction()
+        {
+        }
+
+        public override int ConsumedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
+        public override int ProducedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
 
         public override string InstructionName
         {
-            get { return "Not"; }
+            get
+            {
+                return "Not";
+            }
         }
 
         private class BoolNot : NotInstruction
@@ -225,15 +280,33 @@ namespace System.Linq.Expressions.Interpreter
         {
             switch (TypeHelper.GetTypeCode(TypeHelper.GetNonNullableType(t)))
             {
-                case TypeCode.Boolean: return _Bool ?? (_Bool = new BoolNot());
-                case TypeCode.Int64: return _Int64 ?? (_Int64 = new Int64Not());
-                case TypeCode.Int32: return _Int32 ?? (_Int32 = new Int32Not());
-                case TypeCode.Int16: return _Int16 ?? (_Int16 = new Int16Not());
-                case TypeCode.UInt64: return _UInt64 ?? (_UInt64 = new UInt64Not());
-                case TypeCode.UInt32: return _UInt32 ?? (_UInt32 = new UInt32Not());
-                case TypeCode.UInt16: return _UInt16 ?? (_UInt16 = new UInt16Not());
-                case TypeCode.Byte: return _Byte ?? (_Byte = new ByteNot());
-                case TypeCode.SByte: return _SByte ?? (_SByte = new SByteNot());
+                case TypeCode.Boolean:
+                    return _Bool ?? (_Bool = new BoolNot());
+
+                case TypeCode.Int64:
+                    return _Int64 ?? (_Int64 = new Int64Not());
+
+                case TypeCode.Int32:
+                    return _Int32 ?? (_Int32 = new Int32Not());
+
+                case TypeCode.Int16:
+                    return _Int16 ?? (_Int16 = new Int16Not());
+
+                case TypeCode.UInt64:
+                    return _UInt64 ?? (_UInt64 = new UInt64Not());
+
+                case TypeCode.UInt32:
+                    return _UInt32 ?? (_UInt32 = new UInt32Not());
+
+                case TypeCode.UInt16:
+                    return _UInt16 ?? (_UInt16 = new UInt16Not());
+
+                case TypeCode.Byte:
+                    return _Byte ?? (_Byte = new ByteNot());
+
+                case TypeCode.SByte:
+                    return _SByte ?? (_SByte = new SByteNot());
+
                 default:
                     throw new InvalidOperationException("Not for " + t.ToString());
             }

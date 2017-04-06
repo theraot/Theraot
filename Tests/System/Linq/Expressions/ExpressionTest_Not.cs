@@ -26,155 +26,156 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
-using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-	public class ExpressionTest_Not
-	{
-		[Test]
-		[ExpectedException (typeof (ArgumentNullException))]
-		public void Arg1Null ()
-		{
-			Expression.Not (null);
-		}
+    public class ExpressionTest_Not
+    {
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Arg1Null()
+        {
+            Expression.Not(null);
+        }
 
-		[Test]
-		[ExpectedException (typeof (ArgumentException))]
-		public void MethodArgNotStatic ()
-		{
-			Expression.Not (Expression.Constant (new object ()), typeof (OpClass).GetMethod ("WrongUnaryNotStatic"));
-		}
+        [Test]
+        [ExpectedException(typeof(ArgumentException))]
+        public void MethodArgNotStatic()
+        {
+            Expression.Not(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryNotStatic"));
+        }
 
-		[Test]
-		[ExpectedException (typeof (ArgumentException))]
-		public void MethodArgParameterCount ()
-		{
-			Expression.Not (Expression.Constant (new object ()), typeof (OpClass).GetMethod ("WrongUnaryParameterCount"));
-		}
+        [Test]
+        [ExpectedException(typeof(ArgumentException))]
+        public void MethodArgParameterCount()
+        {
+            Expression.Not(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryParameterCount"));
+        }
 
-		[Test]
-		[ExpectedException (typeof (ArgumentException))]
-		public void MethodArgReturnsVoid ()
-		{
-			Expression.Not (Expression.Constant (new object ()), typeof (OpClass).GetMethod ("WrongUnaryReturnVoid"));
-		}
+        [Test]
+        [ExpectedException(typeof(ArgumentException))]
+        public void MethodArgReturnsVoid()
+        {
+            Expression.Not(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryReturnVoid"));
+        }
 
-		[Test]
-		public void Number ()
-		{
-			var up = Expression.Not (1.ToConstant ());
-			Assert.AreEqual ("Not(1)", up.ToString ());
-		}
+        [Test]
+        public void Number()
+        {
+            var up = Expression.Not(1.ToConstant());
+            Assert.AreEqual("Not(1)", up.ToString());
+        }
 
-		[Test]
-		public void UserDefinedClass ()
-		{
-			var mi = typeof (OpClass).GetMethod ("op_LogicalNot");
+        [Test]
+        public void UserDefinedClass()
+        {
+            var mi = typeof(OpClass).GetMethod("op_LogicalNot");
 
-			var expr = Expression.Not (Expression.Constant (new OpClass ()));
-			Assert.AreEqual (ExpressionType.Not, expr.NodeType);
-			Assert.AreEqual (typeof (OpClass), expr.Type);
-			Assert.AreEqual (mi, expr.Method);
-			Assert.AreEqual ("op_LogicalNot", expr.Method.Name);
-			Assert.AreEqual ("Not(value(MonoTests.System.Linq.Expressions.OpClass))",	expr.ToString ());
-		}
+            var expr = Expression.Not(Expression.Constant(new OpClass()));
+            Assert.AreEqual(ExpressionType.Not, expr.NodeType);
+            Assert.AreEqual(typeof(OpClass), expr.Type);
+            Assert.AreEqual(mi, expr.Method);
+            Assert.AreEqual("op_LogicalNot", expr.Method.Name);
+            Assert.AreEqual("Not(value(MonoTests.System.Linq.Expressions.OpClass))", expr.ToString());
+        }
 
-		[Test]
-		public void NotNullableInt32 ()
-		{
-			var n = Expression.Not (Expression.Parameter (typeof (int?), ""));
-			Assert.AreEqual (typeof (int?), n.Type);
-			Assert.IsTrue (n.IsLifted);
-			Assert.IsTrue (n.IsLiftedToNull);
-			Assert.IsNull (n.Method);
-		}
+        [Test]
+        public void NotNullableInt32()
+        {
+            var n = Expression.Not(Expression.Parameter(typeof(int?), ""));
+            Assert.AreEqual(typeof(int?), n.Type);
+            Assert.IsTrue(n.IsLifted);
+            Assert.IsTrue(n.IsLiftedToNull);
+            Assert.IsNull(n.Method);
+        }
 
-		[Test]
-		public void NotNullableBool ()
-		{
-			var n = Expression.Not (Expression.Parameter (typeof (bool?), ""));
-			Assert.AreEqual (typeof (bool?), n.Type);
-			Assert.IsTrue (n.IsLifted);
-			Assert.IsTrue (n.IsLiftedToNull);
-			Assert.IsNull (n.Method);
-		}
+        [Test]
+        public void NotNullableBool()
+        {
+            var n = Expression.Not(Expression.Parameter(typeof(bool?), ""));
+            Assert.AreEqual(typeof(bool?), n.Type);
+            Assert.IsTrue(n.IsLifted);
+            Assert.IsTrue(n.IsLiftedToNull);
+            Assert.IsNull(n.Method);
+        }
 
-		[Test]
-		public void CompileNotInt32 ()
-		{
-			var p = Expression.Parameter (typeof (int), "i");
-			var not = Expression.Lambda<Func<int, int>> (Expression.Not (p), p).Compile ();
+        [Test]
+        public void CompileNotInt32()
+        {
+            var p = Expression.Parameter(typeof(int), "i");
+            var not = Expression.Lambda<Func<int, int>>(Expression.Not(p), p).Compile();
 
-			Assert.AreEqual (-2, not (1));
-			Assert.AreEqual (-4, not (3));
-			Assert.AreEqual (2, not (-3));
-		}
+            Assert.AreEqual(-2, not(1));
+            Assert.AreEqual(-4, not(3));
+            Assert.AreEqual(2, not(-3));
+        }
 
-		[Test]
-		public void CompiledNotNullableInt32 ()
-		{
-			var p = Expression.Parameter (typeof (int?), "i");
-			var not = Expression.Lambda<Func<int?, int?>> (Expression.Not (p), p).Compile ();
+        [Test]
+        public void CompiledNotNullableInt32()
+        {
+            var p = Expression.Parameter(typeof(int?), "i");
+            var not = Expression.Lambda<Func<int?, int?>>(Expression.Not(p), p).Compile();
 
-			Assert.AreEqual (null, not (null));
-			Assert.AreEqual ((int?) -4, not (3));
-			Assert.AreEqual ((int?) 2, not (-3));
-		}
+            Assert.AreEqual(null, not(null));
+            Assert.AreEqual((int?)-4, not(3));
+            Assert.AreEqual((int?)2, not(-3));
+        }
 
-		[Test]
-		public void CompileNotBool ()
-		{
-			var p = Expression.Parameter (typeof (bool), "i");
-			var not = Expression.Lambda<Func<bool, bool>> (Expression.Not (p), p).Compile ();
+        [Test]
+        public void CompileNotBool()
+        {
+            var p = Expression.Parameter(typeof(bool), "i");
+            var not = Expression.Lambda<Func<bool, bool>>(Expression.Not(p), p).Compile();
 
-			Assert.AreEqual (false, not (true));
-			Assert.AreEqual (true, not (false));
-		}
+            Assert.AreEqual(false, not(true));
+            Assert.AreEqual(true, not(false));
+        }
 
-		[Test]
-		public void CompiledNotNullableBool ()
-		{
-			var p = Expression.Parameter (typeof (bool?), "i");
-			var not = Expression.Lambda<Func<bool?, bool?>> (Expression.Not (p), p).Compile ();
+        [Test]
+        public void CompiledNotNullableBool()
+        {
+            var p = Expression.Parameter(typeof(bool?), "i");
+            var not = Expression.Lambda<Func<bool?, bool?>>(Expression.Not(p), p).Compile();
 
-			Assert.AreEqual ((bool?) null, not (null));
-			Assert.AreEqual ((bool?) false, not (true));
-			Assert.AreEqual ((bool?) true, not (false));
-		}
+            Assert.AreEqual((bool?)null, not(null));
+            Assert.AreEqual((bool?)false, not(true));
+            Assert.AreEqual((bool?)true, not(false));
+        }
 
-        private struct Slot {
-			public int Value;
+        private struct Slot
+        {
+            public int Value;
 
-			public Slot (int value)
-			{
+            public Slot(int value)
+            {
                 Value = value;
-			}
+            }
 
-			public static bool operator ! (Slot s)
-			{
-				return s.Value > 0;
-			}
-		}
+            public static bool operator !(Slot s)
+            {
+                return s.Value > 0;
+            }
+        }
 
-		[Test]
-		public void UserDefinedNotNullable ()
-		{
-			var s = Expression.Parameter (typeof (Slot?), "s");
-			var node = Expression.Not (s);
-			Assert.IsTrue (node.IsLifted);
-			Assert.IsTrue (node.IsLiftedToNull);
-			Assert.AreEqual (typeof (bool?), node.Type);
-			Assert.AreEqual (typeof (Slot).GetMethod ("op_LogicalNot"), node.Method);
+        [Test]
+        public void UserDefinedNotNullable()
+        {
+            var s = Expression.Parameter(typeof(Slot?), "s");
+            var node = Expression.Not(s);
+            Assert.IsTrue(node.IsLifted);
+            Assert.IsTrue(node.IsLiftedToNull);
+            Assert.AreEqual(typeof(bool?), node.Type);
+            Assert.AreEqual(typeof(Slot).GetMethod("op_LogicalNot"), node.Method);
 
-			var not = Expression.Lambda<Func<Slot?, bool?>> (node, s).Compile ();
+            var not = Expression.Lambda<Func<Slot?, bool?>>(node, s).Compile();
 
-			Assert.AreEqual (null, not (null));
-			Assert.AreEqual (true, not (new Slot (1)));
-			Assert.AreEqual (false, not (new Slot (0)));
-		}
-	}
+            Assert.AreEqual(null, not(null));
+            Assert.AreEqual(true, not(new Slot(1)));
+            Assert.AreEqual(false, not(new Slot(0)));
+        }
+    }
 }

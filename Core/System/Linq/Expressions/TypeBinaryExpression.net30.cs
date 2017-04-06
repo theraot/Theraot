@@ -10,9 +10,9 @@ using Theraot.Core;
 namespace System.Linq.Expressions
 {
     /// <summary>
-    /// Represents an operation between an expression and a type. 
+    /// Represents an operation between an expression and a type.
     /// </summary>
-    [DebuggerTypeProxy(typeof(Expression.TypeBinaryExpressionProxy))]
+    [DebuggerTypeProxy(typeof(TypeBinaryExpressionProxy))]
     public sealed class TypeBinaryExpression : Expression
     {
         private readonly Expression _expression;
@@ -32,7 +32,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type
         {
-            get { return typeof(bool); }
+            get
+            {
+                return typeof(bool);
+            }
         }
 
         /// <summary>
@@ -42,7 +45,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get { return _nodeKind; }
+            get
+            {
+                return _nodeKind;
+            }
         }
 
         /// <summary>
@@ -50,7 +56,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Expression
         {
-            get { return _expression; }
+            get
+            {
+                return _expression;
+            }
         }
 
         /// <summary>
@@ -58,7 +67,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public Type TypeOperand
         {
-            get { return _typeOperand; }
+            get
+            {
+                return _typeOperand;
+            }
         }
 
         #region Reduce TypeEqual
@@ -71,7 +83,7 @@ namespace System.Linq.Expressions
             // determine the result now
             if (cType.IsValueType && !cType.IsNullableType())
             {
-                return Expression.Block(Expression, Expression.Constant(cType == _typeOperand.GetNonNullableType()));
+                return Block(Expression, Constant(cType == _typeOperand.GetNonNullableType()));
             }
 
             // Can check the value right now for constants.
@@ -86,11 +98,11 @@ namespace System.Linq.Expressions
             {
                 if (cType.IsNullableType())
                 {
-                    return Expression.NotEqual(Expression, Expression.Constant(null, Expression.Type));
+                    return NotEqual(Expression, Constant(null, Expression.Type));
                 }
                 else
                 {
-                    return Expression.ReferenceNotEqual(Expression, Expression.Constant(null, Expression.Type));
+                    return ReferenceNotEqual(Expression, Constant(null, Expression.Type));
                 }
             }
 
@@ -102,18 +114,18 @@ namespace System.Linq.Expressions
             }
 
             // Create a temp so we only evaluate the left side once
-            parameter = Expression.Parameter(typeof(object));
+            parameter = Parameter(typeof(object));
 
             // Convert to object if necessary
             var expression = Expression;
             if (!TypeHelper.AreReferenceAssignable(typeof(object), expression.Type))
             {
-                expression = Expression.Convert(expression, typeof(object));
+                expression = Convert(expression, typeof(object));
             }
 
-            return Expression.Block(
+            return Block(
                 new[] { parameter },
-                Expression.Assign(parameter, expression),
+                Assign(parameter, expression),
                 ByValParameterTypeEqual(parameter)
             );
         }
@@ -121,7 +133,7 @@ namespace System.Linq.Expressions
         // Helper that is used when re-eval of LHS is safe.
         private Expression ByValParameterTypeEqual(ParameterExpression value)
         {
-            Expression getType = Expression.Call(value, typeof(object).GetMethod("GetType"));
+            Expression getType = Call(value, typeof(object).GetMethod("GetType"));
 
             // In remoting scenarios, obj.GetType() can return an interface.
             // But JIT32's optimized "obj.GetType() == typeof(ISomething)" codegen,
@@ -130,18 +142,18 @@ namespace System.Linq.Expressions
             // if TypeOperand is an interface.
             if (_typeOperand.IsInterface)
             {
-                var temp = Expression.Parameter(typeof(Type));
-                getType = Expression.Block(new[] { temp }, Expression.Assign(temp, getType), temp);
+                var temp = Parameter(typeof(Type));
+                getType = Block(new[] { temp }, Assign(temp, getType), temp);
             }
 
             // We use reference equality when comparing to null for correctness
             // (don't invoke a user defined operator), and reference equality
             // on types for performance (so the JIT can optimize the IL).
-            return Expression.AndAlso(
-                Expression.ReferenceNotEqual(value, Expression.Constant(null)),
-                Expression.ReferenceEqual(
+            return AndAlso(
+                ReferenceNotEqual(value, Constant(null)),
+                ReferenceEqual(
                     getType,
-                    Expression.Constant(_typeOperand.GetNonNullableType(), typeof(Type))
+                    Constant(_typeOperand.GetNonNullableType(), typeof(Type))
                 )
             );
         }
@@ -152,15 +164,15 @@ namespace System.Linq.Expressions
             //TypeEqual(null, T) always returns false.
             if (ce.Value == null)
             {
-                return Expression.Constant(false);
+                return Constant(false);
             }
             else
             {
-                return Expression.Constant(_typeOperand.GetNonNullableType() == ce.Value.GetType());
+                return Constant(_typeOperand.GetNonNullableType() == ce.Value.GetType());
             }
         }
 
-        #endregion
+        #endregion Reduce TypeEqual
 
         /// <summary>
         /// Dispatches to the specific visit method for this node type.
@@ -185,9 +197,9 @@ namespace System.Linq.Expressions
             }
             if (NodeType == ExpressionType.TypeIs)
             {
-                return Expression.TypeIs(expression, TypeOperand);
+                return TypeIs(expression, TypeOperand);
             }
-            return Expression.TypeEqual(expression, TypeOperand);
+            return TypeEqual(expression, TypeOperand);
         }
     }
 
@@ -203,7 +215,8 @@ namespace System.Linq.Expressions
         {
             RequiresCanRead(expression, "expression");
             ContractUtils.RequiresNotNull(type, "type");
-            if (type.IsByRef) throw Error.TypeMustNotBeByRef();
+            if (type.IsByRef)
+                throw Error.TypeMustNotBeByRef();
 
             return new TypeBinaryExpression(expression, type, ExpressionType.TypeIs);
         }
@@ -218,7 +231,8 @@ namespace System.Linq.Expressions
         {
             RequiresCanRead(expression, "expression");
             ContractUtils.RequiresNotNull(type, "type");
-            if (type.IsByRef) throw Error.TypeMustNotBeByRef();
+            if (type.IsByRef)
+                throw Error.TypeMustNotBeByRef();
 
             return new TypeBinaryExpression(expression, type, ExpressionType.TypeEqual);
         }

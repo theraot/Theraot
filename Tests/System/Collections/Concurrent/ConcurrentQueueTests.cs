@@ -24,12 +24,11 @@
 //
 //
 
-using System;
-using System.Threading;
-using System.Collections.Concurrent;
-
 using NUnit.Framework;
+using System;
+using System.Collections.Concurrent;
 using System.Text;
+using System.Threading;
 
 namespace MonoTests.System.Collections.Concurrent
 {

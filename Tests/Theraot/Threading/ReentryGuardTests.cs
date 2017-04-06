@@ -8,7 +8,6 @@ namespace Tests.Theraot.Threading
     [TestFixture]
     internal class ReentryGuardTests
     {
-
         [Test]
         public void SingleThreadReentry()
         {

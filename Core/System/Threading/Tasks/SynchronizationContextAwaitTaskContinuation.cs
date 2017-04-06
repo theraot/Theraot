@@ -10,9 +10,11 @@ namespace System.Threading.Tasks
     {
         /// <summary>SendOrPostCallback delegate to invoke the action.</summary>
         private static readonly SendOrPostCallback _postCallback = state => ((Action)state)(); // can't use InvokeAction as it's SecurityCritical
+
         /// <summary>Cached delegate for PostAction</summary>
         [SecurityCritical]
         private static ContextCallback _postActionCallback;
+
         /// <summary>The context with which to run the action.</summary>
         private readonly SynchronizationContext _syncContext;
 
@@ -55,7 +57,7 @@ namespace System.Threading.Tasks
 
         /// <summary>Gets a cached delegate for the PostAction method.</summary>
         /// <returns>
-        /// A delegate for PostAction, which expects a SynchronizationContextAwaitTaskContinuation 
+        /// A delegate for PostAction, which expects a SynchronizationContextAwaitTaskContinuation
         /// to be passed as state.
         /// </returns>
         [SecurityCritical]

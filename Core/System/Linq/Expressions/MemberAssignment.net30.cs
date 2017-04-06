@@ -14,6 +14,7 @@ namespace System.Linq.Expressions
     public sealed class MemberAssignment : MemberBinding
     {
         private Expression _expression;
+
         internal MemberAssignment(MemberInfo member, Expression expression)
 #pragma warning disable 618
             : base(MemberBindingType.Assignment, member)
@@ -21,12 +22,16 @@ namespace System.Linq.Expressions
 #pragma warning restore 618
             _expression = expression;
         }
+
         /// <summary>
         /// Gets the <see cref="Expression"/> which represents the object whose member is being assigned to.
         /// </summary>
         public Expression Expression
         {
-            get { return _expression; }
+            get
+            {
+                return _expression;
+            }
         }
 
         /// <summary>
@@ -80,7 +85,6 @@ namespace System.Linq.Expressions
             ValidateMethodInfo(propertyAccessor);
             return Bind(GetProperty(propertyAccessor), expression);
         }
-
 
         private static void ValidateSettableFieldOrPropertyMember(MemberInfo member, out Type memberType)
         {

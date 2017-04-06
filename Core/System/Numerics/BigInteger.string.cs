@@ -130,7 +130,7 @@ namespace System.Numerics
                 }
                 // 'c', 'C', 'e', 'E', 'f', 'F', 'n', 'N', 'p', 'P', custom
                 var precision = -1;
-                var groupingSizes = new[] {3};
+                var groupingSizes = new[] { 3 };
                 var groupingSeparator = info.NumberGroupSeparator;
                 var decimalSeparator = info.NumberDecimalSeparator;
                 var groups = false;
@@ -180,7 +180,7 @@ namespace System.Numerics
                     if (groupingSizes[groupingSizes.Length - 1] != 0)
                     {
                         var totalDigits = builder.Length;
-                        extra += (int) Math.Ceiling(totalDigits*1.0/groupingSizes[groupingSizes.Length - 1]);
+                        extra += (int)Math.Ceiling(totalDigits * 1.0 / groupingSizes[groupingSizes.Length - 1]);
                     }
                     var length = extra + builder.Length;
                     if (type == 2)
@@ -189,7 +189,7 @@ namespace System.Numerics
                         append = StringWithGroups(length, new ExtendedEnumerable<char>(new[] { '0', '0' }, builder), groupingSizes, groupingSeparator);
                     }
                     else
-                    {   
+                    {
                         append = StringWithGroups(extra + builder.Length, builder, groupingSizes, groupingSeparator);
                     }
                 }
@@ -367,7 +367,7 @@ namespace System.Numerics
                 }
                 // [digits,]digits[E[sign]exponential_digits][ws]
                 var failure = true;
-                var digits = new[] {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+                var digits = new[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
                 var decimalFound = false;
                 while (true)
                 {
@@ -965,6 +965,7 @@ namespace System.Numerics
                         }
                     }
                     break;
+
                 default:
                     if (value.InternalSign < 0)
                     {

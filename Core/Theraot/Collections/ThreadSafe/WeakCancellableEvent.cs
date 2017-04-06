@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace Theraot.Collections.ThreadSafe
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public class WeakCancellableEvent<TCancelEventArgs> : WeakEvent<TCancelEventArgs>
         where TCancelEventArgs : CancelEventArgs
     {

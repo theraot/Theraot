@@ -11,17 +11,17 @@ namespace System.Threading.Tasks
         private int _waitNotificationEnabled;
 
         /// <summary>
-        /// Determines whether we should inform the debugger that we're ending a join with a task.  
+        /// Determines whether we should inform the debugger that we're ending a join with a task.
         /// This should only be called if the debugger notification bit is set, as it is has some cost,
-        /// namely it is a virtual call (however calling it if the bit is not set is not functionally 
-        /// harmful).  Derived implementations may choose to only conditionally call down to this base 
+        /// namely it is a virtual call (however calling it if the bit is not set is not functionally
+        /// harmful).  Derived implementations may choose to only conditionally call down to this base
         /// implementation.
         /// </summary>
         internal virtual bool ShouldNotifyDebuggerOfWaitCompletion // ideally would be familyAndAssembly, but that can't be done in C#
         {
             get
             {
-                // It's theoretically possible but extremely rare that this assert could fire because the 
+                // It's theoretically possible but extremely rare that this assert could fire because the
                 // bit was unset between the time that it was checked and this method was called.
                 // It's so remote a chance that it's worth having the assert to protect against misuse.
                 var isWaitNotificationEnabled = IsWaitNotificationEnabled;
@@ -51,13 +51,13 @@ namespace System.Threading.Tasks
         [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
         private void NotifyDebuggerOfWaitCompletion()
         {
-            // It's theoretically possible but extremely rare that this assert could fire because the 
+            // It's theoretically possible but extremely rare that this assert could fire because the
             // bit was unset between the time that it was checked and this method was called.
             // It's so remote a chance that it's worth having the assert to protect against misuse.
             Contract.Assert(IsWaitNotificationEnabled, "Should only be called if the wait completion bit is set.");
 
             // Now that we're notifying the debugger, clear the bit.  The debugger should do this anyway,
-            // but this adds a bit of protection in case it fails to, and given that the debugger is involved, 
+            // but this adds a bit of protection in case it fails to, and given that the debugger is involved,
             // the overhead here for the interlocked is negligable.  We do still rely on the debugger
             // to clear bits, as this doesn't recursively clear bits in the case of, for example, WhenAny.
             SetNotificationForWaitCompletion(/*enabled:*/ false);
@@ -155,7 +155,6 @@ namespace System.Threading.Tasks
             }
 
             return WaitAll(tasks, (int)totalMilliseconds);
-
         }
 
         /// <summary>
@@ -352,11 +351,11 @@ namespace System.Threading.Tasks
                     }
                 }
                 // We need to prevent the tasks array from being GC'ed until we come out of the wait.
-                // This is necessary so that the Parallel Debugger can traverse it during the long wait and 
+                // This is necessary so that the Parallel Debugger can traverse it during the long wait and
                 // deduce waiter/waitee relationships
                 GC.KeepAlive(tasks);
             }
-            // Now that we're done and about to exit, if the wait completed and if we have 
+            // Now that we're done and about to exit, if the wait completed and if we have
             // any tasks with a notification bit set, signal the debugger if any requires it.
             if (allCompleted && notificationTasks != null)
             {
@@ -375,8 +374,8 @@ namespace System.Threading.Tasks
             // If one or more threw exceptions, aggregate and throw them.
             if (allCompleted && (exceptionSeen || cancellationSeen))
             {
-                // If the WaitAll was canceled and tasks were canceled but not faulted, 
-                // prioritize throwing an OCE for canceling the WaitAll over throwing an 
+                // If the WaitAll was canceled and tasks were canceled but not faulted,
+                // prioritize throwing an OCE for canceling the WaitAll over throwing an
                 // AggregateException for all of the canceled Tasks.  This helps
                 // to bring determinism to an otherwise non-determistic case of using
                 // the same token to cancel both the WaitAll and the Tasks.
@@ -402,7 +401,8 @@ namespace System.Threading.Tasks
         /// <param name="initSize">The size to which to initialize the list if the list is null.</param>
         private static void AddToList<T>(T item, ref List<T> list, int initSize)
         {
-            if (list == null) list = new List<T>(initSize);
+            if (list == null)
+                list = new List<T>(initSize);
             list.Add(item);
         }
 
@@ -502,7 +502,6 @@ namespace System.Threading.Tasks
                 exceptions.AddRange(ex.InnerExceptions);
             }
         }
-
 
         /// <summary>
         /// Waits for any of the provided <see cref="Task"/> objects to complete execution.
@@ -684,7 +683,7 @@ namespace System.Threading.Tasks
                 PrivateWaitAny(tasks, millisecondsTimeout, cancellationToken, ref signaledTaskIndex);
             }
             // We need to prevent the tasks array from being GC'ed until we come out of the wait.
-            // This is necessary so that the Parallel Debugger can traverse it during the long wait 
+            // This is necessary so that the Parallel Debugger can traverse it during the long wait
             // and deduce waiter/waitee relationships
             GC.KeepAlive(tasks);
             // Return the index

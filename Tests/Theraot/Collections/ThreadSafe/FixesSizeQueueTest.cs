@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using System.Linq;
 using Theraot.Collections.ThreadSafe;
 
 namespace Tests.Theraot.Collections.ThreadSafe

@@ -26,13 +26,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.Concurrent;
-
-using System.Threading;
-using System.Linq;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
+using System.Collections.Concurrent;
+using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace MonoTests.System.Collections.Concurrent
 {

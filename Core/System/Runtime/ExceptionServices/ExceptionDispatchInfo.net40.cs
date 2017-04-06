@@ -51,7 +51,7 @@ namespace System.Runtime.ExceptionServices
         {
             get
             {
-                return _exception;   
+                return _exception;
             }
         }
 

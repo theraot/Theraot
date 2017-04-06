@@ -26,89 +26,89 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
-using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-	public class ExpressionTest_UnaryPlus
-	{
-		[Test]
-		[ExpectedException (typeof (ArgumentNullException))]
-		public void Arg1Null ()
-		{
-			Expression.UnaryPlus (null);
-		}
+    public class ExpressionTest_UnaryPlus
+    {
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Arg1Null()
+        {
+            Expression.UnaryPlus(null);
+        }
 
-		[Test]
-		[ExpectedException (typeof (ArgumentException))]
-		public void MethodArgNotStatic ()
-		{
-			Expression.UnaryPlus (Expression.Constant (new object ()), typeof (OpClass).GetMethod ("WrongUnaryNotStatic"));
-		}
+        [Test]
+        [ExpectedException(typeof(ArgumentException))]
+        public void MethodArgNotStatic()
+        {
+            Expression.UnaryPlus(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryNotStatic"));
+        }
 
-		[Test]
-		[ExpectedException (typeof (ArgumentException))]
-		public void MethodArgParameterCount ()
-		{
-			Expression.UnaryPlus (Expression.Constant (new object ()), typeof (OpClass).GetMethod ("WrongUnaryParameterCount"));
-		}
+        [Test]
+        [ExpectedException(typeof(ArgumentException))]
+        public void MethodArgParameterCount()
+        {
+            Expression.UnaryPlus(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryParameterCount"));
+        }
 
-		[Test]
-		[ExpectedException (typeof (ArgumentException))]
-		public void MethodArgReturnsVoid ()
-		{
-			Expression.UnaryPlus (Expression.Constant (new object ()), typeof (OpClass).GetMethod ("WrongUnaryReturnVoid"));
-		}
+        [Test]
+        [ExpectedException(typeof(ArgumentException))]
+        public void MethodArgReturnsVoid()
+        {
+            Expression.UnaryPlus(Expression.Constant(new object()), typeof(OpClass).GetMethod("WrongUnaryReturnVoid"));
+        }
 
-		[Test]
-		[ExpectedException (typeof (InvalidOperationException))]
-		public void PlusBool ()
-		{
-			Expression.UnaryPlus (true.ToConstant ());
-		}
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void PlusBool()
+        {
+            Expression.UnaryPlus(true.ToConstant());
+        }
 
-		[Test]
-		public void Number ()
-		{
-			var up = Expression.UnaryPlus (1.ToConstant ());
-			Assert.AreEqual ("+1", up.ToString ());
-		}
+        [Test]
+        public void Number()
+        {
+            var up = Expression.UnaryPlus(1.ToConstant());
+            Assert.AreEqual("+1", up.ToString());
+        }
 
-		[Test]
-		public void UserDefinedClass ()
-		{
-			var mi = typeof (OpClass).GetMethod ("op_UnaryPlus");
+        [Test]
+        public void UserDefinedClass()
+        {
+            var mi = typeof(OpClass).GetMethod("op_UnaryPlus");
 
-			var expr = Expression.UnaryPlus (Expression.Constant (new OpClass ()));
-			Assert.AreEqual (ExpressionType.UnaryPlus, expr.NodeType);
-			Assert.AreEqual (typeof (OpClass), expr.Type);
-			Assert.AreEqual (mi, expr.Method);
-			Assert.AreEqual ("op_UnaryPlus", expr.Method.Name);
-			Assert.AreEqual ("+value(MonoTests.System.Linq.Expressions.OpClass)",	expr.ToString ());
-		}
+            var expr = Expression.UnaryPlus(Expression.Constant(new OpClass()));
+            Assert.AreEqual(ExpressionType.UnaryPlus, expr.NodeType);
+            Assert.AreEqual(typeof(OpClass), expr.Type);
+            Assert.AreEqual(mi, expr.Method);
+            Assert.AreEqual("op_UnaryPlus", expr.Method.Name);
+            Assert.AreEqual("+value(MonoTests.System.Linq.Expressions.OpClass)", expr.ToString());
+        }
 
-		[Test]
-		public void PlusNullableInt32 ()
-		{
-			var n = Expression.UnaryPlus (Expression.Parameter (typeof (int?), ""));
-			Assert.AreEqual (typeof (int?), n.Type);
-			Assert.IsTrue (n.IsLifted);
-			Assert.IsTrue (n.IsLiftedToNull);
-			Assert.IsNull (n.Method);
-		}
+        [Test]
+        public void PlusNullableInt32()
+        {
+            var n = Expression.UnaryPlus(Expression.Parameter(typeof(int?), ""));
+            Assert.AreEqual(typeof(int?), n.Type);
+            Assert.IsTrue(n.IsLifted);
+            Assert.IsTrue(n.IsLiftedToNull);
+            Assert.IsNull(n.Method);
+        }
 
-		[Test]
-		public void CompilePlusInt32 ()
-		{
-			var p = Expression.Parameter (typeof (int), "i");
-			var plus = Expression.Lambda<Func<int, int>> (Expression.UnaryPlus (p), p).Compile ();
+        [Test]
+        public void CompilePlusInt32()
+        {
+            var p = Expression.Parameter(typeof(int), "i");
+            var plus = Expression.Lambda<Func<int, int>>(Expression.UnaryPlus(p), p).Compile();
 
-			Assert.AreEqual (-2, plus (-2));
-			Assert.AreEqual (0, plus (0));
-			Assert.AreEqual (3, plus (3));
-		}
-	}
+            Assert.AreEqual(-2, plus(-2));
+            Assert.AreEqual(0, plus(0));
+            Assert.AreEqual(3, plus(3));
+        }
+    }
 }

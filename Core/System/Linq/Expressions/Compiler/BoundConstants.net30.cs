@@ -5,9 +5,9 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Dynamic.Utils;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
-using System.Dynamic.Utils;
 using Theraot.Core;
 
 namespace System.Linq.Expressions.Compiler
@@ -40,12 +40,13 @@ namespace System.Linq.Expressions.Compiler
             {
                 return RuntimeHelpers.GetHashCode(Value) ^ Type.GetHashCode();
             }
+
             public bool Equals(TypedConstant other)
             {
                 // Note: Type.Equals compares the underlaying CLR type.
                 return ReferenceEquals(Value, other.Value) && Type.Equals(other.Type);
             }
-            [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2231:OverloadOperatorEqualsOnOverridingValueTypeEquals")]
+
             public override bool Equals(object obj)
             {
                 return (obj is TypedConstant) && Equals((TypedConstant)obj);
@@ -74,7 +75,10 @@ namespace System.Linq.Expressions.Compiler
 
         internal int Count
         {
-            get { return _values.Count; }
+            get
+            {
+                return _values.Count;
+            }
         }
 
         internal object[] ToArray()

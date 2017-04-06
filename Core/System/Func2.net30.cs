@@ -8,9 +8,13 @@ namespace System
     /// <param name="arg">The parameter of the method that this delegate encapsulates.</param>
     /// <returns>The return value of the method that this delegate encapsulates.</returns>
 #if NETCF
+
     public delegate TResult Func<T, TResult>(T arg);
+
 #else
+
     public delegate TResult Func<in T, out TResult>(T arg);
+
 #endif
 }
 

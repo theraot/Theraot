@@ -1639,7 +1639,7 @@ namespace MonoTests.System.Threading.Tasks
                     handler(task, taskWasPreviouslyQueued);
                 }
 
-                return base.TryExecuteTask(task);
+                return TryExecuteTask(task);
             }
         }
 
@@ -1652,7 +1652,7 @@ namespace MonoTests.System.Threading.Tasks
 
             protected override void QueueTask(Task task)
             {
-                if (!base.TryExecuteTask(task))
+                if (!TryExecuteTask(task))
                 {
                     throw new ApplicationException();
                 }
@@ -1678,7 +1678,7 @@ namespace MonoTests.System.Threading.Tasks
 
             protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
             {
-                return base.TryExecuteTask(task);
+                return TryExecuteTask(task);
             }
         }
 

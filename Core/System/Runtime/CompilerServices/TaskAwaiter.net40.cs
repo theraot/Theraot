@@ -49,7 +49,10 @@ namespace System.Runtime.CompilerServices
         /// <exception cref="NullReferenceException">The awaiter was not properly initialized.</exception>
         public bool IsCompleted
         {
-            get { return m_task.IsCompleted; }
+            get
+            {
+                return m_task.IsCompleted;
+            }
         }
 
         /// <summary>
@@ -60,7 +63,7 @@ namespace System.Runtime.CompilerServices
             get
             {
                 var current = SynchronizationContext.Current;
-                if (current != null && current.GetType() != typeof (SynchronizationContext))
+                if (current != null && current.GetType() != typeof(SynchronizationContext))
                     return false;
                 return TaskScheduler.Current == TaskScheduler.Default;
             }
@@ -190,13 +193,13 @@ namespace System.Runtime.CompilerServices
             if (continuation == null)
                 throw new ArgumentNullException("continuation");
             var syncContext = continueOnCapturedContext ? SynchronizationContext.Current : null;
-            if (syncContext != null && syncContext.GetType() != typeof (SynchronizationContext))
+            if (syncContext != null && syncContext.GetType() != typeof(SynchronizationContext))
             {
                 task.ContinueWith(result =>
                 {
                     try
                     {
-                        syncContext.Post(state => ((Action) state)(), continuation);
+                        syncContext.Post(state => ((Action)state)(), continuation);
                     }
                     catch (Exception ex)
                     {
@@ -209,7 +212,7 @@ namespace System.Runtime.CompilerServices
                 var scheduler = continueOnCapturedContext ? TaskScheduler.Current : TaskScheduler.Default;
                 if (task.IsCompleted)
                 {
-                    Task.Factory.StartNew(state => ((Action) state)(), continuation, CancellationToken.None,
+                    Task.Factory.StartNew(state => ((Action)state)(), continuation, CancellationToken.None,
                                           TaskCreationOptions.None, scheduler);
                 }
                 else if (scheduler != TaskScheduler.Default)
@@ -227,7 +230,7 @@ namespace System.Runtime.CompilerServices
                         }
                         else
                         {
-                            Task.Factory.StartNew(state => RunNoException((Action) state), continuation,
+                            Task.Factory.StartNew(state => RunNoException((Action)state), continuation,
                                                   CancellationToken.None, TaskCreationOptions.None,
                                                   TaskScheduler.Default);
                         }
@@ -279,7 +282,7 @@ namespace System.Runtime.CompilerServices
         {
             try
             {
-                return typeof (Exception).GetMethod("PrepForRemoting", BindingFlags.Instance | BindingFlags.NonPublic);
+                return typeof(Exception).GetMethod("PrepForRemoting", BindingFlags.Instance | BindingFlags.NonPublic);
             }
             catch
             {
@@ -310,7 +313,10 @@ namespace System.Runtime.CompilerServices
         /// <exception cref="NullReferenceException">The awaiter was not properly initialized.</exception>
         public bool IsCompleted
         {
-            get { return m_task.IsCompleted; }
+            get
+            {
+                return m_task.IsCompleted;
+            }
         }
 
         /// <summary>

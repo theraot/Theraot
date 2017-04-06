@@ -156,7 +156,7 @@ namespace Theraot.Collections.ThreadSafe
         private class Node
         {
             internal readonly FixedSizeQueue<T> Queue;
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Not public code - optimization")]
+
             internal Node Next;
 
             public Node()

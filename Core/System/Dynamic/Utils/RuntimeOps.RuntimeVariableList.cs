@@ -42,7 +42,10 @@ namespace System.Runtime.CompilerServices
         {
             int IRuntimeVariables.Count
             {
-                get { return 0; }
+                get
+                {
+                    return 0;
+                }
             }
 
             object IRuntimeVariables.this[int index]
@@ -87,7 +90,10 @@ namespace System.Runtime.CompilerServices
 
             public int Count
             {
-                get { return _indexes.Length; }
+                get
+                {
+                    return _indexes.Length;
+                }
             }
 
             public object this[int index]

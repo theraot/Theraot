@@ -8,11 +8,11 @@
 // Copyright (C) 2010 Novell, Inc (http://www.novell.com)
 //
 
-using System;
-using System.Numerics;
-using System.Globalization;
-using System.Threading;
 using NUnit.Framework;
+using System;
+using System.Globalization;
+using System.Numerics;
+using System.Threading;
 
 namespace MonoTests.System.Numerics
 {

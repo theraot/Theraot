@@ -13,11 +13,12 @@ using Theraot.Collections;
 namespace System.Linq.Expressions
 {
     /// <summary>
-    /// Represents initializing the elements of a collection member of a newly created object. 
+    /// Represents initializing the elements of a collection member of a newly created object.
     /// </summary>
     public sealed class MemberListBinding : MemberBinding
     {
         private ReadOnlyCollection<ElementInit> _initializers;
+
         internal MemberListBinding(MemberInfo member, ReadOnlyCollection<ElementInit> initializers)
 #pragma warning disable 618
             : base(MemberBindingType.ListBinding, member)
@@ -31,7 +32,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<ElementInit> Initializers
         {
-            get { return _initializers; }
+            get
+            {
+                return _initializers;
+            }
         }
 
         /// <summary>
@@ -94,7 +98,7 @@ namespace System.Linq.Expressions
         ///<exception cref="T:System.ArgumentNullException">
         ///<paramref name="propertyAccessor" /> is null. -or-One or more elements of <paramref name="initializers" /> is null.</exception>
         ///<exception cref="T:System.ArgumentException">
-        ///<paramref name="propertyAccessor" /> does not represent a property accessor method.-or-The <see cref="P:System.Reflection.PropertyInfo.PropertyType" /> of the property that the method represented by <paramref name="propertyAccessor" /> accesses does not implement <see cref="T:System.Collections.IEnumerable" />.</exception>  
+        ///<paramref name="propertyAccessor" /> does not represent a property accessor method.-or-The <see cref="P:System.Reflection.PropertyInfo.PropertyType" /> of the property that the method represented by <paramref name="propertyAccessor" /> accesses does not implement <see cref="T:System.Collections.IEnumerable" />.</exception>
         public static MemberListBinding ListBind(MethodInfo propertyAccessor, params ElementInit[] initializers)
         {
             ContractUtils.RequiresNotNull(propertyAccessor, "propertyAccessor");
@@ -109,7 +113,7 @@ namespace System.Linq.Expressions
         ///<exception cref="T:System.ArgumentNullException">
         ///<paramref name="propertyAccessor" /> is null. -or-One or more elements of <paramref name="initializers" /> are null.</exception>
         ///<exception cref="T:System.ArgumentException">
-        ///<paramref name="propertyAccessor" /> does not represent a property accessor method.-or-The <see cref="P:System.Reflection.PropertyInfo.PropertyType" /> of the property that the method represented by <paramref name="propertyAccessor" /> accesses does not implement <see cref="T:System.Collections.IEnumerable" />.</exception>        
+        ///<paramref name="propertyAccessor" /> does not represent a property accessor method.-or-The <see cref="P:System.Reflection.PropertyInfo.PropertyType" /> of the property that the method represented by <paramref name="propertyAccessor" /> accesses does not implement <see cref="T:System.Collections.IEnumerable" />.</exception>
         public static MemberListBinding ListBind(MethodInfo propertyAccessor, IEnumerable<ElementInit> initializers)
         {
             ContractUtils.RequiresNotNull(propertyAccessor, "propertyAccessor");

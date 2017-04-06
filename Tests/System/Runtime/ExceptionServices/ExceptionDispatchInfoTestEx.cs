@@ -1,7 +1,7 @@
 ﻿#if FAT
 
-using System;
 using NUnit.Framework;
+using System;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
 

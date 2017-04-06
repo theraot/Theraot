@@ -128,7 +128,8 @@ namespace Tests.Theraot.Threading.Needles
             var threadDone = 0;
             var needle = new LazyNeedle<int>(() =>
             {
-                Interlocked.Increment(ref control); return 5;
+                Interlocked.Increment(ref control);
+                return 5;
             });
             var manual = new ManualResetEvent(false);
             var threadA = new Thread(() =>
@@ -249,7 +250,8 @@ namespace Tests.Theraot.Threading.Needles
             var readed = 0;
             var needle = new LazyNeedle<int>(() =>
             {
-                Interlocked.Increment(ref control); return 5;
+                Interlocked.Increment(ref control);
+                return 5;
             });
             var threadA = new Thread(() =>
             {

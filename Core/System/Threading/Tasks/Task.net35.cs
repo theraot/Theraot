@@ -202,7 +202,6 @@ namespace System.Threading.Tasks
             }
         }
 
-        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Microsoft's Design")]
         WaitHandle IAsyncResult.AsyncWaitHandle
         {
             get
@@ -215,7 +214,6 @@ namespace System.Threading.Tasks
             }
         }
 
-        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
         bool IAsyncResult.CompletedSynchronously
         {
             get
@@ -268,9 +266,15 @@ namespace System.Threading.Tasks
             }
         }
 
-        internal CancellationToken CancellationToken { get; set; }
+        internal CancellationToken CancellationToken
+        {
+            get; set;
+        }
 
-        internal ExecutionContext CapturedContext { get; set; }
+        internal ExecutionContext CapturedContext
+        {
+            get; set;
+        }
 
         private bool IsContinuationTask
         {
@@ -640,7 +644,6 @@ namespace System.Threading.Tasks
             return InternalStart(scheduler, inline, true);
         }
 
-        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "Microsoft's Design")]
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)

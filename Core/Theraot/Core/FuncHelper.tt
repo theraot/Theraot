@@ -80,7 +80,7 @@ namespace Theraot.Core
             }
 
 <# if (indice != 0) {#>
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
 <#
     }#>
             private static TReturn DefaultFunc(<# if (indice != 0) { if (indice == 1) #>T obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#> arg<#=subindice#><#}}#>)
@@ -112,7 +112,7 @@ namespace Theraot.Core
             }
 
 <# if (indice != 0) {#>
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
 <#
     }#>
             private static bool FallacyFunc(<# if (indice != 0) { if (indice == 1) #>T obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#> arg<#=subindice#><#}}#>)
@@ -144,7 +144,7 @@ namespace Theraot.Core
             }
 
 <# if (indice != 0) {#>
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
 <#
     }#>
             private static bool TautologyFunc(<# if (indice != 0) { if (indice == 1) #>T obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#> arg<#=subindice#><#}}#>)

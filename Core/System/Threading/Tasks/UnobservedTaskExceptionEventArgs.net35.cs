@@ -4,7 +4,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-
 namespace System.Threading.Tasks
 {
     /// <summary>
@@ -27,23 +26,41 @@ namespace System.Threading.Tasks
         /// with the unobserved exception.
         /// </summary>
         /// <param name="exception">The Exception that has gone unobserved.</param>
-        public UnobservedTaskExceptionEventArgs(AggregateException exception) { m_exception = exception; }
+        public UnobservedTaskExceptionEventArgs(AggregateException exception)
+        {
+            m_exception = exception;
+        }
 
         /// <summary>
         /// Marks the <see cref="Exception"/> as "observed," thus preventing it
         /// from triggering exception escalation policy which, by default, terminates the process.
         /// </summary>
-        public void SetObserved() { m_observed = true; }
+        public void SetObserved()
+        {
+            m_observed = true;
+        }
 
         /// <summary>
         /// Gets whether this exception has been marked as "observed."
         /// </summary>
-        public bool Observed { get { return m_observed; } }
+        public bool Observed
+        {
+            get
+            {
+                return m_observed;
+            }
+        }
 
         /// <summary>
         /// The Exception that went unobserved.
         /// </summary>
-        public AggregateException Exception { get { return m_exception; } }
+        public AggregateException Exception
+        {
+            get
+            {
+                return m_exception;
+            }
+        }
     }
 }
 

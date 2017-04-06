@@ -26,20 +26,17 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-using NUnit.Framework;
-
 namespace MonoTests.System.Collections.Generic
 {
-
     [TestFixture]
     public class HashSetTest
     {
-
         [Test]
         public void TestAdd()
         {
@@ -499,29 +496,59 @@ namespace MonoTests.System.Collections.Generic
         {
 #pragma warning disable 0168
             var e1 = new HashSet<int>.Enumerator();
-            Assert.IsFalse(Throws(delegate { var x = e1.Current; }));
+            Assert.IsFalse(Throws(delegate
+            {
+                var x = e1.Current;
+            }));
 
             var d = new HashSet<int>();
             var e2 = d.GetEnumerator();
-            Assert.IsFalse(Throws(delegate { var x = e2.Current; }));
+            Assert.IsFalse(Throws(delegate
+            {
+                var x = e2.Current;
+            }));
             e2.MoveNext();
-            Assert.IsFalse(Throws(delegate { var x = e2.Current; }));
+            Assert.IsFalse(Throws(delegate
+            {
+                var x = e2.Current;
+            }));
             e2.Dispose();
-            Assert.IsFalse(Throws(delegate { var x = e2.Current; }));
+            Assert.IsFalse(Throws(delegate
+            {
+                var x = e2.Current;
+            }));
 
             var e3 = ((IEnumerable<int>)d).GetEnumerator();
-            Assert.IsFalse(Throws(delegate { var x = e3.Current; }));
+            Assert.IsFalse(Throws(delegate
+            {
+                var x = e3.Current;
+            }));
             e3.MoveNext();
-            Assert.IsFalse(Throws(delegate { var x = e3.Current; }));
+            Assert.IsFalse(Throws(delegate
+            {
+                var x = e3.Current;
+            }));
             e3.Dispose();
-            Assert.IsFalse(Throws(delegate { var x = e3.Current; }));
+            Assert.IsFalse(Throws(delegate
+            {
+                var x = e3.Current;
+            }));
 
             var e4 = ((IEnumerable)d).GetEnumerator();
-            Assert.IsTrue(Throws(delegate { var x = e4.Current; }));
+            Assert.IsTrue(Throws(delegate
+            {
+                var x = e4.Current;
+            }));
             e4.MoveNext();
-            Assert.IsTrue(Throws(delegate { var x = e4.Current; }));
+            Assert.IsTrue(Throws(delegate
+            {
+                var x = e4.Current;
+            }));
             ((IDisposable)e4).Dispose();
-            Assert.IsTrue(Throws(delegate { var x = e4.Current; }));
+            Assert.IsTrue(Throws(delegate
+            {
+                var x = e4.Current;
+            }));
 #pragma warning restore 0168
         }
 

@@ -12,23 +12,20 @@ namespace System.Linq.Expressions.Interpreter
 {
     internal sealed class InterpretedFrame
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2104:DoNotDeclareReadOnlyMutableReferenceTypes")]
         [ThreadStatic]
         public static InterpretedFrame CurrentFrame;
 
         internal readonly Interpreter Interpreter;
         internal InterpretedFrame _parent;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
         private int[] _continuations;
+
         private int _continuationIndex;
         private int _pendingContinuation;
         private object _pendingValue;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
         public readonly object[] Data;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Security", "CA2105:ArrayFieldsShouldNotBeReadOnly")]
         public readonly IStrongBox[] Closure;
 
         public int StackIndex;
@@ -65,10 +62,13 @@ namespace System.Linq.Expressions.Interpreter
 
         public string Name
         {
-            get { return Interpreter._name; }
+            get
+            {
+                return Interpreter._name;
+            }
         }
 
-#region Data Stack Operations
+        #region Data Stack Operations
 
         public void Push(object value)
         {
@@ -127,13 +127,16 @@ namespace System.Linq.Expressions.Interpreter
             StackIndex = i + 1;
         }
 
-#endregion
+        #endregion Data Stack Operations
 
-#region Stack Trace
+        #region Stack Trace
 
         public InterpretedFrame Parent
         {
-            get { return _parent; }
+            get
+            {
+                return _parent;
+            }
         }
 
         public static bool IsInterpretedFrame(MethodBase method)
@@ -166,6 +169,7 @@ namespace System.Linq.Expressions.Interpreter
         }
 
 #if DEBUG
+
         internal string[] Trace
         {
             get
@@ -180,6 +184,7 @@ namespace System.Linq.Expressions.Interpreter
                 return trace.ToArray();
             }
         }
+
 #endif
 
         internal InterpretedFrame Enter()
@@ -194,9 +199,9 @@ namespace System.Linq.Expressions.Interpreter
             CurrentFrame = prevFrame;
         }
 
-#endregion
+        #endregion Stack Trace
 
-#region Continuations
+        #region Continuations
 
         internal bool IsJumpHappened()
         {
@@ -268,12 +273,18 @@ namespace System.Linq.Expressions.Interpreter
 
         internal static MethodInfo GotoMethod
         {
-            get { return s_goto ?? (s_goto = typeof(InterpretedFrame).GetMethod("Goto")); }
+            get
+            {
+                return s_goto ?? (s_goto = typeof(InterpretedFrame).GetMethod("Goto"));
+            }
         }
 
         internal static MethodInfo VoidGotoMethod
         {
-            get { return s_voidGoto ?? (s_voidGoto = typeof(InterpretedFrame).GetMethod("VoidGoto")); }
+            get
+            {
+                return s_voidGoto ?? (s_voidGoto = typeof(InterpretedFrame).GetMethod("VoidGoto"));
+            }
         }
 
         public int VoidGoto(int labelIndex)
@@ -303,8 +314,8 @@ namespace System.Linq.Expressions.Interpreter
             _pendingValue = value;
             return YieldToCurrentContinuation();
         }
-#endregion
 
+        #endregion Continuations
     }
 }
 

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using NUnit.Framework;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using NUnit.Framework;
 
 namespace MonoTests.System.Threading.Tasks
 {
@@ -13,7 +13,9 @@ namespace MonoTests.System.Threading.Tasks
         public void StartCancelled()
         {
             var cancellation = new CancellationToken(true);
-            using (var task = new Task(() => { }, cancellation))
+            using (var task = new Task(() =>
+            {
+            }, cancellation))
             {
                 task.Start();
             }

@@ -25,10 +25,10 @@
 #define NET_4_0
 #if NET_4_0
 
-using System;
-using System.Linq;
-using System.Collections.Generic;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoTests.System
 {

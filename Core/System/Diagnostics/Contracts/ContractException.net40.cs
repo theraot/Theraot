@@ -4,7 +4,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Security;
@@ -13,15 +12,12 @@ using System.Security.Permissions;
 namespace System.Diagnostics.Contracts
 {
     [Serializable]
-    [SuppressMessage("Microsoft.Design", "CA1032:ImplementStandardExceptionConstructors")]
-    [SuppressMessage("Microsoft.Design", "CA1064:ExceptionsShouldBePublic")]
     internal sealed class ContractException : Exception
     {
         private readonly ContractFailureKind _kind;
         private readonly string _userMessage;
         private readonly string _condition;
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public ContractFailureKind Kind
         {
             get
@@ -30,7 +26,6 @@ namespace System.Diagnostics.Contracts
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public string Failure
         {
             get
@@ -39,7 +34,6 @@ namespace System.Diagnostics.Contracts
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public string UserMessage
         {
             get
@@ -48,7 +42,6 @@ namespace System.Diagnostics.Contracts
             }
         }
 
-        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public string Condition
         {
             get

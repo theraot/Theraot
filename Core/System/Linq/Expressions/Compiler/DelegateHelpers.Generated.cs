@@ -5,7 +5,6 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Dynamic.Utils;
 using Theraot.Collections;
 using Theraot.Core;
 
@@ -54,7 +53,6 @@ namespace System.Linq.Expressions.Compiler
         public delegate object VBCallSiteDelegate6<T>(T callSite, object instance, ref object arg1, ref object arg2, ref object arg3, ref object arg4, ref object arg5, ref object arg6);
         public delegate object VBCallSiteDelegate7<T>(T callSite, object instance, ref object arg1, ref object arg2, ref object arg3, ref object arg4, ref object arg5, ref object arg6, ref object arg7);
 
-
         private static Type TryMakeVBStyledCallSite(Type[] types)
         {
             // Shape of VB CallSiteDelegates is CallSite * (instance : obj) * [arg-n : byref obj] -> obj
@@ -87,13 +85,12 @@ namespace System.Linq.Expressions.Compiler
                 default: return null;
             }
         }
-#endif 
+#endif
 
         /// <summary>
         /// Creates a new delegate, or uses a func/action
         /// Note: this method does not cache
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         internal static Type MakeNewDelegate(Type[] types)
         {
             Debug.Assert(types != null && types.Length > 0);
@@ -126,7 +123,7 @@ namespace System.Linq.Expressions.Compiler
                 return MakeNewCustomDelegate(types);
 #else
                 return TryMakeVBStyledCallSite(types) ?? MakeNewCustomDelegate(types);
-#endif 
+#endif
             }
 
             Type result;
@@ -146,25 +143,59 @@ namespace System.Linq.Expressions.Compiler
         {
             switch (types.Length)
             {
-                case 1: return typeof(Func<>).MakeGenericType(types);
-                case 2: return typeof(Func<,>).MakeGenericType(types);
-                case 3: return typeof(Func<,,>).MakeGenericType(types);
-                case 4: return typeof(Func<,,,>).MakeGenericType(types);
-                case 5: return typeof(Func<,,,,>).MakeGenericType(types);
-                case 6: return typeof(Func<,,,,,>).MakeGenericType(types);
-                case 7: return typeof(Func<,,,,,,>).MakeGenericType(types);
-                case 8: return typeof(Func<,,,,,,,>).MakeGenericType(types);
-                case 9: return typeof(Func<,,,,,,,,>).MakeGenericType(types);
-                case 10: return typeof(Func<,,,,,,,,,>).MakeGenericType(types);
-                case 11: return typeof(Func<,,,,,,,,,,>).MakeGenericType(types);
-                case 12: return typeof(Func<,,,,,,,,,,,>).MakeGenericType(types);
-                case 13: return typeof(Func<,,,,,,,,,,,,>).MakeGenericType(types);
-                case 14: return typeof(Func<,,,,,,,,,,,,,>).MakeGenericType(types);
-                case 15: return typeof(Func<,,,,,,,,,,,,,,>).MakeGenericType(types);
-                case 16: return typeof(Func<,,,,,,,,,,,,,,,>).MakeGenericType(types);
-                case 17: return typeof(Func<,,,,,,,,,,,,,,,,>).MakeGenericType(types);
+                case 1:
+                    return typeof(Func<>).MakeGenericType(types);
 
-                default: return null;
+                case 2:
+                    return typeof(Func<,>).MakeGenericType(types);
+
+                case 3:
+                    return typeof(Func<,,>).MakeGenericType(types);
+
+                case 4:
+                    return typeof(Func<,,,>).MakeGenericType(types);
+
+                case 5:
+                    return typeof(Func<,,,,>).MakeGenericType(types);
+
+                case 6:
+                    return typeof(Func<,,,,,>).MakeGenericType(types);
+
+                case 7:
+                    return typeof(Func<,,,,,,>).MakeGenericType(types);
+
+                case 8:
+                    return typeof(Func<,,,,,,,>).MakeGenericType(types);
+
+                case 9:
+                    return typeof(Func<,,,,,,,,>).MakeGenericType(types);
+
+                case 10:
+                    return typeof(Func<,,,,,,,,,>).MakeGenericType(types);
+
+                case 11:
+                    return typeof(Func<,,,,,,,,,,>).MakeGenericType(types);
+
+                case 12:
+                    return typeof(Func<,,,,,,,,,,,>).MakeGenericType(types);
+
+                case 13:
+                    return typeof(Func<,,,,,,,,,,,,>).MakeGenericType(types);
+
+                case 14:
+                    return typeof(Func<,,,,,,,,,,,,,>).MakeGenericType(types);
+
+                case 15:
+                    return typeof(Func<,,,,,,,,,,,,,,>).MakeGenericType(types);
+
+                case 16:
+                    return typeof(Func<,,,,,,,,,,,,,,,>).MakeGenericType(types);
+
+                case 17:
+                    return typeof(Func<,,,,,,,,,,,,,,,,>).MakeGenericType(types);
+
+                default:
+                    return null;
             }
         }
 
@@ -172,26 +203,59 @@ namespace System.Linq.Expressions.Compiler
         {
             switch (types.Length)
             {
-                case 0: return typeof(Action);
+                case 0:
+                    return typeof(Action);
 
-                case 1: return typeof(Action<>).MakeGenericType(types);
-                case 2: return typeof(Action<,>).MakeGenericType(types);
-                case 3: return typeof(Action<,,>).MakeGenericType(types);
-                case 4: return typeof(Action<,,,>).MakeGenericType(types);
-                case 5: return typeof(Action<,,,,>).MakeGenericType(types);
-                case 6: return typeof(Action<,,,,,>).MakeGenericType(types);
-                case 7: return typeof(Action<,,,,,,>).MakeGenericType(types);
-                case 8: return typeof(Action<,,,,,,,>).MakeGenericType(types);
-                case 9: return typeof(Action<,,,,,,,,>).MakeGenericType(types);
-                case 10: return typeof(Action<,,,,,,,,,>).MakeGenericType(types);
-                case 11: return typeof(Action<,,,,,,,,,,>).MakeGenericType(types);
-                case 12: return typeof(Action<,,,,,,,,,,,>).MakeGenericType(types);
-                case 13: return typeof(Action<,,,,,,,,,,,,>).MakeGenericType(types);
-                case 14: return typeof(Action<,,,,,,,,,,,,,>).MakeGenericType(types);
-                case 15: return typeof(Action<,,,,,,,,,,,,,,>).MakeGenericType(types);
-                case 16: return typeof(Action<,,,,,,,,,,,,,,,>).MakeGenericType(types);
+                case 1:
+                    return typeof(Action<>).MakeGenericType(types);
 
-                default: return null;
+                case 2:
+                    return typeof(Action<,>).MakeGenericType(types);
+
+                case 3:
+                    return typeof(Action<,,>).MakeGenericType(types);
+
+                case 4:
+                    return typeof(Action<,,,>).MakeGenericType(types);
+
+                case 5:
+                    return typeof(Action<,,,,>).MakeGenericType(types);
+
+                case 6:
+                    return typeof(Action<,,,,,>).MakeGenericType(types);
+
+                case 7:
+                    return typeof(Action<,,,,,,>).MakeGenericType(types);
+
+                case 8:
+                    return typeof(Action<,,,,,,,>).MakeGenericType(types);
+
+                case 9:
+                    return typeof(Action<,,,,,,,,>).MakeGenericType(types);
+
+                case 10:
+                    return typeof(Action<,,,,,,,,,>).MakeGenericType(types);
+
+                case 11:
+                    return typeof(Action<,,,,,,,,,,>).MakeGenericType(types);
+
+                case 12:
+                    return typeof(Action<,,,,,,,,,,,>).MakeGenericType(types);
+
+                case 13:
+                    return typeof(Action<,,,,,,,,,,,,>).MakeGenericType(types);
+
+                case 14:
+                    return typeof(Action<,,,,,,,,,,,,,>).MakeGenericType(types);
+
+                case 15:
+                    return typeof(Action<,,,,,,,,,,,,,,>).MakeGenericType(types);
+
+                case 16:
+                    return typeof(Action<,,,,,,,,,,,,,,,>).MakeGenericType(types);
+
+                default:
+                    return null;
             }
         }
     }

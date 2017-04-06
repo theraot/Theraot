@@ -14,7 +14,6 @@ using Theraot.Core;
 
 namespace System.Linq.Expressions
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
     internal sealed class ExpressionStringBuilder : ExpressionVisitor
     {
         private StringBuilder _out;
@@ -107,7 +106,7 @@ namespace System.Linq.Expressions
             }
         }
 
-#region The printing code
+        #region The printing code
 
         private void Out(string s)
         {
@@ -119,9 +118,9 @@ namespace System.Linq.Expressions
             _out.Append(c);
         }
 
-#endregion
+        #endregion The printing code
 
-#region Output an expresstion tree to a string
+        #region Output an expresstion tree to a string
 
         /// <summary>
         /// Output a given expression tree to a string.
@@ -199,7 +198,6 @@ namespace System.Linq.Expressions
             Out(close);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         protected internal override Expression VisitBinary(BinaryExpression node)
         {
             if (node.NodeType == ExpressionType.ArrayIndex)
@@ -221,38 +219,119 @@ namespace System.Linq.Expressions
                     case ExpressionType.AndAlso:
                         op = "AndAlso";
                         break;
+
                     case ExpressionType.OrElse:
                         op = "OrElse";
                         break;
-                    case ExpressionType.Assign: op = "="; break;
+
+                    case ExpressionType.Assign:
+                        op = "=";
+                        break;
+
                     case ExpressionType.Equal:
                         op = "==";
                         break;
-                    case ExpressionType.NotEqual: op = "!="; break;
-                    case ExpressionType.GreaterThan: op = ">"; break;
-                    case ExpressionType.LessThan: op = "<"; break;
-                    case ExpressionType.GreaterThanOrEqual: op = ">="; break;
-                    case ExpressionType.LessThanOrEqual: op = "<="; break;
-                    case ExpressionType.Add: op = "+"; break;
-                    case ExpressionType.AddAssign: op = "+="; break;
-                    case ExpressionType.AddAssignChecked: op = "+="; break;
-                    case ExpressionType.AddChecked: op = "+"; break;
-                    case ExpressionType.Subtract: op = "-"; break;
-                    case ExpressionType.SubtractAssign: op = "-="; break;
-                    case ExpressionType.SubtractAssignChecked: op = "-="; break;
-                    case ExpressionType.SubtractChecked: op = "-"; break;
-                    case ExpressionType.Divide: op = "/"; break;
-                    case ExpressionType.DivideAssign: op = "/="; break;
-                    case ExpressionType.Modulo: op = "%"; break;
-                    case ExpressionType.ModuloAssign: op = "%="; break;
-                    case ExpressionType.Multiply: op = "*"; break;
-                    case ExpressionType.MultiplyAssign: op = "*="; break;
-                    case ExpressionType.MultiplyAssignChecked: op = "*="; break;
-                    case ExpressionType.MultiplyChecked: op = "*"; break;
-                    case ExpressionType.LeftShift: op = "<<"; break;
-                    case ExpressionType.LeftShiftAssign: op = "<<="; break;
-                    case ExpressionType.RightShift: op = ">>"; break;
-                    case ExpressionType.RightShiftAssign: op = ">>="; break;
+
+                    case ExpressionType.NotEqual:
+                        op = "!=";
+                        break;
+
+                    case ExpressionType.GreaterThan:
+                        op = ">";
+                        break;
+
+                    case ExpressionType.LessThan:
+                        op = "<";
+                        break;
+
+                    case ExpressionType.GreaterThanOrEqual:
+                        op = ">=";
+                        break;
+
+                    case ExpressionType.LessThanOrEqual:
+                        op = "<=";
+                        break;
+
+                    case ExpressionType.Add:
+                        op = "+";
+                        break;
+
+                    case ExpressionType.AddAssign:
+                        op = "+=";
+                        break;
+
+                    case ExpressionType.AddAssignChecked:
+                        op = "+=";
+                        break;
+
+                    case ExpressionType.AddChecked:
+                        op = "+";
+                        break;
+
+                    case ExpressionType.Subtract:
+                        op = "-";
+                        break;
+
+                    case ExpressionType.SubtractAssign:
+                        op = "-=";
+                        break;
+
+                    case ExpressionType.SubtractAssignChecked:
+                        op = "-=";
+                        break;
+
+                    case ExpressionType.SubtractChecked:
+                        op = "-";
+                        break;
+
+                    case ExpressionType.Divide:
+                        op = "/";
+                        break;
+
+                    case ExpressionType.DivideAssign:
+                        op = "/=";
+                        break;
+
+                    case ExpressionType.Modulo:
+                        op = "%";
+                        break;
+
+                    case ExpressionType.ModuloAssign:
+                        op = "%=";
+                        break;
+
+                    case ExpressionType.Multiply:
+                        op = "*";
+                        break;
+
+                    case ExpressionType.MultiplyAssign:
+                        op = "*=";
+                        break;
+
+                    case ExpressionType.MultiplyAssignChecked:
+                        op = "*=";
+                        break;
+
+                    case ExpressionType.MultiplyChecked:
+                        op = "*";
+                        break;
+
+                    case ExpressionType.LeftShift:
+                        op = "<<";
+                        break;
+
+                    case ExpressionType.LeftShiftAssign:
+                        op = "<<=";
+                        break;
+
+                    case ExpressionType.RightShift:
+                        op = ">>";
+                        break;
+
+                    case ExpressionType.RightShiftAssign:
+                        op = ">>=";
+                        break;
+
                     case ExpressionType.And:
                         if (node.Type == typeof(bool) || node.Type == typeof(bool?))
                         {
@@ -263,6 +342,7 @@ namespace System.Linq.Expressions
                             op = "&";
                         }
                         break;
+
                     case ExpressionType.AndAssign:
                         if (node.Type == typeof(bool) || node.Type == typeof(bool?))
                         {
@@ -273,6 +353,7 @@ namespace System.Linq.Expressions
                             op = "&=";
                         }
                         break;
+
                     case ExpressionType.Or:
                         if (node.Type == typeof(bool) || node.Type == typeof(bool?))
                         {
@@ -283,18 +364,37 @@ namespace System.Linq.Expressions
                             op = "|";
                         }
                         break;
+
                     case ExpressionType.OrAssign:
                         if (node.Type == typeof(bool) || node.Type == typeof(bool?))
                         {
                             op = "||=";
                         }
-                        else { op = "|="; }
+                        else
+                        {
+                            op = "|=";
+                        }
                         break;
-                    case ExpressionType.ExclusiveOr: op = "^"; break;
-                    case ExpressionType.ExclusiveOrAssign: op = "^="; break;
-                    case ExpressionType.Power: op = "^"; break;
-                    case ExpressionType.PowerAssign: op = "**="; break;
-                    case ExpressionType.Coalesce: op = "??"; break;
+
+                    case ExpressionType.ExclusiveOr:
+                        op = "^";
+                        break;
+
+                    case ExpressionType.ExclusiveOrAssign:
+                        op = "^=";
+                        break;
+
+                    case ExpressionType.Power:
+                        op = "^";
+                        break;
+
+                    case ExpressionType.PowerAssign:
+                        op = "**=";
+                        break;
+
+                    case ExpressionType.Coalesce:
+                        op = "??";
+                        break;
 
                     default:
                         throw new InvalidOperationException();
@@ -569,6 +669,7 @@ namespace System.Linq.Expressions
                     Out("new " + node.Type.ToString());
                     VisitExpressions('(', node.Expressions, ')');
                     break;
+
                 case ExpressionType.NewArrayInit:
                     // new [] {expr1, expr2}
                     Out("new [] ");
@@ -610,6 +711,7 @@ namespace System.Linq.Expressions
                 case ExpressionType.TypeIs:
                     Out(" Is ");
                     break;
+
                 case ExpressionType.TypeEqual:
                     Out(" TypeEqual ");
                     break;
@@ -619,7 +721,6 @@ namespace System.Linq.Expressions
             return node;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         protected internal override Expression VisitUnary(UnaryExpression node)
         {
             switch (node.NodeType)
@@ -627,36 +728,47 @@ namespace System.Linq.Expressions
                 case ExpressionType.TypeAs:
                     Out("(");
                     break;
+
                 case ExpressionType.Not:
                     Out("Not(");
                     break;
+
                 case ExpressionType.Negate:
                 case ExpressionType.NegateChecked:
                     Out("-");
                     break;
+
                 case ExpressionType.UnaryPlus:
                     Out("+");
                     break;
+
                 case ExpressionType.Quote:
                     break;
+
                 case ExpressionType.Throw:
                     Out("throw(");
                     break;
+
                 case ExpressionType.Increment:
                     Out("Increment(");
                     break;
+
                 case ExpressionType.Decrement:
                     Out("Decrement(");
                     break;
+
                 case ExpressionType.PreIncrementAssign:
                     Out("++");
                     break;
+
                 case ExpressionType.PreDecrementAssign:
                     Out("--");
                     break;
+
                 case ExpressionType.OnesComplement:
                     Out("~(");
                     break;
+
                 default:
                     Out(node.NodeType.ToString());
                     Out("(");
@@ -674,17 +786,21 @@ namespace System.Linq.Expressions
                 case ExpressionType.PreIncrementAssign:
                 case ExpressionType.Quote:
                     break;
+
                 case ExpressionType.TypeAs:
                     Out(" As ");
                     Out(node.Type.Name);
                     Out(")");
                     break;
+
                 case ExpressionType.PostIncrementAssign:
                     Out("++");
                     break;
+
                 case ExpressionType.PostDecrementAssign:
                     Out("--");
                     break;
+
                 default:
                     Out(")");
                     break;
@@ -832,7 +948,8 @@ namespace System.Linq.Expressions
                 Out("UnamedLabel_" + labelId);
             }
         }
-#endregion
+
+        #endregion Output an expresstion tree to a string
     }
 }
 

@@ -14,7 +14,7 @@ namespace System.Threading.Tasks
     /// </summary>
     /// <remarks>
     /// <para>
-    /// <see cref="System.Threading.Tasks.TaskScheduler">TaskScheduler</see> acts as the extension point for all 
+    /// <see cref="System.Threading.Tasks.TaskScheduler">TaskScheduler</see> acts as the extension point for all
     /// pluggable scheduling logic.  This includes mechanisms such as how to schedule a task for execution, and
     /// how scheduled tasks should be exposed to debuggers.
     /// </para>
@@ -33,7 +33,7 @@ namespace System.Threading.Tasks
         //
 
         /// <summary>
-        /// Indicates the maximum concurrency level this 
+        /// Indicates the maximum concurrency level this
         /// <see cref="TaskScheduler"/>  is able to support.
         /// </summary>
         public virtual Int32 MaximumConcurrencyLevel
@@ -96,7 +96,7 @@ namespace System.Threading.Tasks
         /// </summary>
         /// <remarks>
         /// This AppDomain-wide event provides a mechanism to prevent exception
-        /// escalation policy (which, by default, terminates the process) from triggering. 
+        /// escalation policy (which, by default, terminates the process) from triggering.
         /// Each handler is passed a <see cref="T:System.Threading.Tasks.UnobservedTaskExceptionEventArgs"/>
         /// instance, which may be used to examine the exception and to mark it as observed.
         /// </remarks>
@@ -144,10 +144,10 @@ namespace System.Threading.Tasks
         /// </summary>
         /// <remarks>
         /// The returned array is populated through a call to <see cref="GetScheduledTasks"/>.
-        /// Note that this function is only meant to be invoked by a debugger remotely. 
+        /// Note that this function is only meant to be invoked by a debugger remotely.
         /// It should not be called by any other codepaths.
         /// </remarks>
-        /// <returns>An array of <see cref="System.Threading.Tasks.Task">Task</see> instances.</returns> 
+        /// <returns>An array of <see cref="System.Threading.Tasks.Task">Task</see> instances.</returns>
         /// <exception cref="T:System.NotSupportedException">
         /// This scheduler is unable to generate a list of queued tasks at this time.
         /// </exception>
@@ -182,6 +182,7 @@ namespace System.Threading.Tasks
         internal sealed class SystemThreadingTasks_TaskSchedulerDebugView
         {
             private readonly TaskScheduler m_taskScheduler;
+
             public SystemThreadingTasks_TaskSchedulerDebugView(TaskScheduler scheduler)
             {
                 m_taskScheduler = scheduler;
@@ -190,13 +191,19 @@ namespace System.Threading.Tasks
             // returns the scheduler's Id
             public Int32 Id
             {
-                get { return m_taskScheduler.Id; }
+                get
+                {
+                    return m_taskScheduler.Id;
+                }
             }
 
             // returns the scheduler's GetScheduledTasks
             public IEnumerable<Task> ScheduledTasks
             {
-                get { return m_taskScheduler.GetScheduledTasks(); }
+                get
+                {
+                    return m_taskScheduler.GetScheduledTasks();
+                }
             }
         }
     }

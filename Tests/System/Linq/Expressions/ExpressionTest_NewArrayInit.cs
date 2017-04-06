@@ -26,111 +26,115 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using NUnit.Framework;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
 
-using NUnit.Framework;
-
 namespace MonoTests.System.Linq.Expressions
 {
-
     [TestFixture]
-	public class ExpressionTest_NewArrayInit {
+    public class ExpressionTest_NewArrayInit
+    {
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void NullType()
+        {
+            Expression.NewArrayInit(null, new Expression[0]);
+        }
 
-		[Test]
-		[ExpectedException (typeof (ArgumentNullException))]
-		public void NullType ()
-		{
-			Expression.NewArrayInit (null, new Expression [0]);
-		}
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void NullInitializers()
+        {
+            Expression.NewArrayInit(typeof(int), null);
+        }
 
-		[Test]
-		[ExpectedException (typeof (ArgumentNullException))]
-		public void NullInitializers ()
-		{
-			Expression.NewArrayInit (typeof (int), null);
-		}
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void InitializersContainNull()
+        {
+            Expression.NewArrayInit(typeof(int), 1.ToConstant(), null, 3.ToConstant());
+        }
 
-		[Test]
-		[ExpectedException (typeof (ArgumentNullException))]
-		public void InitializersContainNull ()
-		{
-			Expression.NewArrayInit (typeof (int), 1.ToConstant (), null, 3.ToConstant ());
-		}
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void WrongInitializer()
+        {
+            Expression.NewArrayInit(typeof(int), 1.ToConstant(), "2".ToConstant(), 3.ToConstant());
+        }
 
-		[Test]
-		[ExpectedException (typeof (InvalidOperationException))]
-		public void WrongInitializer ()
-		{
-			Expression.NewArrayInit (typeof (int), 1.ToConstant (), "2".ToConstant (), 3.ToConstant ());
-		}
+        [Test]
+        [Category("NotDotNet")]
+        [ExpectedException(typeof(ArgumentException))]
+        public void NewVoid()
+        {
+            Expression.NewArrayInit(typeof(void), new Expression[0]);
+        }
 
-		[Test]
-		[Category ("NotDotNet")]
-		[ExpectedException (typeof (ArgumentException))]
-		public void NewVoid ()
-		{
-			Expression.NewArrayInit (typeof (void), new Expression [0]);
-		}
+        [Test]
+        public void TestArrayInit()
+        {
+            var a = Expression.NewArrayInit(typeof(int), 1.ToConstant(), 2.ToConstant(), 3.ToConstant());
+            Assert.AreEqual(typeof(int[]), a.Type);
+            Assert.AreEqual(3, a.Expressions.Count);
+            Assert.AreEqual("new [] {1, 2, 3}", a.ToString());
+        }
 
-		[Test]
-		public void TestArrayInit ()
-		{
-			var a = Expression.NewArrayInit (typeof (int), 1.ToConstant (), 2.ToConstant (), 3.ToConstant ());
-			Assert.AreEqual (typeof (int []), a.Type);
-			Assert.AreEqual (3, a.Expressions.Count);
-			Assert.AreEqual ("new [] {1, 2, 3}", a.ToString ());
-		}
+        private static Func<T[]> CreateArrayInit<T>(T[] ts)
+        {
+            return Expression.Lambda<Func<T[]>>(
+                Expression.NewArrayInit(
+                    typeof(T),
+                    (from t in ts select t.ToConstant()).ToArray())).Compile();
+        }
 
-		private static Func<T []> CreateArrayInit<T> (T [] ts)
-		{
-			return Expression.Lambda<Func<T []>> (
-				Expression.NewArrayInit (
-					typeof (T),
-					(from t in ts select t.ToConstant ()).ToArray ())).Compile ();
-		}
+        private static void AssertCreatedArrayIsEqual<T>(params T[] ts)
+        {
+            var creator = CreateArrayInit(ts);
+            var array = creator();
 
-		private static void AssertCreatedArrayIsEqual<T> (params T [] ts)
-		{
-			var creator = CreateArrayInit (ts);
-			var array = creator ();
+            Assert.IsTrue(ts.SequenceEqual(array));
+        }
 
-			Assert.IsTrue (ts.SequenceEqual (array));
-		}
-
-		[Test]
-		public void CompileInitArrayOfInt ()
-		{
-			AssertCreatedArrayIsEqual (new int [] { 1, 2, 3, 4 });
-		}
+        [Test]
+        public void CompileInitArrayOfInt()
+        {
+            AssertCreatedArrayIsEqual(new int[] { 1, 2, 3, 4 });
+        }
 
         private enum Months { Jan, Feb, Mar, Apr };
 
-		[Test]
-		public void CompileInitArrayOfEnums ()
-		{
-			AssertCreatedArrayIsEqual (new Months [] { Months.Jan, Months.Feb, Months.Mar, Months.Apr });
-		}
+        [Test]
+        public void CompileInitArrayOfEnums()
+        {
+            AssertCreatedArrayIsEqual(new Months[] { Months.Jan, Months.Feb, Months.Mar, Months.Apr });
+        }
 
-        private class Foo {
-		}
+        private class Foo
+        {
+        }
 
-		[Test]
-		public void CompileInitArrayOfClasses ()
-		{
-			AssertCreatedArrayIsEqual (new Foo [] { new Foo (), new Foo (), new Foo (), new Foo () });
-		}
+        [Test]
+        public void CompileInitArrayOfClasses()
+        {
+            AssertCreatedArrayIsEqual(new Foo[] { new Foo(), new Foo(), new Foo(), new Foo() });
+        }
 
-        private struct Bar {
-			public int bar;
-			public Bar (int b) { bar = b; }
-		}
+        private struct Bar
+        {
+            public int bar;
 
-		[Test]
-		public void CompileInitArrayOfStructs ()
-		{
-			AssertCreatedArrayIsEqual (new Bar [] { new Bar (1), new Bar (2), new Bar (3), new Bar (4) });
-		}
-	}
+            public Bar(int b)
+            {
+                bar = b;
+            }
+        }
+
+        [Test]
+        public void CompileInitArrayOfStructs()
+        {
+            AssertCreatedArrayIsEqual(new Bar[] { new Bar(1), new Bar(2), new Bar(3), new Bar(4) });
+        }
+    }
 }

@@ -25,7 +25,7 @@ namespace MonoTests.System.Threading.Tasks
                 TryExecuteTaskInlineHandler(task, taskWasPreviouslyQueued);
             }
 
-            return base.TryExecuteTask(task);
+            return TryExecuteTask(task);
         }
     }
 }

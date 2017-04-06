@@ -11,6 +11,7 @@ namespace System.Threading.Tasks
     {
         /// <summary>The ExecutionContext with which to run the continuation.</summary>
         private ExecutionContext _capturedContext;
+
         /// <summary>The action to invoke.</summary>
         protected readonly Action Action;
 
@@ -50,7 +51,7 @@ namespace System.Threading.Tasks
         internal override void Run(Task task, bool canInlineContinuationTask)
         {
             // For the base AwaitTaskContinuation, we allow inlining if our caller allows it
-            // and if we're in a "valid location" for it.  See the comments on 
+            // and if we're in a "valid location" for it.  See the comments on
             // IsValidLocationForInlining for more about what's valid.  For performance
             // reasons we would like to always inline, but we don't in some cases to avoid
             // running arbitrary amounts of work in suspected "bad locations", like UI threads.
@@ -70,9 +71,9 @@ namespace System.Threading.Tasks
         /// </summary>
         /// <remarks>
         /// Returns whether SynchronizationContext is null and we're in the default scheduler.
-        /// If the await had a SynchronizationContext/TaskScheduler where it began and the 
-        /// default/ConfigureAwait(true) was used, then we won't be on this path.  If, however, 
-        /// ConfigureAwait(false) was used, or the SynchronizationContext and TaskScheduler were 
+        /// If the await had a SynchronizationContext/TaskScheduler where it began and the
+        /// default/ConfigureAwait(true) was used, then we won't be on this path.  If, however,
+        /// ConfigureAwait(false) was used, or the SynchronizationContext and TaskScheduler were
         /// naturally null/Default, then we might end up here.  If we do, we need to make sure
         /// that we don't execute continuations in a place that isn't set up to handle them, e.g.
         /// running arbitrary amounts of code on the UI thread.  It would be "correct", but very
@@ -139,7 +140,9 @@ namespace System.Threading.Tasks
         }
 
         [SecurityCritical]
-        void IThreadPoolWorkItem.MarkAborted(ThreadAbortException tae) { /* nop */ }
+        void IThreadPoolWorkItem.MarkAborted(ThreadAbortException tae)
+        { /* nop */
+        }
 
         /// <summary>Cached delegate that invokes an Action passed as an object parameter.</summary>
         [SecurityCritical]
@@ -148,13 +151,19 @@ namespace System.Threading.Tasks
         /// <summary>Runs an action provided as an object parameter.</summary>
         /// <param name="state">The Action to invoke.</param>
         [SecurityCritical]
-        private static void InvokeAction(object state) { ((Action)state)(); }
+        private static void InvokeAction(object state)
+        {
+            ((Action)state)();
+        }
 
         [SecurityCritical]
         protected static ContextCallback GetInvokeActionCallback()
         {
             var callback = _invokeActionCallback;
-            if (callback == null) { _invokeActionCallback = callback = InvokeAction; } // lazily initialize SecurityCritical delegate
+            if (callback == null)
+            {
+                _invokeActionCallback = callback = InvokeAction;
+            } // lazily initialize SecurityCritical delegate
             return callback;
         }
 
@@ -236,7 +245,8 @@ namespace System.Threading.Tasks
             var prevCurrentTask = currentTask;
             try
             {
-                if (prevCurrentTask != null) currentTask = null;
+                if (prevCurrentTask != null)
+                    currentTask = null;
                 action();
             }
             catch (Exception exception)
@@ -245,7 +255,8 @@ namespace System.Threading.Tasks
             }
             finally
             {
-                if (prevCurrentTask != null) currentTask = prevCurrentTask;
+                if (prevCurrentTask != null)
+                    currentTask = prevCurrentTask;
             }
         }
 
@@ -261,12 +272,12 @@ namespace System.Threading.Tasks
         /// <param name="exc">The exception to throw.</param>
         protected static void ThrowAsyncIfNecessary(Exception exc)
         {
-            // Awaits should never experience an exception (other than an TAE or ADUE), 
-            // unless a malicious user is explicitly passing a throwing action into the TaskAwaiter. 
-            // We don't want to allow the exception to propagate on this stack, as it'll emerge in random places, 
+            // Awaits should never experience an exception (other than an TAE or ADUE),
+            // unless a malicious user is explicitly passing a throwing action into the TaskAwaiter.
+            // We don't want to allow the exception to propagate on this stack, as it'll emerge in random places,
             // and we can't fail fast, as that would allow for elevation of privilege.
             //
-            // If unhandled error reporting APIs are available use those, otherwise since this 
+            // If unhandled error reporting APIs are available use those, otherwise since this
             // would have executed on the thread pool otherwise, let it propagate there.
             if (exc is ThreadAbortException || exc is AppDomainUnloadedException)
             {

@@ -29,8 +29,8 @@
 #define NET_4_0
 #if NET_4_0
 
-using System.Collections;
 using NUnit.Framework;
+using System.Collections;
 
 namespace MonoTests.System.Collections
 {

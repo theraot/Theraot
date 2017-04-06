@@ -13,7 +13,7 @@ namespace MonoTests.System.Threading.Tasks
 
         protected override void QueueTask(Task task)
         {
-            if (!base.TryExecuteTask(task))
+            if (!TryExecuteTask(task))
             {
                 throw new ApplicationException();
             }

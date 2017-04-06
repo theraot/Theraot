@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 namespace Theraot.Collections
 {
-    [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "By Design")]
     public interface IExtendedList<T> : IExtendedCollection<T>, IExtendedReadOnlyList<T>, IList<T>
     {
         new IReadOnlyList<T> AsReadOnly

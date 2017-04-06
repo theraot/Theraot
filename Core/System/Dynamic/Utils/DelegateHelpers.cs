@@ -4,14 +4,16 @@
 using System.Reflection;
 
 #if !FEATURE_DYNAMIC_DELEGATE
+
 using System.Reflection.Emit;
+
 #endif
 
 namespace System.Dynamic.Utils
 {
     internal static partial class DelegateHelpers
     {
-        internal static Delegate CreateObjectArrayDelegate(Type delegateType, System.Func<object[], object> handler)
+        internal static Delegate CreateObjectArrayDelegate(Type delegateType, Func<object[], object> handler)
         {
 #if !FEATURE_DYNAMIC_DELEGATE
             return CreateObjectArrayDelegateRefEmit(delegateType, handler);
@@ -20,11 +22,10 @@ namespace System.Dynamic.Utils
 #endif
         }
 
-
 #if !FEATURE_DYNAMIC_DELEGATE
 
         // We will generate the following code:
-        //  
+        //
         // object ret;
         // object[] args = new object[parameterCount];
         // args[0] = param0;
@@ -36,7 +37,7 @@ namespace System.Dynamic.Utils
         //      param0 = (T0)args[0];   // only generated for each byref argument
         // }
         // return (TRet)ret;
-        private static Delegate CreateObjectArrayDelegateRefEmit(Type delegateType, System.Func<object[], object> handler)
+        private static Delegate CreateObjectArrayDelegateRefEmit(Type delegateType, Func<object[], object> handler)
         {
             MethodInfo delegateInvokeMethod = delegateType.GetMethod("Invoke");
 
@@ -132,7 +133,7 @@ namespace System.Dynamic.Utils
 
             ilgen.Emit(OpCodes.Ret);
 
-            // TODO: we need to cache these. 
+            // TODO: we need to cache these.
             return thunkMethod.CreateDelegate(delegateType, handler);
         }
 
@@ -142,6 +143,5 @@ namespace System.Dynamic.Utils
         }
 
 #endif
-
     }
 }

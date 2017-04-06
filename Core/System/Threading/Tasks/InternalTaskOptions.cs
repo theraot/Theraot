@@ -26,7 +26,7 @@ namespace System.Threading.Tasks
         /// </summary>
         LazyCancellation = 0x1000,
 
-        /// <summary>Specifies that the task will be queued by the runtime before handing it over to the user. 
+        /// <summary>Specifies that the task will be queued by the runtime before handing it over to the user.
         /// This flag will be used to skip the cancellationtoken registration step, which is only meant for unstarted tasks.</summary>
         QueuedByRuntime = 0x2000,
 

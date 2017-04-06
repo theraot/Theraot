@@ -14,8 +14,6 @@ namespace System.Linq.Expressions.Interpreter
     {
         private const int MaximumArity = 17;
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
         internal static Type MakeDelegate(Type[] types)
         {
             Debug.Assert(types != null && types.Length > 0);
@@ -33,47 +31,112 @@ namespace System.Linq.Expressions.Interpreter
                 Array.Resize(ref types, types.Length - 1);
                 switch (types.Length)
                 {
-                    case 0: return typeof(Action);
+                    case 0:
+                        return typeof(Action);
 
-                    case 1: return typeof(Action<>).MakeGenericType(types);
-                    case 2: return typeof(Action<,>).MakeGenericType(types);
-                    case 3: return typeof(Action<,,>).MakeGenericType(types);
-                    case 4: return typeof(Action<,,,>).MakeGenericType(types);
-                    case 5: return typeof(Action<,,,,>).MakeGenericType(types);
-                    case 6: return typeof(Action<,,,,,>).MakeGenericType(types);
-                    case 7: return typeof(Action<,,,,,,>).MakeGenericType(types);
-                    case 8: return typeof(Action<,,,,,,,>).MakeGenericType(types);
-                    case 9: return typeof(Action<,,,,,,,,>).MakeGenericType(types);
-                    case 10: return typeof(Action<,,,,,,,,,>).MakeGenericType(types);
-                    case 11: return typeof(Action<,,,,,,,,,,>).MakeGenericType(types);
-                    case 12: return typeof(Action<,,,,,,,,,,,>).MakeGenericType(types);
-                    case 13: return typeof(Action<,,,,,,,,,,,,>).MakeGenericType(types);
-                    case 14: return typeof(Action<,,,,,,,,,,,,,>).MakeGenericType(types);
-                    case 15: return typeof(Action<,,,,,,,,,,,,,,>).MakeGenericType(types);
-                    case 16: return typeof(Action<,,,,,,,,,,,,,,,>).MakeGenericType(types);
+                    case 1:
+                        return typeof(Action<>).MakeGenericType(types);
+
+                    case 2:
+                        return typeof(Action<,>).MakeGenericType(types);
+
+                    case 3:
+                        return typeof(Action<,,>).MakeGenericType(types);
+
+                    case 4:
+                        return typeof(Action<,,,>).MakeGenericType(types);
+
+                    case 5:
+                        return typeof(Action<,,,,>).MakeGenericType(types);
+
+                    case 6:
+                        return typeof(Action<,,,,,>).MakeGenericType(types);
+
+                    case 7:
+                        return typeof(Action<,,,,,,>).MakeGenericType(types);
+
+                    case 8:
+                        return typeof(Action<,,,,,,,>).MakeGenericType(types);
+
+                    case 9:
+                        return typeof(Action<,,,,,,,,>).MakeGenericType(types);
+
+                    case 10:
+                        return typeof(Action<,,,,,,,,,>).MakeGenericType(types);
+
+                    case 11:
+                        return typeof(Action<,,,,,,,,,,>).MakeGenericType(types);
+
+                    case 12:
+                        return typeof(Action<,,,,,,,,,,,>).MakeGenericType(types);
+
+                    case 13:
+                        return typeof(Action<,,,,,,,,,,,,>).MakeGenericType(types);
+
+                    case 14:
+                        return typeof(Action<,,,,,,,,,,,,,>).MakeGenericType(types);
+
+                    case 15:
+                        return typeof(Action<,,,,,,,,,,,,,,>).MakeGenericType(types);
+
+                    case 16:
+                        return typeof(Action<,,,,,,,,,,,,,,,>).MakeGenericType(types);
                 }
             }
             else
             {
                 switch (types.Length)
                 {
-                    case 1: return typeof(Func<>).MakeGenericType(types);
-                    case 2: return typeof(Func<,>).MakeGenericType(types);
-                    case 3: return typeof(Func<,,>).MakeGenericType(types);
-                    case 4: return typeof(Func<,,,>).MakeGenericType(types);
-                    case 5: return typeof(Func<,,,,>).MakeGenericType(types);
-                    case 6: return typeof(Func<,,,,,>).MakeGenericType(types);
-                    case 7: return typeof(Func<,,,,,,>).MakeGenericType(types);
-                    case 8: return typeof(Func<,,,,,,,>).MakeGenericType(types);
-                    case 9: return typeof(Func<,,,,,,,,>).MakeGenericType(types);
-                    case 10: return typeof(Func<,,,,,,,,,>).MakeGenericType(types);
-                    case 11: return typeof(Func<,,,,,,,,,,>).MakeGenericType(types);
-                    case 12: return typeof(Func<,,,,,,,,,,,>).MakeGenericType(types);
-                    case 13: return typeof(Func<,,,,,,,,,,,,>).MakeGenericType(types);
-                    case 14: return typeof(Func<,,,,,,,,,,,,,>).MakeGenericType(types);
-                    case 15: return typeof(Func<,,,,,,,,,,,,,,>).MakeGenericType(types);
-                    case 16: return typeof(Func<,,,,,,,,,,,,,,,>).MakeGenericType(types);
-                    case 17: return typeof(Func<,,,,,,,,,,,,,,,,>).MakeGenericType(types);
+                    case 1:
+                        return typeof(Func<>).MakeGenericType(types);
+
+                    case 2:
+                        return typeof(Func<,>).MakeGenericType(types);
+
+                    case 3:
+                        return typeof(Func<,,>).MakeGenericType(types);
+
+                    case 4:
+                        return typeof(Func<,,,>).MakeGenericType(types);
+
+                    case 5:
+                        return typeof(Func<,,,,>).MakeGenericType(types);
+
+                    case 6:
+                        return typeof(Func<,,,,,>).MakeGenericType(types);
+
+                    case 7:
+                        return typeof(Func<,,,,,,>).MakeGenericType(types);
+
+                    case 8:
+                        return typeof(Func<,,,,,,,>).MakeGenericType(types);
+
+                    case 9:
+                        return typeof(Func<,,,,,,,,>).MakeGenericType(types);
+
+                    case 10:
+                        return typeof(Func<,,,,,,,,,>).MakeGenericType(types);
+
+                    case 11:
+                        return typeof(Func<,,,,,,,,,,>).MakeGenericType(types);
+
+                    case 12:
+                        return typeof(Func<,,,,,,,,,,,>).MakeGenericType(types);
+
+                    case 13:
+                        return typeof(Func<,,,,,,,,,,,,>).MakeGenericType(types);
+
+                    case 14:
+                        return typeof(Func<,,,,,,,,,,,,,>).MakeGenericType(types);
+
+                    case 15:
+                        return typeof(Func<,,,,,,,,,,,,,,>).MakeGenericType(types);
+
+                    case 16:
+                        return typeof(Func<,,,,,,,,,,,,,,,>).MakeGenericType(types);
+
+                    case 17:
+                        return typeof(Func<,,,,,,,,,,,,,,,,>).MakeGenericType(types);
                 }
             }
             throw Assert.Unreachable;
@@ -86,6 +149,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             return i;
         }
+
         public static object BooleanToObject(bool b)
         {
             return b ? True : False;
@@ -98,22 +162,50 @@ namespace System.Linq.Expressions.Interpreter
         {
             switch (TypeHelper.GetTypeCode(type))
             {
-                case TypeCode.Boolean: return ScriptingRuntimeHelpers.False;
-                case TypeCode.SByte: return default(SByte);
-                case TypeCode.Byte: return default(Byte);
-                case TypeCode.Char: return default(Char);
-                case TypeCode.Int16: return default(Int16);
-                case TypeCode.Int32: return ScriptingRuntimeHelpers.Int32ToObject(0);
-                case TypeCode.Int64: return default(Int64);
-                case TypeCode.UInt16: return default(UInt16);
-                case TypeCode.UInt32: return default(UInt32);
-                case TypeCode.UInt64: return default(UInt64);
-                case TypeCode.Single: return default(Single);
-                case TypeCode.Double: return default(Double);
+                case TypeCode.Boolean:
+                    return False;
+
+                case TypeCode.SByte:
+                    return default(SByte);
+
+                case TypeCode.Byte:
+                    return default(Byte);
+
+                case TypeCode.Char:
+                    return default(Char);
+
+                case TypeCode.Int16:
+                    return default(Int16);
+
+                case TypeCode.Int32:
+                    return Int32ToObject(0);
+
+                case TypeCode.Int64:
+                    return default(Int64);
+
+                case TypeCode.UInt16:
+                    return default(UInt16);
+
+                case TypeCode.UInt32:
+                    return default(UInt32);
+
+                case TypeCode.UInt64:
+                    return default(UInt64);
+
+                case TypeCode.Single:
+                    return default(Single);
+
+                case TypeCode.Double:
+                    return default(Double);
                 //            case TypeCode.DBNull: return default(DBNull);
-                case TypeCode.DateTime: return default(DateTime);
-                case TypeCode.Decimal: return default(Decimal);
-                default: return null;
+                case TypeCode.DateTime:
+                    return default(DateTime);
+
+                case TypeCode.Decimal:
+                    return default(Decimal);
+
+                default:
+                    return null;
             }
         }
     }
@@ -141,7 +233,10 @@ namespace System.Linq.Expressions.Interpreter
 
         public int Count
         {
-            get { return _count; }
+            get
+            {
+                return _count;
+            }
         }
 
         public object GetArgument(int index)
@@ -183,6 +278,7 @@ namespace System.Linq.Expressions.Interpreter
 #endif // FEATURE_STACK_TRACES
             return rethrow;
         }
+
 #if FEATURE_STACK_TRACES
         /// <summary>
         /// Returns all the stack traces associates with an exception
@@ -474,7 +570,9 @@ namespace System.Linq.Expressions.Interpreter
     {
         internal static readonly ListEqualityComparer<T> Instance = new ListEqualityComparer<T>();
 
-        private ListEqualityComparer() { }
+        private ListEqualityComparer()
+        {
+        }
 
         // EqualityComparer<T> handles null and object identity for us
         public override bool Equals(ICollection<T> x, ICollection<T> y)

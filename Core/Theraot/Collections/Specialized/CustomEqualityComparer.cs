@@ -7,7 +7,7 @@ using Theraot.Core;
 
 namespace Theraot.Collections.Specialized
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public class CustomEqualityComparer<T> : IEqualityComparer<T>
     {
         private readonly Func<T, T, bool> _comparison;

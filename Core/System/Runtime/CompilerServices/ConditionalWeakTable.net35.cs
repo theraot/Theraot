@@ -11,7 +11,7 @@ using Theraot.Collections.ThreadSafe;
 // The ConditionalWeakTable<TKey, TValue> class differs from other collection objects in its management of the object lifetime of keys stored in the collection.
 // Ordinarily, when an object is stored in a collection, its lifetime lasts until it is removed (and there are no additional references to the object)
 // or until the collection object itself is destroyed.
-// 
+//
 // However, in the ConditionalWeakTable<TKey, TValue> class, adding a key/value pair to the table does not ensure that the key will persist,
 // even if it can be reached directly from a value stored in the table (for example, if the table contains one key, A, with a value V1, and a second key, B, with a value P2 that contains a reference to A).
 // Instead, ConditionalWeakTable<TKey, TValue> automatically removes the key/value entry as soon as no other references to a key exist outside the table. The example provides an illustration.
@@ -39,7 +39,7 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Represents a method that creates a non-default value to add as part of a key/value pair to a ConditionalWeakTable<TKey, TValue> object. 
+        /// Represents a method that creates a non-default value to add as part of a key/value pair to a ConditionalWeakTable<TKey, TValue> object.
         /// </summary>
         /// <param name="key">The key that belongs to the value to create.</param>
         /// <returns>An instance of a reference type that represents the value to attach to the specified key.</returns>
@@ -68,7 +68,7 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Atomically searches for a specified key in the table and returns the corresponding value. If the key does not exist in the table, the method invokes the default constructor of the class that represents the table's value to create a value that is bound to the specified key. 
+        /// Atomically searches for a specified key in the table and returns the corresponding value. If the key does not exist in the table, the method invokes the default constructor of the class that represents the table's value to create a value that is bound to the specified key.
         /// </summary>
         /// <param name="key">The key to search for. key represents the object to which the property is attached.</param>
         /// <returns>The value that corresponds to key, if key already exists in the table; otherwise, a new value created by the default constructor of the class defined by the TValue generic type parameter.</returns>

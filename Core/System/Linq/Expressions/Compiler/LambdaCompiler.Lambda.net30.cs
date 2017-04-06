@@ -81,7 +81,7 @@ namespace System.Linq.Expressions.Compiler
 
         /// <summary>
         /// Emits code which creates new instance of the delegateType delegate.
-        /// 
+        ///
         /// Since the delegate is getting closed over the "Closure" argument, this
         /// cannot be used with virtual/instance methods (inner must be static method)
         /// </summary>
@@ -91,8 +91,8 @@ namespace System.Linq.Expressions.Compiler
             DynamicMethod dynamicMethod = inner._method as DynamicMethod;
             if (dynamicMethod != null)
             {
-                var types = new[] {typeof (Type), typeof(object)};
-                var createDelegate = typeof (DynamicMethod).GetMethod("CreateDelegate", types);
+                var types = new[] { typeof(Type), typeof(object) };
+                var createDelegate = typeof(DynamicMethod).GetMethod("CreateDelegate", types);
                 if (createDelegate != null)
                 {
                     _boundConstants.EmitConstant(this, dynamicMethod, typeof(DynamicMethod));
@@ -104,11 +104,11 @@ namespace System.Linq.Expressions.Compiler
                 else
                 {
                     // Emit MethodInfo.CreateDelegate instead because DynamicMethod is not in Windows 8 Profile
-                    _boundConstants.EmitConstant(this, dynamicMethod, typeof (MethodInfo));
+                    _boundConstants.EmitConstant(this, dynamicMethod, typeof(MethodInfo));
                     _ilg.EmitType(delegateType);
                     EmitClosureCreation(inner);
                     _ilg.Emit(OpCodes.Callvirt,
-                        typeof (MethodInfo).GetMethod("CreateDelegate", types));
+                        typeof(MethodInfo).GetMethod("CreateDelegate", types));
                     _ilg.Emit(OpCodes.Castclass, delegateType);
                 }
             }
@@ -126,7 +126,7 @@ namespace System.Linq.Expressions.Compiler
         /// May end up creating a wrapper to match the requested delegate type.
         /// </summary>
         /// <param name="lambda">Lambda for which to generate a delegate</param>
-        /// 
+        ///
         private void EmitDelegateConstruction(LambdaExpression lambda)
         {
             // 1. Create the new compiler
@@ -175,7 +175,7 @@ namespace System.Linq.Expressions.Compiler
         /// <param name="parent">The parent scope.</param>
         /// <param name="inlined">true if the lambda is inlined; false otherwise.</param>
         /// <param name="flags">
-        /// The emum to specify if the lambda is compiled with the tail call optimization. 
+        /// The emum to specify if the lambda is compiled with the tail call optimization.
         /// </param>
         private void EmitLambdaBody(CompilerScope parent, bool inlined, CompilationFlags flags)
         {

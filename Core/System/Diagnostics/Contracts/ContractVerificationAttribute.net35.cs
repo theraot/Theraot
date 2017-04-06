@@ -23,7 +23,10 @@ namespace System.Diagnostics.Contracts
     {
         private readonly bool _value;
 
-        public ContractVerificationAttribute(bool value) { _value = value; }
+        public ContractVerificationAttribute(bool value)
+        {
+            _value = value;
+        }
 
         public bool Value
         {

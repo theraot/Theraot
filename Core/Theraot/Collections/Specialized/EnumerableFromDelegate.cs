@@ -8,7 +8,6 @@ using Theraot.Core;
 
 namespace Theraot.Collections.Specialized
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "By Design")]
     public class EnumerableFromDelegate<T> : IEnumerable<T>
     {
         private readonly Func<IEnumerator<T>> _getEnumerator;

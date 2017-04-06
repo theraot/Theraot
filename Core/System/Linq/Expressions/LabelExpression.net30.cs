@@ -13,7 +13,7 @@ namespace System.Linq.Expressions
     /// <see cref="GotoExpression"/>. Otherwise, it gets the value in <see cref="LabelExpression.DefaultValue"/>. If the
     /// <see cref="Type"/> equals System.Void, no value should be provided.
     /// </summary>
-    [DebuggerTypeProxy(typeof(Expression.LabelExpressionProxy))]
+    [DebuggerTypeProxy(typeof(LabelExpressionProxy))]
     public sealed class LabelExpression : Expression
     {
         private readonly Expression _defaultValue;
@@ -31,7 +31,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type
         {
-            get { return _target.Type; }
+            get
+            {
+                return _target.Type;
+            }
         }
 
         /// <summary>
@@ -40,7 +43,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get { return ExpressionType.Label; }
+            get
+            {
+                return ExpressionType.Label;
+            }
         }
 
         /// <summary>
@@ -48,7 +54,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public LabelTarget Target
         {
-            get { return _target; }
+            get
+            {
+                return _target;
+            }
         }
 
         /// <summary>
@@ -57,7 +66,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression DefaultValue
         {
-            get { return _defaultValue; }
+            get
+            {
+                return _defaultValue;
+            }
         }
 
         /// <summary>
@@ -82,7 +94,7 @@ namespace System.Linq.Expressions
             {
                 return this;
             }
-            return Expression.Label(target, defaultValue);
+            return Label(target, defaultValue);
         }
     }
 

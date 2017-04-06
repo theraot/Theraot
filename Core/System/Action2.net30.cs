@@ -10,9 +10,13 @@ namespace System
     /// <param name="arg1">The first parameter of the method that this delegate encapsulates.</param>
     /// <param name="arg2">The second parameter of the method that this delegate encapsulates.</param>
 #if NETCF
+
     public delegate void Action<T1, T2>(T1 arg1, T2 arg2);
+
 #else
+
     public delegate void Action<in T1, in T2>(T1 arg1, T2 arg2);
+
 #endif
 }
 

@@ -19,43 +19,43 @@
 // Authors:
 //		Federico Di Gregorio <fog@initd.org>
 
+using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
-using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-	public class ExpressionTest_PropertyOrField
-	{
-		[Test]
-		[ExpectedException (typeof (ArgumentNullException))]
-		public void Arg1Null ()
-		{
-			Expression.PropertyOrField (null, "NoPropertyOrField");
-		}
+    public class ExpressionTest_PropertyOrField
+    {
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Arg1Null()
+        {
+            Expression.PropertyOrField(null, "NoPropertyOrField");
+        }
 
-		[Test]
-		[ExpectedException (typeof (ArgumentNullException))]
-		public void Arg2Null ()
-		{
-			Expression.PropertyOrField (Expression.Constant (new MemberClass()), null);
-		}
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Arg2Null()
+        {
+            Expression.PropertyOrField(Expression.Constant(new MemberClass()), null);
+        }
 
-		[Test]
-		[ExpectedException (typeof (ArgumentException))]
-		public void NoPropertyOrField ()
-		{
-			Expression.PropertyOrField (Expression.Constant (new MemberClass()), "NoPropertyOrField");
-		}
+        [Test]
+        [ExpectedException(typeof(ArgumentException))]
+        public void NoPropertyOrField()
+        {
+            Expression.PropertyOrField(Expression.Constant(new MemberClass()), "NoPropertyOrField");
+        }
 
-		[Test]
-		public void InstanceProperty ()
-		{
-			var expr = Expression.PropertyOrField (Expression.Constant (new MemberClass()), "TestProperty1");
-            Assert.AreEqual (ExpressionType.MemberAccess, expr.NodeType, "PropertyOrField#01");
-			Assert.AreEqual (typeof (int), expr.Type, "PropertyOrField#02");
-			Assert.AreEqual ("value(MonoTests.System.Linq.Expressions.MemberClass).TestProperty1", expr.ToString(), "PropertyOrField#04");
-		}
-	}
+        [Test]
+        public void InstanceProperty()
+        {
+            var expr = Expression.PropertyOrField(Expression.Constant(new MemberClass()), "TestProperty1");
+            Assert.AreEqual(ExpressionType.MemberAccess, expr.NodeType, "PropertyOrField#01");
+            Assert.AreEqual(typeof(int), expr.Type, "PropertyOrField#02");
+            Assert.AreEqual("value(MonoTests.System.Linq.Expressions.MemberClass).TestProperty1", expr.ToString(), "PropertyOrField#04");
+        }
+    }
 }

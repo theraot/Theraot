@@ -10,7 +10,7 @@ namespace System.Runtime.CompilerServices
     /// <summary>
     /// Provides a builder for asynchronous methods that return void.
     ///             This type is intended for compiler use only.
-    /// 
+    ///
     /// </summary>
     public struct AsyncVoidMethodBuilder : IAsyncMethodBuilder
     {
@@ -18,14 +18,17 @@ namespace System.Runtime.CompilerServices
         /// The synchronization context associated with this operation.
         /// </summary>
         private readonly SynchronizationContext m_synchronizationContext;
+
         /// <summary>
         /// State related to the IAsyncStateMachine.
         /// </summary>
         private AsyncMethodBuilderCore m_coreState;
+
         /// <summary>
         /// An object used by the debugger to uniquely identify this builder.  Lazily initialized.
         /// </summary>
         private object m_objectIdForDebugger;
+
         /// <summary>
         /// Non-zero if PreventUnobservedTaskExceptions has already been invoked.
         /// </summary>
@@ -33,17 +36,17 @@ namespace System.Runtime.CompilerServices
 
         /// <summary>
         /// Gets an object that may be used to uniquely identify this builder to the debugger.
-        /// 
+        ///
         /// </summary>
-        /// 
+        ///
         /// <remarks>
         /// This property lazily instantiates the ID in a non-thread-safe manner.
         ///             It must only be used by the debugger and only in a single-threaded manner.
-        /// 
+        ///
         /// </remarks>
 // ReSharper disable UnusedMember.Local
         private object ObjectIdForDebugger
-// ReSharper restore UnusedMember.Local
+        // ReSharper restore UnusedMember.Local
         {
             get
             {
@@ -91,7 +94,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         /// Initializes a new <see cref="T:System.Runtime.CompilerServices.AsyncVoidMethodBuilder"/>.
         /// </summary>
-        /// 
+        ///
         /// <returns>
         /// The initialized <see cref="T:System.Runtime.CompilerServices.AsyncVoidMethodBuilder"/>.
         /// </returns>
@@ -125,7 +128,7 @@ namespace System.Runtime.CompilerServices
 
         /// <summary>
         /// Schedules the specified state machine to be pushed forward when the specified awaiter completes.
-        /// 
+        ///
         /// </summary>
         /// <typeparam name="TAwaiter">Specifies the type of the awaiter.</typeparam><typeparam name="TStateMachine">Specifies the type of the state machine.</typeparam><param name="awaiter">The awaiter.</param><param name="stateMachine">The state machine.</param>
         public void AwaitOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine)
@@ -145,7 +148,7 @@ namespace System.Runtime.CompilerServices
 
         /// <summary>
         /// Schedules the specified state machine to be pushed forward when the specified awaiter completes.
-        /// 
+        ///
         /// </summary>
         /// <typeparam name="TAwaiter">Specifies the type of the awaiter.</typeparam><typeparam name="TStateMachine">Specifies the type of the state machine.</typeparam><param name="awaiter">The awaiter.</param><param name="stateMachine">The state machine.</param>
         [SecuritySafeCritical]

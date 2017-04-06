@@ -1,6 +1,5 @@
 ﻿#if NET20 || NET30 || NET35 || NET40
 
-
 namespace System.Threading
 {
     public static class Volatile

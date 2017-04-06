@@ -21,9 +21,9 @@
 //    Jb Evain (jbevain@novell.com)
 //
 
+using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
-using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {

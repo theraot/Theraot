@@ -2,7 +2,6 @@
 
 namespace System.Collections.Generic
 {
-    [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "Backport")]
     public interface ISet<T> : ICollection<T>
     {
         new bool Add(T item);

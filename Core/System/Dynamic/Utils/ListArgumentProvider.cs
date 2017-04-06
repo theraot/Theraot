@@ -74,7 +74,7 @@ namespace System.Dynamic.Utils
             }
         }
 
-        #endregion
+        #endregion IList<Expression> Members
 
         #region ICollection<Expression> Members
 
@@ -104,12 +104,18 @@ namespace System.Dynamic.Utils
 
         public int Count
         {
-            get { return _provider.ArgumentCount; }
+            get
+            {
+                return _provider.ArgumentCount;
+            }
         }
 
         public bool IsReadOnly
         {
-            get { return true; }
+            get
+            {
+                return true;
+            }
         }
 
         public bool Remove(Expression item)
@@ -117,7 +123,7 @@ namespace System.Dynamic.Utils
             throw ContractUtils.Unreachable;
         }
 
-        #endregion
+        #endregion ICollection<Expression> Members
 
         #region IEnumerable<Expression> Members
 
@@ -131,11 +137,11 @@ namespace System.Dynamic.Utils
             }
         }
 
-        #endregion
+        #endregion IEnumerable<Expression> Members
 
         #region IEnumerable Members
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        Collections.IEnumerator Collections.IEnumerable.GetEnumerator()
         {
             yield return _arg0;
 
@@ -144,6 +150,7 @@ namespace System.Dynamic.Utils
                 yield return _provider.GetArgument(i);
             }
         }
-        #endregion
+
+        #endregion IEnumerable Members
     }
 }

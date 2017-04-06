@@ -35,7 +35,7 @@ namespace System.Threading.Tasks
             }
             else
             {
-                // We permit inlining if the caller allows us to, and 
+                // We permit inlining if the caller allows us to, and
                 // either we're on a thread pool thread (in which case we're fine running arbitrary code)
                 // or we're already on the target scheduler (in which case we'll just ask the scheduler
                 // whether it's ok to run here).  We include the IsThreadPoolThread check here, whereas
@@ -43,7 +43,7 @@ namespace System.Threading.Tasks
                 // to in AwaitTaskContinuation.Run where it restricts what's allowed.
                 var inlineIfPossible = canInlineContinuationTask && (TaskScheduler.Current == _scheduler || Thread.CurrentThread.IsThreadPoolThread);
 
-                // Create the continuation task task. If we're allowed to inline, try to do so.  
+                // Create the continuation task task. If we're allowed to inline, try to do so.
                 // The target scheduler may still deny us from executing on this thread, in which case this'll be queued.
                 var task = CreateTask
                     (
@@ -51,7 +51,7 @@ namespace System.Threading.Tasks
                         {
                             try
                             {
-                                ((Action) state)();
+                                ((Action)state)();
                             }
                             catch (Exception exc)
                             {

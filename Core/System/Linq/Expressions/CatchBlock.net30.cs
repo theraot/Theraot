@@ -9,7 +9,7 @@ using System.Dynamic.Utils;
 namespace System.Linq.Expressions
 {
     /// <summary>
-    /// Represents a catch statement in a try block. 
+    /// Represents a catch statement in a try block.
     /// This must have the same return type (i.e., the type of <see cref="P:CatchBlock.Body"/>) as the try block it is associated with.
     /// </summary>
     [DebuggerTypeProxy(typeof(Expression.CatchBlockProxy))]
@@ -33,7 +33,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public ParameterExpression Variable
         {
-            get { return _var; }
+            get
+            {
+                return _var;
+            }
         }
 
         /// <summary>
@@ -41,7 +44,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public Type Test
         {
-            get { return _test; }
+            get
+            {
+                return _test;
+            }
         }
 
         /// <summary>
@@ -49,7 +55,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Body
         {
-            get { return _body; }
+            get
+            {
+                return _body;
+            }
         }
 
         /// <summary>
@@ -64,7 +73,7 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Returns a <see cref="String"/> that represents the current <see cref="Object"/>. 
+        /// Returns a <see cref="String"/> that represents the current <see cref="Object"/>.
         /// </summary>
         /// <returns>A <see cref="String"/> that represents the current <see cref="Object"/>. </returns>
         public override string ToString()
@@ -94,8 +103,8 @@ namespace System.Linq.Expressions
     public partial class Expression
     {
         /// <summary>
-        /// Creates a <see cref="CatchBlock"/> representing a catch statement. 
-        /// The <see cref="Type"/> of object to be caught can be specified but no reference to the object 
+        /// Creates a <see cref="CatchBlock"/> representing a catch statement.
+        /// The <see cref="Type"/> of object to be caught can be specified but no reference to the object
         /// will be available for use in the <see cref="CatchBlock"/>.
         /// </summary>
         /// <param name="type">The <see cref="Type"/> of <see cref="Exception"/> this <see cref="CatchBlock"/> will handle.</param>
@@ -119,7 +128,7 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Creates a <see cref="CatchBlock"/> representing a catch statement with 
+        /// Creates a <see cref="CatchBlock"/> representing a catch statement with
         /// an <see cref="Exception"/> filter but no reference to the caught <see cref="Exception"/> object.
         /// </summary>
         /// <param name="type">The <see cref="Type"/> of <see cref="Exception"/> this <see cref="CatchBlock"/> will handle.</param>
@@ -132,7 +141,7 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Creates a <see cref="CatchBlock"/> representing a catch statement with 
+        /// Creates a <see cref="CatchBlock"/> representing a catch statement with
         /// an <see cref="Exception"/> filter and a reference to the caught <see cref="Exception"/> object.
         /// </summary>
         /// <param name="variable">A <see cref="ParameterExpression"/> representing a reference to the <see cref="Exception"/> object caught by this handler.</param>
@@ -166,7 +175,8 @@ namespace System.Linq.Expressions
             if (filter != null)
             {
                 RequiresCanRead(filter, "filter");
-                if (filter.Type != typeof(bool)) throw Error.ArgumentMustBeBoolean();
+                if (filter.Type != typeof(bool))
+                    throw Error.ArgumentMustBeBoolean();
             }
 
             return new CatchBlock(type, variable, body, filter);

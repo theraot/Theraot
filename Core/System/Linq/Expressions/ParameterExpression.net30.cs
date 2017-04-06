@@ -12,7 +12,7 @@ namespace System.Linq.Expressions
     /// <summary>
     /// Represents a named parameter expression.
     /// </summary>
-    [DebuggerTypeProxy(typeof(Expression.ParameterExpressionProxy))]
+    [DebuggerTypeProxy(typeof(ParameterExpressionProxy))]
     public class ParameterExpression : Expression
     {
         private readonly string _name;
@@ -34,15 +34,33 @@ namespace System.Linq.Expressions
                 {
                     switch (type.GetTypeCode())
                     {
-                        case TypeCode.Boolean: return new PrimitiveParameterExpression<Boolean>(name);
-                        case TypeCode.Byte: return new PrimitiveParameterExpression<Byte>(name);
-                        case TypeCode.Char: return new PrimitiveParameterExpression<Char>(name);
-                        case TypeCode.DateTime: return new PrimitiveParameterExpression<DateTime>(name);
-                        case TypeCode.Decimal: return new PrimitiveParameterExpression<Decimal>(name);
-                        case TypeCode.Double: return new PrimitiveParameterExpression<Double>(name);
-                        case TypeCode.Int16: return new PrimitiveParameterExpression<Int16>(name);
-                        case TypeCode.Int32: return new PrimitiveParameterExpression<Int32>(name);
-                        case TypeCode.Int64: return new PrimitiveParameterExpression<Int64>(name);
+                        case TypeCode.Boolean:
+                            return new PrimitiveParameterExpression<Boolean>(name);
+
+                        case TypeCode.Byte:
+                            return new PrimitiveParameterExpression<Byte>(name);
+
+                        case TypeCode.Char:
+                            return new PrimitiveParameterExpression<Char>(name);
+
+                        case TypeCode.DateTime:
+                            return new PrimitiveParameterExpression<DateTime>(name);
+
+                        case TypeCode.Decimal:
+                            return new PrimitiveParameterExpression<Decimal>(name);
+
+                        case TypeCode.Double:
+                            return new PrimitiveParameterExpression<Double>(name);
+
+                        case TypeCode.Int16:
+                            return new PrimitiveParameterExpression<Int16>(name);
+
+                        case TypeCode.Int32:
+                            return new PrimitiveParameterExpression<Int32>(name);
+
+                        case TypeCode.Int64:
+                            return new PrimitiveParameterExpression<Int64>(name);
+
                         case TypeCode.Object:
                             // common reference types which we optimize go here.  Of course object is in
                             // the list, the others are driven by profiling of various workloads.  This list
@@ -60,12 +78,24 @@ namespace System.Linq.Expressions
                                 return new PrimitiveParameterExpression<object[]>(name);
                             }
                             break;
-                        case TypeCode.SByte: return new PrimitiveParameterExpression<SByte>(name);
-                        case TypeCode.Single: return new PrimitiveParameterExpression<Single>(name);
-                        case TypeCode.String: return new PrimitiveParameterExpression<String>(name);
-                        case TypeCode.UInt16: return new PrimitiveParameterExpression<UInt16>(name);
-                        case TypeCode.UInt32: return new PrimitiveParameterExpression<UInt32>(name);
-                        case TypeCode.UInt64: return new PrimitiveParameterExpression<UInt64>(name);
+
+                        case TypeCode.SByte:
+                            return new PrimitiveParameterExpression<SByte>(name);
+
+                        case TypeCode.Single:
+                            return new PrimitiveParameterExpression<Single>(name);
+
+                        case TypeCode.String:
+                            return new PrimitiveParameterExpression<String>(name);
+
+                        case TypeCode.UInt16:
+                            return new PrimitiveParameterExpression<UInt16>(name);
+
+                        case TypeCode.UInt32:
+                            return new PrimitiveParameterExpression<UInt32>(name);
+
+                        case TypeCode.UInt64:
+                            return new PrimitiveParameterExpression<UInt64>(name);
                     }
                 }
             }
@@ -79,7 +109,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public override Type Type
         {
-            get { return typeof(object); }
+            get
+            {
+                return typeof(object);
+            }
         }
 
         /// <summary>
@@ -88,7 +121,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get { return ExpressionType.Parameter; }
+            get
+            {
+                return ExpressionType.Parameter;
+            }
         }
 
         /// <summary>
@@ -96,7 +132,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public string Name
         {
-            get { return _name; }
+            get
+            {
+                return _name;
+            }
         }
 
         /// <summary>
@@ -125,7 +164,7 @@ namespace System.Linq.Expressions
     }
 
     /// <summary>
-    /// Specialized subclass to avoid holding onto the byref flag in a 
+    /// Specialized subclass to avoid holding onto the byref flag in a
     /// parameter expression.  This version always holds onto the expression
     /// type explicitly and therefore derives from TypedParameterExpression.
     /// </summary>
@@ -158,7 +197,10 @@ namespace System.Linq.Expressions
 
         public sealed override Type Type
         {
-            get { return _paramType; }
+            get
+            {
+                return _paramType;
+            }
         }
     }
 
@@ -175,7 +217,10 @@ namespace System.Linq.Expressions
 
         public sealed override Type Type
         {
-            get { return typeof(T); }
+            get
+            {
+                return typeof(T);
+            }
         }
     }
 
@@ -234,8 +279,10 @@ namespace System.Linq.Expressions
         public static ParameterExpression Variable(Type type, string name)
         {
             ContractUtils.RequiresNotNull(type, "type");
-            if (type == typeof(void)) throw Error.ArgumentCannotBeOfTypeVoid();
-            if (type.IsByRef) throw Error.TypeMustNotBeByRef();
+            if (type == typeof(void))
+                throw Error.ArgumentCannotBeOfTypeVoid();
+            if (type.IsByRef)
+                throw Error.TypeMustNotBeByRef();
             return ParameterExpression.Make(type, name, false);
         }
     }

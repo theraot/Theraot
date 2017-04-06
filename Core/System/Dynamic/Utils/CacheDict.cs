@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System.Threading;
 using System.Diagnostics;
+using System.Threading;
 
 namespace System.Dynamic.Utils
 {
@@ -12,11 +12,11 @@ namespace System.Dynamic.Utils
     /// </summary>
     internal class CacheDict<TKey, TValue>
     {
-
-        // cache size is always ^2. 
+        // cache size is always ^2.
         // items are placed at [hash ^ mask]
         // new item will displace previous one at the same location.
         private readonly int mask;
+
         private readonly Entry[] entries;
 
         // class, to ensure atomic updates.
@@ -41,8 +41,8 @@ namespace System.Dynamic.Utils
         internal CacheDict(int size)
         {
             var alignedSize = AlignSize(size);
-            this.mask = alignedSize - 1;
-            this.entries = new Entry[alignedSize];
+            mask = alignedSize - 1;
+            entries = new Entry[alignedSize];
         }
 
         private static int AlignSize(int size)
@@ -70,7 +70,7 @@ namespace System.Dynamic.Utils
             int hash = key.GetHashCode();
             int idx = hash & mask;
 
-            var entry = Volatile.Read(ref this.entries[idx]);
+            var entry = Volatile.Read(ref entries[idx]);
             if (entry != null && entry.hash == hash && entry.key.Equals(key))
             {
                 value = entry.value;
@@ -90,7 +90,7 @@ namespace System.Dynamic.Utils
             var hash = key.GetHashCode();
             var idx = hash & mask;
 
-            var entry = Volatile.Read(ref this.entries[idx]);
+            var entry = Volatile.Read(ref entries[idx]);
             if (entry == null || entry.hash != hash || !entry.key.Equals(key))
             {
                 Volatile.Write(ref entries[idx], new Entry(hash, key, value));

@@ -14,10 +14,10 @@
 // distribute, sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so, subject to
 // the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be
 // included in all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 // EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 // MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -42,7 +42,11 @@ namespace MonoTests.System.Threading
             var cts = new CancellationTokenSource();
 
             int[] called = { 0 };
-            cts.Token.Register(l => { Assert.AreEqual("v", l); ++called[0]; }, "v");
+            cts.Token.Register(l =>
+            {
+                Assert.AreEqual("v", l);
+                ++called[0];
+            }, "v");
             cts.Cancel();
             Assert.AreEqual(1, called[0], "#1");
 
@@ -57,9 +61,18 @@ namespace MonoTests.System.Threading
         {
             var cts = new CancellationTokenSource();
 
-            cts.Token.Register(() => { throw new ApplicationException("1"); });
-            cts.Token.Register(() => { throw new ApplicationException("2"); });
-            cts.Token.Register(() => { throw new ApplicationException("3"); });
+            cts.Token.Register(() =>
+            {
+                throw new ApplicationException("1");
+            });
+            cts.Token.Register(() =>
+            {
+                throw new ApplicationException("2");
+            });
+            cts.Token.Register(() =>
+            {
+                throw new ApplicationException("3");
+            });
 
             try
             {
@@ -107,9 +120,18 @@ namespace MonoTests.System.Threading
         {
             var cts = new CancellationTokenSource();
 
-            cts.Token.Register(() => { throw new ApplicationException("1"); });
-            cts.Token.Register(() => { throw new ApplicationException("2"); });
-            cts.Token.Register(() => { throw new ApplicationException("3"); });
+            cts.Token.Register(() =>
+            {
+                throw new ApplicationException("1");
+            });
+            cts.Token.Register(() =>
+            {
+                throw new ApplicationException("2");
+            });
+            cts.Token.Register(() =>
+            {
+                throw new ApplicationException("3");
+            });
 
             try
             {
@@ -125,7 +147,10 @@ namespace MonoTests.System.Threading
 
             try
             {
-                cts.Token.Register(() => { throw new ApplicationException("1"); });
+                cts.Token.Register(() =>
+                {
+                    throw new ApplicationException("1");
+                });
                 Assert.Fail("#11");
             }
             catch (ApplicationException)
@@ -140,9 +165,18 @@ namespace MonoTests.System.Threading
         {
             var cts = new CancellationTokenSource();
 
-            cts.Token.Register(() => { throw new ApplicationException("1"); });
-            cts.Token.Register(() => { throw new ApplicationException("2"); });
-            cts.Token.Register(() => { throw new ApplicationException("3"); });
+            cts.Token.Register(() =>
+            {
+                throw new ApplicationException("1");
+            });
+            cts.Token.Register(() =>
+            {
+                throw new ApplicationException("2");
+            });
+            cts.Token.Register(() =>
+            {
+                throw new ApplicationException("3");
+            });
 
             try
             {
@@ -168,7 +202,11 @@ namespace MonoTests.System.Threading
         {
             var cts = new CancellationTokenSource();
             var current = 0;
-            Action<object> a = x => { Assert.AreEqual(current, x); current++; };
+            Action<object> a = x =>
+            {
+                Assert.AreEqual(current, x);
+                current++;
+            };
 
             cts.Token.Register(a, 2);
             cts.Token.Register(a, 1);
@@ -181,7 +219,10 @@ namespace MonoTests.System.Threading
         {
             var cts = new CancellationTokenSource();
 
-            cts.Token.Register(() => { throw new ApplicationException(); });
+            cts.Token.Register(() =>
+            {
+                throw new ApplicationException();
+            });
             try
             {
                 cts.Cancel();
@@ -333,7 +374,9 @@ namespace MonoTests.System.Threading
 
             try
             {
-                token.Register(() => { });
+                token.Register(() =>
+                {
+                });
                 Assert.Fail("#3");
             }
             catch (ObjectDisposedException)
@@ -392,7 +435,11 @@ namespace MonoTests.System.Threading
             Console.WriteLine("Test1");
             var reg = token.Register(() => unregister = true);
             token.Register(reg.Dispose);
-            token.Register(() => { Console.WriteLine("Gnyah"); token.Register(() => register = true); });
+            token.Register(() =>
+            {
+                Console.WriteLine("Gnyah");
+                token.Register(() => register = true);
+            });
             source.Cancel();
 
             Assert.IsFalse(unregister);
@@ -403,10 +450,16 @@ namespace MonoTests.System.Threading
         public void RegisterThenDispose()
         {
             var cts1 = new CancellationTokenSource();
-            var reg1 = cts1.Token.Register(() => { throw new ApplicationException(); });
+            var reg1 = cts1.Token.Register(() =>
+            {
+                throw new ApplicationException();
+            });
 
             var cts2 = new CancellationTokenSource();
-            cts2.Token.Register(() => { throw new ApplicationException(); });
+            cts2.Token.Register(() =>
+            {
+                throw new ApplicationException();
+            });
 
             Assert.AreNotEqual(cts1, cts2, "#1");
             Assert.AreNotSame(cts1, cts2, "#2");
@@ -436,7 +489,6 @@ namespace MonoTests.System.Threading
         //[Test]
         //public void RegisterWhileCancelling()
         //{
-
         //    cts.Token.Register(() =>
         //    {
         //        Assert.IsTrue(cts.IsCancellationRequested, "#10");
@@ -445,7 +497,6 @@ namespace MonoTests.System.Threading
         //        mre.WaitOne(3000);
         //        called += 11;
         //    });
-
 
         //    Assert.IsTrue(mre2.WaitOne(1000), "#0");
         //    cts.Token.Register(() => { called++; });
@@ -553,7 +604,9 @@ namespace MonoTests.System.Threading
 
             try
             {
-                token.Register(() => { });
+                token.Register(() =>
+                {
+                });
                 Assert.Fail("#3");
             }
             catch (ObjectDisposedException)

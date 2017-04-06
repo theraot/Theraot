@@ -1,6 +1,6 @@
-﻿using System;
+﻿using NUnit.Framework;
+using System;
 using System.Runtime.InteropServices;
-using NUnit.Framework;
 using Theraot.Core;
 
 namespace Tests.System

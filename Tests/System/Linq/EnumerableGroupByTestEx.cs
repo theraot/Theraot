@@ -1,8 +1,8 @@
-﻿using System.Collections;
+﻿using NUnit.Framework;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using NUnit.Framework;
 using Theraot.Collections;
 using Theraot.Core;
 
@@ -174,7 +174,10 @@ namespace MonoTests.System.Linq
 
             public int Total
             {
-                get { return _total; }
+                get
+                {
+                    return _total;
+                }
             }
 
             public IEnumerator<int> GetEnumerator()

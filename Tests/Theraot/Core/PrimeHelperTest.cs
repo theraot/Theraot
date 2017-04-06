@@ -48,7 +48,7 @@ namespace Tests.Theraot.Core
             Assert.AreEqual(2, PrimeHelper.ToPrime(2));
             Assert.AreEqual(2147483629, PrimeHelper.ToPrime(2147483629));
         }
-        
+
         [Test]
         public void TestNextPrime()
         {

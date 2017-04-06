@@ -58,7 +58,7 @@ namespace System.Dynamic.Utils
             {
                 if (array[i] == null)
                 {
-                    throw new ArgumentNullException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "{0}[{1}]", arrayName, i));
+                    throw new ArgumentNullException(string.Format(Globalization.CultureInfo.CurrentCulture, "{0}[{1}]", arrayName, i));
                 }
             }
         }
@@ -74,8 +74,10 @@ namespace System.Dynamic.Utils
             Debug.Assert(!string.IsNullOrEmpty(countName));
             Debug.Assert(array != null);
 
-            if (count < 0) throw new ArgumentOutOfRangeException(countName);
-            if (offset < 0 || array.Count - offset < count) throw new ArgumentOutOfRangeException(offsetName);
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(countName);
+            if (offset < 0 || array.Count - offset < count)
+                throw new ArgumentOutOfRangeException(offsetName);
         }
     }
 }

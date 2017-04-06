@@ -8,7 +8,7 @@ namespace System.Runtime.CompilerServices
     /// <summary>
     /// Provides an awaitable object that allows for configured awaits on <see cref="T:System.Threading.Tasks.Task`1"/>.
     /// </summary>
-    /// 
+    ///
     /// <remarks>
     /// This type is intended for compiler use only.
     /// </remarks>
@@ -32,7 +32,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         /// Gets an awaiter for this awaitable.
         /// </summary>
-        /// 
+        ///
         /// <returns>
         /// The awaiter.
         /// </returns>
@@ -44,7 +44,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         /// Provides an awaiter for a <see cref="T:System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1"/>.
         /// </summary>
-        /// 
+        ///
         /// <remarks>
         /// This type is intended for compiler use only.
         /// </remarks>
@@ -54,6 +54,7 @@ namespace System.Runtime.CompilerServices
             /// The task being awaited.
             /// </summary>
             private readonly Task<TResult> m_task;
+
             /// <summary>
             /// Whether to attempt marshaling back to the original context.
             /// </summary>
@@ -62,7 +63,7 @@ namespace System.Runtime.CompilerServices
             /// <summary>
             /// Gets whether the task being awaited is completed.
             /// </summary>
-            /// 
+            ///
             /// <remarks>
             /// This property is intended for compiler user rather than use directly in code.
             /// </remarks>
@@ -114,7 +115,7 @@ namespace System.Runtime.CompilerServices
             /// <summary>
             /// Ends the await on the completed <see cref="T:System.Threading.Tasks.Task`1"/>.
             /// </summary>
-            /// 
+            ///
             /// <returns>
             /// The result of the completed <see cref="T:System.Threading.Tasks.Task`1"/>.
             /// </returns>
@@ -130,7 +131,7 @@ namespace System.Runtime.CompilerServices
     /// <summary>
     /// Provides an awaitable object that allows for configured awaits on <see cref="T:System.Threading.Tasks.Task"/>.
     /// </summary>
-    /// 
+    ///
     /// <remarks>
     /// This type is intended for compiler use only.
     /// </remarks>
@@ -154,7 +155,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         /// Gets an awaiter for this awaitable.
         /// </summary>
-        /// 
+        ///
         /// <returns>
         /// The awaiter.
         /// </returns>
@@ -166,7 +167,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         /// Provides an awaiter for a <see cref="T:System.Runtime.CompilerServices.ConfiguredTaskAwaitable"/>.
         /// </summary>
-        /// 
+        ///
         /// <remarks>
         /// This type is intended for compiler use only.
         /// </remarks>
@@ -176,6 +177,7 @@ namespace System.Runtime.CompilerServices
             /// The task being awaited.
             /// </summary>
             private readonly Task m_task;
+
             /// <summary>
             /// Whether to attempt marshaling back to the original context.
             /// </summary>
@@ -184,7 +186,7 @@ namespace System.Runtime.CompilerServices
             /// <summary>
             /// Gets whether the task being awaited is completed.
             /// </summary>
-            /// 
+            ///
             /// <remarks>
             /// This property is intended for compiler user rather than use directly in code.
             /// </remarks>
@@ -241,7 +243,7 @@ namespace System.Runtime.CompilerServices
             /// <summary>
             /// Ends the await on the completed <see cref="T:System.Threading.Tasks.Task"/>.
             /// </summary>
-            /// 
+            ///
             /// <returns>
             /// The result of the completed <see cref="T:System.Threading.Tasks.Task`1"/>.
             /// </returns>

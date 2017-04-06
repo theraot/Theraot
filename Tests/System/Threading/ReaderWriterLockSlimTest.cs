@@ -26,10 +26,10 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
 using NUnit.Framework;
-using System.Threading;
+using System;
 using System.Linq;
+using System.Threading;
 
 namespace MonoTests.System.Threading
 {
@@ -410,7 +410,6 @@ namespace MonoTests.System.Threading
             var r = from i in Enumerable.Range(1, 30)
                     select new Thread(() =>
             {
-
                 // Just to cause some contention
                 Thread.Sleep(100);
 
@@ -526,8 +525,6 @@ namespace MonoTests.System.Threading
         //[Test]
         //public void EnterWriteLockWhileInUpgradeAndOtherWaiting()
         //{
-
-
         //    var task1 = new Task(() =>
         //    {
         //        v.EnterUpgradeableReadLock();

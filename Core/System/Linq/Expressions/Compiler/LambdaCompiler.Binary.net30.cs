@@ -66,7 +66,6 @@ namespace System.Linq.Expressions.Compiler
             EmitBinaryOperator(b.NodeType, b.Left.Type, b.Right.Type, b.Type, b.IsLiftedToNull);
         }
 
-
         private void EmitNullEquality(ExpressionType op, Expression e, bool isLiftedToNull)
         {
             Debug.Assert(TypeHelper.IsNullableType(e.Type));
@@ -89,7 +88,6 @@ namespace System.Linq.Expressions.Compiler
                 }
             }
         }
-
 
         private void EmitBinaryMethod(BinaryExpression b, CompilationFlags flags)
         {
@@ -119,6 +117,7 @@ namespace System.Linq.Expressions.Compiler
                             }
                             resultType = typeof(bool);
                             break;
+
                         default:
                             resultType = TypeHelper.GetNullableType(mc.Type);
                             break;
@@ -135,7 +134,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-
         private void EmitBinaryOperator(ExpressionType op, Type leftType, Type rightType, Type resultType, bool liftedToNull)
         {
             bool leftIsNullable = TypeHelper.IsNullableType(leftType);
@@ -150,6 +148,7 @@ namespace System.Linq.Expressions.Compiler
                     }
                     _ilg.EmitLoadElement(leftType.GetElementType());
                     return;
+
                 case ExpressionType.Coalesce:
                     throw Error.UnexpectedCoalesceOperator();
             }
@@ -165,8 +164,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private void EmitUnliftedBinaryOp(ExpressionType op, Type leftType, Type rightType)
         {
             Debug.Assert(!TypeHelper.IsNullableType(leftType));
@@ -186,6 +183,7 @@ namespace System.Linq.Expressions.Compiler
                 case ExpressionType.Add:
                     _ilg.Emit(OpCodes.Add);
                     break;
+
                 case ExpressionType.AddChecked:
                     if (TypeHelper.IsFloatingPoint(leftType))
                     {
@@ -200,9 +198,11 @@ namespace System.Linq.Expressions.Compiler
                         _ilg.Emit(OpCodes.Add_Ovf);
                     }
                     break;
+
                 case ExpressionType.Subtract:
                     _ilg.Emit(OpCodes.Sub);
                     break;
+
                 case ExpressionType.SubtractChecked:
                     if (TypeHelper.IsFloatingPoint(leftType))
                     {
@@ -217,9 +217,11 @@ namespace System.Linq.Expressions.Compiler
                         _ilg.Emit(OpCodes.Sub_Ovf);
                     }
                     break;
+
                 case ExpressionType.Multiply:
                     _ilg.Emit(OpCodes.Mul);
                     break;
+
                 case ExpressionType.MultiplyChecked:
                     if (TypeHelper.IsFloatingPoint(leftType))
                     {
@@ -234,6 +236,7 @@ namespace System.Linq.Expressions.Compiler
                         _ilg.Emit(OpCodes.Mul_Ovf);
                     }
                     break;
+
                 case ExpressionType.Divide:
                     if (TypeHelper.IsUnsigned(leftType))
                     {
@@ -244,6 +247,7 @@ namespace System.Linq.Expressions.Compiler
                         _ilg.Emit(OpCodes.Div);
                     }
                     break;
+
                 case ExpressionType.Modulo:
                     if (TypeHelper.IsUnsigned(leftType))
                     {
@@ -254,14 +258,17 @@ namespace System.Linq.Expressions.Compiler
                         _ilg.Emit(OpCodes.Rem);
                     }
                     break;
+
                 case ExpressionType.And:
                 case ExpressionType.AndAlso:
                     _ilg.Emit(OpCodes.And);
                     break;
+
                 case ExpressionType.Or:
                 case ExpressionType.OrElse:
                     _ilg.Emit(OpCodes.Or);
                     break;
+
                 case ExpressionType.LessThan:
                     if (TypeHelper.IsUnsigned(leftType))
                     {
@@ -272,6 +279,7 @@ namespace System.Linq.Expressions.Compiler
                         _ilg.Emit(OpCodes.Clt);
                     }
                     break;
+
                 case ExpressionType.LessThanOrEqual:
                     {
                         Label labFalse = _ilg.DefineLabel();
@@ -291,6 +299,7 @@ namespace System.Linq.Expressions.Compiler
                         _ilg.MarkLabel(labEnd);
                     }
                     break;
+
                 case ExpressionType.GreaterThan:
                     if (TypeHelper.IsUnsigned(leftType))
                     {
@@ -301,6 +310,7 @@ namespace System.Linq.Expressions.Compiler
                         _ilg.Emit(OpCodes.Cgt);
                     }
                     break;
+
                 case ExpressionType.GreaterThanOrEqual:
                     {
                         Label labFalse = _ilg.DefineLabel();
@@ -320,9 +330,11 @@ namespace System.Linq.Expressions.Compiler
                         _ilg.MarkLabel(labEnd);
                     }
                     break;
+
                 case ExpressionType.ExclusiveOr:
                     _ilg.Emit(OpCodes.Xor);
                     break;
+
                 case ExpressionType.LeftShift:
                     if (rightType != typeof(int))
                     {
@@ -330,6 +342,7 @@ namespace System.Linq.Expressions.Compiler
                     }
                     _ilg.Emit(OpCodes.Shl);
                     break;
+
                 case ExpressionType.RightShift:
                     if (rightType != typeof(int))
                     {
@@ -344,12 +357,13 @@ namespace System.Linq.Expressions.Compiler
                         _ilg.Emit(OpCodes.Shr);
                     }
                     break;
+
                 default:
                     throw Error.UnhandledBinary(op);
             }
         }
 
-        // Binary/unary operations on 8 and 16 bit operand types will leave a 
+        // Binary/unary operations on 8 and 16 bit operand types will leave a
         // 32-bit value on the stack, because that's how IL works. For these
         // cases, we need to cast it back to the resultType, possibly using a
         // checked conversion if the original operator was convert
@@ -362,12 +376,15 @@ namespace System.Linq.Expressions.Compiler
                 case TypeCode.Byte:
                     _ilg.Emit(IsChecked(op) ? OpCodes.Conv_Ovf_U1 : OpCodes.Conv_U1);
                     break;
+
                 case TypeCode.SByte:
                     _ilg.Emit(IsChecked(op) ? OpCodes.Conv_Ovf_I1 : OpCodes.Conv_I1);
                     break;
+
                 case TypeCode.UInt16:
                     _ilg.Emit(IsChecked(op) ? OpCodes.Conv_Ovf_U2 : OpCodes.Conv_U2);
                     break;
+
                 case TypeCode.Int16:
                     _ilg.Emit(IsChecked(op) ? OpCodes.Conv_Ovf_I2 : OpCodes.Conv_I2);
                     break;
@@ -389,8 +406,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private void EmitLiftedBinaryOp(ExpressionType op, Type leftType, Type rightType, Type resultType, bool liftedToNull)
         {
             Debug.Assert(TypeHelper.IsNullableType(leftType) || TypeHelper.IsNullableType(rightType));
@@ -406,6 +421,7 @@ namespace System.Linq.Expressions.Compiler
                         EmitLiftedBinaryArithmetic(op, leftType, rightType, resultType);
                     }
                     break;
+
                 case ExpressionType.Or:
                     if (leftType == typeof(bool?))
                     {
@@ -416,6 +432,7 @@ namespace System.Linq.Expressions.Compiler
                         EmitLiftedBinaryArithmetic(op, leftType, rightType, resultType);
                     }
                     break;
+
                 case ExpressionType.ExclusiveOr:
                 case ExpressionType.Add:
                 case ExpressionType.AddChecked:
@@ -429,6 +446,7 @@ namespace System.Linq.Expressions.Compiler
                 case ExpressionType.RightShift:
                     EmitLiftedBinaryArithmetic(op, leftType, rightType, resultType);
                     break;
+
                 case ExpressionType.LessThan:
                 case ExpressionType.LessThanOrEqual:
                 case ExpressionType.GreaterThan:
@@ -437,13 +455,13 @@ namespace System.Linq.Expressions.Compiler
                 case ExpressionType.NotEqual:
                     EmitLiftedRelational(op, leftType, rightType, resultType, liftedToNull);
                     break;
+
                 case ExpressionType.AndAlso:
                 case ExpressionType.OrElse:
                 default:
                     throw ContractUtils.Unreachable;
             }
         }
-
 
         private void EmitLiftedRelational(ExpressionType op, Type leftType, Type rightType, Type resultType, bool liftedToNull)
         {
@@ -563,7 +581,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-
         private void EmitLiftedBinaryArithmetic(ExpressionType op, Type leftType, Type rightType, Type resultType)
         {
             bool leftIsNullable = TypeHelper.IsNullableType(leftType);
@@ -642,7 +659,6 @@ namespace System.Linq.Expressions.Compiler
             FreeLocal(locResult);
         }
 
-
         private void EmitLiftedBooleanAnd()
         {
             Type type = typeof(bool?);
@@ -714,7 +730,6 @@ namespace System.Linq.Expressions.Compiler
             //RELEASING locLeft
             FreeLocal(locLeft);
         }
-
 
         private void EmitLiftedBooleanOr()
         {

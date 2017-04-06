@@ -8,6 +8,7 @@ namespace MonoTests.System.Threading
     public class CancellationTokenSourceTestEx
     {
 #if NET20 || NET30 || NET35 || NET45
+
         [Test]
         public void CancelAfterDisposed()
         {
@@ -17,9 +18,11 @@ namespace MonoTests.System.Threading
             Thread.Sleep(2000);
             Assert.IsFalse(cts.IsCancellationRequested);
         }
+
 #endif
 
 #if FAT && (NET20 || NET30 || NET35)
+
         [Test]
         [Category("RaceCondition")] // This test creates a race condition, that when resolved sequentially will fail
         public void RegisterWhileCancelling()
@@ -49,6 +52,7 @@ namespace MonoTests.System.Threading
             Assert.IsTrue(t.Wait(1000), "#3");
             Assert.AreEqual(12, called, "#4");
         }
+
 #endif
     }
 }

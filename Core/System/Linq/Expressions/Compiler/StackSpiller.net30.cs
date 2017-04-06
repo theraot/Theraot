@@ -118,7 +118,7 @@ namespace System.Linq.Expressions.Compiler
             return lambda;
         }
 
-#region Expressions
+        #region Expressions
 
         [Conditional("DEBUG")]
         private static void VerifyRewrite(Result result, Expression node)
@@ -155,7 +155,6 @@ namespace System.Linq.Expressions.Compiler
         }
 
         // DynamicExpression
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "stack")]
         private Result RewriteDynamicExpression(Expression expr, Stack stack)
         {
             var node = (IDynamicExpression)expr;
@@ -191,7 +190,7 @@ namespace System.Linq.Expressions.Compiler
                     new IndexExpression(
                         cr[0],                              // Object
                         index.Indexer,
-                        cr[1, -2]                           // arguments                        
+                        cr[1, -2]                           // arguments
                     ),
                     cr[-1]                                  // value
                 );
@@ -209,7 +208,7 @@ namespace System.Linq.Expressions.Compiler
             Result left = RewriteExpression(node.Left, stack);
             // ... and so does the right one
             Result right = RewriteExpression(node.Right, stack);
-            //conversion is a lambda. stack state will be ignored. 
+            //conversion is a lambda. stack state will be ignored.
             Result conversion = RewriteExpression(node.Conversion, stack);
 
             RewriteAction action = left.Action | right.Action | conversion.Action;
@@ -287,12 +286,16 @@ namespace System.Linq.Expressions.Compiler
             {
                 case ExpressionType.Index:
                     return RewriteIndexAssignment(node, stack);
+
                 case ExpressionType.MemberAccess:
                     return RewriteMemberAssignment(node, stack);
+
                 case ExpressionType.Parameter:
                     return RewriteVariableAssignment(node, stack);
+
                 case ExpressionType.Extension:
                     return RewriteExtensionAssignment(node, stack);
+
                 default:
                     throw Error.InvalidLvalue(node.Left.NodeType);
             }
@@ -307,7 +310,6 @@ namespace System.Linq.Expressions.Compiler
         }
 
         // LambdaExpression
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "stack")]
         private static Result RewriteLambdaExpression(Expression expr, Stack stack)
         {
             LambdaExpression node = (LambdaExpression)expr;
@@ -459,7 +461,7 @@ namespace System.Linq.Expressions.Compiler
             }
             else
             {
-                // In a case of NewArrayBounds we make no modifications to the stack 
+                // In a case of NewArrayBounds we make no modifications to the stack
                 // before emitting bounds expressions.
             }
 
@@ -502,7 +504,7 @@ namespace System.Linq.Expressions.Compiler
                     RequireNoRefArgs(Expression.GetInvokeMethod(node.Expression));
                 }
 
-                // Lambda body also executes on current stack 
+                // Lambda body also executes on current stack
                 var spiller = new StackSpiller(stack);
                 lambda = lambda.Accept(spiller);
 
@@ -648,6 +650,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 case RewriteAction.None:
                     break;
+
                 case RewriteAction.Copy:
                     ElementInit[] newInits = new ElementInit[inits.Count];
                     for (int i = 0; i < inits.Count; i++)
@@ -664,6 +667,7 @@ namespace System.Linq.Expressions.Compiler
                     }
                     expr = Expression.ListInit((NewExpression)rewrittenNew, new TrueReadOnlyCollection<ElementInit>(newInits));
                     break;
+
                 case RewriteAction.SpillStack:
                     RequireNotRefInstance(node.NewExpression);
 
@@ -680,6 +684,7 @@ namespace System.Linq.Expressions.Compiler
                     comma[inits.Count + 1] = tempNew;
                     expr = MakeBlock(comma);
                     break;
+
                 default:
                     throw ContractUtils.Unreachable;
             }
@@ -712,6 +717,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 case RewriteAction.None:
                     break;
+
                 case RewriteAction.Copy:
                     MemberBinding[] newBindings = new MemberBinding[bindings.Count];
                     for (int i = 0; i < bindings.Count; i++)
@@ -720,6 +726,7 @@ namespace System.Linq.Expressions.Compiler
                     }
                     expr = Expression.MemberInit((NewExpression)rewrittenNew, new TrueReadOnlyCollection<MemberBinding>(newBindings));
                     break;
+
                 case RewriteAction.SpillStack:
                     RequireNotRefInstance(node.NewExpression);
 
@@ -735,15 +742,16 @@ namespace System.Linq.Expressions.Compiler
                     comma[bindings.Count + 1] = tempNew;
                     expr = MakeBlock(comma);
                     break;
+
                 default:
                     throw ContractUtils.Unreachable;
             }
             return new Result(action, expr);
         }
 
-#endregion
+        #endregion Expressions
 
-#region Statements
+        #region Statements
 
         // Block
         private Result RewriteBlockExpression(Expression expr, Stack stack)
@@ -1007,9 +1015,9 @@ namespace System.Linq.Expressions.Compiler
             return new Result(result.Action | RewriteAction.Copy, result.Node);
         }
 
-#endregion
+        #endregion Statements
 
-#region Cloning
+        #region Cloning
 
         /// <summary>
         /// Will clone an IList into an array of the same size, and copy
@@ -1029,12 +1037,12 @@ namespace System.Linq.Expressions.Compiler
             return clone;
         }
 
-#endregion
+        #endregion Cloning
 
         /// <summary>
         /// If we are spilling, requires that there are no byref arguments to
         /// the method call.
-        /// 
+        ///
         /// Used for:
         ///   NewExpression,
         ///   MethodCallExpression,
@@ -1059,7 +1067,7 @@ namespace System.Linq.Expressions.Compiler
         /// <summary>
         /// Requires that the instance is not a value type (primitive types are
         /// okay because they're immutable).
-        /// 
+        ///
         /// Used for:
         ///  MethodCallExpression,
         ///  MemberExpression (for properties),

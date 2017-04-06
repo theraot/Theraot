@@ -13,7 +13,7 @@ namespace System.Linq.Expressions
     /// <summary>
     /// Represents accessing a field or property.
     /// </summary>
-    [DebuggerTypeProxy(typeof(Expression.MemberExpressionProxy))]
+    [DebuggerTypeProxy(typeof(MemberExpressionProxy))]
     public class MemberExpression : Expression
     {
         private readonly Expression _expression;
@@ -23,7 +23,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public MemberInfo Member
         {
-            get { return GetMember(); }
+            get
+            {
+                return GetMember();
+            }
         }
 
         /// <summary>
@@ -31,7 +34,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Expression
         {
-            get { return _expression; }
+            get
+            {
+                return _expression;
+            }
         }
 
         // param order: factories args in order, then other args
@@ -60,7 +66,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get { return ExpressionType.MemberAccess; }
+            get
+            {
+                return ExpressionType.MemberAccess;
+            }
         }
 
         internal virtual MemberInfo GetMember()
@@ -89,7 +98,7 @@ namespace System.Linq.Expressions
             {
                 return this;
             }
-            return Expression.MakeMemberAccess(expression, Member);
+            return MakeMemberAccess(expression, Member);
         }
     }
 
@@ -110,13 +119,17 @@ namespace System.Linq.Expressions
 
         public sealed override Type Type
         {
-            get { return _field.FieldType; }
+            get
+            {
+                return _field.FieldType;
+            }
         }
     }
 
     internal class PropertyExpression : MemberExpression
     {
         private readonly PropertyInfo _property;
+
         public PropertyExpression(Expression expression, PropertyInfo member)
             : base(expression)
         {
@@ -130,13 +143,16 @@ namespace System.Linq.Expressions
 
         public sealed override Type Type
         {
-            get { return _property.PropertyType; }
+            get
+            {
+                return _property.PropertyType;
+            }
         }
     }
 
     public partial class Expression
     {
-#region Field
+        #region Field
 
         /// <summary>
         /// Creates a <see cref="MemberExpression"/> accessing a field.
@@ -144,18 +160,19 @@ namespace System.Linq.Expressions
         /// <param name="expression">The containing object of the field.  This can be null for static fields.</param>
         /// <param name="field">The field to be accessed.</param>
         /// <returns>The created <see cref="MemberExpression"/>.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
         public static MemberExpression Field(Expression expression, FieldInfo field)
         {
             ContractUtils.RequiresNotNull(field, "field");
 
             if (field.IsStatic)
             {
-                if (expression != null) throw new ArgumentException(Strings.OnlyStaticFieldsHaveNullInstance, "expression");
+                if (expression != null)
+                    throw new ArgumentException(Strings.OnlyStaticFieldsHaveNullInstance, "expression");
             }
             else
             {
-                if (expression == null) throw new ArgumentException(Strings.OnlyStaticFieldsHaveNullInstance, "field");
+                if (expression == null)
+                    throw new ArgumentException(Strings.OnlyStaticFieldsHaveNullInstance, "field");
                 RequiresCanRead(expression, "expression");
                 if (!TypeHelper.AreReferenceAssignable(field.DeclaringType, expression.Type))
                 {
@@ -185,9 +202,8 @@ namespace System.Linq.Expressions
             {
                 throw Error.InstanceFieldNotDefinedForType(fieldName, expression.Type);
             }
-            return Expression.Field(expression, fi);
+            return Field(expression, fi);
         }
-
 
         /// <summary>
         /// Creates a <see cref="MemberExpression"/> accessing a field.
@@ -196,7 +212,6 @@ namespace System.Linq.Expressions
         /// <param name="type">The <see cref="Type"/> containing the field.</param>
         /// <param name="fieldName">The field to be accessed.</param>
         /// <returns>The created <see cref="MemberExpression"/>.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
         public static MemberExpression Field(Expression expression, Type type, string fieldName)
         {
             ContractUtils.RequiresNotNull(type, "type");
@@ -212,11 +227,12 @@ namespace System.Linq.Expressions
             {
                 throw Error.FieldNotDefinedForType(fieldName, type);
             }
-            return Expression.Field(expression, fi);
+            return Field(expression, fi);
         }
-#endregion
 
-#region Property
+        #endregion Field
+
+        #region Property
 
         /// <summary>
         /// Creates a <see cref="MemberExpression"/> accessing a property.
@@ -271,7 +287,6 @@ namespace System.Linq.Expressions
         /// <param name="expression">The containing object of the property.  This can be null for static properties.</param>
         /// <param name="property">The property to be accessed.</param>
         /// <returns>The created <see cref="MemberExpression"/>.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames")]
         public static MemberExpression Property(Expression expression, PropertyInfo property)
         {
             ContractUtils.RequiresNotNull(property, "property");
@@ -285,11 +300,13 @@ namespace System.Linq.Expressions
 
             if (mi.IsStatic)
             {
-                if (expression != null) throw new ArgumentException(Strings.OnlyStaticPropertiesHaveNullInstance, "expression");
+                if (expression != null)
+                    throw new ArgumentException(Strings.OnlyStaticPropertiesHaveNullInstance, "expression");
             }
             else
             {
-                if (expression == null) throw new ArgumentException(Strings.OnlyStaticPropertiesHaveNullInstance, "property");
+                if (expression == null)
+                    throw new ArgumentException(Strings.OnlyStaticPropertiesHaveNullInstance, "property");
                 RequiresCanRead(expression, "expression");
                 if (!TypeHelper.IsValidInstanceType(property, expression.Type))
                 {
@@ -338,7 +355,7 @@ namespace System.Linq.Expressions
             {
                 return true;
             }
-            // If the type is an interface then the handle for the method got by the compiler will not be the 
+            // If the type is an interface then the handle for the method got by the compiler will not be the
             // same as that returned by reflection.
             // Check for this condition and try and get the method from reflection.
             Type type = method.DeclaringType;
@@ -349,7 +366,7 @@ namespace System.Linq.Expressions
             return false;
         }
 
-#endregion
+        #endregion Property
 
         /// <summary>
         /// Creates a <see cref="MemberExpression"/> accessing a property or field.
@@ -390,12 +407,12 @@ namespace System.Linq.Expressions
             FieldInfo fi = member as FieldInfo;
             if (fi != null)
             {
-                return Expression.Field(expression, fi);
+                return Field(expression, fi);
             }
             PropertyInfo pi = member as PropertyInfo;
             if (pi != null)
             {
-                return Expression.Property(expression, pi);
+                return Property(expression, pi);
             }
             throw Error.MemberNotFieldOrProperty(member);
         }

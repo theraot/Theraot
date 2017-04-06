@@ -1,9 +1,9 @@
 ﻿#if NET20 || NET30
 
 using System.Collections.Generic;
-using System.Security.Permissions;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Security.Permissions;
 using Theraot.Threading;
 
 namespace System.Threading
@@ -12,7 +12,7 @@ namespace System.Threading
     [HostProtection(SecurityAction.LinkDemand, Synchronization = true, ExternalThreading = true)]
     public class ReaderWriterLockSlim : IDisposable
     {
-        /* Position of each bit isn't really important 
+        /* Position of each bit isn't really important
         * but their relative order is
         */
         private const int RwReadBit = 3;
@@ -37,23 +37,27 @@ namespace System.Threading
         private readonly bool _noRecursion;
 
         private readonly AtomicBoolean _upgradableTaken = new AtomicBoolean();
+
         private
 
                 /* These events are just here for the sake of having a CPU-efficient sleep
                 * when the wait for acquiring the lock is too long
                 */
                 ManualResetEventSlim upgradableEvent = new ManualResetEventSlim(true);
+
         private ManualResetEventSlim writerDoneEvent = new ManualResetEventSlim(true);
         private ManualResetEventSlim readerDoneEvent = new ManualResetEventSlim(true);
 
         // This Stopwatch instance is used for all threads since .Elapsed is thread-safe
         private readonly static Stopwatch sw = Stopwatch.StartNew();
+
         private
 
                 /* For performance sake, these numbers are manipulated via classic increment and
                 * decrement operations and thus are (as hinted by MSDN) not meant to be precise
                 */
                 int numReadWaiters, numUpgradeWaiters, numWriteWaiters;
+
         private bool disposed;
 
         private static int idPool = int.MinValue;
@@ -65,8 +69,10 @@ namespace System.Threading
         * Since there is no LockCookie type here, all the useful per-thread infos concerning each
         * instance are kept here.
         */
+
         [ThreadStatic]
         private static Dictionary<int, ThreadLockState> currentThreadState;
+
         private
 
                 /* Rwls tries to use this array as much as possible to quickly retrieve the thread-local
@@ -83,8 +89,8 @@ namespace System.Threading
 
         public ReaderWriterLockSlim(LockRecursionPolicy recursionPolicy)
         {
-            this._recursionPolicy = recursionPolicy;
-            this._noRecursion = recursionPolicy == LockRecursionPolicy.NoRecursion;
+            _recursionPolicy = recursionPolicy;
+            _noRecursion = recursionPolicy == LockRecursionPolicy.NoRecursion;
         }
 
         public void EnterReadLock()
@@ -303,7 +309,7 @@ namespace System.Threading
                         }
                     }
 
-// Before falling to sleep
+                    // Before falling to sleep
                     do
                     {
                         if (_rwlock <= stateCheck)
@@ -473,10 +479,8 @@ namespace System.Threading
                         readerDoneEvent.Set();
                 }
             }
-
         }
 
-        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "Microsoft's Design")]
         public void Dispose()
         {
             Dispose(true);
@@ -490,7 +494,6 @@ namespace System.Threading
             }
             if (disposing)
             {
-                
                 if (IsReadLockHeld || IsUpgradeableReadLockHeld || IsWriteLockHeld)
                 {
                     throw new SynchronizationLockException("The lock is being disposed while still being used");

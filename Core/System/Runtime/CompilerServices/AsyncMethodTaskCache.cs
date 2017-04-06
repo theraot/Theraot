@@ -13,7 +13,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         /// A singleton cache for this result type.
         ///             This may be null if there are no cached tasks for this TResult.
-        /// 
+        ///
         /// </summary>
         internal static readonly AsyncMethodTaskCache<TResult> Singleton = CreateCache();
 
@@ -38,7 +38,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         /// Creates a cache.
         /// </summary>
-        /// 
+        ///
         /// <returns>
         /// A task cache for this result type.
         /// </returns>
@@ -74,6 +74,7 @@ namespace System.Runtime.CompilerServices
             /// A true task.
             /// </summary>
             private readonly TaskCompletionSource<bool> m_true = CreateCompleted(true);
+
             /// <summary>
             /// A false task.
             /// </summary>
@@ -101,10 +102,12 @@ namespace System.Runtime.CompilerServices
             /// The cache of Task{Int32}.
             /// </summary>
             private static readonly TaskCompletionSource<int>[] Int32Tasks = CreateInt32Tasks();
+
             /// <summary>
             /// The minimum value, inclusive, for which we want a cached task.
             /// </summary>
             private const int INCLUSIVE_INT32_MIN = -1;
+
             /// <summary>
             /// The maximum value, exclusive, for which we want a cached task.
             /// </summary>

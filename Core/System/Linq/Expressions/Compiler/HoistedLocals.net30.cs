@@ -10,13 +10,12 @@ using Theraot.Collections;
 
 namespace System.Linq.Expressions.Compiler
 {
-
     // Suppose we have something like:
     //
     //    (string s)=>()=>s.
     //
     // We wish to generate the outer as:
-    // 
+    //
     //      Func<string> OuterMethod(Closure closure, string s)
     //      {
     //          object[] locals = new object[1];
@@ -24,9 +23,9 @@ namespace System.Linq.Expressions.Compiler
     //          ((StrongBox<string>)locals[0]).Value = s;
     //          return ((DynamicMethod)closure.Constants[0]).CreateDelegate(typeof(Func<string>), new Closure(null, locals));
     //      }
-    //      
+    //
     // ... and the inner as:
-    // 
+    //
     //      string InnerMethod(Closure closure)
     //      {
     //          object[] locals = closure.Locals;
@@ -39,10 +38,10 @@ namespace System.Linq.Expressions.Compiler
     /// <summary>
     /// Stores information about locals and arguments that are hoisted into
     /// the closure array because they're referenced in an inner lambda.
-    /// 
+    ///
     /// This class is sometimes emitted as a runtime constant for internal
     /// use to hoist variables/parameters in quoted expressions
-    /// 
+    ///
     /// Invariant: this class stores no mutable state
     /// </summary>
     internal sealed class HoistedLocals
@@ -81,7 +80,10 @@ namespace System.Linq.Expressions.Compiler
 
         internal ParameterExpression ParentVariable
         {
-            get { return Parent != null ? Parent.SelfVariable : null; }
+            get
+            {
+                return Parent != null ? Parent.SelfVariable : null;
+            }
         }
 
         internal static object[] GetParent(object[] locals)

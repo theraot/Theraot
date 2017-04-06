@@ -226,7 +226,6 @@ namespace System.Threading
             return WaitExtracted((int)milliseconds, cancellationToken);
         }
 
-        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", Justification = "False Positive")]
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)

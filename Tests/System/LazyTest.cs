@@ -29,9 +29,9 @@
 #define NET_4_0
 #if NET_4_0
 
+using NUnit.Framework;
 using System;
 using System.Threading;
-using NUnit.Framework;
 
 #pragma warning disable 219
 #pragma warning disable 168

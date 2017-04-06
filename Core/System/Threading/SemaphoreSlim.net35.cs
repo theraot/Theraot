@@ -149,7 +149,7 @@ namespace System.Threading
             }
             var start = ThreadingHelper.TicksNow();
             var remaining = millisecondsTimeout;
-            while(_event.Wait(remaining, cancellationToken))
+            while (_event.Wait(remaining, cancellationToken))
             {
                 // The thread is not allowed here unless there is room in the semaphore
                 if (TryEnter())

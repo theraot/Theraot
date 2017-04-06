@@ -88,7 +88,7 @@ namespace Theraot.Collections.Specialized
             throw new NotSupportedException();
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }

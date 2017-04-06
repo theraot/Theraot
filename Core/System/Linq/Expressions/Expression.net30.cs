@@ -17,7 +17,6 @@ namespace System.Linq.Expressions
     /// <summary>
     /// The base type for all nodes in Expression Trees.
     /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
     public abstract partial class Expression
     {
         private static readonly CacheDict<Type, MethodInfo> s_lambdaDelegateCache = new CacheDict<Type, MethodInfo>(40);
@@ -90,11 +89,9 @@ namespace System.Linq.Expressions
             }
         }
 
-
         /// <summary>
         /// The <see cref="Type"/> of the value represented by this <see cref="Expression"/>.
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods")]
         public virtual Type Type
         {
             get
@@ -111,12 +108,15 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Indicates that the node can be reduced to a simpler node. If this 
+        /// Indicates that the node can be reduced to a simpler node. If this
         /// returns true, Reduce() can be called to produce the reduced form.
         /// </summary>
         public virtual bool CanReduce
         {
-            get { return false; }
+            get
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -127,7 +127,8 @@ namespace System.Linq.Expressions
         /// <returns>The reduced expression.</returns>
         public virtual Expression Reduce()
         {
-            if (CanReduce) throw Error.ReducibleMustOverrideReduce();
+            if (CanReduce)
+                throw Error.ReducibleMustOverrideReduce();
             return this;
         }
 
@@ -138,14 +139,15 @@ namespace System.Linq.Expressions
         /// <param name="visitor">An instance of <see cref="Func{Expression, Expression}"/>.</param>
         /// <returns>The expression being visited, or an expression which should replace it in the tree.</returns>
         /// <remarks>
-        /// Override this method to provide logic to walk the node's children. 
+        /// Override this method to provide logic to walk the node's children.
         /// A typical implementation will call visitor.Visit on each of its
         /// children, and if any of them change, should return a new copy of
         /// itself with the modified children.
         /// </remarks>
         protected internal virtual Expression VisitChildren(ExpressionVisitor visitor)
         {
-            if (!CanReduce) throw Error.MustBeReducible();
+            if (!CanReduce)
+                throw Error.MustBeReducible();
             return visitor.Visit(ReduceAndCheck());
         }
 
@@ -180,14 +182,17 @@ namespace System.Linq.Expressions
         /// </remarks>
         public Expression ReduceAndCheck()
         {
-            if (!CanReduce) throw Error.MustBeReducible();
+            if (!CanReduce)
+                throw Error.MustBeReducible();
 
             var newNode = Reduce();
 
             // 1. Reduction must return a new, non-null node
             // 2. Reduction must return a new node whose result type can be assigned to the type of the original node
-            if (newNode == null || newNode == this) throw Error.MustReduceToDifferent();
-            if (!TypeHelper.AreReferenceAssignable(Type, newNode.Type)) throw Error.ReducedNotCompatible();
+            if (newNode == null || newNode == this)
+                throw Error.MustReduceToDifferent();
+            if (!TypeHelper.AreReferenceAssignable(Type, newNode.Type))
+                throw Error.ReducedNotCompatible();
             return newNode;
         }
 
@@ -206,7 +211,6 @@ namespace System.Linq.Expressions
             return node;
         }
 
-
         /// <summary>
         /// Creates a <see cref="String"/> representation of the Expression.
         /// </summary>
@@ -224,7 +228,7 @@ namespace System.Linq.Expressions
         {
             get
             {
-                using (System.IO.StringWriter writer = new System.IO.StringWriter(CultureInfo.CurrentCulture))
+                using (IO.StringWriter writer = new IO.StringWriter(CultureInfo.CurrentCulture))
                 {
                     DebugViewWriter.WriteTo(this, writer);
                     return writer.ToString();
@@ -234,12 +238,12 @@ namespace System.Linq.Expressions
 
         /// <summary>
         /// Helper used for ensuring we only return 1 instance of a ReadOnlyCollection of T.
-        /// 
+        ///
         /// This is called from various methods where we internally hold onto an IList of T
-        /// or a readonly collection of T.  We check to see if we've already returned a 
-        /// readonly collection of T and if so simply return the other one.  Otherwise we do 
+        /// or a readonly collection of T.  We check to see if we've already returned a
+        /// readonly collection of T and if so simply return the other one.  Otherwise we do
         /// a thread-safe replacement of the list w/ a readonly collection which wraps it.
-        /// 
+        ///
         /// Ultimately this saves us from having to allocate a ReadOnlyCollection for our
         /// data types because the compiler is capable of going directly to the IList of T.
         /// </summary>
@@ -247,18 +251,19 @@ namespace System.Linq.Expressions
         {
             return ExpressionUtils.ReturnReadOnly<T>(ref collection);
         }
+
         /// <summary>
         /// Helper used for ensuring we only return 1 instance of a ReadOnlyCollection of T.
-        /// 
-        /// This is similar to the ReturnReadOnly of T. This version supports nodes which hold 
+        ///
+        /// This is similar to the ReturnReadOnly of T. This version supports nodes which hold
         /// onto multiple Expressions where one is typed to object.  That object field holds either
         /// an expression or a ReadOnlyCollection of Expressions.  When it holds a ReadOnlyCollection
         /// the IList which backs it is a ListArgumentProvider which uses the Expression which
-        /// implements IArgumentProvider to get 2nd and additional values.  The ListArgumentProvider 
-        /// continues to hold onto the 1st expression.  
-        /// 
-        /// This enables users to get the ReadOnlyCollection w/o it consuming more memory than if 
-        /// it was just an array.  Meanwhile The DLR internally avoids accessing  which would force 
+        /// implements IArgumentProvider to get 2nd and additional values.  The ListArgumentProvider
+        /// continues to hold onto the 1st expression.
+        ///
+        /// This enables users to get the ReadOnlyCollection w/o it consuming more memory than if
+        /// it was just an array.  Meanwhile The DLR internally avoids accessing  which would force
         /// the readonly collection to be created resulting in a typical memory savings.
         /// </summary>
         internal static ReadOnlyCollection<Expression> ReturnReadOnly(IArgumentProvider provider, ref object collection)
@@ -267,9 +272,9 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Helper which is used for specialized subtypes which use ReturnReadOnly(ref object, ...). 
+        /// Helper which is used for specialized subtypes which use ReturnReadOnly(ref object, ...).
         /// This is the reverse version of ReturnReadOnly which takes an IArgumentProvider.
-        /// 
+        ///
         /// This is used to return the 1st argument.  The 1st argument is typed as object and either
         /// contains a ReadOnlyCollection or the Expression.  We check for the Expression and if it's
         /// present we return that, otherwise we return the 1st element of the ReadOnlyCollection.
@@ -305,6 +310,7 @@ namespace System.Linq.Expressions
                 }
             }
         }
+
         private static void RequiresCanWrite(Expression expression, string paramName)
         {
             if (expression == null)
@@ -326,6 +332,7 @@ namespace System.Linq.Expressions
                         canWrite = true;
                     }
                     break;
+
                 case ExpressionType.MemberAccess:
                     MemberExpression member = (MemberExpression)expression;
                     PropertyInfo prop = member.Member as PropertyInfo;
@@ -342,6 +349,7 @@ namespace System.Linq.Expressions
                         }
                     }
                     break;
+
                 case ExpressionType.Parameter:
                     canWrite = true;
                     break;

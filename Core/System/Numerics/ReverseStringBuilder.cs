@@ -47,7 +47,7 @@ namespace System.Numerics
 
         public IEnumerator<char> GetEnumerator()
         {
-            for(var position = _buffer.Length - 1; position >= 0; position--)
+            for (var position = _buffer.Length - 1; position >= 0; position--)
             {
                 yield return _buffer[position];
             }

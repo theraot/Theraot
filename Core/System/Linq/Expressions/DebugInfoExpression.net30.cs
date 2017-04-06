@@ -10,11 +10,11 @@ namespace System.Linq.Expressions
 {
     /// <summary>
     /// Emits or clears a sequence point for debug information.
-    /// 
+    ///
     /// This allows the debugger to highlight the correct source code when
     /// debugging.
     /// </summary>
-    [DebuggerTypeProxy(typeof(Expression.DebugInfoExpressionProxy))]
+    [DebuggerTypeProxy(typeof(DebugInfoExpressionProxy))]
     public class DebugInfoExpression : Expression
     {
         private readonly SymbolDocumentInfo _document;
@@ -30,7 +30,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type
         {
-            get { return typeof(void); }
+            get
+            {
+                return typeof(void);
+            }
         }
 
         /// <summary>
@@ -39,7 +42,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get { return ExpressionType.DebugInfo; }
+            get
+            {
+                return ExpressionType.DebugInfo;
+            }
         }
 
         /// <summary>
@@ -47,7 +53,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public virtual int StartLine
         {
-            get { throw ContractUtils.Unreachable; }
+            get
+            {
+                throw ContractUtils.Unreachable;
+            }
         }
 
         /// <summary>
@@ -55,7 +64,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public virtual int StartColumn
         {
-            get { throw ContractUtils.Unreachable; }
+            get
+            {
+                throw ContractUtils.Unreachable;
+            }
         }
 
         /// <summary>
@@ -63,7 +75,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public virtual int EndLine
         {
-            get { throw ContractUtils.Unreachable; }
+            get
+            {
+                throw ContractUtils.Unreachable;
+            }
         }
 
         /// <summary>
@@ -71,7 +86,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public virtual int EndColumn
         {
-            get { throw ContractUtils.Unreachable; }
+            get
+            {
+                throw ContractUtils.Unreachable;
+            }
         }
 
         /// <summary>
@@ -79,7 +97,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public SymbolDocumentInfo Document
         {
-            get { return _document; }
+            get
+            {
+                return _document;
+            }
         }
 
         /// <summary>
@@ -87,7 +108,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public virtual bool IsClear
         {
-            get { throw ContractUtils.Unreachable; }
+            get
+            {
+                throw ContractUtils.Unreachable;
+            }
         }
 
         /// <summary>
@@ -99,7 +123,7 @@ namespace System.Linq.Expressions
         }
     }
 
-#region Specialized subclasses
+    #region Specialized subclasses
 
     internal sealed class SpanDebugInfoExpression : DebugInfoExpression
     {
@@ -207,7 +231,8 @@ namespace System.Linq.Expressions
             }
         }
     }
-#endregion
+
+    #endregion Specialized subclasses
 
     public partial class Expression
     {

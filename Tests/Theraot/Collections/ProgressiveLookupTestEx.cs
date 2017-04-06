@@ -118,7 +118,10 @@ namespace Tests.Theraot.Collections
 
             public int Total
             {
-                get { return _total; }
+                get
+                {
+                    return _total;
+                }
             }
 
             public IEnumerator<int> GetEnumerator()

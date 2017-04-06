@@ -17,7 +17,7 @@ namespace System.Linq.Expressions
     /// Needed to implement "eval" in some dynamic languages.
     /// Evaluates to an instance of <see cref="IList{IStrongBox}" /> when executed.
     /// </summary>
-    [DebuggerTypeProxy(typeof(Expression.RuntimeVariablesExpressionProxy))]
+    [DebuggerTypeProxy(typeof(RuntimeVariablesExpressionProxy))]
     public sealed class RuntimeVariablesExpression : Expression
     {
         private readonly ReadOnlyCollection<ParameterExpression> _variables;
@@ -33,7 +33,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type
         {
-            get { return typeof(IRuntimeVariables); }
+            get
+            {
+                return typeof(IRuntimeVariables);
+            }
         }
 
         /// <summary>
@@ -43,7 +46,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get { return ExpressionType.RuntimeVariables; }
+            get
+            {
+                return ExpressionType.RuntimeVariables;
+            }
         }
 
         /// <summary>
@@ -51,7 +57,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<ParameterExpression> Variables
         {
-            get { return _variables; }
+            get
+            {
+                return _variables;
+            }
         }
 
         /// <summary>
@@ -75,7 +84,7 @@ namespace System.Linq.Expressions
             {
                 return this;
             }
-            return Expression.RuntimeVariables(variables);
+            return RuntimeVariables(variables);
         }
     }
 

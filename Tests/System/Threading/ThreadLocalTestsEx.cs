@@ -11,6 +11,7 @@ namespace MonoTests.System.Threading
     public class ThreadLocalTestsEx
     {
 #if NET20 || NET30 || NET35 || NET45
+
         [Test]
         [Category("NotDotNet")] // Running this test against .NET 4.0 fails
         public void InitializeThrowingTest()
@@ -18,9 +19,11 @@ namespace MonoTests.System.Threading
             TestException(false);
             TestException(true);
         }
+
 #endif
 
 #if NET20 || NET30 || NET35 || NET45
+
         [Test]
         [Category("NotDotNet")] // nunit results in stack overflow
         public void MultipleReferenceToValueTest()
@@ -52,9 +55,11 @@ namespace MonoTests.System.Threading
                 }
             );
         }
+
 #endif
 
 #if NET20 || NET30 || NET35 || NET45
+
         [Test]
         public void TestValues()
         {
@@ -80,9 +85,11 @@ namespace MonoTests.System.Threading
                     () => GC.KeepAlive(tlocal.Values));
             }
         }
+
 #endif
 
 #if NET20 || NET30 || NET35 || NET45
+
         [Test]
         public void TestValuesWithExceptions()
         {
@@ -101,6 +108,7 @@ namespace MonoTests.System.Threading
             }
             Assert.AreEqual(count, 3);
         }
+
 #endif
 
         [Test]
@@ -113,6 +121,7 @@ namespace MonoTests.System.Threading
         }
 
 #if NET20 || NET30 || NET35 || NET45
+
         [Test]
         public void ValuesIsNewCopy()
         {
@@ -126,11 +135,11 @@ namespace MonoTests.System.Threading
                 Assert.AreEqual(threadLocal.Values.Count, 1);
             }
         }
+
 #endif
 
         private static void LaunchAndWaitThread(ThreadLocal<int> threadLocal)
         {
-
             var thread = new Thread(() =>
             {
                 try
@@ -149,6 +158,7 @@ namespace MonoTests.System.Threading
         }
 
 #if NET20 || NET30 || NET35 || NET45
+
         private static void TestException(bool tracking)
         {
             var callTime = 0;
@@ -189,6 +199,7 @@ namespace MonoTests.System.Threading
                 Assert.AreEqual(1, callTime, "#6");
             }
         }
+
 #endif
     }
 }

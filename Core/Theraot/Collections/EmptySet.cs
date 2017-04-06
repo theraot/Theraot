@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 namespace Theraot.Collections
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
-    [global::System.ComponentModel.ImmutableObject(true)]
+    [System.Diagnostics.DebuggerNonUserCode]
+    [System.ComponentModel.ImmutableObject(true)]
     public sealed class EmptySet<T> : ProgressiveSet<T>, IEnumerable<T>
     {
         private static readonly EmptySet<T> _instance = new EmptySet<T>();

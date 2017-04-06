@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace Theraot.Core
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [DebuggerNonUserCode]
     public static class DebugHelper
     {
         [Conditional("DEBUG")]

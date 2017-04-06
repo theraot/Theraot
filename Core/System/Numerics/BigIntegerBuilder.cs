@@ -195,7 +195,7 @@ namespace System.Numerics
 
         private static uint AddCarry(ref uint u1, uint u2, uint uCarry)
         {
-            var  num = u1 + (ulong)u2 + uCarry;
+            var num = u1 + (ulong)u2 + uCarry;
             u1 = (uint)num;
             return (uint)(num >> 32);
         }

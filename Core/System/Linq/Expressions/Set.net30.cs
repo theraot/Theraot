@@ -67,12 +67,18 @@ namespace System.Linq.Expressions
 
         public int Count
         {
-            get { return _data.Count; }
+            get
+            {
+                return _data.Count;
+            }
         }
 
         public bool IsReadOnly
         {
-            get { return false; }
+            get
+            {
+                return false;
+            }
         }
 
         public bool Remove(T item)
@@ -85,7 +91,7 @@ namespace System.Linq.Expressions
             return _data.Keys.GetEnumerator();
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        Collections.IEnumerator Collections.IEnumerable.GetEnumerator()
         {
             return _data.Keys.GetEnumerator();
         }

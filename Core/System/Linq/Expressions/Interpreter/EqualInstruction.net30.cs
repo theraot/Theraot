@@ -10,15 +10,34 @@ namespace System.Linq.Expressions.Interpreter
     internal abstract class EqualInstruction : Instruction
     {
         // Perf: EqualityComparer<T> but is 3/2 to 2 times slower.
-        private static Instruction s_reference,s_boolean,s_SByte,s_int16,s_char,s_int32,s_int64,s_byte,s_UInt16,s_UInt32,s_UInt64,s_single,s_double;
-        private static Instruction s_referenceLiftedToNull,s_booleanLiftedToNull,s_SByteLiftedToNull,s_int16LiftedToNull,s_charLiftedToNull,s_int32LiftedToNull,s_int64LiftedToNull,s_byteLiftedToNull,s_UInt16LiftedToNull,s_UInt32LiftedToNull,s_UInt64LiftedToNull,s_singleLiftedToNull,s_doubleLiftedToNull;
+        private static Instruction s_reference, s_boolean, s_SByte, s_int16, s_char, s_int32, s_int64, s_byte, s_UInt16, s_UInt32, s_UInt64, s_single, s_double;
 
-        public override int ConsumedStack { get { return 2; } }
-        public override int ProducedStack { get { return 1; } }
+        private static Instruction s_referenceLiftedToNull, s_booleanLiftedToNull, s_SByteLiftedToNull, s_int16LiftedToNull, s_charLiftedToNull, s_int32LiftedToNull, s_int64LiftedToNull, s_byteLiftedToNull, s_UInt16LiftedToNull, s_UInt32LiftedToNull, s_UInt64LiftedToNull, s_singleLiftedToNull, s_doubleLiftedToNull;
+
+        public override int ConsumedStack
+        {
+            get
+            {
+                return 2;
+            }
+        }
+
+        public override int ProducedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
         public override string InstructionName
         {
-            get { return "Equal"; }
+            get
+            {
+                return "Equal";
+            }
         }
+
         private EqualInstruction()
         {
         }
@@ -512,7 +531,6 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-
         internal sealed class EqualReferenceLiftedToNull : EqualInstruction
         {
             public override int Run(InterpretedFrame frame)
@@ -531,8 +549,6 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         public static Instruction Create(Type type, bool liftedToNull)
         {
             // Boxed enums can be unboxed as their underlying types:
@@ -540,20 +556,41 @@ namespace System.Linq.Expressions.Interpreter
             {
                 switch (TypeHelper.GetTypeCode(type.IsEnum ? Enum.GetUnderlyingType(type) : TypeHelper.GetNonNullableType(type)))
                 {
-                    case TypeCode.Boolean: return s_booleanLiftedToNull ?? (s_booleanLiftedToNull = new EqualBooleanLiftedToNull());
-                    case TypeCode.SByte: return s_SByteLiftedToNull ?? (s_SByteLiftedToNull = new EqualSByteLiftedToNull());
-                    case TypeCode.Byte: return s_byteLiftedToNull ?? (s_byteLiftedToNull = new EqualByteLiftedToNull());
-                    case TypeCode.Char: return s_charLiftedToNull ?? (s_charLiftedToNull = new EqualCharLiftedToNull());
-                    case TypeCode.Int16: return s_int16LiftedToNull ?? (s_int16LiftedToNull = new EqualInt16LiftedToNull());
-                    case TypeCode.Int32: return s_int32LiftedToNull ?? (s_int32LiftedToNull = new EqualInt32LiftedToNull());
-                    case TypeCode.Int64: return s_int64LiftedToNull ?? (s_int64LiftedToNull = new EqualInt64LiftedToNull());
+                    case TypeCode.Boolean:
+                        return s_booleanLiftedToNull ?? (s_booleanLiftedToNull = new EqualBooleanLiftedToNull());
 
-                    case TypeCode.UInt16: return s_UInt16LiftedToNull ?? (s_UInt16LiftedToNull = new EqualUInt16LiftedToNull());
-                    case TypeCode.UInt32: return s_UInt32LiftedToNull ?? (s_UInt32LiftedToNull = new EqualUInt32LiftedToNull());
-                    case TypeCode.UInt64: return s_UInt64LiftedToNull ?? (s_UInt64LiftedToNull = new EqualUInt64LiftedToNull());
+                    case TypeCode.SByte:
+                        return s_SByteLiftedToNull ?? (s_SByteLiftedToNull = new EqualSByteLiftedToNull());
 
-                    case TypeCode.Single: return s_singleLiftedToNull ?? (s_singleLiftedToNull = new EqualSingleLiftedToNull());
-                    case TypeCode.Double: return s_doubleLiftedToNull ?? (s_doubleLiftedToNull = new EqualDoubleLiftedToNull());
+                    case TypeCode.Byte:
+                        return s_byteLiftedToNull ?? (s_byteLiftedToNull = new EqualByteLiftedToNull());
+
+                    case TypeCode.Char:
+                        return s_charLiftedToNull ?? (s_charLiftedToNull = new EqualCharLiftedToNull());
+
+                    case TypeCode.Int16:
+                        return s_int16LiftedToNull ?? (s_int16LiftedToNull = new EqualInt16LiftedToNull());
+
+                    case TypeCode.Int32:
+                        return s_int32LiftedToNull ?? (s_int32LiftedToNull = new EqualInt32LiftedToNull());
+
+                    case TypeCode.Int64:
+                        return s_int64LiftedToNull ?? (s_int64LiftedToNull = new EqualInt64LiftedToNull());
+
+                    case TypeCode.UInt16:
+                        return s_UInt16LiftedToNull ?? (s_UInt16LiftedToNull = new EqualUInt16LiftedToNull());
+
+                    case TypeCode.UInt32:
+                        return s_UInt32LiftedToNull ?? (s_UInt32LiftedToNull = new EqualUInt32LiftedToNull());
+
+                    case TypeCode.UInt64:
+                        return s_UInt64LiftedToNull ?? (s_UInt64LiftedToNull = new EqualUInt64LiftedToNull());
+
+                    case TypeCode.Single:
+                        return s_singleLiftedToNull ?? (s_singleLiftedToNull = new EqualSingleLiftedToNull());
+
+                    case TypeCode.Double:
+                        return s_doubleLiftedToNull ?? (s_doubleLiftedToNull = new EqualDoubleLiftedToNull());
 
                     case TypeCode.String:
                     case TypeCode.Object:
@@ -572,20 +609,41 @@ namespace System.Linq.Expressions.Interpreter
             {
                 switch (TypeHelper.GetTypeCode(type.IsEnum ? Enum.GetUnderlyingType(type) : TypeHelper.GetNonNullableType(type)))
                 {
-                    case TypeCode.Boolean: return s_boolean ?? (s_boolean = new EqualBoolean());
-                    case TypeCode.SByte: return s_SByte ?? (s_SByte = new EqualSByte());
-                    case TypeCode.Byte: return s_byte ?? (s_byte = new EqualByte());
-                    case TypeCode.Char: return s_char ?? (s_char = new EqualChar());
-                    case TypeCode.Int16: return s_int16 ?? (s_int16 = new EqualInt16());
-                    case TypeCode.Int32: return s_int32 ?? (s_int32 = new EqualInt32());
-                    case TypeCode.Int64: return s_int64 ?? (s_int64 = new EqualInt64());
+                    case TypeCode.Boolean:
+                        return s_boolean ?? (s_boolean = new EqualBoolean());
 
-                    case TypeCode.UInt16: return s_UInt16 ?? (s_UInt16 = new EqualUInt16());
-                    case TypeCode.UInt32: return s_UInt32 ?? (s_UInt32 = new EqualUInt32());
-                    case TypeCode.UInt64: return s_UInt64 ?? (s_UInt64 = new EqualUInt64());
+                    case TypeCode.SByte:
+                        return s_SByte ?? (s_SByte = new EqualSByte());
 
-                    case TypeCode.Single: return s_single ?? (s_single = new EqualSingle());
-                    case TypeCode.Double: return s_double ?? (s_double = new EqualDouble());
+                    case TypeCode.Byte:
+                        return s_byte ?? (s_byte = new EqualByte());
+
+                    case TypeCode.Char:
+                        return s_char ?? (s_char = new EqualChar());
+
+                    case TypeCode.Int16:
+                        return s_int16 ?? (s_int16 = new EqualInt16());
+
+                    case TypeCode.Int32:
+                        return s_int32 ?? (s_int32 = new EqualInt32());
+
+                    case TypeCode.Int64:
+                        return s_int64 ?? (s_int64 = new EqualInt64());
+
+                    case TypeCode.UInt16:
+                        return s_UInt16 ?? (s_UInt16 = new EqualUInt16());
+
+                    case TypeCode.UInt32:
+                        return s_UInt32 ?? (s_UInt32 = new EqualUInt32());
+
+                    case TypeCode.UInt64:
+                        return s_UInt64 ?? (s_UInt64 = new EqualUInt64());
+
+                    case TypeCode.Single:
+                        return s_single ?? (s_single = new EqualSingle());
+
+                    case TypeCode.Double:
+                        return s_double ?? (s_double = new EqualDouble());
 
                     case TypeCode.String:
                     case TypeCode.Object:

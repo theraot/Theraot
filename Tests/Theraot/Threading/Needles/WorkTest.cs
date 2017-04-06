@@ -1,10 +1,10 @@
-﻿using NUnit.Framework;
+﻿using MonoTests;
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using MonoTests;
 using Theraot.Collections;
 using Theraot.Threading.Needles;
 
@@ -158,6 +158,7 @@ namespace Tests.Theraot.Threading.Needles
         }
 
 #if FAT
+
         [Test]
         [Category("RaceToDeadLock")] // This test creates a race condition, that when resolved sequentially will be stuck
         public void Transact_RaceCondition()
@@ -216,6 +217,7 @@ namespace Tests.Theraot.Threading.Needles
             Assert.IsTrue((winner == 1 && needle.Value == 7) || (winner == 2 && needle.Value == 10) || (needle.Value == 12));
             handle.Close();
         }
+
 #endif
     }
 }

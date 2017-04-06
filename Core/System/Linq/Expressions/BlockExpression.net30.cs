@@ -16,7 +16,7 @@ namespace System.Linq.Expressions
     /// <summary>
     /// Represents a block that contains a sequence of expressions where variables can be defined.
     /// </summary>
-    [DebuggerTypeProxy(typeof(Expression.BlockExpressionProxy))]
+    [DebuggerTypeProxy(typeof(BlockExpressionProxy))]
     public class BlockExpression : Expression
     {
         /// <summary>
@@ -24,7 +24,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<Expression> Expressions
         {
-            get { return GetOrMakeExpressions(); }
+            get
+            {
+                return GetOrMakeExpressions();
+            }
         }
 
         /// <summary>
@@ -69,7 +72,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get { return ExpressionType.Block; }
+            get
+            {
+                return ExpressionType.Block;
+            }
         }
 
         /// <summary>
@@ -78,7 +84,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public override Type Type
         {
-            get { return GetExpression(ExpressionCount - 1).Type; }
+            get
+            {
+                return GetExpression(ExpressionCount - 1).Type;
+            }
         }
 
         /// <summary>
@@ -96,7 +105,7 @@ namespace System.Linq.Expressions
                 return this;
             }
 
-            return Expression.Block(Type, variables, expressions);
+            return Block(Type, variables, expressions);
         }
 
         internal virtual Expression GetExpression(int index)
@@ -136,14 +145,14 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Makes a copy of this node replacing the parameters/args with the provided values.  The 
+        /// Makes a copy of this node replacing the parameters/args with the provided values.  The
         /// shape of the parameters/args needs to match the shape of the current block - in other
         /// words there should be the same # of parameters and args.
-        /// 
+        ///
         /// parameters can be null in which case the existing parameters are used.
-        /// 
+        ///
         /// This helper is provided to allow re-writing of nodes to not depend on the specific optimized
-        /// subclass of BlockExpression which is being used. 
+        /// subclass of BlockExpression which is being used.
         /// </summary>
         internal virtual BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression> variables, Expression[] args)
         {
@@ -152,15 +161,15 @@ namespace System.Linq.Expressions
 
         /// <summary>
         /// Helper used for ensuring we only return 1 instance of a ReadOnlyCollection of T.
-        /// 
+        ///
         /// This is similar to the ReturnReadOnly which only takes a single argument. This version
         /// supports nodes which hold onto 5 Expressions and puts all of the arguments into the
         /// ReadOnlyCollection.
-        /// 
+        ///
         /// Ultimately this means if we create the readonly collection we will be slightly more wasteful as we'll
         /// have a readonly collection + some fields in the type.  The DLR internally avoids accessing anything
         /// which would force the readonly collection to be created.
-        /// 
+        ///
         /// This is used by BlockExpression5 and MethodCallExpression5.
         /// </summary>
         internal static ReadOnlyCollection<Expression> ReturnReadOnlyExpressions(BlockExpression provider, ref object collection)
@@ -198,9 +207,14 @@ namespace System.Linq.Expressions
         {
             switch (index)
             {
-                case 0: return ReturnObject<Expression>(_arg0);
-                case 1: return _arg1;
-                default: throw new InvalidOperationException();
+                case 0:
+                    return ReturnObject<Expression>(_arg0);
+
+                case 1:
+                    return _arg1;
+
+                default:
+                    throw new InvalidOperationException();
             }
         }
 
@@ -242,10 +256,17 @@ namespace System.Linq.Expressions
         {
             switch (index)
             {
-                case 0: return ReturnObject<Expression>(_arg0);
-                case 1: return _arg1;
-                case 2: return _arg2;
-                default: throw new InvalidOperationException();
+                case 0:
+                    return ReturnObject<Expression>(_arg0);
+
+                case 1:
+                    return _arg1;
+
+                case 2:
+                    return _arg2;
+
+                default:
+                    throw new InvalidOperationException();
             }
         }
 
@@ -288,11 +309,20 @@ namespace System.Linq.Expressions
         {
             switch (index)
             {
-                case 0: return ReturnObject<Expression>(_arg0);
-                case 1: return _arg1;
-                case 2: return _arg2;
-                case 3: return _arg3;
-                default: throw new InvalidOperationException();
+                case 0:
+                    return ReturnObject<Expression>(_arg0);
+
+                case 1:
+                    return _arg1;
+
+                case 2:
+                    return _arg2;
+
+                case 3:
+                    return _arg3;
+
+                default:
+                    throw new InvalidOperationException();
             }
         }
 
@@ -336,12 +366,23 @@ namespace System.Linq.Expressions
         {
             switch (index)
             {
-                case 0: return ReturnObject<Expression>(_arg0);
-                case 1: return _arg1;
-                case 2: return _arg2;
-                case 3: return _arg3;
-                case 4: return _arg4;
-                default: throw new InvalidOperationException();
+                case 0:
+                    return ReturnObject<Expression>(_arg0);
+
+                case 1:
+                    return _arg1;
+
+                case 2:
+                    return _arg2;
+
+                case 3:
+                    return _arg3;
+
+                case 4:
+                    return _arg4;
+
+                default:
+                    throw new InvalidOperationException();
             }
         }
 
@@ -471,8 +512,11 @@ namespace System.Linq.Expressions
         {
             switch (index)
             {
-                case 0: return ReturnObject<Expression>(_body);
-                default: throw new InvalidOperationException();
+                case 0:
+                    return ReturnObject<Expression>(_body);
+
+                default:
+                    throw new InvalidOperationException();
             }
         }
 
@@ -547,7 +591,10 @@ namespace System.Linq.Expressions
 
         public sealed override Type Type
         {
-            get { return _type; }
+            get
+            {
+                return _type;
+            }
         }
 
         internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression> variables, Expression[] args)
@@ -559,7 +606,7 @@ namespace System.Linq.Expressions
         }
     }
 
-    #endregion
+    #endregion Specialized Subclasses
 
     #region Block List Classes
 
@@ -631,7 +678,7 @@ namespace System.Linq.Expressions
             }
         }
 
-        #endregion
+        #endregion IList<Expression> Members
 
         #region ICollection<Expression> Members
 
@@ -661,12 +708,18 @@ namespace System.Linq.Expressions
 
         public int Count
         {
-            get { return _block.ExpressionCount; }
+            get
+            {
+                return _block.ExpressionCount;
+            }
         }
 
         public bool IsReadOnly
         {
-            get { return true; }
+            get
+            {
+                return true;
+            }
         }
 
         public bool Remove(Expression item)
@@ -674,7 +727,7 @@ namespace System.Linq.Expressions
             throw ContractUtils.Unreachable;
         }
 
-        #endregion
+        #endregion ICollection<Expression> Members
 
         #region IEnumerable<Expression> Members
 
@@ -688,11 +741,11 @@ namespace System.Linq.Expressions
             }
         }
 
-        #endregion
+        #endregion IEnumerable<Expression> Members
 
         #region IEnumerable Members
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        Collections.IEnumerator Collections.IEnumerable.GetEnumerator()
         {
             yield return _arg0;
 
@@ -701,10 +754,11 @@ namespace System.Linq.Expressions
                 yield return _block.GetExpression(i);
             }
         }
-        #endregion
+
+        #endregion IEnumerable Members
     }
 
-    #endregion
+    #endregion Block List Classes
 
     public partial class Expression
     {
@@ -721,6 +775,7 @@ namespace System.Linq.Expressions
 
             return new Block2(arg0, arg1);
         }
+
         /// <summary>
         /// Creates a <see cref="BlockExpression"/> that contains three expressions and has no variables.
         /// </summary>
@@ -784,10 +839,18 @@ namespace System.Linq.Expressions
 
             switch (expressions.Length)
             {
-                case 2: return Block(expressions[0], expressions[1]);
-                case 3: return Block(expressions[0], expressions[1], expressions[2]);
-                case 4: return Block(expressions[0], expressions[1], expressions[2], expressions[3]);
-                case 5: return Block(expressions[0], expressions[1], expressions[2], expressions[3], expressions[4]);
+                case 2:
+                    return Block(expressions[0], expressions[1]);
+
+                case 3:
+                    return Block(expressions[0], expressions[1], expressions[2]);
+
+                case 4:
+                    return Block(expressions[0], expressions[1], expressions[2], expressions[3]);
+
+                case 5:
+                    return Block(expressions[0], expressions[1], expressions[2], expressions[3], expressions[4]);
+
                 default:
                     ContractUtils.RequiresNotEmpty(expressions, "expressions");
                     RequiresCanRead(expressions, "expressions");
@@ -927,7 +990,7 @@ namespace System.Linq.Expressions
                 var v = varList[i];
                 if (v == null)
                 {
-                    throw new ArgumentNullException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "{0}[{1}]", collectionName, set.Count));
+                    throw new ArgumentNullException(string.Format(Globalization.CultureInfo.CurrentCulture, "{0}[{1}]", collectionName, set.Count));
                 }
                 if (v.IsByRef)
                 {

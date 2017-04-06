@@ -8,10 +8,9 @@ using Theraot.Core;
 
 namespace Theraot.Collections
 {
-    [System.Serializable]
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [Serializable]
+    [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
-    [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "By Design")]
 #if FAT
     public sealed class ExtendedSet<T> : IExtendedSet<T>, ICloneable, ICollection<T>, ISet<T>, ICloneable<ExtendedSet<T>>
     {

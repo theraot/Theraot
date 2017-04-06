@@ -14,7 +14,7 @@ namespace System.Linq.Expressions
 {
     /// <summary>
     /// Represents a try/catch/finally/fault block.
-    /// 
+    ///
     /// The body is protected by the try block.
     /// The handlers consist of a set of <see cref="CatchBlock"/>s that can either be catch or filters.
     /// The fault runs if an exception is thrown.
@@ -22,7 +22,7 @@ namespace System.Linq.Expressions
     /// Only one of fault or finally can be supplied.
     /// The return type of the try block must match the return type of any associated catch statements.
     /// </summary>
-    [DebuggerTypeProxy(typeof(Expression.TryExpressionProxy))]
+    [DebuggerTypeProxy(typeof(TryExpressionProxy))]
     public sealed class TryExpression : Expression
     {
         private readonly Type _type;
@@ -46,7 +46,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type
         {
-            get { return _type; }
+            get
+            {
+                return _type;
+            }
         }
 
         /// <summary>
@@ -55,7 +58,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get { return ExpressionType.Try; }
+            get
+            {
+                return ExpressionType.Try;
+            }
         }
 
         /// <summary>
@@ -63,7 +69,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Body
         {
-            get { return _body; }
+            get
+            {
+                return _body;
+            }
         }
 
         /// <summary>
@@ -71,7 +80,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<CatchBlock> Handlers
         {
-            get { return _handlers; }
+            get
+            {
+                return _handlers;
+            }
         }
 
         /// <summary>
@@ -79,7 +91,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Finally
         {
-            get { return _finally; }
+            get
+            {
+                return _finally;
+            }
         }
 
         /// <summary>
@@ -87,7 +102,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Fault
         {
-            get { return _fault; }
+            get
+            {
+                return _fault;
+            }
         }
 
         /// <summary>
@@ -114,7 +132,7 @@ namespace System.Linq.Expressions
             {
                 return this;
             }
-            return Expression.MakeTry(Type, body, @finally, fault, handlers);
+            return MakeTry(Type, body, @finally, fault, handlers);
         }
     }
 

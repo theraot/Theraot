@@ -1,6 +1,5 @@
 ﻿#if NET20 || NET30 || NET35
 
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
@@ -76,7 +75,6 @@ namespace System.Collections.Generic
             }
         }
 
-        [SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
         bool ICollection.IsSynchronized
         {
             get
@@ -85,7 +83,6 @@ namespace System.Collections.Generic
             }
         }
 
-        [SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns this")]
         object ICollection.SyncRoot
         {
             get
@@ -94,7 +91,6 @@ namespace System.Collections.Generic
             }
         }
 
-        [SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
         bool ICollection<T>.IsReadOnly
         {
             get

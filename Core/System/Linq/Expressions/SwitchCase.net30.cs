@@ -31,7 +31,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<Expression> TestValues
         {
-            get { return _testValues; }
+            get
+            {
+                return _testValues;
+            }
         }
 
         /// <summary>
@@ -39,11 +42,14 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Body
         {
-            get { return _body; }
+            get
+            {
+                return _body;
+            }
         }
 
         /// <summary>
-        /// Returns a <see cref="String"/> that represents the current <see cref="Object"/>. 
+        /// Returns a <see cref="String"/> that represents the current <see cref="Object"/>.
         /// </summary>
         /// <returns>A <see cref="String"/> that represents the current <see cref="Object"/>. </returns>
         public override string ToString()

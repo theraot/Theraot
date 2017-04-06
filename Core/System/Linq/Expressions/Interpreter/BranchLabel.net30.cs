@@ -3,8 +3,8 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 
 namespace System.Linq.Expressions.Interpreter
@@ -38,7 +38,7 @@ namespace System.Linq.Expressions.Interpreter
         internal int _stackDepth = UnknownDepth;
         internal int _continuationStackDepth = UnknownDepth;
 
-        // Offsets of forward branching instructions targetting this label 
+        // Offsets of forward branching instructions targetting this label
         // that need to be updated after we emit the label.
         private List<int> _forwardBranchFixups;
 
@@ -48,23 +48,38 @@ namespace System.Linq.Expressions.Interpreter
 
         internal int LabelIndex
         {
-            get { return _labelIndex; }
-            set { _labelIndex = value; }
+            get
+            {
+                return _labelIndex;
+            }
+            set
+            {
+                _labelIndex = value;
+            }
         }
 
         internal bool HasRuntimeLabel
         {
-            get { return _labelIndex != UnknownIndex; }
+            get
+            {
+                return _labelIndex != UnknownIndex;
+            }
         }
 
         internal int TargetIndex
         {
-            get { return _targetIndex; }
+            get
+            {
+                return _targetIndex;
+            }
         }
 
         internal int StackDepth
         {
-            get { return _stackDepth; }
+            get
+            {
+                return _stackDepth;
+            }
         }
 
         internal RuntimeLabel ToRuntimeLabel()

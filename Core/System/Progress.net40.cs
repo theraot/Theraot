@@ -38,7 +38,6 @@ namespace System
             ProgressChanged += (sender, args) => handler(args);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly", Justification = "Microsoft's Design")]
         public event Theraot.Core.NewEventHandler<T> ProgressChanged;
 
         public void Report(T value)

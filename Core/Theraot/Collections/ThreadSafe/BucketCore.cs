@@ -381,7 +381,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private int SubIndex(int index)
         {
-            var result = (index >> (5*(_level - 1))) & 0x1F;
+            var result = (index >> (5 * (_level - 1))) & 0x1F;
             return result;
         }
     }

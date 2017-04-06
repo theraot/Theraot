@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 namespace Theraot.Collections
 {
-    [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "By Design")]
     public interface IReadOnlySet<T> : IReadOnlyCollection<T>
     {
         bool IsProperSubsetOf(IEnumerable<T> other);

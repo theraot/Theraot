@@ -5,8 +5,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics;
-using System.Security;
 using System.Diagnostics.Contracts;
+using System.Security;
 
 namespace System.Runtime.CompilerServices
 {

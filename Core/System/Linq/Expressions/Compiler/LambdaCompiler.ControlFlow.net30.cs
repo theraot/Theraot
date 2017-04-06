@@ -45,7 +45,6 @@ namespace System.Linq.Expressions.Compiler
             _labelBlock = new LabelScopeInfo(_labelBlock, type);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "kind")]
         private void PopLabelBlock(LabelScopeKind kind)
         {
             Debug.Assert(_labelBlock != null && _labelBlock.Kind == kind);
@@ -105,7 +104,7 @@ namespace System.Linq.Expressions.Compiler
             var tailCall = flags & CompilationFlags.EmitAsTailCallMask;
             if (tailCall != CompilationFlags.EmitAsNoTail)
             {
-                // Since tail call flags are not passed into EmitTryExpression, CanReturn 
+                // Since tail call flags are not passed into EmitTryExpression, CanReturn
                 // means the goto will be emitted as Ret. Therefore we can emit the goto's
                 // default value with tail call. This can be improved by detecting if the
                 // target label is equivalent to the return label.
@@ -148,7 +147,7 @@ namespace System.Linq.Expressions.Compiler
             // Anything that is "statement-like" -- e.g. has no associated
             // stack state can be jumped into, with the exception of try-blocks
             // We indicate this by a "Block"
-            // 
+            //
             // Otherwise, we push an "Expression" to indicate that it can't be
             // jumped into
             switch (node.NodeType)
@@ -160,6 +159,7 @@ namespace System.Linq.Expressions.Compiler
                         return true;
                     }
                     return false;
+
                 case ExpressionType.Label:
                     // LabelExpression is a bit special, if it's directly in a
                     // block it becomes associate with the block's scope. Same
@@ -179,6 +179,7 @@ namespace System.Linq.Expressions.Compiler
                     }
                     PushLabelBlock(LabelScopeKind.Statement);
                     return true;
+
                 case ExpressionType.Block:
                     if (node is SpilledExpressionBlock)
                     {
@@ -194,6 +195,7 @@ namespace System.Linq.Expressions.Compiler
                         DefineBlockLabels(node);
                     }
                     return true;
+
                 case ExpressionType.Switch:
                     PushLabelBlock(LabelScopeKind.Switch);
                     // Define labels inside of the switch cases so theyare in
@@ -258,12 +260,14 @@ namespace System.Linq.Expressions.Compiler
                     default:
                         // Didn't find return label
                         return;
+
                     case ExpressionType.Label:
                         // Found the label. We can directly return from this place
                         // only if the label type is reference assignable to the lambda return type.
                         var label = ((LabelExpression)expression).Target;
                         _labelInfo.Add(label, new LabelInfo(_ilg, label, TypeHelper.AreReferenceAssignable(lambda.ReturnType, label.Type)));
                         return;
+
                     case ExpressionType.Block:
                         // Look in the last significant expression of a block
                         var body = (BlockExpression)expression;

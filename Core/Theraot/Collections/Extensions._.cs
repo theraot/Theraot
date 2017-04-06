@@ -148,7 +148,6 @@ namespace Theraot.Collections
 
         public static bool Contains<T>(this IEnumerable<T> source, IEnumerable<T> items, IEqualityComparer<T> comparer)
         {
-
             if (source == null)
             {
                 throw new ArgumentNullException("source");

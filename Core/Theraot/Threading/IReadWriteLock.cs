@@ -6,13 +6,25 @@ namespace Theraot.Threading
 {
     internal interface IReadWriteLock : IDisposable
     {
-        bool HasReader { get; }
+        bool HasReader
+        {
+            get;
+        }
 
-        bool HasWriter { get; }
+        bool HasWriter
+        {
+            get;
+        }
 
-        bool IsCurrentThreadReader { get; }
+        bool IsCurrentThreadReader
+        {
+            get;
+        }
 
-        bool IsCurrentThreadWriter { get; }
+        bool IsCurrentThreadWriter
+        {
+            get;
+        }
 
         IDisposable EnterRead();
 

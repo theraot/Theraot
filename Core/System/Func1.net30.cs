@@ -6,9 +6,13 @@ namespace System
     /// <returns>The return value of the method that this delegate encapsulates.</returns>
     /// <typeparam name="TResult">The type of the return value of the method that this delegate encapsulates.</typeparam>
 #if NETCF
+
     public delegate TResult Func<TResult>();
+
 #else
+
     public delegate TResult Func<out TResult>();
+
 #endif
 }
 

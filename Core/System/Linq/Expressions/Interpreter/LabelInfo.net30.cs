@@ -24,7 +24,7 @@ namespace System.Linq.Expressions.Interpreter
         // The blocks where this label is defined. If it has more than one item,
         // the blocks can't be jumped to except from a child block
         // If there's only 1 block (the common case) it's stored here, if there's multiple blocks it's stored
-        // as a HashSet<LabelScopeInfo> 
+        // as a HashSet<LabelScopeInfo>
         private object _definitions;
 
         // Blocks that jump to this block
@@ -261,12 +261,14 @@ namespace System.Linq.Expressions.Interpreter
 
         // these correspond to the node of the same name
         Block,
+
         Switch,
         Lambda,
         Try,
 
         // these correspond to the part of the try block we're in
         Catch,
+
         Finally,
         Filter,
 
@@ -317,7 +319,6 @@ namespace System.Linq.Expressions.Interpreter
                 return false;
             }
         }
-
 
         internal bool ContainsTarget(LabelTarget target)
         {

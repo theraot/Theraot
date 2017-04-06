@@ -5,7 +5,7 @@ using System;
 
 namespace Theraot.Core
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public static partial class FuncHelper
     {
         public static Func<TReturn> GetDefaultFunc<TReturn>()
@@ -575,7 +575,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static TReturn DefaultFunc(T obj)
             {
                 return default(TReturn);
@@ -599,7 +599,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static TReturn DefaultFunc(T1 arg1, T2 arg2)
             {
                 return default(TReturn);
@@ -623,7 +623,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static TReturn DefaultFunc(T1 arg1, T2 arg2, T3 arg3)
             {
                 return default(TReturn);
@@ -647,7 +647,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static TReturn DefaultFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4)
             {
                 return default(TReturn);
@@ -671,7 +671,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static TReturn DefaultFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
             {
                 return default(TReturn);
@@ -695,7 +695,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static TReturn DefaultFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
             {
                 return default(TReturn);
@@ -719,7 +719,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static TReturn DefaultFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
             {
                 return default(TReturn);
@@ -743,7 +743,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static TReturn DefaultFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)
             {
                 return default(TReturn);
@@ -767,7 +767,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static TReturn DefaultFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)
             {
                 return default(TReturn);
@@ -791,7 +791,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static TReturn DefaultFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10)
             {
                 return default(TReturn);
@@ -815,7 +815,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static TReturn DefaultFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11)
             {
                 return default(TReturn);
@@ -839,7 +839,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static TReturn DefaultFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12)
             {
                 return default(TReturn);
@@ -863,7 +863,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static TReturn DefaultFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13)
             {
                 return default(TReturn);
@@ -887,7 +887,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static TReturn DefaultFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14)
             {
                 return default(TReturn);
@@ -911,7 +911,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static TReturn DefaultFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15)
             {
                 return default(TReturn);
@@ -935,7 +935,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static TReturn DefaultFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15, T16 arg16)
             {
                 return default(TReturn);
@@ -982,7 +982,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool FallacyFunc(T obj)
             {
                 return false;
@@ -1006,7 +1006,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool FallacyFunc(T1 arg1, T2 arg2)
             {
                 return false;
@@ -1030,7 +1030,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool FallacyFunc(T1 arg1, T2 arg2, T3 arg3)
             {
                 return false;
@@ -1054,7 +1054,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool FallacyFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4)
             {
                 return false;
@@ -1078,7 +1078,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool FallacyFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
             {
                 return false;
@@ -1102,7 +1102,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool FallacyFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
             {
                 return false;
@@ -1126,7 +1126,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool FallacyFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
             {
                 return false;
@@ -1150,7 +1150,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool FallacyFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)
             {
                 return false;
@@ -1174,7 +1174,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool FallacyFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)
             {
                 return false;
@@ -1198,7 +1198,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool FallacyFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10)
             {
                 return false;
@@ -1222,7 +1222,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool FallacyFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11)
             {
                 return false;
@@ -1246,7 +1246,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool FallacyFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12)
             {
                 return false;
@@ -1270,7 +1270,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool FallacyFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13)
             {
                 return false;
@@ -1294,7 +1294,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool FallacyFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14)
             {
                 return false;
@@ -1318,7 +1318,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool FallacyFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15)
             {
                 return false;
@@ -1342,7 +1342,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool FallacyFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15, T16 arg16)
             {
                 return false;
@@ -1389,7 +1389,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool TautologyFunc(T obj)
             {
                 return true;
@@ -1413,7 +1413,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool TautologyFunc(T1 arg1, T2 arg2)
             {
                 return true;
@@ -1437,7 +1437,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool TautologyFunc(T1 arg1, T2 arg2, T3 arg3)
             {
                 return true;
@@ -1461,7 +1461,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool TautologyFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4)
             {
                 return true;
@@ -1485,7 +1485,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool TautologyFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
             {
                 return true;
@@ -1509,7 +1509,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool TautologyFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
             {
                 return true;
@@ -1533,7 +1533,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool TautologyFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
             {
                 return true;
@@ -1557,7 +1557,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool TautologyFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)
             {
                 return true;
@@ -1581,7 +1581,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool TautologyFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)
             {
                 return true;
@@ -1605,7 +1605,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool TautologyFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10)
             {
                 return true;
@@ -1629,7 +1629,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool TautologyFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11)
             {
                 return true;
@@ -1653,7 +1653,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool TautologyFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12)
             {
                 return true;
@@ -1677,7 +1677,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool TautologyFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13)
             {
                 return true;
@@ -1701,7 +1701,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool TautologyFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14)
             {
                 return true;
@@ -1725,7 +1725,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool TautologyFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15)
             {
                 return true;
@@ -1749,7 +1749,7 @@ namespace Theraot.Core
                 }
             }
 
-            [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
+
             private static bool TautologyFunc(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15, T16 arg16)
             {
                 return true;

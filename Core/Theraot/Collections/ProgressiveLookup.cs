@@ -9,8 +9,8 @@ using Theraot.Core;
 
 namespace Theraot.Collections
 {
-    [System.Serializable]
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [Serializable]
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ProgressiveLookup<TKey, T> : ILookup<TKey, T>
     {
         private readonly IDictionary<TKey, IGrouping<TKey, T>> _cache;

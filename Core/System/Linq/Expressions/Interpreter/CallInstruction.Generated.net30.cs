@@ -17,16 +17,35 @@ namespace System.Linq.Expressions.Interpreter
         {
             switch (args.Length)
             {
-                case 0: return Invoke(instance);
-                case 1: return Invoke(instance, args[0]);
-                case 2: return Invoke(instance, args[0], args[1]);
-                case 3: return Invoke(instance, args[0], args[1], args[2]);
-                case 4: return Invoke(instance, args[0], args[1], args[2], args[3]);
-                case 5: return Invoke(instance, args[0], args[1], args[2], args[3], args[4]);
-                case 6: return Invoke(instance, args[0], args[1], args[2], args[3], args[4], args[5]);
-                case 7: return Invoke(instance, args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
-                case 8: return Invoke(instance, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
-                default: throw new InvalidOperationException();
+                case 0:
+                    return Invoke(instance);
+
+                case 1:
+                    return Invoke(instance, args[0]);
+
+                case 2:
+                    return Invoke(instance, args[0], args[1]);
+
+                case 3:
+                    return Invoke(instance, args[0], args[1], args[2]);
+
+                case 4:
+                    return Invoke(instance, args[0], args[1], args[2], args[3]);
+
+                case 5:
+                    return Invoke(instance, args[0], args[1], args[2], args[3], args[4]);
+
+                case 6:
+                    return Invoke(instance, args[0], args[1], args[2], args[3], args[4], args[5]);
+
+                case 7:
+                    return Invoke(instance, args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+
+                case 8:
+                    return Invoke(instance, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
+
+                default:
+                    throw new InvalidOperationException();
             }
         }
 
@@ -34,43 +53,103 @@ namespace System.Linq.Expressions.Interpreter
         {
             switch (args.Length)
             {
-                case 0: return Invoke();
-                case 1: return Invoke(args[0]);
-                case 2: return Invoke(args[0], args[1]);
-                case 3: return Invoke(args[0], args[1], args[2]);
-                case 4: return Invoke(args[0], args[1], args[2], args[3]);
-                case 5: return Invoke(args[0], args[1], args[2], args[3], args[4]);
-                case 6: return Invoke(args[0], args[1], args[2], args[3], args[4], args[5]);
-                case 7: return Invoke(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
-                case 8: return Invoke(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
-                case 9: return Invoke(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]);
-                default: throw new InvalidOperationException();
+                case 0:
+                    return Invoke();
+
+                case 1:
+                    return Invoke(args[0]);
+
+                case 2:
+                    return Invoke(args[0], args[1]);
+
+                case 3:
+                    return Invoke(args[0], args[1], args[2]);
+
+                case 4:
+                    return Invoke(args[0], args[1], args[2], args[3]);
+
+                case 5:
+                    return Invoke(args[0], args[1], args[2], args[3], args[4]);
+
+                case 6:
+                    return Invoke(args[0], args[1], args[2], args[3], args[4], args[5]);
+
+                case 7:
+                    return Invoke(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+
+                case 8:
+                    return Invoke(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
+
+                case 9:
+                    return Invoke(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]);
+
+                default:
+                    throw new InvalidOperationException();
             }
         }
 
-        public virtual object Invoke() { throw new InvalidOperationException(); }
-        public virtual object Invoke(object arg0) { throw new InvalidOperationException(); }
-        public virtual object Invoke(object arg0, object arg1) { throw new InvalidOperationException(); }
-        public virtual object Invoke(object arg0, object arg1, object arg2) { throw new InvalidOperationException(); }
-        public virtual object Invoke(object arg0, object arg1, object arg2, object arg3) { throw new InvalidOperationException(); }
-        public virtual object Invoke(object arg0, object arg1, object arg2, object arg3, object arg4) { throw new InvalidOperationException(); }
-        public virtual object Invoke(object arg0, object arg1, object arg2, object arg3, object arg4, object arg5) { throw new InvalidOperationException(); }
-        public virtual object Invoke(object arg0, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6) { throw new InvalidOperationException(); }
-        public virtual object Invoke(object arg0, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7) { throw new InvalidOperationException(); }
-        public virtual object Invoke(object arg0, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7, object arg8) { throw new InvalidOperationException(); }
+        public virtual object Invoke()
+        {
+            throw new InvalidOperationException();
+        }
+
+        public virtual object Invoke(object arg0)
+        {
+            throw new InvalidOperationException();
+        }
+
+        public virtual object Invoke(object arg0, object arg1)
+        {
+            throw new InvalidOperationException();
+        }
+
+        public virtual object Invoke(object arg0, object arg1, object arg2)
+        {
+            throw new InvalidOperationException();
+        }
+
+        public virtual object Invoke(object arg0, object arg1, object arg2, object arg3)
+        {
+            throw new InvalidOperationException();
+        }
+
+        public virtual object Invoke(object arg0, object arg1, object arg2, object arg3, object arg4)
+        {
+            throw new InvalidOperationException();
+        }
+
+        public virtual object Invoke(object arg0, object arg1, object arg2, object arg3, object arg4, object arg5)
+        {
+            throw new InvalidOperationException();
+        }
+
+        public virtual object Invoke(object arg0, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6)
+        {
+            throw new InvalidOperationException();
+        }
+
+        public virtual object Invoke(object arg0, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7)
+        {
+            throw new InvalidOperationException();
+        }
+
+        public virtual object Invoke(object arg0, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7, object arg8)
+        {
+            throw new InvalidOperationException();
+        }
 
 #if FEATURE_FAST_CREATE
         /// <summary>
         /// Fast creation works if we have a known primitive types for the entire
         /// method siganture.  If we have any non-primitive types then FastCreate
         /// falls back to SlowCreate which works for all types.
-        /// 
+        ///
         /// Fast creation is fast because it avoids using reflection (MakeGenericType
         /// and Activator.CreateInstance) to create the types.  It does this through
         /// calling a series of generic methods picking up each strong type of the
-        /// signature along the way.  When it runs out of types it news up the 
+        /// signature along the way.  When it runs out of types it news up the
         /// appropriate CallInstruction with the strong-types that have been built up.
-        /// 
+        ///
         /// One relaxation is that for return types which are non-primitive types
         /// we can fallback to object due to relaxed delegates.
         /// </summary>
@@ -197,6 +276,7 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 #endif
+
         private static Type GetHelperType(MethodInfo info, Type[] arrTypes)
         {
             Type t;
@@ -204,20 +284,40 @@ namespace System.Linq.Expressions.Interpreter
             {
                 switch (arrTypes.Length)
                 {
-                    case 0: t = typeof(ActionCallInstruction); break;
-                    case 1: t = typeof(ActionCallInstruction<>).MakeGenericType(arrTypes); break;
-                    case 2: t = typeof(ActionCallInstruction<,>).MakeGenericType(arrTypes); break;
-                    default: throw new InvalidOperationException();
+                    case 0:
+                        t = typeof(ActionCallInstruction);
+                        break;
+
+                    case 1:
+                        t = typeof(ActionCallInstruction<>).MakeGenericType(arrTypes);
+                        break;
+
+                    case 2:
+                        t = typeof(ActionCallInstruction<,>).MakeGenericType(arrTypes);
+                        break;
+
+                    default:
+                        throw new InvalidOperationException();
                 }
             }
             else
             {
                 switch (arrTypes.Length)
                 {
-                    case 1: t = typeof(FuncCallInstruction<>).MakeGenericType(arrTypes); break;
-                    case 2: t = typeof(FuncCallInstruction<,>).MakeGenericType(arrTypes); break;
-                    case 3: t = typeof(FuncCallInstruction<,,>).MakeGenericType(arrTypes); break;
-                    default: throw new InvalidOperationException();
+                    case 1:
+                        t = typeof(FuncCallInstruction<>).MakeGenericType(arrTypes);
+                        break;
+
+                    case 2:
+                        t = typeof(FuncCallInstruction<,>).MakeGenericType(arrTypes);
+                        break;
+
+                    case 3:
+                        t = typeof(FuncCallInstruction<,,>).MakeGenericType(arrTypes);
+                        break;
+
+                    default:
+                        throw new InvalidOperationException();
                 }
             }
             return t;
@@ -227,14 +327,27 @@ namespace System.Linq.Expressions.Interpreter
     internal sealed class ActionCallInstruction : CallInstruction
     {
         private readonly Action _target;
-        public override int ArgumentCount { get { return 0; } }
+
+        public override int ArgumentCount
+        {
+            get
+            {
+                return 0;
+            }
+        }
 
         public ActionCallInstruction(Action target)
         {
             _target = target;
         }
 
-        public override int ProducedStack { get { return 0; } }
+        public override int ProducedStack
+        {
+            get
+            {
+                return 0;
+            }
+        }
 
         public ActionCallInstruction(MethodInfo target)
         {
@@ -258,8 +371,22 @@ namespace System.Linq.Expressions.Interpreter
     internal sealed class ActionCallInstruction<T0> : CallInstruction
     {
         private readonly Action<T0> _target;
-        public override int ProducedStack { get { return 0; } }
-        public override int ArgumentCount { get { return 1; } }
+
+        public override int ProducedStack
+        {
+            get
+            {
+                return 0;
+            }
+        }
+
+        public override int ArgumentCount
+        {
+            get
+            {
+                return 1;
+            }
+        }
 
         public ActionCallInstruction(Action<T0> target)
         {
@@ -288,8 +415,22 @@ namespace System.Linq.Expressions.Interpreter
     internal sealed class ActionCallInstruction<T0, T1> : CallInstruction
     {
         private readonly Action<T0, T1> _target;
-        public override int ProducedStack { get { return 0; } }
-        public override int ArgumentCount { get { return 2; } }
+
+        public override int ProducedStack
+        {
+            get
+            {
+                return 0;
+            }
+        }
+
+        public override int ArgumentCount
+        {
+            get
+            {
+                return 2;
+            }
+        }
 
         public ActionCallInstruction(Action<T0, T1> target)
         {
@@ -318,8 +459,22 @@ namespace System.Linq.Expressions.Interpreter
     internal sealed class FuncCallInstruction<TRet> : CallInstruction
     {
         private readonly Func<TRet> _target;
-        public override int ProducedStack { get { return 1; } }
-        public override int ArgumentCount { get { return 0; } }
+
+        public override int ProducedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
+        public override int ArgumentCount
+        {
+            get
+            {
+                return 0;
+            }
+        }
 
         public FuncCallInstruction(Func<TRet> target)
         {
@@ -347,8 +502,22 @@ namespace System.Linq.Expressions.Interpreter
     internal sealed class FuncCallInstruction<T0, TRet> : CallInstruction
     {
         private readonly Func<T0, TRet> _target;
-        public override int ProducedStack { get { return 1; } }
-        public override int ArgumentCount { get { return 1; } }
+
+        public override int ProducedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
+        public override int ArgumentCount
+        {
+            get
+            {
+                return 1;
+            }
+        }
 
         public FuncCallInstruction(Func<T0, TRet> target)
         {
@@ -376,8 +545,22 @@ namespace System.Linq.Expressions.Interpreter
     internal sealed class FuncCallInstruction<T0, T1, TRet> : CallInstruction
     {
         private readonly Func<T0, T1, TRet> _target;
-        public override int ProducedStack { get { return 1; } }
-        public override int ArgumentCount { get { return 2; } }
+
+        public override int ProducedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
+        public override int ArgumentCount
+        {
+            get
+            {
+                return 2;
+            }
+        }
 
         public FuncCallInstruction(Func<T0, T1, TRet> target)
         {

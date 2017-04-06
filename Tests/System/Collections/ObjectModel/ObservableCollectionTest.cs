@@ -29,13 +29,13 @@
 #define NET_4_0
 #if NET_4_0
 
+using MonoTests.System.Collections.Specialized;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using NUnit.Framework;
 using System.ComponentModel;
-using System.Collections.Generic;
-using System;
-using MonoTests.System.Collections.Specialized;
 
 namespace MonoTests.System.Collections.ObjectModel
 {

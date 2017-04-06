@@ -17,11 +17,20 @@ namespace System.Linq.Expressions.Interpreter
             _value = value;
         }
 
-        public override int ProducedStack { get { return 1; } }
+        public override int ProducedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
 
         public override string InstructionName
         {
-            get { return "LoadObject"; }
+            get
+            {
+                return "LoadObject";
+            }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -45,11 +54,20 @@ namespace System.Linq.Expressions.Interpreter
             _index = index;
         }
 
-        public override int ProducedStack { get { return 1; } }
+        public override int ProducedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
 
         public override string InstructionName
         {
-            get { return "LoadCachedObject"; }
+            get
+            {
+                return "LoadCachedObject";
+            }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -73,13 +91,26 @@ namespace System.Linq.Expressions.Interpreter
     {
         internal static readonly PopInstruction Instance = new PopInstruction();
 
-        private PopInstruction() { }
+        private PopInstruction()
+        {
+        }
 
-        public override int ConsumedStack { get { return 1; } }
+        public override int ConsumedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
         public override string InstructionName
         {
-            get { return "Pop"; }
+            get
+            {
+                return "Pop";
+            }
         }
+
         public override int Run(InterpretedFrame frame)
         {
             frame.Pop();
@@ -96,14 +127,34 @@ namespace System.Linq.Expressions.Interpreter
     {
         internal readonly static DupInstruction Instance = new DupInstruction();
 
-        private DupInstruction() { }
+        private DupInstruction()
+        {
+        }
 
-        public override int ConsumedStack { get { return 0; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack
+        {
+            get
+            {
+                return 0;
+            }
+        }
+
+        public override int ProducedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
         public override string InstructionName
         {
-            get { return "Dup"; }
+            get
+            {
+                return "Dup";
+            }
         }
+
         public override int Run(InterpretedFrame frame)
         {
             var value = frame.Peek();

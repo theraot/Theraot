@@ -3,7 +3,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Dynamic.Utils;
 using System.Runtime.CompilerServices;
@@ -263,7 +262,6 @@ namespace System.Linq.Expressions
         /// <param name="node">The expression to visit.</param>
         /// <returns>The modified expression, if it or any subexpression was modified;
         /// otherwise, returns the original expression.</returns>
-        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
         protected internal virtual Expression VisitNew(NewExpression node)
         {
             var args = VisitExpressionList(node.Arguments);
@@ -482,6 +480,7 @@ namespace System.Linq.Expressions
     }
 
 #else
+
     public abstract partial class ExpressionVisitor
     {
         /// <summary>
@@ -621,7 +620,7 @@ namespace System.Linq.Expressions
             return node.Update(VisitLabelTarget(node.Target), Visit(node.Value));
         }
 
-            /// <summary>
+        /// <summary>
         /// Visits the children of the <see cref="InvocationExpression" />.
         /// </summary>
         /// <param name="node">The expression to visit.</param>
@@ -649,7 +648,7 @@ namespace System.Linq.Expressions
             return node.Update(VisitLabelTarget(node.Target), Visit(node.DefaultValue));
         }
 
-                /// <summary>
+        /// <summary>
         /// Visits the children of the <see cref="LambdaExpression" />.
         /// </summary>
         /// <typeparam name="T">The type of the delegate.</typeparam>
@@ -736,7 +735,6 @@ namespace System.Linq.Expressions
         /// <param name="node">The expression to visit.</param>
         /// <returns>The modified expression, if it or any subexpression was modified;
         /// otherwise, returns the original expression.</returns>
-        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
         protected internal virtual Expression VisitNew(NewExpression node)
         {
             return node.Update(Visit(node.Arguments));
@@ -915,6 +913,7 @@ namespace System.Linq.Expressions
             return after;
         }
     }
+
 #endif
 
     /// <summary>
