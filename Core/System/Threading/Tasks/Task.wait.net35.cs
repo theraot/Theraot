@@ -127,8 +127,7 @@ namespace System.Threading.Tasks
         /// An array of <see cref="Task"/> instances on which to wait.
         /// </param>
         /// <param name="timeout">
-        /// A <see cref="System.TimeSpan"/> that represents the number of milliseconds to wait, or a <see
-        /// cref="System.TimeSpan"/> that represents -1 milliseconds to wait indefinitely.
+        /// A <see cref="System.TimeSpan"/> that represents the number of milliseconds to wait, or a <see cref="System.TimeSpan"/> that represents -1 milliseconds to wait indefinitely.
         /// </param>
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="tasks"/> argument is null.
@@ -531,8 +530,7 @@ namespace System.Threading.Tasks
         /// An array of <see cref="Task"/> instances on which to wait.
         /// </param>
         /// <param name="timeout">
-        /// A <see cref="System.TimeSpan"/> that represents the number of milliseconds to wait, or a <see
-        /// cref="System.TimeSpan"/> that represents -1 milliseconds to wait indefinitely.
+        /// A <see cref="System.TimeSpan"/> that represents the number of milliseconds to wait, or a <see cref="System.TimeSpan"/> that represents -1 milliseconds to wait indefinitely.
         /// </param>
         /// <returns>
         /// The index of the completed task in the <paramref name="tasks"/> array argument, or -1 if the
