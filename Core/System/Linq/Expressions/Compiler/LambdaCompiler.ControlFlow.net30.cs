@@ -234,7 +234,8 @@ namespace System.Linq.Expressions.Compiler
             {
                 return;
             }
-            for (int i = 0, n = block.ExpressionCount; i < n; i++)
+            var n = block.ExpressionCount;
+            for (int i = 0; i < n; i++)
             {
                 Expression e = block.GetExpression(i);
 
