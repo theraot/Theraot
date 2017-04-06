@@ -292,7 +292,7 @@ namespace Theraot.Collections.Specialized
         private void Fill(bool value)
         {
             var entryValue = value ? unchecked((int)0xffffffff) : 0;
-            for (var index = 0; index < _capacity; index++)
+            for (var index = 0; index < GetLength(_capacity); index++)
             {
                 _entries[index] = entryValue;
             }
