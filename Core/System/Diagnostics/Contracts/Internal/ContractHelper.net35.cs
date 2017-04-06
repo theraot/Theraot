@@ -4,9 +4,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.ConstrainedExecution;
-
 
 // Note: In .NET FX 4.5, we duplicated the ContractHelper class in the System.Runtime.CompilerServices
 // namespace to remove an ugly wart of a namespace from the Windows 8 profile.  But we still need the
@@ -17,8 +15,6 @@ namespace System.Diagnostics.Contracts.Internal
     [Obsolete("Use the ContractHelper class in the System.Runtime.CompilerServices namespace instead.")]
     public static class ContractHelper
     {
-
-        [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
         [DebuggerNonUserCode]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static string RaiseContractFailedEvent(ContractFailureKind failureKind, string userMessage, string conditionText, Exception innerException)
@@ -32,7 +28,6 @@ namespace System.Diagnostics.Contracts.Internal
         {
             Runtime.CompilerServices.ContractHelper.TriggerFailure(kind, displayMessage, userMessage, conditionText, innerException);
         }
-
     }
 }
 

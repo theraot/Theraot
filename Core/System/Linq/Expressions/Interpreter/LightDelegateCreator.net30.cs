@@ -15,6 +15,7 @@ namespace System.Linq.Expressions.Interpreter
     {
         // null if we are forced to compile
         private readonly Interpreter _interpreter;
+
         private readonly Expression _lambda;
 
         internal LightDelegateCreator(Interpreter interpreter, LambdaExpression lambda)
@@ -26,12 +27,18 @@ namespace System.Linq.Expressions.Interpreter
 
         internal Interpreter Interpreter
         {
-            get { return _interpreter; }
+            get
+            {
+                return _interpreter;
+            }
         }
 
         private bool HasClosure
         {
-            get { return _interpreter.ClosureSize > 0; }
+            get
+            {
+                return _interpreter.ClosureSize > 0;
+            }
         }
 
         public Delegate CreateDelegate()

@@ -7,11 +7,9 @@ using Theraot.Core;
 
 namespace Theraot.Collections
 {
-    [System.Serializable]
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [Serializable]
+    [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
-    [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix", Justification = "By Design")]
-    [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "By Design")]
     public sealed class ExtendedStack<T> : IDropPoint<T>, ICloneable, IEnumerable<T>, ICollection<T>, ICloneable<ExtendedStack<T>>
     {
         private readonly IReadOnlyCollection<T> _readOnly;
@@ -45,7 +43,6 @@ namespace Theraot.Collections
             }
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns False")]
         bool ICollection<T>.IsReadOnly
         {
             get

@@ -4,7 +4,7 @@ namespace Theraot.Core
 {
     public static partial class PrimeHelper
     {
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         public static bool IsPrime(int number)
         {
             if (number < 0)
@@ -54,7 +54,7 @@ namespace Theraot.Core
             }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         public static int NextPrime(int fromNumber)
         {
             if (fromNumber < 2)
@@ -72,7 +72,7 @@ namespace Theraot.Core
             }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         public static int ToPrime(int fromNumber)
         {
             if (fromNumber <= 2)
@@ -89,7 +89,7 @@ namespace Theraot.Core
             }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [System.Diagnostics.DebuggerNonUserCode]
         internal static int ToPrimeInternal(int fromNumber)
         {
             if (fromNumber < _smallPrimes[_smallPrimes.Length - 1])

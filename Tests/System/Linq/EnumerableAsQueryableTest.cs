@@ -26,17 +26,16 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using NUnit.Framework;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Collections;
 
 namespace MonoTests.System.Linq
 {
-
     [TestFixture]
     public class EnumerableAsQueryableTest
     {
@@ -97,7 +96,6 @@ namespace MonoTests.System.Linq
         [Test]
         public void Contains()
         {
-
             for (int i = 1; i < 20; ++i)
             {
                 Assert.AreEqual(_src.Contains<int>(i), _array.Contains<int>(i));
@@ -334,8 +332,8 @@ namespace MonoTests.System.Linq
         {
             var extensionFlags = BindingFlags.Static | BindingFlags.Public;
             var method = (from m in typeof(Ext).GetMethods(extensionFlags)
-                                 where (m.Name == "UserQueryableExt1" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
-                                 select m).FirstOrDefault().MakeGenericMethod(typeof(int));
+                          where (m.Name == "UserQueryableExt1" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
+                          select m).FirstOrDefault().MakeGenericMethod(typeof(int));
             Expression<Func<int, int>> exp = i => i;
             Expression e = Expression.Equal(
                                     Expression.Constant("UserEnumerableExt1"),
@@ -357,8 +355,8 @@ namespace MonoTests.System.Linq
         {
             var extensionFlags = BindingFlags.Static | BindingFlags.Public;
             var method = (from m in typeof(Ext).GetMethods(extensionFlags)
-                                 where (m.Name == "UserQueryableExt3" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
-                                 select m).FirstOrDefault().MakeGenericMethod(typeof(int));
+                          where (m.Name == "UserQueryableExt3" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
+                          select m).FirstOrDefault().MakeGenericMethod(typeof(int));
             Expression<Func<int, int>> exp = i => i;
             Expression e = Expression.Call(method, _src.Expression, Expression.Quote(exp), Expression.Constant(10));
             _src.Provider.Execute(e);
@@ -369,8 +367,8 @@ namespace MonoTests.System.Linq
         {
             var extensionFlags = BindingFlags.Static | BindingFlags.Public;
             var method = (from m in typeof(Ext).GetMethods(extensionFlags)
-                                 where (m.Name == "NonGenericMethod" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
-                                 select m).FirstOrDefault();
+                          where (m.Name == "NonGenericMethod" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
+                          select m).FirstOrDefault();
 
             Expression e = Expression.Call(method, _src.Expression);
             Assert.AreEqual(_src.Provider.Execute(e), "EnumerableNonGenericMethod", "NonGenericMethod");
@@ -382,8 +380,8 @@ namespace MonoTests.System.Linq
         {
             var extensionFlags = BindingFlags.Static | BindingFlags.Public;
             var method = (from m in typeof(Ext).GetMethods(extensionFlags)
-                                 where (m.Name == "InstantiatedGenericMethod" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
-                                 select m).FirstOrDefault().MakeGenericMethod(typeof(int));
+                          where (m.Name == "InstantiatedGenericMethod" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
+                          select m).FirstOrDefault().MakeGenericMethod(typeof(int));
 
             Expression e = Expression.Call(method, _src.Expression, Expression.Constant(0));
             _src.Provider.Execute(e);
@@ -413,7 +411,6 @@ namespace MonoTests.System.Linq
 
         private class Bar<T1, T2> : IEnumerable<T2>
         {
-
             public IEnumerator<T2> GetEnumerator()
             {
                 yield break;
@@ -445,7 +442,6 @@ namespace MonoTests.System.Linq
 
     internal class CustomEqualityComparer : IEqualityComparer<int>
     {
-
         public bool Equals(int x, int y)
         {
             return true;
@@ -459,7 +455,6 @@ namespace MonoTests.System.Linq
 
     public static class Ext
     {
-
         public static string UserQueryableExt1<T>(this IQueryable<T> e, Expression<Func<int, int>> ex)
         {
             return "UserQueryableExt1";

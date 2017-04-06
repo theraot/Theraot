@@ -176,7 +176,6 @@ namespace System.Linq.Expressions.Compiler
             return body;
         }
 
-
         protected internal override Expression VisitParameter(ParameterExpression node)
         {
             Reference(node, VariableStorageKind.Local);

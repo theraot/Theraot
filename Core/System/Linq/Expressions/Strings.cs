@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-
 namespace System.Linq.Expressions
 {
     /// <summary>
@@ -850,7 +849,6 @@ namespace System.Linq.Expressions
             return SR.Format(SR.ExpressionNotSupportedForNullableType, p0, p1);
         }
 
-
         /// <summary>
         /// A string like "ParameterExpression of type '{0}' cannot be used for delegate parameter of type '{1}'"
         /// </summary>
@@ -1323,7 +1321,6 @@ namespace System.Linq.Expressions
                 return SR.InvalidAsmNameOrExtension;
             }
         }
-
 
         /// <summary>
         /// A string like "Cannot create instance of {0} because it contains generic parameters"

@@ -13,8 +13,7 @@ using System.Runtime.CompilerServices;
 
 namespace System.Linq.Expressions.Interpreter
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1815:OverrideEqualsAndOperatorEqualsOnValueTypes")]
-    [DebuggerTypeProxy(typeof(InstructionArray.DebugView))]
+    [DebuggerTypeProxy(typeof(DebugView))]
     internal struct InstructionArray
     {
         internal readonly int MaxStackDepth;
@@ -39,10 +38,13 @@ namespace System.Linq.Expressions.Interpreter
 
         internal int Length
         {
-            get { return Instructions.Length; }
+            get
+            {
+                return Instructions.Length;
+            }
         }
 
-#region Debug View
+        #region Debug View
 
         internal sealed class DebugView
         {
@@ -67,11 +69,11 @@ namespace System.Linq.Expressions.Interpreter
                 }
             }
         }
-#endregion
+
+        #endregion Debug View
     }
 
-    [DebuggerTypeProxy(typeof(InstructionList.DebugView))]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
+    [DebuggerTypeProxy(typeof(DebugView))]
     internal sealed class InstructionList
     {
         private readonly List<Instruction> _instructions = new List<Instruction>();
@@ -87,7 +89,7 @@ namespace System.Linq.Expressions.Interpreter
         // list of (instruction index, cookie) sorted by instruction index:
         private List<KeyValuePair<int, object>> _debugCookies = null;
 
-#region Debug View
+        #region Debug View
 
         internal sealed class DebugView
         {
@@ -181,9 +183,9 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-#endregion
+        #endregion Debug View
 
-#region Core Emit Ops
+        #region Core Emit Ops
 
         public void Emit(Instruction instruction)
         {
@@ -232,22 +234,34 @@ namespace System.Linq.Expressions.Interpreter
 
         public int Count
         {
-            get { return _instructions.Count; }
+            get
+            {
+                return _instructions.Count;
+            }
         }
 
         public int CurrentStackDepth
         {
-            get { return _currentStackDepth; }
+            get
+            {
+                return _currentStackDepth;
+            }
         }
 
         public int CurrentContinuationsDepth
         {
-            get { return _currentContinuationsDepth; }
+            get
+            {
+                return _currentContinuationsDepth;
+            }
         }
 
         public int MaxStackDepth
         {
-            get { return _maxStackDepth; }
+            get
+            {
+                return _maxStackDepth;
+            }
         }
 
         internal Instruction GetInstruction(int index)
@@ -281,6 +295,7 @@ namespace System.Linq.Expressions.Interpreter
             });
         }
 #endif
+
         public InstructionArray ToArray()
         {
 #if STATS
@@ -312,9 +327,9 @@ namespace System.Linq.Expressions.Interpreter
             );
         }
 
-#endregion
+        #endregion Core Emit Ops
 
-#region Stack Operations
+        #region Stack Operations
 
         private const int PushIntMinCachedValue = -100;
         private const int PushIntMaxCachedValue = 100;
@@ -406,9 +421,9 @@ namespace System.Linq.Expressions.Interpreter
             Emit(PopInstruction.Instance);
         }
 
-#endregion
+        #endregion Stack Operations
 
-#region Locals
+        #region Locals
 
         internal void SwitchToBoxed(int index, int instructionIndex)
         {
@@ -657,9 +672,9 @@ namespace System.Linq.Expressions.Interpreter
             Emit(new RuntimeVariablesInstruction(count));
         }
 
-#endregion
+        #endregion Locals
 
-#region Array Operations
+        #region Array Operations
 
         public void EmitGetArrayItem()
         {
@@ -686,9 +701,9 @@ namespace System.Linq.Expressions.Interpreter
             Emit(new NewArrayInitInstruction(elementType, elementCount));
         }
 
-#endregion
+        #endregion Array Operations
 
-#region Arithmetic Operations
+        #region Arithmetic Operations
 
         public void EmitAdd(Type type, bool @checked)
         {
@@ -702,7 +717,6 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters")]
         public void EmitSub(Type type, bool @checked)
         {
             if (@checked)
@@ -715,7 +729,6 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters")]
         public void EmitMul(Type type, bool @checked)
         {
             if (@checked)
@@ -738,9 +751,9 @@ namespace System.Linq.Expressions.Interpreter
             Emit(ModuloInstruction.Create(type));
         }
 
-#endregion
+        #endregion Arithmetic Operations
 
-#region Comparisons
+        #region Comparisons
 
         public void EmitExclusiveOr(Type type)
         {
@@ -807,9 +820,9 @@ namespace System.Linq.Expressions.Interpreter
             Emit(GreaterThanOrEqualInstruction.Create(type, liftedToNull));
         }
 
-#endregion
+        #endregion Comparisons
 
-#region Conversions
+        #region Conversions
 
         public void EmitNumericConvertChecked(TypeCode from, TypeCode to, bool isLiftedToNull)
         {
@@ -831,18 +844,18 @@ namespace System.Linq.Expressions.Interpreter
             Emit(new CastToEnumInstruction(toType));
         }
 
-#endregion
+        #endregion Conversions
 
-#region Boolean Operators
+        #region Boolean Operators
 
         public void EmitNot(Type type)
         {
             Emit(NotInstruction.Create(type));
         }
 
-#endregion
+        #endregion Boolean Operators
 
-#region Types
+        #region Types
 
         public void EmitDefaultValue(Type type)
         {
@@ -909,9 +922,9 @@ namespace System.Linq.Expressions.Interpreter
             Emit(new TypeAsInstruction(type));
         }
 
-#endregion
+        #endregion Types
 
-#region Fields and Methods
+        #region Fields and Methods
 
         private static readonly Dictionary<FieldInfo, Instruction> s_loadFields = new Dictionary<FieldInfo, Instruction>();
 
@@ -977,9 +990,10 @@ namespace System.Linq.Expressions.Interpreter
         {
             Emit(NullCheckInstruction.Create(stackOffset));
         }
-#endregion
 
-#region Control Flow
+        #endregion Fields and Methods
+
+        #region Control Flow
 
         private static readonly RuntimeLabel[] s_emptyRuntimeLabels = new RuntimeLabel[] { new RuntimeLabel(Interpreter.RethrowOnReturn, 0, 0) };
 
@@ -1150,7 +1164,7 @@ namespace System.Linq.Expressions.Interpreter
             Emit(new StringSwitchInstruction(cases, nullCase));
         }
 
-#endregion
+        #endregion Control Flow
     }
 }
 

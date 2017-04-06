@@ -26,10 +26,14 @@ namespace System.Linq.Expressions.Compiler
 
             internal RewriteAction Action
             {
-                get { return _action; }
+                get
+                {
+                    return _action;
+                }
             }
 
             internal abstract MemberBinding AsBinding();
+
             internal abstract Expression AsExpression(Expression target);
 
             internal static BindingRewriter Create(MemberBinding binding, StackSpiller spiller, Stack stack)
@@ -39,9 +43,11 @@ namespace System.Linq.Expressions.Compiler
                     case MemberBindingType.Assignment:
                         MemberAssignment assign = (MemberAssignment)binding;
                         return new MemberAssignmentRewriter(assign, spiller, stack);
+
                     case MemberBindingType.ListBinding:
                         MemberListBinding list = (MemberListBinding)binding;
                         return new ListBindingRewriter(list, spiller, stack);
+
                     case MemberBindingType.MemberBinding:
                         MemberMemberBinding member = (MemberMemberBinding)binding;
                         return new MemberMemberBindingRewriter(member, spiller, stack);
@@ -62,7 +68,7 @@ namespace System.Linq.Expressions.Compiler
                 _bindingRewriters = new BindingRewriter[_bindings.Count];
                 for (int i = 0; i < _bindings.Count; i++)
                 {
-                    BindingRewriter br = BindingRewriter.Create(_bindings[i], spiller, stack);
+                    BindingRewriter br = Create(_bindings[i], spiller, stack);
                     _action |= br.Action;
                     _bindingRewriters[i] = br;
                 }
@@ -74,6 +80,7 @@ namespace System.Linq.Expressions.Compiler
                 {
                     case RewriteAction.None:
                         return _binding;
+
                     case RewriteAction.Copy:
                         MemberBinding[] newBindings = new MemberBinding[_bindings.Count];
                         for (int i = 0; i < _bindings.Count; i++)
@@ -87,7 +94,7 @@ namespace System.Linq.Expressions.Compiler
 
             internal override Expression AsExpression(Expression target)
             {
-                if (target.Type.IsValueType && _binding.Member is System.Reflection.PropertyInfo)
+                if (target.Type.IsValueType && _binding.Member is Reflection.PropertyInfo)
                 {
                     throw Error.CannotAutoInitializeValueTypeMemberThroughProperty(_binding.Member);
                 }
@@ -150,6 +157,7 @@ namespace System.Linq.Expressions.Compiler
                 {
                     case RewriteAction.None:
                         return _binding;
+
                     case RewriteAction.Copy:
                         ElementInit[] newInits = new ElementInit[_inits.Count];
                         for (int i = 0; i < _inits.Count; i++)
@@ -171,7 +179,7 @@ namespace System.Linq.Expressions.Compiler
 
             internal override Expression AsExpression(Expression target)
             {
-                if (target.Type.IsValueType && _binding.Member is System.Reflection.PropertyInfo)
+                if (target.Type.IsValueType && _binding.Member is Reflection.PropertyInfo)
                 {
                     throw Error.CannotAutoInitializeValueTypeElementThroughProperty(_binding.Member);
                 }
@@ -224,6 +232,7 @@ namespace System.Linq.Expressions.Compiler
                 {
                     case RewriteAction.None:
                         return _binding;
+
                     case RewriteAction.Copy:
                         return Expression.Bind(_binding.Member, _rhs);
                 }

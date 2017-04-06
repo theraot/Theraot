@@ -65,7 +65,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-
         private void AddressOf(BinaryExpression node, Type type)
         {
             Debug.Assert(node.NodeType == ExpressionType.ArrayIndex && node.Method == null);
@@ -115,7 +114,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-
         private void AddressOf(MemberExpression node, Type type)
         {
             if (type == node.Type)
@@ -148,7 +146,7 @@ namespace System.Linq.Expressions.Compiler
                 // the address of field bar to do the call.  The address of a local which
                 // has the same value as bar is sufficient.
 
-                // The C# compiler will not compile a lambda expression tree 
+                // The C# compiler will not compile a lambda expression tree
                 // which writes to the address of an init-only field. But one could
                 // probably use the expression tree API to build such an expression.
                 // (When compiled, such an expression would fail silently.)  It might
@@ -168,7 +166,6 @@ namespace System.Linq.Expressions.Compiler
             _ilg.Emit(OpCodes.Stloc, temp);
             _ilg.Emit(OpCodes.Ldloca, temp);
         }
-
 
         private void AddressOf(MethodCallExpression node, Type type)
         {
@@ -232,7 +229,6 @@ namespace System.Linq.Expressions.Compiler
             _ilg.Emit(OpCodes.Ldloca, tmp);
         }
 
-
         // Emits the address of the expression, returning the write back if necessary
         //
         // For properties, we want to write back into the property if it's
@@ -249,6 +245,7 @@ namespace System.Linq.Expressions.Compiler
                     case ExpressionType.MemberAccess:
                         result = AddressOfWriteBack((MemberExpression)node);
                         break;
+
                     case ExpressionType.Index:
                         result = AddressOfWriteBack((IndexExpression)node);
                         break;

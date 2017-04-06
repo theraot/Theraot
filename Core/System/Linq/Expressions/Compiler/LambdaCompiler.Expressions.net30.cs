@@ -92,20 +92,25 @@ namespace System.Linq.Expressions.Compiler
                 case ExpressionType.Assign:
                     EmitAssign((BinaryExpression)node, CompilationFlags.EmitAsVoidType);
                     break;
+
                 case ExpressionType.Block:
                     Emit((BlockExpression)node, UpdateEmitAsTypeFlag(flags, CompilationFlags.EmitAsVoidType));
                     break;
+
                 case ExpressionType.Throw:
                     EmitThrow((UnaryExpression)node, CompilationFlags.EmitAsVoidType);
                     break;
+
                 case ExpressionType.Goto:
                     EmitGotoExpression(node, UpdateEmitAsTypeFlag(flags, CompilationFlags.EmitAsVoidType));
                     break;
+
                 case ExpressionType.Constant:
                 case ExpressionType.Default:
                 case ExpressionType.Parameter:
                     // no-op
                     break;
+
                 default:
                     if (node.Type == typeof(void))
                     {
@@ -145,7 +150,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-#region label block tracking
+        #region label block tracking
 
         private CompilationFlags EmitExpressionStart(Expression node)
         {
@@ -164,9 +169,9 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-#endregion
+        #endregion label block tracking
 
-#region InvocationExpression
+        #region InvocationExpression
 
         private void EmitInvocationExpression(Expression expr, CompilationFlags flags)
         {
@@ -221,9 +226,9 @@ namespace System.Linq.Expressions.Compiler
             EmitWriteBack(wb);
         }
 
-#endregion
+        #endregion InvocationExpression
 
-#region IndexExpression
+        #region IndexExpression
 
         private void EmitIndexExpression(Expression expr)
         {
@@ -327,9 +332,9 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-#endregion
+        #endregion IndexExpression
 
-#region MethodCallExpression
+        #region MethodCallExpression
 
         private void EmitMethodCallExpression(Expression expr, CompilationFlags flags)
         {
@@ -356,7 +361,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 EmitInstance(obj, objectType = obj.Type);
             }
-            // if the obj has a value type, its address is passed to the method call so we cannot destroy the 
+            // if the obj has a value type, its address is passed to the method call so we cannot destroy the
             // stack by emitting a tail call
             if (obj != null && obj.Type.IsValueType)
             {
@@ -387,7 +392,7 @@ namespace System.Linq.Expressions.Compiler
                 // This automatically boxes value types if necessary.
                 _ilg.Emit(OpCodes.Constrained, objectType);
             }
-            // The method call can be a tail call if 
+            // The method call can be a tail call if
             // 1) the method call is the last instruction before Ret
             // 2) the method does not have any ByRef parameters, refer to ECMA-335 Partition III Section 2.4.
             //    "Verification requires that no managed pointers are passed to the method being called, since
@@ -458,7 +463,7 @@ namespace System.Linq.Expressions.Compiler
             //
             // We never need to generate a nonvirtual call to a virtual method on a reference type because
             // expression trees do not support "base.Foo()" style calling.
-            // 
+            //
             // We could do an optimization here for the case where we know that the object is a non-null
             // reference type and the method is a non-virtual instance method.  For example, if we had
             // (new Foo()).Bar() for instance method Bar we don't need the null check so we could do a
@@ -528,7 +533,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-#endregion
+        #endregion MethodCallExpression
 
         private void EmitConstantExpression(Expression expr)
         {
@@ -702,12 +707,15 @@ namespace System.Linq.Expressions.Compiler
                 case ExpressionType.Index:
                     EmitIndexAssignment(node, emitAs);
                     return;
+
                 case ExpressionType.MemberAccess:
                     EmitMemberAssignment(node, emitAs);
                     return;
+
                 case ExpressionType.Parameter:
                     EmitVariableAssignment(node, emitAs);
                     return;
+
                 default:
                     throw Error.InvalidLvalue(node.Left.NodeType);
             }
@@ -846,6 +854,7 @@ namespace System.Linq.Expressions.Compiler
                 return false;
             }
         }
+
         private void EmitInstance(Expression instance, Type type)
         {
             if (instance != null)
@@ -894,13 +903,12 @@ namespace System.Linq.Expressions.Compiler
             return;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "expr")]
         private static void EmitExtensionExpression(Expression expr)
         {
             throw Error.ExtensionNotReduced();
         }
 
-#region ListInit, MemberInit
+        #region ListInit, MemberInit
 
         private void EmitListInitExpression(Expression expr)
         {
@@ -919,12 +927,15 @@ namespace System.Linq.Expressions.Compiler
                 case MemberBindingType.Assignment:
                     EmitMemberAssignment((MemberAssignment)binding, objectType);
                     break;
+
                 case MemberBindingType.ListBinding:
                     EmitMemberListBinding((MemberListBinding)binding);
                     break;
+
                 case MemberBindingType.MemberBinding:
                     EmitMemberMemberBinding((MemberMemberBinding)binding);
                     break;
+
                 default:
                     throw Error.UnknownBindingType();
             }
@@ -1084,20 +1095,22 @@ namespace System.Linq.Expressions.Compiler
         private static Type GetMemberType(MemberInfo member)
         {
             FieldInfo fi = member as FieldInfo;
-            if (fi != null) return fi.FieldType;
+            if (fi != null)
+                return fi.FieldType;
             PropertyInfo pi = member as PropertyInfo;
-            if (pi != null) return pi.PropertyType;
+            if (pi != null)
+                return pi.PropertyType;
             throw Error.MemberNotFieldOrProperty(member);
         }
 
-#endregion
+        #endregion ListInit, MemberInit
 
-#region Expression helpers
+        #region Expression helpers
 
         internal static void ValidateLift(IList<ParameterExpression> variables, IList<Expression> arguments)
         {
-            System.Diagnostics.Debug.Assert(variables != null);
-            System.Diagnostics.Debug.Assert(arguments != null);
+            Debug.Assert(variables != null);
+            Debug.Assert(arguments != null);
 
             if (variables.Count != arguments.Count)
             {
@@ -1112,7 +1125,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private void EmitLift(ExpressionType nodeType, Type resultType, MethodCallExpression mc, ParameterExpression[] paramList, Expression[] argList)
         {
             Debug.Assert(TypeHelper.GetNonNullableType(resultType) == TypeHelper.GetNonNullableType(mc.Type));
@@ -1193,6 +1205,7 @@ namespace System.Linq.Expressions.Compiler
                                 case ExpressionType.GreaterThanOrEqual:
                                     _ilg.Emit(OpCodes.Ldc_I4_0);
                                     break;
+
                                 default:
                                     throw Error.UnknownLiftType(nodeType);
                             }
@@ -1289,7 +1302,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-#endregion
+        #endregion Expression helpers
     }
 }
 

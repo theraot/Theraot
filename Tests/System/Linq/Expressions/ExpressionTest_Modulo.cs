@@ -19,110 +19,110 @@
 // Authors:
 //		Federico Di Gregorio <fog@initd.org>
 
+using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
-using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {
     [TestFixture]
-	public class ExpressionTest_Modulo
-	{
-		[Test]
-		[ExpectedException (typeof (ArgumentNullException))]
-		public void Arg1Null ()
-		{
-			Expression.Modulo (null, Expression.Constant (1));
-		}
+    public class ExpressionTest_Modulo
+    {
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Arg1Null()
+        {
+            Expression.Modulo(null, Expression.Constant(1));
+        }
 
-		[Test]
-		[ExpectedException (typeof (ArgumentNullException))]
-		public void Arg2Null ()
-		{
-			Expression.Modulo (Expression.Constant (1), null);
-		}
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Arg2Null()
+        {
+            Expression.Modulo(Expression.Constant(1), null);
+        }
 
-		[Test]
-		[ExpectedException (typeof (InvalidOperationException))]
-		public void ArgTypesDifferent ()
-		{
-			Expression.Modulo (Expression.Constant (1), Expression.Constant (2.0));
-		}
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void ArgTypesDifferent()
+        {
+            Expression.Modulo(Expression.Constant(1), Expression.Constant(2.0));
+        }
 
-		[Test]
-		[ExpectedException (typeof (InvalidOperationException))]
-		public void NoOperatorClass ()
-		{
-			Expression.Modulo (Expression.Constant (new NoOpClass ()), Expression.Constant (new NoOpClass ()));
-		}
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void NoOperatorClass()
+        {
+            Expression.Modulo(Expression.Constant(new NoOpClass()), Expression.Constant(new NoOpClass()));
+        }
 
-		[Test]
-		[ExpectedException (typeof (InvalidOperationException))]
-		public void Boolean ()
-		{
-			Expression.Modulo (Expression.Constant (true), Expression.Constant (false));
-		}
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void Boolean()
+        {
+            Expression.Modulo(Expression.Constant(true), Expression.Constant(false));
+        }
 
-		[Test]
-		public void Double ()
-		{
-			var expr = Expression.Modulo (Expression.Constant (1.0), Expression.Constant (2.0));
-            Assert.AreEqual (ExpressionType.Modulo, expr.NodeType, "Modulo#14");
-			Assert.AreEqual (typeof (double), expr.Type, "Modulo#15");
-			Assert.IsNull (expr.Method, "Modulo#16");
-			Assert.AreEqual ("(1 % 2)", expr.ToString(), "Modulo#17");
-		}
+        [Test]
+        public void Double()
+        {
+            var expr = Expression.Modulo(Expression.Constant(1.0), Expression.Constant(2.0));
+            Assert.AreEqual(ExpressionType.Modulo, expr.NodeType, "Modulo#14");
+            Assert.AreEqual(typeof(double), expr.Type, "Modulo#15");
+            Assert.IsNull(expr.Method, "Modulo#16");
+            Assert.AreEqual("(1 % 2)", expr.ToString(), "Modulo#17");
+        }
 
-		[Test]
-		public void Numeric ()
-		{
-			var expr = Expression.Modulo (Expression.Constant (1), Expression.Constant (2));
-            Assert.AreEqual (ExpressionType.Modulo, expr.NodeType, "Modulo#01");
-			Assert.AreEqual (typeof (int), expr.Type, "Modulo#02");
-			Assert.IsNull (expr.Method, "Modulo#03");
-			Assert.AreEqual ("(1 % 2)", expr.ToString(), "Modulo#04");
-		}
+        [Test]
+        public void Numeric()
+        {
+            var expr = Expression.Modulo(Expression.Constant(1), Expression.Constant(2));
+            Assert.AreEqual(ExpressionType.Modulo, expr.NodeType, "Modulo#01");
+            Assert.AreEqual(typeof(int), expr.Type, "Modulo#02");
+            Assert.IsNull(expr.Method, "Modulo#03");
+            Assert.AreEqual("(1 % 2)", expr.ToString(), "Modulo#04");
+        }
 
-		[Test]
-		public void Nullable ()
-		{
-			int? a = 1;
-			int? b = 2;
+        [Test]
+        public void Nullable()
+        {
+            int? a = 1;
+            int? b = 2;
 
-			var expr = Expression.Modulo (Expression.Constant (a), Expression.Constant (b));
-            Assert.AreEqual (ExpressionType.Modulo, expr.NodeType, "Modulo#05");
-			Assert.AreEqual (typeof (int), expr.Type, "Modulo#06");
-			Assert.IsNull (expr.Method, "Modulo#07");
-			Assert.AreEqual ("(1 % 2)", expr.ToString(), "Modulo#08");
-		}
+            var expr = Expression.Modulo(Expression.Constant(a), Expression.Constant(b));
+            Assert.AreEqual(ExpressionType.Modulo, expr.NodeType, "Modulo#05");
+            Assert.AreEqual(typeof(int), expr.Type, "Modulo#06");
+            Assert.IsNull(expr.Method, "Modulo#07");
+            Assert.AreEqual("(1 % 2)", expr.ToString(), "Modulo#08");
+        }
 
-		[Test]
-		public void UserDefinedClass ()
-		{
-			// We can use the simplest version of GetMethod because we already know only one
-			// exists in the very simple class we're using for the tests.
-			var mi = typeof (OpClass).GetMethod ("op_Modulus");
+        [Test]
+        public void UserDefinedClass()
+        {
+            // We can use the simplest version of GetMethod because we already know only one
+            // exists in the very simple class we're using for the tests.
+            var mi = typeof(OpClass).GetMethod("op_Modulus");
 
-            BinaryExpression expr = Expression.Modulo (Expression.Constant (new OpClass ()), Expression.Constant (new OpClass ()));
-			Assert.AreEqual (ExpressionType.Modulo, expr.NodeType, "Modulo#09");
-			Assert.AreEqual (typeof (OpClass), expr.Type, "Modulo#10");
-			Assert.AreEqual (mi, expr.Method, "Modulo#11");
-			Assert.AreEqual ("op_Modulus", expr.Method.Name, "Modulo#12");
-			Assert.AreEqual ("(value(MonoTests.System.Linq.Expressions.OpClass) % value(MonoTests.System.Linq.Expressions.OpClass))",
-				expr.ToString(), "Modulo#13");
-		}
+            BinaryExpression expr = Expression.Modulo(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
+            Assert.AreEqual(ExpressionType.Modulo, expr.NodeType, "Modulo#09");
+            Assert.AreEqual(typeof(OpClass), expr.Type, "Modulo#10");
+            Assert.AreEqual(mi, expr.Method, "Modulo#11");
+            Assert.AreEqual("op_Modulus", expr.Method.Name, "Modulo#12");
+            Assert.AreEqual("(value(MonoTests.System.Linq.Expressions.OpClass) % value(MonoTests.System.Linq.Expressions.OpClass))",
+                expr.ToString(), "Modulo#13");
+        }
 
-		[Test]
-		public void CompiledModulo ()
-		{
-			var l = Expression.Parameter (typeof (double), "l");
-			var p = Expression.Parameter (typeof (double), "r");
+        [Test]
+        public void CompiledModulo()
+        {
+            var l = Expression.Parameter(typeof(double), "l");
+            var p = Expression.Parameter(typeof(double), "r");
 
-			var modulo = Expression.Lambda<Func<double, double, double>> (
-				Expression.Modulo (l, p), l, p).Compile ();
+            var modulo = Expression.Lambda<Func<double, double, double>>(
+                Expression.Modulo(l, p), l, p).Compile();
 
-			Assert.AreEqual (0, modulo (4.0, 2.0));
-			Assert.AreEqual (2.0, modulo (5.0, 3.0));
-		}
-	}
+            Assert.AreEqual(0, modulo(4.0, 2.0));
+            Assert.AreEqual(2.0, modulo(5.0, 3.0));
+        }
+    }
 }

@@ -4,7 +4,7 @@ using System;
 
 namespace Theraot.Core
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public static class Check
     {
         public static TArgument CheckArgument<TArgument>(TArgument argument, Predicate<TArgument> check, string parameterName)
@@ -33,7 +33,7 @@ namespace Theraot.Core
 
         public static T NotNullArgument<T>(T argument, string parameterName)
         {
-            if (object.ReferenceEquals(argument, null))
+            if (ReferenceEquals(argument, null))
             {
                 throw new ArgumentNullException(parameterName, parameterName + " is null.");
             }

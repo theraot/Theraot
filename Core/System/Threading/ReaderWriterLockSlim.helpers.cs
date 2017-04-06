@@ -9,7 +9,7 @@ namespace System.Threading
             return (state & value) > 0;
         }
 
-        internal static bool IsSet (this ManualResetEventSlim self)
+        internal static bool IsSet(this ManualResetEventSlim self)
         {
             return self.IsSet;
         }

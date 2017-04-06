@@ -51,7 +51,6 @@ namespace Theraot.Collections.ThreadSafe
             _invoke = InvokeExtracted;
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "By Design")]
         public void Add(MethodInfo method, object target)
         {
             if (method == null)

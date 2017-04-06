@@ -20,7 +20,7 @@ namespace System.Diagnostics.Contracts.Tests
             using (Utilities.WithContractFailed(handler))
             {
                 Contract.Assert(true);
-                NUnit.Framework.Assert.False(eventRaised, "ContractFailed event was raised");
+                Assert.False(eventRaised, "ContractFailed event was raised");
             }
         }
 
@@ -37,7 +37,7 @@ namespace System.Diagnostics.Contracts.Tests
             {
                 Contract.Assert(false);
 #if DEBUG
-                NUnit.Framework.Assert.True(eventRaised, "ContractFailed event not raised");
+                Assert.True(eventRaised, "ContractFailed event not raised");
 #else
                 NUnit.Framework.Assert.False(eventRaised, "ContractFailed event not raised");
 #endif
@@ -57,7 +57,7 @@ namespace System.Diagnostics.Contracts.Tests
             {
 #if DEBUG
                 Utilities.AssertThrowsContractException(() => Contract.Assert(false, "Some kind of user message"));
-                NUnit.Framework.Assert.True(eventRaised, "ContractFailed was not raised");
+                Assert.True(eventRaised, "ContractFailed was not raised");
 #else
                 Contract.Assert(false, "Some kind of user message");
                 NUnit.Framework.Assert.False(eventRaised, "ContractFailed event was raised");

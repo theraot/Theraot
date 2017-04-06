@@ -9,8 +9,10 @@ namespace System.Threading.Tasks
     {
         /// <summary>The unstarted continuation task.</summary>
         internal readonly Task Task;
+
         /// <summary>The options to use with the continuation task.</summary>
         internal readonly TaskContinuationOptions Options;
+
         /// <summary>The task scheduler with which to run the continuation task.</summary>
         private readonly TaskScheduler _scheduler;
 
@@ -39,7 +41,7 @@ namespace System.Threading.Tasks
             }
             Contract.Assert(completedTask.IsCompleted, "ContinuationTask.Run(): completedTask not completed");
 
-            // Check if the completion status of the task works with the desired 
+            // Check if the completion status of the task works with the desired
             // activation criteria of the TaskContinuationOptions.
             var options = Options;
             var isRightKind =
@@ -69,7 +71,7 @@ namespace System.Threading.Tasks
                     }
                     catch (TaskSchedulerException exception)
                     {
-                        // No further action is necessary -- ScheduleAndStart() already transitioned the 
+                        // No further action is necessary -- ScheduleAndStart() already transitioned the
                         // task to faulted.  But we want to make sure that no exception is thrown from here.
                         GC.KeepAlive(exception);
                     }
@@ -77,7 +79,8 @@ namespace System.Threading.Tasks
             }
             // Otherwise, the final state of this task does not match the desired
             // continuation activation criteria; cancel it to denote this.
-            else continuationTask.InternalCancel(false);
+            else
+                continuationTask.InternalCancel(false);
         }
     }
 }

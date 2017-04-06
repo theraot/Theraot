@@ -29,12 +29,12 @@
 #define NET_4_5
 #if NET_4_5
 
+using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace MonoTests.System.Runtime.CompilerServices
 {

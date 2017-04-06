@@ -38,15 +38,19 @@ namespace System.Linq.Expressions.Compiler
                 case 0:
                     il.Emit(OpCodes.Ldarg_0);
                     break;
+
                 case 1:
                     il.Emit(OpCodes.Ldarg_1);
                     break;
+
                 case 2:
                     il.Emit(OpCodes.Ldarg_2);
                     break;
+
                 case 3:
                     il.Emit(OpCodes.Ldarg_3);
                     break;
+
                 default:
                     if (index <= Byte.MaxValue)
                     {
@@ -144,7 +148,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-
         /// <summary>
         /// Emits a Stind* instruction for the appropriate type.
         /// </summary>
@@ -215,32 +218,41 @@ namespace System.Linq.Expressions.Compiler
                     case TypeCode.SByte:
                         il.Emit(OpCodes.Ldelem_I1);
                         break;
+
                     case TypeCode.Byte:
                         il.Emit(OpCodes.Ldelem_U1);
                         break;
+
                     case TypeCode.Int16:
                         il.Emit(OpCodes.Ldelem_I2);
                         break;
+
                     case TypeCode.Char:
                     case TypeCode.UInt16:
                         il.Emit(OpCodes.Ldelem_U2);
                         break;
+
                     case TypeCode.Int32:
                         il.Emit(OpCodes.Ldelem_I4);
                         break;
+
                     case TypeCode.UInt32:
                         il.Emit(OpCodes.Ldelem_U4);
                         break;
+
                     case TypeCode.Int64:
                     case TypeCode.UInt64:
                         il.Emit(OpCodes.Ldelem_I8);
                         break;
+
                     case TypeCode.Single:
                         il.Emit(OpCodes.Ldelem_R4);
                         break;
+
                     case TypeCode.Double:
                         il.Emit(OpCodes.Ldelem_R8);
                         break;
+
                     default:
                         il.Emit(OpCodes.Ldelem, type);
                         break;
@@ -267,25 +279,31 @@ namespace System.Linq.Expressions.Compiler
                 case TypeCode.Byte:
                     il.Emit(OpCodes.Stelem_I1);
                     break;
+
                 case TypeCode.Char:
                 case TypeCode.Int16:
                 case TypeCode.UInt16:
                     il.Emit(OpCodes.Stelem_I2);
                     break;
+
                 case TypeCode.Int32:
                 case TypeCode.UInt32:
                     il.Emit(OpCodes.Stelem_I4);
                     break;
+
                 case TypeCode.Int64:
                 case TypeCode.UInt64:
                     il.Emit(OpCodes.Stelem_I8);
                     break;
+
                 case TypeCode.Single:
                     il.Emit(OpCodes.Stelem_R4);
                     break;
+
                 case TypeCode.Double:
                     il.Emit(OpCodes.Stelem_R8);
                     break;
+
                 default:
                     if (type.IsValueType)
                     {
@@ -307,7 +325,7 @@ namespace System.Linq.Expressions.Compiler
             il.Emit(OpCodes.Call, typeof(Type).GetMethod("GetTypeFromHandle"));
         }
 
-        #endregion
+        #endregion Instruction helpers
 
         #region Fields, properties and methods
 
@@ -353,7 +371,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
         internal static void EmitNew(this ILGenerator il, ConstructorInfo ci)
         {
             ContractUtils.RequiresNotNull(ci, "ci");
@@ -366,18 +383,18 @@ namespace System.Linq.Expressions.Compiler
             il.Emit(OpCodes.Newobj, ci);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1711:IdentifiersShouldNotHaveIncorrectSuffix")]
         internal static void EmitNew(this ILGenerator il, Type type, Type[] paramTypes)
         {
             ContractUtils.RequiresNotNull(type, "type");
             ContractUtils.RequiresNotNull(paramTypes, "paramTypes");
 
             ConstructorInfo ci = type.GetConstructor(paramTypes);
-            if (ci == null) throw Error.TypeDoesNotHaveConstructorForTheSignature();
+            if (ci == null)
+                throw Error.TypeDoesNotHaveConstructorForTheSignature();
             il.EmitNew(ci);
         }
 
-        #endregion
+        #endregion Fields, properties and methods
 
         #region Constants
 
@@ -442,33 +459,43 @@ namespace System.Linq.Expressions.Compiler
                 case -1:
                     c = OpCodes.Ldc_I4_M1;
                     break;
+
                 case 0:
                     c = OpCodes.Ldc_I4_0;
                     break;
+
                 case 1:
                     c = OpCodes.Ldc_I4_1;
                     break;
+
                 case 2:
                     c = OpCodes.Ldc_I4_2;
                     break;
+
                 case 3:
                     c = OpCodes.Ldc_I4_3;
                     break;
+
                 case 4:
                     c = OpCodes.Ldc_I4_4;
                     break;
+
                 case 5:
                     c = OpCodes.Ldc_I4_5;
                     break;
+
                 case 6:
                     c = OpCodes.Ldc_I4_6;
                     break;
+
                 case 7:
                     c = OpCodes.Ldc_I4_7;
                     break;
+
                 case 8:
                     c = OpCodes.Ldc_I4_8;
                     break;
+
                 default:
                     if (value >= -128 && value <= 127)
                     {
@@ -571,7 +598,6 @@ namespace System.Linq.Expressions.Compiler
             EmitConstant(il, value, value.GetType());
         }
 
-
         //
         // Note: we support emitting more things as IL constants than
         // Linq does
@@ -645,7 +671,6 @@ namespace System.Linq.Expressions.Compiler
             return dt == null || ShouldLdtoken(dt);
         }
 
-
         private static bool TryEmitILConstant(this ILGenerator il, object value, Type type)
         {
             switch (type.GetTypeCode())
@@ -653,51 +678,65 @@ namespace System.Linq.Expressions.Compiler
                 case TypeCode.Boolean:
                     il.EmitBoolean((bool)value);
                     return true;
+
                 case TypeCode.SByte:
                     il.EmitSByte((sbyte)value);
                     return true;
+
                 case TypeCode.Int16:
                     il.EmitShort((short)value);
                     return true;
+
                 case TypeCode.Int32:
                     il.EmitInt((int)value);
                     return true;
+
                 case TypeCode.Int64:
                     il.EmitLong((long)value);
                     return true;
+
                 case TypeCode.Single:
                     il.EmitSingle((float)value);
                     return true;
+
                 case TypeCode.Double:
                     il.EmitDouble((double)value);
                     return true;
+
                 case TypeCode.Char:
                     il.EmitChar((char)value);
                     return true;
+
                 case TypeCode.Byte:
                     il.EmitByte((byte)value);
                     return true;
+
                 case TypeCode.UInt16:
                     il.EmitUShort((ushort)value);
                     return true;
+
                 case TypeCode.UInt32:
                     il.EmitUInt((uint)value);
                     return true;
+
                 case TypeCode.UInt64:
                     il.EmitULong((ulong)value);
                     return true;
+
                 case TypeCode.Decimal:
                     il.EmitDecimal((decimal)value);
                     return true;
+
                 case TypeCode.String:
                     il.EmitString((string)value);
                     return true;
+
                 default:
                     return false;
             }
         }
 
-        #endregion
+        #endregion Constants
 
         #region Linq Conversions
 
@@ -723,8 +762,8 @@ namespace System.Linq.Expressions.Compiler
                typeTo.IsInterface ||
                typeFrom == typeof(object) || // boxing cast
                typeTo == typeof(object) ||
-               typeFrom == typeof(System.Enum) ||
-               typeFrom == typeof(System.ValueType) ||
+               typeFrom == typeof(Enum) ||
+               typeFrom == typeof(ValueType) ||
                TypeHelper.IsLegalExplicitVariantDelegateConversion(typeFrom, typeTo))
             {
                 il.EmitCastToType(typeFrom, typeTo);
@@ -751,7 +790,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-
         private static void EmitCastToType(this ILGenerator il, Type typeFrom, Type typeTo)
         {
             if (!typeFrom.IsValueType && typeTo.IsValueType)
@@ -776,8 +814,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private static void EmitNumericConversion(this ILGenerator il, Type typeFrom, Type typeTo, bool isChecked)
         {
             bool isFromUnsigned = TypeHelper.IsUnsigned(typeFrom);
@@ -807,28 +843,36 @@ namespace System.Linq.Expressions.Compiler
                             case TypeCode.SByte:
                                 il.Emit(OpCodes.Conv_Ovf_I1_Un);
                                 break;
+
                             case TypeCode.Int16:
                                 il.Emit(OpCodes.Conv_Ovf_I2_Un);
                                 break;
+
                             case TypeCode.Int32:
                                 il.Emit(OpCodes.Conv_Ovf_I4_Un);
                                 break;
+
                             case TypeCode.Int64:
                                 il.Emit(OpCodes.Conv_Ovf_I8_Un);
                                 break;
+
                             case TypeCode.Byte:
                                 il.Emit(OpCodes.Conv_Ovf_U1_Un);
                                 break;
+
                             case TypeCode.UInt16:
                             case TypeCode.Char:
                                 il.Emit(OpCodes.Conv_Ovf_U2_Un);
                                 break;
+
                             case TypeCode.UInt32:
                                 il.Emit(OpCodes.Conv_Ovf_U4_Un);
                                 break;
+
                             case TypeCode.UInt64:
                                 il.Emit(OpCodes.Conv_Ovf_U8_Un);
                                 break;
+
                             default:
                                 throw Error.UnhandledConvert(typeTo);
                         }
@@ -840,28 +884,36 @@ namespace System.Linq.Expressions.Compiler
                             case TypeCode.SByte:
                                 il.Emit(OpCodes.Conv_Ovf_I1);
                                 break;
+
                             case TypeCode.Int16:
                                 il.Emit(OpCodes.Conv_Ovf_I2);
                                 break;
+
                             case TypeCode.Int32:
                                 il.Emit(OpCodes.Conv_Ovf_I4);
                                 break;
+
                             case TypeCode.Int64:
                                 il.Emit(OpCodes.Conv_Ovf_I8);
                                 break;
+
                             case TypeCode.Byte:
                                 il.Emit(OpCodes.Conv_Ovf_U1);
                                 break;
+
                             case TypeCode.UInt16:
                             case TypeCode.Char:
                                 il.Emit(OpCodes.Conv_Ovf_U2);
                                 break;
+
                             case TypeCode.UInt32:
                                 il.Emit(OpCodes.Conv_Ovf_U4);
                                 break;
+
                             case TypeCode.UInt64:
                                 il.Emit(OpCodes.Conv_Ovf_U8);
                                 break;
+
                             default:
                                 throw Error.UnhandledConvert(typeTo);
                         }
@@ -874,22 +926,28 @@ namespace System.Linq.Expressions.Compiler
                         case TypeCode.SByte:
                             il.Emit(OpCodes.Conv_I1);
                             break;
+
                         case TypeCode.Byte:
                             il.Emit(OpCodes.Conv_U1);
                             break;
+
                         case TypeCode.Int16:
                             il.Emit(OpCodes.Conv_I2);
                             break;
+
                         case TypeCode.UInt16:
                         case TypeCode.Char:
                             il.Emit(OpCodes.Conv_U2);
                             break;
+
                         case TypeCode.Int32:
                             il.Emit(OpCodes.Conv_I4);
                             break;
+
                         case TypeCode.UInt32:
                             il.Emit(OpCodes.Conv_U4);
                             break;
+
                         case TypeCode.Int64:
                             if (isFromUnsigned)
                             {
@@ -900,6 +958,7 @@ namespace System.Linq.Expressions.Compiler
                                 il.Emit(OpCodes.Conv_I8);
                             }
                             break;
+
                         case TypeCode.UInt64:
                             if (isFromUnsigned || isFromFloatingPoint)
                             {
@@ -910,6 +969,7 @@ namespace System.Linq.Expressions.Compiler
                                 il.Emit(OpCodes.Conv_I8);
                             }
                             break;
+
                         default:
                             throw Error.UnhandledConvert(typeTo);
                     }
@@ -952,7 +1012,6 @@ namespace System.Linq.Expressions.Compiler
             il.Emit(OpCodes.Ldloc, locTo);
         }
 
-
         private static void EmitNonNullableToNullableConversion(this ILGenerator il, Type typeFrom, Type typeTo, bool isChecked)
         {
             Debug.Assert(!TypeHelper.IsNullableType(typeFrom));
@@ -967,7 +1026,6 @@ namespace System.Linq.Expressions.Compiler
             il.Emit(OpCodes.Ldloc, locTo);
         }
 
-
         private static void EmitNullableToNonNullableConversion(this ILGenerator il, Type typeFrom, Type typeTo, bool isChecked)
         {
             Debug.Assert(TypeHelper.IsNullableType(typeFrom));
@@ -977,7 +1035,6 @@ namespace System.Linq.Expressions.Compiler
             else
                 il.EmitNullableToReferenceConversion(typeFrom);
         }
-
 
         private static void EmitNullableToNonNullableStructConversion(this ILGenerator il, Type typeFrom, Type typeTo, bool isChecked)
         {
@@ -993,15 +1050,13 @@ namespace System.Linq.Expressions.Compiler
             il.EmitConvertToType(nnTypeFrom, typeTo, isChecked);
         }
 
-
         private static void EmitNullableToReferenceConversion(this ILGenerator il, Type typeFrom)
         {
             Debug.Assert(TypeHelper.IsNullableType(typeFrom));
             // We've got a conversion from nullable to Object, ValueType, Enum, etc.  Just box it so that
-            // we get the nullable semantics.  
+            // we get the nullable semantics.
             il.Emit(OpCodes.Box, typeFrom);
         }
-
 
         private static void EmitNullableConversion(this ILGenerator il, Type typeFrom, Type typeTo, bool isChecked)
         {
@@ -1016,14 +1071,12 @@ namespace System.Linq.Expressions.Compiler
                 il.EmitNonNullableToNullableConversion(typeFrom, typeTo, isChecked);
         }
 
-
         internal static void EmitHasValue(this ILGenerator il, Type nullableType)
         {
             MethodInfo mi = nullableType.GetMethod("get_HasValue", BindingFlags.Instance | BindingFlags.Public);
             Debug.Assert(nullableType.IsValueType);
             il.Emit(OpCodes.Call, mi);
         }
-
 
         internal static void EmitGetValue(this ILGenerator il, Type nullableType)
         {
@@ -1032,15 +1085,14 @@ namespace System.Linq.Expressions.Compiler
             il.Emit(OpCodes.Call, mi);
         }
 
-
         internal static void EmitGetValueOrDefault(this ILGenerator il, Type nullableType)
         {
-            MethodInfo mi = nullableType.GetMethod("GetValueOrDefault", System.Type.EmptyTypes);
+            MethodInfo mi = nullableType.GetMethod("GetValueOrDefault", Type.EmptyTypes);
             Debug.Assert(nullableType.IsValueType);
             il.Emit(OpCodes.Call, mi);
         }
 
-        #endregion
+        #endregion Linq Conversions
 
         #region Arrays
 
@@ -1071,7 +1123,8 @@ namespace System.Linq.Expressions.Compiler
         {
             ContractUtils.RequiresNotNull(elementType, "elementType");
             ContractUtils.RequiresNotNull(emit, "emit");
-            if (count < 0) throw Error.CountCannotBeNegative();
+            if (count < 0)
+                throw Error.CountCannotBeNegative();
 
             il.EmitInt(count);
             il.Emit(OpCodes.Newarr, elementType);
@@ -1087,14 +1140,15 @@ namespace System.Linq.Expressions.Compiler
         }
 
         /// <summary>
-        /// Emits an array construction code.  
+        /// Emits an array construction code.
         /// The code assumes that bounds for all dimensions
         /// are already emitted.
         /// </summary>
         internal static void EmitArray(this ILGenerator il, Type arrayType)
         {
             ContractUtils.RequiresNotNull(arrayType, "arrayType");
-            if (!arrayType.IsArray) throw Error.ArrayTypeMustBeArray();
+            if (!arrayType.IsArray)
+                throw Error.ArrayTypeMustBeArray();
 
             int rank = arrayType.GetArrayRank();
             if (rank == 1)
@@ -1112,7 +1166,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        #endregion
+        #endregion Arrays
 
         #region Support for emitting constants
 
@@ -1224,6 +1278,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        #endregion
+        #endregion Support for emitting constants
     }
 }

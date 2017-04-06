@@ -10,7 +10,7 @@ using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Core
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public static class FolderEnumeration
     {
         public static IEnumerable<string> GetFiles(string folder, string pattern)

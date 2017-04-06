@@ -20,7 +20,6 @@
 #define DEBUG // The behavior of this contract library should be consistent regardless of build type.
 
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.ConstrainedExecution;
 
 namespace System.Diagnostics.Contracts
@@ -166,7 +165,6 @@ namespace System.Diagnostics.Contracts
         /// </remarks>
         [Pure]
         [Conditional("CONTRACTS_FULL")]
-        [SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "Exception type used in tools.")]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void EnsuresOnThrow<TException>(bool condition) where TException : Exception
         {
@@ -186,7 +184,6 @@ namespace System.Diagnostics.Contracts
         /// </remarks>
         [Pure]
         [Conditional("CONTRACTS_FULL")]
-        [SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "Exception type used in tools.")]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void EnsuresOnThrow<TException>(bool condition, string userMessage) where TException : Exception
         {
@@ -371,7 +368,6 @@ namespace System.Diagnostics.Contracts
         /// <remarks>
         /// This method can only be used within the argument to the <seealso cref="Ensures(bool)"/> contract.
         /// </remarks>
-        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "value")]
         [Pure]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public static T OldValue<T>(T value)
@@ -423,8 +419,6 @@ namespace System.Diagnostics.Contracts
         /// This contract is exposed to clients so must only reference members at least as visible as the enclosing method.
         /// Use this form when you want to throw a particular exception.
         /// </remarks>
-        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "condition")]
-        [SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
         [Pure]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Requires<TException>(bool condition) where TException : Exception
@@ -442,9 +436,6 @@ namespace System.Diagnostics.Contracts
         /// This contract is exposed to clients so must only reference members at least as visible as the enclosing method.
         /// Use this form when you want to throw a particular exception.
         /// </remarks>
-        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "userMessage")]
-        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "condition")]
-        [SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
         [Pure]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Requires<TException>(bool condition, string userMessage) where TException : Exception
@@ -460,7 +451,6 @@ namespace System.Diagnostics.Contracts
         /// <remarks>
         /// This method can only be used within the argument to the <seealso cref="Ensures(bool)"/> contract.
         /// </remarks>
-        [SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "Not intended to be called at runtime.")]
         [Pure]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public static T Result<T>()
@@ -477,7 +467,6 @@ namespace System.Diagnostics.Contracts
         /// <remarks>
         /// This method can only be used within the argument to the <seealso cref="Ensures(bool)"/> contract.
         /// </remarks>
-        [SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "0#", Justification = "Not intended to be called at runtime.")]
         [Pure]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public static T ValueAtReturn<T>(out T value)

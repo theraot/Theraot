@@ -242,7 +242,7 @@ namespace Theraot.Threading.Needles
 
         private void InitializeExtracted()
         {
-        back:
+            back:
             var valueFactory = Interlocked.Exchange(ref _valueFactory, null);
             if (valueFactory == null)
             {

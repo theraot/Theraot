@@ -249,7 +249,6 @@ namespace System.Threading
             return true;
         }
 
-        [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2213:DisposableFieldsShouldBeDisposed", MessageId = "_timer", Justification = "False Positive")]
         protected virtual void Dispose(bool disposing)
         {
             if (disposing && Interlocked.CompareExchange(ref _disposeRequested, 1, 0) == 0)

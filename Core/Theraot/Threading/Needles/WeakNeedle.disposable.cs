@@ -9,7 +9,6 @@ namespace Theraot.Threading.Needles
         private int _status;
 
         [System.Diagnostics.DebuggerNonUserCode]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
         ~WeakNeedle()
         {
             try

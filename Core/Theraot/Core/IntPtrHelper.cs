@@ -13,8 +13,10 @@ namespace Theraot.Core
             {
                 case 4:
                     return new IntPtr(unchecked((int)pointer + offset));
+
                 case 8:
                     return new IntPtr(unchecked((long)pointer + offset));
+
                 default:
                     throw new NotSupportedException("Not supported platform");
             }
@@ -30,8 +32,10 @@ namespace Theraot.Core
             {
                 case 4:
                     return new IntPtr(unchecked((int)pointer - offset));
+
                 case 8:
                     return new IntPtr(unchecked((long)pointer - offset));
+
                 default:
                     throw new NotSupportedException("Not supported platform");
             }
@@ -51,8 +55,10 @@ namespace Theraot.Core
             {
                 case 4:
                     return new UIntPtr(unchecked((uint)((int)pointer + offset)));
+
                 case 8:
                     return new UIntPtr(unchecked((ulong)((long)pointer + offset)));
+
                 default:
                     throw new NotSupportedException("Not supported platform");
             }
@@ -69,8 +75,10 @@ namespace Theraot.Core
             {
                 case 4:
                     return new UIntPtr(unchecked((uint)((int)pointer - offset)));
+
                 case 8:
                     return new UIntPtr(unchecked((ulong)((long)pointer - offset)));
+
                 default:
                     throw new NotSupportedException("Not supported platform");
             }

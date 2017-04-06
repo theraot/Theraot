@@ -34,13 +34,12 @@ namespace System
             return ((IStructuralEquatable)this).GetHashCode(EqualityComparer<object>.Default);
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Microsoft's Design")]
-        int System.Collections.IStructuralComparable.CompareTo(object other, IComparer comparer)
+        int IStructuralComparable.CompareTo(object other, IComparer comparer)
         {
             return CompareTo(other, comparer);
         }
 
-        bool System.Collections.IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
+        bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
             var tuple = other as Tuple<T1>;
             if (tuple == null)
@@ -53,13 +52,12 @@ namespace System
             }
         }
 
-        int System.Collections.IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
+        int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)
         {
             return comparer.GetHashCode(_item1);
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Microsoft's Design")]
-        int System.IComparable.CompareTo(object obj)
+        int IComparable.CompareTo(object obj)
         {
             return CompareTo(obj, Comparer<object>.Default);
         }

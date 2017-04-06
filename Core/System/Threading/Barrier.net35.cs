@@ -64,7 +64,6 @@ namespace System.Threading
         }
     }
 
-
     /// <summary>
     /// Enables multiple tasks to cooperatively work on an algorithm in parallel through multiple phases.
     /// </summary>
@@ -84,8 +83,8 @@ namespace System.Threading
     [DebuggerDisplay("Participant Count={ParticipantCount},Participants Remaining={ParticipantsRemaining}")]
     public class Barrier : IDisposable
     {
-        //This variable holds the basic barrier variables: 
-        // 1- The current participants count 
+        //This variable holds the basic barrier variables:
+        // 1- The current participants count
         // 2- The total participants count
         // 3- The sense flag (true if the current phase is even, false otherwise)
         // The first 15 bits are for the total count which means the maximum participants for the barrier is about 32K
@@ -106,12 +105,10 @@ namespace System.Threading
         // The maximum participants the barrier can operate = 32767 ( 2 power 15 - 1 )
         private const int MAX_PARTICIPANTS = TOTAL_MASK;
 
-
         // The current barrier phase
         // We don't need to worry about overflow, the max value is 2^63-1; If it starts from 0 at a
         // rate of 4 billion increments per second, it will takes about 64 years to overflow.
         private long _currentPhase;
-
 
         // dispose flag
         private bool _disposed;
@@ -166,7 +163,10 @@ namespace System.Threading
         /// </summary>
         public int ParticipantCount
         {
-            get { return (int)(_currentTotalCount & TOTAL_MASK); }
+            get
+            {
+                return (int)(_currentTotalCount & TOTAL_MASK);
+            }
         }
 
         /// <summary>
@@ -175,12 +175,18 @@ namespace System.Threading
         public long CurrentPhaseNumber
         {
             // use the new Volatile.Read/Write method because it is cheaper than Interlocked.Read on AMD64 architecture
-            get { return Volatile.Read(ref _currentPhase); }
+            get
+            {
+                return Volatile.Read(ref _currentPhase);
+            }
 
-            internal set { Volatile.Write(ref _currentPhase, value); }
+            internal set
+            {
+                Volatile.Write(ref _currentPhase, value);
+            }
         }
 
-        #endregion
+        #endregion Properties
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Barrier"/> class.
@@ -272,7 +278,7 @@ namespace System.Threading
         /// <returns>The phase number of the barrier in which the new participants will first
         /// participate.</returns>
         /// <exception cref="T:System.InvalidOperationException">
-        /// Adding a participant would cause the barrier's participant count to 
+        /// Adding a participant would cause the barrier's participant count to
         /// exceed <see cref="T:System.Int16.MaxValue"/>.
         /// </exception>
         /// <exception cref="T:System.InvalidOperationException">
@@ -348,7 +354,7 @@ namespace System.Threading
                 if (SetCurrentTotal(currentTotal, current, total + participantCount, sense))
                 {
                     // Calculating the first phase for that participant, if the current phase already finished return the next phase else return the current phase
-                    // To know that the current phase is  the sense doesn't match the 
+                    // To know that the current phase is  the sense doesn't match the
                     // phase odd even, so that means it didn't yet change the phase count, so currentPhase +1 is returned, otherwise currentPhase is returned
                     long currPhase = CurrentPhaseNumber;
                     newPhase = (sense != (currPhase % 2 == 0)) ? currPhase + 1 : currPhase;
@@ -415,7 +421,7 @@ namespace System.Threading
         /// disposed.</exception>
         public void RemoveParticipants(int participantCount)
         {
-            // check dispose 
+            // check dispose
             ThrowIfDisposed();
 
             // Validate input
@@ -561,7 +567,7 @@ namespace System.Threading
             Int64 totalMilliseconds = (Int64)timeout.TotalMilliseconds;
             if (totalMilliseconds < -1 || totalMilliseconds > int.MaxValue)
             {
-                throw new System.ArgumentOutOfRangeException("timeout", timeout,
+                throw new ArgumentOutOfRangeException("timeout", timeout,
                     "The specified timeout must represent a value between -1 and Int32.MaxValue, inclusive.");
             }
             return SignalAndWait((int)timeout.TotalMilliseconds, cancellationToken);
@@ -616,7 +622,7 @@ namespace System.Threading
 
             if (millisecondsTimeout < -1)
             {
-                throw new System.ArgumentOutOfRangeException("millisecondsTimeout", millisecondsTimeout,
+                throw new ArgumentOutOfRangeException("millisecondsTimeout", millisecondsTimeout,
                     "The specified timeout must represent a value between -1 and Int32.MaxValue, inclusive.");
             }
 
@@ -690,8 +696,6 @@ namespace System.Threading
                     throw;
             }
 
-
-
             if (!waitResult)
             {
                 //reset the spinLock to prepare it for the next loop
@@ -741,7 +745,7 @@ namespace System.Threading
         }
 
         /// <summary>
-        /// Finish the phase by invoking the post phase action, and setting the event, this must be called by the 
+        /// Finish the phase by invoking the post phase action, and setting the event, this must be called by the
         /// last arrival thread
         /// </summary>
         /// <param name="observedSense">The current phase sense</param>
@@ -842,7 +846,7 @@ namespace System.Threading
         }
 
         /// <summary>
-        /// The reason of discontinuous waiting instead of direct waiting on the event is to avoid the race where the sense is 
+        /// The reason of discontinuous waiting instead of direct waiting on the event is to avoid the race where the sense is
         /// changed twice because the next phase is finished (due to either RemoveParticipant is called or another thread joined
         /// the next phase instead of the current thread) so the current thread will be stuck on the event because it is reset back
         /// The maxWait and the shift numbers are arbitrarily chosen, there were no references picking them

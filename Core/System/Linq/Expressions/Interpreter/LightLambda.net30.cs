@@ -9,7 +9,10 @@ namespace System.Linq.Expressions.Interpreter
 {
     internal sealed class LightLambdaCompileEventArgs : EventArgs
     {
-        public Delegate Compiled { get; private set; }
+        public Delegate Compiled
+        {
+            get; private set;
+        }
 
         internal LightLambdaCompileEventArgs(Delegate compiled)
         {
@@ -96,7 +99,7 @@ namespace System.Linq.Expressions.Interpreter
                     }
                 }
 
-#if FEATURE_MAKE_RUN_METHODS    
+#if FEATURE_MAKE_RUN_METHODS
                 if (DelegateHelpers.MakeDelegate(paramTypes) == delegateType)
                 {
                     name = "Make" + name + paramInfos.Length;
@@ -149,7 +152,6 @@ namespace System.Linq.Expressions.Interpreter
 
             var dlgExpr = AstUtils.Constant(dlg);
 
-
             var argsParam = Expression.Parameter(typeof(object[]), "$args");
 
             Expression body;
@@ -162,7 +164,6 @@ namespace System.Linq.Expressions.Interpreter
                 body = Expression.Convert(Expression.Invoke(dlgExpr, argsParam), method.ReturnType);
             }
 
-
             if (hasByRef)
             {
                 List<Expression> updates = new List<Expression>();
@@ -170,7 +171,6 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     if (paramInfos[i].ParameterType.IsByRef)
                     {
-
                         updates.Add(
                             Expression.Assign(
                                 parameters[i],
@@ -205,11 +205,11 @@ namespace System.Linq.Expressions.Interpreter
             var method = delegateType.GetMethod("Invoke");
             if (method.ReturnType == typeof(void))
             {
-                return System.Dynamic.Utils.DelegateHelpers.CreateObjectArrayDelegate(delegateType, RunVoid);
+                return Dynamic.Utils.DelegateHelpers.CreateObjectArrayDelegate(delegateType, RunVoid);
             }
             else
             {
-                return System.Dynamic.Utils.DelegateHelpers.CreateObjectArrayDelegate(delegateType, Run);
+                return Dynamic.Utils.DelegateHelpers.CreateObjectArrayDelegate(delegateType, Run);
             }
 #else
             Func<LightLambda, Delegate> fastCtor = GetRunDelegateCtor(delegateType);
@@ -223,7 +223,6 @@ namespace System.Linq.Expressions.Interpreter
             }
 #endif
         }
-
 
         private InterpretedFrame MakeFrame()
         {

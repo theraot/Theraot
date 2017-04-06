@@ -7,9 +7,8 @@ using Theraot.Core;
 
 namespace Theraot.Collections
 {
-    [System.Serializable]
-    [global::System.Diagnostics.DebuggerNonUserCode]
-    [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "By Design")]
+    [Serializable]
+    [System.Diagnostics.DebuggerNonUserCode]
     public sealed class ExtendedReadOnlyList<T> : IReadOnlyList<T>, IReadOnlyCollection<T>, IEnumerable<T>, IExtendedCollection<T>, IExtendedList<T>
     {
         private readonly IList<T> _wrapped;

@@ -3,7 +3,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-
 namespace System.Linq.Expressions.Interpreter
 {
     internal sealed class NewArrayInitInstruction : Instruction
@@ -17,11 +16,28 @@ namespace System.Linq.Expressions.Interpreter
             _elementCount = elementCount;
         }
 
-        public override int ConsumedStack { get { return _elementCount; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack
+        {
+            get
+            {
+                return _elementCount;
+            }
+        }
+
+        public override int ProducedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
         public override string InstructionName
         {
-            get { return "NewArrayInit"; }
+            get
+            {
+                return "NewArrayInit";
+            }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -45,11 +61,28 @@ namespace System.Linq.Expressions.Interpreter
             _elementType = elementType;
         }
 
-        public override int ConsumedStack { get { return 1; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
+        public override int ProducedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
         public override string InstructionName
         {
-            get { return "NewArray"; }
+            get
+            {
+                return "NewArray";
+            }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -76,11 +109,28 @@ namespace System.Linq.Expressions.Interpreter
             _rank = rank;
         }
 
-        public override int ConsumedStack { get { return _rank; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack
+        {
+            get
+            {
+                return _rank;
+            }
+        }
+
+        public override int ProducedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
         public override string InstructionName
         {
-            get { return "NewArrayBounds"; }
+            get
+            {
+                return "NewArrayBounds";
+            }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -100,13 +150,32 @@ namespace System.Linq.Expressions.Interpreter
     {
         internal static readonly GetArrayItemInstruction Instruction = new GetArrayItemInstruction();
 
-        internal GetArrayItemInstruction() { }
+        internal GetArrayItemInstruction()
+        {
+        }
 
-        public override int ConsumedStack { get { return 2; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack
+        {
+            get
+            {
+                return 2;
+            }
+        }
+
+        public override int ProducedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
         public override string InstructionName
         {
-            get { return "GetArrayItem"; }
+            get
+            {
+                return "GetArrayItem";
+            }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -122,13 +191,32 @@ namespace System.Linq.Expressions.Interpreter
     {
         internal static readonly SetArrayItemInstruction Instruction = new SetArrayItemInstruction();
 
-        internal SetArrayItemInstruction() { }
+        internal SetArrayItemInstruction()
+        {
+        }
 
-        public override int ConsumedStack { get { return 3; } }
-        public override int ProducedStack { get { return 0; } }
+        public override int ConsumedStack
+        {
+            get
+            {
+                return 3;
+            }
+        }
+
+        public override int ProducedStack
+        {
+            get
+            {
+                return 0;
+            }
+        }
+
         public override string InstructionName
         {
-            get { return "SetArrayItem"; }
+            get
+            {
+                return "SetArrayItem";
+            }
         }
 
         public override int Run(InterpretedFrame frame)

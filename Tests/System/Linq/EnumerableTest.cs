@@ -26,21 +26,18 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using NUnit.Framework;
 using System;
-using System.IO;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-
-using NUnit.Framework;
 
 namespace MonoTests.System.Linq
 {
-
     [TestFixture]
     public class EnumerableTest
     {
-
         [Test]
         public void TestSimpleExcept()
         {
@@ -71,9 +68,13 @@ namespace MonoTests.System.Linq
             AssertAreSame(result, first.Union(second));
         }
 
-        private class Foo { }
+        private class Foo
+        {
+        }
 
-        private class Bar : Foo { }
+        private class Bar : Foo
+        {
+        }
 
         [Test]
         public void TestCast()
@@ -90,7 +91,6 @@ namespace MonoTests.System.Linq
 
         private class Bingo : IEnumerable<int>, IEnumerable<string>
         {
-
             IEnumerator<int> IEnumerable<int>.GetEnumerator()
             {
                 yield return 42;
@@ -471,7 +471,10 @@ namespace MonoTests.System.Linq
 
             public int Age
             {
-                get { return age + 1; }
+                get
+                {
+                    return age + 1;
+                }
             }
 
             public Baz(string name, int age)
@@ -505,12 +508,12 @@ namespace MonoTests.System.Linq
         private static IEnumerable<Baz> CreateBazCollection()
         {
             return new[] {
-				new Baz ("jb", 25),
-				new Baz ("ana", 20),
-				new Baz ("reg", 28),
-				new Baz ("ro", 25),
-				new Baz ("jb", 7),
-			};
+                new Baz ("jb", 25),
+                new Baz ("ana", 20),
+                new Baz ("reg", 28),
+                new Baz ("ro", 25),
+                new Baz ("jb", 7),
+            };
         }
 
         [Test]
@@ -521,20 +524,27 @@ namespace MonoTests.System.Linq
                     select b;
 
             var expected = new[] {
-				new Baz ("jb", 7),
-				new Baz ("ana", 20),
-				new Baz ("ro", 25),
-				new Baz ("jb", 25),
-				new Baz ("reg", 28),
-			};
+                new Baz ("jb", 7),
+                new Baz ("ana", 20),
+                new Baz ("ro", 25),
+                new Baz ("jb", 25),
+                new Baz ("reg", 28),
+            };
 
             AssertAreSame(expected, q);
         }
 
         private class Data
         {
-            public int ID { get; set; }
-            public string Name { get; set; }
+            public int ID
+            {
+                get; set;
+            }
+
+            public string Name
+            {
+                get; set;
+            }
 
             public override string ToString()
             {
@@ -545,11 +555,11 @@ namespace MonoTests.System.Linq
         private IEnumerable<Data> CreateData()
         {
             return new[] {
-				new Data { ID = 10, Name = "bcd" },
-				new Data { ID = 20, Name = "Abcd" },
-				new Data { ID = 20, Name = "Ab" },
-				new Data { ID = 10, Name = "Zyx" },
-			};
+                new Data { ID = 10, Name = "bcd" },
+                new Data { ID = 20, Name = "Abcd" },
+                new Data { ID = 20, Name = "Ab" },
+                new Data { ID = 10, Name = "Zyx" },
+            };
         }
 
         [Test]
@@ -571,30 +581,30 @@ namespace MonoTests.System.Linq
         public void TestOrderByDescendingStability()
         {
             var data = new[] {
-				new { Key = true, Value = 1 },
-				new { Key = false, Value = 2},
-				new { Key = true, Value = 3},
-				new { Key = false, Value = 4},
-				new { Key = true, Value = 5},
-				new { Key = false, Value = 6},
-				new { Key = true, Value = 7},
-				new { Key = false, Value = 8},
-				new { Key = true, Value = 9},
-				new { Key = false, Value = 10},
-			};
+                new { Key = true, Value = 1 },
+                new { Key = false, Value = 2},
+                new { Key = true, Value = 3},
+                new { Key = false, Value = 4},
+                new { Key = true, Value = 5},
+                new { Key = false, Value = 6},
+                new { Key = true, Value = 7},
+                new { Key = false, Value = 8},
+                new { Key = true, Value = 9},
+                new { Key = false, Value = 10},
+            };
 
             var expected = new[] {
-				new { Key = true, Value = 1 },
-				new { Key = true, Value = 3},
-				new { Key = true, Value = 5},
-				new { Key = true, Value = 7},
-				new { Key = true, Value = 9},
-				new { Key = false, Value = 2},
-				new { Key = false, Value = 4},
-				new { Key = false, Value = 6},
-				new { Key = false, Value = 8},
-				new { Key = false, Value = 10},
-			};
+                new { Key = true, Value = 1 },
+                new { Key = true, Value = 3},
+                new { Key = true, Value = 5},
+                new { Key = true, Value = 7},
+                new { Key = true, Value = 9},
+                new { Key = false, Value = 2},
+                new { Key = false, Value = 4},
+                new { Key = false, Value = 6},
+                new { Key = false, Value = 8},
+                new { Key = false, Value = 10},
+            };
 
             AssertAreSame(expected, data.OrderByDescending(x => x.Key));
         }

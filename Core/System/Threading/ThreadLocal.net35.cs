@@ -6,7 +6,7 @@ using Theraot.Threading;
 
 namespace System.Threading
 {
-    [System.Diagnostics.DebuggerDisplay("IsValueCreated={IsValueCreated}, Value={ValueForDebugDisplay}")]
+    [Diagnostics.DebuggerDisplay("IsValueCreated={IsValueCreated}, Value={ValueForDebugDisplay}")]
     public sealed class ThreadLocal<T> : IDisposable
     {
         private int _disposing;
@@ -46,8 +46,7 @@ namespace System.Threading
             }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
+        [Diagnostics.DebuggerNonUserCode]
         ~ThreadLocal()
         {
             try
@@ -117,7 +116,7 @@ namespace System.Threading
             }
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
+        [Diagnostics.DebuggerNonUserCode]
         public void Dispose()
         {
             try
@@ -132,11 +131,10 @@ namespace System.Threading
 
         public override string ToString()
         {
-            return string.Format(System.Globalization.CultureInfo.InvariantCulture, "[ThreadLocal: IsValueCreated={0}, Value={1}]", IsValueCreated, Value);
+            return string.Format(Globalization.CultureInfo.InvariantCulture, "[ThreadLocal: IsValueCreated={0}, Value={1}]", IsValueCreated, Value);
         }
 
-        [global::System.Diagnostics.DebuggerNonUserCode]
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2004:RemoveCallsToGCKeepAlive", Justification = "By Design")]
+        [Diagnostics.DebuggerNonUserCode]
         private void Dispose(bool disposeManagedResources)
         {
             if (disposeManagedResources)

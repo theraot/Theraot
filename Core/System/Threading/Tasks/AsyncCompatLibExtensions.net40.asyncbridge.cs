@@ -4,7 +4,6 @@ using System.Runtime.CompilerServices;
 
 namespace System.Threading.Tasks
 {
-
     /// <summary>
     /// Provides extension methods for threading-related types.
     /// </summary>

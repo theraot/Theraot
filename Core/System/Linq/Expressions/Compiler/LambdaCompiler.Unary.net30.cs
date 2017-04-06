@@ -18,7 +18,6 @@ namespace System.Linq.Expressions.Compiler
             EmitQuote((UnaryExpression)expr);
         }
 
-
         private void EmitQuote(UnaryExpression quote)
         {
             // emit the quoted expression as a runtime constant
@@ -91,7 +90,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private void EmitUnaryOperator(ExpressionType op, Type operandType, Type resultType)
         {
             var operandIsNullable = TypeHelper.IsNullableType(operandType);
@@ -189,6 +187,7 @@ namespace System.Linq.Expressions.Compiler
                             _ilg.Emit(OpCodes.Unbox_Any, resultType);
                         }
                         return;
+
                     default:
                         throw Error.UnhandledUnary(op);
                 }
@@ -208,26 +207,32 @@ namespace System.Linq.Expressions.Compiler
                             _ilg.Emit(OpCodes.Not);
                         }
                         break;
+
                     case ExpressionType.OnesComplement:
                         _ilg.Emit(OpCodes.Not);
                         break;
+
                     case ExpressionType.IsFalse:
                         _ilg.Emit(OpCodes.Ldc_I4_0);
                         _ilg.Emit(OpCodes.Ceq);
                         // Not an arithmetic operation -> no conversion
                         return;
+
                     case ExpressionType.IsTrue:
                         _ilg.Emit(OpCodes.Ldc_I4_1);
                         _ilg.Emit(OpCodes.Ceq);
                         // Not an arithmetic operation -> no conversion
                         return;
+
                     case ExpressionType.UnaryPlus:
                         _ilg.Emit(OpCodes.Nop);
                         break;
+
                     case ExpressionType.Negate:
                     case ExpressionType.NegateChecked:
                         _ilg.Emit(OpCodes.Neg);
                         break;
+
                     case ExpressionType.TypeAs:
                         if (operandType.IsValueType)
                         {
@@ -240,14 +245,17 @@ namespace System.Linq.Expressions.Compiler
                         }
                         // Not an arithmetic operation -> no conversion
                         return;
+
                     case ExpressionType.Increment:
                         EmitConstantOne(resultType);
                         _ilg.Emit(OpCodes.Add);
                         break;
+
                     case ExpressionType.Decrement:
                         EmitConstantOne(resultType);
                         _ilg.Emit(OpCodes.Sub);
                         break;
+
                     default:
                         throw Error.UnhandledUnary(op);
                 }
@@ -266,16 +274,20 @@ namespace System.Linq.Expressions.Compiler
                 case TypeCode.Int32:
                     _ilg.Emit(OpCodes.Ldc_I4_1);
                     break;
+
                 case TypeCode.Int64:
                 case TypeCode.UInt64:
                     _ilg.Emit(OpCodes.Ldc_I8, (long)1);
                     break;
+
                 case TypeCode.Single:
                     _ilg.Emit(OpCodes.Ldc_R4, 1.0f);
                     break;
+
                 case TypeCode.Double:
                     _ilg.Emit(OpCodes.Ldc_R8, 1.0d);
                     break;
+
                 default:
                     // we only have to worry about arithmetic types, see
                     // TypeHelper.IsArithmetic
@@ -361,7 +373,6 @@ namespace System.Linq.Expressions.Compiler
                 }
             }
         }
-
 
         private void EmitUnaryMethod(UnaryExpression node, CompilationFlags flags)
         {

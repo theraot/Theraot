@@ -57,7 +57,6 @@ namespace System.Threading.Tasks
 
         public TResult Result
         {
-            [Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1065:DoNotRaiseExceptionsInUnexpectedLocations", Justification = "Microsoft's Design")]
             get
             {
                 Wait();
@@ -73,7 +72,10 @@ namespace System.Threading.Tasks
             }
         }
 
-        internal static Func<Task<Task>, Task<TResult>> ContinuationConvertion { get; private set; }
+        internal static Func<Task<Task>, Task<TResult>> ContinuationConvertion
+        {
+            get; private set;
+        }
 
         internal override void InnerInvoke()
         {

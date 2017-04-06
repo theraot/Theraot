@@ -5,8 +5,8 @@ using System.Net.NetworkInformation;
 
 namespace Theraot.Core
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
-    [global::System.ComponentModel.ImmutableObject(true)]
+    [System.Diagnostics.DebuggerNonUserCode]
+    [System.ComponentModel.ImmutableObject(true)]
     public class TracertNode
     {
         private readonly IPAddress _address;

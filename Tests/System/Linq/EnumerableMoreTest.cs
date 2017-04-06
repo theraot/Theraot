@@ -26,27 +26,25 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework;
-
 
 namespace MonoTests.System.Linq
 {
-
     [TestFixture]
     public class EnumerableMoreTest
     {
         private class BigEnumerable : IEnumerable<int>
         {
             public readonly ulong Count;
+
             public BigEnumerable(ulong Count)
             {
                 this.Count = Count;
             }
-
 
             #region IEnumerable<int> Members
 
@@ -55,7 +53,7 @@ namespace MonoTests.System.Linq
                 return new BigEnumerator(this);
             }
 
-            #endregion
+            #endregion IEnumerable<int> Members
 
             #region IEnumerable Members
 
@@ -64,7 +62,7 @@ namespace MonoTests.System.Linq
                 throw new NotImplementedException();
             }
 
-            #endregion
+            #endregion IEnumerable Members
         }
 
         private class BigEnumerator : IEnumerator<int>
@@ -79,7 +77,10 @@ namespace MonoTests.System.Linq
 
             public int Current
             {
-                get { return 3; }
+                get
+                {
+                    return 3;
+                }
             }
 
             public void Dispose()
@@ -88,7 +89,10 @@ namespace MonoTests.System.Linq
 
             object IEnumerator.Current
             {
-                get { throw new NotImplementedException(); }
+                get
+                {
+                    throw new NotImplementedException();
+                }
             }
 
             public bool MoveNext()
@@ -106,7 +110,6 @@ namespace MonoTests.System.Linq
             {
                 throw new NotImplementedException();
             }
-
         }
 
         public static void AssertException<T>(Action action) where T : Exception
@@ -255,7 +258,6 @@ namespace MonoTests.System.Linq
         {
             string[] data = { "2", "1", "5", "3", "4" };
 
-
             // First<TSource> ()
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).First());
 
@@ -285,7 +287,6 @@ namespace MonoTests.System.Linq
         {
             string[] data = { "2", "1", "5", "3", "4" };
 
-
             // FirstOrDefault<TSource> ()
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).FirstOrDefault());
 
@@ -300,7 +301,6 @@ namespace MonoTests.System.Linq
             int[] data = { 2, 1, 5, 3, 4 };
             int[] empty = { };
 
-
             // FirstOrDefault<TSource> ()
             Assert.AreEqual(2, data.FirstOrDefault());
             Assert.AreEqual(0, empty.FirstOrDefault());
@@ -309,14 +309,12 @@ namespace MonoTests.System.Linq
             Assert.AreEqual(5, data.FirstOrDefault(x => x == 5));
             Assert.AreEqual(0, empty.FirstOrDefault(x => x == 5));
             Assert.AreEqual(0, data.FirstOrDefault(x => x == 6));
-
         }
 
         [Test]
         public void LastArgumentNullTest()
         {
             string[] data = { "2", "1", "5", "3", "4" };
-
 
             // Last<TSource> ()
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Last());
@@ -347,7 +345,6 @@ namespace MonoTests.System.Linq
         {
             string[] data = { "2", "1", "5", "3", "4" };
 
-
             // LastOrDefault<TSource> ()
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).LastOrDefault());
 
@@ -361,7 +358,6 @@ namespace MonoTests.System.Linq
         {
             int[] data = { 2, 1, 5, 3, 4 };
             int[] empty = { };
-
 
             // LastOrDefault<TSource> ()
             Assert.AreEqual(4, data.LastOrDefault());
@@ -378,7 +374,6 @@ namespace MonoTests.System.Linq
         {
             string[] data = { "2", "1", "5", "3", "4" };
 
-
             // Single<TSource> ()
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Single());
 
@@ -393,7 +388,6 @@ namespace MonoTests.System.Linq
             int[] data = { 2 };
             int[] data2 = { 2, 3, 5 };
             int[] empty = { };
-
 
             // Single<TSource> ()
             Assert.AreEqual(2, data.Single());
@@ -412,7 +406,6 @@ namespace MonoTests.System.Linq
         {
             string[] data = { "2", "1", "5", "3", "4" };
 
-
             // SingleOrDefault<TSource> ()
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).SingleOrDefault());
 
@@ -428,12 +421,10 @@ namespace MonoTests.System.Linq
             int[] data2 = { 2, 3, 5 };
             int[] empty = { };
 
-
             // SingleOrDefault<TSource> ()
             Assert.AreEqual(2, data.SingleOrDefault());
             Assert.AreEqual(0, empty.SingleOrDefault());
             AssertException<InvalidOperationException>(() => data2.SingleOrDefault());
-
 
             // SingleOrDefault<TSource> (Func<TSource, bool>)
             Assert.AreEqual(3, data2.SingleOrDefault(x => x == 3));
@@ -444,8 +435,6 @@ namespace MonoTests.System.Linq
         [Test]
         public void ElementAtArgumentNullTest()
         {
-
-
             // ElementAt<TSource> (int)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).ElementAt(0));
         }
@@ -466,8 +455,6 @@ namespace MonoTests.System.Linq
         [Test]
         public void ElementAtOrDefaultArgumentNullTest()
         {
-
-
             // ElementAtOrDefault<TSource> (int)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).ElementAtOrDefault(0));
         }
@@ -477,7 +464,6 @@ namespace MonoTests.System.Linq
         {
             int[] data = { 2, 3, 4, 5 };
             int[] empty = { };
-
 
             // ElementAtOrDefault<TSource> (int)
             Assert.AreEqual(2, data.ElementAtOrDefault(0));
@@ -492,14 +478,12 @@ namespace MonoTests.System.Linq
         {
             var empty = Enumerable.Empty<string>();
             Assert.IsFalse(empty.GetEnumerator().MoveNext());
-
         }
 
         [Test]
         public void AnyArgumentNullTest()
         {
             string[] data = { "2", "1", "5", "3", "4" };
-
 
             // Any<TSource> ()
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Any());
@@ -515,7 +499,6 @@ namespace MonoTests.System.Linq
             int[] data = { 5, 2, 3, 1, 6 };
             int[] empty = { };
 
-
             // Any<TSource> ()
             Assert.IsTrue(data.Any());
             Assert.IsFalse(empty.Any());
@@ -530,7 +513,6 @@ namespace MonoTests.System.Linq
         public void AllArgumentNullTest()
         {
             string[] data = { "2", "1", "5", "3", "4" };
-
 
             // All<TSource> (Func<TSource, bool>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).All(x => true));
@@ -554,7 +536,6 @@ namespace MonoTests.System.Linq
         {
             string[] data = { "2", "1", "5", "3", "4" };
 
-
             // Count<TSource> ()
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Count());
 
@@ -575,11 +556,9 @@ namespace MonoTests.System.Linq
             Assert.AreEqual(3, data.Count(x => x < 5));
         }
 
-
         //[Test]
         public void CountOverflowTest()
         {
-
             // Count<TSource> ()
             //AssertException<OverflowException> (delegate () { data.Count (); });
 
@@ -595,7 +574,6 @@ namespace MonoTests.System.Linq
         public void LongCountArgumentNullTest()
         {
             string[] data = { "2", "1", "5", "3", "4" };
-
 
             // LongCount<TSource> ()
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).LongCount());
@@ -623,8 +601,6 @@ namespace MonoTests.System.Linq
         [Test]
         public void ContainsArgumentNullTest()
         {
-
-
             // Contains<TSource> (TSource)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Contains("2"));
 
@@ -669,7 +645,6 @@ namespace MonoTests.System.Linq
         {
             string[] data = { "2", "1", "5", "3", "4" };
 
-
             // Aggregate<TSource> (Func<TSource, TSource, TSource>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Aggregate((x, y) => "test"));
             AssertException<ArgumentNullException>(() => data.Aggregate((Func<string, string, string>)null));
@@ -705,7 +680,6 @@ namespace MonoTests.System.Linq
         public void SumArgumentNullTest()
         {
             string[] data = { "2", "1", "5", "3", "4" };
-
 
             // Sum<TSource> (Func<TSource, int>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Sum<string>((Func<string, int>)(x => 0)));
@@ -871,7 +845,6 @@ namespace MonoTests.System.Linq
         {
             string[] data = { "2", "1", "5", "3", "4" };
 
-
             // Min<TSource> ()
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Min<string>());
 
@@ -955,10 +928,8 @@ namespace MonoTests.System.Linq
         {
             string[] data = { "2", "1", "5", "3", "4" };
 
-
             // Min<TSource> ()
             Assert.AreEqual("1", ((IEnumerable<string>)data).Min<string>());
-
 
             // Min<TSource> (Func<TSource, int>)
             Assert.AreEqual(1, ((IEnumerable<string>)data).Min<string>((Func<string, int>)(x => int.Parse(x))));
@@ -1028,7 +999,6 @@ namespace MonoTests.System.Linq
         public void MaxArgumentNullTest()
         {
             string[] data = { "2", "1", "5", "3", "4" };
-
 
             // Max<TSource> ()
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Max<string>());
@@ -1113,7 +1083,6 @@ namespace MonoTests.System.Linq
         {
             string[] data = { "2", "1", "5", "3", "4" };
 
-
             // Max<string> ()
             Assert.AreEqual("5", ((IEnumerable<string>)data).Max<string>());
 
@@ -1185,7 +1154,6 @@ namespace MonoTests.System.Linq
         public void AverageArgumentNullTest()
         {
             string[] data = { "2", "1", "5", "3", "4" };
-
 
             // Average<TSource> (Func<TSource, int>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Average<string>((Func<string, int>)(x => 0)));
@@ -1299,7 +1267,6 @@ namespace MonoTests.System.Linq
             // Average<TSource> (Func<TSource, Nullable<Decimal>>)
             Assert.AreEqual(3, ((IEnumerable<string>)data).Average<string>((Func<string, decimal?>)(x => (int?)int.Parse(x))));
 
-
             // Average<> ()
             Assert.AreEqual(3, ((IEnumerable<int>)new int[] { 2, 3, 4 }).Average());
             AssertException<InvalidOperationException>(() => new int[0].Average());
@@ -1369,7 +1336,6 @@ namespace MonoTests.System.Linq
         {
             string[] data = { "2", "1", "5", "3", "4" };
 
-
             // Select<TSource,TResult> (Func<TSource, TResult>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Select(x => "test"));
             AssertException<ArgumentNullException>(() => data.Select((Func<string, string>)null));
@@ -1386,7 +1352,6 @@ namespace MonoTests.System.Linq
             string[] expected1 = { "2x", "1x", "5x", "3x", "4x" };
             string[] expected2 = { "2x0", "1x1", "5x2", "3x3", "4x4" };
 
-
             // Select<TSource,TResult> (Func<TSource, TResult>)
             AssertAreSame(expected1, data.Select<string, string>(x => x + "x"));
 
@@ -1398,7 +1363,6 @@ namespace MonoTests.System.Linq
         public void SelectManyArgumentNullTest()
         {
             string[] data = { "2", "1", "5", "3", "4" };
-
 
             // SelectMany<TSource,TResult> (Func<TSource, IEnumerable<TResult>>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).SelectMany(x => data));
@@ -1441,8 +1405,6 @@ namespace MonoTests.System.Linq
         [Test]
         public void TakeArgumentNullTest()
         {
-
-
             // Take<TSource> (int)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Take(0));
         }
@@ -1464,7 +1426,6 @@ namespace MonoTests.System.Linq
         {
             string[] data = { "2", "1", "5", "3", "4" };
 
-
             // TakeWhile<TSource> (Func<TSource, bool>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).TakeWhile(x => true));
             AssertException<ArgumentNullException>(() => data.TakeWhile((Func<string, bool>)null));
@@ -1480,7 +1441,6 @@ namespace MonoTests.System.Linq
             int[] data = { 2, 1, 5, 3, 1 };
             int[] expected = { 2, 1 };
 
-
             // TakeWhile<TSource> (Func<TSource, bool>)
             AssertAreSame(expected, data.TakeWhile(x => x != 5));
 
@@ -1491,8 +1451,6 @@ namespace MonoTests.System.Linq
         [Test]
         public void SkipArgumentNullTest()
         {
-
-
             // Skip<TSource> (int)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Skip(0));
         }
@@ -1513,7 +1471,6 @@ namespace MonoTests.System.Linq
         {
             string[] data = { "2", "1", "5", "3", "4" };
 
-
             // SkipWhile<TSource> (Func<TSource, bool>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).SkipWhile(x => true));
             AssertException<ArgumentNullException>(() => data.SkipWhile((Func<string, bool>)null));
@@ -1529,8 +1486,6 @@ namespace MonoTests.System.Linq
             int[] data = { 2, 1, 5, 3, 1 };
             int[] expected = { 5, 3, 1 };
 
-
-
             // SkipWhile<TSource> (Func<TSource, bool>)
             AssertAreSame(expected, data.SkipWhile(x => x != 5));
 
@@ -1542,7 +1497,6 @@ namespace MonoTests.System.Linq
         public void JoinArgumentNullTest()
         {
             string[] data = { "2", "1", "5", "3", "4" };
-
 
             // Join<TOuter,TInner,TKey,TResult> (IEnumerable<TInner>, Func<TOuter, TKey>, Func<TInner, TKey>, Func<TOuter, TInner, TResult>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Join(data, x => "test", x => "test", (x, y) => "test"));
@@ -1570,7 +1524,6 @@ namespace MonoTests.System.Linq
             string[] dataInner2 = { "7", "5", "8", "9" };
             string[] expected2 = { };
 
-
             // Join<TOuter,TInner,TKey,TResult> (IEnumerable<TInner>, Func<TOuter, TKey>, Func<TInner, TKey>, Func<TOuter, TInner, TResult>)
             AssertAreSame(expected1, dataOuter1.Join(dataInner1, x => x, x => x, (x, y) => x + y));
             AssertAreSame(expected2, dataOuter2.Join(dataInner2, x => x, x => x, (x, y) => x + y));
@@ -1584,9 +1537,9 @@ namespace MonoTests.System.Linq
         public void JoinTestNullKeys()
         {
             var l1 = new[] {
-				new { Name = "name1", Nullable = (int?) null },
-				new { Name = "name2", Nullable = (int?) null }
-			};
+                new { Name = "name1", Nullable = (int?) null },
+                new { Name = "name2", Nullable = (int?) null }
+            };
 
             var count = l1.Join(l1, i => i.Nullable, i => i.Nullable, (x, y) => x.Name).Count();
             Assert.AreEqual(0, count);
@@ -1596,7 +1549,6 @@ namespace MonoTests.System.Linq
         public void GroupJoinArgumentNullTest()
         {
             string[] data = { "2", "1", "5", "3", "4" };
-
 
             // GroupJoin<TOuter,TInner,TKey,TResult> (IEnumerable<TInner>, Func<TOuter, TKey>, Func<TInner, TKey>, Func<TOuter, IEnumerable<TInner>, TResult>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).GroupJoin(data, x => "test", x => "test", (x, y) => "test"));
@@ -1624,34 +1576,45 @@ namespace MonoTests.System.Linq
             string[] dataInner2 = { "7", "3", "6", "3", "9" };
             string[] expected2 = { "2", "1", "5", "8", "4" };
 
-
             // GroupJoin<TOuter,TInner,TKey,TResult> (IEnumerable<TInner>, Func<TOuter, TKey>, Func<TInner, TKey>, Func<TOuter, IEnumerable<TInner>, TResult>)
-            AssertAreSame(expected1, dataOuter1.GroupJoin(dataInner1, x => x, x => x, (x, y) => { foreach (var s in y)
+            AssertAreSame(expected1, dataOuter1.GroupJoin(dataInner1, x => x, x => x, (x, y) =>
+            {
+                foreach (var s in y)
                 {
                     x += s;
                 }
 
-                return x; }));
-            AssertAreSame(expected2, dataOuter2.GroupJoin(dataInner2, x => x, x => x, (x, y) => { foreach (var s in y)
+                return x;
+            }));
+            AssertAreSame(expected2, dataOuter2.GroupJoin(dataInner2, x => x, x => x, (x, y) =>
+            {
+                foreach (var s in y)
                 {
                     x += s;
                 }
 
-                return x; }));
+                return x;
+            }));
 
             // GroupJoin<TOuter,TInner,TKey,TResult> (IEnumerable<TInner>, Func<TOuter, TKey>, Func<TInner, TKey>, Func<TOuter, IEnumerable<TInner>, TResult, IEqualityComparer<TKey>>)
-            AssertAreSame(expected1, dataOuter1.GroupJoin(dataInner1, x => x, x => x, (x, y) => { foreach (var s in y)
+            AssertAreSame(expected1, dataOuter1.GroupJoin(dataInner1, x => x, x => x, (x, y) =>
+            {
+                foreach (var s in y)
                 {
                     x += s;
                 }
 
-                return x; }, EqualityComparer<string>.Default));
-            AssertAreSame(expected2, dataOuter2.GroupJoin(dataInner2, x => x, x => x, (x, y) => { foreach (var s in y)
+                return x;
+            }, EqualityComparer<string>.Default));
+            AssertAreSame(expected2, dataOuter2.GroupJoin(dataInner2, x => x, x => x, (x, y) =>
+            {
+                foreach (var s in y)
                 {
                     x += s;
                 }
 
-                return x; }, EqualityComparer<string>.Default));
+                return x;
+            }, EqualityComparer<string>.Default));
         }
 
         [Test]
@@ -1659,7 +1622,11 @@ namespace MonoTests.System.Linq
         {
             string[] l1 = { null };
             string[] l2 = { null, null };
-            var res = l1.GroupJoin(l2, x => x, y => y, (a, b) => new { Key = a, Count = b.Count() }).ToArray();
+            var res = l1.GroupJoin(l2, x => x, y => y, (a, b) => new
+            {
+                Key = a,
+                Count = b.Count()
+            }).ToArray();
             Assert.AreEqual(1, res.Length);
             Assert.AreEqual(0, res[0].Count);
         }
@@ -1668,7 +1635,6 @@ namespace MonoTests.System.Linq
         public void OrderByArgumentNullTest()
         {
             string[] data = { "2", "1", "5", "3", "4" };
-
 
             // OrderBy<TSource,TKey> (Func<TSource, TKey>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).OrderBy(x => "test"));
@@ -1685,7 +1651,6 @@ namespace MonoTests.System.Linq
             int[] data = { 2, 1, 5, 3, 4 };
             int[] expected = { 1, 2, 3, 4, 5 };
 
-
             // OrderBy<TSource,TKey> (Func<TSource, TKey>)
             AssertAreSame(expected, data.OrderBy(x => x));
 
@@ -1697,7 +1662,6 @@ namespace MonoTests.System.Linq
         public void OrderByDescendingArgumentNullTest()
         {
             string[] data = { "2", "1", "5", "3", "4" };
-
 
             // OrderByDescending<TSource,TKey> (Func<TSource, TKey>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).OrderByDescending(x => "test"));
@@ -1714,7 +1678,6 @@ namespace MonoTests.System.Linq
             int[] data = { 2, 1, 5, 3, 4 };
             int[] expected = { 5, 4, 3, 2, 1 };
 
-
             // OrderByDescending<TSource,TKey> (Func<TSource, TKey>)
             AssertAreSame(expected, data.OrderByDescending(x => x));
 
@@ -1726,7 +1689,6 @@ namespace MonoTests.System.Linq
         public void ThenByArgumentNullTest()
         {
             string[] data = { "2", "1", "5", "3", "4" };
-
 
             // ThenBy<TSource,TKey> (Func<TSource, TKey>)
             AssertException<ArgumentNullException>(() => ((IOrderedEnumerable<string>)null).ThenBy(x => "test"));
@@ -1743,7 +1705,6 @@ namespace MonoTests.System.Linq
             int[] data = { 2, 1, 5, 3, 4 };
             int[] expected = { 1, 2, 3, 4, 5 };
 
-
             // ThenBy<TSource,TKey> (Func<TSource, TKey>)
             AssertAreSame(expected, data.OrderBy(x => x).ThenBy(x => x));
 
@@ -1755,7 +1716,6 @@ namespace MonoTests.System.Linq
         public void ThenByDescendingArgumentNullTest()
         {
             string[] data = { "2", "1", "5", "3", "4" };
-
 
             // ThenByDescending<TSource,TKey> (Func<TSource, TKey>)
             AssertException<ArgumentNullException>(() => ((IOrderedEnumerable<string>)null).ThenByDescending(x => "test"));
@@ -1772,7 +1732,6 @@ namespace MonoTests.System.Linq
             int[] data = { 2, 1, 5, 3, 4 };
             int[] expected = { 5, 4, 3, 2, 1 };
 
-
             // ThenByDescending<TSource,TKey> (Func<TSource, TKey>)
             AssertAreSame(expected, data.OrderBy(x => 0).ThenByDescending(x => x));
 
@@ -1784,7 +1743,6 @@ namespace MonoTests.System.Linq
         public void GroupByArgumentNullTest()
         {
             string[] data = { "2", "1", "5", "3", "4" };
-
 
             // GroupBy<string,string> (Func<string, string>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).GroupBy<string, string>((Func<string, string>)(x => "test")));
@@ -1861,41 +1819,52 @@ namespace MonoTests.System.Linq
             AssertAreSame(expected2, data.GroupBy(x => x, x => x + x, EqualityComparer<string>.Default));
 
             // GroupBy<int,int,int> (Func<int, int>, Func<int, IEnumerable<int>, int>)
-            AssertAreSame(expected3, data.GroupBy(x => x, (x, y) => { foreach (var s in y)
+            AssertAreSame(expected3, data.GroupBy(x => x, (x, y) =>
+            {
+                foreach (var s in y)
                 {
                     x += s;
                 }
 
-                return x; }));
+                return x;
+            }));
 
             // GroupBy<int,int,int,int> (Func<int, int>, Func<int, int>, Func<int, IEnumerable<int>, int>)
-            AssertAreSame(expected3, data.GroupBy(x => x, x => x, (x, y) => { foreach (var s in y)
+            AssertAreSame(expected3, data.GroupBy(x => x, x => x, (x, y) =>
+            {
+                foreach (var s in y)
                 {
                     x += s;
                 }
 
-                return x; }));
+                return x;
+            }));
 
             // GroupBy<int,int,int> (Func<int, int>, Func<int, IEnumerable<int>, int>, IEqualityComparer<int>)
-            AssertAreSame(expected3, data.GroupBy(x => x, (x, y) => { foreach (var s in y)
+            AssertAreSame(expected3, data.GroupBy(x => x, (x, y) =>
+            {
+                foreach (var s in y)
                 {
                     x += s;
                 }
 
-                return x; }, EqualityComparer<string>.Default));
+                return x;
+            }, EqualityComparer<string>.Default));
 
             // GroupBy<int,int,int,int> (Func<int, int>, Func<int, int>, Func<int, IEnumerable<int>, int>, IEqualityComparer<int>)
-            AssertAreSame(expected3, data.GroupBy(x => x, x => x, (x, y) => { foreach (var s in y)
+            AssertAreSame(expected3, data.GroupBy(x => x, x => x, (x, y) =>
+            {
+                foreach (var s in y)
                 {
                     x += s;
                 }
 
-                return x; }, EqualityComparer<string>.Default));
+                return x;
+            }, EqualityComparer<string>.Default));
         }
 
         private class Data
         {
-
             public int Number;
             public string String;
 
@@ -1939,7 +1908,6 @@ namespace MonoTests.System.Linq
             int[] data2 = { 1, 2, 3, 4, 5 };
             int[] expected = { 2, 1, 5, 3, 4, 1, 2, 3, 4, 5 };
 
-
             // Concat<TSource> (IEnumerable<TSource>)
             AssertAreSame(expected, data1.Concat(data2));
         }
@@ -1947,8 +1915,6 @@ namespace MonoTests.System.Linq
         [Test]
         public void DistinctArgumentNullTest()
         {
-
-
             // Distinct<TSource> ()
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Distinct());
 
@@ -1962,7 +1928,6 @@ namespace MonoTests.System.Linq
             int[] data = { 2, 1, 5, 3, 4, 2, 5, 3, 1, 8 };
             int[] expected = { 2, 1, 5, 3, 4, 8 };
 
-
             // Distinct<TSource> ()
             AssertAreSame(expected, data.Distinct());
 
@@ -1974,7 +1939,6 @@ namespace MonoTests.System.Linq
         public void UnionArgumentNullTest()
         {
             string[] data = { "2", "1", "5", "3", "4" };
-
 
             // Union<TSource> (IEnumerable<TSource>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Union(data));
@@ -2004,7 +1968,6 @@ namespace MonoTests.System.Linq
         {
             string[] data = { "2", "1", "5", "3", "4" };
 
-
             // Intersect<TSource> (IEnumerable<TSource>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Intersect(data));
             AssertException<ArgumentNullException>(() => data.Intersect((IEnumerable<string>)null));
@@ -2021,7 +1984,6 @@ namespace MonoTests.System.Linq
             int[] data2 = { 1, 2, 3, 8, 4, 5 };
             int[] expected = { 2, 1, 5, 3, 4 };
 
-
             // Intersect<TSource> (IEnumerable<TSource>)
             AssertAreSame(expected, data1.Intersect(data2));
 
@@ -2033,7 +1995,6 @@ namespace MonoTests.System.Linq
         public void ExceptArgumentNullTest()
         {
             string[] data = { "2", "1", "5", "3", "4" };
-
 
             // Except<TSource> (IEnumerable<TSource>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Except(data));
@@ -2051,7 +2012,6 @@ namespace MonoTests.System.Linq
             int[] data2 = { 1, 2, 3, 8, 4, 5 };
             int[] expected = { 7 };
 
-
             // Except<TSource> (IEnumerable<TSource>)
             AssertAreSame(expected, data1.Except(data2));
 
@@ -2062,8 +2022,6 @@ namespace MonoTests.System.Linq
         [Test]
         public void ReverseArgumentNullTest()
         {
-
-
             // Reverse<TSource> ()
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).Reverse());
         }
@@ -2074,8 +2032,6 @@ namespace MonoTests.System.Linq
             int[] data = { 2, 1, 5, 7, 3, 4 };
             int[] expected = { 4, 3, 7, 5, 1, 2 };
 
-
-
             // Reverse<TSource> ()
             AssertAreSame(expected, data.Reverse());
         }
@@ -2084,7 +2040,6 @@ namespace MonoTests.System.Linq
         public void SequenceEqualArgumentNullTest()
         {
             string[] data = { "2", "1", "5", "3", "4" };
-
 
             // SequenceEqual<TSource> (IEnumerable<TSource>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).SequenceEqual(data));
@@ -2104,7 +2059,6 @@ namespace MonoTests.System.Linq
             int[] data4 = { 2, 1, 5, 7, 3 };
             int[] data5 = { 2, 1, 5, 8, 3, 4 };
 
-
             // SequenceEqual<TSource> (IEnumerable<TSource>)
             Assert.IsTrue(data1.SequenceEqual(data2));
             Assert.IsFalse(data1.SequenceEqual(data3));
@@ -2121,14 +2075,12 @@ namespace MonoTests.System.Linq
         [Test]
         public void AsEnumerableArgumentNullTest()
         {
-
         }
 
         [Test]
         public void AsEnumerableTest()
         {
             int[] data = { 2, 1, 5, 7, 3, 4 };
-
 
             // AsEnumerable<TSource> ()
             Assert.AreSame(data, data.AsEnumerable());
@@ -2137,8 +2089,6 @@ namespace MonoTests.System.Linq
         [Test]
         public void ToArrayArgumentNullTest()
         {
-
-
             // ToArray<TSource> ()
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).ToArray());
         }
@@ -2149,7 +2099,6 @@ namespace MonoTests.System.Linq
             int[] data = { 2, 3, 4, 5 };
             int[] expected = { 2, 3, 4, 5 };
 
-
             // ToArray<TSource> ()
             AssertAreSame(expected, data.ToArray());
         }
@@ -2157,8 +2106,6 @@ namespace MonoTests.System.Linq
         [Test]
         public void ToListArgumentNullTest()
         {
-
-
             // ToList<string> ()
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).ToList());
         }
@@ -2169,7 +2116,6 @@ namespace MonoTests.System.Linq
             int[] data = { 2, 4, 5, 1 };
             int[] expected = { 2, 4, 5, 1 };
 
-
             // ToList<int> ()
             AssertAreSame(expected, data.ToList());
         }
@@ -2178,7 +2124,6 @@ namespace MonoTests.System.Linq
         public void ToDictionaryArgumentNullTest()
         {
             string[] data = { "2", "1", "5", "3", "4" };
-
 
             // ToDictionary<TSource,TKey> (Func<TSource, TKey>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).ToDictionary(x => "test"));
@@ -2210,7 +2155,6 @@ namespace MonoTests.System.Linq
             expected.Add("k3", "3");
             expected.Add("k4", "4");
 
-
             // ToDictionary<TSource,TKey> (Func<TSource, TKey>)
             AssertAreSame(expected, ((IEnumerable<string>)data).ToDictionary(x => "k" + x));
             AssertException<ArgumentException>(() => data.ToDictionary(x => "key"));
@@ -2232,7 +2176,6 @@ namespace MonoTests.System.Linq
         public void ToLookupArgumentNullTest()
         {
             string[] data = { "2", "1", "5", "3", "4" };
-
 
             // ToLookup<string,string> (Func<string, string>)
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).ToLookup<string, string>((Func<string, string>)(x => "test")));
@@ -2300,8 +2243,6 @@ namespace MonoTests.System.Linq
         [Test]
         public void DefaultIfEmptyArgumentNullTest()
         {
-
-
             // DefaultIfEmpty<string> ()
             AssertException<ArgumentNullException>(() => ((IEnumerable<string>)null).DefaultIfEmpty<string>());
 
@@ -2317,7 +2258,6 @@ namespace MonoTests.System.Linq
             string[] default1 = { null };
             string[] default2 = { "default" };
 
-
             // DefaultIfEmpty<string> ()
             AssertAreSame(data, data.DefaultIfEmpty());
             AssertAreSame(default1, empty.DefaultIfEmpty());
@@ -2330,8 +2270,6 @@ namespace MonoTests.System.Linq
         [Test]
         public void OfTypeArgumentNullTest()
         {
-
-
             // OfType<string> ()
             AssertException<ArgumentNullException>(() => ((IEnumerable)null).OfType<string>());
         }
@@ -2342,7 +2280,6 @@ namespace MonoTests.System.Linq
             object[] data = { "2", 2, "1", "5", "3", "4" };
             string[] expected = { "2", "1", "5", "3", "4" };
 
-
             // OfType<string> ()
             AssertAreSame(expected, data.OfType<string>());
         }
@@ -2350,8 +2287,6 @@ namespace MonoTests.System.Linq
         [Test]
         public void CastArgumentNullTest()
         {
-
-
             // Cast<string> ()
             AssertException<ArgumentNullException>(() => ((IEnumerable)null).Cast<string>());
         }
@@ -2362,7 +2297,6 @@ namespace MonoTests.System.Linq
             object[] data = { 1, 2, 3 };
             int[] expected = { 1, 2, 3 };
 
-
             // Cast<string> ()
             AssertAreSame(expected, data.Cast<int>());
             AssertException<InvalidCastException>(() => data.Cast<IEnumerable>().GetEnumerator().MoveNext());
@@ -2372,7 +2306,6 @@ namespace MonoTests.System.Linq
         [Test]
         public void RangeArgumentNullTest()
         {
-
         }
 
         [Test]

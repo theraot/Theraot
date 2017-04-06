@@ -1,7 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using NUnit.Framework;
+using System;
 using System.Runtime.Serialization;
-using NUnit.Framework;
+using System.Threading.Tasks;
 
 namespace MonoTests.System.Threading.Tasks
 {
@@ -11,7 +11,10 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WrapAggregateExceptionCorrectly()
         {
-            using (var x = new Task(() => { throw new AggregateException(new CustomException()); }))
+            using (var x = new Task(() =>
+            {
+                throw new AggregateException(new CustomException());
+            }))
             {
                 try
                 {
@@ -36,7 +39,10 @@ namespace MonoTests.System.Threading.Tasks
                 (
                     () =>
                     {
-                        Task.Factory.StartNew(() => { throw new CustomException(); }, TaskCreationOptions.AttachedToParent);
+                        Task.Factory.StartNew(() =>
+                        {
+                            throw new CustomException();
+                        }, TaskCreationOptions.AttachedToParent);
                         throw new OtherException();
                     }
                 )
@@ -66,7 +72,10 @@ namespace MonoTests.System.Threading.Tasks
         public void WrapObjectDisposedExceptionCorrectly()
         {
             var objectName = "AAAAAAAAAAAAAAAA";
-            using (var x = new Task(() => { throw new ObjectDisposedException(objectName); }))
+            using (var x = new Task(() =>
+            {
+                throw new ObjectDisposedException(objectName);
+            }))
             {
                 try
                 {
@@ -85,7 +94,10 @@ namespace MonoTests.System.Threading.Tasks
         [Test]
         public void WrapCustomExceptionCorrectly()
         {
-            using (var x = new Task(() => { throw new CustomException(); }))
+            using (var x = new Task(() =>
+            {
+                throw new CustomException();
+            }))
             {
                 try
                 {

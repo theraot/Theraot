@@ -4,6 +4,6 @@ namespace Theraot
 {
     public struct VoidStruct
     {
-         // Empty
+        // Empty
     }
 }

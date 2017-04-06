@@ -1,17 +1,16 @@
-﻿using System;
+﻿using NUnit.Framework;
+using System;
 using System.IO;
-using NUnit.Framework;
 using Theraot.Core;
 
 namespace Tests.Theraot.Threading
 {
     internal class PathHelperTest
     {
-
         [Test]
         public void Combine()
         {
-            Assert.AreEqual("a", PathHelper.Combine(new[] {"a", ""}), "Combine #08");
+            Assert.AreEqual("a", PathHelper.Combine(new[] { "a", "" }), "Combine #08");
         }
 
         [Test]
@@ -208,7 +207,7 @@ namespace Tests.Theraot.Threading
         [Test]
         public void Combine_Extra()
         {
-            var source = new [] {"test", "/test", "\\test"};
+            var source = new[] { "test", "/test", "\\test" };
             var start = @"C:\test";
             // tested this on Linux and Windows using Path.Combine...
             foreach (var combination in source)
@@ -224,7 +223,7 @@ namespace Tests.Theraot.Threading
                 }
                 else
                 {
-                    Assert.AreEqual(string.Join(Path.DirectorySeparatorChar.ToString(), new [] { start , combination }), result);
+                    Assert.AreEqual(string.Join(Path.DirectorySeparatorChar.ToString(), new[] { start, combination }), result);
                 }
             }
         }

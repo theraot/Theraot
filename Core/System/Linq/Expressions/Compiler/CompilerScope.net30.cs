@@ -24,7 +24,7 @@ namespace System.Linq.Expressions.Compiler
     ///   1. Parent relationship (for resolving variables)
     ///   2. Information about hoisted variables
     ///   3. Information for resolving closures
-    /// 
+    ///
     /// Instances are produced by VariableBinder, which does a tree walk
     /// looking for scope nodes: LambdaExpression and BlockExpression.
     /// </summary>
@@ -69,7 +69,7 @@ namespace System.Linq.Expressions.Compiler
 
         /// <summary>
         /// Scopes whose variables were merged into this one
-        /// 
+        ///
         /// Created lazily as we create hundreds of compiler scopes w/o merging scopes when compiling rules.
         /// </summary>
         internal Set<object> MergedScopes;
@@ -110,7 +110,10 @@ namespace System.Linq.Expressions.Compiler
         /// </summary>
         internal HoistedLocals NearestHoistedLocals
         {
-            get { return _hoistedLocals ?? _closureHoistedLocals; }
+            get
+            {
+                return _hoistedLocals ?? _closureHoistedLocals;
+            }
         }
 
         /// <summary>
@@ -164,7 +167,7 @@ namespace System.Linq.Expressions.Compiler
             return parent;
         }
 
-#region LocalScopeExpression support
+        #region LocalScopeExpression support
 
         internal void EmitVariableAccess(LambdaCompiler lc, ReadOnlyCollection<ParameterExpression> vars)
         {
@@ -206,9 +209,9 @@ namespace System.Linq.Expressions.Compiler
             return;
         }
 
-#endregion
+        #endregion LocalScopeExpression support
 
-#region Variable access
+        #region Variable access
 
         /// <summary>
         /// Adds a new virtual variable corresponding to an IL local
@@ -283,7 +286,7 @@ namespace System.Linq.Expressions.Compiler
             throw Error.UndefinedVariable(variable.Name, variable.Type, CurrentLambdaName);
         }
 
-#endregion
+        #endregion Variable access
 
         private void SetParent(LambdaCompiler lc, CompilerScope parent)
         {

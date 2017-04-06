@@ -12,7 +12,7 @@ namespace System.Linq.Expressions
     /// <summary>
     /// Represents an expression that has a constant value.
     /// </summary>
-    [DebuggerTypeProxy(typeof(Expression.ConstantExpressionProxy))]
+    [DebuggerTypeProxy(typeof(ConstantExpressionProxy))]
     public class ConstantExpression : Expression
     {
         // Possible optimization: we could have a Constant<T> subclass that
@@ -59,14 +59,21 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get { return ExpressionType.Constant; }
+            get
+            {
+                return ExpressionType.Constant;
+            }
         }
+
         /// <summary>
         /// Gets the value of the constant expression.
         /// </summary>
         public object Value
         {
-            get { return _value; }
+            get
+            {
+                return _value;
+            }
         }
 
         /// <summary>
@@ -90,7 +97,10 @@ namespace System.Linq.Expressions
 
         public sealed override Type Type
         {
-            get { return _type; }
+            get
+            {
+                return _type;
+            }
         }
     }
 
@@ -101,7 +111,7 @@ namespace System.Linq.Expressions
         /// </summary>
         /// <param name="value">An <see cref="System.Object"/> to set the <see cref="P:ConstantExpression.Value"/> property equal to.</param>
         /// <returns>
-        /// A <see cref="ConstantExpression"/> that has the <see cref="P:Expression.NodeType"/> property equal to 
+        /// A <see cref="ConstantExpression"/> that has the <see cref="P:Expression.NodeType"/> property equal to
         /// <see cref="F:ExpressionType.Constant"/> and the <see cref="P:Expression.Value"/> property set to the specified value.
         /// </returns>
         public static ConstantExpression Constant(object value)
@@ -109,16 +119,15 @@ namespace System.Linq.Expressions
             return ConstantExpression.Make(value, value == null ? typeof(object) : value.GetType());
         }
 
-
         /// <summary>
-        /// Creates a <see cref="ConstantExpression"/> that has the <see cref="P:ConstantExpression.Value"/> 
+        /// Creates a <see cref="ConstantExpression"/> that has the <see cref="P:ConstantExpression.Value"/>
         /// and <see cref="P:ConstantExpression.Type"/> properties set to the specified values. .
         /// </summary>
         /// <param name="value">An <see cref="System.Object"/> to set the <see cref="P:ConstantExpression.Value"/> property equal to.</param>
         /// <param name="type">A <see cref="System.Type"/> to set the <see cref="P:Expression.Type"/> property equal to.</param>
         /// <returns>
-        /// A <see cref="ConstantExpression"/> that has the <see cref="P:Expression.NodeType"/> property equal to 
-        /// <see cref="F:ExpressionType.Constant"/> and the <see cref="P:ConstantExpression.Value"/> and 
+        /// A <see cref="ConstantExpression"/> that has the <see cref="P:Expression.NodeType"/> property equal to
+        /// <see cref="F:ExpressionType.Constant"/> and the <see cref="P:ConstantExpression.Value"/> and
         /// <see cref="P:Expression.Type"/> properties set to the specified values.
         /// </returns>
         public static ConstantExpression Constant(object value, Type type)

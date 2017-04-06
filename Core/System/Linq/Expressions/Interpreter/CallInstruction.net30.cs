@@ -13,14 +13,23 @@ namespace System.Linq.Expressions.Interpreter
         /// <summary>
         /// The number of arguments including "this" for instance methods.
         /// </summary>
-        public abstract int ArgumentCount { get; }
+        public abstract int ArgumentCount
+        {
+            get;
+        }
 
-#region Construction
+        #region Construction
 
-        internal CallInstruction() { }
+        internal CallInstruction()
+        {
+        }
+
         public override string InstructionName
         {
-            get { return "Call"; }
+            get
+            {
+                return "Call";
+            }
         }
 
 #if FEATURE_DLG_INVOKE
@@ -86,7 +95,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
             }
 
-            // create it 
+            // create it
             try
             {
 #if FEATURE_FAST_CREATE
@@ -111,9 +120,9 @@ namespace System.Linq.Expressions.Interpreter
             }
             catch (NotSupportedException)
             {
-                // if Delegate.CreateDelegate can't handle the method fallback to 
-                // the slow reflection version.  For example this can happen w/ 
-                // a generic method defined on an interface and implemented on a class or 
+                // if Delegate.CreateDelegate can't handle the method fallback to
+                // the slow reflection version.  For example this can happen w/
+                // a generic method defined on an interface and implemented on a class or
                 // a virtual generic method.
                 res = new MethodInfoCallInstruction(info, argumentCount);
             }
@@ -166,7 +175,6 @@ namespace System.Linq.Expressions.Interpreter
             return Create(alternativeMethod);
         }
 
-
         public static void ArrayItemSetter1(Array array, int index0, object value)
         {
             array.SetValue(value, index0);
@@ -181,6 +189,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             array.SetValue(value, index0, index1, index2);
         }
+
 #if FEATURE_DLG_INVOKE
         private static bool ShouldCache(MethodInfo info)
         {
@@ -229,7 +238,8 @@ namespace System.Linq.Expressions.Interpreter
         private static CallInstruction SlowCreate(MethodInfo info, ParameterInfo[] pis)
         {
             List<Type> types = new List<Type>();
-            if (!info.IsStatic) types.Add(info.DeclaringType);
+            if (!info.IsStatic)
+                types.Add(info.DeclaringType);
             foreach (ParameterInfo pi in pis)
             {
                 types.Add(pi.ParameterType);
@@ -250,21 +260,28 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-#endregion
+        #endregion Construction
 
-#region Instruction
+        #region Instruction
 
-        public override int ConsumedStack { get { return ArgumentCount; } }
+        public override int ConsumedStack
+        {
+            get
+            {
+                return ArgumentCount;
+            }
+        }
 
         public override string ToString()
         {
             return "Call()";
         }
-#endregion
+
+        #endregion Instruction
 
         /// <summary>
         /// If the target of invokation happens to be a delegate
-        /// over enclosed instance lightLambda, return that instance. 
+        /// over enclosed instance lightLambda, return that instance.
         /// We can interpret LightLambdas directly.
         /// </summary>
         /// <param name="instance"></param>
@@ -308,7 +325,13 @@ namespace System.Linq.Expressions.Interpreter
         private readonly MethodInfo _target;
         private readonly int _argumentCount;
 
-        public override int ArgumentCount { get { return _argumentCount; } }
+        public override int ArgumentCount
+        {
+            get
+            {
+                return _argumentCount;
+            }
+        }
 
         internal MethodInfoCallInstruction(MethodInfo target, int argumentCount)
         {
@@ -316,20 +339,29 @@ namespace System.Linq.Expressions.Interpreter
             _argumentCount = argumentCount;
         }
 
-        public override int ProducedStack { get { return _target.ReturnType == typeof(void) ? 0 : 1; } }
+        public override int ProducedStack
+        {
+            get
+            {
+                return _target.ReturnType == typeof(void) ? 0 : 1;
+            }
+        }
 
         public override object Invoke(params object[] args)
         {
             return InvokeWorker(args);
         }
+
         public override object Invoke()
         {
             return InvokeWorker();
         }
+
         public override object Invoke(object arg0)
         {
             return InvokeWorker(arg0);
         }
+
         public override object Invoke(object arg0, object arg1)
         {
             return InvokeWorker(arg0, arg1);
@@ -348,7 +380,7 @@ namespace System.Linq.Expressions.Interpreter
                     throw ExceptionHelpers.UpdateForRethrow(e.InnerException);
                 }
             }
-            
+
             LightLambda targetLambda;
             if (TryGetLightLambdaTarget(instance, out targetLambda))
             {
@@ -436,7 +468,13 @@ namespace System.Linq.Expressions.Interpreter
         private readonly MethodInfo _target;
         private readonly int _argumentCount;
 
-        public override int ArgumentCount { get { return _argumentCount; } }
+        public override int ArgumentCount
+        {
+            get
+            {
+                return _argumentCount;
+            }
+        }
 
         internal ByRefMethodInfoCallInstruction(MethodInfo target, int argumentCount, ByRefUpdater[] byrefArgs)
         {
@@ -445,13 +483,19 @@ namespace System.Linq.Expressions.Interpreter
             _byrefArgs = byrefArgs;
         }
 
-        public override int ProducedStack { get { return (_target.ReturnType == typeof(void) ? 0 : 1); } }
+        public override int ProducedStack
+        {
+            get
+            {
+                return (_target.ReturnType == typeof(void) ? 0 : 1);
+            }
+        }
 
         public sealed override int Run(InterpretedFrame frame)
         {
             int first = frame.StackIndex - _argumentCount;
             object[] args = null;
-            object instance = null; 
+            object instance = null;
             try
             {
                 object ret;
@@ -518,7 +562,7 @@ namespace System.Linq.Expressions.Interpreter
                     {
                         if (arg.ArgumentIndex == -1)
                         {
-                            // instance param, just copy back the exact instance invoked with, which 
+                            // instance param, just copy back the exact instance invoked with, which
                             // gets passed by reference from reflection for value types.
                             arg.Update(frame, instance);
                         }

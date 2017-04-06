@@ -18,14 +18,17 @@ namespace System.Linq.Expressions
         /// A <see cref="GotoExpression"/> that represents a jump to some location.
         /// </summary>
         Goto,
+
         /// <summary>
         /// A <see cref="GotoExpression"/> that represents a return statement.
         /// </summary>
         Return,
+
         /// <summary>
         /// A <see cref="GotoExpression"/> that represents a break statement.
         /// </summary>
         Break,
+
         /// <summary>
         /// A <see cref="GotoExpression"/> that represents a continue statement.
         /// </summary>
@@ -35,7 +38,7 @@ namespace System.Linq.Expressions
     /// <summary>
     /// Represents an unconditional jump. This includes return statements, break and continue statements, and other jumps.
     /// </summary>
-    [DebuggerTypeProxy(typeof(Expression.GotoExpressionProxy))]
+    [DebuggerTypeProxy(typeof(GotoExpressionProxy))]
     public sealed class GotoExpression : Expression
     {
         private readonly GotoExpressionKind _kind;
@@ -57,7 +60,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type
         {
-            get { return _type; }
+            get
+            {
+                return _type;
+            }
         }
 
         /// <summary>
@@ -66,7 +72,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get { return ExpressionType.Goto; }
+            get
+            {
+                return ExpressionType.Goto;
+            }
         }
 
         /// <summary>
@@ -75,7 +84,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Value
         {
-            get { return _value; }
+            get
+            {
+                return _value;
+            }
         }
 
         /// <summary>
@@ -83,7 +95,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public LabelTarget Target
         {
-            get { return _target; }
+            get
+            {
+                return _target;
+            }
         }
 
         /// <summary>
@@ -91,7 +106,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public GotoExpressionKind Kind
         {
-            get { return _kind; }
+            get
+            {
+                return _kind;
+            }
         }
 
         /// <summary>
@@ -116,7 +134,7 @@ namespace System.Linq.Expressions
             {
                 return this;
             }
-            return Expression.MakeGoto(Kind, target, value, Type);
+            return MakeGoto(Kind, target, value, Type);
         }
     }
 
@@ -127,7 +145,7 @@ namespace System.Linq.Expressions
         /// </summary>
         /// <param name="target">The <see cref="LabelTarget"/> that the <see cref="GotoExpression"/> will jump to.</param>
         /// <returns>
-        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Break, 
+        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Break,
         /// the <see cref="P:GotoExpression.Target"/> property set to <paramref name="target"/>, and a null value to be passed to the target label upon jumping.
         /// </returns>
         public static GotoExpression Break(LabelTarget target)
@@ -141,8 +159,8 @@ namespace System.Linq.Expressions
         /// <param name="target">The <see cref="LabelTarget"/> that the <see cref="GotoExpression"/> will jump to.</param>
         /// <param name="value">The value that will be passed to the associated label upon jumping.</param>
         /// <returns>
-        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Break, 
-        /// the <see cref="P:GotoExpression.Target"/> property set to <paramref name="target"/>, 
+        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Break,
+        /// the <see cref="P:GotoExpression.Target"/> property set to <paramref name="target"/>,
         /// and <paramref name="value"/> to be passed to the target label upon jumping.
         /// </returns>
         public static GotoExpression Break(LabelTarget target, Expression value)
@@ -156,8 +174,8 @@ namespace System.Linq.Expressions
         /// <param name="target">The <see cref="LabelTarget"/> that the <see cref="GotoExpression"/> will jump to.</param>
         /// <param name="type">An <see cref="System.Type"/> to set the <see cref="P:Expression.Type"/> property equal to.</param>
         /// <returns>
-        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Break, 
-        /// the <see cref="P:GotoExpression.Target"/> property set to <paramref name="target"/>, 
+        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Break,
+        /// the <see cref="P:GotoExpression.Target"/> property set to <paramref name="target"/>,
         /// and the <see cref="P:Expression.Type"/> property set to <paramref name="type"/>.
         /// </returns>
         public static GotoExpression Break(LabelTarget target, Type type)
@@ -166,15 +184,15 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Creates a <see cref="GotoExpression"/> representing a break statement with the specified type. 
+        /// Creates a <see cref="GotoExpression"/> representing a break statement with the specified type.
         /// The value passed to the label upon jumping can be specified.
         /// </summary>
         /// <param name="target">The <see cref="LabelTarget"/> that the <see cref="GotoExpression"/> will jump to.</param>
         /// <param name="value">The value that will be passed to the associated label upon jumping.</param>
         /// <param name="type">An <see cref="System.Type"/> to set the <see cref="P:Expression.Type"/> property equal to.</param>
         /// <returns>
-        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Break, 
-        /// the <see cref="P:GotoExpression.Target"/> property set to <paramref name="target"/>, 
+        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Break,
+        /// the <see cref="P:GotoExpression.Target"/> property set to <paramref name="target"/>,
         /// the <see cref="P:Expression.Type"/> property set to <paramref name="type"/>,
         /// and <paramref name="value"/> to be passed to the target label upon jumping.
         /// </returns>
@@ -188,8 +206,8 @@ namespace System.Linq.Expressions
         /// </summary>
         /// <param name="target">The <see cref="LabelTarget"/> that the <see cref="GotoExpression"/> will jump to.</param>
         /// <returns>
-        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Continue, 
-        /// the <see cref="P:GotoExpression.Target"/> property set to <paramref name="target"/>, 
+        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Continue,
+        /// the <see cref="P:GotoExpression.Target"/> property set to <paramref name="target"/>,
         /// and a null value to be passed to the target label upon jumping.
         /// </returns>
         public static GotoExpression Continue(LabelTarget target)
@@ -203,8 +221,8 @@ namespace System.Linq.Expressions
         /// <param name="target">The <see cref="LabelTarget"/> that the <see cref="GotoExpression"/> will jump to.</param>
         /// <param name="type">An <see cref="System.Type"/> to set the <see cref="P:Expression.Type"/> property equal to.</param>
         /// <returns>
-        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Continue, 
-        /// the <see cref="P:GotoExpression.Target"/> property set to <paramref name="target"/>, 
+        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Continue,
+        /// the <see cref="P:GotoExpression.Target"/> property set to <paramref name="target"/>,
         /// the <see cref="P:Expression.Type"/> property set to <paramref name="type"/>,
         /// and a null value to be passed to the target label upon jumping.
         /// </returns>
@@ -218,8 +236,8 @@ namespace System.Linq.Expressions
         /// </summary>
         /// <param name="target">The <see cref="LabelTarget"/> that the <see cref="GotoExpression"/> will jump to.</param>
         /// <returns>
-        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Return, 
-        /// the <see cref="P:GotoExpression.Target"/> property set to <paramref name="target"/>, 
+        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Return,
+        /// the <see cref="P:GotoExpression.Target"/> property set to <paramref name="target"/>,
         /// and a null value to be passed to the target label upon jumping.
         /// </returns>
         public static GotoExpression Return(LabelTarget target)
@@ -233,8 +251,8 @@ namespace System.Linq.Expressions
         /// <param name="target">The <see cref="LabelTarget"/> that the <see cref="GotoExpression"/> will jump to.</param>
         /// <param name="type">An <see cref="System.Type"/> to set the <see cref="P:Expression.Type"/> property equal to.</param>
         /// <returns>
-        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Return, 
-        /// the <see cref="P:GotoExpression.Target"/> property set to <paramref name="target"/>, 
+        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Return,
+        /// the <see cref="P:GotoExpression.Target"/> property set to <paramref name="target"/>,
         /// the <see cref="P:Expression.Type"/> property set to <paramref name="type"/>,
         /// and a null value to be passed to the target label upon jumping.
         /// </returns>
@@ -249,8 +267,8 @@ namespace System.Linq.Expressions
         /// <param name="target">The <see cref="LabelTarget"/> that the <see cref="GotoExpression"/> will jump to.</param>
         /// <param name="value">The value that will be passed to the associated label upon jumping.</param>
         /// <returns>
-        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Continue, 
-        /// the <see cref="P:GotoExpression.Target"/> property set to <paramref name="target"/>, 
+        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Continue,
+        /// the <see cref="P:GotoExpression.Target"/> property set to <paramref name="target"/>,
         /// and <paramref name="value"/> to be passed to the target label upon jumping.
         /// </returns>
         public static GotoExpression Return(LabelTarget target, Expression value)
@@ -259,15 +277,15 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// Creates a <see cref="GotoExpression"/> representing a return statement with the specified type. 
+        /// Creates a <see cref="GotoExpression"/> representing a return statement with the specified type.
         /// The value passed to the label upon jumping can be specified.
         /// </summary>
         /// <param name="target">The <see cref="LabelTarget"/> that the <see cref="GotoExpression"/> will jump to.</param>
         /// <param name="value">The value that will be passed to the associated label upon jumping.</param>
         /// <param name="type">An <see cref="System.Type"/> to set the <see cref="P:Expression.Type"/> property equal to.</param>
         /// <returns>
-        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Continue, 
-        /// the <see cref="P:GotoExpression.Target"/> property set to <paramref name="target"/>, 
+        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Continue,
+        /// the <see cref="P:GotoExpression.Target"/> property set to <paramref name="target"/>,
         /// the <see cref="P:Expression.Type"/> property set to <paramref name="type"/>,
         /// and <paramref name="value"/> to be passed to the target label upon jumping.
         /// </returns>
@@ -281,8 +299,8 @@ namespace System.Linq.Expressions
         /// </summary>
         /// <param name="target">The <see cref="LabelTarget"/> that the <see cref="GotoExpression"/> will jump to.</param>
         /// <returns>
-        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Goto, 
-        /// the <see cref="P:GotoExpression.Target"/> property set to the specified value, 
+        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Goto,
+        /// the <see cref="P:GotoExpression.Target"/> property set to the specified value,
         /// and a null value to be passed to the target label upon jumping.
         /// </returns>
         public static GotoExpression Goto(LabelTarget target)
@@ -296,8 +314,8 @@ namespace System.Linq.Expressions
         /// <param name="target">The <see cref="LabelTarget"/> that the <see cref="GotoExpression"/> will jump to.</param>
         /// <param name="type">An <see cref="System.Type"/> to set the <see cref="P:Expression.Type"/> property equal to.</param>
         /// <returns>
-        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Goto, 
-        /// the <see cref="P:GotoExpression.Target"/> property set to the specified value, 
+        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Goto,
+        /// the <see cref="P:GotoExpression.Target"/> property set to the specified value,
         /// the <see cref="P:Expression.Type"/> property set to <paramref name="type"/>,
         /// and a null value to be passed to the target label upon jumping.
         /// </returns>
@@ -312,8 +330,8 @@ namespace System.Linq.Expressions
         /// <param name="target">The <see cref="LabelTarget"/> that the <see cref="GotoExpression"/> will jump to.</param>
         /// <param name="value">The value that will be passed to the associated label upon jumping.</param>
         /// <returns>
-        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Goto, 
-        /// the <see cref="P:GotoExpression.Target"/> property set to <paramref name="target"/>, 
+        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Goto,
+        /// the <see cref="P:GotoExpression.Target"/> property set to <paramref name="target"/>,
         /// and <paramref name="value"/> to be passed to the target label upon jumping.
         /// </returns>
         public static GotoExpression Goto(LabelTarget target, Expression value)
@@ -329,8 +347,8 @@ namespace System.Linq.Expressions
         /// <param name="value">The value that will be passed to the associated label upon jumping.</param>
         /// <param name="type">An <see cref="System.Type"/> to set the <see cref="P:Expression.Type"/> property equal to.</param>
         /// <returns>
-        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Goto, 
-        /// the <see cref="P:GotoExpression.Target"/> property set to <paramref name="target"/>, 
+        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to Goto,
+        /// the <see cref="P:GotoExpression.Target"/> property set to <paramref name="target"/>,
         /// the <see cref="P:Expression.Type"/> property set to <paramref name="type"/>,
         /// and <paramref name="value"/> to be passed to the target label upon jumping.
         /// </returns>
@@ -348,8 +366,8 @@ namespace System.Linq.Expressions
         /// <param name="value">The value that will be passed to the associated label upon jumping.</param>
         /// <param name="type">An <see cref="System.Type"/> to set the <see cref="P:Expression.Type"/> property equal to.</param>
         /// <returns>
-        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to <paramref name="kind"/>, 
-        /// the <see cref="P:GotoExpression.Target"/> property set to <paramref name="target"/>, 
+        /// A <see cref="GotoExpression"/> with <see cref="P:GotoExpression.Kind"/> equal to <paramref name="kind"/>,
+        /// the <see cref="P:GotoExpression.Target"/> property set to <paramref name="target"/>,
         /// the <see cref="P:Expression.Type"/> property set to <paramref name="type"/>,
         /// and <paramref name="value"/> to be passed to the target label upon jumping.
         /// </returns>
@@ -364,7 +382,8 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(target, targetParameter);
             if (value == null)
             {
-                if (target.Type != typeof(void)) throw Error.LabelMustBeVoidOrHaveExpression();
+                if (target.Type != typeof(void))
+                    throw Error.LabelMustBeVoidOrHaveExpression();
             }
             else
             {

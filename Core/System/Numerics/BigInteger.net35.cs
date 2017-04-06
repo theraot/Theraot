@@ -126,7 +126,7 @@ namespace System.Numerics
 
         static BigInteger()
         {
-            _sBnMinInt = new BigInteger(-1, new [] { unchecked ((uint)int.MinValue) });
+            _sBnMinInt = new BigInteger(-1, new[] { unchecked((uint)int.MinValue) });
             _sBnOneInt = new BigInteger(1);
             _sBnZeroInt = new BigInteger(0);
             _sBnMinusOneInt = new BigInteger(-1);
@@ -305,8 +305,8 @@ namespace System.Numerics
             }
             if (valueLength > 4)
             {
-                var unalignedBytes = valueLength%4;
-                var dwordCount = valueLength/4 + (unalignedBytes == 0 ? 0 : 1);
+                var unalignedBytes = valueLength % 4;
+                var dwordCount = valueLength / 4 + (unalignedBytes == 0 ? 0 : 1);
                 var isZero = true;
                 var internalBits = new uint[dwordCount];
                 var byteIndex = 3;
@@ -360,9 +360,11 @@ namespace System.Numerics
                             case 1:
                                 this = _sBnMinusOneInt;
                                 break;
-                            case unchecked((uint) int.MinValue):
+
+                            case unchecked((uint)int.MinValue):
                                 this = _sBnMinInt;
                                 break;
+
                             default:
                                 InternalSign = -1;
                                 InternalBits = internalBits;
@@ -767,7 +769,7 @@ namespace System.Numerics
             }
             if (InternalBits == null)
             {
-                return InternalSign == unchecked((long) other);
+                return InternalSign == unchecked((long)other);
             }
             var length = Length(InternalBits);
             if (length > 2)
@@ -853,11 +855,11 @@ namespace System.Numerics
             }
             else if (x.InternalSign >= 0)
             {
-                xd = new[] { unchecked  ((uint)x.InternalSign) };
+                xd = new[] { unchecked((uint)x.InternalSign) };
             }
             else
             {
-                xd = new[] { unchecked((uint)-x.InternalSign)  };
+                xd = new[] { unchecked((uint)-x.InternalSign) };
             }
             xl = (x.InternalBits != null ? x.InternalBits.Length : 1);
             return x.InternalSign < 0;
@@ -942,7 +944,7 @@ namespace System.Numerics
                     d = d * 0.5;
                     indbit = indbit >> 1;
                 }
-                indbit = unchecked ((uint)int.MinValue);
+                indbit = unchecked((uint)int.MinValue);
             }
             return (Math.Log(c) + 0.69314718055994529D * bitlen) / Math.Log(baseValue);
         }
@@ -995,7 +997,8 @@ namespace System.Numerics
         {
             if (exponent.Sign < 0)
             {
-                throw new ArgumentOutOfRangeException("exponent", "The number must be greater than or equal to zero.");}
+                throw new ArgumentOutOfRangeException("exponent", "The number must be greater than or equal to zero.");
+            }
             var signRes = 1;
             var signVal = 1;
             var signMod = 1;
@@ -1347,7 +1350,7 @@ namespace System.Numerics
             {
                 return checked((int)value.InternalBits[0]);
             }
-            if (value.InternalBits[0] > unchecked ((uint)int.MinValue))
+            if (value.InternalBits[0] > unchecked((uint)int.MinValue))
             {
                 throw new OverflowException("Value was either too large or too small for an Int32.");
             }
@@ -2048,7 +2051,7 @@ namespace System.Numerics
             var maxResultSize = 1;
             uint resultMin = 1;
             uint resultMax = 1;
-            for(var expTmp = exponent; ;)
+            for (var expTmp = exponent; ;)
             {
                 if ((expTmp & 1) != 0)
                 {
@@ -2074,7 +2077,7 @@ namespace System.Numerics
             {
                 sign = 1;
             }
-            for(var expTmp = exponent; ;)
+            for (var expTmp = exponent; ;)
             {
                 if ((expTmp & 1) != 0)
                 {
@@ -2192,7 +2195,7 @@ namespace System.Numerics
             }
             if (InternalBits == null)
             {
-                internalBits = new[] { unchecked((uint) InternalSign) };
+                internalBits = new[] { unchecked((uint)InternalSign) };
                 highByte = InternalSign < 0 ? (byte)0xff : (byte)0x00;
             }
             else if (InternalSign != -1)
@@ -2286,7 +2289,7 @@ namespace System.Numerics
             }
             if (InternalBits == null)
             {
-                internalBits = new[] { unchecked ((uint)InternalSign) };
+                internalBits = new[] { unchecked((uint)InternalSign) };
                 highDword = (uint)((InternalSign >= 0 ? 0 : -1));
             }
             else if (InternalSign != -1)
@@ -2298,7 +2301,7 @@ namespace System.Numerics
             {
                 internalBits = (uint[])InternalBits.Clone();
                 NumericsHelpers.DangerousMakeTwosComplement(internalBits);
-                highDword = unchecked ((uint)-1);
+                highDword = unchecked((uint)-1);
             }
             var length = internalBits.Length - 1;
             while (length > 0)

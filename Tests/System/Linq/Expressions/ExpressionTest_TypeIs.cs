@@ -19,9 +19,9 @@
 // Authors:
 //		Federico Di Gregorio <fog@initd.org>
 
+using NUnit.Framework;
 using System;
 using System.Linq.Expressions;
-using NUnit.Framework;
 
 namespace MonoTests.System.Linq.Expressions
 {

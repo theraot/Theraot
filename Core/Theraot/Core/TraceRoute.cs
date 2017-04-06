@@ -6,7 +6,7 @@ using System.Net.NetworkInformation;
 
 namespace Theraot.Core
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public static class TraceRoute
     {
         private const int INT_BufferSize = 32;

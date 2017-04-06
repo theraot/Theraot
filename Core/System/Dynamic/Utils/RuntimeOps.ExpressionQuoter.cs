@@ -211,7 +211,10 @@ namespace System.Runtime.CompilerServices
 
             int IRuntimeVariables.Count
             {
-                get { return _boxes.Length; }
+                get
+                {
+                    return _boxes.Length;
+                }
             }
 
             object IRuntimeVariables.this[int index]
@@ -249,7 +252,10 @@ namespace System.Runtime.CompilerServices
 
             public int Count
             {
-                get { return _indexes.Length; }
+                get
+                {
+                    return _indexes.Length;
+                }
             }
 
             public object this[int index]

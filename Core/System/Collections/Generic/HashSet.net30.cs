@@ -8,7 +8,6 @@ using Theraot.Collections.Specialized;
 namespace System.Collections.Generic
 {
     [Serializable]
-    [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "Backport")]
     public class HashSet<T> : ISet<T>, ISerializable
     {
         private readonly NullAwareDictionary<T, object> _wrapped;

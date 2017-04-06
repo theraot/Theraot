@@ -29,9 +29,9 @@
 #define NET_4_5
 #if NET_4_5
 
+using NUnit.Framework;
 using System;
 using System.Threading;
-using NUnit.Framework;
 
 namespace MonoTests.System.Threading
 {

@@ -1,9 +1,9 @@
 ﻿#if !NETCF
 
+using NUnit.Framework;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using NUnit.Framework;
 
 namespace Tests
 {

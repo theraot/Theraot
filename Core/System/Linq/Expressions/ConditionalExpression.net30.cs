@@ -3,8 +3,8 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System.Dynamic.Utils;
 using System.Diagnostics;
+using System.Dynamic.Utils;
 using Theraot.Core;
 
 namespace System.Linq.Expressions
@@ -12,7 +12,7 @@ namespace System.Linq.Expressions
     /// <summary>
     /// Represents an expression that has a conditional operator.
     /// </summary>
-    [DebuggerTypeProxy(typeof(Expression.ConditionalExpressionProxy))]
+    [DebuggerTypeProxy(typeof(ConditionalExpressionProxy))]
     public class ConditionalExpression : Expression
     {
         private readonly Expression _test;
@@ -47,7 +47,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get { return ExpressionType.Conditional; }
+            get
+            {
+                return ExpressionType.Conditional;
+            }
         }
 
         /// <summary>
@@ -56,7 +59,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public override Type Type
         {
-            get { return IfTrue.Type; }
+            get
+            {
+                return IfTrue.Type;
+            }
         }
 
         /// <summary>
@@ -64,26 +70,37 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Test
         {
-            get { return _test; }
+            get
+            {
+                return _test;
+            }
         }
+
         /// <summary>
         /// Gets the expression to execute if the test evaluates to true.
         /// </summary>
         public Expression IfTrue
         {
-            get { return _true; }
+            get
+            {
+                return _true;
+            }
         }
+
         /// <summary>
         /// Gets the expression to execute if the test evaluates to false.
         /// </summary>
         public Expression IfFalse
         {
-            get { return GetFalse(); }
+            get
+            {
+                return GetFalse();
+            }
         }
 
         internal virtual Expression GetFalse()
         {
-            return Expression.Empty();
+            return Empty();
         }
 
         /// <summary>
@@ -109,7 +126,7 @@ namespace System.Linq.Expressions
             {
                 return this;
             }
-            return Expression.Condition(test, ifTrue, ifFalse, Type);
+            return Condition(test, ifTrue, ifFalse, Type);
         }
     }
 
@@ -141,7 +158,10 @@ namespace System.Linq.Expressions
 
         public sealed override Type Type
         {
-            get { return _type; }
+            get
+            {
+                return _type;
+            }
         }
     }
 
@@ -153,8 +173,8 @@ namespace System.Linq.Expressions
         /// <param name="test">An <see cref="Expression"/> to set the <see cref="P:ConditionalExpression.Test"/> property equal to.</param>
         /// <param name="ifTrue">An <see cref="Expression"/> to set the <see cref="P:ConditionalExpression.IfTrue"/> property equal to.</param>
         /// <param name="ifFalse">An <see cref="Expression"/> to set the <see cref="P:ConditionalExpression.IfFalse"/> property equal to.</param>
-        /// <returns>A <see cref="ConditionalExpression"/> that has the <see cref="P:Expression.NodeType"/> property equal to 
-        /// <see cref="F:ExpressionType.Conditional"/> and the <see cref="P:ConditionalExpression.Test"/>, <see cref="P:ConditionalExpression.IfTrue"/>, 
+        /// <returns>A <see cref="ConditionalExpression"/> that has the <see cref="P:Expression.NodeType"/> property equal to
+        /// <see cref="F:ExpressionType.Conditional"/> and the <see cref="P:ConditionalExpression.Test"/>, <see cref="P:ConditionalExpression.IfTrue"/>,
         /// and <see cref="P:ConditionalExpression.IfFalse"/> properties set to the specified values.</returns>
         public static ConditionalExpression Condition(Expression test, Expression ifTrue, Expression ifFalse)
         {
@@ -174,7 +194,6 @@ namespace System.Linq.Expressions
             return ConditionalExpression.Make(test, ifTrue, ifFalse, ifTrue.Type);
         }
 
-
         /// <summary>
         /// Creates a <see cref="ConditionalExpression"/>.
         /// </summary>
@@ -182,8 +201,8 @@ namespace System.Linq.Expressions
         /// <param name="ifTrue">An <see cref="Expression"/> to set the <see cref="P:ConditionalExpression.IfTrue"/> property equal to.</param>
         /// <param name="ifFalse">An <see cref="Expression"/> to set the <see cref="P:ConditionalExpression.IfFalse"/> property equal to.</param>
         /// <param name="type">A <see cref="Type"/> to set the <see cref="P:Expression.Type"/> property equal to.</param>
-        /// <returns>A <see cref="ConditionalExpression"/> that has the <see cref="P:Expression.NodeType"/> property equal to 
-        /// <see cref="F:ExpressionType.Conditional"/> and the <see cref="P:ConditionalExpression.Test"/>, <see cref="P:ConditionalExpression.IfTrue"/>, 
+        /// <returns>A <see cref="ConditionalExpression"/> that has the <see cref="P:Expression.NodeType"/> property equal to
+        /// <see cref="F:ExpressionType.Conditional"/> and the <see cref="P:ConditionalExpression.Test"/>, <see cref="P:ConditionalExpression.IfTrue"/>,
         /// and <see cref="P:ConditionalExpression.IfFalse"/> properties set to the specified values.</returns>
         /// <remarks>This method allows explicitly unifying the result type of the conditional expression in cases where the types of <paramref name="ifTrue"/>
         /// and <paramref name="ifFalse"/> expressions are not equal. Types of both <paramref name="ifTrue"/> and <paramref name="ifFalse"/> must be implicitly
@@ -217,13 +236,13 @@ namespace System.Linq.Expressions
         /// </summary>
         /// <param name="test">An <see cref="Expression"/> to set the <see cref="P:ConditionalExpression.Test"/> property equal to.</param>
         /// <param name="ifTrue">An <see cref="Expression"/> to set the <see cref="P:ConditionalExpression.IfTrue"/> property equal to.</param>
-        /// <returns>A <see cref="ConditionalExpression"/> that has the <see cref="P:Expression.NodeType"/> property equal to 
-        /// <see cref="F:ExpressionType.Conditional"/> and the <see cref="P:ConditionalExpression.Test"/>, <see cref="P:ConditionalExpression.IfTrue"/>, 
+        /// <returns>A <see cref="ConditionalExpression"/> that has the <see cref="P:Expression.NodeType"/> property equal to
+        /// <see cref="F:ExpressionType.Conditional"/> and the <see cref="P:ConditionalExpression.Test"/>, <see cref="P:ConditionalExpression.IfTrue"/>,
         /// properties set to the specified values. The <see cref="P:ConditionalExpression.IfFalse"/> property is set to default expression and
         /// the type of the resulting <see cref="ConditionalExpression"/> returned by this method is <see cref="System.Void"/>.</returns>
         public static ConditionalExpression IfThen(Expression test, Expression ifTrue)
         {
-            return Condition(test, ifTrue, Expression.Empty(), typeof(void));
+            return Condition(test, ifTrue, Empty(), typeof(void));
         }
 
         /// <summary>
@@ -232,8 +251,8 @@ namespace System.Linq.Expressions
         /// <param name="test">An <see cref="Expression"/> to set the <see cref="P:ConditionalExpression.Test"/> property equal to.</param>
         /// <param name="ifTrue">An <see cref="Expression"/> to set the <see cref="P:ConditionalExpression.IfTrue"/> property equal to.</param>
         /// <param name="ifFalse">An <see cref="Expression"/> to set the <see cref="P:ConditionalExpression.IfFalse"/> property equal to.</param>
-        /// <returns>A <see cref="ConditionalExpression"/> that has the <see cref="P:Expression.NodeType"/> property equal to 
-        /// <see cref="F:ExpressionType.Conditional"/> and the <see cref="P:ConditionalExpression.Test"/>, <see cref="P:ConditionalExpression.IfTrue"/>, 
+        /// <returns>A <see cref="ConditionalExpression"/> that has the <see cref="P:Expression.NodeType"/> property equal to
+        /// <see cref="F:ExpressionType.Conditional"/> and the <see cref="P:ConditionalExpression.Test"/>, <see cref="P:ConditionalExpression.IfTrue"/>,
         /// and <see cref="P:ConditionalExpression.IfFalse"/> properties set to the specified values. The type of the resulting <see cref="ConditionalExpression"/>
         /// returned by this method is <see cref="System.Void"/>.</returns>
         public static ConditionalExpression IfThenElse(Expression test, Expression ifTrue, Expression ifFalse)
@@ -242,4 +261,5 @@ namespace System.Linq.Expressions
         }
     }
 }
+
 #endif

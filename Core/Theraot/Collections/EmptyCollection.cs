@@ -5,8 +5,8 @@ using System.Collections.ObjectModel;
 
 namespace Theraot.Collections
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
-    [global::System.ComponentModel.ImmutableObject(true)]
+    [System.Diagnostics.DebuggerNonUserCode]
+    [System.ComponentModel.ImmutableObject(true)]
     public sealed class EmptyCollection<T> : ReadOnlyCollection<T>, IReadOnlyCollection<T>
     {
         private static T[] _internal = new T[0];
@@ -15,7 +15,6 @@ namespace Theraot.Collections
         private EmptyCollection()
             : base(_internal)
         {
-            
         }
 
         public static EmptyCollection<T> Instance

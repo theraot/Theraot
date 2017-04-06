@@ -12,7 +12,10 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         /// Gets the type that implements the state machine.
         /// </summary>
-        public Type StateMachineType { get; private set; }
+        public Type StateMachineType
+        {
+            get; private set;
+        }
 
         /// <summary>
         /// Initializes the attribute.

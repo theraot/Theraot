@@ -24,12 +24,11 @@ namespace System.Linq.Expressions.Compiler
             return false;
         }
 
-
         /// <summary>
         /// If the result of a TypeBinaryExpression is known statically, this
         /// returns the result, otherwise it returns null, meaning we'll need
         /// to perform the IsInst instruction at runtime.
-        /// 
+        ///
         /// The result of this function must be equivalent to IsInst, or
         /// null.
         /// </summary>
@@ -42,7 +41,7 @@ namespace System.Linq.Expressions.Compiler
         /// If the result of an isinst opcode is known statically, this
         /// returns the result, otherwise it returns null, meaning we'll need
         /// to perform the IsInst instruction at runtime.
-        /// 
+        ///
         /// The result of this function must be equivalent to IsInst, or
         /// null.
         /// </summary>

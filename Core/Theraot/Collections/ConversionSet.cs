@@ -7,7 +7,7 @@ using Theraot.Core;
 
 namespace Theraot.Collections
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public class ConversionSet<TInput, TOutput> : ProgressiveSet<TOutput>
     {
         public ConversionSet(IEnumerable<TInput> wrapped, Converter<TInput, TOutput> converter)

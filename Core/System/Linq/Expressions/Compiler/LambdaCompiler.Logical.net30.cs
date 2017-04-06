@@ -11,7 +11,7 @@ namespace System.Linq.Expressions.Compiler
 {
     internal partial class LambdaCompiler
     {
-#region Conditional
+        #region Conditional
 
         private void EmitConditionalExpression(Expression expr, CompilationFlags flags)
         {
@@ -79,10 +79,9 @@ namespace System.Linq.Expressions.Compiler
             return NotEmpty(node) && !(node is DebugInfoExpression);
         }
 
-#endregion
+        #endregion Conditional
 
-#region Coalesce
-
+        #region Coalesce
 
         private void EmitCoalesceBinaryExpression(Expression expr)
         {
@@ -106,7 +105,6 @@ namespace System.Linq.Expressions.Compiler
                 EmitReferenceCoalesceWithoutConversion(b);
             }
         }
-
 
         private void EmitNullableCoalesce(BinaryExpression b)
         {
@@ -169,7 +167,6 @@ namespace System.Linq.Expressions.Compiler
             _ilg.MarkLabel(labEnd);
         }
 
-
         private void EmitLambdaReferenceCoalesce(BinaryExpression b)
         {
             var loc = GetLocal(b.Left.Type);
@@ -201,7 +198,6 @@ namespace System.Linq.Expressions.Compiler
             _ilg.MarkLabel(labEnd);
         }
 
-
         private void EmitReferenceCoalesceWithoutConversion(BinaryExpression b)
         {
             var labEnd = _ilg.DefineLabel();
@@ -231,9 +227,9 @@ namespace System.Linq.Expressions.Compiler
             _ilg.MarkLabel(labEnd);
         }
 
-#endregion
+        #endregion Coalesce
 
-#region AndAlso
+        #region AndAlso
 
         private void EmitLiftedAndAlso(BinaryExpression b)
         {
@@ -359,9 +355,9 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-#endregion
+        #endregion AndAlso
 
-#region OrElse
+        #region OrElse
 
         private void EmitLiftedOrElse(BinaryExpression b)
         {
@@ -487,9 +483,9 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-#endregion
+        #endregion OrElse
 
-#region Optimized branching
+        #region Optimized branching
 
         /// <summary>
         /// Emits the expression and then either brtrue/brfalse to the label.
@@ -503,18 +499,17 @@ namespace System.Linq.Expressions.Compiler
         /// and generate similar IL to the C# compiler. This is important for
         /// the JIT to optimize patterns like:
         ///     x != null AndAlso x.GetType() == typeof(SomeType)
-        ///     
+        ///
         /// One optimization we don't do: we always emits at least one
         /// conditional branch to the label, and always possibly falls through,
         /// even if we know if the branch will always succeed or always fail.
         /// We do this to avoid generating unreachable code, which is fine for
         /// the CLR JIT, but doesn't verify with peverify.
-        /// 
+        ///
         /// This kind of optimization could be implemented safely, by doing
         /// constant folding over conditionals and logical expressions at the
         /// tree level.
         /// </remarks>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1800:DoNotCastUnnecessarily")]
         private void EmitExpressionAndBranch(bool branchValue, Expression node, Label label)
         {
             var startEmitted = EmitExpressionStart(node);
@@ -527,13 +522,16 @@ namespace System.Linq.Expressions.Compiler
                         case ExpressionType.Not:
                             EmitBranchNot(branchValue, (UnaryExpression)node, label);
                             return;
+
                         case ExpressionType.AndAlso:
                         case ExpressionType.OrElse:
                             EmitBranchLogical(branchValue, (BinaryExpression)node, label);
                             return;
+
                         case ExpressionType.Block:
                             EmitBranchBlock(branchValue, (BlockExpression)node, label);
                             return;
+
                         case ExpressionType.Equal:
                         case ExpressionType.NotEqual:
                             EmitBranchComparison(branchValue, (BinaryExpression)node, label);
@@ -631,7 +629,7 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        // For optimized Equal/NotEqual, we can eliminate reference 
+        // For optimized Equal/NotEqual, we can eliminate reference
         // conversions. IL allows comparing managed pointers regardless of
         // type. See ECMA-335 "Binary Comparison or Branch Operations", in
         // Partition III, Section 1.5 Table 4.
@@ -659,7 +657,6 @@ namespace System.Linq.Expressions.Compiler
                 EmitBranchOp(branch, label);
                 return;
             }
-
 
             var isAnd = node.NodeType == ExpressionType.AndAlso;
 
@@ -690,7 +687,7 @@ namespace System.Linq.Expressions.Compiler
         // or optimized OrElse with branch == false
         private void EmitBranchAnd(bool branch, BinaryExpression node, Label label)
         {
-            // if (left) then 
+            // if (left) then
             //   if (right) branch label
             // endif
 
@@ -724,7 +721,7 @@ namespace System.Linq.Expressions.Compiler
             ExitScope(node);
         }
 
-#endregion
+        #endregion Optimized branching
     }
 }
 

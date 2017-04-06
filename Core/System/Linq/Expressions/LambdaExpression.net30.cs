@@ -19,9 +19,9 @@ namespace System.Linq.Expressions
     /// This captures a block of code that is similar to a .NET method body.
     /// </summary>
     /// <remarks>
-    /// Lambda expressions take input through parameters and are expected to be fully bound. 
+    /// Lambda expressions take input through parameters and are expected to be fully bound.
     /// </remarks>
-    [DebuggerTypeProxy(typeof(Expression.LambdaExpressionProxy))]
+    [DebuggerTypeProxy(typeof(LambdaExpressionProxy))]
     public abstract class LambdaExpression : Expression
     {
         private readonly string _name;
@@ -53,7 +53,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type
         {
-            get { return _delegateType; }
+            get
+            {
+                return _delegateType;
+            }
         }
 
         /// <summary>
@@ -62,49 +65,67 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get { return ExpressionType.Lambda; }
+            get
+            {
+                return ExpressionType.Lambda;
+            }
         }
 
         /// <summary>
-        /// Gets the parameters of the lambda expression. 
+        /// Gets the parameters of the lambda expression.
         /// </summary>
         public ReadOnlyCollection<ParameterExpression> Parameters
         {
-            get { return _parameters; }
+            get
+            {
+                return _parameters;
+            }
         }
 
         /// <summary>
-        /// Gets the name of the lambda expression. 
+        /// Gets the name of the lambda expression.
         /// </summary>
         /// <remarks>Used for debugging purposes.</remarks>
         public string Name
         {
-            get { return _name; }
+            get
+            {
+                return _name;
+            }
         }
 
         /// <summary>
-        /// Gets the body of the lambda expression. 
+        /// Gets the body of the lambda expression.
         /// </summary>
         public Expression Body
         {
-            get { return _body; }
+            get
+            {
+                return _body;
+            }
         }
 
         /// <summary>
-        /// Gets the return type of the lambda expression. 
+        /// Gets the return type of the lambda expression.
         /// </summary>
         public Type ReturnType
         {
-            get { return Type.GetMethod("Invoke").ReturnType; }
+            get
+            {
+                return Type.GetMethod("Invoke").ReturnType;
+            }
         }
 
         /// <summary>
         /// Gets the value that indicates if the lambda expression will be compiled with
-        /// tail call optimization. 
+        /// tail call optimization.
         /// </summary>
         public bool TailCall
         {
-            get { return _tailCall; }
+            get
+            {
+                return _tailCall;
+            }
         }
 
         /// <summary>
@@ -131,11 +152,13 @@ namespace System.Linq.Expressions
             {
                 return this;
             }
-            return Expression.Lambda(Type, body, Name, TailCall, parameters);
+            return Lambda(Type, body, Name, TailCall, parameters);
         }
 
 #if FEATURE_CORECLR
+
         internal abstract LambdaExpression Accept(Compiler.StackSpiller spiller);
+
 #endif
     }
 
@@ -145,7 +168,7 @@ namespace System.Linq.Expressions
     /// </summary>
     /// <typeparam name="TDelegate">The type of the delegate.</typeparam>
     /// <remarks>
-    /// Lambda expressions take input through parameters and are expected to be fully bound. 
+    /// Lambda expressions take input through parameters and are expected to be fully bound.
     /// </remarks>
     public sealed class Expression<TDelegate> : LambdaExpression
     {
@@ -181,7 +204,7 @@ namespace System.Linq.Expressions
             {
                 return this;
             }
-            return Expression.Lambda<TDelegate>(body, Name, TailCall, parameters);
+            return Lambda<TDelegate>(body, Name, TailCall, parameters);
         }
 
         protected internal override Expression Accept(ExpressionVisitor visitor)
@@ -190,6 +213,7 @@ namespace System.Linq.Expressions
         }
 
 #if FEATURE_CORECLR
+
         internal override LambdaExpression Accept(Compiler.StackSpiller spiller)
         {
             return spiller.Rewrite(this);
@@ -199,6 +223,7 @@ namespace System.Linq.Expressions
         {
             return new Expression<TDelegate>(body, name, tailCall, parameters);
         }
+
 #endif
     }
 
@@ -251,7 +276,7 @@ public class ExpressionCreator<TDelegate>
         }
 
         /// <summary>
-        /// Creates an <see cref="Expression{TDelegate}"/> where the delegate type is known at compile time. 
+        /// Creates an <see cref="Expression{TDelegate}"/> where the delegate type is known at compile time.
         /// </summary>
         /// <typeparam name="TDelegate">The delegate type. </typeparam>
         /// <param name="body">An <see cref="Expression"/> to set the <see cref="P:Body"/> property equal to. </param>
@@ -263,7 +288,7 @@ public class ExpressionCreator<TDelegate>
         }
 
         /// <summary>
-        /// Creates an <see cref="Expression{TDelegate}"/> where the delegate type is known at compile time. 
+        /// Creates an <see cref="Expression{TDelegate}"/> where the delegate type is known at compile time.
         /// </summary>
         /// <typeparam name="TDelegate">The delegate type. </typeparam>
         /// <param name="body">An <see cref="Expression"/> to set the <see cref="P:Body"/> property equal to. </param>
@@ -276,7 +301,7 @@ public class ExpressionCreator<TDelegate>
         }
 
         /// <summary>
-        /// Creates an <see cref="Expression{TDelegate}"/> where the delegate type is known at compile time. 
+        /// Creates an <see cref="Expression{TDelegate}"/> where the delegate type is known at compile time.
         /// </summary>
         /// <typeparam name="TDelegate">The delegate type. </typeparam>
         /// <param name="body">An <see cref="Expression"/> to set the <see cref="P:Body"/> property equal to. </param>
@@ -288,7 +313,7 @@ public class ExpressionCreator<TDelegate>
         }
 
         /// <summary>
-        /// Creates an <see cref="Expression{TDelegate}"/> where the delegate type is known at compile time. 
+        /// Creates an <see cref="Expression{TDelegate}"/> where the delegate type is known at compile time.
         /// </summary>
         /// <typeparam name="TDelegate">The delegate type. </typeparam>
         /// <param name="body">An <see cref="Expression"/> to set the <see cref="P:Body"/> property equal to. </param>
@@ -301,7 +326,7 @@ public class ExpressionCreator<TDelegate>
         }
 
         /// <summary>
-        /// Creates an <see cref="Expression{TDelegate}"/> where the delegate type is known at compile time. 
+        /// Creates an <see cref="Expression{TDelegate}"/> where the delegate type is known at compile time.
         /// </summary>
         /// <typeparam name="TDelegate">The delegate type. </typeparam>
         /// <param name="body">An <see cref="Expression"/> to set the <see cref="P:Body"/> property equal to. </param>
@@ -314,7 +339,7 @@ public class ExpressionCreator<TDelegate>
         }
 
         /// <summary>
-        /// Creates an <see cref="Expression{TDelegate}"/> where the delegate type is known at compile time. 
+        /// Creates an <see cref="Expression{TDelegate}"/> where the delegate type is known at compile time.
         /// </summary>
         /// <typeparam name="TDelegate">The delegate type. </typeparam>
         /// <param name="body">An <see cref="Expression"/> to set the <see cref="P:Body"/> property equal to. </param>
@@ -329,9 +354,8 @@ public class ExpressionCreator<TDelegate>
             return new Expression<TDelegate>(body, name, tailCall, parameterList);
         }
 
-
         /// <summary>
-        /// Creates a LambdaExpression by first constructing a delegate type. 
+        /// Creates a LambdaExpression by first constructing a delegate type.
         /// </summary>
         /// <param name="body">An <see cref="Expression"/> to set the <see cref="P:Body"/> property equal to. </param>
         /// <param name="parameters">An array that contains <see cref="ParameterExpression"/> objects to use to populate the <see cref="P:Parameters"/> collection. </param>
@@ -342,7 +366,7 @@ public class ExpressionCreator<TDelegate>
         }
 
         /// <summary>
-        /// Creates a LambdaExpression by first constructing a delegate type. 
+        /// Creates a LambdaExpression by first constructing a delegate type.
         /// </summary>
         /// <param name="body">An <see cref="Expression"/> to set the <see cref="P:Body"/> property equal to. </param>
         /// <param name="tailCall">A <see cref="Boolean"/> that indicates if tail call optimization will be applied when compiling the created expression. </param>
@@ -354,7 +378,7 @@ public class ExpressionCreator<TDelegate>
         }
 
         /// <summary>
-        /// Creates a LambdaExpression by first constructing a delegate type. 
+        /// Creates a LambdaExpression by first constructing a delegate type.
         /// </summary>
         /// <param name="body">An <see cref="Expression"/> to set the <see cref="P:Body"/> property equal to. </param>
         /// <param name="parameters">An <see cref="IEnumerable{T}"/> that contains <see cref="ParameterExpression"/> objects to use to populate the <see cref="P:Parameters"/> collection. </param>
@@ -365,7 +389,7 @@ public class ExpressionCreator<TDelegate>
         }
 
         /// <summary>
-        /// Creates a LambdaExpression by first constructing a delegate type. 
+        /// Creates a LambdaExpression by first constructing a delegate type.
         /// </summary>
         /// <param name="body">An <see cref="Expression"/> to set the <see cref="P:Body"/> property equal to. </param>
         /// <param name="tailCall">A <see cref="Boolean"/> that indicates if tail call optimization will be applied when compiling the created expression. </param>
@@ -377,7 +401,7 @@ public class ExpressionCreator<TDelegate>
         }
 
         /// <summary>
-        /// Creates a LambdaExpression by first constructing a delegate type. 
+        /// Creates a LambdaExpression by first constructing a delegate type.
         /// </summary>
         /// <param name="body">An <see cref="Expression"/> to set the <see cref="P:Body"/> property equal to. </param>
         /// <param name="parameters">An array that contains <see cref="ParameterExpression"/> objects to use to populate the <see cref="P:Parameters"/> collection. </param>
@@ -389,7 +413,7 @@ public class ExpressionCreator<TDelegate>
         }
 
         /// <summary>
-        /// Creates a LambdaExpression by first constructing a delegate type. 
+        /// Creates a LambdaExpression by first constructing a delegate type.
         /// </summary>
         /// <param name="body">An <see cref="Expression"/> to set the <see cref="P:Body"/> property equal to. </param>
         /// <param name="tailCall">A <see cref="Boolean"/> that indicates if tail call optimization will be applied when compiling the created expression. </param>
@@ -402,7 +426,7 @@ public class ExpressionCreator<TDelegate>
         }
 
         /// <summary>
-        /// Creates a LambdaExpression by first constructing a delegate type. 
+        /// Creates a LambdaExpression by first constructing a delegate type.
         /// </summary>
         /// <param name="body">An <see cref="Expression"/> to set the <see cref="P:Body"/> property equal to. </param>
         /// <param name="parameters">An <see cref="IEnumerable{T}"/> that contains <see cref="ParameterExpression"/> objects to use to populate the <see cref="P:Parameters"/> collection. </param>
@@ -414,7 +438,7 @@ public class ExpressionCreator<TDelegate>
         }
 
         /// <summary>
-        /// Creates a LambdaExpression by first constructing a delegate type. 
+        /// Creates a LambdaExpression by first constructing a delegate type.
         /// </summary>
         /// <param name="body">An <see cref="Expression"/> to set the <see cref="P:Body"/> property equal to. </param>
         /// <param name="tailCall">A <see cref="Boolean"/> that indicates if tail call optimization will be applied when compiling the created expression. </param>
@@ -427,7 +451,7 @@ public class ExpressionCreator<TDelegate>
         }
 
         /// <summary>
-        /// Creates a LambdaExpression by first constructing a delegate type. 
+        /// Creates a LambdaExpression by first constructing a delegate type.
         /// </summary>
         /// <param name="body">An <see cref="Expression"/> to set the <see cref="P:Body"/> property equal to. </param>
         /// <param name="parameters">An <see cref="IEnumerable{T}"/> that contains <see cref="ParameterExpression"/> objects to use to populate the <see cref="P:Parameters"/> collection. </param>
@@ -439,7 +463,7 @@ public class ExpressionCreator<TDelegate>
         }
 
         /// <summary>
-        /// Creates a LambdaExpression by first constructing a delegate type. 
+        /// Creates a LambdaExpression by first constructing a delegate type.
         /// </summary>
         /// <param name="body">An <see cref="Expression"/> to set the <see cref="P:Body"/> property equal to. </param>
         /// <param name="name">The name for the lambda. Used for emitting debug information.</param>
@@ -477,7 +501,7 @@ public class ExpressionCreator<TDelegate>
         }
 
         /// <summary>
-        /// Creates a LambdaExpression by first constructing a delegate type. 
+        /// Creates a LambdaExpression by first constructing a delegate type.
         /// </summary>
         /// <param name="body">An <see cref="Expression"/> to set the <see cref="P:Body"/> property equal to. </param>
         /// <param name="parameters">An <see cref="IEnumerable{T}"/> that contains <see cref="ParameterExpression"/> objects to use to populate the <see cref="P:Parameters"/> collection. </param>
@@ -493,7 +517,7 @@ public class ExpressionCreator<TDelegate>
         }
 
         /// <summary>
-        /// Creates a LambdaExpression by first constructing a delegate type. 
+        /// Creates a LambdaExpression by first constructing a delegate type.
         /// </summary>
         /// <param name="delegateType">A <see cref="Type"/> representing the delegate signature for the lambda.</param>
         /// <param name="body">An <see cref="Expression"/> to set the <see cref="P:Body"/> property equal to. </param>
@@ -521,9 +545,11 @@ public class ExpressionCreator<TDelegate>
 
             MethodInfo mi;
             var ldc = s_lambdaDelegateCache;
-            if (!ldc.TryGetValue(delegateType, out mi)) {
+            if (!ldc.TryGetValue(delegateType, out mi))
+            {
                 mi = delegateType.GetMethod("Invoke");
-                if (TypeHelper.CanCache(delegateType)) {
+                if (TypeHelper.CanCache(delegateType))
+                {
                     ldc[delegateType] = mi;
                 }
             }
@@ -607,7 +633,8 @@ public class ExpressionCreator<TDelegate>
         /// <returns>The type of a System.Func delegate that has the specified type arguments.</returns>
         public static Type GetFuncType(params Type[] typeArgs)
         {
-            if (!ValidateTryGetFuncActionArgs(typeArgs)) throw Error.TypeMustNotBeByRef();
+            if (!ValidateTryGetFuncActionArgs(typeArgs))
+                throw Error.TypeMustNotBeByRef();
 
             var result = Compiler.DelegateHelpers.GetFuncType(typeArgs);
             if (result == null)
@@ -635,13 +662,14 @@ public class ExpressionCreator<TDelegate>
         }
 
         /// <summary>
-        /// Creates a <see cref="Type"/> object that represents a generic System.Action delegate type that has specific type arguments. 
+        /// Creates a <see cref="Type"/> object that represents a generic System.Action delegate type that has specific type arguments.
         /// </summary>
         /// <param name="typeArgs">An array of Type objects that specify the type arguments for the System.Action delegate type.</param>
         /// <returns>The type of a System.Action delegate that has the specified type arguments.</returns>
         public static Type GetActionType(params Type[] typeArgs)
         {
-            if (!ValidateTryGetFuncActionArgs(typeArgs)) throw Error.TypeMustNotBeByRef();
+            if (!ValidateTryGetFuncActionArgs(typeArgs))
+                throw Error.TypeMustNotBeByRef();
 
             var result = Compiler.DelegateHelpers.GetActionType(typeArgs);
             if (result == null)

@@ -14,7 +14,7 @@ namespace System.Linq.Expressions
     /// <summary>
     /// Represents an expression that applies a delegate or lambda expression to a list of argument expressions.
     /// </summary>
-    [DebuggerTypeProxy(typeof(Expression.InvocationExpressionProxy))]
+    [DebuggerTypeProxy(typeof(InvocationExpressionProxy))]
     public sealed class InvocationExpression : Expression, IArgumentProvider
     {
         private IList<Expression> _arguments;
@@ -34,7 +34,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type
         {
-            get { return _returnType; }
+            get
+            {
+                return _returnType;
+            }
         }
 
         /// <summary>
@@ -44,7 +47,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get { return ExpressionType.Invoke; }
+            get
+            {
+                return ExpressionType.Invoke;
+            }
         }
 
         /// <summary>
@@ -52,7 +58,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Expression
         {
-            get { return _lambda; }
+            get
+            {
+                return _lambda;
+            }
         }
 
         /// <summary>
@@ -60,7 +69,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<Expression> Arguments
         {
-            get { return ReturnReadOnly(ref _arguments); }
+            get
+            {
+                return ReturnReadOnly(ref _arguments);
+            }
         }
 
         /// <summary>
@@ -78,7 +90,7 @@ namespace System.Linq.Expressions
                 return this;
             }
 
-            return Expression.Invoke(expression, arguments);
+            return Invoke(expression, arguments);
         }
 
         public Expression GetArgument(int index)
@@ -107,7 +119,7 @@ namespace System.Linq.Expressions
             Debug.Assert(lambda != null);
             Debug.Assert(arguments == null || arguments.Length == _arguments.Count);
 
-            return Expression.Invoke(lambda, arguments ?? _arguments);
+            return Invoke(lambda, arguments ?? _arguments);
         }
 
         internal LambdaExpression LambdaOperand
@@ -124,11 +136,11 @@ namespace System.Linq.Expressions
     public partial class Expression
     {
         ///<summary>
-        ///Creates an <see cref="T:System.Linq.Expressions.InvocationExpression" /> that 
+        ///Creates an <see cref="T:System.Linq.Expressions.InvocationExpression" /> that
         ///applies a delegate or lambda expression to a list of argument expressions.
         ///</summary>
         ///<returns>
-        ///An <see cref="T:System.Linq.Expressions.InvocationExpression" /> that 
+        ///An <see cref="T:System.Linq.Expressions.InvocationExpression" /> that
         ///applies the specified delegate or lambda expression to the provided arguments.
         ///</returns>
         ///<param name="expression">
@@ -151,11 +163,11 @@ namespace System.Linq.Expressions
         }
 
         ///<summary>
-        ///Creates an <see cref="T:System.Linq.Expressions.InvocationExpression" /> that 
+        ///Creates an <see cref="T:System.Linq.Expressions.InvocationExpression" /> that
         ///applies a delegate or lambda expression to a list of argument expressions.
         ///</summary>
         ///<returns>
-        ///An <see cref="T:System.Linq.Expressions.InvocationExpression" /> that 
+        ///An <see cref="T:System.Linq.Expressions.InvocationExpression" /> that
         ///applies the specified delegate or lambda expression to the provided arguments.
         ///</returns>
         ///<param name="expression">

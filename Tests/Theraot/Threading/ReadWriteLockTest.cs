@@ -619,7 +619,7 @@ namespace Tests.Theraot.Threading
                         else
                         {
                             // Not reentrant ReadWriteLock will not be able to upgrade the lock
-                            Assert.IsFalse(x.IsCurrentThreadWriter);   
+                            Assert.IsFalse(x.IsCurrentThreadWriter);
                         }
                     }
                     finally

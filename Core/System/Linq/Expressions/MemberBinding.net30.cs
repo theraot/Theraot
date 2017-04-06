@@ -7,7 +7,6 @@ using System.Reflection;
 
 namespace System.Linq.Expressions
 {
-
     /// <summary>
     /// Describes the binding types that are used in MemberInitExpression objects.
     /// </summary>
@@ -17,10 +16,12 @@ namespace System.Linq.Expressions
         /// A binding that represents initializing a member with the value of an expression.
         /// </summary>
         Assignment,
+
         /// <summary>
         /// A binding that represents recursively initializing members of a member.
         /// </summary>
         MemberBinding,
+
         /// <summary>
         /// A binding that represents initializing a member of type <see cref="System.Collections.IList"/> or <see cref="System.Collections.Generic.ICollection{T}"/> from a list of elements.
         /// </summary>
@@ -52,7 +53,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public MemberBindingType BindingType
         {
-            get { return _type; }
+            get
+            {
+                return _type;
+            }
         }
 
         /// <summary>
@@ -60,11 +64,14 @@ namespace System.Linq.Expressions
         /// </summary>
         public MemberInfo Member
         {
-            get { return _member; }
+            get
+            {
+                return _member;
+            }
         }
 
         /// <summary>
-        /// Returns a <see cref="String"/> that represents the current <see cref="Object"/>. 
+        /// Returns a <see cref="String"/> that represents the current <see cref="Object"/>.
         /// </summary>
         /// <returns>A <see cref="String"/> that represents the current <see cref="Object"/>. </returns>
         public override string ToString()

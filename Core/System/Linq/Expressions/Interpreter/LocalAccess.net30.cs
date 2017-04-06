@@ -3,10 +3,10 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace System.Linq.Expressions.Interpreter
 {
@@ -32,7 +32,7 @@ namespace System.Linq.Expressions.Interpreter
         }
     }
 
-#region Load
+    #region Load
 
     internal sealed class LoadLocalInstruction : LocalAccessInstruction, IBoxableInstruction
     {
@@ -41,7 +41,13 @@ namespace System.Linq.Expressions.Interpreter
         {
         }
 
-        public override int ProducedStack { get { return 1; } }
+        public override int ProducedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
 
         public override int Run(InterpretedFrame frame)
         {
@@ -62,7 +68,13 @@ namespace System.Linq.Expressions.Interpreter
         {
         }
 
-        public override int ProducedStack { get { return 1; } }
+        public override int ProducedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
 
         public override int Run(InterpretedFrame frame)
         {
@@ -79,7 +91,13 @@ namespace System.Linq.Expressions.Interpreter
         {
         }
 
-        public override int ProducedStack { get { return 1; } }
+        public override int ProducedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
 
         public override int Run(InterpretedFrame frame)
         {
@@ -96,7 +114,13 @@ namespace System.Linq.Expressions.Interpreter
         {
         }
 
-        public override int ProducedStack { get { return 1; } }
+        public override int ProducedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
 
         public override int Run(InterpretedFrame frame)
         {
@@ -106,9 +130,9 @@ namespace System.Linq.Expressions.Interpreter
         }
     }
 
-#endregion
+    #endregion Load
 
-#region Store, Assign
+    #region Store, Assign
 
     internal sealed class AssignLocalInstruction : LocalAccessInstruction, IBoxableInstruction
     {
@@ -117,8 +141,21 @@ namespace System.Linq.Expressions.Interpreter
         {
         }
 
-        public override int ConsumedStack { get { return 1; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
+        public override int ProducedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
 
         public override int Run(InterpretedFrame frame)
         {
@@ -139,7 +176,14 @@ namespace System.Linq.Expressions.Interpreter
         {
         }
 
-        public override int ConsumedStack { get { return 1; } }
+        public override int ConsumedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
         public override int Run(InterpretedFrame frame)
         {
             frame.Data[_index] = frame.Pop();
@@ -159,8 +203,21 @@ namespace System.Linq.Expressions.Interpreter
         {
         }
 
-        public override int ConsumedStack { get { return 1; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
+        public override int ProducedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
 
         public override int Run(InterpretedFrame frame)
         {
@@ -177,8 +234,21 @@ namespace System.Linq.Expressions.Interpreter
         {
         }
 
-        public override int ConsumedStack { get { return 1; } }
-        public override int ProducedStack { get { return 0; } }
+        public override int ConsumedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
+        public override int ProducedStack
+        {
+            get
+            {
+                return 0;
+            }
+        }
 
         public override int Run(InterpretedFrame frame)
         {
@@ -195,8 +265,21 @@ namespace System.Linq.Expressions.Interpreter
         {
         }
 
-        public override int ConsumedStack { get { return 1; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
+        public override int ProducedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
 
         public override int Run(InterpretedFrame frame)
         {
@@ -214,8 +297,21 @@ namespace System.Linq.Expressions.Interpreter
         {
         }
 
-        public override int ConsumedStack { get { return 1; } }
-        public override int ProducedStack { get { return 1; } }
+        public override int ConsumedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
+        public override int ProducedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
 
         public override int Run(InterpretedFrame frame)
         {
@@ -225,11 +321,10 @@ namespace System.Linq.Expressions.Interpreter
         }
     }
 
-#endregion
+    #endregion Store, Assign
 
-#region Initialize
+    #region Initialize
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1012:AbstractTypesShouldNotHaveConstructors")]
     internal abstract class InitializeLocalInstruction : LocalAccessInstruction
     {
         internal InitializeLocalInstruction(int index)
@@ -257,7 +352,10 @@ namespace System.Linq.Expressions.Interpreter
 
             public override string InstructionName
             {
-                get { return "InitRef"; }
+                get
+                {
+                    return "InitRef";
+                }
             }
         }
 
@@ -285,7 +383,10 @@ namespace System.Linq.Expressions.Interpreter
 
             public override string InstructionName
             {
-                get { return "InitImmutableValue"; }
+                get
+                {
+                    return "InitImmutableValue";
+                }
             }
         }
 
@@ -306,7 +407,10 @@ namespace System.Linq.Expressions.Interpreter
 
             public override string InstructionName
             {
-                get { return "InitImmutableBox"; }
+                get
+                {
+                    return "InitImmutableBox";
+                }
             }
         }
 
@@ -333,7 +437,10 @@ namespace System.Linq.Expressions.Interpreter
 
             public override string InstructionName
             {
-                get { return "InitImmutableValue"; }
+                get
+                {
+                    return "InitImmutableValue";
+                }
             }
         }
 
@@ -353,7 +460,10 @@ namespace System.Linq.Expressions.Interpreter
 
             public override string InstructionName
             {
-                get { return "InitImmutableBox"; }
+                get
+                {
+                    return "InitImmutableBox";
+                }
             }
         }
 
@@ -395,7 +505,10 @@ namespace System.Linq.Expressions.Interpreter
 
             public override string InstructionName
             {
-                get { return "InitParameter"; }
+                get
+                {
+                    return "InitParameter";
+                }
             }
         }
 
@@ -431,7 +544,10 @@ namespace System.Linq.Expressions.Interpreter
 
             public override string InstructionName
             {
-                get { return "InitMutableValue"; }
+                get
+                {
+                    return "InitMutableValue";
+                }
             }
         }
 
@@ -450,14 +566,17 @@ namespace System.Linq.Expressions.Interpreter
 
             public override string InstructionName
             {
-                get { return "InitMutableBox"; }
+                get
+                {
+                    return "InitMutableBox";
+                }
             }
         }
     }
 
-#endregion
+    #endregion Initialize
 
-#region RuntimeVariables
+    #region RuntimeVariables
 
     internal sealed class RuntimeVariablesInstruction : Instruction
     {
@@ -468,8 +587,21 @@ namespace System.Linq.Expressions.Interpreter
             _count = count;
         }
 
-        public override int ProducedStack { get { return 1; } }
-        public override int ConsumedStack { get { return _count; } }
+        public override int ProducedStack
+        {
+            get
+            {
+                return 1;
+            }
+        }
+
+        public override int ConsumedStack
+        {
+            get
+            {
+                return _count;
+            }
+        }
 
         public override int Run(InterpretedFrame frame)
         {
@@ -487,7 +619,8 @@ namespace System.Linq.Expressions.Interpreter
             return "GetRuntimeVariables()";
         }
     }
-#endregion
+
+    #endregion RuntimeVariables
 }
 
 #endif

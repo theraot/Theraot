@@ -5,8 +5,8 @@
 
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Reflection;
 using System.Dynamic.Utils;
+using System.Reflection;
 using Theraot.Collections;
 
 namespace System.Linq.Expressions
@@ -24,12 +24,16 @@ namespace System.Linq.Expressions
             _addMethod = addMethod;
             _arguments = arguments;
         }
+
         /// <summary>
         /// Gets the <see cref="MethodInfo"/> used to add elements to the object.
         /// </summary>
         public MethodInfo AddMethod
         {
-            get { return _addMethod; }
+            get
+            {
+                return _addMethod;
+            }
         }
 
         /// <summary>
@@ -37,7 +41,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<Expression> Arguments
         {
-            get { return _arguments; }
+            get
+            {
+                return _arguments;
+            }
         }
 
         public Expression GetArgument(int index)

@@ -6,6 +6,7 @@ using System.Dynamic.Utils;
 namespace System.Linq.Expressions
 {
 #if NET20 || NET30 || NET35
+
     /// <summary>
     /// Stores information needed to emit debugging symbol information for a
     /// source file, in particular the file name and unique language identifier.
@@ -25,7 +26,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public string FileName
         {
-            get { return _fileName; }
+            get
+            {
+                return _fileName;
+            }
         }
 
         /// <summary>
@@ -33,7 +37,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public virtual Guid Language
         {
-            get { return Guid.Empty; }
+            get
+            {
+                return Guid.Empty;
+            }
         }
 
         /// <summary>
@@ -41,7 +48,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public virtual Guid LanguageVendor
         {
-            get { return Guid.Empty; }
+            get
+            {
+                return Guid.Empty;
+            }
         }
 
         internal static readonly Guid DocumentType_Text = new Guid(0x5a869d0b, 0x6611, 0x11d3, 0xbd, 0x2a, 0, 0, 0xf8, 8, 0x49, 0xbd);
@@ -52,7 +62,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public virtual Guid DocumentType
         {
-            get { return DocumentType_Text; }
+            get
+            {
+                return DocumentType_Text;
+            }
         }
     }
 
@@ -66,7 +79,7 @@ namespace System.Linq.Expressions
             : base(fileName)
         {
             _language = language;
-            _documentType = SymbolDocumentInfo.DocumentType_Text;
+            _documentType = DocumentType_Text;
         }
 
         internal SymbolDocumentWithGuids(string fileName, ref Guid language, ref Guid vendor)
@@ -74,7 +87,7 @@ namespace System.Linq.Expressions
         {
             _language = language;
             _vendor = vendor;
-            _documentType = SymbolDocumentInfo.DocumentType_Text;
+            _documentType = DocumentType_Text;
         }
 
         internal SymbolDocumentWithGuids(string fileName, ref Guid language, ref Guid vendor, ref Guid documentType)
@@ -87,17 +100,26 @@ namespace System.Linq.Expressions
 
         public override Guid Language
         {
-            get { return _language; }
+            get
+            {
+                return _language;
+            }
         }
 
         public override Guid LanguageVendor
         {
-            get { return _vendor; }
+            get
+            {
+                return _vendor;
+            }
         }
 
         public override Guid DocumentType
         {
-            get { return _documentType; }
+            get
+            {
+                return _documentType;
+            }
         }
     }
 
@@ -121,7 +143,7 @@ namespace System.Linq.Expressions
         /// </summary>
         /// <param name="fileName">A <see cref="T:System.String" /> to set the <see cref="P:System.Linq.Expressions.SymbolDocumentInfo.FileName" /> equal to.</param>
         /// <param name="language">A <see cref="T:System.Guid" /> to set the <see cref="P:System.Linq.Expressions.SymbolDocumentInfo.Language" /> equal to.</param>
-        /// <returns>A <see cref="T:System.Linq.Expressions.SymbolDocumentInfo" /> that has the <see cref="P:System.Linq.Expressions.SymbolDocumentInfo.FileName" /> 
+        /// <returns>A <see cref="T:System.Linq.Expressions.SymbolDocumentInfo" /> that has the <see cref="P:System.Linq.Expressions.SymbolDocumentInfo.FileName" />
         /// and <see cref="P:System.Linq.Expressions.SymbolDocumentInfo.Language" /> properties set to the specified value.</returns>
         public static SymbolDocumentInfo SymbolDocument(string fileName, Guid language)
         {
@@ -134,8 +156,8 @@ namespace System.Linq.Expressions
         /// <param name="fileName">A <see cref="T:System.String" /> to set the <see cref="P:System.Linq.Expressions.SymbolDocumentInfo.FileName" /> equal to.</param>
         /// <param name="language">A <see cref="T:System.Guid" /> to set the <see cref="P:System.Linq.Expressions.SymbolDocumentInfo.Language" /> equal to.</param>
         /// <param name="languageVendor">A <see cref="T:System.Guid" /> to set the <see cref="P:System.Linq.Expressions.SymbolDocumentInfo.LanguageVendor" /> equal to.</param>
-        /// <returns>A <see cref="T:System.Linq.Expressions.SymbolDocumentInfo" /> that has the <see cref="P:System.Linq.Expressions.SymbolDocumentInfo.FileName" /> 
-        /// and <see cref="P:System.Linq.Expressions.SymbolDocumentInfo.Language" /> 
+        /// <returns>A <see cref="T:System.Linq.Expressions.SymbolDocumentInfo" /> that has the <see cref="P:System.Linq.Expressions.SymbolDocumentInfo.FileName" />
+        /// and <see cref="P:System.Linq.Expressions.SymbolDocumentInfo.Language" />
         /// and <see cref="P:System.Linq.Expressions.SymbolDocumentInfo.LanguageVendor" /> properties set to the specified value.</returns>
         public static SymbolDocumentInfo SymbolDocument(string fileName, Guid language, Guid languageVendor)
         {
@@ -149,9 +171,9 @@ namespace System.Linq.Expressions
         /// <param name="language">A <see cref="T:System.Guid" /> to set the <see cref="P:System.Linq.Expressions.SymbolDocumentInfo.Language" /> equal to.</param>
         /// <param name="languageVendor">A <see cref="T:System.Guid" /> to set the <see cref="P:System.Linq.Expressions.SymbolDocumentInfo.LanguageVendor" /> equal to.</param>
         /// <param name="documentType">A <see cref="T:System.Guid" /> to set the <see cref="P:System.Linq.Expressions.SymbolDocumentInfo.DocumentType" /> equal to.</param>
-        /// <returns>A <see cref="T:System.Linq.Expressions.SymbolDocumentInfo" /> that has the <see cref="P:System.Linq.Expressions.SymbolDocumentInfo.FileName" /> 
-        /// and <see cref="P:System.Linq.Expressions.SymbolDocumentInfo.Language" /> 
-        /// and <see cref="P:System.Linq.Expressions.SymbolDocumentInfo.LanguageVendor" /> 
+        /// <returns>A <see cref="T:System.Linq.Expressions.SymbolDocumentInfo" /> that has the <see cref="P:System.Linq.Expressions.SymbolDocumentInfo.FileName" />
+        /// and <see cref="P:System.Linq.Expressions.SymbolDocumentInfo.Language" />
+        /// and <see cref="P:System.Linq.Expressions.SymbolDocumentInfo.LanguageVendor" />
         /// and <see cref="P:System.Linq.Expressions.SymbolDocumentInfo.DocumentType" /> properties set to the specified value.</returns>
         public static SymbolDocumentInfo SymbolDocument(string fileName, Guid language, Guid languageVendor, Guid documentType)
         {

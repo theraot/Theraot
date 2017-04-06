@@ -1,9 +1,9 @@
 ﻿#if FAT
 
+using NUnit.Framework;
 using System;
 using System.Diagnostics;
 using System.Threading;
-using NUnit.Framework;
 using Theraot.Collections.ThreadSafe;
 using Theraot.Threading.Needles;
 
@@ -63,14 +63,14 @@ namespace Tests.Theraot.Threading.Needles
         {
             var context = new LockableContext(16);
             var needle = new LockableNeedle<int>(5, context);
-            int[] count = {0};
+            int[] count = { 0 };
 
             var info = new CircularBucket<string>(64);
 
             Assert.AreEqual(5, needle.Value);
             Assert.Throws<InvalidOperationException>(() => needle.Value = 7);
 
-            var threads = new []
+            var threads = new[]
             {
                 new Thread(() =>
                 {

@@ -139,7 +139,7 @@ namespace Tests.Theraot.Collections
         public void ObservableProgressor()
         {
             var source = new Progressor<int>(new[] { 0, 1, 2, 3, 4, 5 });
-            var progresor = new Progressor<int>((IObservable<int>) source);
+            var progresor = new Progressor<int>((IObservable<int>)source);
             source.AsEnumerable().Consume();
             var indexA = 0;
             var indexB = 0;
@@ -320,7 +320,7 @@ namespace Tests.Theraot.Collections
         [Test]
         public void ThreadedUseWithPreface()
         {
-            var source = new Progressor<int>( new List<int> {7, 7, 7, 7, 7}, new Progressor<int>(new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 })).AsEnumerable();
+            var source = new Progressor<int>(new List<int> { 7, 7, 7, 7, 7 }, new Progressor<int>(new[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 })).AsEnumerable();
             var handle = new ManualResetEvent(false);
             int[] count = { 0, 0, 0 };
             var work = new WaitCallback

@@ -39,7 +39,7 @@ namespace Theraot.Collections
                 foreach (var item in _source)
                 {
                     group.Add(item);
-                    count --;
+                    count--;
                     if (count == 0)
                     {
                         yield return group;

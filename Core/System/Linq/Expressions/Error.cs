@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-
 namespace System.Linq.Expressions
 {
     /// <summary>
@@ -16,6 +15,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.ReducibleMustOverrideReduce);
         }
+
         /// <summary>
         /// ArgumentException with message like "node cannot reduce to itself or null"
         /// </summary>
@@ -23,6 +23,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.MustReduceToDifferent);
         }
+
         /// <summary>
         /// ArgumentException with message like "cannot assign from the reduced node type to the original node type"
         /// </summary>
@@ -30,6 +31,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.ReducedNotCompatible);
         }
+
         /// <summary>
         /// ArgumentException with message like "Setter must have parameters."
         /// </summary>
@@ -37,6 +39,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.SetterHasNoParams);
         }
+
         /// <summary>
         /// ArgumentException with message like "Property cannot have a managed pointer type."
         /// </summary>
@@ -44,6 +47,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.PropertyCannotHaveRefType);
         }
+
         /// <summary>
         /// ArgumentException with message like "Indexing parameters of getter and setter must match."
         /// </summary>
@@ -51,6 +55,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.IndexesOfSetGetMustMatch);
         }
+
         /// <summary>
         /// ArgumentException with message like "Accessor method should not have VarArgs."
         /// </summary>
@@ -58,6 +63,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.AccessorsCannotHaveVarArgs);
         }
+
         /// <summary>
         /// ArgumentException with message like "Accessor indexes cannot be passed ByRef."
         /// </summary>
@@ -65,6 +71,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.AccessorsCannotHaveByRefArgs);
         }
+
         /// <summary>
         /// ArgumentException with message like "Bounds count cannot be less than 1"
         /// </summary>
@@ -72,6 +79,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.BoundsCannotBeLessThanOne);
         }
+
         /// <summary>
         /// ArgumentException with message like "type must not be ByRef"
         /// </summary>
@@ -79,6 +87,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.TypeMustNotBeByRef);
         }
+
         /// <summary>
         /// ArgumentException with message like "Type doesn't have constructor with a given signature"
         /// </summary>
@@ -86,6 +95,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.TypeDoesNotHaveConstructorForTheSignature);
         }
+
         /// <summary>
         /// ArgumentException with message like "Count must be non-negative."
         /// </summary>
@@ -93,6 +103,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.CountCannotBeNegative);
         }
+
         /// <summary>
         /// ArgumentException with message like "arrayType must be an array type"
         /// </summary>
@@ -100,6 +111,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.ArrayTypeMustBeArray);
         }
+
         /// <summary>
         /// ArgumentException with message like "Setter should have void type."
         /// </summary>
@@ -107,6 +119,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.SetterMustBeVoid);
         }
+
         /// <summary>
         /// ArgumentException with message like "Property type must match the value type of setter"
         /// </summary>
@@ -114,6 +127,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.PropertyTyepMustMatchSetter);
         }
+
         /// <summary>
         /// ArgumentException with message like "Both accessors must be static."
         /// </summary>
@@ -121,6 +135,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.BothAccessorsMustBeStatic);
         }
+
         /// <summary>
         /// ArgumentException with message like "Static method requires null instance, non-static method requires non-null instance."
         /// </summary>
@@ -128,6 +143,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.OnlyStaticMethodsHaveNullInstance);
         }
+
         /// <summary>
         /// ArgumentException with message like "Property cannot have a void type."
         /// </summary>
@@ -135,6 +151,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.PropertyTypeCannotBeVoid);
         }
+
         /// <summary>
         /// ArgumentException with message like "Can only unbox from an object or interface type to a value type."
         /// </summary>
@@ -142,6 +159,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.InvalidUnboxType);
         }
+
         /// <summary>
         /// ArgumentException with message like "Argument must not have a value type."
         /// </summary>
@@ -149,6 +167,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.ArgumentMustNotHaveValueType);
         }
+
         /// <summary>
         /// ArgumentException with message like "must be reducible node"
         /// </summary>
@@ -156,6 +175,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.MustBeReducible);
         }
+
         /// <summary>
         /// ArgumentException with message like "Default body must be supplied if case bodies are not System.Void."
         /// </summary>
@@ -163,6 +183,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.DefaultBodyMustBeSupplied);
         }
+
         /// <summary>
         /// ArgumentException with message like "MethodBuilder does not have a valid TypeBuilder"
         /// </summary>
@@ -170,6 +191,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.MethodBuilderDoesNotHaveTypeBuilder);
         }
+
         /// <summary>
         /// ArgumentException with message like "Label type must be System.Void if an expression is not supplied"
         /// </summary>
@@ -177,6 +199,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.LabelMustBeVoidOrHaveExpression);
         }
+
         /// <summary>
         /// ArgumentException with message like "Type must be System.Void for this label argument"
         /// </summary>
@@ -184,6 +207,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.LabelTypeMustBeVoid);
         }
+
         /// <summary>
         /// ArgumentException with message like "Quoted expression must be a lambda"
         /// </summary>
@@ -191,6 +215,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.QuotedExpressionMustBeLambda);
         }
+
         /// <summary>
         /// ArgumentException with message like "Variable '{0}' uses unsupported type '{1}'. Reference types are not supported for variables."
         /// </summary>
@@ -198,6 +223,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.VariableMustNotBeByRef(p0, p1));
         }
+
         /// <summary>
         /// ArgumentException with message like "Found duplicate parameter '{0}'. Each ParameterExpression in the list must be a unique object."
         /// </summary>
@@ -205,6 +231,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.DuplicateVariable(p0));
         }
+
         /// <summary>
         /// ArgumentException with message like "Start and End must be well ordered"
         /// </summary>
@@ -212,6 +239,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.StartEndMustBeOrdered);
         }
+
         /// <summary>
         /// ArgumentException with message like "fault cannot be used with catch or finally clauses"
         /// </summary>
@@ -219,6 +247,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.FaultCannotHaveCatchOrFinally);
         }
+
         /// <summary>
         /// ArgumentException with message like "try must have at least one catch, finally, or fault clause"
         /// </summary>
@@ -226,6 +255,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.TryMustHaveCatchFinallyOrFault);
         }
+
         /// <summary>
         /// ArgumentException with message like "Body of catch must have the same type as body of try."
         /// </summary>
@@ -233,6 +263,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.BodyOfCatchMustHaveSameTypeAsBodyOfTry);
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Extension node must override the property {0}."
         /// </summary>
@@ -240,6 +271,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.ExtensionNodeMustOverrideProperty(p0));
         }
+
         /// <summary>
         /// ArgumentException with message like "User-defined operator method '{0}' must be static."
         /// </summary>
@@ -247,6 +279,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.UserDefinedOperatorMustBeStatic(p0));
         }
+
         /// <summary>
         /// ArgumentException with message like "User-defined operator method '{0}' must not be void."
         /// </summary>
@@ -254,6 +287,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.UserDefinedOperatorMustNotBeVoid(p0));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "No coercion operator is defined between types '{0}' and '{1}'."
         /// </summary>
@@ -261,6 +295,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.CoercionOperatorNotDefined(p0, p1));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "The unary operator {0} is not defined for the type '{1}'."
         /// </summary>
@@ -268,6 +303,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.UnaryOperatorNotDefined(p0, p1));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "The binary operator {0} is not defined for the types '{1}' and '{2}'."
         /// </summary>
@@ -275,6 +311,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.BinaryOperatorNotDefined(p0, p1, p2));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Reference equality is not defined for the types '{0}' and '{1}'."
         /// </summary>
@@ -282,6 +319,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.ReferenceEqualityNotDefined(p0, p1));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "The operands for operator '{0}' do not match the parameters of method '{1}'."
         /// </summary>
@@ -289,6 +327,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.OperandTypesDoNotMatchParameters(p0, p1));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "The return type of overload method for operator '{0}' does not match the parameter type of conversion method '{1}'."
         /// </summary>
@@ -296,6 +335,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.OverloadOperatorTypeDoesNotMatchConversionType(p0, p1));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Conversion is not supported for arithmetic types without operator overloading."
         /// </summary>
@@ -303,6 +343,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.ConversionIsNotSupportedForArithmeticTypes);
         }
+
         /// <summary>
         /// ArgumentException with message like "Argument must be array"
         /// </summary>
@@ -310,6 +351,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.ArgumentMustBeArray);
         }
+
         /// <summary>
         /// ArgumentException with message like "Argument must be boolean"
         /// </summary>
@@ -317,6 +359,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.ArgumentMustBeBoolean);
         }
+
         /// <summary>
         /// ArgumentException with message like "The user-defined equality method '{0}' must return a boolean value."
         /// </summary>
@@ -324,6 +367,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.EqualityMustReturnBoolean(p0));
         }
+
         /// <summary>
         /// ArgumentException with message like "Argument must be either a FieldInfo or PropertyInfo"
         /// </summary>
@@ -331,6 +375,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.ArgumentMustBeFieldInfoOrPropertInfo);
         }
+
         /// <summary>
         /// ArgumentException with message like "Argument must be either a FieldInfo, PropertyInfo or MethodInfo"
         /// </summary>
@@ -338,6 +383,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.ArgumentMustBeFieldInfoOrPropertInfoOrMethod);
         }
+
         /// <summary>
         /// ArgumentException with message like "Argument must be an instance member"
         /// </summary>
@@ -345,6 +391,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.ArgumentMustBeInstanceMember);
         }
+
         /// <summary>
         /// ArgumentException with message like "Argument must be of an integer type"
         /// </summary>
@@ -352,6 +399,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.ArgumentMustBeInteger);
         }
+
         /// <summary>
         /// ArgumentException with message like "Argument for array index must be of type Int32"
         /// </summary>
@@ -359,6 +407,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.ArgumentMustBeArrayIndexType);
         }
+
         /// <summary>
         /// ArgumentException with message like "Argument must be single dimensional array type"
         /// </summary>
@@ -366,6 +415,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.ArgumentMustBeSingleDimensionalArrayType);
         }
+
         /// <summary>
         /// ArgumentException with message like "Argument types do not match"
         /// </summary>
@@ -373,6 +423,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.ArgumentTypesMustMatch);
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Cannot auto initialize elements of value type through property '{0}', use assignment instead"
         /// </summary>
@@ -380,6 +431,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.CannotAutoInitializeValueTypeElementThroughProperty(p0));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Cannot auto initialize members of value type through property '{0}', use assignment instead"
         /// </summary>
@@ -387,6 +439,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.CannotAutoInitializeValueTypeMemberThroughProperty(p0));
         }
+
         /// <summary>
         /// ArgumentException with message like "The type used in TypeAs Expression must be of reference or nullable type, {0} is neither"
         /// </summary>
@@ -394,6 +447,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.IncorrectTypeForTypeAs(p0));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Coalesce used with type that cannot be null"
         /// </summary>
@@ -401,6 +455,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.CoalesceUsedOnNonNullType);
         }
+
         /// <summary>
         /// InvalidOperationException with message like "An expression of type '{0}' cannot be used to initialize an array of type '{1}'"
         /// </summary>
@@ -408,6 +463,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.ExpressionTypeCannotInitializeArrayType(p0, p1));
         }
+
         /// <summary>
         /// ArgumentException with message like "Expression of type '{0}' cannot be used for constructor parameter of type '{1}'"
         /// </summary>
@@ -415,6 +471,7 @@ namespace System.Linq.Expressions
         {
             return Dynamic.Utils.Error.ExpressionTypeDoesNotMatchConstructorParameter(p0, p1);
         }
+
         /// <summary>
         /// ArgumentException with message like " Argument type '{0}' does not match the corresponding member type '{1}'"
         /// </summary>
@@ -422,6 +479,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.ArgumentTypeDoesNotMatchMember(p0, p1));
         }
+
         /// <summary>
         /// ArgumentException with message like " The member '{0}' is not declared on type '{1}' being created"
         /// </summary>
@@ -429,6 +487,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.ArgumentMemberNotDeclOnType(p0, p1));
         }
+
         /// <summary>
         /// ArgumentException with message like "Expression of type '{0}' cannot be used for parameter of type '{1}' of method '{2}'"
         /// </summary>
@@ -436,6 +495,7 @@ namespace System.Linq.Expressions
         {
             return Dynamic.Utils.Error.ExpressionTypeDoesNotMatchMethodParameter(p0, p1, p2);
         }
+
         /// <summary>
         /// ArgumentException with message like "Expression of type '{0}' cannot be used for parameter of type '{1}'"
         /// </summary>
@@ -443,6 +503,7 @@ namespace System.Linq.Expressions
         {
             return Dynamic.Utils.Error.ExpressionTypeDoesNotMatchParameter(p0, p1);
         }
+
         /// <summary>
         /// ArgumentException with message like "Expression of type '{0}' cannot be used for return type '{1}'"
         /// </summary>
@@ -450,6 +511,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.ExpressionTypeDoesNotMatchReturn(p0, p1));
         }
+
         /// <summary>
         /// ArgumentException with message like "Expression of type '{0}' cannot be used for assignment to type '{1}'"
         /// </summary>
@@ -457,6 +519,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.ExpressionTypeDoesNotMatchAssignment(p0, p1));
         }
+
         /// <summary>
         /// ArgumentException with message like "Expression of type '{0}' cannot be used for label of type '{1}'"
         /// </summary>
@@ -464,6 +527,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.ExpressionTypeDoesNotMatchLabel(p0, p1));
         }
+
         /// <summary>
         /// ArgumentException with message like "Expression of type '{0}' cannot be invoked"
         /// </summary>
@@ -471,6 +535,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.ExpressionTypeNotInvocable(p0));
         }
+
         /// <summary>
         /// ArgumentException with message like "Field '{0}' is not defined for type '{1}'"
         /// </summary>
@@ -478,6 +543,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.FieldNotDefinedForType(p0, p1));
         }
+
         /// <summary>
         /// ArgumentException with message like "Instance field '{0}' is not defined for type '{1}'"
         /// </summary>
@@ -485,6 +551,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.InstanceFieldNotDefinedForType(p0, p1));
         }
+
         /// <summary>
         /// ArgumentException with message like "Field '{0}.{1}' is not defined for type '{2}'"
         /// </summary>
@@ -492,6 +559,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.FieldInfoNotDefinedForType(p0, p1, p2));
         }
+
         /// <summary>
         /// ArgumentException with message like "Incorrect number of indexes"
         /// </summary>
@@ -499,6 +567,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.IncorrectNumberOfIndexes);
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Incorrect number of arguments supplied for lambda invocation"
         /// </summary>
@@ -506,6 +575,7 @@ namespace System.Linq.Expressions
         {
             return Dynamic.Utils.Error.IncorrectNumberOfLambdaArguments();
         }
+
         /// <summary>
         /// ArgumentException with message like "Incorrect number of parameters supplied for lambda declaration"
         /// </summary>
@@ -513,6 +583,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.IncorrectNumberOfLambdaDeclarationParameters);
         }
+
         /// <summary>
         /// ArgumentException with message like "Incorrect number of arguments supplied for call to method '{0}'"
         /// </summary>
@@ -520,6 +591,7 @@ namespace System.Linq.Expressions
         {
             return Dynamic.Utils.Error.IncorrectNumberOfMethodCallArguments(p0);
         }
+
         /// <summary>
         /// ArgumentException with message like "Incorrect number of arguments for constructor"
         /// </summary>
@@ -527,6 +599,7 @@ namespace System.Linq.Expressions
         {
             return Dynamic.Utils.Error.IncorrectNumberOfConstructorArguments();
         }
+
         /// <summary>
         /// ArgumentException with message like " Incorrect number of members for constructor"
         /// </summary>
@@ -534,6 +607,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.IncorrectNumberOfMembersForGivenConstructor);
         }
+
         /// <summary>
         /// ArgumentException with message like "Incorrect number of arguments for the given members "
         /// </summary>
@@ -541,6 +615,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.IncorrectNumberOfArgumentsForMembers);
         }
+
         /// <summary>
         /// ArgumentException with message like "Lambda type parameter must be derived from System.Delegate"
         /// </summary>
@@ -548,6 +623,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.LambdaTypeMustBeDerivedFromSystemDelegate);
         }
+
         /// <summary>
         /// ArgumentException with message like "Member '{0}' not field or property"
         /// </summary>
@@ -555,6 +631,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.MemberNotFieldOrProperty(p0));
         }
+
         /// <summary>
         /// ArgumentException with message like "Method {0} contains generic parameters"
         /// </summary>
@@ -562,6 +639,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.MethodContainsGenericParameters(p0));
         }
+
         /// <summary>
         /// ArgumentException with message like "Method {0} is a generic method definition"
         /// </summary>
@@ -569,6 +647,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.MethodIsGeneric(p0));
         }
+
         /// <summary>
         /// ArgumentException with message like "The method '{0}.{1}' is not a property accessor"
         /// </summary>
@@ -576,6 +655,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.MethodNotPropertyAccessor(p0, p1));
         }
+
         /// <summary>
         /// ArgumentException with message like "The property '{0}' has no 'get' accessor"
         /// </summary>
@@ -583,6 +663,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.PropertyDoesNotHaveGetter(p0));
         }
+
         /// <summary>
         /// ArgumentException with message like "The property '{0}' has no 'set' accessor"
         /// </summary>
@@ -590,6 +671,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.PropertyDoesNotHaveSetter(p0));
         }
+
         /// <summary>
         /// ArgumentException with message like "The property '{0}' has no 'get' or 'set' accessors"
         /// </summary>
@@ -597,6 +679,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.PropertyDoesNotHaveAccessor(p0));
         }
+
         /// <summary>
         /// ArgumentException with message like "'{0}' is not a member of type '{1}'"
         /// </summary>
@@ -604,6 +687,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.NotAMemberOfType(p0, p1));
         }
+
         /// <summary>
         /// PlatformNotSupportedException with message like "The instruction '{0}' is not supported for type '{1}'"
         /// </summary>
@@ -611,6 +695,7 @@ namespace System.Linq.Expressions
         {
             return new PlatformNotSupportedException(Strings.ExpressionNotSupportedForType(p0, p1));
         }
+
         /// <summary>
         /// PlatformNotSupportedException with message like "The instruction '{0}' is not supported for nullable type '{1}'"
         /// </summary>
@@ -618,6 +703,7 @@ namespace System.Linq.Expressions
         {
             return new PlatformNotSupportedException(Strings.ExpressionNotSupportedForNullableType(p0, p1));
         }
+
         /// <summary>
         /// ArgumentException with message like "ParameterExpression of type '{0}' cannot be used for delegate parameter of type '{1}'"
         /// </summary>
@@ -625,6 +711,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.ParameterExpressionNotValidAsDelegate(p0, p1));
         }
+
         /// <summary>
         /// ArgumentException with message like "Property '{0}' is not defined for type '{1}'"
         /// </summary>
@@ -632,6 +719,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.PropertyNotDefinedForType(p0, p1));
         }
+
         /// <summary>
         /// ArgumentException with message like "Instance property '{0}' is not defined for type '{1}'"
         /// </summary>
@@ -639,6 +727,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.InstancePropertyNotDefinedForType(p0, p1));
         }
+
         /// <summary>
         /// ArgumentException with message like "Instance property '{0}' that takes no argument is not defined for type '{1}'"
         /// </summary>
@@ -646,6 +735,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.InstancePropertyWithoutParameterNotDefinedForType(p0, p1));
         }
+
         /// <summary>
         /// ArgumentException with message like "Instance property '{0}{1}' is not defined for type '{2}'"
         /// </summary>
@@ -653,6 +743,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.InstancePropertyWithSpecifiedParametersNotDefinedForType(p0, p1, p2));
         }
+
         /// <summary>
         /// ArgumentException with message like "Method '{0}' declared on type '{1}' cannot be called with instance of type '{2}'"
         /// </summary>
@@ -668,6 +759,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.TypeMissingDefaultConstructor(p0));
         }
+
         /// <summary>
         /// ArgumentException with message like "List initializers must contain at least one initializer"
         /// </summary>
@@ -675,6 +767,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.ListInitializerWithZeroMembers);
         }
+
         /// <summary>
         /// ArgumentException with message like "Element initializer method must be named 'Add'"
         /// </summary>
@@ -682,6 +775,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.ElementInitializerMethodNotAdd);
         }
+
         /// <summary>
         /// ArgumentException with message like "Parameter '{0}' of element initializer method '{1}' must not be a pass by reference parameter"
         /// </summary>
@@ -689,6 +783,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.ElementInitializerMethodNoRefOutParam(p0, p1));
         }
+
         /// <summary>
         /// ArgumentException with message like "Element initializer method must have at least 1 parameter"
         /// </summary>
@@ -696,6 +791,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.ElementInitializerMethodWithZeroArgs);
         }
+
         /// <summary>
         /// ArgumentException with message like "Element initializer method must be an instance method"
         /// </summary>
@@ -703,6 +799,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.ElementInitializerMethodStatic);
         }
+
         /// <summary>
         /// ArgumentException with message like "Type '{0}' is not IEnumerable"
         /// </summary>
@@ -710,6 +807,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.TypeNotIEnumerable(p0));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Unexpected coalesce operator."
         /// </summary>
@@ -717,6 +815,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.UnexpectedCoalesceOperator);
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Cannot cast from type '{0}' to type '{1}"
         /// </summary>
@@ -724,6 +823,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.InvalidCast(p0, p1));
         }
+
         /// <summary>
         /// ArgumentException with message like "Unhandled binary: {0}"
         /// </summary>
@@ -731,6 +831,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.UnhandledBinary(p0));
         }
+
         /// <summary>
         /// ArgumentException with message like "Unhandled binding "
         /// </summary>
@@ -738,6 +839,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.UnhandledBinding);
         }
+
         /// <summary>
         /// ArgumentException with message like "Unhandled Binding Type: {0}"
         /// </summary>
@@ -745,6 +847,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.UnhandledBindingType(p0));
         }
+
         /// <summary>
         /// ArgumentException with message like "Unhandled convert: {0}"
         /// </summary>
@@ -752,6 +855,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.UnhandledConvert(p0));
         }
+
         /// <summary>
         /// ArgumentException with message like "Unhandled Expression Type: {0}"
         /// </summary>
@@ -759,6 +863,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.UnhandledExpressionType(p0));
         }
+
         /// <summary>
         /// ArgumentException with message like "Unhandled unary: {0}"
         /// </summary>
@@ -766,6 +871,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.UnhandledUnary(p0));
         }
+
         /// <summary>
         /// ArgumentException with message like "Unknown binding type"
         /// </summary>
@@ -773,6 +879,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.UnknownBindingType);
         }
+
         /// <summary>
         /// ArgumentException with message like "The user-defined operator method '{1}' for operator '{0}' must have identical parameter and return types."
         /// </summary>
@@ -780,6 +887,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.UserDefinedOpMustHaveConsistentTypes(p0, p1));
         }
+
         /// <summary>
         /// ArgumentException with message like "The user-defined operator method '{1}' for operator '{0}' must return the same type as its parameter or a derived type."
         /// </summary>
@@ -787,6 +895,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.UserDefinedOpMustHaveValidReturnType(p0, p1));
         }
+
         /// <summary>
         /// ArgumentException with message like "The user-defined operator method '{1}' for operator '{0}' must have associated boolean True and False operators."
         /// </summary>
@@ -794,6 +903,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.LogicalOperatorMustHaveBooleanOperators(p0, p1));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "No method '{0}' exists on type '{1}'."
         /// </summary>
@@ -801,6 +911,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.MethodDoesNotExistOnType(p0, p1));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "No method '{0}' on type '{1}' is compatible with the supplied arguments."
         /// </summary>
@@ -808,6 +919,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.MethodWithArgsDoesNotExistOnType(p0, p1));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "No generic method '{0}' on type '{1}' is compatible with the supplied type arguments and arguments. No type arguments should be provided if the method is non-generic. "
         /// </summary>
@@ -815,6 +927,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.GenericMethodWithArgsDoesNotExistOnType(p0, p1));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "More than one method '{0}' on type '{1}' is compatible with the supplied arguments."
         /// </summary>
@@ -822,6 +935,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.MethodWithMoreThanOneMatch(p0, p1));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "More than one property '{0}' on type '{1}' is compatible with the supplied arguments."
         /// </summary>
@@ -829,6 +943,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.PropertyWithMoreThanOneMatch(p0, p1));
         }
+
         /// <summary>
         /// ArgumentException with message like "An incorrect number of type args were specified for the declaration of a Func type."
         /// </summary>
@@ -836,6 +951,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.IncorrectNumberOfTypeArgsForFunc);
         }
+
         /// <summary>
         /// ArgumentException with message like "An incorrect number of type args were specified for the declaration of an Action type."
         /// </summary>
@@ -843,6 +959,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.IncorrectNumberOfTypeArgsForAction);
         }
+
         /// <summary>
         /// ArgumentException with message like "Argument type cannot be System.Void."
         /// </summary>
@@ -850,6 +967,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.ArgumentCannotBeOfTypeVoid);
         }
+
         /// <summary>
         /// ArgumentException with message like "Invalid operation: '{0}'"
         /// </summary>
@@ -857,6 +975,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.InvalidOperation(p0));
         }
+
         /// <summary>
         /// ArgumentOutOfRangeException with message like "{0} must be greater than or equal to {1}"
         /// </summary>
@@ -864,6 +983,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentOutOfRangeException(Strings.OutOfRange(p0, p1));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Queue empty."
         /// </summary>
@@ -871,6 +991,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.QueueEmpty);
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Cannot redefine label '{0}' in an inner block."
         /// </summary>
@@ -878,6 +999,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.LabelTargetAlreadyDefined(p0));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Cannot jump to undefined label '{0}'."
         /// </summary>
@@ -885,6 +1007,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.LabelTargetUndefined(p0));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Control cannot leave a finally block."
         /// </summary>
@@ -892,6 +1015,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.ControlCannotLeaveFinally);
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Control cannot leave a filter test."
         /// </summary>
@@ -899,6 +1023,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.ControlCannotLeaveFilterTest);
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Cannot jump to ambiguous label '{0}'."
         /// </summary>
@@ -906,6 +1031,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.AmbiguousJump(p0));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Control cannot enter a try block."
         /// </summary>
@@ -913,6 +1039,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.ControlCannotEnterTry);
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Control cannot enter an expression--only statements can be jumped into."
         /// </summary>
@@ -920,6 +1047,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.ControlCannotEnterExpression);
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Cannot jump to non-local label '{0}' with a value. Only jumps to labels defined in outer blocks can pass values."
         /// </summary>
@@ -927,6 +1055,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.NonLocalJumpWithValue(p0));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Extension should have been reduced."
         /// </summary>
@@ -934,6 +1063,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.ExtensionNotReduced);
         }
+
         /// <summary>
         /// InvalidOperationException with message like "CompileToMethod cannot compile constant '{0}' because it is a non-trivial value, such as a live object. Instead, create an expression tree that can construct this value."
         /// </summary>
@@ -941,6 +1071,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.CannotCompileConstant(p0));
         }
+
         /// <summary>
         /// NotSupportedException with message like "Dynamic expressions are not supported by CompileToMethod. Instead, create an expression tree that uses System.Runtime.CompilerServices.CallSite."
         /// </summary>
@@ -948,6 +1079,7 @@ namespace System.Linq.Expressions
         {
             return new NotSupportedException(Strings.CannotCompileDynamic);
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Invalid lvalue for assignment: {0}."
         /// </summary>
@@ -955,6 +1087,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.InvalidLvalue(p0));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Invalid member type: {0}."
         /// </summary>
@@ -962,6 +1095,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.InvalidMemberType(p0));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "unknown lift type: '{0}'."
         /// </summary>
@@ -969,6 +1103,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.UnknownLiftType(p0));
         }
+
         /// <summary>
         /// ArgumentException with message like "Invalid output directory."
         /// </summary>
@@ -976,6 +1111,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.InvalidOutputDir);
         }
+
         /// <summary>
         /// ArgumentException with message like "Invalid assembly name or file extension."
         /// </summary>
@@ -983,6 +1119,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.InvalidAsmNameOrExtension);
         }
+
         /// <summary>
         /// ArgumentException with message like "Cannot create instance of {0} because it contains generic parameters"
         /// </summary>
@@ -990,6 +1127,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.IllegalNewGenericParams(p0));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "variable '{0}' of type '{1}' referenced from scope '{2}', but it is not defined"
         /// </summary>
@@ -997,6 +1135,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.UndefinedVariable(p0, p1, p2));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Cannot close over byref parameter '{0}' referenced in lambda '{1}'"
         /// </summary>
@@ -1004,6 +1143,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.CannotCloseOverByRef(p0, p1));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Unexpected VarArgs call to method '{0}'"
         /// </summary>
@@ -1011,6 +1151,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.UnexpectedVarArgsCall(p0));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Rethrow statement is valid only inside a Catch block."
         /// </summary>
@@ -1018,6 +1159,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.RethrowRequiresCatch);
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Try expression is not allowed inside a filter body."
         /// </summary>
@@ -1025,6 +1167,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.TryNotAllowedInFilter);
         }
+
         /// <summary>
         /// InvalidOperationException with message like "When called from '{0}', rewriting a node of type '{1}' must return a non-null value of the same type. Alternatively, override '{2}' and change it to not visit children of this type."
         /// </summary>
@@ -1032,6 +1175,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.MustRewriteToSameNode(p0, p1, p2));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Rewriting child expression from type '{0}' to type '{1}' is not allowed, because it would change the meaning of the operation. If this is intentional, override '{2}' and change it to allow this rewrite."
         /// </summary>
@@ -1039,6 +1183,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.MustRewriteChildToSameType(p0, p1, p2));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Rewritten expression calls operator method '{0}', but the original node had no operator method. If this is is intentional, override '{1}' and change it to allow this rewrite."
         /// </summary>
@@ -1046,6 +1191,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.MustRewriteWithoutMethod(p0, p1));
         }
+
         /// <summary>
         /// NotSupportedException with message like "TryExpression is not supported as an argument to method '{0}' because it has an argument with by-ref type. Construct the tree so the TryExpression is not nested inside of this expression."
         /// </summary>
@@ -1053,6 +1199,7 @@ namespace System.Linq.Expressions
         {
             return new NotSupportedException(Strings.TryNotSupportedForMethodsWithRefArgs(p0));
         }
+
         /// <summary>
         /// NotSupportedException with message like "TryExpression is not supported as a child expression when accessing a member on type '{0}' because it is a value type. Construct the tree so the TryExpression is not nested inside of this expression."
         /// </summary>
@@ -1068,6 +1215,7 @@ namespace System.Linq.Expressions
         {
             return new InvalidOperationException(Strings.HomogenousAppDomainRequired);
         }
+
         /// <summary>
         /// ArgumentException with message like "Test value of type '{0}' cannot be used for the comparison method parameter of type '{1}'"
         /// </summary>
@@ -1075,6 +1223,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.TestValueTypeDoesNotMatchComparisonMethodParameter(p0, p1));
         }
+
         /// <summary>
         /// ArgumentException with message like "Switch value of type '{0}' cannot be used for the comparison method parameter of type '{1}'"
         /// </summary>
@@ -1082,6 +1231,7 @@ namespace System.Linq.Expressions
         {
             return new ArgumentException(Strings.SwitchValueTypeDoesNotMatchComparisonMethodParameter(p0, p1));
         }
+
         /// <summary>
         /// NotSupportedException with message like "DebugInfoGenerator created by CreatePdbGenerator can only be used with LambdaExpression.CompileToMethod."
         /// </summary>
@@ -1107,7 +1257,7 @@ namespace System.Linq.Expressions
         }
 
         /// <summary>
-        /// The exception that is thrown when an invoked method is not supported, or when there is an attempt to read, seek, or write to a stream that does not support the invoked functionality. 
+        /// The exception that is thrown when an invoked method is not supported, or when there is an attempt to read, seek, or write to a stream that does not support the invoked functionality.
         /// </summary>
         internal static Exception NotSupported()
         {

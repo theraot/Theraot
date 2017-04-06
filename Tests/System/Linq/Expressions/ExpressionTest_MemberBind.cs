@@ -26,135 +26,147 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System;
-using System.Reflection;
-using System.Linq.Expressions;
-
 using NUnit.Framework;
+using System;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace MonoTests.System.Linq.Expressions
 {
-
     [TestFixture]
-	public class ExpressionTest_MemberBind {
+    public class ExpressionTest_MemberBind
+    {
+        public class Foo
+        {
+            public string Bar;
+            public string Baz;
 
-		public class Foo {
-			public string Bar;
-			public string Baz;
+            public Gazonk Gaz;
 
-			public Gazonk Gaz;
+            public Gazonk Gazoo
+            {
+                get; set;
+            }
 
-			public Gazonk Gazoo { get; set; }
+            public string Gruik
+            {
+                get; set;
+            }
 
-			public string Gruik { get; set; }
+            public Foo()
+            {
+                Gazoo = new Gazonk();
+                Gaz = new Gazonk();
+            }
+        }
 
-			public Foo ()
-			{
-				Gazoo = new Gazonk ();
-				Gaz = new Gazonk ();
-			}
-		}
+        public class Gazonk
+        {
+            public string Tzap;
 
-		public class Gazonk {
-			public string Tzap;
+            public int Klang;
 
-			public int Klang;
+            public string Couic
+            {
+                get; set;
+            }
 
-			public string Couic { get; set; }
+            public string Bang()
+            {
+                return "";
+            }
+        }
 
-			public string Bang () { return ""; }
-		}
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void NullMethod()
+        {
+            Expression.MemberBind(null as MethodInfo, new MemberBinding[0]);
+        }
 
-		[Test]
-		[ExpectedException (typeof (ArgumentNullException))]
-		public void NullMethod ()
-		{
-			Expression.MemberBind (null as MethodInfo, new MemberBinding [0]);
-		}
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void NullMember()
+        {
+            Expression.MemberBind(null as MemberInfo, new MemberBinding[0]);
+        }
 
-		[Test]
-		[ExpectedException (typeof (ArgumentNullException))]
-		public void NullMember ()
-		{
-			Expression.MemberBind (null as MemberInfo, new MemberBinding [0]);
-		}
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void NullBindings()
+        {
+            Expression.MemberBind(typeof(Foo).GetField("Bar"), null);
+        }
 
-		[Test]
-		[ExpectedException (typeof (ArgumentNullException))]
-		public void NullBindings ()
-		{
-			Expression.MemberBind (typeof (Foo).GetField ("Bar"), null);
-		}
+        [Test]
+        [ExpectedException(typeof(ArgumentException))]
+        public void MemberNotFieldOrProp()
+        {
+            Expression.MemberBind(typeof(Gazonk).GetMethod("Bang") as MemberInfo, new MemberBinding[0]);
+        }
 
-		[Test]
-		[ExpectedException (typeof (ArgumentException))]
-		public void MemberNotFieldOrProp ()
-		{
-			Expression.MemberBind (typeof (Gazonk).GetMethod ("Bang") as MemberInfo, new MemberBinding [0]);
-		}
+        [Test]
+        [ExpectedException(typeof(ArgumentException))]
+        public void MemberTypeMismatch()
+        {
+            Expression.MemberBind(typeof(Gazonk).GetField("Klang"), Expression.Bind(typeof(Foo).GetField("Bar"), "bar".ToConstant()));
+        }
 
-		[Test]
-		[ExpectedException (typeof (ArgumentException))]
-		public void MemberTypeMismatch ()
-		{
-			Expression.MemberBind (typeof (Gazonk).GetField ("Klang"), Expression.Bind (typeof (Foo).GetField ("Bar"), "bar".ToConstant ()));
-		}
+        [Test]
+        [ExpectedException(typeof(ArgumentException))]
+        public void MethodNotPropertyAccessor()
+        {
+            Expression.MemberBind(typeof(Gazonk).GetMethod("Bang"), new MemberBinding[0]);
+        }
 
-		[Test]
-		[ExpectedException (typeof (ArgumentException))]
-		public void MethodNotPropertyAccessor ()
-		{
-			Expression.MemberBind (typeof (Gazonk).GetMethod ("Bang"), new MemberBinding [0]);
-		}
+        [Test]
+        public void MemberBindToField()
+        {
+            var mb = Expression.MemberBind(typeof(Foo).GetField("Gaz"),
+                Expression.Bind(typeof(Gazonk).GetField("Tzap"), "tzap".ToConstant()));
 
-		[Test]
-		public void MemberBindToField ()
-		{
-			var mb = Expression.MemberBind (typeof (Foo).GetField ("Gaz"),
-				Expression.Bind (typeof (Gazonk).GetField ("Tzap"), "tzap".ToConstant ()));
+            Assert.AreEqual(MemberBindingType.MemberBinding, mb.BindingType);
+            Assert.AreEqual("Gaz = {Tzap = \"tzap\"}", mb.ToString());
+        }
 
-			Assert.AreEqual (MemberBindingType.MemberBinding, mb.BindingType);
-			Assert.AreEqual ("Gaz = {Tzap = \"tzap\"}", mb.ToString ());
-		}
+        [Test]
+        public void MemberBindToProperty()
+        {
+            var mb = Expression.MemberBind(typeof(Foo).GetProperty("Gazoo"),
+                Expression.Bind(typeof(Gazonk).GetField("Tzap"), "tzap".ToConstant()));
 
-		[Test]
-		public void MemberBindToProperty ()
-		{
-			var mb = Expression.MemberBind (typeof (Foo).GetProperty ("Gazoo"),
-				Expression.Bind (typeof (Gazonk).GetField ("Tzap"), "tzap".ToConstant ()));
+            Assert.AreEqual(MemberBindingType.MemberBinding, mb.BindingType);
+            Assert.AreEqual("Gazoo = {Tzap = \"tzap\"}", mb.ToString());
+        }
 
-			Assert.AreEqual (MemberBindingType.MemberBinding, mb.BindingType);
-			Assert.AreEqual ("Gazoo = {Tzap = \"tzap\"}", mb.ToString ());
-		}
+        [Test]
+        public void MemberBindToPropertyAccessor()
+        {
+            var mb = Expression.MemberBind(typeof(Foo).GetProperty("Gazoo").GetSetMethod(true),
+                Expression.Bind(typeof(Gazonk).GetField("Tzap"), "tzap".ToConstant()));
 
-		[Test]
-		public void MemberBindToPropertyAccessor ()
-		{
-			var mb = Expression.MemberBind (typeof (Foo).GetProperty ("Gazoo").GetSetMethod (true),
-				Expression.Bind (typeof (Gazonk).GetField ("Tzap"), "tzap".ToConstant ()));
+            Assert.AreEqual(MemberBindingType.MemberBinding, mb.BindingType);
+            Assert.AreEqual("Gazoo = {Tzap = \"tzap\"}", mb.ToString());
+        }
 
-			Assert.AreEqual (MemberBindingType.MemberBinding, mb.BindingType);
-			Assert.AreEqual ("Gazoo = {Tzap = \"tzap\"}", mb.ToString ());
-		}
+        [Test]
+        public void CompiledMemberBinding()
+        {
+            var getfoo = Expression.Lambda<Func<Foo>>(
+                Expression.MemberInit(
+                    Expression.New(typeof(Foo)),
+                    Expression.MemberBind(
+                        typeof(Foo).GetProperty("Gazoo"),
+                        Expression.Bind(typeof(Gazonk).GetField("Tzap"),
+                            "tzap".ToConstant()),
+                        Expression.Bind(typeof(Gazonk).GetField("Klang"),
+                            42.ToConstant())))).Compile();
 
-		[Test]
-		public void CompiledMemberBinding ()
-		{
-			var getfoo = Expression.Lambda<Func<Foo>> (
-				Expression.MemberInit (
-					Expression.New (typeof (Foo)),
-					Expression.MemberBind (
-						typeof (Foo).GetProperty ("Gazoo"),
-						Expression.Bind (typeof (Gazonk).GetField ("Tzap"),
-							"tzap".ToConstant ()),
-						Expression.Bind (typeof (Gazonk).GetField ("Klang"),
-							42.ToConstant ())))).Compile ();
+            var foo = getfoo();
 
-			var foo = getfoo ();
-
-			Assert.IsNotNull (foo);
-			Assert.AreEqual ("tzap", foo.Gazoo.Tzap);
-			Assert.AreEqual (42, foo.Gazoo.Klang);
-		}
-	}
+            Assert.IsNotNull(foo);
+            Assert.AreEqual("tzap", foo.Gazoo.Tzap);
+            Assert.AreEqual(42, foo.Gazoo.Klang);
+        }
+    }
 }

@@ -302,7 +302,7 @@ namespace Theraot.Core
                 var index = _position - ((_position >> _sectorBits) << _sectorBits);
                 var diff = (1 << _sectorBits) - index;
                 var contribution = diff > count ? count : diff;
-                var intContribution = (int) contribution;
+                var intContribution = (int)contribution;
                 Array.Copy(buffer, offset, left, index, intContribution);
                 if (!Add(bytes, left, out pair))
                 {

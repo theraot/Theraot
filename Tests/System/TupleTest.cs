@@ -29,8 +29,8 @@
 #define NET_4_0
 #if NET_4_0
 
-using System;
 using NUnit.Framework;
+using System;
 
 namespace MonoTests.System
 {

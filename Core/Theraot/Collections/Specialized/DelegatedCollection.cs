@@ -7,7 +7,7 @@ using Theraot.Core;
 
 namespace Theraot.Collections.Specialized
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public partial class DelegatedCollection<T> : ICollection<T>
     {
         private readonly IReadOnlyCollection<T> _readOnly;

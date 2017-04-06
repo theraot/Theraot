@@ -8,7 +8,7 @@ using Theraot.Collections.ThreadSafe;
 
 namespace Theraot.Core
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public static partial class TypeHelper
     {
         public static object[] EmptyObjects

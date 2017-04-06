@@ -13,7 +13,6 @@
 ===========================================================*/
 
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
 using System.Runtime.ConstrainedExecution;
 using System.Security;
@@ -22,7 +21,6 @@ namespace System.Runtime.CompilerServices
 {
     public static class ContractHelper
     {
-        [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
         [DebuggerNonUserCode]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static string RaiseContractFailedEvent(ContractFailureKind failureKind, string userMessage, string conditionText, Exception innerException)
@@ -99,8 +97,6 @@ namespace System.Runtime.CompilerServices
             return failureMessage;
         }
 
-        [SuppressMessage("Microsoft.Design", "CA1030:UseEventsWhereAppropriate")]
-        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         [DebuggerNonUserCode]
         [SecuritySafeCritical]
         private static void RaiseContractFailedEventImplementation(ContractFailureKind failureKind, string userMessage,
@@ -165,10 +161,6 @@ namespace System.Runtime.CompilerServices
             resultFailureMessage = returnValue;
         }
 
-        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "conditionText")]
-        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "userMessage")]
-        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "kind")]
-        [SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "innerException")]
         [DebuggerNonUserCode]
         [SecuritySafeCritical]
         private static void TriggerFailureImplementation(ContractFailureKind kind, string displayMessage,

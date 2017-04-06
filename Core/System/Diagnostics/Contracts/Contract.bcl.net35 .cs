@@ -13,7 +13,6 @@
 ===========================================================*/
 #define DEBUG // The behavior of this contract library should be consistent regardless of build type.
 
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.ConstrainedExecution;
@@ -93,7 +92,6 @@ namespace System.Diagnostics.Contracts
             _assertingMustUseRewriter = false;
         }
 
-        [SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.Security.SecuritySafeCriticalAttribute")]
         [DebuggerNonUserCode]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         private static void ReportFailure(ContractFailureKind failureKind, string userMessage, string conditionText, Exception innerException)

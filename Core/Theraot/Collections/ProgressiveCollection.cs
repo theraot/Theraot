@@ -95,7 +95,6 @@ namespace Theraot.Collections
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns True")]
         bool ICollection<T>.IsReadOnly
         {
             get
@@ -181,13 +180,11 @@ namespace Theraot.Collections
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
         void ICollection<T>.Add(T item)
         {
             throw new NotSupportedException();
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
         void ICollection<T>.Clear()
         {
             throw new NotSupportedException();
@@ -198,7 +195,6 @@ namespace Theraot.Collections
             return GetEnumerator();
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Not Supported")]
         bool ICollection<T>.Remove(T item)
         {
             throw new NotSupportedException();

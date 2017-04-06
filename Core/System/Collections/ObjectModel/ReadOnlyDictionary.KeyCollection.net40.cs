@@ -8,7 +8,7 @@ namespace System.Collections.ObjectModel
 {
     public partial class ReadOnlyDictionary<TKey, TValue>
     {
-        [System.Serializable]
+        [Serializable]
         public sealed class KeyCollection : ICollection<TKey>, ICollection
         {
             private readonly ICollection<TKey> _wrapped;
@@ -85,7 +85,7 @@ namespace System.Collections.ObjectModel
                 throw new NotSupportedException();
             }
 
-            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+            IEnumerator IEnumerable.GetEnumerator()
             {
                 return GetEnumerator();
             }

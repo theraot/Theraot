@@ -21,7 +21,7 @@ namespace System.Dynamic.Utils
                 {
                     newNodes[i] = node;
                 }
-                else if (!object.ReferenceEquals(node, curNode))
+                else if (!ReferenceEquals(node, curNode))
                 {
                     newNodes = new Expression[n];
                     for (int j = 0; j < i; j++)

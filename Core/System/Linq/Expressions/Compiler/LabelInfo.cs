@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Dynamic.Utils;
 using System.Reflection.Emit;
 
-
 namespace System.Linq.Expressions.Compiler
 {
     /// <summary>
@@ -20,6 +19,7 @@ namespace System.Linq.Expressions.Compiler
 
         // The IL label, will be mutated if Node is redefined
         private Label _label;
+
         private bool _labelDefined;
 
         internal Label Label
@@ -67,17 +67,23 @@ namespace System.Linq.Expressions.Compiler
 
         internal bool CanReturn
         {
-            get { return _canReturn; }
+            get
+            {
+                return _canReturn;
+            }
         }
 
         /// <summary>
         /// Indicates if it is legal to emit a "branch" instruction based on
-        /// currently available information. Call the Reference method before 
+        /// currently available information. Call the Reference method before
         /// using this property.
         /// </summary>
         internal bool CanBranch
         {
-            get { return _opCode != OpCodes.Leave; }
+            get
+            {
+                return _opCode != OpCodes.Leave;
+            }
         }
 
         internal void Reference(LabelScopeInfo block)
@@ -305,12 +311,14 @@ namespace System.Linq.Expressions.Compiler
 
         // these correspond to the node of the same name
         Block,
+
         Switch,
         Lambda,
         Try,
 
         // these correspond to the part of the try block we're in
         Catch,
+
         Finally,
         Filter,
 
@@ -361,7 +369,6 @@ namespace System.Linq.Expressions.Compiler
                 return false;
             }
         }
-
 
         internal bool ContainsTarget(LabelTarget target)
         {

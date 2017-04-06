@@ -10,8 +10,8 @@ using Theraot.Core;
 
 namespace Theraot.Collections.Specialized
 {
-    [System.Serializable]
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [Serializable]
+    [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
     public sealed partial class NullAwareDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ISerializable
     {

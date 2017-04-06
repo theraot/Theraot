@@ -205,7 +205,9 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>Dummy type to use as a void TResult.</summary>
-        private struct VoidResult { }
+        private struct VoidResult
+        {
+        }
     }
 }
 

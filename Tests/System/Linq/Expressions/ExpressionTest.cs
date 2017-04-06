@@ -26,13 +26,11 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using NUnit.Framework;
 using System;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Linq;
 using System.Linq.Expressions;
-
-using NUnit.Framework;
+using System.Reflection;
 
 namespace MonoTests.System.Linq.Expressions
 {

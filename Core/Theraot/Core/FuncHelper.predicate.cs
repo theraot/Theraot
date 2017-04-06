@@ -76,7 +76,6 @@ namespace Theraot.Core
                 }
             }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
             private static bool FallacyFunc(T obj)
             {
                 GC.KeepAlive(obj);
@@ -101,7 +100,6 @@ namespace Theraot.Core
                 }
             }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
             private static bool TautologyFunc(T obj)
             {
                 GC.KeepAlive(obj);

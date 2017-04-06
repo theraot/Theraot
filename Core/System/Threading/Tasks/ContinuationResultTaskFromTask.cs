@@ -26,7 +26,7 @@ namespace System.Threading.Tasks
 
         /// <summary>
         /// Evaluates the value selector of the Task which is passed in as an object and stores the result.
-        /// </summary>        
+        /// </summary>
         internal override void InnerInvoke()
         {
             // Get and null out the antecedent.  This is crucial to avoid a memory

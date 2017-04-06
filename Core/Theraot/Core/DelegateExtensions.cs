@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace Theraot.Core
 {
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [System.Diagnostics.DebuggerNonUserCode]
     public static class DelegateExtensions
     {
         public static int SafeInvoke<T>(this Comparison<T> method, T x, T y, int def)
@@ -100,7 +100,6 @@ namespace Theraot.Core
             }
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", Justification = "By Desing")]
         public static void SafeInvoke(this ParameterizedThreadStart method, object obj)
         {
             if (method != null)
@@ -109,7 +108,6 @@ namespace Theraot.Core
             }
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1720:IdentifiersShouldNotContainTypeNames", Justification = "By Desing")]
         public static void SafeInvoke(this ParameterizedThreadStart method, object obj, Action alternative)
         {
             if (method != null)

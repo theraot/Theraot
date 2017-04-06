@@ -8,9 +8,15 @@ namespace System.Numerics
     {
         public StringBuilder Digits;
 
-        public bool Negative { get; set; }
+        public bool Negative
+        {
+            get; set;
+        }
 
-        public int Scale { get; set; }
+        public int Scale
+        {
+            get; set;
+        }
 
         public static BigNumberBuffer Create()
         {

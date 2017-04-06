@@ -10,7 +10,7 @@ namespace System.Threading.Tasks
         private static Task _completedTask;
 
         /// <summary>Gets a task that's already been completed successfully.</summary>
-        /// <remarks>May not always return the same instance.</remarks>        
+        /// <remarks>May not always return the same instance.</remarks>
         internal static Task CompletedTask
         {
             get
@@ -51,12 +51,12 @@ namespace System.Threading.Tasks
         /// </exception>
         /// <exception cref="T:System.ObjectDisposedException">
         /// The provided <paramref name="cancellationToken"/> has already been disposed.
-        /// </exception>        
+        /// </exception>
         /// <remarks>
         /// If the cancellation token is signaled before the specified time delay, then the Task is completed in
         /// Canceled state.  Otherwise, the Task is completed in RanToCompletion state once the specified time
         /// delay has expired.
-        /// </remarks>        
+        /// </remarks>
         public static Task Delay(TimeSpan delay, CancellationToken cancellationToken)
         {
             var totalMilliseconds = (long)delay.TotalMilliseconds;
@@ -95,7 +95,7 @@ namespace System.Threading.Tasks
         /// </exception>
         /// <exception cref="T:System.ObjectDisposedException">
         /// The provided <paramref name="cancellationToken"/> has already been disposed.
-        /// </exception>        
+        /// </exception>
         /// <remarks>
         /// If the cancellation token is signaled before the specified time delay, then the Task is completed in
         /// Canceled state.  Otherwise, the Task is completed in RanToCompletion state once the specified time
@@ -123,7 +123,7 @@ namespace System.Threading.Tasks
             var source = new TaskCompletionSource<bool>();
             if (millisecondsDelay > 0)
             {
-                var timeout = 
+                var timeout =
                     new Theraot.Threading.Timeout
                         (
                         () =>

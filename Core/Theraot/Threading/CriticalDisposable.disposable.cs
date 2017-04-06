@@ -9,7 +9,6 @@ namespace Theraot.Threading
         private int _status;
 
         [System.Diagnostics.DebuggerNonUserCode]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralexceptionTypes", Justification = "Pokemon")]
         ~CriticalDisposable()
         {
             try
@@ -137,7 +136,6 @@ namespace Theraot.Threading
         }
 
         [System.Diagnostics.DebuggerNonUserCode]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2004:RemoveCallsToGCKeepAlive", Justification = "By Design")]
         private void Dispose(bool disposeManagedResources)
         {
             GC.KeepAlive(disposeManagedResources);

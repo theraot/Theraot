@@ -31,6 +31,7 @@ namespace System.Dynamic.Utils
         {
             return new ArgumentException(Strings.TypeContainsGenericParameters(p0));
         }
+
         /// <summary>
         /// ArgumentException with message like "Type {0} is a generic type definition"
         /// </summary>
@@ -62,6 +63,7 @@ namespace System.Dynamic.Utils
         {
             return new ArgumentException(Strings.ExpressionTypeDoesNotMatchParameter(p0, p1));
         }
+
         /// <summary>
         /// InvalidOperationException with message like "Incorrect number of arguments supplied for lambda invocation"
         /// </summary>

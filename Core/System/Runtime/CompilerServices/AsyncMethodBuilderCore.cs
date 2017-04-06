@@ -9,7 +9,7 @@ namespace System.Runtime.CompilerServices
     /// <summary>
     /// Holds state related to the builder's IAsyncStateMachine.
     /// </summary>
-    /// 
+    ///
     /// <remarks>
     /// This is a mutable struct.  Be very delicate with it.
     /// </remarks>
@@ -51,7 +51,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         /// Gets the Action to use with an awaiter's OnCompleted or UnsafeOnCompleted method.
         ///             On first invocation, the supplied state machine will be boxed.
-        /// 
+        ///
         /// </summary>
         /// <typeparam name="TMethodBuilder">Specifies the type of the method builder used.</typeparam><typeparam name="TStateMachine">Specifies the type of the state machine used.</typeparam><param name="builder">The builder.</param><param name="stateMachine">The state machine.</param>
         /// <returns>
@@ -110,10 +110,12 @@ namespace System.Runtime.CompilerServices
             /// The context with which to run MoveNext.
             /// </summary>
             private readonly ExecutionContext m_context;
+
             /// <summary>
             /// The state machine whose MoveNext method should be invoked.
             /// </summary>
             internal IAsyncStateMachine m_stateMachine;
+
             /// <summary>
             /// Cached delegate used with ExecutionContext.Run.
             /// </summary>

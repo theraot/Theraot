@@ -5,8 +5,10 @@ namespace System
     /// <summary>Defines a provider for push-based notification.</summary>
     /// <typeparam name="T">The object that provides notification information.</typeparam>
 #if NETCF
+
     public interface IObservable<T>
 #else
+
     public interface IObservable<out T>
 #endif
     {

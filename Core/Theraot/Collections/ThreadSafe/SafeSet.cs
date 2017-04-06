@@ -76,7 +76,6 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1033:InterfaceMethodsShouldBeCallableByChildTypes", Justification = "Returns false")]
         bool ICollection<T>.IsReadOnly
         {
             get

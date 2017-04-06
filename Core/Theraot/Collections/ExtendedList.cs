@@ -8,10 +8,9 @@ using Theraot.Core;
 
 namespace Theraot.Collections
 {
-    [System.Serializable]
-    [global::System.Diagnostics.DebuggerNonUserCode]
+    [Serializable]
+    [System.Diagnostics.DebuggerNonUserCode]
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
-    [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "By Design")]
     public sealed class ExtendedList<T> : IExtendedList<T>, IList<T>, ICollection<T>, IEnumerable<T>, ICloneable, ICloneable<ExtendedList<T>>, IEqualityComparer<T>
     {
         private readonly IEqualityComparer<T> _comparer;
@@ -234,7 +233,6 @@ namespace Theraot.Collections
             _wrapped.Reverse(index, count);
         }
 
-        [global::System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", Justification = "By Design")]
         public bool SetEquals(IEnumerable<T> other)
         {
             var that = Extensions.AsDistinctCollection(Check.NotNullArgument(other, "other"));

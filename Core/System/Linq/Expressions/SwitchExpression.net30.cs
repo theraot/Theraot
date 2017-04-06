@@ -16,7 +16,7 @@ namespace System.Linq.Expressions
     /// <summary>
     /// Represents a control expression that handles multiple selections by passing control to a <see cref="SwitchCase"/>.
     /// </summary>
-    [DebuggerTypeProxy(typeof(Expression.SwitchExpressionProxy))]
+    [DebuggerTypeProxy(typeof(SwitchExpressionProxy))]
     public sealed class SwitchExpression : Expression
     {
         private readonly Type _type;
@@ -40,7 +40,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type
         {
-            get { return _type; }
+            get
+            {
+                return _type;
+            }
         }
 
         /// <summary>
@@ -50,7 +53,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get { return ExpressionType.Switch; }
+            get
+            {
+                return ExpressionType.Switch;
+            }
         }
 
         /// <summary>
@@ -58,7 +64,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression SwitchValue
         {
-            get { return _switchValue; }
+            get
+            {
+                return _switchValue;
+            }
         }
 
         /// <summary>
@@ -66,7 +75,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<SwitchCase> Cases
         {
-            get { return _cases; }
+            get
+            {
+                return _cases;
+            }
         }
 
         /// <summary>
@@ -74,7 +86,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression DefaultBody
         {
-            get { return _defaultBody; }
+            get
+            {
+                return _defaultBody;
+            }
         }
 
         /// <summary>
@@ -82,7 +97,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public MethodInfo Comparison
         {
-            get { return _comparison; }
+            get
+            {
+                return _comparison;
+            }
         }
 
         protected internal override Expression Accept(ExpressionVisitor visitor)
@@ -118,7 +136,7 @@ namespace System.Linq.Expressions
             {
                 return this;
             }
-            return Expression.Switch(Type, switchValue, defaultBody, Comparison, cases);
+            return Switch(Type, switchValue, defaultBody, Comparison, cases);
         }
     }
 
@@ -199,7 +217,8 @@ namespace System.Linq.Expressions
         public static SwitchExpression Switch(Type type, Expression switchValue, Expression defaultBody, MethodInfo comparison, IEnumerable<SwitchCase> cases)
         {
             RequiresCanRead(switchValue, "switchValue");
-            if (switchValue.Type == typeof(void)) throw Error.ArgumentCannotBeOfTypeVoid();
+            if (switchValue.Type == typeof(void))
+                throw Error.ArgumentCannotBeOfTypeVoid();
 
             var caseList = cases.ToReadOnly();
             ContractUtils.RequiresNotEmpty(caseList, "cases");
@@ -216,7 +235,7 @@ namespace System.Linq.Expressions
                 {
                     throw Error.IncorrectNumberOfMethodCallArguments(comparison);
                 }
-                // Validate that the switch value's type matches the comparison method's 
+                // Validate that the switch value's type matches the comparison method's
                 // left hand side parameter type.
                 var leftParam = pms[0];
                 var liftedCall = false;
@@ -284,7 +303,8 @@ namespace System.Linq.Expressions
 
             if (defaultBody == null)
             {
-                if (resultType != typeof(void)) throw Error.DefaultBodyMustBeSupplied();
+                if (resultType != typeof(void))
+                    throw Error.DefaultBodyMustBeSupplied();
             }
             else
             {
@@ -299,7 +319,6 @@ namespace System.Linq.Expressions
 
             return new SwitchExpression(resultType, switchValue, defaultBody, comparison, caseList);
         }
-
 
         private static void ValidateSwitchCaseType(Expression @case, bool customType, Type resultType, string parameterName)
         {

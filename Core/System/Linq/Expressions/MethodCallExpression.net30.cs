@@ -19,7 +19,7 @@ namespace System.Linq.Expressions
     /// <summary>
     /// Represents a call to either static or an instance method.
     /// </summary>
-    [DebuggerTypeProxy(typeof(Expression.MethodCallExpressionProxy))]
+    [DebuggerTypeProxy(typeof(MethodCallExpressionProxy))]
     public class MethodCallExpression : Expression, IArgumentProvider
     {
         private readonly MethodInfo _method;
@@ -40,7 +40,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get { return ExpressionType.Call; }
+            get
+            {
+                return ExpressionType.Call;
+            }
         }
 
         /// <summary>
@@ -49,7 +52,10 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type
         {
-            get { return _method.ReturnType; }
+            get
+            {
+                return _method.ReturnType;
+            }
         }
 
         /// <summary>
@@ -57,16 +63,22 @@ namespace System.Linq.Expressions
         /// </summary>
         public MethodInfo Method
         {
-            get { return _method; }
+            get
+            {
+                return _method;
+            }
         }
 
         /// <summary>
-        /// Gets the <see cref="Expression" /> that represents the instance 
+        /// Gets the <see cref="Expression" /> that represents the instance
         /// for instance method calls or null for static method cals.
         /// </summary>
         public Expression Object
         {
-            get { return GetInstance(); }
+            get
+            {
+                return GetInstance();
+            }
         }
 
         /// <summary>
@@ -74,7 +86,10 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<Expression> Arguments
         {
-            get { return GetOrMakeArguments(); }
+            get
+            {
+                return GetOrMakeArguments();
+            }
         }
 
         /// <summary>
@@ -91,7 +106,7 @@ namespace System.Linq.Expressions
             {
                 return this;
             }
-            return Expression.Call(@object, Method, arguments);
+            return Call(@object, Method, arguments);
         }
 
         internal virtual ReadOnlyCollection<Expression> GetOrMakeArguments()
@@ -111,16 +126,16 @@ namespace System.Linq.Expressions
         /// Returns a new MethodCallExpression replacing the existing instance/args with the
         /// newly provided instance and args.    Arguments can be null to use the existing
         /// arguments.
-        /// 
+        ///
         /// This helper is provided to allow re-writing of nodes to not depend on the specific optimized
-        /// subclass of MethodCallExpression which is being used. 
+        /// subclass of MethodCallExpression which is being used.
         /// </summary>
         internal virtual MethodCallExpression Rewrite(Expression instance, IList<Expression> args)
         {
             throw ContractUtils.Unreachable;
         }
 
-#region IArgumentProvider Members
+        #region IArgumentProvider Members
 
         public virtual Expression GetArgument(int index)
         {
@@ -129,14 +144,18 @@ namespace System.Linq.Expressions
 
         public virtual int ArgumentCount
         {
-            get { throw ContractUtils.Unreachable; }
+            get
+            {
+                throw ContractUtils.Unreachable;
+            }
         }
-#endregion
+
+        #endregion IArgumentProvider Members
     }
 
 #endif
 
-#region Specialized Subclasses
+    #region Specialized Subclasses
 
     internal class MethodCallExpressionN : MethodCallExpression, IArgumentProvider
     {
@@ -171,7 +190,7 @@ namespace System.Linq.Expressions
             Debug.Assert(instance == null);
             Debug.Assert(args == null || args.Count == _arguments.Count);
 
-            return Expression.Call(Method, args ?? _arguments);
+            return Call(Method, args ?? _arguments);
         }
     }
 
@@ -215,7 +234,7 @@ namespace System.Linq.Expressions
             Debug.Assert(instance != null);
             Debug.Assert(args == null || args.Count == _arguments.Count);
 
-            return Expression.Call(instance, Method, args ?? _arguments);
+            return Call(instance, Method, args ?? _arguments);
         }
     }
 
@@ -233,8 +252,11 @@ namespace System.Linq.Expressions
         {
             switch (index)
             {
-                case 0: return ReturnObject<Expression>(_arg0);
-                default: throw new InvalidOperationException();
+                case 0:
+                    return ReturnObject<Expression>(_arg0);
+
+                default:
+                    throw new InvalidOperationException();
             }
         }
 
@@ -258,10 +280,10 @@ namespace System.Linq.Expressions
 
             if (args != null)
             {
-                return Expression.Call(Method, args[0]);
+                return Call(Method, args[0]);
             }
 
-            return Expression.Call(Method, ReturnObject<Expression>(_arg0));
+            return Call(Method, ReturnObject<Expression>(_arg0));
         }
     }
 
@@ -281,9 +303,14 @@ namespace System.Linq.Expressions
         {
             switch (index)
             {
-                case 0: return ReturnObject<Expression>(_arg0);
-                case 1: return _arg1;
-                default: throw new InvalidOperationException();
+                case 0:
+                    return ReturnObject<Expression>(_arg0);
+
+                case 1:
+                    return _arg1;
+
+                default:
+                    throw new InvalidOperationException();
             }
         }
 
@@ -307,9 +334,9 @@ namespace System.Linq.Expressions
 
             if (args != null)
             {
-                return Expression.Call(Method, args[0], args[1]);
+                return Call(Method, args[0], args[1]);
             }
-            return Expression.Call(Method, ReturnObject<Expression>(_arg0), _arg1);
+            return Call(Method, ReturnObject<Expression>(_arg0), _arg1);
         }
     }
 
@@ -330,10 +357,17 @@ namespace System.Linq.Expressions
         {
             switch (index)
             {
-                case 0: return ReturnObject<Expression>(_arg0);
-                case 1: return _arg1;
-                case 2: return _arg2;
-                default: throw new InvalidOperationException();
+                case 0:
+                    return ReturnObject<Expression>(_arg0);
+
+                case 1:
+                    return _arg1;
+
+                case 2:
+                    return _arg2;
+
+                default:
+                    throw new InvalidOperationException();
             }
         }
 
@@ -357,9 +391,9 @@ namespace System.Linq.Expressions
 
             if (args != null)
             {
-                return Expression.Call(Method, args[0], args[1], args[2]);
+                return Call(Method, args[0], args[1], args[2]);
             }
-            return Expression.Call(Method, ReturnObject<Expression>(_arg0), _arg1, _arg2);
+            return Call(Method, ReturnObject<Expression>(_arg0), _arg1, _arg2);
         }
     }
 
@@ -381,11 +415,20 @@ namespace System.Linq.Expressions
         {
             switch (index)
             {
-                case 0: return ReturnObject<Expression>(_arg0);
-                case 1: return _arg1;
-                case 2: return _arg2;
-                case 3: return _arg3;
-                default: throw new InvalidOperationException();
+                case 0:
+                    return ReturnObject<Expression>(_arg0);
+
+                case 1:
+                    return _arg1;
+
+                case 2:
+                    return _arg2;
+
+                case 3:
+                    return _arg3;
+
+                default:
+                    throw new InvalidOperationException();
             }
         }
 
@@ -409,9 +452,9 @@ namespace System.Linq.Expressions
 
             if (args != null)
             {
-                return Expression.Call(Method, args[0], args[1], args[2], args[3]);
+                return Call(Method, args[0], args[1], args[2], args[3]);
             }
-            return Expression.Call(Method, ReturnObject<Expression>(_arg0), _arg1, _arg2, _arg3);
+            return Call(Method, ReturnObject<Expression>(_arg0), _arg1, _arg2, _arg3);
         }
     }
 
@@ -434,12 +477,23 @@ namespace System.Linq.Expressions
         {
             switch (index)
             {
-                case 0: return ReturnObject<Expression>(_arg0);
-                case 1: return _arg1;
-                case 2: return _arg2;
-                case 3: return _arg3;
-                case 4: return _arg4;
-                default: throw new InvalidOperationException();
+                case 0:
+                    return ReturnObject<Expression>(_arg0);
+
+                case 1:
+                    return _arg1;
+
+                case 2:
+                    return _arg2;
+
+                case 3:
+                    return _arg3;
+
+                case 4:
+                    return _arg4;
+
+                default:
+                    throw new InvalidOperationException();
             }
         }
 
@@ -463,10 +517,10 @@ namespace System.Linq.Expressions
 
             if (args != null)
             {
-                return Expression.Call(Method, args[0], args[1], args[2], args[3], args[4]);
+                return Call(Method, args[0], args[1], args[2], args[3], args[4]);
             }
 
-            return Expression.Call(Method, ReturnObject<Expression>(_arg0), _arg1, _arg2, _arg3, _arg4);
+            return Call(Method, ReturnObject<Expression>(_arg0), _arg1, _arg2, _arg3, _arg4);
         }
     }
 
@@ -490,9 +544,14 @@ namespace System.Linq.Expressions
         {
             switch (index)
             {
-                case 0: return ReturnObject<Expression>(_arg0);
-                case 1: return _arg1;
-                default: throw new InvalidOperationException();
+                case 0:
+                    return ReturnObject<Expression>(_arg0);
+
+                case 1:
+                    return _arg1;
+
+                default:
+                    throw new InvalidOperationException();
             }
         }
 
@@ -521,9 +580,9 @@ namespace System.Linq.Expressions
 
             if (args != null)
             {
-                return Expression.Call(instance, Method, args[0], args[1]);
+                return Call(instance, Method, args[0], args[1]);
             }
-            return Expression.Call(instance, Method, ReturnObject<Expression>(_arg0), _arg1);
+            return Call(instance, Method, ReturnObject<Expression>(_arg0), _arg1);
         }
     }
 
@@ -548,10 +607,17 @@ namespace System.Linq.Expressions
         {
             switch (index)
             {
-                case 0: return ReturnObject<Expression>(_arg0);
-                case 1: return _arg1;
-                case 2: return _arg2;
-                default: throw new InvalidOperationException();
+                case 0:
+                    return ReturnObject<Expression>(_arg0);
+
+                case 1:
+                    return _arg1;
+
+                case 2:
+                    return _arg2;
+
+                default:
+                    throw new InvalidOperationException();
             }
         }
 
@@ -580,17 +646,17 @@ namespace System.Linq.Expressions
 
             if (args != null)
             {
-                return Expression.Call(instance, Method, args[0], args[1], args[2]);
+                return Call(instance, Method, args[0], args[1], args[2]);
             }
-            return Expression.Call(instance, Method, ReturnObject<Expression>(_arg0), _arg1, _arg2);
+            return Call(instance, Method, ReturnObject<Expression>(_arg0), _arg1, _arg2);
         }
     }
 
-#endregion
+    #endregion Specialized Subclasses
 
     public partial class Expression
     {
-#region Call
+        #region Call
 
         ///<summary>Creates a <see cref="T:System.Linq.Expressions.MethodCallExpression" /> that represents a call to a static method that takes one argument.</summary>
         ///<returns>A <see cref="T:System.Linq.Expressions.MethodCallExpression" /> that has the <see cref="P:System.Linq.Expressions.Expression.NodeType" /> property equal to <see cref="F:System.Linq.Expressions.ExpressionType.Call" /> and the <see cref="P:System.Linq.Expressions.MethodCallExpression.Object" /> and <see cref="P:System.Linq.Expressions.MethodCallExpression.Method" /> properties set to the specified values.</returns>
@@ -870,7 +936,8 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(type, "type");
             ContractUtils.RequiresNotNull(methodName, "methodName");
 
-            if (arguments == null) arguments = ArrayReservoir<Expression>.EmptyArray;
+            if (arguments == null)
+                arguments = ArrayReservoir<Expression>.EmptyArray;
             var flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
             return InternalCall(null, FindMethod(type, methodName, typeArguments, arguments, flags), arguments);
         }
@@ -936,11 +1003,13 @@ namespace System.Linq.Expressions
         {
             if (method.IsStatic)
             {
-                if (instance != null) throw new ArgumentException(Strings.OnlyStaticMethodsHaveNullInstance, "instance");
+                if (instance != null)
+                    throw new ArgumentException(Strings.OnlyStaticMethodsHaveNullInstance, "instance");
             }
             else
             {
-                if (instance == null) throw new ArgumentNullException(Strings.OnlyStaticMethodsHaveNullInstance, "method");
+                if (instance == null)
+                    throw new ArgumentNullException(Strings.OnlyStaticMethodsHaveNullInstance, "method");
                 RequiresCanRead(instance, "instance");
                 ValidateCallInstanceType(instance.Type, method);
             }
@@ -950,11 +1019,13 @@ namespace System.Linq.Expressions
         {
             if (method.IsStatic)
             {
-                if (instance != null) throw new InvalidOperationException(Strings.OnlyStaticMethodsHaveNullInstance);
+                if (instance != null)
+                    throw new InvalidOperationException(Strings.OnlyStaticMethodsHaveNullInstance);
             }
             else
             {
-                if (instance == null) throw new InvalidOperationException(Strings.OnlyStaticMethodsHaveNullInstance);
+                if (instance == null)
+                    throw new InvalidOperationException(Strings.OnlyStaticMethodsHaveNullInstance);
                 RequiresCanRead(instance, "instance");
                 ValidateCallInstanceType(instance.Type, method);
             }
@@ -1098,10 +1169,9 @@ namespace System.Linq.Expressions
             return null;
         }
 
+        #endregion Call
 
-#endregion
-
-#region ArrayIndex
+        #region ArrayIndex
 
         ///<summary>Creates a <see cref="T:System.Linq.Expressions.MethodCallExpression" /> that represents applying an array index operator to a multi-dimensional array.</summary>
         ///<returns>A <see cref="T:System.Linq.Expressions.BinaryExpression" /> that has the <see cref="P:System.Linq.Expressions.Expression.NodeType" /> property equal to <see cref="F:System.Linq.Expressions.ExpressionType.ArrayIndex" /> and the <see cref="P:System.Linq.Expressions.BinaryExpression.Left" /> and <see cref="P:System.Linq.Expressions.BinaryExpression.Right" /> properties set to the specified values.</returns>
@@ -1149,8 +1219,8 @@ namespace System.Linq.Expressions
             var mi = array.Type.GetMethod("Get", BindingFlags.Public | BindingFlags.Instance);
             return Call(array, mi, indexList);
         }
-#endregion
 
+        #endregion ArrayIndex
     }
 }
 

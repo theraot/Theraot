@@ -8,7 +8,6 @@ using System.Runtime.Serialization;
 
 namespace System.Threading.Tasks
 {
-
     /// <summary>
     /// Represents an exception used to communicate an invalid operation by a
     /// <see cref="T:System.Threading.Tasks.TaskScheduler"/>.
@@ -69,10 +68,7 @@ namespace System.Threading.Tasks
             : base(info, context)
         {
         }
-
-
     }
-
 }
 
 #endif
