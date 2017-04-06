@@ -33,12 +33,15 @@ namespace Theraot.Collections.Specialized
         public static void FlagArrayContainsLongA()
         {
             var flagarray = new FlagArray(60);
+            Assert.AreEqual(0, flagarray.Count);
             Assert.IsTrue(flagarray.Contains(false));
             Assert.IsFalse(flagarray.Contains(true));
             flagarray[20] = true;
+            Assert.AreEqual(1, flagarray.Count);
             Assert.IsTrue(flagarray.Contains(false));
             Assert.IsTrue(flagarray.Contains(true));
             flagarray[0] = true;
+            Assert.AreEqual(2, flagarray.Count);
             Assert.IsTrue(flagarray.Contains(false));
             Assert.IsTrue(flagarray.Contains(true));
             for (int index = 1; index < 20; index++)
@@ -49,6 +52,7 @@ namespace Theraot.Collections.Specialized
             {
                 flagarray[index] = true;
             }
+            Assert.AreEqual(60, flagarray.Count);
             Assert.IsFalse(flagarray.Contains(false));
             Assert.IsTrue(flagarray.Contains(true));
         }
@@ -56,19 +60,16 @@ namespace Theraot.Collections.Specialized
         [Test]
         public static void FlagArrayContainsLongB()
         {
-            var flagarray = new FlagArray(60);
-            Assert.IsTrue(flagarray.Contains(false));
-            Assert.IsFalse(flagarray.Contains(true));
-            for (int index = 0; index < 60; index++)
-            {
-                flagarray[index] = true;
-            }
+            var flagarray = new FlagArray(60, true);
+            Assert.AreEqual(60, flagarray.Count);
             Assert.IsFalse(flagarray.Contains(false));
             Assert.IsTrue(flagarray.Contains(true));
             flagarray[20] = false;
+            Assert.AreEqual(59, flagarray.Count);
             Assert.IsTrue(flagarray.Contains(false));
             Assert.IsTrue(flagarray.Contains(true));
             flagarray[0] = false;
+            Assert.AreEqual(58, flagarray.Count);
             Assert.IsTrue(flagarray.Contains(false));
             Assert.IsTrue(flagarray.Contains(true));
             for (int index = 1; index < 20; index++)
@@ -79,6 +80,7 @@ namespace Theraot.Collections.Specialized
             {
                 flagarray[index] = false;
             }
+            Assert.AreEqual(0, flagarray.Count);
             Assert.IsTrue(flagarray.Contains(false));
             Assert.IsFalse(flagarray.Contains(true));
         }
