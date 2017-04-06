@@ -494,7 +494,8 @@ namespace System.Linq.Expressions
                     throw Error.IncorrectNumberOfMethodCallArguments(method);
                 }
                 Expression[] newArgs = null;
-                for (int i = 0, n = indexes.Length; i < n; i++)
+                var n = indexes.Length;
+                for (int i = 0; i < n; i++)
                 {
                     Expression arg = arguments[i];
                     ParameterInfo pi = indexes[i];

@@ -943,7 +943,8 @@ namespace System.Linq.Expressions
         public ReadOnlyCollection<Expression> Visit(ReadOnlyCollection<Expression> nodes)
         {
             Expression[] newNodes = null;
-            for (int i = 0, n = nodes.Count; i < n; i++)
+            var n = nodes.Count;
+            for (int i = 0; i < n; i++)
             {
                 Expression node = Visit(nodes[i]);
 
@@ -985,7 +986,8 @@ namespace System.Linq.Expressions
         public static ReadOnlyCollection<T> Visit<T>(ReadOnlyCollection<T> nodes, Func<T, T> elementVisitor)
         {
             T[] newNodes = null;
-            for (int i = 0, n = nodes.Count; i < n; i++)
+            var n = nodes.Count;
+            for (int i = 0; i < n; i++)
             {
                 T node = elementVisitor(nodes[i]);
                 if (newNodes != null)
@@ -1044,7 +1046,8 @@ namespace System.Linq.Expressions
         public ReadOnlyCollection<T> VisitAndConvert<T>(ReadOnlyCollection<T> nodes, string callerName) where T : Expression
         {
             T[] newNodes = null;
-            for (int i = 0, n = nodes.Count; i < n; i++)
+            var n = nodes.Count;
+            for (int i = 0; i < n; i++)
             {
                 T node = Visit(nodes[i]) as T;
                 if (node == null)
