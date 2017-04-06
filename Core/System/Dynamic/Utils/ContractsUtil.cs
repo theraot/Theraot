@@ -56,7 +56,7 @@ namespace System.Dynamic.Utils
 
             for (int i = 0; i < array.Count; i++)
             {
-                if (array[i] == null)
+                if (ReferenceEquals(array[i], null))
                 {
                     throw new ArgumentNullException(string.Format(Globalization.CultureInfo.CurrentCulture, "{0}[{1}]", arrayName, i));
                 }
