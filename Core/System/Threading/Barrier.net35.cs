@@ -493,8 +493,7 @@ namespace System.Threading
 
         /// <summary>
         /// Signals that a participant has reached the <see cref="Barrier"/> and waits for all other
-        /// participants to reach the barrier, while observing a <see
-        /// cref="T:System.Threading.CancellationToken"/>.
+        /// participants to reach the barrier, while observing a <see cref="T:System.Threading.CancellationToken"/>.
         /// </summary>
         /// <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> to
         /// observe.</param>
@@ -543,8 +542,7 @@ namespace System.Threading
         /// <summary>
         /// Signals that a participant has reached the <see cref="Barrier"/> and waits for all other
         /// participants to reach the barrier as well, using a
-        /// <see cref="T:System.TimeSpan"/> to measure the time interval, while observing a <see
-        /// cref="T:System.Threading.CancellationToken"/>.
+        /// <see cref="T:System.TimeSpan"/> to measure the time interval, while observing a <see cref="T:System.Threading.CancellationToken"/>.
         /// </summary>
         /// <param name="timeout">A <see cref="T:System.TimeSpan"/> that represents the number of
         /// milliseconds to wait, or a <see cref="T:System.TimeSpan"/> that represents -1 milliseconds to
@@ -578,8 +576,7 @@ namespace System.Threading
         /// participants to reach the barrier as well, using a
         /// 32-bit signed integer to measure the time interval.
         /// </summary>
-        /// <param name="millisecondsTimeout">The number of milliseconds to wait, or <see
-        /// cref="Timeout.Infinite"/>(-1) to wait indefinitely.</param>
+        /// <param name="millisecondsTimeout">The number of milliseconds to wait, or <see cref="Timeout.Infinite"/>(-1) to wait indefinitely.</param>
         /// <returns>true if all other participants reached the barrier; otherwise, false.</returns>
         /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="millisecondsTimeout"/> is a
         /// negative number other than -1, which represents an infinite time-out.</exception>
@@ -597,11 +594,9 @@ namespace System.Threading
         /// <summary>
         /// Signals that a participant has reached the barrier and waits for all other participants to reach
         /// the barrier as well, using a
-        /// 32-bit signed integer to measure the time interval, while observing a <see
-        /// cref="T:System.Threading.CancellationToken"/>.
+        /// 32-bit signed integer to measure the time interval, while observing a <see cref="T:System.Threading.CancellationToken"/>.
         /// </summary>
-        /// <param name="millisecondsTimeout">The number of milliseconds to wait, or <see
-        /// cref="Timeout.Infinite"/>(-1) to wait indefinitely.</param>
+        /// <param name="millisecondsTimeout">The number of milliseconds to wait, or <see cref="Timeout.Infinite"/>(-1) to wait indefinitely.</param>
         /// <param name="cancellationToken">The <see cref="T:System.Threading.CancellationToken"/> to
         /// observe.</param>
         /// <returns>true if all other participants reached the barrier; otherwise, false.</returns>
