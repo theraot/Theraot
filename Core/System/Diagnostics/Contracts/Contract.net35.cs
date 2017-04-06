@@ -132,6 +132,7 @@ namespace System.Diagnostics.Contracts
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Ensures(bool condition)
         {
+            GC.KeepAlive(condition);
             AssertMustUseRewriter(ContractFailureKind.Postcondition, "Ensures");
         }
 
@@ -150,6 +151,8 @@ namespace System.Diagnostics.Contracts
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Ensures(bool condition, string userMessage)
         {
+            GC.KeepAlive(condition);
+            GC.KeepAlive(userMessage);
             AssertMustUseRewriter(ContractFailureKind.Postcondition, "Ensures");
         }
 
