@@ -1878,8 +1878,8 @@ namespace System.Linq.Expressions.Interpreter
             {
                 return;
             }
-
-            for (int i = 0, n = block.Expressions.Count; i < n; i++)
+            var n = block.Expressions.Count;
+            for (int i = 0; i < n; i++)
             {
                 Expression e = block.Expressions[i];
 
