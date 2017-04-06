@@ -57,7 +57,7 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        public int Count
+        public int Length
         {
             get
             {
@@ -65,17 +65,53 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        public IEnumerable<int> Flags
+        public int Count
         {
             get
             {
                 var count = 0;
+                var index = 0;
+                var newindex = 0;
+                foreach (var entry in _entries)
+                {
+                    newindex += 32;
+                    if (newindex <= _length)
+                    {
+                        count += NumericHelper.PopulationCount(entry);
+                        index = newindex;
+                    }
+                    else
+                    {
+                        foreach (var bit in entry.BinaryReverse().BitsBinary())
+                        {
+                            if (bit == 1)
+                            {
+                                count++;
+                            }
+                            index++;
+                            if (index == _length)
+                            {
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+                return count;
+            }
+        }
+
+        public IEnumerable<int> Flags
+        {
+            get
+            {
+                var index = 0;
                 foreach (var entry in _entries)
                 {
                     if (entry == 0)
                     {
-                        count += 32;
-                        if (count >= _length)
+                        index += 32;
+                        if (index >= _length)
                         {
                             yield break;
                         }
@@ -86,10 +122,10 @@ namespace Theraot.Collections.Specialized
                         {
                             if (bit == 1)
                             {
-                                yield return count;
+                                yield return index;
                             }
-                            count++;
-                            if (count == _length)
+                            index++;
+                            if (index == _length)
                             {
                                 yield break;
                             }
@@ -139,19 +175,19 @@ namespace Theraot.Collections.Specialized
 
         public bool Contains(bool item)
         {
-            var count = 0;
-            var newcount = 0;
+            var index = 0;
+            var newindex = 0;
             var check = item ? 0 : -1;
             foreach (var entry in _entries)
             {
-                newcount += 32;
-                if (newcount <= _length)
+                newindex += 32;
+                if (newindex <= _length)
                 {
                     if (entry != check)
                     {
                         return true;
                     }
-                    count = newcount;
+                    index = newindex;
                 }
                 else
                 {
@@ -161,8 +197,8 @@ namespace Theraot.Collections.Specialized
                         {
                             return true;
                         }
-                        count++;
-                        if (count == _length)
+                        index++;
+                        if (index == _length)
                         {
                             break;
                         }
@@ -198,14 +234,14 @@ namespace Theraot.Collections.Specialized
 
         public IEnumerator<bool> GetEnumerator()
         {
-            var count = 0;
+            var index = 0;
             foreach (var entry in _entries)
             {
                 foreach (var bit in entry.BinaryReverse().BitsBinary())
                 {
                     yield return bit == 1;
-                    count++;
-                    if (count == _length)
+                    index++;
+                    if (index == _length)
                     {
                         yield break;
                     }
