@@ -308,6 +308,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Theraot\Collections\ProgressorTestEx.cs" />
+    <Compile Include="Theraot\Collections\Specialized\FlagArrayTest.cs" />
     <Compile Include="Theraot\Collections\ThreadSafe\FixesSizeQueueTest.cs" />
     <Compile Include="Theraot\Core\CloneHelperTests.cs" />
     <Compile Include="Theraot\Core\RamStreamTests.cs" />

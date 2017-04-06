@@ -155,12 +155,13 @@ namespace Theraot.Collections.Specialized
                 }
                 else
                 {
-                    foreach (var bit in entry.BitsBinary())
+                    foreach (var bit in entry.BinaryReverse().BitsBinary())
                     {
                         if ((bit == 1) == item)
                         {
-                            count++;
+                            return true;
                         }
+                        count++;
                         if (count == _length)
                         {
                             break;
@@ -200,7 +201,7 @@ namespace Theraot.Collections.Specialized
             var count = 0;
             foreach (var entry in _entries)
             {
-                foreach (var bit in entry.BitsBinary())
+                foreach (var bit in entry.BinaryReverse().BitsBinary())
                 {
                     yield return bit == 1;
                     count++;
@@ -268,7 +269,7 @@ namespace Theraot.Collections.Specialized
 
         private int GetLength(int length)
         {
-            return (length >> 5) + (length & 31) == 0 ? 0 : 1;
+            return (length >> 5) + ((length & 31) == 0 ? 0 : 1);
         }
 
         private void RecycleExtracted()
@@ -309,13 +310,8 @@ namespace Theraot.Collections.Specialized
         }
     }
 
-    public sealed partial class FlagArray : IList<bool>
-#if FAT
-        , IExtendedCollection<bool>, ICloneable<FlagArray>
-#endif
+    public sealed partial class FlagArray : IList<bool>, IExtendedCollection<bool>, ICloneable<FlagArray>
     {
-#if FAT
-
         IReadOnlyCollection<bool> IExtendedCollection<bool>.AsReadOnly
         {
             get
@@ -328,8 +324,6 @@ namespace Theraot.Collections.Specialized
         {
             throw new NotSupportedException();
         }
-
-#endif
     }
 }
 
