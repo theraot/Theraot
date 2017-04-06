@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace System.Dynamic.Utils
 {
-    internal static partial class ContractUtils
+    internal static class ContractUtils
     {
         public static Exception Unreachable
         {
