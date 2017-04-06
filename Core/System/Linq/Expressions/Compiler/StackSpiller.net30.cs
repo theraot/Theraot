@@ -157,6 +157,8 @@ namespace System.Linq.Expressions.Compiler
         // DynamicExpression
         private Result RewriteDynamicExpression(Expression expr, Stack stack)
         {
+            GC.KeepAlive(stack);
+
             var node = (IDynamicExpression)expr;
 
             // CallSite is on the stack
