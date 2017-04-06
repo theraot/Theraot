@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using Theraot.Threading;
+using Theraot.Threading.Needles;
 
 namespace System.Collections.ObjectModel
 {
@@ -11,7 +12,7 @@ namespace System.Collections.ObjectModel
     {
         // Using TrackingThreadLocal instead of NoTrackingThreadLocal or ThreadLocal to avoid not managed resources
         // This field is disposable and will not be disposed
-        private readonly TrackingThreadLocal<int> _entryCheck;
+        private readonly StructNeedle<TrackingThreadLocal<int>> _entryCheck;
 
         private readonly ReentryBlockage _reentryBlockage;
 
@@ -19,7 +20,7 @@ namespace System.Collections.ObjectModel
             : base(new List<T>())
         {
             _entryCheck = new TrackingThreadLocal<int>(() => 0);
-            _reentryBlockage = new ReentryBlockage(() => _entryCheck.Value--);
+            _reentryBlockage = new ReentryBlockage(() => _entryCheck.Value.Value--);
         }
 
         public ObservableCollection(IEnumerable<T> collection)
@@ -45,14 +46,14 @@ namespace System.Collections.ObjectModel
 
         protected IDisposable BlockReentrancy()
         {
-            _entryCheck.Value++;
+            _entryCheck.Value.Value++;
             return _reentryBlockage;
         }
 
         protected void CheckReentrancy()
         {
             int value;
-            if (_entryCheck.TryGetValue(out value) && value > 0)
+            if (_entryCheck.Value.TryGetValue(out value) && value > 0)
             {
                 throw new InvalidOperationException("Reentry");
             }
@@ -118,12 +119,12 @@ namespace System.Collections.ObjectModel
             {
                 try
                 {
-                    _entryCheck.Value++;
+                    _entryCheck.Value.Value++;
                     collectionChanged.Invoke(this, eventArgs);
                 }
                 finally
                 {
-                    _entryCheck.Value--;
+                    _entryCheck.Value.Value--;
                 }
             }
         }
@@ -135,12 +136,12 @@ namespace System.Collections.ObjectModel
             {
                 try
                 {
-                    _entryCheck.Value++;
+                    _entryCheck.Value.Value++;
                     propertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
                 }
                 finally
                 {
-                    _entryCheck.Value--;
+                    _entryCheck.Value.Value--;
                 }
             }
         }
