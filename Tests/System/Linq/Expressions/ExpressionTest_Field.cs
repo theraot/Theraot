@@ -94,7 +94,7 @@ namespace MonoTests.System.Linq.Expressions
                 GetType().GetField("foo"));
         }
 
-        public static string foo = "foo";
+        public static string Foo = "foo";
 
         [Test]
         public void CompileStaticField()
