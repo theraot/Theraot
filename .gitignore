@@ -172,3 +172,4 @@ pip-log.txt
 ################## CUSTOM
 package/
 .vs/
+.vscode/
