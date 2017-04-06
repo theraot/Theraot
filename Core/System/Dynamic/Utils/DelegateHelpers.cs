@@ -11,7 +11,7 @@ using System.Reflection.Emit;
 
 namespace System.Dynamic.Utils
 {
-    internal static partial class DelegateHelpers
+    internal static class DelegateHelpers
     {
         internal static Delegate CreateObjectArrayDelegate(Type delegateType, Func<object[], object> handler)
         {
