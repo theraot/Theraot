@@ -449,7 +449,8 @@ namespace System.Linq.Expressions
         {
             Visit(node.NewExpression);
             Out(" {");
-            for (int i = 0, n = node.Initializers.Count; i < n; i++)
+            var n = node.Initializers.Count;
+            for (int i = 0; i < n; i++)
             {
                 if (i > 0)
                 {
@@ -557,7 +558,8 @@ namespace System.Linq.Expressions
                 Visit(node.NewExpression);
             }
             Out(" {");
-            for (int i = 0, n = node.Bindings.Count; i < n; i++)
+            var n = node.Bindings.Count;
+            for (int i = 0; i < n; i++)
             {
                 MemberBinding b = node.Bindings[i];
                 if (i > 0)
@@ -582,7 +584,8 @@ namespace System.Linq.Expressions
         {
             Out(binding.Member.Name);
             Out(" = {");
-            for (int i = 0, n = binding.Initializers.Count; i < n; i++)
+            var n = binding.Initializers.Count;
+            for (int i = 0; i < n; i++)
             {
                 if (i > 0)
                 {
@@ -598,7 +601,8 @@ namespace System.Linq.Expressions
         {
             Out(binding.Member.Name);
             Out(" = {");
-            for (int i = 0, n = binding.Bindings.Count; i < n; i++)
+            var n = binding.Bindings.Count;
+            for (int i = 0; i < n; i++)
             {
                 if (i > 0)
                 {
@@ -623,7 +627,8 @@ namespace System.Linq.Expressions
             Out("Invoke(");
             Visit(node.Expression);
             string sep = ", ";
-            for (int i = 0, n = node.Arguments.Count; i < n; i++)
+            var n = node.Arguments.Count;
+            for (int i = 0; i < n; i++)
             {
                 Out(sep);
                 Visit(node.Arguments[i]);
@@ -650,7 +655,8 @@ namespace System.Linq.Expressions
             }
             Out(node.Method.Name);
             Out("(");
-            for (int i = start, n = node.Arguments.Count; i < n; i++)
+            var n = node.Arguments.Count;
+            for (int i = start; i < n; i++)
             {
                 if (i > start)
                     Out(", ");
