@@ -20,7 +20,7 @@ namespace System.Linq.Expressions.Interpreter
         }
     }
 
-    public partial class LightLambda
+    public class LightLambda
     {
         private readonly IStrongBox[] _closure;
         private readonly Interpreter _interpreter;
