@@ -12,7 +12,8 @@ namespace System.Dynamic.Utils
         public static Expression[] VisitArguments(ExpressionVisitor visitor, IArgumentProvider nodes)
         {
             Expression[] newNodes = null;
-            for (int i = 0, n = nodes.ArgumentCount; i < n; i++)
+            var n = nodes.ArgumentCount;
+            for (int i = 0; i < n; i++)
             {
                 Expression curNode = nodes.GetArgument(i);
                 Expression node = visitor.Visit(curNode);
