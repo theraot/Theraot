@@ -6,6 +6,7 @@
 
 using System.Collections.Generic;
 using System.Security.Permissions;
+using Theraot.Threading.Needles;
 
 namespace System.Threading.Tasks
 {
@@ -35,7 +36,7 @@ namespace System.Threading.Tasks
     [HostProtection(Synchronization = true, ExternalThreading = true)]
     public class TaskCompletionSource<TResult>
     {
-        private readonly Task<TResult> _task;
+        private readonly StructNeedle<Task<TResult>> _task;
 
         /// <summary>
         /// Creates a <see cref="TaskCompletionSource{TResult}"/>.
@@ -111,7 +112,7 @@ namespace System.Threading.Tasks
         {
             get
             {
-                return _task;
+                return _task.Value;
             }
         }
 
@@ -121,7 +122,7 @@ namespace System.Threading.Tasks
         {
             // Spin wait until the completion is finalized by another thread.
             var sw = new SpinWait();
-            while (!_task.IsCompleted)
+            while (!_task.Value.IsCompleted)
                 sw.SpinOnce();
         }
 
@@ -149,8 +150,8 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentNullException("exception");
             }
-            var rval = _task.TrySetException(exception);
-            if (!rval && !_task.IsCompleted)
+            var rval = _task.Value.TrySetException(exception);
+            if (!rval && !_task.Value.IsCompleted)
                 SpinUntilCompleted();
             return rval;
         }
@@ -190,8 +191,8 @@ namespace System.Threading.Tasks
             {
                 throw new ArgumentException("The exceptions collection was empty.", "exceptions");
             }
-            var rval = _task.TrySetException(defensiveCopy);
-            if (!rval && !_task.IsCompleted)
+            var rval = _task.Value.TrySetException(defensiveCopy);
+            if (!rval && !_task.Value.IsCompleted)
                 SpinUntilCompleted();
             return rval;
         }
@@ -269,8 +270,8 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ObjectDisposedException">The <see cref="Task"/> was disposed.</exception>
         public bool TrySetResult(TResult result)
         {
-            var rval = _task.TrySetResult(result);
-            if (!rval && !_task.IsCompleted)
+            var rval = _task.Value.TrySetResult(result);
+            if (!rval && !_task.Value.IsCompleted)
                 SpinUntilCompleted();
             return rval;
         }
@@ -320,8 +321,8 @@ namespace System.Threading.Tasks
         // Enables a token to be stored into the canceled task
         internal bool TrySetCanceled(CancellationToken tokenToRecord)
         {
-            var rval = _task.TrySetCanceled(tokenToRecord);
-            if (!rval && !_task.IsCompleted)
+            var rval = _task.Value.TrySetCanceled(tokenToRecord);
+            if (!rval && !_task.Value.IsCompleted)
             {
                 SpinUntilCompleted();
             }
