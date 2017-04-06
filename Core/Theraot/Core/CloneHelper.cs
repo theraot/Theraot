@@ -24,7 +24,7 @@ namespace Theraot.Core
 
         private static ICloner<T> GetConstructorCloner(Type type)
         {
-            var constructorInfo = type.GetConstructor(Type.EmptyTypes);
+            var constructorInfo = type.GetConstructor(new[] { type });
             if (constructorInfo == null)
             {
                 return null;
@@ -54,7 +54,7 @@ namespace Theraot.Core
         private static ICloner<T> GetMockCloner(Type type)
         {
             var method = type.GetMethod("Clone", Type.EmptyTypes);
-            if (method != null && method.ReturnType == type || method.ReturnType == typeof(object))
+            if (method != null && (method.ReturnType == type || method.ReturnType == typeof(object)))
             {
                 return MockCloner.GetInstance(method);
             }
