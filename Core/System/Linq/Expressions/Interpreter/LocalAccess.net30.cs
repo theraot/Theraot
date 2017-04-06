@@ -486,6 +486,7 @@ namespace System.Linq.Expressions.Interpreter
             internal Parameter(int index, Type parameterType)
                 : base(index)
             {
+                GC.KeepAlive(parameterType);
             }
 
             public override int Run(InterpretedFrame frame)
