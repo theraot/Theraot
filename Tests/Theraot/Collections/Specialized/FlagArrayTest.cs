@@ -26,7 +26,7 @@ namespace Theraot.Collections.Specialized
         public static void FlagArrayConstructorTest()
         {
             var flagarray = new FlagArray(12);
-            Assert.AreEqual(12, flagarray.Length);
+            Assert.AreEqual(12, flagarray.Capacity);
         }
 
         [Test]

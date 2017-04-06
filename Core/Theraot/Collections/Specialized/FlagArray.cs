@@ -13,7 +13,7 @@ namespace Theraot.Collections.Specialized
     public sealed partial class FlagArray
     {
         private readonly IReadOnlyCollection<bool> _asReadOnly;
-        private readonly int _length;
+        private readonly int _capacity;
         private int[] _entries;
 
         public FlagArray(FlagArray prototype)
@@ -22,25 +22,25 @@ namespace Theraot.Collections.Specialized
             {
                 throw new ArgumentNullException("prototype", "prototype is null.");
             }
-            _length = prototype._length;
-            _entries = ArrayReservoir<int>.GetArray(GetLength(_length));
+            _capacity = prototype._capacity;
+            _entries = ArrayReservoir<int>.GetArray(GetLength(_capacity));
             prototype._entries.CopyTo(_entries, 0);
             _asReadOnly = new ExtendedReadOnlyCollection<bool>(this);
         }
 
-        public FlagArray(int length)
+        public FlagArray(int capacity)
         {
-            if (length < 0)
+            if (capacity < 0)
             {
-                throw new ArgumentOutOfRangeException("length", "length < 0");
+                throw new ArgumentOutOfRangeException("capacity", "length < 0");
             }
-            _length = length;
-            _entries = ArrayReservoir<int>.GetArray(GetLength(_length));
+            _capacity = capacity;
+            _entries = ArrayReservoir<int>.GetArray(GetLength(_capacity));
             _asReadOnly = new ExtendedReadOnlyCollection<bool>(this);
         }
 
-        public FlagArray(int length, bool defaultValue)
-            : this(length)
+        public FlagArray(int capacity, bool defaultValue)
+            : this(capacity)
         {
             if (defaultValue)
             {
@@ -57,11 +57,11 @@ namespace Theraot.Collections.Specialized
             }
         }
 
-        public int Length
+        public int Capacity
         {
             get
             {
-                return _length;
+                return _capacity;
             }
         }
 
@@ -75,7 +75,7 @@ namespace Theraot.Collections.Specialized
                 foreach (var entry in _entries)
                 {
                     newindex += 32;
-                    if (newindex <= _length)
+                    if (newindex <= _capacity)
                     {
                         count += NumericHelper.PopulationCount(entry);
                         index = newindex;
@@ -89,7 +89,7 @@ namespace Theraot.Collections.Specialized
                                 count++;
                             }
                             index++;
-                            if (index == _length)
+                            if (index == _capacity)
                             {
                                 break;
                             }
@@ -111,7 +111,7 @@ namespace Theraot.Collections.Specialized
                     if (entry == 0)
                     {
                         index += 32;
-                        if (index >= _length)
+                        if (index >= _capacity)
                         {
                             yield break;
                         }
@@ -125,7 +125,7 @@ namespace Theraot.Collections.Specialized
                                 yield return index;
                             }
                             index++;
-                            if (index == _length)
+                            if (index == _capacity)
                             {
                                 yield break;
                             }
@@ -181,7 +181,7 @@ namespace Theraot.Collections.Specialized
             foreach (var entry in _entries)
             {
                 newindex += 32;
-                if (newindex <= _length)
+                if (newindex <= _capacity)
                 {
                     if (entry != check)
                     {
@@ -198,7 +198,7 @@ namespace Theraot.Collections.Specialized
                             return true;
                         }
                         index++;
-                        if (index == _length)
+                        if (index == _capacity)
                         {
                             break;
                         }
@@ -216,13 +216,13 @@ namespace Theraot.Collections.Specialized
 
         public void CopyTo(bool[] array, int arrayIndex)
         {
-            Extensions.CanCopyTo(_length, array, arrayIndex);
+            Extensions.CanCopyTo(_capacity, array, arrayIndex);
             Extensions.CopyTo(this, array, arrayIndex);
         }
 
         public void CopyTo(bool[] array)
         {
-            Extensions.CanCopyTo(_length, array);
+            Extensions.CanCopyTo(_capacity, array);
             Extensions.CopyTo(this, array);
         }
 
@@ -241,7 +241,7 @@ namespace Theraot.Collections.Specialized
                 {
                     yield return bit == 1;
                     index++;
-                    if (index == _length)
+                    if (index == _capacity)
                     {
                         yield break;
                     }
@@ -292,7 +292,7 @@ namespace Theraot.Collections.Specialized
         private void Fill(bool value)
         {
             var entryValue = value ? unchecked((int)0xffffffff) : 0;
-            for (var index = 0; index < _length; index++)
+            for (var index = 0; index < _capacity; index++)
             {
                 _entries[index] = entryValue;
             }
