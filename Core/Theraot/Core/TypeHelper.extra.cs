@@ -12,7 +12,7 @@ namespace Theraot.Core
         public static Tuple<MethodInfo, ConstructorInfo> GetConstructorDeconstructPair(Type type)
         {
             var deconstructs = type.GetMethods(BindingFlags.Public | BindingFlags.Instance);
-            var constructors = type.GetConstructors(BindingFlags.Public);
+            var constructors = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance);
             foreach (var deconstruct in deconstructs)
             {
                 // If the method is not called Deconstruct, skip it
@@ -63,7 +63,8 @@ namespace Theraot.Core
                     {
                         var constructorParameters = candidates[index].GetParameters();
                         var constructorParameter = constructorParameters[parameterIndex];
-                        if (constructorParameter.ParameterType == methodParameter.ParameterType && !constructorParameter.IsOut)
+                        var constructorParameterType = constructorParameter.ParameterType;
+                        if (!constructorParameterType.IsByRef && constructorParameterType.MakeByRefType() == methodParameter.ParameterType)
                         {
                             next[nextIndex] = constructors[index];
                             nextIndex++;
