@@ -572,54 +572,54 @@ namespace System.Linq.Expressions
             return node;
         }
 
-        protected override MemberAssignment VisitMemberAssignment(MemberAssignment assignment)
+        protected override MemberAssignment VisitMemberAssignment(MemberAssignment node)
         {
-            Out(assignment.Member.Name);
+            Out(node.Member.Name);
             Out(" = ");
-            Visit(assignment.Expression);
-            return assignment;
+            Visit(node.Expression);
+            return node;
         }
 
-        protected override MemberListBinding VisitMemberListBinding(MemberListBinding binding)
+        protected override MemberListBinding VisitMemberListBinding(MemberListBinding node)
         {
-            Out(binding.Member.Name);
+            Out(node.Member.Name);
             Out(" = {");
-            var n = binding.Initializers.Count;
+            var n = node.Initializers.Count;
             for (int i = 0; i < n; i++)
             {
                 if (i > 0)
                 {
                     Out(", ");
                 }
-                VisitElementInit(binding.Initializers[i]);
+                VisitElementInit(node.Initializers[i]);
             }
             Out("}");
-            return binding;
+            return node;
         }
 
-        protected override MemberMemberBinding VisitMemberMemberBinding(MemberMemberBinding binding)
+        protected override MemberMemberBinding VisitMemberMemberBinding(MemberMemberBinding node)
         {
-            Out(binding.Member.Name);
+            Out(node.Member.Name);
             Out(" = {");
-            var n = binding.Bindings.Count;
+            var n = node.Bindings.Count;
             for (int i = 0; i < n; i++)
             {
                 if (i > 0)
                 {
                     Out(", ");
                 }
-                VisitMemberBinding(binding.Bindings[i]);
+                VisitMemberBinding(node.Bindings[i]);
             }
             Out("}");
-            return binding;
+            return node;
         }
 
-        protected override ElementInit VisitElementInit(ElementInit initializer)
+        protected override ElementInit VisitElementInit(ElementInit node)
         {
-            Out(initializer.AddMethod.ToString());
+            Out(node.AddMethod.ToString());
             string sep = ", ";
-            VisitExpressions('(', initializer.Arguments, ')', sep);
-            return initializer;
+            VisitExpressions('(', node.Arguments, ')', sep);
+            return node;
         }
 
         protected internal override Expression VisitInvocation(InvocationExpression node)
