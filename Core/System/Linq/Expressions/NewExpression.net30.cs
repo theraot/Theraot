@@ -257,7 +257,8 @@ namespace System.Linq.Expressions
                 }
                 Expression[] newArguments = null;
                 MemberInfo[] newMembers = null;
-                for (int i = 0, n = arguments.Count; i < n; i++)
+                var n = arguments.Count;
+                for (int i = 0; i < n; i++)
                 {
                     var arg = arguments[i];
                     RequiresCanRead(arg, "argument");
@@ -291,7 +292,7 @@ namespace System.Linq.Expressions
                     }
                     if (newArguments == null && arg != arguments[i])
                     {
-                        newArguments = new Expression[arguments.Count];
+                        newArguments = new Expression[n];
                         for (var j = 0; j < i; j++)
                         {
                             newArguments[j] = arguments[j];
