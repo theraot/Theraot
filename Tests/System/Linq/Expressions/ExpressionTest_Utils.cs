@@ -138,10 +138,12 @@ namespace MonoTests.System.Linq.Expressions
 
         public static void WrongUnaryReturnVoid(OpClass a)
         {
+            GC.KeepAlive(a);
         }
 
         public static OpClass WrongUnaryParameterCount(OpClass a, OpClass b)
         {
+            GC.KeepAlive(b);
             return a;
         }
 
@@ -163,9 +165,9 @@ namespace MonoTests.System.Linq.Expressions
         //
         // Required when you have == or !=
         //
-        public override bool Equals(object o)
+        public override bool Equals(object obj)
         {
-            return ((object)this) == o;
+            return ((object)this) == obj;
         }
 
         public override int GetHashCode()
