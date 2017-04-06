@@ -130,7 +130,7 @@ namespace System.Linq.Expressions.Interpreter
         }
     }
 
-    internal partial class ByRefNewInstruction : Instruction
+    internal class ByRefNewInstruction : Instruction
     {
         private readonly ByRefUpdater[] _byrefArgs;
         private readonly ConstructorInfo _constructor;

@@ -10,7 +10,7 @@ using Theraot.Core;
 
 namespace System.Linq.Expressions.Interpreter
 {
-    internal static partial class DelegateHelpers
+    internal static class DelegateHelpers
     {
         private const int MaximumArity = 17;
 
