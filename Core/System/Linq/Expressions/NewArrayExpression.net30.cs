@@ -165,7 +165,8 @@ namespace System.Linq.Expressions
             ReadOnlyCollection<Expression> initializerList = initializers.ToReadOnly();
 
             Expression[] newList = null;
-            for (int i = 0, n = initializerList.Count; i < n; i++)
+            var n = initializerList.Count;
+            for (int i = 0; i < n; i++)
             {
                 Expression expr = initializerList[i];
                 RequiresCanRead(expr, "initializers");
@@ -178,7 +179,7 @@ namespace System.Linq.Expressions
                     }
                     if (newList == null)
                     {
-                        newList = new Expression[initializerList.Count];
+                        newList = new Expression[n];
                         for (int j = 0; j < i; j++)
                         {
                             newList[j] = initializerList[j];
