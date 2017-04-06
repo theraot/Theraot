@@ -1024,28 +1024,28 @@ namespace System.Linq.Expressions
             return node;
         }
 
-        protected override MemberAssignment VisitMemberAssignment(MemberAssignment assignment)
+        protected override MemberAssignment VisitMemberAssignment(MemberAssignment node)
         {
-            Out(assignment.Member.Name);
+            Out(node.Member.Name);
             Out(Flow.Space, "=", Flow.Space);
-            Visit(assignment.Expression);
-            return assignment;
+            Visit(node.Expression);
+            return node;
         }
 
-        protected override MemberListBinding VisitMemberListBinding(MemberListBinding binding)
+        protected override MemberListBinding VisitMemberListBinding(MemberListBinding node)
         {
-            Out(binding.Member.Name);
+            Out(node.Member.Name);
             Out(Flow.Space, "=", Flow.Space);
-            VisitExpressions('{', ',', binding.Initializers, e => VisitElementInit(e));
-            return binding;
+            VisitExpressions('{', ',', node.Initializers, e => VisitElementInit(e));
+            return node;
         }
 
-        protected override MemberMemberBinding VisitMemberMemberBinding(MemberMemberBinding binding)
+        protected override MemberMemberBinding VisitMemberMemberBinding(MemberMemberBinding node)
         {
-            Out(binding.Member.Name);
+            Out(node.Member.Name);
             Out(Flow.Space, "=", Flow.Space);
-            VisitExpressions('{', ',', binding.Bindings, e => VisitMemberBinding(e));
-            return binding;
+            VisitExpressions('{', ',', node.Bindings, e => VisitMemberBinding(e));
+            return node;
         }
 
         protected internal override Expression VisitMemberInit(MemberInitExpression node)
