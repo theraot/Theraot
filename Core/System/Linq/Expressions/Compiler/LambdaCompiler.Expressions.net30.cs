@@ -498,10 +498,11 @@ namespace System.Linq.Expressions.Compiler
         private List<WriteBack> EmitArguments(MethodBase method, IArgumentProvider args, int skipParameters)
         {
             var pis = method.GetParameters();
-            Debug.Assert(args.ArgumentCount + skipParameters == pis.Length);
+            var n = pis.Length;
+            Debug.Assert(args.ArgumentCount + skipParameters == n);
 
             var writeBacks = new List<WriteBack>();
-            for (int i = skipParameters, n = pis.Length; i < n; i++)
+            for (int i = skipParameters; i < n; i++)
             {
                 var parameter = pis[i];
                 var argument = args.GetArgument(i - skipParameters);
@@ -900,11 +901,13 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitDebugInfoExpression(Expression expr)
         {
+            GC.KeepAlive(expr);
             return;
         }
 
         private static void EmitExtensionExpression(Expression expr)
         {
+            GC.KeepAlive(expr);
             throw Error.ExtensionNotReduced();
         }
 
@@ -1111,12 +1114,12 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(variables != null);
             Debug.Assert(arguments != null);
-
-            if (variables.Count != arguments.Count)
+            var n = variables.Count;
+            if (n != arguments.Count)
             {
                 throw Error.IncorrectNumberOfIndexes();
             }
-            for (int i = 0, n = variables.Count; i < n; i++)
+            for (int i = 0; i < n; i++)
             {
                 if (!TypeHelper.AreReferenceAssignable(variables[i].Type, TypeHelper.GetNonNullableType(arguments[i].Type)))
                 {
@@ -1140,7 +1143,8 @@ namespace System.Linq.Expressions.Compiler
                         var exit = _ilg.DefineLabel();
                         var exitNull = _ilg.DefineLabel();
                         var anyNull = _ilg.DeclareLocal(typeof(bool));
-                        for (int i = 0, n = paramList.Length; i < n; i++)
+                        var n = paramList.Length;
+                        for (int i = 0; i < n; i++)
                         {
                             var v = paramList[i];
                             var arg = argList[i];
@@ -1231,7 +1235,8 @@ namespace System.Linq.Expressions.Compiler
                         _ilg.Emit(OpCodes.Ldc_I4_1);
                         _ilg.Emit(OpCodes.Stloc, allNull);
 
-                        for (int i = 0, n = paramList.Length; i < n; i++)
+                        var n = paramList.Length;
+                        for (int i = 0; i < n; i++)
                         {
                             var v = paramList[i];
                             var arg = argList[i];
