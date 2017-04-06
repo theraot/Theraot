@@ -995,7 +995,7 @@ namespace System.Linq.Expressions.Interpreter
 
         #region Control Flow
 
-        private static readonly RuntimeLabel[] s_emptyRuntimeLabels = new RuntimeLabel[] { new RuntimeLabel(Interpreter.RethrowOnReturn, 0, 0) };
+        private static readonly RuntimeLabel[] s_emptyRuntimeLabels = { new RuntimeLabel(Interpreter.RethrowOnReturn, 0, 0) };
 
         private RuntimeLabel[] BuildRuntimeLabels()
         {
