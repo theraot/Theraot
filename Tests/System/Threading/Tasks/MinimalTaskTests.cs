@@ -560,7 +560,10 @@ namespace MonoTests.System.Threading.Tasks
                 t2.Wait(1000);
                 Assert.Fail();
             }
-            catch (Exception) { }
+            catch (Exception ex)
+            {
+                GC.KeepAlive(ex);
+            }
 
             Assert.AreEqual(TaskStatus.Faulted, t.Status, "#2");
         }
