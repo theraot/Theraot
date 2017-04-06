@@ -2,6 +2,7 @@
 
 using NUnit.Framework;
 using System;
+using System.Globalization;
 using Theraot.Core;
 
 namespace Tests.Theraot.Core
@@ -31,22 +32,24 @@ namespace Tests.Theraot.Core
             Assert.AreEqual(0.5, CloneHelper<double>.GetCloner().Clone(0.5));
         }
 
+        [Test]
         public void CloneDate()
         {
             var date = DateTime.Now;
             var clone = CloneHelper<DateTime>.GetCloner().Clone(date);
             Assert.AreEqual(date, clone);
-            Assert.IsFalse(ReferenceEquals(date, clone));
         }
 
+        [Test]
         public void CloneString()
         {
-            var str = DateTime.Now.ToString();
+            var str = DateTime.Now.ToString(CultureInfo.InvariantCulture);
             var clone = CloneHelper<string>.GetCloner().Clone(str);
             Assert.AreEqual(str, clone);
             Assert.IsFalse(ReferenceEquals(str, clone));
         }
 
+        [Test]
         public void CloneObject()
         {
             var obj = new object();
@@ -55,6 +58,7 @@ namespace Tests.Theraot.Core
             Assert.IsFalse(ReferenceEquals(obj, clone));
         }
 
+        [Test]
         public void CloneArray()
         {
             var array = new int[] { 1, 2, 3 };
