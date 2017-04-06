@@ -46,7 +46,8 @@ namespace Tests.Theraot.Core
             var str = DateTime.Now.ToString(CultureInfo.InvariantCulture);
             var clone = CloneHelper<string>.GetCloner().Clone(str);
             Assert.AreEqual(str, clone);
-            Assert.IsFalse(ReferenceEquals(str, clone));
+            // String.Clone returns the same instance
+            Assert.IsTrue(ReferenceEquals(str, clone));
         }
 
         [Test]
@@ -54,7 +55,9 @@ namespace Tests.Theraot.Core
         {
             var obj = new object();
             var clone = CloneHelper<object>.GetCloner().Clone(obj);
-            Assert.AreEqual(obj, clone);
+            Assert.IsInstanceOf<object>(obj);
+            Assert.IsInstanceOf<object>(clone);
+            // There is only reference comparison, and the clone is a differente reference
             Assert.IsFalse(ReferenceEquals(obj, clone));
         }
 
