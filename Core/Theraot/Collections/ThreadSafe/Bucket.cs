@@ -282,7 +282,7 @@ namespace Theraot.Collections.ThreadSafe
         {
             foreach (var value in _bucketCore)
             {
-                T castedValue = value == BucketHelper.Null ? default(T) : (T)value;
+                var castedValue = value == BucketHelper.Null ? default(T) : (T)value;
                 if (check(castedValue))
                 {
                     yield return castedValue;

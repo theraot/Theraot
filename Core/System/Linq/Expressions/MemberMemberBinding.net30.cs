@@ -83,7 +83,7 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(member, "member");
             ContractUtils.RequiresNotNull(bindings, "bindings");
-            ReadOnlyCollection<MemberBinding> roBindings = bindings.ToReadOnly();
+            var roBindings = bindings.ToReadOnly();
             Type memberType;
             ValidateGettableFieldOrPropertyMember(member, out memberType);
             ValidateMemberInitArgs(memberType, roBindings);
@@ -124,10 +124,10 @@ namespace System.Linq.Expressions
 
         private static void ValidateGettableFieldOrPropertyMember(MemberInfo member, out Type memberType)
         {
-            FieldInfo fi = member as FieldInfo;
+            var fi = member as FieldInfo;
             if (fi == null)
             {
-                PropertyInfo pi = member as PropertyInfo;
+                var pi = member as PropertyInfo;
                 if (pi == null)
                 {
                     throw Error.ArgumentMustBeFieldInfoOrPropertInfo();
@@ -148,7 +148,7 @@ namespace System.Linq.Expressions
         {
             for (int i = 0, n = bindings.Count; i < n; i++)
             {
-                MemberBinding b = bindings[i];
+                var b = bindings[i];
                 ContractUtils.RequiresNotNull(b, "bindings");
                 if (!b.Member.DeclaringType.IsAssignableFrom(type))
                 {

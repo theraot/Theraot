@@ -174,7 +174,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static ReadOnlyCollection<Expression> ReturnReadOnlyExpressions(BlockExpression provider, ref object collection)
         {
-            Expression tObj = collection as Expression;
+            var tObj = collection as Expression;
             if (tObj != null)
             {
                 // otherwise make sure only one readonly collection ever gets exposed

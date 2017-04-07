@@ -121,7 +121,7 @@ namespace System.Linq.Expressions
         private static void ValidateElementInitAddMethodInfo(MethodInfo addMethod)
         {
             ValidateMethodInfo(addMethod);
-            ParameterInfo[] pis = addMethod.GetParameters();
+            var pis = addMethod.GetParameters();
             if (pis.Length == 0)
             {
                 throw Error.ElementInitializerMethodWithZeroArgs();

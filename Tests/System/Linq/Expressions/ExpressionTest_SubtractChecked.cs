@@ -93,7 +93,7 @@ namespace MonoTests.System.Linq.Expressions
             // exists in the very simple class we're using for the tests.
             var mi = typeof(OpClass).GetMethod("op_Subtraction");
 
-            BinaryExpression expr = Expression.SubtractChecked(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
+            var expr = Expression.SubtractChecked(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
             Assert.AreEqual(ExpressionType.SubtractChecked, expr.NodeType, "SubtractChecked#07");
             Assert.AreEqual(typeof(OpClass), expr.Type, "SubtractChecked#08");
             Assert.AreEqual(mi, expr.Method, "SubtractChecked#09");
@@ -109,7 +109,7 @@ namespace MonoTests.System.Linq.Expressions
             // exists in the very simple class we're using for the tests.
             var mi = typeof(OpStruct).GetMethod("op_Subtraction");
 
-            BinaryExpression expr = Expression.SubtractChecked(Expression.Constant(new OpStruct()), Expression.Constant(new OpStruct()));
+            var expr = Expression.SubtractChecked(Expression.Constant(new OpStruct()), Expression.Constant(new OpStruct()));
             Assert.AreEqual(ExpressionType.SubtractChecked, expr.NodeType, "SubtractChecked#11");
             Assert.AreEqual(typeof(OpStruct), expr.Type, "SubtractChecked#12");
             Assert.AreEqual(mi, expr.Method, "SubtractChecked#13");
@@ -126,7 +126,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             var l = Expression.Lambda<Func<T>>(
                 Expression.SubtractChecked(Expression.Constant(v1), Expression.Constant(v2)));
-            Func<T> del = l.Compile();
+            var del = l.Compile();
             var res = default(T);
             try
             {
@@ -149,7 +149,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             var l = Expression.Lambda<Func<T>>(
                 Expression.SubtractChecked(Expression.Constant(v1), Expression.Constant(v2)));
-            Func<T> del = l.Compile();
+            var del = l.Compile();
             del();
         }
 

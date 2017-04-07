@@ -208,10 +208,10 @@ namespace MonoTests.System.Linq.Expressions
         private void CTest<T>(ExpressionType node, bool r, T a, T b)
         {
             var pa = Expression.Parameter(typeof(T), "a");
-            ParameterExpression pb = Expression.Parameter(typeof(T), "b");
+            var pb = Expression.Parameter(typeof(T), "b");
 
             var p = Expression.MakeBinary(node, Expression.Constant(a), Expression.Constant(b));
-            Expression<Func<T, T, bool>> pexpr = Expression.Lambda<Func<T, T, bool>>(
+            var pexpr = Expression.Lambda<Func<T, T, bool>>(
                 p, new ParameterExpression[] { pa, pb });
 
             var compiled = pexpr.Compile();

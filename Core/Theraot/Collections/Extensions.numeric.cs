@@ -573,7 +573,7 @@ namespace Theraot.Collections
             int? max = null;
             foreach (var element in source)
             {
-                int? item = selector(element);
+                var item = selector(element);
                 if (max.HasValue)
                 {
                     if (item.HasValue && comparer.Compare(item.Value, max.Value) > 0)
@@ -615,7 +615,7 @@ namespace Theraot.Collections
             long? max = null;
             foreach (var element in source)
             {
-                long? item = selector(element);
+                var item = selector(element);
                 if (max.HasValue)
                 {
                     if (item.HasValue && comparer.Compare(item.Value, max.Value) > 0)
@@ -657,7 +657,7 @@ namespace Theraot.Collections
             double? max = null;
             foreach (var element in source)
             {
-                double? item = selector(element);
+                var item = selector(element);
                 if (max.HasValue)
                 {
                     if (item.HasValue && comparer.Compare(item.Value, max.Value) > 0)
@@ -699,7 +699,7 @@ namespace Theraot.Collections
             float? max = null;
             foreach (var element in source)
             {
-                float? item = selector(element);
+                var item = selector(element);
                 if (max.HasValue)
                 {
                     if (item.HasValue && comparer.Compare(item.Value, max.Value) > 0)
@@ -741,7 +741,7 @@ namespace Theraot.Collections
             decimal? max = null;
             foreach (var element in source)
             {
-                decimal? item = selector(element);
+                var item = selector(element);
                 if (max.HasValue)
                 {
                     if (item.HasValue && comparer.Compare(item.Value, max.Value) > 0)
@@ -1109,7 +1109,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("comparer");
             }
-            TSource min = default(TSource);
+            var min = default(TSource);
             if (typeof(TSource).CanBeNull())
             {
                 foreach (var element in source)
@@ -1346,7 +1346,7 @@ namespace Theraot.Collections
             int? min = null;
             foreach (var element in source)
             {
-                int? item = selector(element);
+                var item = selector(element);
                 if (min.HasValue)
                 {
                     if (item.HasValue && comparer.Compare(min.Value, item.Value) > 0)
@@ -1388,7 +1388,7 @@ namespace Theraot.Collections
             long? min = null;
             foreach (var element in source)
             {
-                long? item = selector(element);
+                var item = selector(element);
                 if (min.HasValue)
                 {
                     if (item.HasValue && comparer.Compare(min.Value, item.Value) > 0)
@@ -1430,7 +1430,7 @@ namespace Theraot.Collections
             double? min = null;
             foreach (var element in source)
             {
-                double? item = selector(element);
+                var item = selector(element);
                 if (min.HasValue)
                 {
                     if (item.HasValue && comparer.Compare(min.Value, item.Value) > 0)
@@ -1472,7 +1472,7 @@ namespace Theraot.Collections
             float? min = null;
             foreach (var element in source)
             {
-                float? item = selector(element);
+                var item = selector(element);
                 if (min.HasValue)
                 {
                     if (item.HasValue && comparer.Compare(min.Value, item.Value) > 0)
@@ -1514,7 +1514,7 @@ namespace Theraot.Collections
             decimal? min = null;
             foreach (var element in source)
             {
-                decimal? item = selector(element);
+                var item = selector(element);
                 if (min.HasValue)
                 {
                     if (item.HasValue && comparer.Compare(min.Value, item.Value) > 0)

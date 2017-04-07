@@ -90,7 +90,7 @@ namespace MonoTests.System.Linq.Expressions
             // exists in the very simple class we're using for the tests.
             var mi = typeof(OpClass).GetMethod("op_BitwiseAnd");
 
-            BinaryExpression expr = Expression.AndAlso(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
+            var expr = Expression.AndAlso(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
             Assert.AreEqual(ExpressionType.AndAlso, expr.NodeType, "AndAlso#05");
             Assert.AreEqual(typeof(OpClass), expr.Type, "AndAlso#06");
             Assert.AreEqual(mi, expr.Method, "AndAlso#07");

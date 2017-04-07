@@ -93,7 +93,7 @@ namespace MonoTests.System.Linq.Expressions
             // exists in the very simple class we're using for the tests.
             var mi = typeof(OpClass).GetMethod("op_Division");
 
-            BinaryExpression expr = Expression.Divide(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
+            var expr = Expression.Divide(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
             Assert.AreEqual(ExpressionType.Divide, expr.NodeType, "Divide#09");
             Assert.AreEqual(typeof(OpClass), expr.Type, "Divide#10");
             Assert.AreEqual(mi, expr.Method, "Divide#11");

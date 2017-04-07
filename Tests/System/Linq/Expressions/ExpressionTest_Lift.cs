@@ -37,7 +37,7 @@ namespace MonoTests.System.Linq.Expressions
         public void TestLiftOnEqual()
         {
             var a = Expression.Constant(1, typeof(int?));
-            ConstantExpression b = Expression.Constant(1, typeof(int?));
+            var b = Expression.Constant(1, typeof(int?));
 
             var cmp = Expression.Equal(a, b);
 
@@ -50,7 +50,7 @@ namespace MonoTests.System.Linq.Expressions
         public void TestLiftOnEqual_ForcedLifted()
         {
             var a = Expression.Constant(1, typeof(int?));
-            ConstantExpression b = Expression.Constant(1, typeof(int?));
+            var b = Expression.Constant(1, typeof(int?));
 
             // Force the lift on equal
             var cmp = Expression.Equal(a, b, true, null);
@@ -84,7 +84,7 @@ namespace MonoTests.System.Linq.Expressions
         public void TestLiftOnEqual_WithMethodInfo()
         {
             var a = Expression.Constant(new OpStruct(), typeof(OpStruct?));
-            ConstantExpression b = Expression.Constant(null, typeof(OpStruct?));
+            var b = Expression.Constant(null, typeof(OpStruct?));
 
             // Force the lift on equal
             var cmp = Expression.Equal(a, b, true, GM("MyCompare"));

@@ -48,14 +48,14 @@ namespace System.Linq.Expressions
 
         internal static MemberExpression Make(Expression expression, MemberInfo member)
         {
-            FieldInfo fi = member as FieldInfo;
+            var fi = member as FieldInfo;
             if (fi != null)
             {
                 return new FieldExpression(expression, fi);
             }
             else
             {
-                PropertyInfo pi = (PropertyInfo)member;
+                var pi = (PropertyInfo)member;
                 return new PropertyExpression(expression, pi);
             }
         }
@@ -193,7 +193,7 @@ namespace System.Linq.Expressions
             RequiresCanRead(expression, "expression");
 
             // bind to public names first
-            FieldInfo fi = expression.Type.GetField(fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
+            var fi = expression.Type.GetField(fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
             if (fi == null)
             {
                 fi = expression.Type.GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
@@ -217,7 +217,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(type, "type");
 
             // bind to public names first
-            FieldInfo fi = type.GetField(fieldName, BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
+            var fi = type.GetField(fieldName, BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
             if (fi == null)
             {
                 fi = type.GetField(fieldName, BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
@@ -245,7 +245,7 @@ namespace System.Linq.Expressions
             RequiresCanRead(expression, "expression");
             ContractUtils.RequiresNotNull(propertyName, "propertyName");
             // bind to public names first
-            PropertyInfo pi = expression.Type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
+            var pi = expression.Type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
             if (pi == null)
             {
                 pi = expression.Type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
@@ -269,7 +269,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(type, "type");
             ContractUtils.RequiresNotNull(propertyName, "propertyName");
             // bind to public names first
-            PropertyInfo pi = type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
+            var pi = type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
             if (pi == null)
             {
                 pi = type.GetProperty(propertyName, BindingFlags.Static | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
@@ -291,7 +291,7 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(property, "property");
 
-            MethodInfo mi = property.GetGetMethod(true) ?? property.GetSetMethod(true);
+            var mi = property.GetGetMethod(true) ?? property.GetSetMethod(true);
 
             if (mi == null)
             {
@@ -331,8 +331,8 @@ namespace System.Linq.Expressions
 
         private static PropertyInfo GetProperty(MethodInfo mi)
         {
-            Type type = mi.DeclaringType;
-            BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic;
+            var type = mi.DeclaringType;
+            var flags = BindingFlags.Public | BindingFlags.NonPublic;
             flags |= (mi.IsStatic) ? BindingFlags.Static : BindingFlags.Instance;
             var props = type.GetProperties(flags);
             foreach (PropertyInfo pi in props)
@@ -358,7 +358,7 @@ namespace System.Linq.Expressions
             // If the type is an interface then the handle for the method got by the compiler will not be the
             // same as that returned by reflection.
             // Check for this condition and try and get the method from reflection.
-            Type type = method.DeclaringType;
+            var type = method.DeclaringType;
             if (type.IsInterface && method.Name == propertyMethod.Name && type.GetMethod(method.Name) == propertyMethod)
             {
                 return true;
@@ -378,10 +378,10 @@ namespace System.Linq.Expressions
         {
             RequiresCanRead(expression, "expression");
             // bind to public names first
-            PropertyInfo pi = expression.Type.GetProperty(propertyOrFieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
+            var pi = expression.Type.GetProperty(propertyOrFieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
             if (pi != null)
                 return Property(expression, pi);
-            FieldInfo fi = expression.Type.GetField(propertyOrFieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
+            var fi = expression.Type.GetField(propertyOrFieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
             if (fi != null)
                 return Field(expression, fi);
             pi = expression.Type.GetProperty(propertyOrFieldName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy);
@@ -404,12 +404,12 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(member, "member");
 
-            FieldInfo fi = member as FieldInfo;
+            var fi = member as FieldInfo;
             if (fi != null)
             {
                 return Field(expression, fi);
             }
-            PropertyInfo pi = member as PropertyInfo;
+            var pi = member as PropertyInfo;
             if (pi != null)
             {
                 return Property(expression, pi);

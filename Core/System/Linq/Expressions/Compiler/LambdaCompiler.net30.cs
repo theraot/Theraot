@@ -60,7 +60,7 @@ namespace System.Linq.Expressions.Compiler
         /// </summary>
         private LambdaCompiler(AnalyzedTree tree, LambdaExpression lambda)
         {
-            Type[] parameterTypes = GetParameterTypes(lambda).AddFirst(typeof(Closure));
+            var parameterTypes = GetParameterTypes(lambda).AddFirst(typeof(Closure));
 
             var method = new DynamicMethod(lambda.Name ?? "lambda_method", lambda.ReturnType, parameterTypes, true);
 
@@ -92,7 +92,7 @@ namespace System.Linq.Expressions.Compiler
         private LambdaCompiler(AnalyzedTree tree, LambdaExpression lambda, MethodBuilder method)
         {
             _hasClosureArgument = tree.Scopes[lambda].NeedsClosure;
-            Type[] paramTypes = GetParameterTypes(lambda);
+            var paramTypes = GetParameterTypes(lambda);
             if (_hasClosureArgument)
             {
                 paramTypes = paramTypes.AddFirst(typeof(Closure));
@@ -183,10 +183,10 @@ namespace System.Linq.Expressions.Compiler
         internal static Delegate Compile(LambdaExpression lambda)
         {
             // 1. Bind lambda
-            AnalyzedTree tree = AnalyzeLambda(ref lambda);
+            var tree = AnalyzeLambda(ref lambda);
 
             // 2. Create lambda compiler
-            LambdaCompiler c = new LambdaCompiler(tree, lambda);
+            var c = new LambdaCompiler(tree, lambda);
 
             // 3. Emit
             c.EmitLambdaBody();
@@ -233,7 +233,7 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(type != null && variable != null);
 
-            LocalBuilder lb = _ilg.DeclareLocal(type);
+            var lb = _ilg.DeclareLocal(type);
             return lb;
         }
 

@@ -197,7 +197,7 @@ namespace System.Linq.Expressions
         {
             RequiresCanRead(array, "array");
 
-            Type arrayType = array.Type;
+            var arrayType = array.Type;
             if (!arrayType.IsArray)
             {
                 throw Error.ArgumentMustBeArray();
@@ -236,7 +236,7 @@ namespace System.Linq.Expressions
         {
             RequiresCanRead(instance, "instance");
             ContractUtils.RequiresNotNull(propertyName, "indexerName");
-            PropertyInfo pi = FindInstanceProperty(instance.Type, propertyName, arguments);
+            var pi = FindInstanceProperty(instance.Type, propertyName, arguments);
             return Property(instance, pi, arguments);
         }
 
@@ -249,8 +249,8 @@ namespace System.Linq.Expressions
         private static PropertyInfo FindInstanceProperty(Type type, string propertyName, Expression[] arguments)
         {
             // bind to public names first
-            BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy;
-            PropertyInfo pi = FindProperty(type, propertyName, arguments, flags);
+            var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy;
+            var pi = FindProperty(type, propertyName, arguments, flags);
             if (pi == null)
             {
                 flags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase | BindingFlags.FlattenHierarchy;
@@ -272,7 +272,7 @@ namespace System.Linq.Expressions
 
         private static string GetArgTypesString(Expression[] arguments)
         {
-            StringBuilder argTypesStr = new StringBuilder();
+            var argTypesStr = new StringBuilder();
             argTypesStr.Append('(');
             for (int i = 0; i < arguments.Length; i++)
             {
@@ -289,7 +289,7 @@ namespace System.Linq.Expressions
         private static PropertyInfo FindProperty(Type type, string propertyName, Expression[] arguments, BindingFlags flags)
         {
             var props = type.GetProperties(flags).Where(x => x.Name.Equals(propertyName, StringComparison.CurrentCultureIgnoreCase));
-            PropertyInfo[] members = new List<PropertyInfo>(props).ToArray();
+            var members = new List<PropertyInfo>(props).ToArray();
             if (members == null || members.Length == 0)
                 return null;
 
@@ -414,22 +414,22 @@ namespace System.Linq.Expressions
                 throw Error.PropertyTypeCannotBeVoid();
 
             ParameterInfo[] getParameters = null;
-            MethodInfo getter = property.GetGetMethod(true);
+            var getter = property.GetGetMethod(true);
             if (getter != null)
             {
                 getParameters = getter.GetParameters();
                 ValidateAccessor(instance, getter, getParameters, ref argList);
             }
 
-            MethodInfo setter = property.GetSetMethod(true);
+            var setter = property.GetSetMethod(true);
             if (setter != null)
             {
-                ParameterInfo[] setParameters = setter.GetParameters();
+                var setParameters = setter.GetParameters();
                 if (setParameters.Length == 0)
                     throw Error.SetterHasNoParams();
 
                 // valueType is the type of the value passed to the setter (last parameter)
-                Type valueType = setParameters[setParameters.Length - 1].ParameterType;
+                var valueType = setParameters[setParameters.Length - 1].ParameterType;
                 if (valueType.IsByRef)
                     throw Error.PropertyCannotHaveRefType();
                 if (setter.ReturnType != typeof(void))
@@ -497,11 +497,11 @@ namespace System.Linq.Expressions
                 var n = indexes.Length;
                 for (int i = 0; i < n; i++)
                 {
-                    Expression arg = arguments[i];
-                    ParameterInfo pi = indexes[i];
+                    var arg = arguments[i];
+                    var pi = indexes[i];
                     RequiresCanRead(arg, "arguments");
 
-                    Type pType = pi.ParameterType;
+                    var pType = pi.ParameterType;
                     if (pType.IsByRef)
                         throw Error.AccessorsCannotHaveByRefArgs();
                     TypeHelper.ValidateType(pType);

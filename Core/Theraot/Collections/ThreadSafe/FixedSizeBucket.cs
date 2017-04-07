@@ -405,7 +405,7 @@ namespace Theraot.Collections.ThreadSafe
             {
                 if (entry != null)
                 {
-                    T yield = default(T);
+                    var yield = default(T);
                     if (entry != BucketHelper.Null)
                     {
                         yield = (T)entry;

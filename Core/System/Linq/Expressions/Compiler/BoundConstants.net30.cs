@@ -160,7 +160,7 @@ namespace System.Linq.Expressions.Compiler
                         // Dup array to keep it on the stack
                         lc.IL.Emit(OpCodes.Dup);
                     }
-                    LocalBuilder local = lc.IL.DeclareLocal(reference.Key.Type);
+                    var local = lc.IL.DeclareLocal(reference.Key.Type);
                     EmitConstantFromArray(lc, reference.Key.Value, local.LocalType);
                     lc.IL.Emit(OpCodes.Stloc, local);
                     _cache.Add(reference.Key, local);

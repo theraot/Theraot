@@ -77,7 +77,7 @@ namespace System.Linq.Expressions
 
         internal Expression ReduceTypeEqual()
         {
-            Type cType = Expression.Type;
+            var cType = Expression.Type;
 
             // For value types (including Void, but not nullables), we can
             // determine the result now
@@ -160,7 +160,7 @@ namespace System.Linq.Expressions
 
         private Expression ReduceConstantTypeEqual()
         {
-            ConstantExpression ce = Expression as ConstantExpression;
+            var ce = Expression as ConstantExpression;
             //TypeEqual(null, T) always returns false.
             if (ce.Value == null)
             {

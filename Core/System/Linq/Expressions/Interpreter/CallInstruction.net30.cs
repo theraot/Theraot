@@ -142,7 +142,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private static CallInstruction GetArrayAccessor(MethodInfo info, int argumentCount)
         {
-            Type arrayType = info.DeclaringType;
+            var arrayType = info.DeclaringType;
             bool isGetter = info.Name == "Get";
             MethodInfo alternativeMethod = null;
 
@@ -237,7 +237,7 @@ namespace System.Linq.Expressions.Interpreter
         /// </summary>
         private static CallInstruction SlowCreate(MethodInfo info, ParameterInfo[] pis)
         {
-            List<Type> types = new List<Type>();
+            var types = new List<Type>();
             if (!info.IsStatic)
                 types.Add(info.DeclaringType);
             foreach (ParameterInfo pi in pis)
@@ -248,7 +248,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 types.Add(info.ReturnType);
             }
-            Type[] arrTypes = types.ToArray();
+            var arrTypes = types.ToArray();
 
             try
             {
@@ -431,7 +431,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private static object[] SkipFirstArg(object[] args)
         {
-            object[] newArgs = new object[args.Length - 1];
+            var newArgs = new object[args.Length - 1];
             for (int i = 0; i < newArgs.Length; i++)
             {
                 newArgs[i] = args[i + 1];
@@ -442,13 +442,13 @@ namespace System.Linq.Expressions.Interpreter
         public override int Run(InterpretedFrame frame)
         {
             int first = frame.StackIndex - _argumentCount;
-            object[] args = new object[_argumentCount];
+            var args = new object[_argumentCount];
             for (int i = 0; i < args.Length; i++)
             {
                 args[i] = frame.Data[first + i];
             }
 
-            object ret = Invoke(args);
+            var ret = Invoke(args);
             if (_target.ReturnType != typeof(void))
             {
                 frame.Data[first] = ret;

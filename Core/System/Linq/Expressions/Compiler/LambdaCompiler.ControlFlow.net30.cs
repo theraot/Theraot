@@ -24,7 +24,7 @@ namespace System.Linq.Expressions.Compiler
 
         private LabelInfo ReferenceLabel(LabelTarget node)
         {
-            LabelInfo result = EnsureLabel(node);
+            var result = EnsureLabel(node);
             result.Reference(_labelBlock);
             return result;
         }
@@ -35,7 +35,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 return new LabelInfo(_ilg, null, false);
             }
-            LabelInfo result = EnsureLabel(node);
+            var result = EnsureLabel(node);
             result.Define(_labelBlock);
             return result;
         }
@@ -237,7 +237,7 @@ namespace System.Linq.Expressions.Compiler
             var n = block.ExpressionCount;
             for (int i = 0; i < n; i++)
             {
-                Expression e = block.GetExpression(i);
+                var e = block.GetExpression(i);
 
                 var label = e as LabelExpression;
                 if (label != null)

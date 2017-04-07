@@ -129,7 +129,7 @@ namespace System.Linq.Expressions
             }
             for (int i = 0, n = initializers.Count; i < n; i++)
             {
-                ElementInit element = initializers[i];
+                var element = initializers[i];
                 ContractUtils.RequiresNotNull(element, "initializers");
                 ValidateCallInstanceType(listType, element.AddMethod);
             }

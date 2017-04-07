@@ -93,7 +93,7 @@ namespace MonoTests.System.Linq.Expressions
             // exists in the very simple class we're using for the tests.
             var mi = typeof(OpClass).GetMethod("op_Addition");
 
-            BinaryExpression expr = Expression.AddChecked(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
+            var expr = Expression.AddChecked(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
             Assert.AreEqual(ExpressionType.AddChecked, expr.NodeType, "AddChecked#07");
             Assert.AreEqual(typeof(OpClass), expr.Type, "AddChecked#08");
             Assert.AreEqual(mi, expr.Method, "AddChecked#09");
@@ -109,7 +109,7 @@ namespace MonoTests.System.Linq.Expressions
             // exists in the very simple class we're using for the tests.
             var mi = typeof(OpStruct).GetMethod("op_Addition");
 
-            BinaryExpression expr = Expression.AddChecked(Expression.Constant(new OpStruct()), Expression.Constant(new OpStruct()));
+            var expr = Expression.AddChecked(Expression.Constant(new OpStruct()), Expression.Constant(new OpStruct()));
             Assert.AreEqual(ExpressionType.AddChecked, expr.NodeType, "AddChecked#11");
             Assert.AreEqual(typeof(OpStruct), expr.Type, "AddChecked#12");
             Assert.AreEqual(mi, expr.Method, "AddChecked#13");
@@ -126,7 +126,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             var l = Expression.Lambda<Func<T>>(
                 Expression.AddChecked(Expression.Constant(v1), Expression.Constant(v2)));
-            Func<T> del = l.Compile();
+            var del = l.Compile();
             var res = default(T);
             try
             {
@@ -149,7 +149,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             var l = Expression.Lambda<Func<T>>(
                 Expression.AddChecked(Expression.Constant(v1), Expression.Constant(v2)));
-            Func<T> del = l.Compile();
+            var del = l.Compile();
             del();
         }
 

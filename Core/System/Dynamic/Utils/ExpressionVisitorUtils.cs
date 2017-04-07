@@ -15,8 +15,8 @@ namespace System.Dynamic.Utils
             var n = nodes.ArgumentCount;
             for (int i = 0; i < n; i++)
             {
-                Expression curNode = nodes.GetArgument(i);
-                Expression node = visitor.Visit(curNode);
+                var curNode = nodes.GetArgument(i);
+                var node = visitor.Visit(curNode);
 
                 if (newNodes != null)
                 {

@@ -79,7 +79,7 @@ namespace System.Threading
         public static T Read<T>(ref T location)
             where T : class
         {
-            T copy = location;
+            var copy = location;
             Thread.MemoryBarrier();
             return copy;
         }

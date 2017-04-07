@@ -120,7 +120,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             var mi = typeof(MemberClass).GetMethod("get_TestProperty2");
 
-            MemberAssignment expr = Expression.Bind(mi, Expression.Constant(1));
+            var expr = Expression.Bind(mi, Expression.Constant(1));
             Assert.AreEqual(MemberBindingType.Assignment, expr.BindingType, "Bind#11");
             Assert.AreEqual("TestProperty2 = 1", expr.ToString(), "Bind#12");
             Assert.AreEqual(MemberClass.GetRwPropertyInfo(), expr.Member, "Bind#13");
@@ -131,7 +131,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             var mi = typeof(MemberClass).GetMethod("get_StaticProperty");
 
-            MemberAssignment expr = Expression.Bind(mi, Expression.Constant(1));
+            var expr = Expression.Bind(mi, Expression.Constant(1));
             Assert.AreEqual(MemberBindingType.Assignment, expr.BindingType, "Bind#14");
             Assert.AreEqual("StaticProperty = 1", expr.ToString(), "Bind#15");
             Assert.AreEqual(MemberClass.GetStaticPropertyInfo(), expr.Member, "Bind#16");

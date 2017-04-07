@@ -101,7 +101,7 @@ namespace MonoTests.System.Linq.Expressions
             // exists in the very simple class we're using for the tests.
             var mi = typeof(OpClass).GetMethod("op_LeftShift");
 
-            BinaryExpression expr = Expression.LeftShift(Expression.Constant(new OpClass()), Expression.Constant(1));
+            var expr = Expression.LeftShift(Expression.Constant(new OpClass()), Expression.Constant(1));
             Assert.AreEqual(ExpressionType.LeftShift, expr.NodeType, "LeftShift#09");
             Assert.AreEqual(typeof(OpClass), expr.Type, "LeftShift#10");
             Assert.AreEqual(mi, expr.Method, "LeftShift#11");

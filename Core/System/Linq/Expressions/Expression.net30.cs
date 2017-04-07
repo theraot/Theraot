@@ -294,7 +294,7 @@ namespace System.Linq.Expressions
             if (items != null)
             {
                 // this is called a lot, avoid allocating an enumerator if we can...
-                IList<Expression> listItems = items as IList<Expression>;
+                var listItems = items as IList<Expression>;
                 if (listItems != null)
                 {
                     for (int i = 0; i < listItems.Count; i++)
@@ -322,7 +322,7 @@ namespace System.Linq.Expressions
             switch (expression.NodeType)
             {
                 case ExpressionType.Index:
-                    IndexExpression index = (IndexExpression)expression;
+                    var index = (IndexExpression)expression;
                     if (index.Indexer != null)
                     {
                         canWrite = index.Indexer.CanWrite;
@@ -334,15 +334,15 @@ namespace System.Linq.Expressions
                     break;
 
                 case ExpressionType.MemberAccess:
-                    MemberExpression member = (MemberExpression)expression;
-                    PropertyInfo prop = member.Member as PropertyInfo;
+                    var member = (MemberExpression)expression;
+                    var prop = member.Member as PropertyInfo;
                     if (prop != null)
                     {
                         canWrite = prop.CanWrite;
                     }
                     else
                     {
-                        FieldInfo field = member.Member as FieldInfo;
+                        var field = member.Member as FieldInfo;
                         if (field != null)
                         {
                             canWrite = !(field.IsInitOnly || field.IsLiteral);

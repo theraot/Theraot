@@ -80,7 +80,7 @@ namespace System.Threading.Tasks
         {
             get
             {
-                Task currentTask = Task.InternalCurrent;
+                var currentTask = Task.InternalCurrent;
                 return ((currentTask != null)
                     && ((currentTask.CreationOptions & TaskCreationOptions.HideScheduler) == 0)
                     ) ? currentTask.ExecutingTaskScheduler : null;
@@ -155,13 +155,13 @@ namespace System.Threading.Tasks
         {
             // this can throw InvalidOperationException indicating that they are unable to provide the info
             // at the moment. We should let the debugger receive that exception so that it can indicate it in the UI
-            IEnumerable<Task> activeTasksSource = GetScheduledTasks();
+            var activeTasksSource = GetScheduledTasks();
 
             if (activeTasksSource == null)
                 return null;
 
             // If it can be cast to an array, use it directly
-            Task[] activeTasksArray = activeTasksSource as Task[];
+            var activeTasksArray = activeTasksSource as Task[];
             if (activeTasksArray == null)
             {
                 activeTasksArray = (new List<Task>(activeTasksSource)).ToArray();

@@ -119,8 +119,8 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             // We didn't find an outward jump. Look for a jump across blocks
-            LabelScopeInfo def = FirstDefinition();
-            LabelScopeInfo common = CommonNode(def, reference, b => b.Parent);
+            var def = FirstDefinition();
+            var common = CommonNode(def, reference, b => b.Parent);
 
             // Validate that we aren't jumping across a finally
             for (LabelScopeInfo j = reference; j != common; j = j.Parent)
@@ -176,7 +176,7 @@ namespace System.Linq.Expressions.Interpreter
                 return true;
             }
 
-            HashSet<LabelScopeInfo> definitions = _definitions as HashSet<LabelScopeInfo>;
+            var definitions = _definitions as HashSet<LabelScopeInfo>;
             if (definitions != null)
             {
                 return definitions.Contains(scope);
@@ -194,7 +194,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private LabelScopeInfo FirstDefinition()
         {
-            LabelScopeInfo scope = _definitions as LabelScopeInfo;
+            var scope = _definitions as LabelScopeInfo;
             if (scope != null)
             {
                 return scope;
@@ -214,7 +214,7 @@ namespace System.Linq.Expressions.Interpreter
             }
             else
             {
-                HashSet<LabelScopeInfo> set = _definitions as HashSet<LabelScopeInfo>;
+                var set = _definitions as HashSet<LabelScopeInfo>;
                 if (set == null)
                 {
                     _definitions = set = new HashSet<LabelScopeInfo>() { (LabelScopeInfo)_definitions };

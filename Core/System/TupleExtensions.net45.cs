@@ -2092,7 +2092,7 @@ namespace System
         public override int GetHashCode()
         {
             // We want to have a limited hash in this case.  We'll use the last 8 elements of the tuple
-            ITupleInternal rest = Rest as ITupleInternal;
+            var rest = Rest as ITupleInternal;
             if (rest == null)
             {
                 return ValueTuple.CombineHashCodes(EqualityComparer<T1>.Default.GetHashCode(Item1),
@@ -2177,7 +2177,7 @@ namespace System
         private int GetHashCodeCore(IEqualityComparer comparer)
         {
             // We want to have a limited hash in this case.  We'll use the last 8 elements of the tuple
-            ITupleInternal rest = Rest as ITupleInternal;
+            var rest = Rest as ITupleInternal;
             if (rest == null)
             {
                 return ValueTuple.CombineHashCodes(comparer.GetHashCode(Item1), comparer.GetHashCode(Item2), comparer.GetHashCode(Item3),
@@ -2244,7 +2244,7 @@ namespace System
         /// </remarks>
         public override string ToString()
         {
-            ITupleInternal rest = Rest as ITupleInternal;
+            var rest = Rest as ITupleInternal;
             if (rest == null)
             {
                 return "(" + (ReferenceEquals(Item1, null) ? "" : Item1.ToString()) + ", " + (ReferenceEquals(Item2, null) ? "" : Item2.ToString()) + ", " + (ReferenceEquals(Item3, null) ? "" : Item3.ToString()) + ", " + (ReferenceEquals(Item4, null) ? "" : Item4.ToString()) + ", " + (ReferenceEquals(Item5, null) ? "" : Item5.ToString()) + ", " + (ReferenceEquals(Item6, null) ? "" : Item6.ToString()) + ", " + (ReferenceEquals(Item7, null) ? "" : Item7.ToString()) + ", " + Rest.ToString() + ")";
@@ -2257,7 +2257,7 @@ namespace System
 
         string ITupleInternal.ToStringEnd()
         {
-            ITupleInternal rest = Rest as ITupleInternal;
+            var rest = Rest as ITupleInternal;
             if (rest == null)
             {
                 return (ReferenceEquals(Item1, null) ? "" : Item1.ToString()) + ", " + (ReferenceEquals(Item2, null) ? "" : Item2.ToString()) + ", " + (ReferenceEquals(Item3, null) ? "" : Item3.ToString()) + ", " + (ReferenceEquals(Item4, null) ? "" : Item4.ToString()) + ", " + (ReferenceEquals(Item5, null) ? "" : Item5.ToString()) + ", " + (ReferenceEquals(Item6, null) ? "" : Item6.ToString()) + ", " + (ReferenceEquals(Item7, null) ? "" : Item7.ToString()) + ", " + Rest.ToString() + ")";
@@ -2272,7 +2272,7 @@ namespace System
         {
             get
             {
-                ITupleInternal rest = Rest as ITupleInternal;
+                var rest = Rest as ITupleInternal;
                 return rest == null ? 8 : 7 + rest.Size;
             }
         }

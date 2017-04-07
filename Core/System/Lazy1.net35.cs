@@ -163,7 +163,7 @@ namespace System
 
         private T CachingNoneMode(Func<T> valueFactory, HashSet<Thread> threads)
         {
-            Thread currentThread = Thread.CurrentThread;
+            var currentThread = Thread.CurrentThread;
             if (Thread.VolatileRead(ref _isValueCreated) == 0)
             {
                 try
@@ -248,7 +248,7 @@ namespace System
 
         private T NoneMode(Func<T> valueFactory, HashSet<Thread> threads)
         {
-            Thread currentThread = Thread.CurrentThread;
+            var currentThread = Thread.CurrentThread;
             if (Thread.VolatileRead(ref _isValueCreated) == 0)
             {
                 try

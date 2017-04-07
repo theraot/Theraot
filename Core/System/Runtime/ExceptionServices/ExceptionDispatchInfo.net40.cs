@@ -62,7 +62,7 @@ namespace System.Runtime.ExceptionServices
                 // ---
                 // Code by Miguel de Icaza
 
-                FieldInfo remoteStackTraceString =
+                var remoteStackTraceString =
                     typeof(Exception).GetField("_remoteStackTraceString",
                     BindingFlags.Instance | BindingFlags.NonPublic); // MS.Net
 
@@ -78,7 +78,7 @@ namespace System.Runtime.ExceptionServices
 
         private static void SetStackTrace(Exception exception, object value)
         {
-            FieldInfo remoteStackTraceString = GetFieldInfo();
+            var remoteStackTraceString = GetFieldInfo();
             remoteStackTraceString.SetValue(exception, value);
         }
 

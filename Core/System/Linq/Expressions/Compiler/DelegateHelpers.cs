@@ -21,10 +21,10 @@ namespace System.Linq.Expressions.Compiler
         private static Type MakeNewCustomDelegate(Type[] types)
         {
 #if FEATURE_CORECLR
-            Type returnType = types[types.Length - 1];
-            Type[] parameters = types.RemoveLast();
+            var returnType = types[types.Length - 1];
+            var parameters = types.RemoveLast();
 
-            TypeBuilder builder = AssemblyGen.DefineDelegateType("Delegate" + types.Length);
+            var builder = AssemblyGen.DefineDelegateType("Delegate" + types.Length);
             builder.DefineConstructor(CtorAttributes, CallingConventions.Standard, s_delegateCtorSignature).SetImplementationFlags(ImplAttributes);
             builder.DefineMethod("Invoke", InvokeAttributes, returnType, parameters).SetImplementationFlags(ImplAttributes);
             return builder.CreateType();
@@ -42,7 +42,7 @@ namespace System.Linq.Expressions.Compiler
         {
             lock (_DelegateCache)
             {
-                TypeInfo curTypeInfo = _DelegateCache;
+                var curTypeInfo = _DelegateCache;
 
                 // arguments & return type
                 for (int i = 0; i < types.Length; i++)

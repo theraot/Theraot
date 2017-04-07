@@ -67,7 +67,7 @@ namespace System.Runtime.CompilerServices
             protected internal override Expression VisitLambda<T>(Expression<T> node)
             {
                 _shadowedVars.Push(new Set<ParameterExpression>(node.Parameters));
-                Expression b = Visit(node.Body);
+                var b = Visit(node.Body);
                 _shadowedVars.Pop();
                 if (b == node.Body)
                 {
@@ -100,8 +100,8 @@ namespace System.Runtime.CompilerServices
                 {
                     _shadowedVars.Push(new Set<ParameterExpression>(new[] { node.Variable }));
                 }
-                Expression b = Visit(node.Body);
-                Expression f = Visit(node.Filter);
+                var b = Visit(node.Body);
+                var f = Visit(node.Filter);
                 if (node.Variable != null)
                 {
                     _shadowedVars.Pop();
@@ -121,7 +121,7 @@ namespace System.Runtime.CompilerServices
                 var indexes = new int[count];
                 for (int i = 0; i < count; i++)
                 {
-                    IStrongBox box = GetBox(node.Variables[i]);
+                    var box = GetBox(node.Variables[i]);
                     if (box == null)
                     {
                         indexes[i] = vars.Count;
@@ -158,7 +158,7 @@ namespace System.Runtime.CompilerServices
 
             protected internal override Expression VisitParameter(ParameterExpression node)
             {
-                IStrongBox box = GetBox(node);
+                var box = GetBox(node);
                 if (box == null)
                 {
                     return node;
@@ -177,8 +177,8 @@ namespace System.Runtime.CompilerServices
                     }
                 }
 
-                HoistedLocals scope = _scope;
-                object[] locals = _locals;
+                var scope = _scope;
+                var locals = _locals;
                 while (true)
                 {
                     int hoistIndex;

@@ -174,8 +174,8 @@ namespace System.Linq.Expressions.Compiler
             }
 
             // We didn't find an outward jump. Look for a jump across blocks
-            LabelScopeInfo def = _definitions.First();
-            LabelScopeInfo common = Helpers.CommonNode(def, reference, b => b.Parent);
+            var def = _definitions.First();
+            var common = Helpers.CommonNode(def, reference, b => b.Parent);
 
             // Assume we can do a ret/branch
             _opCode = _canReturn ? OpCodes.Ret : OpCodes.Br;

@@ -128,7 +128,7 @@ namespace System.Linq.Expressions
         internal static string ExpressionToString(Expression node)
         {
             Debug.Assert(node != null);
-            ExpressionStringBuilder esb = new ExpressionStringBuilder();
+            var esb = new ExpressionStringBuilder();
             esb.Visit(node);
             return esb.ToString();
         }
@@ -136,7 +136,7 @@ namespace System.Linq.Expressions
         internal static string CatchBlockToString(CatchBlock node)
         {
             Debug.Assert(node != null);
-            ExpressionStringBuilder esb = new ExpressionStringBuilder();
+            var esb = new ExpressionStringBuilder();
             esb.VisitCatchBlock(node);
             return esb.ToString();
         }
@@ -144,7 +144,7 @@ namespace System.Linq.Expressions
         internal static string SwitchCaseToString(SwitchCase node)
         {
             Debug.Assert(node != null);
-            ExpressionStringBuilder esb = new ExpressionStringBuilder();
+            var esb = new ExpressionStringBuilder();
             esb.VisitSwitchCase(node);
             return esb.ToString();
         }
@@ -155,7 +155,7 @@ namespace System.Linq.Expressions
         internal static string MemberBindingToString(MemberBinding node)
         {
             Debug.Assert(node != null);
-            ExpressionStringBuilder esb = new ExpressionStringBuilder();
+            var esb = new ExpressionStringBuilder();
             esb.VisitMemberBinding(node);
             return esb.ToString();
         }
@@ -166,7 +166,7 @@ namespace System.Linq.Expressions
         internal static string ElementInitBindingToString(ElementInit node)
         {
             Debug.Assert(node != null);
-            ExpressionStringBuilder esb = new ExpressionStringBuilder();
+            var esb = new ExpressionStringBuilder();
             esb.VisitElementInit(node);
             return esb.ToString();
         }
@@ -416,7 +416,7 @@ namespace System.Linq.Expressions
             {
                 Out("ref ");
             }
-            string name = node.Name;
+            var name = node.Name;
             if (String.IsNullOrEmpty(name))
             {
                 Out("Param_" + GetParamId(node));
@@ -478,7 +478,7 @@ namespace System.Linq.Expressions
         {
             if (node.Value != null)
             {
-                string sValue = node.Value.ToString();
+                var sValue = node.Value.ToString();
                 if (node.Value is string)
                 {
                     Out("\"");
@@ -505,7 +505,7 @@ namespace System.Linq.Expressions
 
         protected internal override Expression VisitDebugInfo(DebugInfoExpression node)
         {
-            string s = String.Format(
+            var s = String.Format(
                 CultureInfo.CurrentCulture,
                 "<DebugInfo({0}: {1}, {2}, {3}, {4})>",
                 node.Document.FileName,
@@ -561,7 +561,7 @@ namespace System.Linq.Expressions
             var n = node.Bindings.Count;
             for (int i = 0; i < n; i++)
             {
-                MemberBinding b = node.Bindings[i];
+                var b = node.Bindings[i];
                 if (i > 0)
                 {
                     Out(", ");
@@ -617,7 +617,7 @@ namespace System.Linq.Expressions
         protected override ElementInit VisitElementInit(ElementInit node)
         {
             Out(node.AddMethod.ToString());
-            string sep = ", ";
+            var sep = ", ";
             VisitExpressions('(', node.Arguments, ')', sep);
             return node;
         }
@@ -626,7 +626,7 @@ namespace System.Linq.Expressions
         {
             Out("Invoke(");
             Visit(node.Expression);
-            string sep = ", ";
+            var sep = ", ";
             var n = node.Arguments.Count;
             for (int i = 0; i < n; i++)
             {
@@ -640,7 +640,7 @@ namespace System.Linq.Expressions
         protected internal override Expression VisitMethodCall(MethodCallExpression node)
         {
             int start = 0;
-            Expression ob = node.Object;
+            var ob = node.Object;
 
             if (TypeHelper.HasAttribute<ExtensionAttribute>(node.Method))
             {
@@ -698,7 +698,7 @@ namespace System.Linq.Expressions
                 }
                 if (members != null)
                 {
-                    string name = members[i].Name;
+                    var name = members[i].Name;
                     Out(name);
                     Out(" = ");
                 }

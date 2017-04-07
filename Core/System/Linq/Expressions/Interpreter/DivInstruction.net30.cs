@@ -44,8 +44,8 @@ namespace System.Linq.Expressions.Interpreter
         {
             public override int Run(InterpretedFrame frame)
             {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
+                var l = frame.Data[frame.StackIndex - 2];
+                var r = frame.Data[frame.StackIndex - 1];
                 if (l == null || r == null)
                 {
                     frame.Data[frame.StackIndex - 2] = null;
@@ -63,8 +63,8 @@ namespace System.Linq.Expressions.Interpreter
         {
             public override int Run(InterpretedFrame frame)
             {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
+                var l = frame.Data[frame.StackIndex - 2];
+                var r = frame.Data[frame.StackIndex - 1];
                 if (l == null || r == null)
                 {
                     frame.Data[frame.StackIndex - 2] = null;
@@ -82,8 +82,8 @@ namespace System.Linq.Expressions.Interpreter
         {
             public override int Run(InterpretedFrame frame)
             {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
+                var l = frame.Data[frame.StackIndex - 2];
+                var r = frame.Data[frame.StackIndex - 1];
                 if (l == null || r == null)
                 {
                     frame.Data[frame.StackIndex - 2] = null;
@@ -101,8 +101,8 @@ namespace System.Linq.Expressions.Interpreter
         {
             public override int Run(InterpretedFrame frame)
             {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
+                var l = frame.Data[frame.StackIndex - 2];
+                var r = frame.Data[frame.StackIndex - 1];
                 if (l == null || r == null)
                 {
                     frame.Data[frame.StackIndex - 2] = null;
@@ -120,8 +120,8 @@ namespace System.Linq.Expressions.Interpreter
         {
             public override int Run(InterpretedFrame frame)
             {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
+                var l = frame.Data[frame.StackIndex - 2];
+                var r = frame.Data[frame.StackIndex - 1];
                 if (l == null || r == null)
                 {
                     frame.Data[frame.StackIndex - 2] = null;
@@ -139,8 +139,8 @@ namespace System.Linq.Expressions.Interpreter
         {
             public override int Run(InterpretedFrame frame)
             {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
+                var l = frame.Data[frame.StackIndex - 2];
+                var r = frame.Data[frame.StackIndex - 1];
                 if (l == null || r == null)
                 {
                     frame.Data[frame.StackIndex - 2] = null;
@@ -158,8 +158,8 @@ namespace System.Linq.Expressions.Interpreter
         {
             public override int Run(InterpretedFrame frame)
             {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
+                var l = frame.Data[frame.StackIndex - 2];
+                var r = frame.Data[frame.StackIndex - 1];
                 if (l == null || r == null)
                 {
                     frame.Data[frame.StackIndex - 2] = null;
@@ -177,8 +177,8 @@ namespace System.Linq.Expressions.Interpreter
         {
             public override int Run(InterpretedFrame frame)
             {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
+                var l = frame.Data[frame.StackIndex - 2];
+                var r = frame.Data[frame.StackIndex - 1];
                 if (l == null || r == null)
                 {
                     frame.Data[frame.StackIndex - 2] = null;
@@ -268,8 +268,8 @@ namespace System.Linq.Expressions.Interpreter
         {
             public override int Run(InterpretedFrame frame)
             {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
+                var l = frame.Data[frame.StackIndex - 2];
+                var r = frame.Data[frame.StackIndex - 1];
                 if (l == null || r == null)
                 {
                     frame.Data[frame.StackIndex - 2] = null;
@@ -287,8 +287,8 @@ namespace System.Linq.Expressions.Interpreter
         {
             public override int Run(InterpretedFrame frame)
             {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
+                var l = frame.Data[frame.StackIndex - 2];
+                var r = frame.Data[frame.StackIndex - 1];
                 if (l == null || r == null)
                 {
                     frame.Data[frame.StackIndex - 2] = null;
@@ -306,8 +306,8 @@ namespace System.Linq.Expressions.Interpreter
         {
             public override int Run(InterpretedFrame frame)
             {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
+                var l = frame.Data[frame.StackIndex - 2];
+                var r = frame.Data[frame.StackIndex - 1];
                 if (l == null || r == null)
                 {
                     frame.Data[frame.StackIndex - 2] = null;
@@ -325,8 +325,8 @@ namespace System.Linq.Expressions.Interpreter
         {
             public override int Run(InterpretedFrame frame)
             {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
+                var l = frame.Data[frame.StackIndex - 2];
+                var r = frame.Data[frame.StackIndex - 1];
                 if (l == null || r == null)
                 {
                     frame.Data[frame.StackIndex - 2] = null;
@@ -344,8 +344,8 @@ namespace System.Linq.Expressions.Interpreter
         {
             public override int Run(InterpretedFrame frame)
             {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
+                var l = frame.Data[frame.StackIndex - 2];
+                var r = frame.Data[frame.StackIndex - 1];
                 if (l == null || r == null)
                 {
                     frame.Data[frame.StackIndex - 2] = null;
@@ -363,8 +363,8 @@ namespace System.Linq.Expressions.Interpreter
         {
             public override int Run(InterpretedFrame frame)
             {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
+                var l = frame.Data[frame.StackIndex - 2];
+                var r = frame.Data[frame.StackIndex - 1];
                 if (l == null || r == null)
                 {
                     frame.Data[frame.StackIndex - 2] = null;
@@ -382,8 +382,8 @@ namespace System.Linq.Expressions.Interpreter
         {
             public override int Run(InterpretedFrame frame)
             {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
+                var l = frame.Data[frame.StackIndex - 2];
+                var r = frame.Data[frame.StackIndex - 1];
                 if (l == null || r == null)
                 {
                     frame.Data[frame.StackIndex - 2] = null;
@@ -401,8 +401,8 @@ namespace System.Linq.Expressions.Interpreter
         {
             public override int Run(InterpretedFrame frame)
             {
-                object l = frame.Data[frame.StackIndex - 2];
-                object r = frame.Data[frame.StackIndex - 1];
+                var l = frame.Data[frame.StackIndex - 2];
+                var r = frame.Data[frame.StackIndex - 1];
                 if (l == null || r == null)
                 {
                     frame.Data[frame.StackIndex - 2] = null;

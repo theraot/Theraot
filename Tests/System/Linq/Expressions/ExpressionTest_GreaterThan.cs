@@ -116,11 +116,11 @@ namespace MonoTests.System.Linq.Expressions
         public void TestCompiled()
         {
             var a = Expression.Parameter(typeof(int), "a");
-            ParameterExpression b = Expression.Parameter(typeof(int), "b");
+            var b = Expression.Parameter(typeof(int), "b");
 
             var p = Expression.GreaterThan(a, b);
 
-            Expression<Func<int, int, bool>> pexpr = Expression.Lambda<Func<int, int, bool>>(
+            var pexpr = Expression.Lambda<Func<int, int, bool>>(
                 p, new ParameterExpression[] { a, b });
 
             var compiled = pexpr.Compile();

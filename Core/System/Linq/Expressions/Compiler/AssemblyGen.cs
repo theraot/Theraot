@@ -50,7 +50,7 @@ namespace System.Linq.Expressions.Compiler
             ContractUtils.RequiresNotNull(name, "name");
             ContractUtils.RequiresNotNull(parent, "parent");
 
-            StringBuilder sb = new StringBuilder(name);
+            var sb = new StringBuilder(name);
 
             int index = Interlocked.Increment(ref _index);
             sb.Append("$");

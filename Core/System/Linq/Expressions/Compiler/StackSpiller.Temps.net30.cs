@@ -156,7 +156,7 @@ namespace System.Linq.Expressions.Compiler
                     return;
                 }
 
-                Result exp = _self.RewriteExpression(node, _stack);
+                var exp = _self.RewriteExpression(node, _stack);
                 _action |= exp.Action;
                 _stack = Stack.NonEmpty;
 
@@ -191,9 +191,9 @@ namespace System.Linq.Expressions.Compiler
 
                     if (_action == RewriteAction.SpillStack)
                     {
-                        Expression[] clone = _expressions;
+                        var clone = _expressions;
                         int count = clone.Length;
-                        List<Expression> comma = new List<Expression>(count + 1);
+                        var comma = new List<Expression>(count + 1);
                         for (int i = 0; i < count; i++)
                         {
                             if (clone[i] != null)
@@ -271,7 +271,7 @@ namespace System.Linq.Expressions.Compiler
                         return _expressions;
                     }
 
-                    Expression[] clone = new Expression[count];
+                    var clone = new Expression[count];
                     Array.Copy(_expressions, first, clone, 0, count);
                     return clone;
                 }
@@ -306,7 +306,7 @@ namespace System.Linq.Expressions.Compiler
         /// </summary>
         private ParameterExpression ToTemp(Expression expression, out Expression save)
         {
-            ParameterExpression temp = MakeTemp(expression.Type);
+            var temp = MakeTemp(expression.Type);
             save = Expression.Assign(temp, expression);
             return temp;
         }

@@ -90,7 +90,7 @@ namespace MonoTests.System.Linq.Expressions
             // exists in the very simple class we're using for the tests.
             var mi = typeof(OpClass).GetMethod("op_BitwiseOr");
 
-            BinaryExpression expr = Expression.OrElse(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
+            var expr = Expression.OrElse(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
             Assert.AreEqual(ExpressionType.OrElse, expr.NodeType, "OrElse#05");
             Assert.AreEqual(typeof(OpClass), expr.Type, "OrElse#06");
             Assert.AreEqual(mi, expr.Method, "OrElse#07");

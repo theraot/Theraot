@@ -337,7 +337,7 @@ namespace System.Linq.Expressions
 
         private static void ValidateAnonymousTypeMember(ref MemberInfo member, out Type memberType)
         {
-            FieldInfo field = member as FieldInfo;
+            var field = member as FieldInfo;
             if (field != null)
             {
                 if (field.IsStatic)
@@ -348,7 +348,7 @@ namespace System.Linq.Expressions
                 return;
             }
 
-            PropertyInfo pi = member as PropertyInfo;
+            var pi = member as PropertyInfo;
             if (pi != null)
             {
                 if (!pi.CanRead)
@@ -363,7 +363,7 @@ namespace System.Linq.Expressions
                 return;
             }
 
-            MethodInfo method = member as MethodInfo;
+            var method = member as MethodInfo;
             if (method != null)
             {
                 if (method.IsStatic)

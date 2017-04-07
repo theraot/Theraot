@@ -19,7 +19,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public sealed override int Run(InterpretedFrame frame)
         {
-            object obj = frame.Pop();
+            var obj = frame.Pop();
             object converted;
             if (obj == null)
             {

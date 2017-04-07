@@ -35,7 +35,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 throw Error.QueueEmpty();
             }
-            V result = queue.Dequeue();
+            var result = queue.Dequeue();
             if (queue.Count == 0)
             {
                 _data.Remove(key);
