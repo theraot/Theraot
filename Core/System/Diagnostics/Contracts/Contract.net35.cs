@@ -234,6 +234,7 @@ namespace System.Diagnostics.Contracts
         /// Returns whether the <paramref name="predicate"/> returns <c>true</c>
         /// for any element in the <paramref name="collection"/>.
         /// </summary>
+        /// <typeparam name="T">The type that is contained in collection.</typeparam>
         /// <param name="collection">The collection from which elements will be drawn from to pass to <paramref name="predicate"/>.</param>
         /// <param name="predicate">Function that is evaluated on elements from <paramref name="collection"/>.</param>
         /// <returns><c>true</c> if and only if <paramref name="predicate"/> returns <c>true</c> for an element in
@@ -301,6 +302,7 @@ namespace System.Diagnostics.Contracts
         /// Returns whether the <paramref name="predicate"/> returns <c>true</c>
         /// for all elements in the <paramref name="collection"/>.
         /// </summary>
+        /// <typeparam name="T">The type that is contained in collection.</typeparam>
         /// <param name="collection">The collection from which elements will be drawn from to pass to <paramref name="predicate"/>.</param>
         /// <param name="predicate">Function that is evaluated on elements from <paramref name="collection"/>.</param>
         /// <returns><c>true</c> if and only if <paramref name="predicate"/> returns <c>true</c> for all elements in
@@ -426,6 +428,7 @@ namespace System.Diagnostics.Contracts
         /// <summary>
         /// Specifies a contract such that the expression <paramref name="condition"/> must be true before the enclosing method or property is invoked.
         /// </summary>
+        /// <typeparam name="TException">The exception to throw if the condition is false.</typeparam>
         /// <param name="condition">Boolean expression representing the contract.</param>
         /// <remarks>
         /// This call must happen at the beginning of a method or property before any other code.
@@ -443,6 +446,7 @@ namespace System.Diagnostics.Contracts
         /// <summary>
         /// Specifies a contract such that the expression <paramref name="condition"/> must be true before the enclosing method or property is invoked.
         /// </summary>
+        /// <typeparam name="TException">The exception to throw if the condition is false.</typeparam>
         /// <param name="condition">Boolean expression representing the contract.</param>
         /// <param name="userMessage">If it is not a constant string literal, then the contract may not be understood by tools.</param>
         /// <remarks>
