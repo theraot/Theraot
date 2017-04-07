@@ -1,36 +1,32 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System.Diagnostics;
 using System.Threading;
+using Theraot.Core;
 
 namespace System.Dynamic.Utils
 {
-    /// <summary>
-    /// Provides a dictionary-like object used for caches which holds onto a maximum
-    /// number of elements specified at construction time.
-    /// </summary>
     internal class CacheDict<TKey, TValue>
     {
         // cache size is always ^2.
         // items are placed at [hash ^ mask]
         // new item will displace previous one at the same location.
-        private readonly int mask;
+        private readonly int _mask;
 
-        private readonly Entry[] entries;
+        private readonly Entry[] _entries;
 
         // class, to ensure atomic updates.
         private sealed class Entry
         {
-            internal readonly int hash;
-            internal readonly TKey key;
-            internal readonly TValue value;
+            internal readonly int _hash;
+            internal readonly TKey _key;
+            internal readonly TValue _value;
 
             internal Entry(int hash, TKey key, TValue value)
             {
-                this.hash = hash;
-                this.key = key;
-                this.value = value;
+                _hash = hash;
+                _key = key;
+                _value = value;
             }
         }
 
@@ -40,40 +36,20 @@ namespace System.Dynamic.Utils
         /// <param name="size">The maximum number of elements to store will be this number aligned to next ^2.</param>
         internal CacheDict(int size)
         {
-            var alignedSize = AlignSize(size);
-            mask = alignedSize - 1;
-            entries = new Entry[alignedSize];
+            var alignedSize = NumericHelper.NextPowerOf2(size - 1);
+            _mask = alignedSize - 1;
+            _entries = new Entry[alignedSize];
         }
 
-        private static int AlignSize(int size)
-        {
-            Debug.Assert(size > 0);
-
-            size--;
-            size |= size >> 1;
-            size |= size >> 2;
-            size |= size >> 4;
-            size |= size >> 8;
-            size |= size >> 16;
-            size++;
-
-            Debug.Assert((size & (~size + 1)) == size, "aligned size should be a power of 2");
-            return size;
-        }
-
-        /// <summary>
-        /// Tries to get the value associated with 'key', returning true if it's found and
-        /// false if it's not present.
-        /// </summary>
         internal bool TryGetValue(TKey key, out TValue value)
         {
             var hash = key.GetHashCode();
-            var idx = hash & mask;
+            var idx = hash & _mask;
 
-            var entry = Volatile.Read(ref entries[idx]);
-            if (entry != null && entry.hash == hash && entry.key.Equals(key))
+            var entry = Volatile.Read(ref _entries[idx]);
+            if (entry != null && entry._hash == hash && entry._key.Equals(key))
             {
-                value = entry.value;
+                value = entry._value;
                 return true;
             }
 
@@ -81,25 +57,18 @@ namespace System.Dynamic.Utils
             return false;
         }
 
-        /// <summary>
-        /// Adds a new element to the cache, possibly replacing some
-        /// element that is already present.
-        /// </summary>
         internal void Add(TKey key, TValue value)
         {
             var hash = key.GetHashCode();
-            var idx = hash & mask;
+            var idx = hash & _mask;
 
-            var entry = Volatile.Read(ref entries[idx]);
-            if (entry == null || entry.hash != hash || !entry.key.Equals(key))
+            var entry = Volatile.Read(ref _entries[idx]);
+            if (entry == null || entry._hash != hash || !entry._key.Equals(key))
             {
-                Volatile.Write(ref entries[idx], new Entry(hash, key, value));
+                Volatile.Write(ref _entries[idx], new Entry(hash, key, value));
             }
         }
 
-        /// <summary>
-        /// Sets the value associated with the given key.
-        /// </summary>
         internal TValue this[TKey key]
         {
             set { Add(key, value); }
