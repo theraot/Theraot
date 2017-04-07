@@ -10,13 +10,13 @@ namespace System.Collections.Concurrent
     [SerializableAttribute]
     public class ConcurrentDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IDictionary
     {
-        private const int INT_DefaultCapacity = 31;
-        private const int INT_DefaultConcurrency = 4;
+        private const int _defaultCapacity = 31;
+        private const int _defaultConcurrency = 4;
         private readonly ValueCollection<TKey, TValue> _valueCollection;
         private readonly SafeDictionary<TKey, TValue> _wrapped;
 
         public ConcurrentDictionary()
-            : this(INT_DefaultConcurrency, INT_DefaultCapacity, EqualityComparer<TKey>.Default)
+            : this(_defaultConcurrency, _defaultCapacity, EqualityComparer<TKey>.Default)
         {
             //Empty
         }
@@ -28,7 +28,7 @@ namespace System.Collections.Concurrent
         }
 
         public ConcurrentDictionary(IEnumerable<KeyValuePair<TKey, TValue>> collection)
-            : this(INT_DefaultConcurrency, INT_DefaultCapacity, EqualityComparer<TKey>.Default)
+            : this(_defaultConcurrency, _defaultCapacity, EqualityComparer<TKey>.Default)
         {
             if (ReferenceEquals(collection, null))
             {
@@ -38,13 +38,13 @@ namespace System.Collections.Concurrent
         }
 
         public ConcurrentDictionary(IEqualityComparer<TKey> comparer)
-            : this(INT_DefaultConcurrency, INT_DefaultCapacity, comparer)
+            : this(_defaultConcurrency, _defaultCapacity, comparer)
         {
             //Empty
         }
 
         public ConcurrentDictionary(IEnumerable<KeyValuePair<TKey, TValue>> collection, IEqualityComparer<TKey> comparer)
-            : this(INT_DefaultConcurrency, INT_DefaultCapacity, comparer)
+            : this(_defaultConcurrency, _defaultCapacity, comparer)
         {
             if (ReferenceEquals(collection, null))
             {
@@ -54,7 +54,7 @@ namespace System.Collections.Concurrent
         }
 
         public ConcurrentDictionary(int concurrencyLevel, IEnumerable<KeyValuePair<TKey, TValue>> collection, IEqualityComparer<TKey> comparer)
-            : this(concurrencyLevel, INT_DefaultCapacity, comparer)
+            : this(concurrencyLevel, _defaultCapacity, comparer)
         {
             if (ReferenceEquals(collection, null))
             {
