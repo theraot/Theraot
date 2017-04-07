@@ -224,7 +224,7 @@ namespace System.Threading
                     callback = () => capturedSyncContext.Send(_ => originalCallback(), null);
                 }
                 callbacks.TryAdd(tokenReg, callback);
-                // Check if the source was just cancelled and if so, it may be that it executed the callbacks except the one just added...
+                // Check if the source was just canceled and if so, it may be that it executed the callbacks except the one just added...
                 // So try to inline the callback
                 if (Thread.VolatileRead(ref _cancelRequested) == 1 && callbacks.Remove(tokenReg, out callback))
                 {
