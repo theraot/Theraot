@@ -19,23 +19,14 @@ namespace System.Linq.Expressions.Interpreter
 
         public int Offset
         {
-            get
-            {
-                return _offset;
-            }
+            get { return _offset; }
         }
 
-        public abstract Instruction[] Cache
-        {
-            get;
-        }
+        public abstract Instruction[] Cache { get; }
 
         public override string InstructionName
         {
-            get
-            {
-                return "Offset";
-            }
+            get { return "Offset"; }
         }
 
         public Instruction Fixup(int offset)
@@ -69,10 +60,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string InstructionName
         {
-            get
-            {
-                return "BranchFalse";
-            }
+            get { return "BranchFalse"; }
         }
 
         public override Instruction[] Cache
@@ -93,10 +81,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -118,10 +103,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string InstructionName
         {
-            get
-            {
-                return "BranchTrue";
-            }
+            get { return "BranchTrue"; }
         }
 
         public override Instruction[] Cache
@@ -142,10 +124,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -167,10 +146,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string InstructionName
         {
-            get
-            {
-                return "CoalescingBranch";
-            }
+            get { return "CoalescingBranch"; }
         }
 
         public override Instruction[] Cache
@@ -191,18 +167,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -224,10 +194,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string InstructionName
         {
-            get
-            {
-                return "Branch";
-            }
+            get { return "Branch"; }
         }
 
         public override Instruction[] Cache
@@ -258,18 +225,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return _hasValue ? 1 : 0;
-            }
+            get { return _hasValue ? 1 : 0; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return _hasResult ? 1 : 0;
-            }
+            get { return _hasResult ? 1 : 0; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -286,10 +247,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string InstructionName
         {
-            get
-            {
-                return "IndexedBranch";
-            }
+            get { return "IndexedBranch"; }
         }
 
         internal readonly int _labelIndex;
@@ -350,10 +308,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string InstructionName
         {
-            get
-            {
-                return "Goto";
-            }
+            get { return "Goto"; }
         }
 
         private readonly bool _hasResult;
@@ -368,34 +323,22 @@ namespace System.Linq.Expressions.Interpreter
         // The important thing here is that the stack balance is 0.
         public override int ConsumedContinuations
         {
-            get
-            {
-                return 0;
-            }
+            get { return 0; }
         }
 
         public override int ProducedContinuations
         {
-            get
-            {
-                return 0;
-            }
+            get { return 0; }
         }
 
         public override int ConsumedStack
         {
-            get
-            {
-                return _hasValue ? 1 : 0;
-            }
+            get { return _hasValue ? 1 : 0; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return _hasResult ? 1 : 0;
-            }
+            get { return _hasResult ? 1 : 0; }
         }
 
         private GotoInstruction(int targetIndex, bool hasResult, bool hasValue, bool labelTargetGetsValue)
@@ -442,10 +385,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ProducedContinuations
         {
-            get
-            {
-                return _hasFinally ? 1 : 0;
-            }
+            get { return _hasFinally ? 1 : 0; }
         }
 
         private EnterTryCatchFinallyInstruction(int targetIndex, bool hasFinally)
@@ -589,10 +529,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string InstructionName
         {
-            get
-            {
-                return _hasFinally ? "EnterTryFinally" : "EnterTryCatch";
-            }
+            get { return _hasFinally ? "EnterTryFinally" : "EnterTryCatch"; }
         }
 
         public override string ToString()
@@ -610,26 +547,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string InstructionName
         {
-            get
-            {
-                return "EnterFinally";
-            }
+            get { return "EnterFinally"; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 2;
-            }
+            get { return 2; }
         }
 
         public override int ConsumedContinuations
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         private EnterFinallyInstruction(int labelIndex)
@@ -671,18 +599,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 2;
-            }
+            get { return 2; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "LeaveFinally";
-            }
+            get { return "LeaveFinally"; }
         }
 
         private LeaveFinallyInstruction()
@@ -715,10 +637,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string InstructionName
         {
-            get
-            {
-                return "EnterExceptionHandler";
-            }
+            get { return "EnterExceptionHandler"; }
         }
 
         private EnterExceptionHandlerInstruction(bool hasValue)
@@ -733,10 +652,7 @@ namespace System.Linq.Expressions.Interpreter
         // stack depth after throw jumped to this catch block.
         public override int ConsumedStack
         {
-            get
-            {
-                return _hasValue ? 1 : 0;
-            }
+            get { return _hasValue ? 1 : 0; }
         }
 
         // A variable storing the current exception is pushed to the stack by exception handling.
@@ -744,10 +660,7 @@ namespace System.Linq.Expressions.Interpreter
         // Fault handlers: The value is kept on stack during fault handler evaluation.
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -768,27 +681,18 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string InstructionName
         {
-            get
-            {
-                return "LeaveExceptionHandler";
-            }
+            get { return "LeaveExceptionHandler"; }
         }
 
         // The catch block yields a value if the body is non-void. This value is left on the stack.
         public override int ConsumedStack
         {
-            get
-            {
-                return _hasValue ? 1 : 0;
-            }
+            get { return _hasValue ? 1 : 0; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return _hasValue ? 1 : 0;
-            }
+            get { return _hasValue ? 1 : 0; }
         }
 
         private LeaveExceptionHandlerInstruction(int labelIndex, bool hasValue)
@@ -829,10 +733,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string InstructionName
         {
-            get
-            {
-                return "LeaveFault";
-            }
+            get { return "LeaveFault"; }
         }
 
         // The fault block has a value if the body is non-void, but the value is never used.
@@ -841,19 +742,13 @@ namespace System.Linq.Expressions.Interpreter
         // and pop it at the end.
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         // While emitting instructions a non-void try-fault expression is expected to produce a value.
         public override int ProducedStack
         {
-            get
-            {
-                return _hasValue ? 1 : 0;
-            }
+            get { return _hasValue ? 1 : 0; }
         }
 
         private LeaveFaultInstruction(bool hasValue)
@@ -879,10 +774,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string InstructionName
         {
-            get
-            {
-                return "Throw";
-            }
+            get { return "Throw"; }
         }
 
         private ThrowInstruction(bool hasResult, bool isRethrow)
@@ -893,18 +785,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ProducedStack
         {
-            get
-            {
-                return _hasResult ? 1 : 0;
-            }
+            get { return _hasResult ? 1 : 0; }
         }
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -924,10 +810,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string InstructionName
         {
-            get
-            {
-                return "IntSwitch";
-            }
+            get { return "IntSwitch"; }
         }
 
         internal IntSwitchInstruction(Dictionary<T, int> cases)
@@ -938,18 +821,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 0;
-            }
+            get { return 0; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -966,10 +843,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string InstructionName
         {
-            get
-            {
-                return "StringSwitch";
-            }
+            get { return "StringSwitch"; }
         }
 
         internal StringSwitchInstruction(Dictionary<string, int> cases, StrongBox<int> nullCase)
@@ -982,18 +856,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 0;
-            }
+            get { return 0; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -1020,10 +888,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string InstructionName
         {
-            get
-            {
-                return "EnterLoop";
-            }
+            get { return "EnterLoop"; }
         }
 
         internal EnterLoopInstruction(LoopExpression loop, LocalVariables locals, int instructionIndex)
@@ -1046,10 +911,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private bool Compiled
         {
-            get
-            {
-                return _loop == null;
-            }
+            get { return _loop == null; }
         }
 
         private void Compile(object frameObj)

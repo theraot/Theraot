@@ -6,21 +6,11 @@ namespace Theraot.Collections
 {
     public interface IExtendedList<T> : IExtendedCollection<T>, IExtendedReadOnlyList<T>, IList<T>
     {
-        new IReadOnlyList<T> AsReadOnly
-        {
-            get;
-        }
+        new IReadOnlyList<T> AsReadOnly { get; }
 
-        new int Count
-        {
-            get;
-        }
+        new int Count { get; }
 
-        new T this[int index]
-        {
-            get;
-            set;
-        }
+        new T this[int index] { get; set; }
 
         void Move(int oldIndex, int newIndex);
 

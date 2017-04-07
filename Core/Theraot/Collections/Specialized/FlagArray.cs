@@ -59,10 +59,7 @@ namespace Theraot.Collections.Specialized
 
         public int Capacity
         {
-            get
-            {
-                return _capacity;
-            }
+            get { return _capacity; }
         }
 
         public int Count
@@ -137,10 +134,7 @@ namespace Theraot.Collections.Specialized
 
         bool ICollection<bool>.IsReadOnly
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public bool this[int index]
@@ -350,10 +344,7 @@ namespace Theraot.Collections.Specialized
     {
         IReadOnlyCollection<bool> IExtendedCollection<bool>.AsReadOnly
         {
-            get
-            {
-                return _asReadOnly;
-            }
+            get { return _asReadOnly; }
         }
 
         bool IExtendedCollection<bool>.Remove(bool item, IEqualityComparer<bool> comparer)

@@ -13,10 +13,7 @@ namespace Theraot.Core
     {
         public static object[] EmptyObjects
         {
-            get
-            {
-                return ArrayReservoir<object>.EmptyArray;
-            }
+            get { return ArrayReservoir<object>.EmptyArray; }
         }
 
         public static TTarget As<TTarget>(object source)
@@ -571,10 +568,7 @@ namespace Theraot.Core
 
             public static bool Result
             {
-                get
-                {
-                    return _result;
-                }
+                get { return _result; }
             }
         }
 
@@ -589,10 +583,7 @@ namespace Theraot.Core
 
             public static bool Result
             {
-                get
-                {
-                    return _result;
-                }
+                get { return _result; }
             }
         }
 
@@ -607,10 +598,7 @@ namespace Theraot.Core
 
             public static bool Result
             {
-                get
-                {
-                    return _result;
-                }
+                get { return _result; }
             }
         }
     }

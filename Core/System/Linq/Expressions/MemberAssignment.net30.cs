@@ -28,10 +28,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Expression
         {
-            get
-            {
-                return _expression;
-            }
+            get { return _expression; }
         }
 
         /// <summary>

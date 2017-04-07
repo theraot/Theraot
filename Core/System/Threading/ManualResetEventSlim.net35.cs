@@ -59,10 +59,7 @@ namespace System.Threading
 
         public int SpinCount
         {
-            get
-            {
-                return _spinCount;
-            }
+            get { return _spinCount; }
         }
 
         public WaitHandle WaitHandle

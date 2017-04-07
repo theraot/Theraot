@@ -20,66 +20,41 @@ namespace Theraot.Collections
 
         public int Count
         {
-            get
-            {
-                return _wrapped.Count;
-            }
+            get { return _wrapped.Count; }
         }
 
         bool ICollection<T>.IsReadOnly
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         IReadOnlyCollection<T> IExtendedCollection<T>.AsReadOnly
         {
-            get
-            {
-                return this;
-            }
+            get { return this; }
         }
 
         IReadOnlyList<T> IExtendedList<T>.AsReadOnly
         {
-            get
-            {
-                return this;
-            }
+            get { return this; }
         }
 
         T IExtendedList<T>.this[int index]
         {
-            get
-            {
-                return this[index];
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
+            get { return this[index]; }
+
+            set { throw new NotSupportedException(); }
         }
 
         T IList<T>.this[int index]
         {
-            get
-            {
-                return this[index];
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
+            get { return this[index]; }
+
+            set { throw new NotSupportedException(); }
         }
 
         public T this[int index]
         {
-            get
-            {
-                return _wrapped[index];
-            }
+            get { return _wrapped[index]; }
         }
 
         public bool Contains(T item)

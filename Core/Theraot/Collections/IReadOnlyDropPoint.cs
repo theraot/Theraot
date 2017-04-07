@@ -6,10 +6,7 @@ namespace Theraot.Collections
 {
     public interface IReadOnlyDropPoint<T> : IReadOnlyCollection<T>
     {
-        T Item
-        {
-            get;
-        }
+        T Item { get; }
     }
 }
 

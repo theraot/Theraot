@@ -7,10 +7,7 @@ namespace Theraot.Collections
     public interface IExtendedDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IExtendedReadOnlyDictionary<TKey, TValue>
     {
         // Collides IDictionary<TKey, TValue> with IExtendedReadOnlyDictionary<TKey, TValue>
-        new IReadOnlyDictionary<TKey, TValue> AsReadOnly
-        {
-            get;
-        }
+        new IReadOnlyDictionary<TKey, TValue> AsReadOnly { get; }
     }
 }
 

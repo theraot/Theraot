@@ -47,62 +47,39 @@ namespace Theraot.Threading
 
         public T Value
         {
-            get
-            {
-                return GetValue(Thread.CurrentThread);
-            }
-            set
-            {
-                SetValue(Thread.CurrentThread, value);
-            }
+            get { return GetValue(Thread.CurrentThread); }
+
+            set { SetValue(Thread.CurrentThread, value); }
         }
 
         public IList<T> Values
         {
-            get
-            {
-                return _slots.ConvertFiltered(input => input.Value.Value, input => input.Value is ReadOnlyStructNeedle<T>);
-            }
+            get { return _slots.ConvertFiltered(input => input.Value.Value, input => input.Value is ReadOnlyStructNeedle<T>); }
         }
 
         Exception IPromise.Exception
         {
-            get
-            {
-                return null;
-            }
+            get { return null; }
         }
 
         bool IReadOnlyNeedle<T>.IsAlive
         {
-            get
-            {
-                return IsValueCreated;
-            }
+            get { return IsValueCreated; }
         }
 
         bool IPromise.IsCanceled
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         bool IPromise.IsCompleted
         {
-            get
-            {
-                return IsValueCreated;
-            }
+            get { return IsValueCreated; }
         }
 
         bool IPromise.IsFaulted
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         [System.Diagnostics.DebuggerNonUserCode]

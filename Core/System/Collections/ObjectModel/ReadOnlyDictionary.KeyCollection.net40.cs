@@ -20,34 +20,22 @@ namespace System.Collections.ObjectModel
 
             public int Count
             {
-                get
-                {
-                    return _wrapped.Count;
-                }
+                get { return _wrapped.Count; }
             }
 
             bool ICollection.IsSynchronized
             {
-                get
-                {
-                    return ((ICollection)_wrapped).IsSynchronized;
-                }
+                get { return ((ICollection)_wrapped).IsSynchronized; }
             }
 
             object ICollection.SyncRoot
             {
-                get
-                {
-                    return ((ICollection)_wrapped).SyncRoot;
-                }
+                get { return ((ICollection)_wrapped).SyncRoot; }
             }
 
             bool ICollection<TKey>.IsReadOnly
             {
-                get
-                {
-                    return true;
-                }
+                get { return true; }
             }
 
             public void CopyTo(TKey[] array, int arrayIndex)

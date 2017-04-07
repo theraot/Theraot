@@ -10,14 +10,8 @@ namespace Theraot.Threading.Needles
     public interface IReadOnlyNeedle<out T>
 #endif
     {
-        bool IsAlive
-        {
-            get;
-        }
+        bool IsAlive { get; }
 
-        T Value
-        {
-            get;
-        }
+        T Value { get; }
     }
 }

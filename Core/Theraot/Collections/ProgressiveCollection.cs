@@ -89,34 +89,22 @@ namespace Theraot.Collections
 
         public bool EndOfEnumeration
         {
-            get
-            {
-                return _progressor.IsClosed;
-            }
+            get { return _progressor.IsClosed; }
         }
 
         bool ICollection<T>.IsReadOnly
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         protected IEqualityComparer<T> Comparer
         {
-            get
-            {
-                return _comparer;
-            }
+            get { return _comparer; }
         }
 
         protected Progressor<T> Progressor
         {
-            get
-            {
-                return _progressor;
-            }
+            get { return _progressor; }
         }
 
         public void Close()

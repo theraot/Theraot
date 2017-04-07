@@ -109,10 +109,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public override Type Type
         {
-            get
-            {
-                return typeof(object);
-            }
+            get { return typeof(object); }
         }
 
         /// <summary>
@@ -121,10 +118,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get
-            {
-                return ExpressionType.Parameter;
-            }
+            get { return ExpressionType.Parameter; }
         }
 
         /// <summary>
@@ -132,10 +126,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public string Name
         {
-            get
-            {
-                return _name;
-            }
+            get { return _name; }
         }
 
         /// <summary>
@@ -143,10 +134,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public bool IsByRef
         {
-            get
-            {
-                return GetIsByRef();
-            }
+            get { return GetIsByRef(); }
         }
 
         internal virtual bool GetIsByRef()
@@ -197,10 +185,7 @@ namespace System.Linq.Expressions
 
         public sealed override Type Type
         {
-            get
-            {
-                return _paramType;
-            }
+            get { return _paramType; }
         }
     }
 
@@ -217,10 +202,7 @@ namespace System.Linq.Expressions
 
         public sealed override Type Type
         {
-            get
-            {
-                return typeof(T);
-            }
+            get { return typeof(T); }
         }
     }
 

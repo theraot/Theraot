@@ -22,26 +22,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return _creator.Interpreter.ClosureSize;
-            }
+            get { return _creator.Interpreter.ClosureSize; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "CreateDelegate";
-            }
+            get { return "CreateDelegate"; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -80,26 +71,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return _argCount;
-            }
+            get { return _argCount; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "New";
-            }
+            get { return "New"; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -145,26 +127,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return _argCount;
-            }
+            get { return _argCount; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "ByRefNew";
-            }
+            get { return "ByRefNew"; }
         }
 
         public sealed override int Run(InterpretedFrame frame)
@@ -215,26 +188,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 0;
-            }
+            get { return 0; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "DefaultValue";
-            }
+            get { return "DefaultValue"; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -261,26 +225,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "TypeIs";
-            }
+            get { return "TypeIs"; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -306,26 +261,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "TypeAs";
-            }
+            get { return "TypeAs"; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -354,26 +300,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 2;
-            }
+            get { return 2; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "TypeEquals";
-            }
+            get { return "TypeEquals"; }
         }
 
         private TypeEqualsInstruction()
@@ -395,26 +332,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 2;
-            }
+            get { return 2; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "NullableTypeEquals";
-            }
+            get { return "NullableTypeEquals"; }
         }
 
         private NullableTypeEqualsInstruction()
@@ -436,26 +364,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "ArrayLength";
-            }
+            get { return "ArrayLength"; }
         }
 
         private ArrayLengthInstruction()
@@ -476,26 +395,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "Negate";
-            }
+            get { return "Negate"; }
         }
 
         private NegateInstruction()
@@ -664,26 +574,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "NegateChecked";
-            }
+            get { return "NegateChecked"; }
         }
 
         private NegateCheckedInstruction()
@@ -852,26 +753,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "Increment";
-            }
+            get { return "Increment"; }
         }
 
         private IncrementInstruction()
@@ -1040,26 +932,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "Decrement";
-            }
+            get { return "Decrement"; }
         }
 
         private DecrementInstruction()
@@ -1229,26 +1112,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 2;
-            }
+            get { return 2; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "LeftShift";
-            }
+            get { return "LeftShift"; }
         }
 
         private LeftShiftInstruction()
@@ -1446,26 +1320,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 2;
-            }
+            get { return 2; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "RightShift";
-            }
+            get { return "RightShift"; }
         }
 
         private RightShiftInstruction()
@@ -1663,26 +1528,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 2;
-            }
+            get { return 2; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "ExclusiveOr";
-            }
+            get { return "ExclusiveOr"; }
         }
 
         private ExclusiveOrInstruction()
@@ -1888,26 +1744,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 2;
-            }
+            get { return 2; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "Or";
-            }
+            get { return "Or"; }
         }
 
         private OrInstruction()
@@ -2120,26 +1967,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 2;
-            }
+            get { return 2; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "And";
-            }
+            get { return "And"; }
         }
 
         private AndInstruction()
@@ -2351,26 +2189,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "NullableMethod";
-            }
+            get { return "NullableMethod"; }
         }
 
         private NullableMethodCallInstruction()
@@ -2417,10 +2246,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             public override int ConsumedStack
             {
-                get
-                {
-                    return 2;
-                }
+                get { return 2; }
             }
 
             public override int Run(InterpretedFrame frame)
@@ -2443,10 +2269,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             public override int ConsumedStack
             {
-                get
-                {
-                    return 2;
-                }
+                get { return 2; }
             }
 
             public override int Run(InterpretedFrame frame)
@@ -2544,26 +2367,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "Cast";
-            }
+            get { return "Cast"; }
         }
 
         private class CastInstructionT<T> : CastInstruction
@@ -2697,26 +2511,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 0;
-            }
+            get { return 0; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 0;
-            }
+            get { return 0; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "NullCheck";
-            }
+            get { return "NullCheck"; }
         }
 
         private NullCheckInstruction(int stackOffset)
@@ -2757,10 +2562,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string InstructionName
         {
-            get
-            {
-                return "Log";
-            }
+            get { return "Log"; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -2785,26 +2587,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 0;
-            }
+            get { return 0; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "Quote";
-            }
+            get { return "Quote"; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -2975,22 +2768,13 @@ namespace System.Linq.Expressions.Interpreter
 
                 int IRuntimeVariables.Count
                 {
-                    get
-                    {
-                        return _boxes.Length;
-                    }
+                    get { return _boxes.Length; }
                 }
 
                 object IRuntimeVariables.this[int index]
                 {
-                    get
-                    {
-                        return _boxes[index].Value;
-                    }
-                    set
-                    {
-                        _boxes[index].Value = value;
-                    }
+                    get { return _boxes[index].Value; }
+                    set { _boxes[index].Value = value; }
                 }
             }
 
@@ -3016,10 +2800,7 @@ namespace System.Linq.Expressions.Interpreter
 
                 public int Count
                 {
-                    get
-                    {
-                        return _indexes.Length;
-                    }
+                    get { return _indexes.Length; }
                 }
 
                 public object this[int index]

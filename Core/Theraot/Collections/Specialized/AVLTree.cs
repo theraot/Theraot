@@ -33,18 +33,12 @@ namespace Theraot.Collections.Specialized
 
         public int Count
         {
-            get
-            {
-                return _count;
-            }
+            get { return _count; }
         }
 
         public AVLNode Root
         {
-            get
-            {
-                return _root;
-            }
+            get { return _root; }
         }
 
         public void Add(TKey key, TValue value)

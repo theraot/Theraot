@@ -6,25 +6,13 @@ namespace Theraot.Threading.Needles
 {
     public interface IPromise
     {
-        Exception Exception
-        {
-            get;
-        }
+        Exception Exception { get; }
 
-        bool IsCanceled
-        {
-            get;
-        }
+        bool IsCanceled { get; }
 
-        bool IsCompleted
-        {
-            get;
-        }
+        bool IsCompleted { get; }
 
-        bool IsFaulted
-        {
-            get;
-        }
+        bool IsFaulted { get; }
     }
 
 #if NETCF

@@ -126,17 +126,11 @@ namespace MonoTests.System.Linq.Expressions
 
         public class Foo
         {
-            public string Prop
-            {
-                get; set;
-            }
+            public string Prop { get; set; }
 
             public static string StatProp
             {
-                get
-                {
-                    return "StaticFoo";
-                }
+                get { return "StaticFoo"; }
             }
         }
 
@@ -166,14 +160,9 @@ namespace MonoTests.System.Linq.Expressions
 
             public string Prop
             {
-                get
-                {
-                    return slot;
-                }
-                set
-                {
-                    slot = value;
-                }
+                get { return slot; }
+
+                set { slot = value; }
             }
 
             public Bar(string slot)
@@ -194,10 +183,7 @@ namespace MonoTests.System.Linq.Expressions
 
         public static int StaticProperty
         {
-            get
-            {
-                return 42;
-            }
+            get { return 42; }
         }
 
         [Test]

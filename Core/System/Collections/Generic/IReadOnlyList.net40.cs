@@ -14,10 +14,7 @@
 
     public interface IReadOnlyList<T> : IReadOnlyCollection<T>
     {
-        T this[int index]
-        {
-            get;
-        }
+        T this[int index] { get; }
     }
 
 #endif

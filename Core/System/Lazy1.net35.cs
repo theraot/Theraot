@@ -104,27 +104,18 @@ namespace System
 
         public bool IsValueCreated
         {
-            get
-            {
-                return _isValueCreated == 1;
-            }
+            get { return _isValueCreated == 1; }
         }
 
         [DebuggerBrowsable(DebuggerBrowsableState.Never)]
         public T Value
         {
-            get
-            {
-                return _valueFactory.Invoke();
-            }
+            get { return _valueFactory.Invoke(); }
         }
 
         internal T ValueForDebugDisplay
         {
-            get
-            {
-                return _target;
-            }
+            get { return _target; }
         }
 
         private T CachingFullMode(Func<T> valueFactory, ManualResetEvent waitHandle, ref Thread thread)

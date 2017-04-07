@@ -46,42 +46,27 @@ namespace System.Numerics
 
         public double Imaginary
         {
-            get
-            {
-                return _imaginary;
-            }
+            get { return _imaginary; }
         }
 
         public double Magnitude
         {
-            get
-            {
-                return Math.Sqrt((_imaginary * _imaginary) + (_real * _real));
-            }
+            get { return Math.Sqrt((_imaginary * _imaginary) + (_real * _real)); }
         }
 
         public double Phase
         {
-            get
-            {
-                return Math.Atan2(_imaginary, _real);
-            }
+            get { return Math.Atan2(_imaginary, _real); }
         }
 
         public double Real
         {
-            get
-            {
-                return _real;
-            }
+            get { return _real; }
         }
 
         private double MagnitudeSquared
         {
-            get
-            {
-                return (_imaginary * _imaginary) + (_real * _real);
-            }
+            get { return (_imaginary * _imaginary) + (_real * _real); }
         }
 
         public static double Abs(Complex value)

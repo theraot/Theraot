@@ -60,26 +60,17 @@ namespace System.Linq.Expressions
 
         private int Base
         {
-            get
-            {
-                return _stack.Count > 0 ? _stack.Peek() : 0;
-            }
+            get { return _stack.Count > 0 ? _stack.Peek() : 0; }
         }
 
         private int Delta
         {
-            get
-            {
-                return _delta;
-            }
+            get { return _delta; }
         }
 
         private int Depth
         {
-            get
-            {
-                return Base + Delta;
-            }
+            get { return Base + Delta; }
         }
 
         private void Indent()

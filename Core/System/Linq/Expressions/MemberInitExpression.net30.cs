@@ -33,10 +33,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type
         {
-            get
-            {
-                return _newExpression.Type;
-            }
+            get { return _newExpression.Type; }
         }
 
         /// <summary>
@@ -44,10 +41,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public override bool CanReduce
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         /// <summary>
@@ -57,30 +51,21 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get
-            {
-                return ExpressionType.MemberInit;
-            }
+            get { return ExpressionType.MemberInit; }
         }
 
         ///<summary>Gets the expression that represents the constructor call.</summary>
         ///<returns>A <see cref="T:System.Linq.Expressions.NewExpression" /> that represents the constructor call.</returns>
         public NewExpression NewExpression
         {
-            get
-            {
-                return _newExpression;
-            }
+            get { return _newExpression; }
         }
 
         ///<summary>Gets the bindings that describe how to initialize the members of the newly created object.</summary>
         ///<returns>A <see cref="T:System.Collections.ObjectModel.ReadOnlyCollection`1" /> of <see cref="T:System.Linq.Expressions.MemberBinding" /> objects which describe how to initialize the members.</returns>
         public ReadOnlyCollection<MemberBinding> Bindings
         {
-            get
-            {
-                return _bindings;
-            }
+            get { return _bindings; }
         }
 
         /// <summary>

@@ -24,10 +24,7 @@ namespace Theraot.Threading
 
         public bool IsDisposed
         {
-            get
-            {
-                return _status == -1;
-            }
+            get { return _status == -1; }
         }
 
         [System.Diagnostics.DebuggerNonUserCode]

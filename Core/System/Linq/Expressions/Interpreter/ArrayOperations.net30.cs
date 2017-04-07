@@ -18,26 +18,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return _elementCount;
-            }
+            get { return _elementCount; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "NewArrayInit";
-            }
+            get { return "NewArrayInit"; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -63,26 +54,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "NewArray";
-            }
+            get { return "NewArray"; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -111,26 +93,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return _rank;
-            }
+            get { return _rank; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "NewArrayBounds";
-            }
+            get { return "NewArrayBounds"; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -156,26 +129,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 2;
-            }
+            get { return 2; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "GetArrayItem";
-            }
+            get { return "GetArrayItem"; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -197,26 +161,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 3;
-            }
+            get { return 3; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 0;
-            }
+            get { return 0; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "SetArrayItem";
-            }
+            get { return "SetArrayItem"; }
         }
 
         public override int Run(InterpretedFrame frame)

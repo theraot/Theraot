@@ -19,18 +19,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "LoadObject";
-            }
+            get { return "LoadObject"; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -56,18 +50,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "LoadCachedObject";
-            }
+            get { return "LoadCachedObject"; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -97,18 +85,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "Pop";
-            }
+            get { return "Pop"; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -133,26 +115,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 0;
-            }
+            get { return 0; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "Dup";
-            }
+            get { return "Dup"; }
         }
 
         public override int Run(InterpretedFrame frame)

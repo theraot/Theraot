@@ -26,10 +26,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public string FileName
         {
-            get
-            {
-                return _fileName;
-            }
+            get { return _fileName; }
         }
 
         /// <summary>
@@ -37,10 +34,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public virtual Guid Language
         {
-            get
-            {
-                return Guid.Empty;
-            }
+            get { return Guid.Empty; }
         }
 
         /// <summary>
@@ -48,10 +42,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public virtual Guid LanguageVendor
         {
-            get
-            {
-                return Guid.Empty;
-            }
+            get { return Guid.Empty; }
         }
 
         internal static readonly Guid DocumentType_Text = new Guid(0x5a869d0b, 0x6611, 0x11d3, 0xbd, 0x2a, 0, 0, 0xf8, 8, 0x49, 0xbd);
@@ -62,10 +53,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public virtual Guid DocumentType
         {
-            get
-            {
-                return DocumentType_Text;
-            }
+            get { return DocumentType_Text; }
         }
     }
 
@@ -100,26 +88,17 @@ namespace System.Linq.Expressions
 
         public override Guid Language
         {
-            get
-            {
-                return _language;
-            }
+            get { return _language; }
         }
 
         public override Guid LanguageVendor
         {
-            get
-            {
-                return _vendor;
-            }
+            get { return _vendor; }
         }
 
         public override Guid DocumentType
         {
-            get
-            {
-                return _documentType;
-            }
+            get { return _documentType; }
         }
     }
 

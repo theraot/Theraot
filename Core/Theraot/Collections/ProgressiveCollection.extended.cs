@@ -9,10 +9,7 @@ namespace Theraot.Collections
     {
         IReadOnlyCollection<T> IExtendedCollection<T>.AsReadOnly
         {
-            get
-            {
-                return this;
-            }
+            get { return this; }
         }
 
         bool IExtendedCollection<T>.Remove(T item, IEqualityComparer<T> comparer)

@@ -20,34 +20,22 @@ namespace Theraot.Collections
 
         public int Count
         {
-            get
-            {
-                return _wrapped.Count;
-            }
+            get { return _wrapped.Count; }
         }
 
         bool ICollection<T>.IsReadOnly
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         IReadOnlyCollection<T> IExtendedCollection<T>.AsReadOnly
         {
-            get
-            {
-                return this;
-            }
+            get { return this; }
         }
 
         IReadOnlySet<T> IExtendedSet<T>.AsReadOnly
         {
-            get
-            {
-                return this;
-            }
+            get { return this; }
         }
 
         public bool Contains(T item)

@@ -330,10 +330,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ArgumentCount
         {
-            get
-            {
-                return 0;
-            }
+            get { return 0; }
         }
 
         public ActionCallInstruction(Action target)
@@ -343,10 +340,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ProducedStack
         {
-            get
-            {
-                return 0;
-            }
+            get { return 0; }
         }
 
         public ActionCallInstruction(MethodInfo target)
@@ -374,18 +368,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ProducedStack
         {
-            get
-            {
-                return 0;
-            }
+            get { return 0; }
         }
 
         public override int ArgumentCount
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public ActionCallInstruction(Action<T0> target)
@@ -418,18 +406,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ProducedStack
         {
-            get
-            {
-                return 0;
-            }
+            get { return 0; }
         }
 
         public override int ArgumentCount
         {
-            get
-            {
-                return 2;
-            }
+            get { return 2; }
         }
 
         public ActionCallInstruction(Action<T0, T1> target)
@@ -462,18 +444,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int ArgumentCount
         {
-            get
-            {
-                return 0;
-            }
+            get { return 0; }
         }
 
         public FuncCallInstruction(Func<TRet> target)
@@ -505,18 +481,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int ArgumentCount
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public FuncCallInstruction(Func<T0, TRet> target)
@@ -548,18 +518,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int ArgumentCount
         {
-            get
-            {
-                return 2;
-            }
+            get { return 2; }
         }
 
         public FuncCallInstruction(Func<T0, T1, TRet> target)

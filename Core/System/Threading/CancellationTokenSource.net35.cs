@@ -87,10 +87,7 @@ namespace System.Threading
 
         public bool IsCancellationRequested
         {
-            get
-            {
-                return _cancelRequested == 1;
-            }
+            get { return _cancelRequested == 1; }
         }
 
         public CancellationToken Token

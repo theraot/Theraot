@@ -38,15 +38,9 @@ namespace MonoTests.System.Linq
     {
         private class Color
         {
-            public string Name
-            {
-                get; set;
-            }
+            public string Name { get; set; }
 
-            public int Value
-            {
-                get; set;
-            }
+            public int Value { get; set; }
 
             public Color(string name, int value)
             {

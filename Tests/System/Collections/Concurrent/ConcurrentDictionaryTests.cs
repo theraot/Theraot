@@ -372,10 +372,7 @@ namespace MonoTests.System.Collections.Concurrent
 
             public int Foo
             {
-                get
-                {
-                    return _foo;
-                }
+                get { return _foo; }
             }
 
             public override bool Equals(object obj)

@@ -110,10 +110,7 @@ namespace System.Threading.Tasks
         /// </remarks>
         public Task<TResult> Task
         {
-            get
-            {
-                return _task.Value;
-            }
+            get { return _task.Value; }
         }
 
         /// <summary>Spins until the underlying task is completed.</summary>

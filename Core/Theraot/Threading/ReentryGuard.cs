@@ -29,10 +29,7 @@ namespace Theraot.Threading
         /// </summary>
         public bool IsTaken
         {
-            get
-            {
-                return ReentryGuardHelper.IsTaken(_id);
-            }
+            get { return ReentryGuardHelper.IsTaken(_id); }
         }
 
         /// <summary>

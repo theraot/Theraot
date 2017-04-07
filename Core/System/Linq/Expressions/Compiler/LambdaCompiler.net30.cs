@@ -151,26 +151,17 @@ namespace System.Linq.Expressions.Compiler
 
         internal ILGenerator IL
         {
-            get
-            {
-                return _ilg;
-            }
+            get { return _ilg; }
         }
 
         internal ReadOnlyCollection<ParameterExpression> Parameters
         {
-            get
-            {
-                return _lambda.Parameters;
-            }
+            get { return _lambda.Parameters; }
         }
 
         internal bool CanEmitBoundConstants
         {
-            get
-            {
-                return _method is DynamicMethod;
-            }
+            get { return _method is DynamicMethod; }
         }
 
         #region Compiler entry points

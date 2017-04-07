@@ -43,10 +43,7 @@ namespace System
 
         public TMetadata Metadata
         {
-            get
-            {
-                return _metadata;
-            }
+            get { return _metadata; }
         }
     }
 }

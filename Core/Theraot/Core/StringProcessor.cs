@@ -43,10 +43,7 @@ namespace Theraot.Core
         /// </summary>
         public int Count
         {
-            get
-            {
-                return _length - _position;
-            }
+            get { return _length - _position; }
         }
 
         /// <summary>
@@ -54,16 +51,10 @@ namespace Theraot.Core
         /// </summary>
         public bool EndOfString
         {
-            get
-            {
-                return _position == _length;
-            }
+            get { return _position == _length; }
         }
 
-        public bool Greedy
-        {
-            get; set;
-        }
+        public bool Greedy { get; set; }
 
         /// <summary>
         /// Gets or sets the current position withing the underlying string.
@@ -71,10 +62,8 @@ namespace Theraot.Core
         /// <exception cref="ArgumentOutOfRangeException">The position must be greater than zero and less or equal to the length of the underlying string.</exception>
         public int Position
         {
-            get
-            {
-                return _position;
-            }
+            get { return _position; }
+
             set
             {
                 if (value > 0 && value <= _length)
@@ -93,10 +82,7 @@ namespace Theraot.Core
         /// </summary>
         public string String
         {
-            get
-            {
-                return _string;
-            }
+            get { return _string; }
         }
 
         /// <summary>

@@ -19,10 +19,7 @@ namespace System
     {
         int GetHashCode(IEqualityComparer comparer);
 
-        int Size
-        {
-            get;
-        }
+        int Size { get; }
 
         string ToStringEnd();
     }
@@ -136,10 +133,7 @@ namespace System
 
         int ITupleInternal.Size
         {
-            get
-            {
-                return 0;
-            }
+            get { return 0; }
         }
 
         /// <summary>Creates a new struct 0-tuple.</summary>
@@ -458,10 +452,7 @@ namespace System
 
         int ITupleInternal.Size
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
     }
 
@@ -655,10 +646,7 @@ namespace System
 
         int ITupleInternal.Size
         {
-            get
-            {
-                return 2;
-            }
+            get { return 2; }
         }
     }
 
@@ -852,10 +840,7 @@ namespace System
 
         int ITupleInternal.Size
         {
-            get
-            {
-                return 3;
-            }
+            get { return 3; }
         }
     }
 
@@ -1069,10 +1054,7 @@ namespace System
 
         int ITupleInternal.Size
         {
-            get
-            {
-                return 4;
-            }
+            get { return 4; }
         }
     }
 
@@ -1306,10 +1288,7 @@ namespace System
 
         int ITupleInternal.Size
         {
-            get
-            {
-                return 5;
-            }
+            get { return 5; }
         }
     }
 
@@ -1563,10 +1542,7 @@ namespace System
 
         int ITupleInternal.Size
         {
-            get
-            {
-                return 6;
-            }
+            get { return 6; }
         }
     }
 
@@ -1840,10 +1816,7 @@ namespace System
 
         int ITupleInternal.Size
         {
-            get
-            {
-                return 7;
-            }
+            get { return 7; }
         }
     }
 

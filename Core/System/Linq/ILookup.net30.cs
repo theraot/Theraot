@@ -6,15 +6,9 @@ namespace System.Linq
 {
     public interface ILookup<TKey, TElement> : IEnumerable<IGrouping<TKey, TElement>>
     {
-        int Count
-        {
-            get;
-        }
+        int Count { get; }
 
-        IEnumerable<TElement> this[TKey key]
-        {
-            get;
-        }
+        IEnumerable<TElement> this[TKey key] { get; }
 
         bool Contains(TKey key);
     }

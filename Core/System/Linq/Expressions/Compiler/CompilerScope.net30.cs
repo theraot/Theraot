@@ -110,10 +110,7 @@ namespace System.Linq.Expressions.Compiler
         /// </summary>
         internal HoistedLocals NearestHoistedLocals
         {
-            get
-            {
-                return _hoistedLocals ?? _closureHoistedLocals;
-            }
+            get { return _hoistedLocals ?? _closureHoistedLocals; }
         }
 
         /// <summary>

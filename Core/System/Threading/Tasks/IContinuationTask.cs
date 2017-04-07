@@ -4,10 +4,7 @@ namespace System.Threading.Tasks
 {
     internal interface IContinuationTask
     {
-        Task Antecedent
-        {
-            get;
-        }
+        Task Antecedent { get; }
     }
 }
 

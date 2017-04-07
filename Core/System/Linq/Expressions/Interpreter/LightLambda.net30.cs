@@ -9,10 +9,7 @@ namespace System.Linq.Expressions.Interpreter
 {
     internal sealed class LightLambdaCompileEventArgs : EventArgs
     {
-        public Delegate Compiled
-        {
-            get; private set;
-        }
+        public Delegate Compiled { get; private set; }
 
         internal LightLambdaCompileEventArgs(Delegate compiled)
         {

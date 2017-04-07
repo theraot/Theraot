@@ -96,10 +96,8 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool AutoRemoveDeadItems
         {
-            get
-            {
-                return _eventHandler.IsAlive;
-            }
+            get { return _eventHandler.IsAlive; }
+
             set
             {
                 if (value)
@@ -115,18 +113,12 @@ namespace Theraot.Collections.ThreadSafe
 
         public int Count
         {
-            get
-            {
-                return _wrapped.Count;
-            }
+            get { return _wrapped.Count; }
         }
 
         bool ICollection<T>.IsReadOnly
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public void Add(T item)

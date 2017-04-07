@@ -35,14 +35,9 @@ namespace Theraot.Threading
 
         public bool Value
         {
-            get
-            {
-                return _value == _set;
-            }
-            set
-            {
-                Exchange(value);
-            }
+            get { return _value == _set; }
+
+            set { Exchange(value); }
         }
 
         public static implicit operator AtomicBoolean(bool value)

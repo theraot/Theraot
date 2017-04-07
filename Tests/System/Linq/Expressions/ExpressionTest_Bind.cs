@@ -139,15 +139,9 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct Slot
         {
-            public int Integer
-            {
-                get; set;
-            }
+            public int Integer { get; set; }
 
-            public short Short
-            {
-                get; set;
-            }
+            public short Short { get; set; }
         }
 
         [Test]

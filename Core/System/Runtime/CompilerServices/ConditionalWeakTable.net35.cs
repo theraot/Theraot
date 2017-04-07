@@ -47,10 +47,7 @@ namespace System.Runtime.CompilerServices
 
         internal ICollection<TKey> Keys
         {
-            get
-            {
-                return _wrapped.Keys;
-            }
+            get { return _wrapped.Keys; }
         }
 
         /// <summary>

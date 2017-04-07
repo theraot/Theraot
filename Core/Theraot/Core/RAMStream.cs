@@ -35,26 +35,17 @@ namespace Theraot.Core
 
         public override bool CanRead
         {
-            get
-            {
-                return _position != -1;
-            }
+            get { return _position != -1; }
         }
 
         public override bool CanSeek
         {
-            get
-            {
-                return _position != -1;
-            }
+            get { return _position != -1; }
         }
 
         public override bool CanWrite
         {
-            get
-            {
-                return _position != -1;
-            }
+            get { return _position != -1; }
         }
 
         public override long Length
@@ -71,10 +62,8 @@ namespace Theraot.Core
 
         public override long Position
         {
-            get
-            {
-                return _position;
-            }
+            get { return _position; }
+
             set
             {
                 if (_position == -1)

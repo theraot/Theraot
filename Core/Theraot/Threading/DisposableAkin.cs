@@ -50,10 +50,7 @@ namespace Theraot.Threading
 
         public bool IsDisposed
         {
-            get
-            {
-                return _thread == null;
-            }
+            get { return _thread == null; }
         }
 
         public static DisposableAkin Create(Action release)

@@ -58,18 +58,12 @@ namespace Theraot.Collections.Specialized
 
         public int Count
         {
-            get
-            {
-                return _count.Invoke();
-            }
+            get { return _count.Invoke(); }
         }
 
         bool ICollection<T>.IsReadOnly
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         public bool Contains(T item)

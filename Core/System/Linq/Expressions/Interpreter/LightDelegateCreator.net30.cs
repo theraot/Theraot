@@ -27,18 +27,12 @@ namespace System.Linq.Expressions.Interpreter
 
         internal Interpreter Interpreter
         {
-            get
-            {
-                return _interpreter;
-            }
+            get { return _interpreter; }
         }
 
         private bool HasClosure
         {
-            get
-            {
-                return _interpreter.ClosureSize > 0;
-            }
+            get { return _interpreter.ClosureSize > 0; }
         }
 
         public Delegate CreateDelegate()

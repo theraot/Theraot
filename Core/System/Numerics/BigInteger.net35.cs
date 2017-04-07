@@ -25,20 +25,14 @@ namespace System.Numerics
         /// <returns>true if the value of the <see cref="T:System.Numerics.BigInteger" /> object is an even number; otherwise, false.</returns>
         public bool IsEven
         {
-            get
-            {
-                return (InternalBits != null ? (InternalBits[0] & 1) == 0 : (InternalSign & 1) == 0);
-            }
+            get { return (InternalBits != null ? (InternalBits[0] & 1) == 0 : (InternalSign & 1) == 0); }
         }
 
         /// <summary>Indicates whether the value of the current <see cref="T:System.Numerics.BigInteger" /> object is <see cref="P:System.Numerics.BigInteger.One" />.</summary>
         /// <returns>true if the value of the <see cref="T:System.Numerics.BigInteger" /> object is <see cref="P:System.Numerics.BigInteger.One" />; otherwise, false.</returns>
         public bool IsOne
         {
-            get
-            {
-                return InternalSign == 1 && InternalBits == null;
-            }
+            get { return InternalSign == 1 && InternalBits == null; }
         }
 
         /// <summary>Indicates whether the value of the current <see cref="T:System.Numerics.BigInteger" /> object is a power of two.</summary>
@@ -78,50 +72,35 @@ namespace System.Numerics
         /// <returns>true if the value of the <see cref="T:System.Numerics.BigInteger" /> object is <see cref="P:System.Numerics.BigInteger.Zero" />; otherwise, false.</returns>
         public bool IsZero
         {
-            get
-            {
-                return InternalSign == 0;
-            }
+            get { return InternalSign == 0; }
         }
 
         /// <summary>Gets a value that represents the number negative one (-1).</summary>
         /// <returns>An integer whose value is negative one (-1).</returns>
         public static BigInteger MinusOne
         {
-            get
-            {
-                return _sBnMinusOneInt;
-            }
+            get { return _sBnMinusOneInt; }
         }
 
         /// <summary>Gets a value that represents the number one (1).</summary>
         /// <returns>An object whose value is one (1).</returns>
         public static BigInteger One
         {
-            get
-            {
-                return _sBnOneInt;
-            }
+            get { return _sBnOneInt; }
         }
 
         /// <summary>Gets a number that indicates the sign (negative, positive, or zero) of the current <see cref="T:System.Numerics.BigInteger" /> object.</summary>
         /// <returns>A number that indicates the sign of the <see cref="T:System.Numerics.BigInteger" /> object, as shown in the following table.NumberDescription-1The value of this object is negative.0The value of this object is 0 (zero).1The value of this object is positive.</returns>
         public int Sign
         {
-            get
-            {
-                return (InternalSign >> 31) - (-InternalSign >> 31);
-            }
+            get { return (InternalSign >> 31) - (-InternalSign >> 31); }
         }
 
         /// <summary>Gets a value that represents the number 0 (zero).</summary>
         /// <returns>An integer whose value is 0 (zero).</returns>
         public static BigInteger Zero
         {
-            get
-            {
-                return _sBnZeroInt;
-            }
+            get { return _sBnZeroInt; }
         }
 
         static BigInteger()

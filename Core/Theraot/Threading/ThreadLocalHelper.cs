@@ -16,10 +16,7 @@ namespace Theraot.Threading
 
         public static Exception RecursionGuardException
         {
-            get
-            {
-                return _recursionGuardException;
-            }
+            get { return _recursionGuardException; }
         }
     }
 
@@ -29,10 +26,7 @@ namespace Theraot.Threading
 
         public static INeedle<T> RecursionGuardNeedle
         {
-            get
-            {
-                return _recursionGuardNeedle;
-            }
+            get { return _recursionGuardNeedle; }
         }
     }
 }

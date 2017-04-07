@@ -45,10 +45,7 @@ namespace Theraot.Collections
 
         public IReadOnlySet<T> AsReadOnly
         {
-            get
-            {
-                return _readOnly;
-            }
+            get { return _readOnly; }
         }
 
 #else
@@ -82,18 +79,12 @@ namespace Theraot.Collections
 
         public int Count
         {
-            get
-            {
-                return _wrapped.Count;
-            }
+            get { return _wrapped.Count; }
         }
 
         public bool IsReadOnly
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public bool Add(T item)

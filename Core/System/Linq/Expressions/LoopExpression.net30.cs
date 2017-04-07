@@ -30,10 +30,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type
         {
-            get
-            {
-                return _break == null ? typeof(void) : _break.Type;
-            }
+            get { return _break == null ? typeof(void) : _break.Type; }
         }
 
         /// <summary>
@@ -43,10 +40,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get
-            {
-                return ExpressionType.Loop;
-            }
+            get { return ExpressionType.Loop; }
         }
 
         /// <summary>
@@ -54,10 +48,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Body
         {
-            get
-            {
-                return _body;
-            }
+            get { return _body; }
         }
 
         /// <summary>
@@ -65,10 +56,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public LabelTarget BreakLabel
         {
-            get
-            {
-                return _break;
-            }
+            get { return _break; }
         }
 
         /// <summary>
@@ -76,10 +64,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public LabelTarget ContinueLabel
         {
-            get
-            {
-                return _continue;
-            }
+            get { return _continue; }
         }
 
         /// <summary>

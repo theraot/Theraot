@@ -17,38 +17,24 @@ namespace Theraot.Threading.Needles
 
         public Exception Exception
         {
-            get
-            {
-                return _exception;
-            }
+            get { return _exception; }
         }
 
         T INeedle<T>.Value
         {
-            get
-            {
-                throw _exception;
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
+            get { throw _exception; }
+
+            set { throw new NotSupportedException(); }
         }
 
         public bool IsAlive
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public T Value
         {
-            get
-            {
-                throw _exception;
-            }
+            get { throw _exception; }
         }
 
         public static explicit operator Exception(ExceptionStructNeedle<T> needle)

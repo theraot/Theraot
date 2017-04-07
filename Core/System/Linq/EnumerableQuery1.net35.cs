@@ -22,26 +22,17 @@ namespace System.Linq
 
         Type IQueryable.ElementType
         {
-            get
-            {
-                return queryable.ElementType;
-            }
+            get { return queryable.ElementType; }
         }
 
         Expression IQueryable.Expression
         {
-            get
-            {
-                return queryable.Expression;
-            }
+            get { return queryable.Expression; }
         }
 
         IQueryProvider IQueryable.Provider
         {
-            get
-            {
-                return queryable;
-            }
+            get { return queryable; }
         }
 
         IEnumerator IEnumerable.GetEnumerator()

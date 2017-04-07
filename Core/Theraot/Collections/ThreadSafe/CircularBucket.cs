@@ -35,10 +35,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public int Capacity
         {
-            get
-            {
-                return _capacity;
-            }
+            get { return _capacity; }
         }
 
         /// <summary>
@@ -46,10 +43,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public int Count
         {
-            get
-            {
-                return _entries.Count;
-            }
+            get { return _entries.Count; }
         }
 
         /// <summary>

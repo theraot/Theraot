@@ -18,10 +18,7 @@ namespace Theraot.Collections.Specialized
 
         public static EnumCollection<TEnum> Instance
         {
-            get
-            {
-                return instance;
-            }
+            get { return instance; }
         }
 
         public static IEnumerable<TEnum> GetEnumerable()

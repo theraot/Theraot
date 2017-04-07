@@ -25,102 +25,64 @@ namespace Theraot.Collections
 
         public int Count
         {
-            get
-            {
-                return _wrapped.Count;
-            }
+            get { return _wrapped.Count; }
         }
 
         bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         ICollection<TKey> IDictionary<TKey, TValue>.Keys
         {
-            get
-            {
-                return _keys;
-            }
+            get { return _keys; }
         }
 
         ICollection<TValue> IDictionary<TKey, TValue>.Values
         {
-            get
-            {
-                return _values;
-            }
+            get { return _values; }
         }
 
         IReadOnlyCollection<KeyValuePair<TKey, TValue>> IExtendedCollection<KeyValuePair<TKey, TValue>>.AsReadOnly
         {
-            get
-            {
-                return this;
-            }
+            get { return this; }
         }
 
         IReadOnlyDictionary<TKey, TValue> IExtendedDictionary<TKey, TValue>.AsReadOnly
         {
-            get
-            {
-                return this;
-            }
+            get { return this; }
         }
 
         IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys
         {
-            get
-            {
-                return _keys;
-            }
+            get { return _keys; }
         }
 
         IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values
         {
-            get
-            {
-                return _values;
-            }
+            get { return _values; }
         }
 
         public IReadOnlyCollection<TKey> Keys
         {
-            get
-            {
-                return _keys;
-            }
+            get { return _keys; }
         }
 
         public IReadOnlyCollection<TValue> Values
         {
-            get
-            {
-                return _values;
-            }
+            get { return _values; }
         }
 
         TValue IDictionary<TKey, TValue>.this[TKey key]
         {
-            get
-            {
-                return this[key];
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
+            get { return this[key]; }
+
+            set { throw new NotSupportedException(); }
         }
 
         public TValue this[TKey key]
         {
-            get
-            {
-                return _wrapped[key];
-            }
+            get { return _wrapped[key]; }
         }
 
         public bool Contains(KeyValuePair<TKey, TValue> item)

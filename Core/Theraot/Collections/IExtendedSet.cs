@@ -6,15 +6,9 @@ namespace Theraot.Collections
 {
     public interface IExtendedSet<T> : IReadOnlySet<T>, ISet<T>
     {
-        IReadOnlySet<T> AsReadOnly
-        {
-            get;
-        }
+        IReadOnlySet<T> AsReadOnly { get; }
 
-        new int Count
-        {
-            get;
-        }
+        new int Count { get; }
 
         new bool Add(T item);
 

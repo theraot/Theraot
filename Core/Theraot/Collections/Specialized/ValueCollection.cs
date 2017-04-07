@@ -23,34 +23,22 @@ namespace Theraot.Collections.Specialized
 
         public int Count
         {
-            get
-            {
-                return _wrapped.Count;
-            }
+            get { return _wrapped.Count; }
         }
 
         bool ICollection.IsSynchronized
         {
-            get
-            {
-                return ((ICollection)_wrapped).IsSynchronized;
-            }
+            get { return ((ICollection)_wrapped).IsSynchronized; }
         }
 
         object ICollection.SyncRoot
         {
-            get
-            {
-                return ((ICollection)_wrapped).SyncRoot;
-            }
+            get { return ((ICollection)_wrapped).SyncRoot; }
         }
 
         bool ICollection<TValue>.IsReadOnly
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         public void CopyTo(TValue[] array, int arrayIndex)

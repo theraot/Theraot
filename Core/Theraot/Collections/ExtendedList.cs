@@ -49,46 +49,29 @@ namespace Theraot.Collections
 
         public IReadOnlyList<T> AsReadOnly
         {
-            get
-            {
-                return _readOnly;
-            }
+            get { return _readOnly; }
         }
 
         public int Count
         {
-            get
-            {
-                return _wrapped.Count;
-            }
+            get { return _wrapped.Count; }
         }
 
         IReadOnlyCollection<T> IExtendedCollection<T>.AsReadOnly
         {
-            get
-            {
-                return _readOnly;
-            }
+            get { return _readOnly; }
         }
 
         public bool IsReadOnly
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public T this[int index]
         {
-            get
-            {
-                return _wrapped[index];
-            }
-            set
-            {
-                _wrapped[index] = value;
-            }
+            get { return _wrapped[index]; }
+
+            set { _wrapped[index] = value; }
         }
 
         public void Add(T item)

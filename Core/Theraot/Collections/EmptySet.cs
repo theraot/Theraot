@@ -18,10 +18,7 @@ namespace Theraot.Collections
 
         public static EmptySet<T> Instance
         {
-            get
-            {
-                return _instance;
-            }
+            get { return _instance; }
         }
 
         private static IEnumerable<T> BuildEmptyEnumerable()

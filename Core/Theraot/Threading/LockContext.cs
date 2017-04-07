@@ -35,10 +35,7 @@ namespace Theraot.Threading
 
         internal int Capacity
         {
-            get
-            {
-                return _capacity;
-            }
+            get { return _capacity; }
         }
 
         internal bool ClaimSlot(out LockSlot<T> slot)

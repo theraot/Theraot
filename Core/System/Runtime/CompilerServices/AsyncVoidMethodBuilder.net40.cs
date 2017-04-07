@@ -48,10 +48,7 @@ namespace System.Runtime.CompilerServices
         private object ObjectIdForDebugger
         // ReSharper restore UnusedMember.Local
         {
-            get
-            {
-                return m_objectIdForDebugger ?? (m_objectIdForDebugger = new object());
-            }
+            get { return m_objectIdForDebugger ?? (m_objectIdForDebugger = new object()); }
         }
 
         /// <summary>

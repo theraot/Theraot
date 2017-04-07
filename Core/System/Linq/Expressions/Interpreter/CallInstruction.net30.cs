@@ -13,10 +13,7 @@ namespace System.Linq.Expressions.Interpreter
         /// <summary>
         /// The number of arguments including "this" for instance methods.
         /// </summary>
-        public abstract int ArgumentCount
-        {
-            get;
-        }
+        public abstract int ArgumentCount { get; }
 
         #region Construction
 
@@ -26,10 +23,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string InstructionName
         {
-            get
-            {
-                return "Call";
-            }
+            get { return "Call"; }
         }
 
 #if FEATURE_DLG_INVOKE
@@ -266,10 +260,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return ArgumentCount;
-            }
+            get { return ArgumentCount; }
         }
 
         public override string ToString()
@@ -327,10 +318,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ArgumentCount
         {
-            get
-            {
-                return _argumentCount;
-            }
+            get { return _argumentCount; }
         }
 
         internal MethodInfoCallInstruction(MethodInfo target, int argumentCount)
@@ -341,10 +329,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ProducedStack
         {
-            get
-            {
-                return _target.ReturnType == typeof(void) ? 0 : 1;
-            }
+            get { return _target.ReturnType == typeof(void) ? 0 : 1; }
         }
 
         public override object Invoke(params object[] args)
@@ -470,10 +455,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ArgumentCount
         {
-            get
-            {
-                return _argumentCount;
-            }
+            get { return _argumentCount; }
         }
 
         internal ByRefMethodInfoCallInstruction(MethodInfo target, int argumentCount, ByRefUpdater[] byrefArgs)
@@ -485,10 +467,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ProducedStack
         {
-            get
-            {
-                return (_target.ReturnType == typeof(void) ? 0 : 1);
-            }
+            get { return (_target.ReturnType == typeof(void) ? 0 : 1); }
         }
 
         public sealed override int Run(InterpretedFrame frame)

@@ -30,26 +30,17 @@ namespace Theraot.Threading.Needles
 
         public static Transact CurrentTransaction
         {
-            get
-            {
-                return _currentTransaction;
-            }
+            get { return _currentTransaction; }
         }
 
         public bool IsRoot
         {
-            get
-            {
-                return _parentTransaction == null;
-            }
+            get { return _parentTransaction == null; }
         }
 
         private static LockContext<Thread> Context
         {
-            get
-            {
-                return _context;
-            }
+            get { return _context; }
         }
 
         public static Needle<T> CreateNeedle<T>(T value)

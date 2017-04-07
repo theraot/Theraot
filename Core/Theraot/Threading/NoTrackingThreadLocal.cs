@@ -86,58 +86,37 @@ namespace Theraot.Threading
 
         Exception IPromise.Exception
         {
-            get
-            {
-                return null;
-            }
+            get { return null; }
         }
 
         bool IReadOnlyNeedle<T>.IsAlive
         {
-            get
-            {
-                return IsValueCreated;
-            }
+            get { return IsValueCreated; }
         }
 
         bool IPromise.IsCanceled
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         bool IPromise.IsCompleted
         {
-            get
-            {
-                return IsValueCreated;
-            }
+            get { return IsValueCreated; }
         }
 
         bool IPromise.IsFaulted
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         T IThreadLocal<T>.ValueForDebugDisplay
         {
-            get
-            {
-                return ValueForDebugDisplay;
-            }
+            get { return ValueForDebugDisplay; }
         }
 
         System.Collections.Generic.IList<T> IThreadLocal<T>.Values
         {
-            get
-            {
-                throw new InvalidOperationException();
-            }
+            get { throw new InvalidOperationException(); }
         }
 
         [System.Diagnostics.DebuggerNonUserCode]

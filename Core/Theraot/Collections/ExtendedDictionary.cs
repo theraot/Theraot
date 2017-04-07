@@ -77,94 +77,59 @@ namespace Theraot.Collections
 
         public IReadOnlyDictionary<TKey, TValue> AsReadOnly
         {
-            get
-            {
-                return _readOnly;
-            }
+            get { return _readOnly; }
         }
 
         public int Count
         {
-            get
-            {
-                return _wrapped.Count;
-            }
+            get { return _wrapped.Count; }
         }
 
         bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         ICollection<TKey> IDictionary<TKey, TValue>.Keys
         {
-            get
-            {
-                return _wrapped.Keys;
-            }
+            get { return _wrapped.Keys; }
         }
 
         ICollection<TValue> IDictionary<TKey, TValue>.Values
         {
-            get
-            {
-                return _wrapped.Values;
-            }
+            get { return _wrapped.Values; }
         }
 
         IReadOnlyCollection<KeyValuePair<TKey, TValue>> IExtendedCollection<KeyValuePair<TKey, TValue>>.AsReadOnly
         {
-            get
-            {
-                return _readOnly;
-            }
+            get { return _readOnly; }
         }
 
         IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys
         {
-            get
-            {
-                return _keysReadonly;
-            }
+            get { return _keysReadonly; }
         }
 
         IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values
         {
-            get
-            {
-                return _valuesReadonly;
-            }
+            get { return _valuesReadonly; }
         }
 
         public IReadOnlyCollection<TKey> Keys
         {
-            get
-            {
-                return _keysReadonly;
-            }
+            get { return _keysReadonly; }
         }
 
         public IReadOnlyCollection<TValue> Values
         {
-            get
-            {
-                return _valuesReadonly;
-            }
+            get { return _valuesReadonly; }
         }
 
         public TValue this[TKey key]
         {
-            get
-            {
-                return _wrapped[key];
-            }
-            set
-            {
-                _wrapped[key] = value;
-            }
+            get { return _wrapped[key]; }
+
+            set { _wrapped[key] = value; }
         }
 
         public void Add(KeyValuePair<TKey, TValue> item)

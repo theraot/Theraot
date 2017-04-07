@@ -63,34 +63,22 @@ namespace System.Linq.Expressions.Interpreter
 
         internal int LocalCount
         {
-            get
-            {
-                return _localCount;
-            }
+            get { return _localCount; }
         }
 
         internal InstructionArray Instructions
         {
-            get
-            {
-                return _instructions;
-            }
+            get { return _instructions; }
         }
 
         internal Dictionary<ParameterExpression, LocalVariable> ClosureVariables
         {
-            get
-            {
-                return _closureVariables;
-            }
+            get { return _closureVariables; }
         }
 
         internal HybridReferenceDictionary<LabelTarget, BranchLabel> LabelMapping
         {
-            get
-            {
-                return _labelMapping;
-            }
+            get { return _labelMapping; }
         }
 
         /// <summary>

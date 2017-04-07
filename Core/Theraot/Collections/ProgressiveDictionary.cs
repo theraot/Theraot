@@ -88,74 +88,47 @@ namespace Theraot.Collections
 
         bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         ICollection<TKey> IDictionary<TKey, TValue>.Keys
         {
-            get
-            {
-                return _keysReadonly;
-            }
+            get { return _keysReadonly; }
         }
 
         ICollection<TValue> IDictionary<TKey, TValue>.Values
         {
-            get
-            {
-                return _valuesReadonly;
-            }
+            get { return _valuesReadonly; }
         }
 
         IReadOnlyCollection<KeyValuePair<TKey, TValue>> IExtendedCollection<KeyValuePair<TKey, TValue>>.AsReadOnly
         {
-            get
-            {
-                return this;
-            }
+            get { return this; }
         }
 
         IReadOnlyDictionary<TKey, TValue> IExtendedDictionary<TKey, TValue>.AsReadOnly
         {
-            get
-            {
-                return this;
-            }
+            get { return this; }
         }
 
         IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys
         {
-            get
-            {
-                return _keysReadonly;
-            }
+            get { return _keysReadonly; }
         }
 
         IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values
         {
-            get
-            {
-                return _valuesReadonly;
-            }
+            get { return _valuesReadonly; }
         }
 
         public IReadOnlyCollection<TKey> Keys
         {
-            get
-            {
-                return _keysReadonly;
-            }
+            get { return _keysReadonly; }
         }
 
         public IReadOnlyCollection<TValue> Values
         {
-            get
-            {
-                return _valuesReadonly;
-            }
+            get { return _valuesReadonly; }
         }
 
         TValue IDictionary<TKey, TValue>.this[TKey key]
@@ -179,10 +152,8 @@ namespace Theraot.Collections
                     throw;
                 }
             }
-            set
-            {
-                throw new NotSupportedException();
-            }
+
+            set { throw new NotSupportedException(); }
         }
 
         public TValue this[TKey key]

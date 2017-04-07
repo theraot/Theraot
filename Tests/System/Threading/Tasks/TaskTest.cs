@@ -1693,10 +1693,7 @@ namespace MonoTests.System.Threading.Tasks
 
             public ManualResetEvent TasksPilledUp
             {
-                get
-                {
-                    return _mre;
-                }
+                get { return _mre; }
             }
 
             public void Run()

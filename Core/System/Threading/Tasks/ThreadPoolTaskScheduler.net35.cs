@@ -35,10 +35,7 @@ namespace System.Threading.Tasks
         /// </summary>
         internal override bool RequiresAtomicStartTransition
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         /// <summary>

@@ -32,10 +32,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<ElementInit> Initializers
         {
-            get
-            {
-                return _initializers;
-            }
+            get { return _initializers; }
         }
 
         /// <summary>

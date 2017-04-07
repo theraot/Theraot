@@ -47,10 +47,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get
-            {
-                return ExpressionType.Conditional;
-            }
+            get { return ExpressionType.Conditional; }
         }
 
         /// <summary>
@@ -59,10 +56,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public override Type Type
         {
-            get
-            {
-                return IfTrue.Type;
-            }
+            get { return IfTrue.Type; }
         }
 
         /// <summary>
@@ -70,10 +64,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Test
         {
-            get
-            {
-                return _test;
-            }
+            get { return _test; }
         }
 
         /// <summary>
@@ -81,10 +72,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression IfTrue
         {
-            get
-            {
-                return _true;
-            }
+            get { return _true; }
         }
 
         /// <summary>
@@ -92,10 +80,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression IfFalse
         {
-            get
-            {
-                return GetFalse();
-            }
+            get { return GetFalse(); }
         }
 
         internal virtual Expression GetFalse()
@@ -158,10 +143,7 @@ namespace System.Linq.Expressions
 
         public sealed override Type Type
         {
-            get
-            {
-                return _type;
-            }
+            get { return _type; }
         }
     }
 

@@ -38,10 +38,7 @@ namespace System.Linq.Expressions.Interpreter
 
         internal int Length
         {
-            get
-            {
-                return Instructions.Length;
-            }
+            get { return Instructions.Length; }
         }
 
         #region Debug View
@@ -234,34 +231,22 @@ namespace System.Linq.Expressions.Interpreter
 
         public int Count
         {
-            get
-            {
-                return _instructions.Count;
-            }
+            get { return _instructions.Count; }
         }
 
         public int CurrentStackDepth
         {
-            get
-            {
-                return _currentStackDepth;
-            }
+            get { return _currentStackDepth; }
         }
 
         public int CurrentContinuationsDepth
         {
-            get
-            {
-                return _currentContinuationsDepth;
-            }
+            get { return _currentContinuationsDepth; }
         }
 
         public int MaxStackDepth
         {
-            get
-            {
-                return _maxStackDepth;
-            }
+            get { return _maxStackDepth; }
         }
 
         internal Instruction GetInstruction(int index)

@@ -20,34 +20,22 @@ namespace System.Diagnostics.Contracts
 
         public ContractFailureKind Kind
         {
-            get
-            {
-                return _kind;
-            }
+            get { return _kind; }
         }
 
         public string Failure
         {
-            get
-            {
-                return Message;
-            }
+            get { return Message; }
         }
 
         public string UserMessage
         {
-            get
-            {
-                return _userMessage;
-            }
+            get { return _userMessage; }
         }
 
         public string Condition
         {
-            get
-            {
-                return _condition;
-            }
+            get { return _condition; }
         }
 
         // Called by COM Interop, if we see Cor_E_Codecontractfailed as an HRESULT.

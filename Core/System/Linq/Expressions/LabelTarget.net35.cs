@@ -28,10 +28,7 @@ namespace System.Linq.Expressions
         /// <remarks>The label's name is provided for information purposes only.</remarks>
         public string Name
         {
-            get
-            {
-                return _name;
-            }
+            get { return _name; }
         }
 
         /// <summary>
@@ -40,10 +37,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Type Type
         {
-            get
-            {
-                return _type;
-            }
+            get { return _type; }
         }
 
         /// <summary>

@@ -10,10 +10,7 @@ namespace System.Dynamic.Utils
         /// </summary>
         internal static string InvalidArgumentValue
         {
-            get
-            {
-                return SR.InvalidArgumentValue;
-            }
+            get { return SR.InvalidArgumentValue; }
         }
 
         /// <summary>
@@ -21,10 +18,7 @@ namespace System.Dynamic.Utils
         /// </summary>
         internal static string NonEmptyCollectionRequired
         {
-            get
-            {
-                return SR.NonEmptyCollectionRequired;
-            }
+            get { return SR.NonEmptyCollectionRequired; }
         }
 
         /// <summary>
@@ -64,10 +58,7 @@ namespace System.Dynamic.Utils
         /// </summary>
         internal static string CollectionModifiedWhileEnumerating
         {
-            get
-            {
-                return SR.CollectionModifiedWhileEnumerating;
-            }
+            get { return SR.CollectionModifiedWhileEnumerating; }
         }
 
         /// <summary>
@@ -75,18 +66,12 @@ namespace System.Dynamic.Utils
         /// </summary>
         internal static string EnumerationIsDone
         {
-            get
-            {
-                return SR.EnumerationIsDone;
-            }
+            get { return SR.EnumerationIsDone; }
         }
 
         internal static string ExpressionMustBeReadable
         {
-            get
-            {
-                return SR.ExpressionMustBeReadable;
-            }
+            get { return SR.ExpressionMustBeReadable; }
         }
 
         /// <summary>
@@ -126,10 +111,7 @@ namespace System.Dynamic.Utils
         /// </summary>
         internal static string IncorrectNumberOfLambdaArguments
         {
-            get
-            {
-                return SR.IncorrectNumberOfLambdaArguments;
-            }
+            get { return SR.IncorrectNumberOfLambdaArguments; }
         }
 
         /// <summary>
@@ -137,10 +119,7 @@ namespace System.Dynamic.Utils
         /// </summary>
         internal static string IncorrectNumberOfConstructorArguments
         {
-            get
-            {
-                return SR.IncorrectNumberOfConstructorArguments;
-            }
+            get { return SR.IncorrectNumberOfConstructorArguments; }
         }
     }
 }

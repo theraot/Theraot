@@ -75,10 +75,7 @@ namespace System.Linq.Expressions.Compiler
 
         internal int Count
         {
-            get
-            {
-                return _values.Count;
-            }
+            get { return _values.Count; }
         }
 
         internal object[] ToArray()

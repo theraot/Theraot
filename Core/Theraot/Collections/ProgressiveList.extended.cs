@@ -9,22 +9,14 @@ namespace Theraot.Collections
     {
         IReadOnlyList<T> IExtendedList<T>.AsReadOnly
         {
-            get
-            {
-                return this;
-            }
+            get { return this; }
         }
 
         T IExtendedList<T>.this[int index]
         {
-            get
-            {
-                return this[index];
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
+            get { return this[index]; }
+
+            set { throw new NotSupportedException(); }
         }
 
         bool IExtendedCollection<T>.Remove(T item, IEqualityComparer<T> comparer)

@@ -46,18 +46,12 @@ namespace Theraot.Threading.Needles
 
         bool IPromise.IsCanceled
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         bool IPromise.IsCompleted
         {
-            get
-            {
-                return IsAlive;
-            }
+            get { return IsAlive; }
         }
 
         public bool IsAlive
@@ -71,22 +65,14 @@ namespace Theraot.Threading.Needles
 
         public bool IsFaulted
         {
-            get
-            {
-                return _target is ExceptionStructNeedle<T>;
-            }
+            get { return _target is ExceptionStructNeedle<T>; }
         }
 
         public virtual T Value
         {
-            get
-            {
-                return _target.Value;
-            }
-            set
-            {
-                SetTargetValue(value);
-            }
+            get { return _target.Value; }
+
+            set { SetTargetValue(value); }
         }
 
         public static explicit operator T(Needle<T> needle)

@@ -58,10 +58,7 @@ namespace Theraot.Threading.Needles
 
         protected Thread RunnerThread
         {
-            get
-            {
-                return _runnerThread;
-            }
+            get { return _runnerThread; }
         }
 
         public virtual void Execute()

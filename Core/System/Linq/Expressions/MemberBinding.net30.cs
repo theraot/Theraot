@@ -53,10 +53,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public MemberBindingType BindingType
         {
-            get
-            {
-                return _type;
-            }
+            get { return _type; }
         }
 
         /// <summary>
@@ -64,10 +61,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public MemberInfo Member
         {
-            get
-            {
-                return _member;
-            }
+            get { return _member; }
         }
 
         /// <summary>

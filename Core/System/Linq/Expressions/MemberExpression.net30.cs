@@ -23,10 +23,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public MemberInfo Member
         {
-            get
-            {
-                return GetMember();
-            }
+            get { return GetMember(); }
         }
 
         /// <summary>
@@ -34,10 +31,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Expression
         {
-            get
-            {
-                return _expression;
-            }
+            get { return _expression; }
         }
 
         // param order: factories args in order, then other args
@@ -66,10 +60,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get
-            {
-                return ExpressionType.MemberAccess;
-            }
+            get { return ExpressionType.MemberAccess; }
         }
 
         internal virtual MemberInfo GetMember()
@@ -119,10 +110,7 @@ namespace System.Linq.Expressions
 
         public sealed override Type Type
         {
-            get
-            {
-                return _field.FieldType;
-            }
+            get { return _field.FieldType; }
         }
     }
 
@@ -143,10 +131,7 @@ namespace System.Linq.Expressions
 
         public sealed override Type Type
         {
-            get
-            {
-                return _property.PropertyType;
-            }
+            get { return _property.PropertyType; }
         }
     }
 

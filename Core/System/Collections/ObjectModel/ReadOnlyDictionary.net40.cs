@@ -23,122 +23,77 @@ namespace System.Collections.ObjectModel
 
         public int Count
         {
-            get
-            {
-                return _wrapped.Count;
-            }
+            get { return _wrapped.Count; }
         }
 
         public IDictionary<TKey, TValue> Dictionary
         {
-            get
-            {
-                return _wrapped;
-            }
+            get { return _wrapped; }
         }
 
         bool ICollection.IsSynchronized
         {
-            get
-            {
-                return ((ICollection)_wrapped).IsSynchronized;
-            }
+            get { return ((ICollection)_wrapped).IsSynchronized; }
         }
 
         object ICollection.SyncRoot
         {
-            get
-            {
-                return ((ICollection)_wrapped).SyncRoot;
-            }
+            get { return ((ICollection)_wrapped).SyncRoot; }
         }
 
         bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         bool IDictionary.IsFixedSize
         {
-            get
-            {
-                return ((IDictionary)_wrapped).IsFixedSize;
-            }
+            get { return ((IDictionary)_wrapped).IsFixedSize; }
         }
 
         bool IDictionary.IsReadOnly
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         ICollection IDictionary.Keys
         {
-            get
-            {
-                return _keys;
-            }
+            get { return _keys; }
         }
 
         ICollection IDictionary.Values
         {
-            get
-            {
-                return _values;
-            }
+            get { return _values; }
         }
 
         ICollection<TKey> IDictionary<TKey, TValue>.Keys
         {
-            get
-            {
-                return _keys;
-            }
+            get { return _keys; }
         }
 
         ICollection<TValue> IDictionary<TKey, TValue>.Values
         {
-            get
-            {
-                return _values;
-            }
+            get { return _values; }
         }
 
         IEnumerable<TKey> IReadOnlyDictionary<TKey, TValue>.Keys
         {
-            get
-            {
-                return _keys;
-            }
+            get { return _keys; }
         }
 
         IEnumerable<TValue> IReadOnlyDictionary<TKey, TValue>.Values
         {
-            get
-            {
-                return _values;
-            }
+            get { return _values; }
         }
 
         public KeyCollection Keys
         {
-            get
-            {
-                return _keys;
-            }
+            get { return _keys; }
         }
 
         public ValueCollection Values
         {
-            get
-            {
-                return _values;
-            }
+            get { return _values; }
         }
 
         object IDictionary.this[object key]
@@ -158,30 +113,20 @@ namespace System.Collections.ObjectModel
                     return null;
                 }
             }
-            set
-            {
-                throw new NotSupportedException();
-            }
+
+            set { throw new NotSupportedException(); }
         }
 
         TValue IDictionary<TKey, TValue>.this[TKey key]
         {
-            get
-            {
-                return this[key];
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
+            get { return this[key]; }
+
+            set { throw new NotSupportedException(); }
         }
 
         public TValue this[TKey key]
         {
-            get
-            {
-                return _wrapped[key];
-            }
+            get { return _wrapped[key]; }
         }
 
         public bool ContainsKey(TKey key)

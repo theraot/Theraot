@@ -21,82 +21,52 @@ namespace System.Linq.Expressions
 
             public Boolean CanReduce
             {
-                get
-                {
-                    return _node.CanReduce;
-                }
+                get { return _node.CanReduce; }
             }
 
             public LambdaExpression Conversion
             {
-                get
-                {
-                    return _node.Conversion;
-                }
+                get { return _node.Conversion; }
             }
 
             public String DebugView
             {
-                get
-                {
-                    return _node.DebugView;
-                }
+                get { return _node.DebugView; }
             }
 
             public Boolean IsLifted
             {
-                get
-                {
-                    return _node.IsLifted;
-                }
+                get { return _node.IsLifted; }
             }
 
             public Boolean IsLiftedToNull
             {
-                get
-                {
-                    return _node.IsLiftedToNull;
-                }
+                get { return _node.IsLiftedToNull; }
             }
 
             public Expression Left
             {
-                get
-                {
-                    return _node.Left;
-                }
+                get { return _node.Left; }
             }
 
             public MethodInfo Method
             {
-                get
-                {
-                    return _node.Method;
-                }
+                get { return _node.Method; }
             }
 
             public ExpressionType NodeType
             {
-                get
-                {
-                    return _node.NodeType;
-                }
+                get { return _node.NodeType; }
             }
 
             public Expression Right
             {
-                get
-                {
-                    return _node.Right;
-                }
+                get { return _node.Right; }
             }
 
             public Type Type
             {
-                get
-                {
-                    return _node.Type;
-                }
+                get { return _node.Type; }
             }
         }
 
@@ -111,58 +81,37 @@ namespace System.Linq.Expressions
 
             public Boolean CanReduce
             {
-                get
-                {
-                    return _node.CanReduce;
-                }
+                get { return _node.CanReduce; }
             }
 
             public String DebugView
             {
-                get
-                {
-                    return _node.DebugView;
-                }
+                get { return _node.DebugView; }
             }
 
             public ReadOnlyCollection<Expression> Expressions
             {
-                get
-                {
-                    return _node.Expressions;
-                }
+                get { return _node.Expressions; }
             }
 
             public ExpressionType NodeType
             {
-                get
-                {
-                    return _node.NodeType;
-                }
+                get { return _node.NodeType; }
             }
 
             public Expression Result
             {
-                get
-                {
-                    return _node.Result;
-                }
+                get { return _node.Result; }
             }
 
             public Type Type
             {
-                get
-                {
-                    return _node.Type;
-                }
+                get { return _node.Type; }
             }
 
             public ReadOnlyCollection<ParameterExpression> Variables
             {
-                get
-                {
-                    return _node.Variables;
-                }
+                get { return _node.Variables; }
             }
         }
 
@@ -177,34 +126,22 @@ namespace System.Linq.Expressions
 
             public Expression Body
             {
-                get
-                {
-                    return _node.Body;
-                }
+                get { return _node.Body; }
             }
 
             public Expression Filter
             {
-                get
-                {
-                    return _node.Filter;
-                }
+                get { return _node.Filter; }
             }
 
             public Type Test
             {
-                get
-                {
-                    return _node.Test;
-                }
+                get { return _node.Test; }
             }
 
             public ParameterExpression Variable
             {
-                get
-                {
-                    return _node.Variable;
-                }
+                get { return _node.Variable; }
             }
         }
 
@@ -219,58 +156,37 @@ namespace System.Linq.Expressions
 
             public Boolean CanReduce
             {
-                get
-                {
-                    return _node.CanReduce;
-                }
+                get { return _node.CanReduce; }
             }
 
             public String DebugView
             {
-                get
-                {
-                    return _node.DebugView;
-                }
+                get { return _node.DebugView; }
             }
 
             public Expression IfFalse
             {
-                get
-                {
-                    return _node.IfFalse;
-                }
+                get { return _node.IfFalse; }
             }
 
             public Expression IfTrue
             {
-                get
-                {
-                    return _node.IfTrue;
-                }
+                get { return _node.IfTrue; }
             }
 
             public ExpressionType NodeType
             {
-                get
-                {
-                    return _node.NodeType;
-                }
+                get { return _node.NodeType; }
             }
 
             public Expression Test
             {
-                get
-                {
-                    return _node.Test;
-                }
+                get { return _node.Test; }
             }
 
             public Type Type
             {
-                get
-                {
-                    return _node.Type;
-                }
+                get { return _node.Type; }
             }
         }
 
@@ -285,42 +201,27 @@ namespace System.Linq.Expressions
 
             public Boolean CanReduce
             {
-                get
-                {
-                    return _node.CanReduce;
-                }
+                get { return _node.CanReduce; }
             }
 
             public String DebugView
             {
-                get
-                {
-                    return _node.DebugView;
-                }
+                get { return _node.DebugView; }
             }
 
             public ExpressionType NodeType
             {
-                get
-                {
-                    return _node.NodeType;
-                }
+                get { return _node.NodeType; }
             }
 
             public Type Type
             {
-                get
-                {
-                    return _node.Type;
-                }
+                get { return _node.Type; }
             }
 
             public Object Value
             {
-                get
-                {
-                    return _node.Value;
-                }
+                get { return _node.Value; }
             }
         }
 
@@ -335,82 +236,52 @@ namespace System.Linq.Expressions
 
             public Boolean CanReduce
             {
-                get
-                {
-                    return _node.CanReduce;
-                }
+                get { return _node.CanReduce; }
             }
 
             public String DebugView
             {
-                get
-                {
-                    return _node.DebugView;
-                }
+                get { return _node.DebugView; }
             }
 
             public SymbolDocumentInfo Document
             {
-                get
-                {
-                    return _node.Document;
-                }
+                get { return _node.Document; }
             }
 
             public Int32 EndColumn
             {
-                get
-                {
-                    return _node.EndColumn;
-                }
+                get { return _node.EndColumn; }
             }
 
             public Int32 EndLine
             {
-                get
-                {
-                    return _node.EndLine;
-                }
+                get { return _node.EndLine; }
             }
 
             public Boolean IsClear
             {
-                get
-                {
-                    return _node.IsClear;
-                }
+                get { return _node.IsClear; }
             }
 
             public ExpressionType NodeType
             {
-                get
-                {
-                    return _node.NodeType;
-                }
+                get { return _node.NodeType; }
             }
 
             public Int32 StartColumn
             {
-                get
-                {
-                    return _node.StartColumn;
-                }
+                get { return _node.StartColumn; }
             }
 
             public Int32 StartLine
             {
-                get
-                {
-                    return _node.StartLine;
-                }
+                get { return _node.StartLine; }
             }
 
             public Type Type
             {
-                get
-                {
-                    return _node.Type;
-                }
+                get { return _node.Type; }
             }
         }
 
@@ -425,34 +296,22 @@ namespace System.Linq.Expressions
 
             public Boolean CanReduce
             {
-                get
-                {
-                    return _node.CanReduce;
-                }
+                get { return _node.CanReduce; }
             }
 
             public String DebugView
             {
-                get
-                {
-                    return _node.DebugView;
-                }
+                get { return _node.DebugView; }
             }
 
             public ExpressionType NodeType
             {
-                get
-                {
-                    return _node.NodeType;
-                }
+                get { return _node.NodeType; }
             }
 
             public Type Type
             {
-                get
-                {
-                    return _node.Type;
-                }
+                get { return _node.Type; }
             }
         }
 
@@ -467,58 +326,37 @@ namespace System.Linq.Expressions
 
             public Boolean CanReduce
             {
-                get
-                {
-                    return _node.CanReduce;
-                }
+                get { return _node.CanReduce; }
             }
 
             public String DebugView
             {
-                get
-                {
-                    return _node.DebugView;
-                }
+                get { return _node.DebugView; }
             }
 
             public GotoExpressionKind Kind
             {
-                get
-                {
-                    return _node.Kind;
-                }
+                get { return _node.Kind; }
             }
 
             public ExpressionType NodeType
             {
-                get
-                {
-                    return _node.NodeType;
-                }
+                get { return _node.NodeType; }
             }
 
             public LabelTarget Target
             {
-                get
-                {
-                    return _node.Target;
-                }
+                get { return _node.Target; }
             }
 
             public Type Type
             {
-                get
-                {
-                    return _node.Type;
-                }
+                get { return _node.Type; }
             }
 
             public Expression Value
             {
-                get
-                {
-                    return _node.Value;
-                }
+                get { return _node.Value; }
             }
         }
 
@@ -533,58 +371,37 @@ namespace System.Linq.Expressions
 
             public ReadOnlyCollection<Expression> Arguments
             {
-                get
-                {
-                    return _node.Arguments;
-                }
+                get { return _node.Arguments; }
             }
 
             public Boolean CanReduce
             {
-                get
-                {
-                    return _node.CanReduce;
-                }
+                get { return _node.CanReduce; }
             }
 
             public String DebugView
             {
-                get
-                {
-                    return _node.DebugView;
-                }
+                get { return _node.DebugView; }
             }
 
             public PropertyInfo Indexer
             {
-                get
-                {
-                    return _node.Indexer;
-                }
+                get { return _node.Indexer; }
             }
 
             public ExpressionType NodeType
             {
-                get
-                {
-                    return _node.NodeType;
-                }
+                get { return _node.NodeType; }
             }
 
             public Expression Object
             {
-                get
-                {
-                    return _node.Object;
-                }
+                get { return _node.Object; }
             }
 
             public Type Type
             {
-                get
-                {
-                    return _node.Type;
-                }
+                get { return _node.Type; }
             }
         }
 
@@ -599,50 +416,32 @@ namespace System.Linq.Expressions
 
             public ReadOnlyCollection<Expression> Arguments
             {
-                get
-                {
-                    return _node.Arguments;
-                }
+                get { return _node.Arguments; }
             }
 
             public Boolean CanReduce
             {
-                get
-                {
-                    return _node.CanReduce;
-                }
+                get { return _node.CanReduce; }
             }
 
             public String DebugView
             {
-                get
-                {
-                    return _node.DebugView;
-                }
+                get { return _node.DebugView; }
             }
 
             public Expression Expression
             {
-                get
-                {
-                    return _node.Expression;
-                }
+                get { return _node.Expression; }
             }
 
             public ExpressionType NodeType
             {
-                get
-                {
-                    return _node.NodeType;
-                }
+                get { return _node.NodeType; }
             }
 
             public Type Type
             {
-                get
-                {
-                    return _node.Type;
-                }
+                get { return _node.Type; }
             }
         }
 
@@ -657,50 +456,32 @@ namespace System.Linq.Expressions
 
             public Boolean CanReduce
             {
-                get
-                {
-                    return _node.CanReduce;
-                }
+                get { return _node.CanReduce; }
             }
 
             public String DebugView
             {
-                get
-                {
-                    return _node.DebugView;
-                }
+                get { return _node.DebugView; }
             }
 
             public Expression DefaultValue
             {
-                get
-                {
-                    return _node.DefaultValue;
-                }
+                get { return _node.DefaultValue; }
             }
 
             public ExpressionType NodeType
             {
-                get
-                {
-                    return _node.NodeType;
-                }
+                get { return _node.NodeType; }
             }
 
             public LabelTarget Target
             {
-                get
-                {
-                    return _node.Target;
-                }
+                get { return _node.Target; }
             }
 
             public Type Type
             {
-                get
-                {
-                    return _node.Type;
-                }
+                get { return _node.Type; }
             }
         }
 
@@ -715,74 +496,47 @@ namespace System.Linq.Expressions
 
             public Expression Body
             {
-                get
-                {
-                    return _node.Body;
-                }
+                get { return _node.Body; }
             }
 
             public Boolean CanReduce
             {
-                get
-                {
-                    return _node.CanReduce;
-                }
+                get { return _node.CanReduce; }
             }
 
             public String DebugView
             {
-                get
-                {
-                    return _node.DebugView;
-                }
+                get { return _node.DebugView; }
             }
 
             public String Name
             {
-                get
-                {
-                    return _node.Name;
-                }
+                get { return _node.Name; }
             }
 
             public ExpressionType NodeType
             {
-                get
-                {
-                    return _node.NodeType;
-                }
+                get { return _node.NodeType; }
             }
 
             public ReadOnlyCollection<ParameterExpression> Parameters
             {
-                get
-                {
-                    return _node.Parameters;
-                }
+                get { return _node.Parameters; }
             }
 
             public Type ReturnType
             {
-                get
-                {
-                    return _node.ReturnType;
-                }
+                get { return _node.ReturnType; }
             }
 
             public Boolean TailCall
             {
-                get
-                {
-                    return _node.TailCall;
-                }
+                get { return _node.TailCall; }
             }
 
             public Type Type
             {
-                get
-                {
-                    return _node.Type;
-                }
+                get { return _node.Type; }
             }
         }
 
@@ -797,50 +551,32 @@ namespace System.Linq.Expressions
 
             public Boolean CanReduce
             {
-                get
-                {
-                    return _node.CanReduce;
-                }
+                get { return _node.CanReduce; }
             }
 
             public String DebugView
             {
-                get
-                {
-                    return _node.DebugView;
-                }
+                get { return _node.DebugView; }
             }
 
             public ReadOnlyCollection<ElementInit> Initializers
             {
-                get
-                {
-                    return _node.Initializers;
-                }
+                get { return _node.Initializers; }
             }
 
             public NewExpression NewExpression
             {
-                get
-                {
-                    return _node.NewExpression;
-                }
+                get { return _node.NewExpression; }
             }
 
             public ExpressionType NodeType
             {
-                get
-                {
-                    return _node.NodeType;
-                }
+                get { return _node.NodeType; }
             }
 
             public Type Type
             {
-                get
-                {
-                    return _node.Type;
-                }
+                get { return _node.Type; }
             }
         }
 
@@ -855,58 +591,37 @@ namespace System.Linq.Expressions
 
             public Expression Body
             {
-                get
-                {
-                    return _node.Body;
-                }
+                get { return _node.Body; }
             }
 
             public LabelTarget BreakLabel
             {
-                get
-                {
-                    return _node.BreakLabel;
-                }
+                get { return _node.BreakLabel; }
             }
 
             public Boolean CanReduce
             {
-                get
-                {
-                    return _node.CanReduce;
-                }
+                get { return _node.CanReduce; }
             }
 
             public LabelTarget ContinueLabel
             {
-                get
-                {
-                    return _node.ContinueLabel;
-                }
+                get { return _node.ContinueLabel; }
             }
 
             public String DebugView
             {
-                get
-                {
-                    return _node.DebugView;
-                }
+                get { return _node.DebugView; }
             }
 
             public ExpressionType NodeType
             {
-                get
-                {
-                    return _node.NodeType;
-                }
+                get { return _node.NodeType; }
             }
 
             public Type Type
             {
-                get
-                {
-                    return _node.Type;
-                }
+                get { return _node.Type; }
             }
         }
 
@@ -921,50 +636,32 @@ namespace System.Linq.Expressions
 
             public Boolean CanReduce
             {
-                get
-                {
-                    return _node.CanReduce;
-                }
+                get { return _node.CanReduce; }
             }
 
             public String DebugView
             {
-                get
-                {
-                    return _node.DebugView;
-                }
+                get { return _node.DebugView; }
             }
 
             public Expression Expression
             {
-                get
-                {
-                    return _node.Expression;
-                }
+                get { return _node.Expression; }
             }
 
             public MemberInfo Member
             {
-                get
-                {
-                    return _node.Member;
-                }
+                get { return _node.Member; }
             }
 
             public ExpressionType NodeType
             {
-                get
-                {
-                    return _node.NodeType;
-                }
+                get { return _node.NodeType; }
             }
 
             public Type Type
             {
-                get
-                {
-                    return _node.Type;
-                }
+                get { return _node.Type; }
             }
         }
 
@@ -979,50 +676,32 @@ namespace System.Linq.Expressions
 
             public ReadOnlyCollection<MemberBinding> Bindings
             {
-                get
-                {
-                    return _node.Bindings;
-                }
+                get { return _node.Bindings; }
             }
 
             public Boolean CanReduce
             {
-                get
-                {
-                    return _node.CanReduce;
-                }
+                get { return _node.CanReduce; }
             }
 
             public String DebugView
             {
-                get
-                {
-                    return _node.DebugView;
-                }
+                get { return _node.DebugView; }
             }
 
             public NewExpression NewExpression
             {
-                get
-                {
-                    return _node.NewExpression;
-                }
+                get { return _node.NewExpression; }
             }
 
             public ExpressionType NodeType
             {
-                get
-                {
-                    return _node.NodeType;
-                }
+                get { return _node.NodeType; }
             }
 
             public Type Type
             {
-                get
-                {
-                    return _node.Type;
-                }
+                get { return _node.Type; }
             }
         }
 
@@ -1037,58 +716,37 @@ namespace System.Linq.Expressions
 
             public ReadOnlyCollection<Expression> Arguments
             {
-                get
-                {
-                    return _node.Arguments;
-                }
+                get { return _node.Arguments; }
             }
 
             public Boolean CanReduce
             {
-                get
-                {
-                    return _node.CanReduce;
-                }
+                get { return _node.CanReduce; }
             }
 
             public String DebugView
             {
-                get
-                {
-                    return _node.DebugView;
-                }
+                get { return _node.DebugView; }
             }
 
             public MethodInfo Method
             {
-                get
-                {
-                    return _node.Method;
-                }
+                get { return _node.Method; }
             }
 
             public ExpressionType NodeType
             {
-                get
-                {
-                    return _node.NodeType;
-                }
+                get { return _node.NodeType; }
             }
 
             public Expression Object
             {
-                get
-                {
-                    return _node.Object;
-                }
+                get { return _node.Object; }
             }
 
             public Type Type
             {
-                get
-                {
-                    return _node.Type;
-                }
+                get { return _node.Type; }
             }
         }
 
@@ -1103,42 +761,27 @@ namespace System.Linq.Expressions
 
             public Boolean CanReduce
             {
-                get
-                {
-                    return _node.CanReduce;
-                }
+                get { return _node.CanReduce; }
             }
 
             public String DebugView
             {
-                get
-                {
-                    return _node.DebugView;
-                }
+                get { return _node.DebugView; }
             }
 
             public ReadOnlyCollection<Expression> Expressions
             {
-                get
-                {
-                    return _node.Expressions;
-                }
+                get { return _node.Expressions; }
             }
 
             public ExpressionType NodeType
             {
-                get
-                {
-                    return _node.NodeType;
-                }
+                get { return _node.NodeType; }
             }
 
             public Type Type
             {
-                get
-                {
-                    return _node.Type;
-                }
+                get { return _node.Type; }
             }
         }
 
@@ -1153,58 +796,37 @@ namespace System.Linq.Expressions
 
             public ReadOnlyCollection<Expression> Arguments
             {
-                get
-                {
-                    return _node.Arguments;
-                }
+                get { return _node.Arguments; }
             }
 
             public Boolean CanReduce
             {
-                get
-                {
-                    return _node.CanReduce;
-                }
+                get { return _node.CanReduce; }
             }
 
             public ConstructorInfo Constructor
             {
-                get
-                {
-                    return _node.Constructor;
-                }
+                get { return _node.Constructor; }
             }
 
             public String DebugView
             {
-                get
-                {
-                    return _node.DebugView;
-                }
+                get { return _node.DebugView; }
             }
 
             public ReadOnlyCollection<MemberInfo> Members
             {
-                get
-                {
-                    return _node.Members;
-                }
+                get { return _node.Members; }
             }
 
             public ExpressionType NodeType
             {
-                get
-                {
-                    return _node.NodeType;
-                }
+                get { return _node.NodeType; }
             }
 
             public Type Type
             {
-                get
-                {
-                    return _node.Type;
-                }
+                get { return _node.Type; }
             }
         }
 
@@ -1219,50 +841,32 @@ namespace System.Linq.Expressions
 
             public Boolean CanReduce
             {
-                get
-                {
-                    return _node.CanReduce;
-                }
+                get { return _node.CanReduce; }
             }
 
             public String DebugView
             {
-                get
-                {
-                    return _node.DebugView;
-                }
+                get { return _node.DebugView; }
             }
 
             public Boolean IsByRef
             {
-                get
-                {
-                    return _node.IsByRef;
-                }
+                get { return _node.IsByRef; }
             }
 
             public String Name
             {
-                get
-                {
-                    return _node.Name;
-                }
+                get { return _node.Name; }
             }
 
             public ExpressionType NodeType
             {
-                get
-                {
-                    return _node.NodeType;
-                }
+                get { return _node.NodeType; }
             }
 
             public Type Type
             {
-                get
-                {
-                    return _node.Type;
-                }
+                get { return _node.Type; }
             }
         }
 
@@ -1277,42 +881,27 @@ namespace System.Linq.Expressions
 
             public Boolean CanReduce
             {
-                get
-                {
-                    return _node.CanReduce;
-                }
+                get { return _node.CanReduce; }
             }
 
             public String DebugView
             {
-                get
-                {
-                    return _node.DebugView;
-                }
+                get { return _node.DebugView; }
             }
 
             public ExpressionType NodeType
             {
-                get
-                {
-                    return _node.NodeType;
-                }
+                get { return _node.NodeType; }
             }
 
             public Type Type
             {
-                get
-                {
-                    return _node.Type;
-                }
+                get { return _node.Type; }
             }
 
             public ReadOnlyCollection<ParameterExpression> Variables
             {
-                get
-                {
-                    return _node.Variables;
-                }
+                get { return _node.Variables; }
             }
         }
 
@@ -1327,18 +916,12 @@ namespace System.Linq.Expressions
 
             public Expression Body
             {
-                get
-                {
-                    return _node.Body;
-                }
+                get { return _node.Body; }
             }
 
             public ReadOnlyCollection<Expression> TestValues
             {
-                get
-                {
-                    return _node.TestValues;
-                }
+                get { return _node.TestValues; }
             }
         }
 
@@ -1353,66 +936,42 @@ namespace System.Linq.Expressions
 
             public Boolean CanReduce
             {
-                get
-                {
-                    return _node.CanReduce;
-                }
+                get { return _node.CanReduce; }
             }
 
             public ReadOnlyCollection<SwitchCase> Cases
             {
-                get
-                {
-                    return _node.Cases;
-                }
+                get { return _node.Cases; }
             }
 
             public MethodInfo Comparison
             {
-                get
-                {
-                    return _node.Comparison;
-                }
+                get { return _node.Comparison; }
             }
 
             public String DebugView
             {
-                get
-                {
-                    return _node.DebugView;
-                }
+                get { return _node.DebugView; }
             }
 
             public Expression DefaultBody
             {
-                get
-                {
-                    return _node.DefaultBody;
-                }
+                get { return _node.DefaultBody; }
             }
 
             public ExpressionType NodeType
             {
-                get
-                {
-                    return _node.NodeType;
-                }
+                get { return _node.NodeType; }
             }
 
             public Expression SwitchValue
             {
-                get
-                {
-                    return _node.SwitchValue;
-                }
+                get { return _node.SwitchValue; }
             }
 
             public Type Type
             {
-                get
-                {
-                    return _node.Type;
-                }
+                get { return _node.Type; }
             }
         }
 
@@ -1427,66 +986,42 @@ namespace System.Linq.Expressions
 
             public Expression Body
             {
-                get
-                {
-                    return _node.Body;
-                }
+                get { return _node.Body; }
             }
 
             public Boolean CanReduce
             {
-                get
-                {
-                    return _node.CanReduce;
-                }
+                get { return _node.CanReduce; }
             }
 
             public String DebugView
             {
-                get
-                {
-                    return _node.DebugView;
-                }
+                get { return _node.DebugView; }
             }
 
             public Expression Fault
             {
-                get
-                {
-                    return _node.Fault;
-                }
+                get { return _node.Fault; }
             }
 
             public Expression Finally
             {
-                get
-                {
-                    return _node.Finally;
-                }
+                get { return _node.Finally; }
             }
 
             public ReadOnlyCollection<CatchBlock> Handlers
             {
-                get
-                {
-                    return _node.Handlers;
-                }
+                get { return _node.Handlers; }
             }
 
             public ExpressionType NodeType
             {
-                get
-                {
-                    return _node.NodeType;
-                }
+                get { return _node.NodeType; }
             }
 
             public Type Type
             {
-                get
-                {
-                    return _node.Type;
-                }
+                get { return _node.Type; }
             }
         }
 
@@ -1501,50 +1036,32 @@ namespace System.Linq.Expressions
 
             public Boolean CanReduce
             {
-                get
-                {
-                    return _node.CanReduce;
-                }
+                get { return _node.CanReduce; }
             }
 
             public String DebugView
             {
-                get
-                {
-                    return _node.DebugView;
-                }
+                get { return _node.DebugView; }
             }
 
             public Expression Expression
             {
-                get
-                {
-                    return _node.Expression;
-                }
+                get { return _node.Expression; }
             }
 
             public ExpressionType NodeType
             {
-                get
-                {
-                    return _node.NodeType;
-                }
+                get { return _node.NodeType; }
             }
 
             public Type Type
             {
-                get
-                {
-                    return _node.Type;
-                }
+                get { return _node.Type; }
             }
 
             public Type TypeOperand
             {
-                get
-                {
-                    return _node.TypeOperand;
-                }
+                get { return _node.TypeOperand; }
             }
         }
 
@@ -1559,66 +1076,42 @@ namespace System.Linq.Expressions
 
             public Boolean CanReduce
             {
-                get
-                {
-                    return _node.CanReduce;
-                }
+                get { return _node.CanReduce; }
             }
 
             public String DebugView
             {
-                get
-                {
-                    return _node.DebugView;
-                }
+                get { return _node.DebugView; }
             }
 
             public Boolean IsLifted
             {
-                get
-                {
-                    return _node.IsLifted;
-                }
+                get { return _node.IsLifted; }
             }
 
             public Boolean IsLiftedToNull
             {
-                get
-                {
-                    return _node.IsLiftedToNull;
-                }
+                get { return _node.IsLiftedToNull; }
             }
 
             public MethodInfo Method
             {
-                get
-                {
-                    return _node.Method;
-                }
+                get { return _node.Method; }
             }
 
             public ExpressionType NodeType
             {
-                get
-                {
-                    return _node.NodeType;
-                }
+                get { return _node.NodeType; }
             }
 
             public Expression Operand
             {
-                get
-                {
-                    return _node.Operand;
-                }
+                get { return _node.Operand; }
             }
 
             public Type Type
             {
-                get
-                {
-                    return _node.Type;
-                }
+                get { return _node.Type; }
             }
         }
     }

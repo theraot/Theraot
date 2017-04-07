@@ -18,10 +18,7 @@ namespace System.Threading.Tasks
 
         public Task Antecedent
         {
-            get
-            {
-                return _antecedent;
-            }
+            get { return _antecedent; }
         }
 
         /// <summary>

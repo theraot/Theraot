@@ -40,10 +40,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type
         {
-            get
-            {
-                return _type;
-            }
+            get { return _type; }
         }
 
         /// <summary>
@@ -53,10 +50,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get
-            {
-                return ExpressionType.Switch;
-            }
+            get { return ExpressionType.Switch; }
         }
 
         /// <summary>
@@ -64,10 +58,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression SwitchValue
         {
-            get
-            {
-                return _switchValue;
-            }
+            get { return _switchValue; }
         }
 
         /// <summary>
@@ -75,10 +66,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<SwitchCase> Cases
         {
-            get
-            {
-                return _cases;
-            }
+            get { return _cases; }
         }
 
         /// <summary>
@@ -86,10 +74,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression DefaultBody
         {
-            get
-            {
-                return _defaultBody;
-            }
+            get { return _defaultBody; }
         }
 
         /// <summary>
@@ -97,10 +82,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public MethodInfo Comparison
         {
-            get
-            {
-                return _comparison;
-            }
+            get { return _comparison; }
         }
 
         protected internal override Expression Accept(ExpressionVisitor visitor)

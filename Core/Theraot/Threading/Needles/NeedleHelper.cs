@@ -168,10 +168,7 @@ namespace Theraot.Threading.Needles
 
             public static bool CanCreate
             {
-                get
-                {
-                    return _canCreate;
-                }
+                get { return _canCreate; }
             }
 
             public static TNeedle Create(Func<T> target)
@@ -210,10 +207,7 @@ namespace Theraot.Threading.Needles
 
             public static bool CanCreate
             {
-                get
-                {
-                    return _canCreate;
-                }
+                get { return _canCreate; }
             }
 
             public static TNeedle Create(Func<T> target)
@@ -267,10 +261,7 @@ namespace Theraot.Threading.Needles
 
             public static bool CanCreate
             {
-                get
-                {
-                    return _canCreate;
-                }
+                get { return _canCreate; }
             }
 
             public static TNeedle Create(T target)
@@ -309,10 +300,7 @@ namespace Theraot.Threading.Needles
 
             public static bool CanCreate
             {
-                get
-                {
-                    return _canCreate;
-                }
+                get { return _canCreate; }
             }
 
             public static TNeedle Create(INeedle<T> target)
@@ -351,10 +339,7 @@ namespace Theraot.Threading.Needles
 
             public static bool CanCreate
             {
-                get
-                {
-                    return _canCreate;
-                }
+                get { return _canCreate; }
             }
 
             public static TNeedle Create(IReadOnlyNeedle<T> target)
@@ -393,10 +378,7 @@ namespace Theraot.Threading.Needles
 
             public static bool CanCreate
             {
-                get
-                {
-                    return _canCreate;
-                }
+                get { return _canCreate; }
             }
 
             public static TNeedle Create(T target)

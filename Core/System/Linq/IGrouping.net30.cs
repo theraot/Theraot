@@ -12,10 +12,7 @@ namespace System.Linq
     public interface IGrouping<out TKey, TElement> : IEnumerable<TElement>
 #endif
     {
-        TKey Key
-        {
-            get;
-        }
+        TKey Key { get; }
     }
 }
 

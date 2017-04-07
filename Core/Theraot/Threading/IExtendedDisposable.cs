@@ -6,10 +6,7 @@ namespace Theraot.Threading
 {
     public interface IExtendedDisposable : IDisposable
     {
-        bool IsDisposed
-        {
-            get;
-        }
+        bool IsDisposed { get; }
 
         void DisposedConditional(Action whenDisposed, Action whenNotDisposed);
 

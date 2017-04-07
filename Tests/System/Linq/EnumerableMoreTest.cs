@@ -77,10 +77,7 @@ namespace MonoTests.System.Linq
 
             public int Current
             {
-                get
-                {
-                    return 3;
-                }
+                get { return 3; }
             }
 
             public void Dispose()
@@ -89,10 +86,7 @@ namespace MonoTests.System.Linq
 
             object IEnumerator.Current
             {
-                get
-                {
-                    throw new NotImplementedException();
-                }
+                get { throw new NotImplementedException(); }
             }
 
             public bool MoveNext()

@@ -5,10 +5,7 @@ namespace Theraot.Collections.ThreadSafe
 {
     public interface IBucket<T> : IEnumerable<T>
     {
-        int Count
-        {
-            get;
-        }
+        int Count { get; }
 
         void CopyTo(T[] array, int arrayIndex);
 

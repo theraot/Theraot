@@ -61,10 +61,7 @@ namespace System.Threading
 
         public bool CanBeCanceled
         {
-            get
-            {
-                return _source != null;
-            }
+            get { return _source != null; }
         }
 
         public bool IsCancellationRequested
@@ -84,18 +81,12 @@ namespace System.Threading
 
         public WaitHandle WaitHandle
         {
-            get
-            {
-                return Source.WaitHandle;
-            }
+            get { return Source.WaitHandle; }
         }
 
         private CancellationTokenSource Source
         {
-            get
-            {
-                return _source ?? CancellationTokenSource.NoneSource;
-            }
+            get { return _source ?? CancellationTokenSource.NoneSource; }
         }
 
         public static bool operator !=(CancellationToken left, CancellationToken right)

@@ -23,10 +23,7 @@ namespace System.Diagnostics.Contracts
 
         public Type TypeContainingContracts
         {
-            get
-            {
-                return _typeWithContracts;
-            }
+            get { return _typeWithContracts; }
         }
     }
 }

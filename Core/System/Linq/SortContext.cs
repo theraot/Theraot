@@ -41,26 +41,16 @@ namespace System.Linq
 
         protected SortContext<TElement> ChildContext
         {
-            get
-            {
-                return _childContext;
-            }
-            set
-            {
-                _childContext = value;
-            }
+            get { return _childContext; }
+
+            set { _childContext = value; }
         }
 
         protected SortDirection Direction
         {
-            get
-            {
-                return _direction;
-            }
-            set
-            {
-                _direction = value;
-            }
+            get { return _direction; }
+
+            set { _direction = value; }
         }
 
         public abstract int Compare(int firstIndex, int secondIndex);

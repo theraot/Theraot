@@ -70,10 +70,7 @@ namespace Theraot.Core
 
             public static Predicate<T> Instance
             {
-                get
-                {
-                    return _instance;
-                }
+                get { return _instance; }
             }
 
             private static bool FallacyFunc(T obj)
@@ -94,10 +91,7 @@ namespace Theraot.Core
 
             public static Predicate<T> Instance
             {
-                get
-                {
-                    return _instance;
-                }
+                get { return _instance; }
             }
 
             private static bool TautologyFunc(T obj)
@@ -118,10 +112,7 @@ namespace Theraot.Core
 
             public Func<T, bool> Func
             {
-                get
-                {
-                    return _func;
-                }
+                get { return _func; }
             }
 
             public bool Invoke(T input)
@@ -141,10 +132,7 @@ namespace Theraot.Core
 
             public Predicate<T> Predicate
             {
-                get
-                {
-                    return _predicate;
-                }
+                get { return _predicate; }
             }
 
             public bool Invoke(T input)

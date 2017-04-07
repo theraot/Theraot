@@ -85,11 +85,7 @@ namespace MonoTests.System
                 Prop = 5;
             }
 
-            public int Prop
-            {
-                get;
-                set;
-            }
+            public int Prop { get; set; }
         }
 
         [Test]

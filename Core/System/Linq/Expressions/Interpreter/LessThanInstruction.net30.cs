@@ -17,26 +17,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 2;
-            }
+            get { return 2; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "LessThan";
-            }
+            get { return "LessThan"; }
         }
 
         private LessThanInstruction(object nullValue)
@@ -403,26 +394,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 2;
-            }
+            get { return 2; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "LessThanOrEqual";
-            }
+            get { return "LessThanOrEqual"; }
         }
 
         private LessThanOrEqualInstruction(object nullValue)

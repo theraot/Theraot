@@ -27,10 +27,7 @@ namespace System.Linq
 
         public int Count
         {
-            get
-            {
-                return _groupings.Count;
-            }
+            get { return _groupings.Count; }
         }
 
         public IEnumerable<TElement> this[TKey key]
@@ -121,22 +118,13 @@ namespace System.Linq
 
             public Collection<TElement> Items
             {
-                get
-                {
-                    return _items;
-                }
+                get { return _items; }
             }
 
             public TKey Key
             {
-                get
-                {
-                    return _key;
-                }
-                set
-                {
-                    _key = value;
-                }
+                get { return _key; }
+                set { _key = value; }
             }
 
             public IEnumerator<TElement> GetEnumerator()

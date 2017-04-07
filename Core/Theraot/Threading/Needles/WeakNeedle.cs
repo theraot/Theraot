@@ -72,18 +72,12 @@ namespace Theraot.Threading.Needles
 
         bool IPromise.IsCanceled
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         bool IPromise.IsCompleted
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         public bool IsAlive
@@ -120,10 +114,7 @@ namespace Theraot.Threading.Needles
 
         public virtual bool TrackResurrection
         {
-            get
-            {
-                return _trackResurrection;
-            }
+            get { return _trackResurrection; }
         }
 
         public virtual T Value
@@ -142,11 +133,9 @@ namespace Theraot.Threading.Needles
                 }
                 return null;
             }
+
             [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
-            set
-            {
-                SetTargetValue(value);
-            }
+            set { SetTargetValue(value); }
         }
 
         public static explicit operator T(WeakNeedle<T> needle)

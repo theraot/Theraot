@@ -47,10 +47,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get
-            {
-                return ExpressionType.Index;
-            }
+            get { return ExpressionType.Index; }
         }
 
         /// <summary>
@@ -74,10 +71,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Object
         {
-            get
-            {
-                return _instance;
-            }
+            get { return _instance; }
         }
 
         /// <summary>
@@ -85,10 +79,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public PropertyInfo Indexer
         {
-            get
-            {
-                return _indexer;
-            }
+            get { return _indexer; }
         }
 
         /// <summary>
@@ -96,10 +87,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<Expression> Arguments
         {
-            get
-            {
-                return ReturnReadOnly(ref _arguments);
-            }
+            get { return ReturnReadOnly(ref _arguments); }
         }
 
         /// <summary>
@@ -126,10 +114,7 @@ namespace System.Linq.Expressions
 
         public int ArgumentCount
         {
-            get
-            {
-                return _arguments.Count;
-            }
+            get { return _arguments.Count; }
         }
 
         /// <summary>

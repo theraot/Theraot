@@ -33,10 +33,7 @@ namespace Theraot.Threading.Needles
 
         public bool IsAlive
         {
-            get
-            {
-                return !ReferenceEquals(_target, null);
-            }
+            get { return !ReferenceEquals(_target, null); }
         }
 
         public virtual T Value

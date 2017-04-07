@@ -43,15 +43,9 @@ namespace MonoTests.System.Linq.Expressions
 
             public Gazonk Gaz;
 
-            public Gazonk Gazoo
-            {
-                get; set;
-            }
+            public Gazonk Gazoo { get; set; }
 
-            public string Gruik
-            {
-                get; set;
-            }
+            public string Gruik { get; set; }
 
             public Foo()
             {
@@ -66,10 +60,7 @@ namespace MonoTests.System.Linq.Expressions
 
             public int Klang;
 
-            public string Couic
-            {
-                get; set;
-            }
+            public string Couic { get; set; }
 
             public string Bang()
             {

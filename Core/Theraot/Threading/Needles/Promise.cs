@@ -37,18 +37,12 @@ namespace Theraot.Threading.Needles
 
         public Exception Exception
         {
-            get
-            {
-                return _exception;
-            }
+            get { return _exception; }
         }
 
         bool IPromise.IsCanceled
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public bool IsCompleted
@@ -62,18 +56,12 @@ namespace Theraot.Threading.Needles
 
         public bool IsFaulted
         {
-            get
-            {
-                return _exception != null;
-            }
+            get { return _exception != null; }
         }
 
         protected IRecyclableNeedle<ManualResetEventSlim> WaitHandle
         {
-            get
-            {
-                return _waitHandle;
-            }
+            get { return _waitHandle; }
         }
 
         public virtual void Free()

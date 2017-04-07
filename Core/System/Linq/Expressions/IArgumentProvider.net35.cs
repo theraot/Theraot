@@ -39,9 +39,6 @@ namespace System.Linq.Expressions
     {
         Expression GetArgument(int index);
 
-        int ArgumentCount
-        {
-            get;
-        }
+        int ArgumentCount { get; }
     }
 }

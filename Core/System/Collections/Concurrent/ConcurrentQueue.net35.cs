@@ -30,34 +30,22 @@ namespace System.Collections.Concurrent
 
         public int Count
         {
-            get
-            {
-                return _wrapped.Count;
-            }
+            get { return _wrapped.Count; }
         }
 
         public bool IsEmpty
         {
-            get
-            {
-                return _wrapped.Count == 0;
-            }
+            get { return _wrapped.Count == 0; }
         }
 
         bool ICollection.IsSynchronized
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         object ICollection.SyncRoot
         {
-            get
-            {
-                throw new NotSupportedException();
-            }
+            get { throw new NotSupportedException(); }
         }
 
         public void CopyTo(T[] array, int index)

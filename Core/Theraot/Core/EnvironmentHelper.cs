@@ -22,10 +22,7 @@ namespace Theraot.Core
 
         public static bool IsSingleCPU
         {
-            get
-            {
-                return _processorCount == 1;
-            }
+            get { return _processorCount == 1; }
         }
     }
 }

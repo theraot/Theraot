@@ -68,10 +68,8 @@ namespace System.Dynamic.Utils
 
                 return _provider.GetArgument(index);
             }
-            set
-            {
-                throw ContractUtils.Unreachable;
-            }
+
+            set { throw ContractUtils.Unreachable; }
         }
 
         #endregion IList<Expression> Members
@@ -104,18 +102,12 @@ namespace System.Dynamic.Utils
 
         public int Count
         {
-            get
-            {
-                return _provider.ArgumentCount;
-            }
+            get { return _provider.ArgumentCount; }
         }
 
         public bool IsReadOnly
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         public bool Remove(Expression item)

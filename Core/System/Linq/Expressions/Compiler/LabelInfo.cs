@@ -67,10 +67,7 @@ namespace System.Linq.Expressions.Compiler
 
         internal bool CanReturn
         {
-            get
-            {
-                return _canReturn;
-            }
+            get { return _canReturn; }
         }
 
         /// <summary>
@@ -80,10 +77,7 @@ namespace System.Linq.Expressions.Compiler
         /// </summary>
         internal bool CanBranch
         {
-            get
-            {
-                return _opCode != OpCodes.Leave;
-            }
+            get { return _opCode != OpCodes.Leave; }
         }
 
         internal void Reference(LabelScopeInfo block)

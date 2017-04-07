@@ -48,26 +48,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string InstructionName
         {
-            get
-            {
-                return "NumericConvert";
-            }
+            get { return "NumericConvert"; }
         }
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string ToString()
@@ -79,10 +70,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             public override string InstructionName
             {
-                get
-                {
-                    return "UncheckedConvert";
-                }
+                get { return "UncheckedConvert"; }
             }
 
             public Unchecked(TypeCode from, TypeCode to, bool isLiftedToNull)
@@ -317,10 +305,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             public override string InstructionName
             {
-                get
-                {
-                    return "CheckedConvert";
-                }
+                get { return "CheckedConvert"; }
             }
 
             public Checked(TypeCode from, TypeCode to, bool isLiftedToNull)

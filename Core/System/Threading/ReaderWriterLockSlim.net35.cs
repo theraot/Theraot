@@ -507,90 +507,57 @@ namespace System.Threading
 
         public bool IsReadLockHeld
         {
-            get
-            {
-                return _rwlock >= RwRead && CurrentThreadState.LockState.Has(LockState.Read);
-            }
+            get { return _rwlock >= RwRead && CurrentThreadState.LockState.Has(LockState.Read); }
         }
 
         public bool IsWriteLockHeld
         {
-            get
-            {
-                return (_rwlock & RwWrite) > 0 && CurrentThreadState.LockState.Has(LockState.Write);
-            }
+            get { return (_rwlock & RwWrite) > 0 && CurrentThreadState.LockState.Has(LockState.Write); }
         }
 
         public bool IsUpgradeableReadLockHeld
         {
-            get
-            {
-                return _upgradableTaken.Value && CurrentThreadState.LockState.Has(LockState.Upgradable);
-            }
+            get { return _upgradableTaken.Value && CurrentThreadState.LockState.Has(LockState.Upgradable); }
         }
 
         public int CurrentReadCount
         {
-            get
-            {
-                return (_rwlock >> RwReadBit) - (_upgradableTaken.Value ? 1 : 0);
-            }
+            get { return (_rwlock >> RwReadBit) - (_upgradableTaken.Value ? 1 : 0); }
         }
 
         public int RecursiveReadCount
         {
-            get
-            {
-                return CurrentThreadState.ReaderRecursiveCount;
-            }
+            get { return CurrentThreadState.ReaderRecursiveCount; }
         }
 
         public int RecursiveUpgradeCount
         {
-            get
-            {
-                return CurrentThreadState.UpgradeableRecursiveCount;
-            }
+            get { return CurrentThreadState.UpgradeableRecursiveCount; }
         }
 
         public int RecursiveWriteCount
         {
-            get
-            {
-                return CurrentThreadState.WriterRecursiveCount;
-            }
+            get { return CurrentThreadState.WriterRecursiveCount; }
         }
 
         public int WaitingReadCount
         {
-            get
-            {
-                return numReadWaiters;
-            }
+            get { return numReadWaiters; }
         }
 
         public int WaitingUpgradeCount
         {
-            get
-            {
-                return numUpgradeWaiters;
-            }
+            get { return numUpgradeWaiters; }
         }
 
         public int WaitingWriteCount
         {
-            get
-            {
-                return numWriteWaiters;
-            }
+            get { return numWriteWaiters; }
         }
 
         public LockRecursionPolicy RecursionPolicy
         {
-            get
-            {
-                return _recursionPolicy;
-            }
+            get { return _recursionPolicy; }
         }
 
         private ThreadLockState CurrentThreadState

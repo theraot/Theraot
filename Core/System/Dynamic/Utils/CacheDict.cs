@@ -102,10 +102,7 @@ namespace System.Dynamic.Utils
         /// </summary>
         internal TValue this[TKey key]
         {
-            set
-            {
-                Add(key, value);
-            }
+            set { Add(key, value); }
         }
     }
 }

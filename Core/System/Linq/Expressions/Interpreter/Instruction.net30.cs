@@ -19,60 +19,39 @@ namespace System.Linq.Expressions.Interpreter
 
         public virtual int ConsumedStack
         {
-            get
-            {
-                return 0;
-            }
+            get { return 0; }
         }
 
         public virtual int ProducedStack
         {
-            get
-            {
-                return 0;
-            }
+            get { return 0; }
         }
 
         public virtual int ConsumedContinuations
         {
-            get
-            {
-                return 0;
-            }
+            get { return 0; }
         }
 
         public virtual int ProducedContinuations
         {
-            get
-            {
-                return 0;
-            }
+            get { return 0; }
         }
 
         public int StackBalance
         {
-            get
-            {
-                return ProducedStack - ConsumedStack;
-            }
+            get { return ProducedStack - ConsumedStack; }
         }
 
         public int ContinuationsBalance
         {
-            get
-            {
-                return ProducedContinuations - ConsumedContinuations;
-            }
+            get { return ProducedContinuations - ConsumedContinuations; }
         }
 
         public abstract int Run(InterpretedFrame frame);
 
         public virtual string InstructionName
         {
-            get
-            {
-                return "<Unknown>";
-            }
+            get { return "<Unknown>"; }
         }
 
         public override string ToString()
@@ -101,26 +80,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "Not";
-            }
+            get { return "Not"; }
         }
 
         private class BoolNot : NotInstruction

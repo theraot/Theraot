@@ -34,10 +34,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type
         {
-            get
-            {
-                return _returnType;
-            }
+            get { return _returnType; }
         }
 
         /// <summary>
@@ -47,10 +44,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get
-            {
-                return ExpressionType.Invoke;
-            }
+            get { return ExpressionType.Invoke; }
         }
 
         /// <summary>
@@ -58,10 +52,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Expression
         {
-            get
-            {
-                return _lambda;
-            }
+            get { return _lambda; }
         }
 
         /// <summary>
@@ -69,10 +60,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<Expression> Arguments
         {
-            get
-            {
-                return ReturnReadOnly(ref _arguments);
-            }
+            get { return ReturnReadOnly(ref _arguments); }
         }
 
         /// <summary>
@@ -100,10 +88,7 @@ namespace System.Linq.Expressions
 
         public int ArgumentCount
         {
-            get
-            {
-                return _arguments.Count;
-            }
+            get { return _arguments.Count; }
         }
 
         /// <summary>

@@ -69,14 +69,9 @@ namespace Theraot.Collections
 
         T IList<T>.this[int index]
         {
-            get
-            {
-                return this[index];
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
+            get { return this[index]; }
+
+            set { throw new NotSupportedException(); }
         }
 
         public int IndexOf(T item)

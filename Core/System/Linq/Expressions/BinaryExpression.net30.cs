@@ -65,10 +65,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Right
         {
-            get
-            {
-                return _right;
-            }
+            get { return _right; }
         }
 
         /// <summary>
@@ -76,10 +73,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Left
         {
-            get
-            {
-                return _left;
-            }
+            get { return _left; }
         }
 
         /// <summary>
@@ -87,10 +81,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public MethodInfo Method
         {
-            get
-            {
-                return GetMethod();
-            }
+            get { return GetMethod(); }
         }
 
         internal virtual MethodInfo GetMethod()
@@ -330,10 +321,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public LambdaExpression Conversion
         {
-            get
-            {
-                return GetConversion();
-            }
+            get { return GetConversion(); }
         }
 
         internal virtual LambdaExpression GetConversion()
@@ -366,10 +354,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public bool IsLiftedToNull
         {
-            get
-            {
-                return IsLifted && TypeHelper.IsNullableType(Type);
-            }
+            get { return IsLifted && TypeHelper.IsNullableType(Type); }
         }
 
         protected internal override Expression Accept(ExpressionVisitor visitor)
@@ -516,18 +501,12 @@ namespace System.Linq.Expressions
 
         public sealed override Type Type
         {
-            get
-            {
-                return typeof(bool);
-            }
+            get { return typeof(bool); }
         }
 
         public sealed override ExpressionType NodeType
         {
-            get
-            {
-                return _nodeType;
-            }
+            get { return _nodeType; }
         }
     }
 
@@ -541,18 +520,12 @@ namespace System.Linq.Expressions
 
         public sealed override Type Type
         {
-            get
-            {
-                return Left.Type;
-            }
+            get { return Left.Type; }
         }
 
         public sealed override ExpressionType NodeType
         {
-            get
-            {
-                return ExpressionType.Assign;
-            }
+            get { return ExpressionType.Assign; }
         }
     }
 
@@ -576,18 +549,12 @@ namespace System.Linq.Expressions
 
         public sealed override ExpressionType NodeType
         {
-            get
-            {
-                return ExpressionType.Coalesce;
-            }
+            get { return ExpressionType.Coalesce; }
         }
 
         public sealed override Type Type
         {
-            get
-            {
-                return Right.Type;
-            }
+            get { return Right.Type; }
         }
     }
 
@@ -626,18 +593,12 @@ namespace System.Linq.Expressions
 
         public sealed override ExpressionType NodeType
         {
-            get
-            {
-                return _nodeType;
-            }
+            get { return _nodeType; }
         }
 
         public sealed override Type Type
         {
-            get
-            {
-                return _type;
-            }
+            get { return _type; }
         }
     }
 

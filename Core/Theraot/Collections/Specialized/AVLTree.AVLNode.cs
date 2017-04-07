@@ -29,34 +29,22 @@ namespace Theraot.Collections.Specialized
 
             public TKey Key
             {
-                get
-                {
-                    return _key;
-                }
+                get { return _key; }
             }
 
             public AVLNode Left
             {
-                get
-                {
-                    return _left;
-                }
+                get { return _left; }
             }
 
             public AVLNode Right
             {
-                get
-                {
-                    return _right;
-                }
+                get { return _right; }
             }
 
             public TValue Value
             {
-                get
-                {
-                    return _value;
-                }
+                get { return _value; }
             }
 
             public int CompareTo(AVLNode other, IComparer<TKey> comparer)

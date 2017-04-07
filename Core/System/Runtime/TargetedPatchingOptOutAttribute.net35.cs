@@ -12,10 +12,7 @@ namespace System.Runtime
         /// <returns>The reason why the method is considered to be eligible for inlining across NGen images.</returns>
         public string Reason
         {
-            get
-            {
-                return _reason;
-            }
+            get { return _reason; }
         }
 
         /// <summary>Initializes a new instance of the <see cref="T:System.Runtime.TargetedPatchingOptOutAttribute" /> class.</summary>

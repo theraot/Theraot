@@ -22,10 +22,7 @@ namespace System.Diagnostics.Contracts
 
         public Type TypeContractsAreFor
         {
-            get
-            {
-                return _typeIamAContractFor;
-            }
+            get { return _typeIamAContractFor; }
         }
     }
 }

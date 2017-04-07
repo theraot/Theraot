@@ -61,26 +61,17 @@ namespace System.Linq
 
         public Type ElementType
         {
-            get
-            {
-                return typeof(TElement);
-            }
+            get { return typeof(TElement); }
         }
 
         public Expression Expression
         {
-            get
-            {
-                return _expression;
-            }
+            get { return _expression; }
         }
 
         public IQueryProvider Provider
         {
-            get
-            {
-                return this;
-            }
+            get { return this; }
         }
 
         public IQueryable CreateQuery(Expression expression)

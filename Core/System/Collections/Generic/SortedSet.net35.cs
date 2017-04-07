@@ -61,58 +61,37 @@ namespace System.Collections.Generic
 
         public IComparer<T> Comparer
         {
-            get
-            {
-                return _comparer;
-            }
+            get { return _comparer; }
         }
 
         public int Count
         {
-            get
-            {
-                return GetCount();
-            }
+            get { return GetCount(); }
         }
 
         bool ICollection.IsSynchronized
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         object ICollection.SyncRoot
         {
-            get
-            {
-                return this;
-            }
+            get { return this; }
         }
 
         bool ICollection<T>.IsReadOnly
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public T Max
         {
-            get
-            {
-                return GetMax();
-            }
+            get { return GetMax(); }
         }
 
         public T Min
         {
-            get
-            {
-                return GetMin();
-            }
+            get { return GetMin(); }
         }
 
         public bool Add(T item)

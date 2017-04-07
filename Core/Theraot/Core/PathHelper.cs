@@ -15,26 +15,17 @@ namespace Theraot.Core
 
         public static string DirectorySeparatorString
         {
-            get
-            {
-                return _directorySeparatorString;
-            }
+            get { return _directorySeparatorString; }
         }
 
         public static string AltDirectorySeparatorString
         {
-            get
-            {
-                return _altDirectorySeparatorString;
-            }
+            get { return _altDirectorySeparatorString; }
         }
 
         public static string VolumeSeparatorString
         {
-            get
-            {
-                return _volumeSeparatorString;
-            }
+            get { return _volumeSeparatorString; }
         }
 
         public static string Combine(params string[] paths)

@@ -72,10 +72,7 @@ namespace System.Threading.Tasks
             }
         }
 
-        internal static Func<Task<Task>, Task<TResult>> ContinuationConvertion
-        {
-            get; private set;
-        }
+        internal static Func<Task<Task>, Task<TResult>> ContinuationConvertion { get; private set; }
 
         internal override void InnerInvoke()
         {

@@ -233,10 +233,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public int Count
         {
-            get
-            {
-                return _count;
-            }
+            get { return _count; }
         }
 
         public object GetArgument(int index)

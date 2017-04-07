@@ -60,10 +60,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type
         {
-            get
-            {
-                return _type;
-            }
+            get { return _type; }
         }
 
         /// <summary>
@@ -72,10 +69,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get
-            {
-                return ExpressionType.Goto;
-            }
+            get { return ExpressionType.Goto; }
         }
 
         /// <summary>
@@ -84,10 +78,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Value
         {
-            get
-            {
-                return _value;
-            }
+            get { return _value; }
         }
 
         /// <summary>
@@ -95,10 +86,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public LabelTarget Target
         {
-            get
-            {
-                return _target;
-            }
+            get { return _target; }
         }
 
         /// <summary>
@@ -106,10 +94,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public GotoExpressionKind Kind
         {
-            get
-            {
-                return _kind;
-            }
+            get { return _kind; }
         }
 
         /// <summary>

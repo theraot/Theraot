@@ -22,10 +22,7 @@ namespace System.Threading
 
         public bool IsHeld
         {
-            get
-            {
-                return Thread.VolatileRead(ref _isHeld) == 1;
-            }
+            get { return Thread.VolatileRead(ref _isHeld) == 1; }
         }
 
         public bool IsHeldByCurrentThread
@@ -45,10 +42,7 @@ namespace System.Threading
 
         public bool IsThreadOwnerTrackingEnabled
         {
-            get
-            {
-                return _disableThreadTracking;
-            }
+            get { return _disableThreadTracking; }
         }
 
         public void Enter(ref bool lockTaken)
