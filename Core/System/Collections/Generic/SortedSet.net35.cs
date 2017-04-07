@@ -56,6 +56,7 @@ namespace System.Collections.Generic
 
         protected SortedSet(SerializationInfo info, StreamingContext context)
         {
+            GC.KeepAlive(context);
             _serializationInfo = info;
         }
 
