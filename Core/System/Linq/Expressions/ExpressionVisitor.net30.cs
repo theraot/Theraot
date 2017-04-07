@@ -166,7 +166,7 @@ namespace System.Linq.Expressions
             List<Expression> list = null;
             for (int i = 0, n = original.Count; i < n; i++)
             {
-                Expression p = Visit(original[i]);
+                var p = Visit(original[i]);
                 if (list != null)
                 {
                     list.Add(p);
@@ -331,7 +331,7 @@ namespace System.Linq.Expressions
             List<MemberBinding> list = null;
             for (int i = 0, n = original.Count; i < n; i++)
             {
-                MemberBinding b = VisitBinding(original[i]);
+                var b = VisitBinding(original[i]);
                 if (list != null)
                 {
                     list.Add(b);
