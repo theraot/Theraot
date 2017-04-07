@@ -18,15 +18,15 @@ namespace System.Dynamic.Utils
         // class, to ensure atomic updates.
         private sealed class Entry
         {
-            internal readonly int _hash;
-            internal readonly TKey _key;
-            internal readonly TValue _value;
+            internal readonly int Hash;
+            internal readonly TKey Key;
+            internal readonly TValue Value;
 
             internal Entry(int hash, TKey key, TValue value)
             {
-                _hash = hash;
-                _key = key;
-                _value = value;
+                Hash = hash;
+                Key = key;
+                Value = value;
             }
         }
 
@@ -47,9 +47,9 @@ namespace System.Dynamic.Utils
             var idx = hash & _mask;
 
             var entry = Volatile.Read(ref _entries[idx]);
-            if (entry != null && entry._hash == hash && entry._key.Equals(key))
+            if (entry != null && entry.Hash == hash && entry.Key.Equals(key))
             {
-                value = entry._value;
+                value = entry.Value;
                 return true;
             }
 
@@ -63,7 +63,7 @@ namespace System.Dynamic.Utils
             var idx = hash & _mask;
 
             var entry = Volatile.Read(ref _entries[idx]);
-            if (entry == null || entry._hash != hash || !entry._key.Equals(key))
+            if (entry == null || entry.Hash != hash || !entry.Key.Equals(key))
             {
                 Volatile.Write(ref _entries[idx], new Entry(hash, key, value));
             }
