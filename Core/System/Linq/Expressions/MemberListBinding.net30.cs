@@ -17,7 +17,7 @@ namespace System.Linq.Expressions
     /// </summary>
     public sealed class MemberListBinding : MemberBinding
     {
-        private ReadOnlyCollection<ElementInit> _initializers;
+        private readonly ReadOnlyCollection<ElementInit> _initializers;
 
         internal MemberListBinding(MemberInfo member, ReadOnlyCollection<ElementInit> initializers)
 #pragma warning disable 618

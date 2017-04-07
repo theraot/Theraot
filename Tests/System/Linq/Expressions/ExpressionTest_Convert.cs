@@ -235,7 +235,7 @@ namespace MonoTests.System.Linq.Expressions
 
         private class Klang
         {
-            private int i;
+            private readonly int i;
 
             public Klang(int i)
             {
@@ -280,7 +280,7 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct Kling
         {
-            private int i;
+            private readonly int i;
 
             public Kling(int i)
             {
@@ -459,7 +459,7 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct ImplicitToShort
         {
-            private short value;
+            private readonly short value;
 
             public ImplicitToShort(short v)
             {
@@ -564,7 +564,7 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct ImplicitToInt
         {
-            private int Value;
+            private readonly int Value;
 
             public ImplicitToInt(int v)
             {

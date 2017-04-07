@@ -20,7 +20,7 @@ namespace System.Linq.Expressions
     /// </remarks>
     public sealed class MemberMemberBinding : MemberBinding
     {
-        private ReadOnlyCollection<MemberBinding> _bindings;
+        private readonly ReadOnlyCollection<MemberBinding> _bindings;
 
         internal MemberMemberBinding(MemberInfo member, ReadOnlyCollection<MemberBinding> bindings)
 #pragma warning disable 618

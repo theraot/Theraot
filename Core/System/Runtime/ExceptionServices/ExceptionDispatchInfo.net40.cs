@@ -12,8 +12,8 @@ namespace System.Runtime.ExceptionServices
         private static FieldInfo _remoteStackTraceString;
 
         private Exception _exception;
-        private object _stackTraceOriginal;
-        private object _stackTrace;
+        private readonly object _stackTraceOriginal;
+        private readonly object _stackTrace;
 
         private ExceptionDispatchInfo(Exception exception)
         {

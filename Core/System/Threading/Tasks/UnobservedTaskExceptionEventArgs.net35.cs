@@ -18,7 +18,7 @@ namespace System.Threading.Tasks
     /// </remarks>
     public class UnobservedTaskExceptionEventArgs : EventArgs
     {
-        private AggregateException m_exception;
+        private readonly AggregateException m_exception;
         internal bool m_observed = false;
 
         /// <summary>

@@ -33,8 +33,8 @@ namespace System.Linq.Expressions
     /// </summary>
     public abstract class MemberBinding
     {
-        private MemberBindingType _type;
-        private MemberInfo _member;
+        private readonly MemberBindingType _type;
+        private readonly MemberInfo _member;
 
         /// <summary>
         /// Initializes an instance of <see cref="MemberBinding"/> class.

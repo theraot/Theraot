@@ -330,7 +330,7 @@ namespace MonoTests.System.Linq.Expressions
     internal class Item<T>
     {
         private bool left_called;
-        private T left;
+        private readonly T left;
 
         public T Left
         {
@@ -347,7 +347,7 @@ namespace MonoTests.System.Linq.Expressions
         }
 
         private bool right_called;
-        private T right;
+        private readonly T right;
 
         public T Right
         {

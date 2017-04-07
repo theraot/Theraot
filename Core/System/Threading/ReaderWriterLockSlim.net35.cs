@@ -38,15 +38,15 @@ namespace System.Threading
 
         private readonly AtomicBoolean _upgradableTaken = new AtomicBoolean();
 
-        private
+        private readonly
 
                 /* These events are just here for the sake of having a CPU-efficient sleep
                 * when the wait for acquiring the lock is too long
                 */
                 ManualResetEventSlim upgradableEvent = new ManualResetEventSlim(true);
 
-        private ManualResetEventSlim writerDoneEvent = new ManualResetEventSlim(true);
-        private ManualResetEventSlim readerDoneEvent = new ManualResetEventSlim(true);
+        private readonly ManualResetEventSlim writerDoneEvent = new ManualResetEventSlim(true);
+        private readonly ManualResetEventSlim readerDoneEvent = new ManualResetEventSlim(true);
 
         // This Stopwatch instance is used for all threads since .Elapsed is thread-safe
         private readonly static Stopwatch sw = Stopwatch.StartNew();
@@ -73,7 +73,7 @@ namespace System.Threading
         [ThreadStatic]
         private static Dictionary<int, ThreadLockState> currentThreadState;
 
-        private
+        private readonly
 
                 /* Rwls tries to use this array as much as possible to quickly retrieve the thread-local
                 * informations so that it ends up being only an array lookup. When the number of thread
