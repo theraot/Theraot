@@ -171,6 +171,7 @@ namespace System.Diagnostics.Contracts
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void EnsuresOnThrow<TException>(bool condition) where TException : Exception
         {
+            GC.KeepAlive(condition);
             AssertMustUseRewriter(ContractFailureKind.PostconditionOnException, "EnsuresOnThrow");
         }
 
@@ -190,6 +191,8 @@ namespace System.Diagnostics.Contracts
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void EnsuresOnThrow<TException>(bool condition, string userMessage) where TException : Exception
         {
+            GC.KeepAlive(condition);
+            GC.KeepAlive(userMessage);
             AssertMustUseRewriter(ContractFailureKind.PostconditionOnException, "EnsuresOnThrow");
         }
 
@@ -341,6 +344,7 @@ namespace System.Diagnostics.Contracts
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Invariant(bool condition)
         {
+            GC.KeepAlive(condition);
             AssertMustUseRewriter(ContractFailureKind.Invariant, "Invariant");
         }
 
@@ -359,6 +363,8 @@ namespace System.Diagnostics.Contracts
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Invariant(bool condition, string userMessage)
         {
+            GC.KeepAlive(condition);
+            GC.KeepAlive(userMessage);
             AssertMustUseRewriter(ContractFailureKind.Invariant, "Invariant");
         }
 
@@ -375,6 +381,7 @@ namespace System.Diagnostics.Contracts
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         public static T OldValue<T>(T value)
         {
+            GC.KeepAlive(value);
             return default(T);
         }
 
@@ -392,6 +399,7 @@ namespace System.Diagnostics.Contracts
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Requires(bool condition)
         {
+            GC.KeepAlive(condition);
             AssertMustUseRewriter(ContractFailureKind.Precondition, "Requires");
         }
 
@@ -410,6 +418,8 @@ namespace System.Diagnostics.Contracts
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Requires(bool condition, string userMessage)
         {
+            GC.KeepAlive(condition);
+            GC.KeepAlive(userMessage);
             AssertMustUseRewriter(ContractFailureKind.Precondition, "Requires");
         }
 
@@ -426,6 +436,7 @@ namespace System.Diagnostics.Contracts
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Requires<TException>(bool condition) where TException : Exception
         {
+            GC.KeepAlive(condition);
             AssertMustUseRewriter(ContractFailureKind.Precondition, "Requires<TException>");
         }
 
@@ -443,6 +454,8 @@ namespace System.Diagnostics.Contracts
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Requires<TException>(bool condition, string userMessage) where TException : Exception
         {
+            GC.KeepAlive(condition);
+            GC.KeepAlive(userMessage);
             AssertMustUseRewriter(ContractFailureKind.Precondition, "Requires<TException>");
         }
 
