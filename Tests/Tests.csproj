@@ -372,6 +372,7 @@
     <Compile Include="Theraot\Threading\ReadWriteLockTest.cs" />
     <Compile Include="Theraot\Threading\Needles\TransactionalTests.cs" />
     <Compile Include="System\Runtime\ExceptionServices\ExceptionDispatchInfoTest.cs" />
+    <Compile Include="Theraot\Threading\TimeoutTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -14,7 +14,7 @@ namespace Theraot.Threading
         private const int _created = 0;
         private const int _executed = 2;
         private const int _executing = 1;
-        private const int _starting = 6;
+        private const int _changing = 6;
         private static readonly Bucket<Timeout> _root = new Bucket<Timeout>();
         private static int _lastRootIndex = -1;
         private readonly int _hashcode;
@@ -46,6 +46,7 @@ namespace Theraot.Threading
             {
                 _callback = null;
                 _wrapped = null;
+                _status = _canceled;
             }
             else
             {
@@ -75,7 +76,7 @@ namespace Theraot.Threading
 
         ~Timeout()
         {
-            Cancel();
+            Close();
         }
 
         Exception IPromise.Exception
@@ -171,7 +172,6 @@ namespace Theraot.Threading
 
         public void Cancel()
         {
-            // Protected by status
             if (Interlocked.CompareExchange(ref _status, _canceling, _created) == _created)
             {
                 Close();
@@ -179,35 +179,31 @@ namespace Theraot.Threading
             }
         }
 
-        public void Change(long dueTime)
+        public bool Change(long dueTime)
         {
-            // Protected by status
-            MarkChanging();
-            _startTime = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
-            _targetTime = _startTime + dueTime;
-            var wrapped = Interlocked.CompareExchange(ref _wrapped, null, null);
-            if (wrapped == null)
+            if (Interlocked.CompareExchange(ref _status, _changing, _created) == _created)
             {
-                var created = new Timer(Finish, null, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
-                wrapped = Interlocked.CompareExchange(ref _wrapped, created, null);
+                _startTime = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
+                _targetTime = _startTime + dueTime;
+                var wrapped = Interlocked.CompareExchange(ref _wrapped, null, null);
                 if (wrapped == null)
                 {
-                    return;
+                    return false;
                 }
+                wrapped.Change(TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
+                Volatile.Write(ref _status, _created);
+                return true;
             }
-            wrapped.Change(TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
-            Volatile.Write(ref _status, _created);
+            return false;
         }
 
         public void Change(TimeSpan dueTime)
         {
-            // Protected by status
             Change((long)dueTime.TotalMilliseconds);
         }
 
         public long CheckRemaining()
         {
-            // Protected by status
             var remaining = _targetTime - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
             if (remaining <= 0)
             {
@@ -248,44 +244,33 @@ namespace Theraot.Threading
 
         private void Close()
         {
-            // Protected by status
             var wrapped = Interlocked.Exchange(ref _wrapped, null);
             if (wrapped != null)
             {
                 wrapped.Dispose();
             }
-            _callback = null;
+            Volatile.Write(ref _callback, null);
             GC.SuppressFinalize(this);
         }
 
         private void Finish(object state)
         {
-            // Protected by status
             GC.KeepAlive(state);
+            ThreadingHelper.SpinWaitWhile(ref _status, _changing);
             if (Interlocked.CompareExchange(ref _status, _executing, _created) == _created)
             {
-                _callback.Invoke();
-                Close();
-                Volatile.Write(ref _status, _executed);
-            }
-        }
-
-        private void MarkChanging()
-        {
-            // Protected by status
-            Interlocked.CompareExchange(ref _status, _executed, _starting);
-            var found = Interlocked.CompareExchange(ref _status, _canceled, _starting);
-            while ((found & _executing) == _executing)
-            {
-                ThreadingHelper.SpinWaitWhile(ref _status, found);
-                Interlocked.CompareExchange(ref _status, _executed, _starting);
-                found = Interlocked.CompareExchange(ref _status, _canceled, _starting);
+                var callback = Volatile.Read(ref _callback);
+                if (callback != null)
+                {
+                    callback.Invoke();
+                    Close();
+                    Volatile.Write(ref _status, _executed);
+                }
             }
         }
 
         private void Start(long dueTime)
         {
-            // Protected by constructor
             _startTime = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
             _targetTime = _startTime + dueTime;
             _wrapped = new Timer(Finish, null, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
