@@ -52,10 +52,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public static T[] EmptyArray
         {
-            get
-            {
-                return _emptyArray;
-            }
+            get { return _emptyArray; }
         }
 
         internal static void DonateArray(T[] donation)

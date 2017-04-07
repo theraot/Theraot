@@ -81,10 +81,7 @@ namespace System.Threading.Tasks
         /// <returns>true if the bit is set; false if it's not set.</returns>
         internal bool IsWaitNotificationEnabled // internal only to enable unit tests; would otherwise be private
         {
-            get
-            {
-                return Thread.VolatileRead(ref _waitNotificationEnabled) == 1;
-            }
+            get { return Thread.VolatileRead(ref _waitNotificationEnabled) == 1; }
         }
 
         /// <summary>

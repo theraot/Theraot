@@ -14,26 +14,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 2;
-            }
+            get { return 2; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "Sub";
-            }
+            get { return "Sub"; }
         }
 
         private SubInstruction()
@@ -238,26 +229,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 2;
-            }
+            get { return 2; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override string InstructionName
         {
-            get
-            {
-                return "SubOvf";
-            }
+            get { return "SubOvf"; }
         }
 
         private SubOvfInstruction()

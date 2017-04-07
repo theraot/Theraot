@@ -81,34 +81,22 @@ namespace Theraot.Threading
 
         Exception IPromise.Exception
         {
-            get
-            {
-                return null;
-            }
+            get { return null; }
         }
 
         public bool IsCanceled
         {
-            get
-            {
-                return Volatile.Read(ref _status) == _canceled;
-            }
+            get { return Volatile.Read(ref _status) == _canceled; }
         }
 
         public bool IsCompleted
         {
-            get
-            {
-                return Volatile.Read(ref _status) == _executed;
-            }
+            get { return Volatile.Read(ref _status) == _executed; }
         }
 
         bool IPromise.IsFaulted
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public static void Launch(Action callback, long dueTime)

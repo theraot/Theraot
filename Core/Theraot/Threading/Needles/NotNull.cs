@@ -17,10 +17,8 @@ namespace Theraot.Threading.Needles
 
         public override T Value
         {
-            get
-            {
-                return base.Value;
-            }
+            get { return base.Value; }
+
             set
             {
                 if (ReferenceEquals(value, null))

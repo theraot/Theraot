@@ -33,10 +33,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type
         {
-            get
-            {
-                return typeof(IRuntimeVariables);
-            }
+            get { return typeof(IRuntimeVariables); }
         }
 
         /// <summary>
@@ -46,10 +43,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get
-            {
-                return ExpressionType.RuntimeVariables;
-            }
+            get { return ExpressionType.RuntimeVariables; }
         }
 
         /// <summary>
@@ -57,10 +51,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<ParameterExpression> Variables
         {
-            get
-            {
-                return _variables;
-            }
+            get { return _variables; }
         }
 
         /// <summary>

@@ -18,30 +18,19 @@ namespace Theraot.Threading.Needles
 
         T INeedle<T>.Value
         {
-            get
-            {
-                return _promised.Value;
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
+            get { return _promised.Value; }
+
+            set { throw new NotSupportedException(); }
         }
 
         public bool IsAlive
         {
-            get
-            {
-                return _promised.IsAlive;
-            }
+            get { return _promised.IsAlive; }
         }
 
         public T Value
         {
-            get
-            {
-                return _promised.Value;
-            }
+            get { return _promised.Value; }
         }
 
         public static bool operator !=(ReadOnlyPromiseNeedle<T> left, ReadOnlyPromiseNeedle<T> right)

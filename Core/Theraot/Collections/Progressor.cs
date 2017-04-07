@@ -400,10 +400,7 @@ namespace Theraot.Collections
 
         public bool IsClosed
         {
-            get
-            {
-                return _tryTake == null;
-            }
+            get { return _tryTake == null; }
         }
 
         public static Progressor<T> CreateConverted<TInput>(Progressor<TInput> wrapped, Converter<TInput, T> converter)

@@ -42,22 +42,14 @@ namespace System.Runtime.CompilerServices
         {
             int IRuntimeVariables.Count
             {
-                get
-                {
-                    return 0;
-                }
+                get { return 0; }
             }
 
             object IRuntimeVariables.this[int index]
             {
-                get
-                {
-                    throw new ArgumentOutOfRangeException("index");
-                }
-                set
-                {
-                    throw new ArgumentOutOfRangeException("index");
-                }
+                get { throw new ArgumentOutOfRangeException("index"); }
+
+                set { throw new ArgumentOutOfRangeException("index"); }
             }
         }
 
@@ -90,22 +82,14 @@ namespace System.Runtime.CompilerServices
 
             public int Count
             {
-                get
-                {
-                    return _indexes.Length;
-                }
+                get { return _indexes.Length; }
             }
 
             public object this[int index]
             {
-                get
-                {
-                    return GetStrongBox(index).Value;
-                }
-                set
-                {
-                    GetStrongBox(index).Value = value;
-                }
+                get { return GetStrongBox(index).Value; }
+
+                set { GetStrongBox(index).Value = value; }
             }
 
             private IStrongBox GetStrongBox(int index)

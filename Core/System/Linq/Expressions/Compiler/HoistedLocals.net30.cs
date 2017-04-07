@@ -80,10 +80,7 @@ namespace System.Linq.Expressions.Compiler
 
         internal ParameterExpression ParentVariable
         {
-            get
-            {
-                return Parent != null ? Parent.SelfVariable : null;
-            }
+            get { return Parent != null ? Parent.SelfVariable : null; }
         }
 
         internal static object[] GetParent(object[] locals)

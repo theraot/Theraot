@@ -107,10 +107,7 @@ namespace Theraot.Core
 
         public static IEqualityComparer<T> Default
         {
-            get
-            {
-                return _default;
-            }
+            get { return _default; }
         }
 
         private static PropertyInfo GetProperty(Type type, Type equalityComparerType)

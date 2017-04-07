@@ -26,10 +26,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type
         {
-            get
-            {
-                return _type;
-            }
+            get { return _type; }
         }
 
         /// <summary>
@@ -39,10 +36,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get
-            {
-                return ExpressionType.Default;
-            }
+            get { return ExpressionType.Default; }
         }
 
         /// <summary>

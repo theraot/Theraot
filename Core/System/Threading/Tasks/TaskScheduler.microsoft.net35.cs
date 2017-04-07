@@ -38,10 +38,7 @@ namespace System.Threading.Tasks
         /// </summary>
         public virtual Int32 MaximumConcurrencyLevel
         {
-            get
-            {
-                return Int32.MaxValue;
-            }
+            get { return Int32.MaxValue; }
         }
 
         ////////////////////////////////////////////////////////////
@@ -191,19 +188,13 @@ namespace System.Threading.Tasks
             // returns the scheduler's Id
             public Int32 Id
             {
-                get
-                {
-                    return m_taskScheduler.Id;
-                }
+                get { return m_taskScheduler.Id; }
             }
 
             // returns the scheduler's GetScheduledTasks
             public IEnumerable<Task> ScheduledTasks
             {
-                get
-                {
-                    return m_taskScheduler.GetScheduledTasks();
-                }
+                get { return m_taskScheduler.GetScheduledTasks(); }
             }
         }
     }

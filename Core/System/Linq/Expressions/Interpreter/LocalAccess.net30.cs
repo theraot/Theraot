@@ -43,10 +43,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -70,10 +67,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -93,10 +87,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -116,10 +107,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -143,18 +131,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -178,10 +160,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -205,18 +184,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -236,18 +209,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 0;
-            }
+            get { return 0; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -267,18 +234,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -299,18 +260,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -352,10 +307,7 @@ namespace System.Linq.Expressions.Interpreter
 
             public override string InstructionName
             {
-                get
-                {
-                    return "InitRef";
-                }
+                get { return "InitRef"; }
             }
         }
 
@@ -383,10 +335,7 @@ namespace System.Linq.Expressions.Interpreter
 
             public override string InstructionName
             {
-                get
-                {
-                    return "InitImmutableValue";
-                }
+                get { return "InitImmutableValue"; }
             }
         }
 
@@ -407,10 +356,7 @@ namespace System.Linq.Expressions.Interpreter
 
             public override string InstructionName
             {
-                get
-                {
-                    return "InitImmutableBox";
-                }
+                get { return "InitImmutableBox"; }
             }
         }
 
@@ -437,10 +383,7 @@ namespace System.Linq.Expressions.Interpreter
 
             public override string InstructionName
             {
-                get
-                {
-                    return "InitImmutableValue";
-                }
+                get { return "InitImmutableValue"; }
             }
         }
 
@@ -460,10 +403,7 @@ namespace System.Linq.Expressions.Interpreter
 
             public override string InstructionName
             {
-                get
-                {
-                    return "InitImmutableBox";
-                }
+                get { return "InitImmutableBox"; }
             }
         }
 
@@ -506,10 +446,7 @@ namespace System.Linq.Expressions.Interpreter
 
             public override string InstructionName
             {
-                get
-                {
-                    return "InitParameter";
-                }
+                get { return "InitParameter"; }
             }
         }
 
@@ -545,10 +482,7 @@ namespace System.Linq.Expressions.Interpreter
 
             public override string InstructionName
             {
-                get
-                {
-                    return "InitMutableValue";
-                }
+                get { return "InitMutableValue"; }
             }
         }
 
@@ -567,10 +501,7 @@ namespace System.Linq.Expressions.Interpreter
 
             public override string InstructionName
             {
-                get
-                {
-                    return "InitMutableBox";
-                }
+                get { return "InitMutableBox"; }
             }
         }
     }
@@ -590,18 +521,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int ConsumedStack
         {
-            get
-            {
-                return _count;
-            }
+            get { return _count; }
         }
 
         public override int Run(InterpretedFrame frame)

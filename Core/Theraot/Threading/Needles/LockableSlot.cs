@@ -33,10 +33,7 @@ namespace Theraot.Threading.Needles
 
         internal LockSlot<Thread> LockSlot
         {
-            get
-            {
-                return _lockSlot;
-            }
+            get { return _lockSlot; }
         }
 
         public void Dispose()

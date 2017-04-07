@@ -37,10 +37,7 @@ namespace System.Linq.Expressions.Compiler
 
             internal List<ParameterExpression> Temps
             {
-                get
-                {
-                    return _temps;
-                }
+                get { return _temps; }
             }
 
             internal ParameterExpression Temp(Type type)
@@ -211,18 +208,12 @@ namespace System.Linq.Expressions.Compiler
 
             internal bool Rewrite
             {
-                get
-                {
-                    return _action != RewriteAction.None;
-                }
+                get { return _action != RewriteAction.None; }
             }
 
             internal RewriteAction Action
             {
-                get
-                {
-                    return _action;
-                }
+                get { return _action; }
             }
 
             internal Result Finish(Expression expr)

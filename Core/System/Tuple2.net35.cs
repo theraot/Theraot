@@ -20,18 +20,12 @@ namespace System
 
         public T1 Item1
         {
-            get
-            {
-                return _item1;
-            }
+            get { return _item1; }
         }
 
         public T2 Item2
         {
-            get
-            {
-                return _item2;
-            }
+            get { return _item2; }
         }
 
         public override bool Equals(object obj)

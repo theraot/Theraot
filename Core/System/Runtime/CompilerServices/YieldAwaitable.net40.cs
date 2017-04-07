@@ -31,10 +31,7 @@ namespace System.Runtime.CompilerServices
             /// <remarks>This property is intended for compiler user rather than use directly in code.</remarks>
             public bool IsCompleted
             {
-                get
-                {
-                    return false;
-                }
+                get { return false; }
             }
 
             /// <summary>Ends the await operation.</summary>

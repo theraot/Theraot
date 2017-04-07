@@ -55,10 +55,7 @@ namespace System.Runtime.CompilerServices
         /// </summary>
         public IList<string> TransformNames
         {
-            get
-            {
-                return _transformNames;
-            }
+            get { return _transformNames; }
         }
     }
 }

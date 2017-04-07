@@ -12,10 +12,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public static bool Recycling
         {
-            get
-            {
-                return InternalRecycling > 0;
-            }
+            get { return InternalRecycling > 0; }
         }
     }
 

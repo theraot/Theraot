@@ -8,10 +8,7 @@ namespace System.Linq.Expressions
         /// <summary>
         /// Gets the type of the delegate used by the CallSite />.
         /// </summary>
-        Type DelegateType
-        {
-            get;
-        }
+        Type DelegateType { get; }
 
         /// <summary>
         /// Rewrite this node replacing the args with the provided values.  The

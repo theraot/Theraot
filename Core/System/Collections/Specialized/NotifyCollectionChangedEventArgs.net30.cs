@@ -164,42 +164,27 @@ namespace System.Collections.Specialized
 
         public NotifyCollectionChangedAction Action
         {
-            get
-            {
-                return _action;
-            }
+            get { return _action; }
         }
 
         public IList NewItems
         {
-            get
-            {
-                return _newItems;
-            }
+            get { return _newItems; }
         }
 
         public int NewStartingIndex
         {
-            get
-            {
-                return _newIndex;
-            }
+            get { return _newIndex; }
         }
 
         public IList OldItems
         {
-            get
-            {
-                return _oldItems;
-            }
+            get { return _oldItems; }
         }
 
         public int OldStartingIndex
         {
-            get
-            {
-                return _oldIndex;
-            }
+            get { return _oldIndex; }
         }
 
         private void InitializeAdd(IList items, int index)

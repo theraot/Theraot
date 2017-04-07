@@ -72,42 +72,27 @@ namespace Theraot.Collections
 
         public bool EndOfEnumeration
         {
-            get
-            {
-                return _progressor.IsClosed;
-            }
+            get { return _progressor.IsClosed; }
         }
 
         public IReadOnlyCollection<TKey> Keys
         {
-            get
-            {
-                return _keysReadonly;
-            }
+            get { return _keysReadonly; }
         }
 
         protected IEqualityComparer<T> ItemComparer
         {
-            get
-            {
-                return _itemComparer;
-            }
+            get { return _itemComparer; }
         }
 
         protected IEqualityComparer<TKey> KeyComparer
         {
-            get
-            {
-                return _keyComparer;
-            }
+            get { return _keyComparer; }
         }
 
         protected Progressor<IGrouping<TKey, T>> Progressor
         {
-            get
-            {
-                return _progressor;
-            }
+            get { return _progressor; }
         }
 
         public IEnumerable<T> this[TKey key]

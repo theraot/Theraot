@@ -9,18 +9,12 @@ namespace Theraot.Threading
 
         public static bool HasThreadUniqueId
         {
-            get
-            {
-                return _threadRuntimeUniqueId.IsValueCreated;
-            }
+            get { return _threadRuntimeUniqueId.IsValueCreated; }
         }
 
         public static RuntimeUniqueIdProdiver.UniqueId ThreadUniqueId
         {
-            get
-            {
-                return _threadRuntimeUniqueId.Value;
-            }
+            get { return _threadRuntimeUniqueId.Value; }
         }
     }
 }

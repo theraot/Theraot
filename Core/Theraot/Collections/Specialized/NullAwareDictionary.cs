@@ -120,50 +120,32 @@ namespace Theraot.Collections.Specialized
 
         public IReadOnlyDictionary<TKey, TValue> AsReadOnly
         {
-            get
-            {
-                return _readOnly;
-            }
+            get { return _readOnly; }
         }
 
         public IEqualityComparer<TKey> Comparer
         {
-            get
-            {
-                return _dictionary.Comparer;
-            }
+            get { return _dictionary.Comparer; }
         }
 
         public int Count
         {
-            get
-            {
-                return _hasNull ? _dictionary.Count + 1 : _dictionary.Count;
-            }
+            get { return _hasNull ? _dictionary.Count + 1 : _dictionary.Count; }
         }
 
         public ICollection<TKey> Keys
         {
-            get
-            {
-                return _keys;
-            }
+            get { return _keys; }
         }
 
         public ICollection<TValue> Values
         {
-            get
-            {
-                return _values;
-            }
+            get { return _values; }
         }
 
         bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public TValue this[TKey key]

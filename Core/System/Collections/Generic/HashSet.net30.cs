@@ -70,26 +70,17 @@ namespace System.Collections.Generic
 
         public IEqualityComparer<T> Comparer
         {
-            get
-            {
-                return _wrapped.Comparer;
-            }
+            get { return _wrapped.Comparer; }
         }
 
         public int Count
         {
-            get
-            {
-                return _wrapped.Count;
-            }
+            get { return _wrapped.Count; }
         }
 
         public bool IsReadOnly
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public static IEqualityComparer<HashSet<T>> CreateSetComparer()
@@ -443,10 +434,7 @@ namespace System.Collections.Generic
 
             public T Current
             {
-                get
-                {
-                    return current;
-                }
+                get { return current; }
             }
 
             object IEnumerator.Current

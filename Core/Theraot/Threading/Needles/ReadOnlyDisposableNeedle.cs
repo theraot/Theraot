@@ -28,26 +28,17 @@ namespace Theraot.Threading.Needles
 
         public bool IsAlive
         {
-            get
-            {
-                return _isAlive;
-            }
+            get { return _isAlive; }
         }
 
         public bool IsDisposed
         {
-            get
-            {
-                return _status == -1;
-            }
+            get { return _status == -1; }
         }
 
         public T Value
         {
-            get
-            {
-                return _target;
-            }
+            get { return _target; }
         }
 
         public static explicit operator T(ReadOnlyDisposableNeedle<T> needle)

@@ -67,18 +67,12 @@ namespace System.Linq.Expressions
 
         public int Count
         {
-            get
-            {
-                return _data.Count;
-            }
+            get { return _data.Count; }
         }
 
         public bool IsReadOnly
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public bool Remove(T item)

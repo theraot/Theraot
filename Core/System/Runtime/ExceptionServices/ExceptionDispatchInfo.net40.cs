@@ -49,10 +49,7 @@ namespace System.Runtime.ExceptionServices
         /// </summary>
         public Exception SourceException
         {
-            get
-            {
-                return _exception;
-            }
+            get { return _exception; }
         }
 
         private static FieldInfo GetFieldInfo()

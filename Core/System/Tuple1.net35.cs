@@ -18,10 +18,7 @@ namespace System
 
         public T1 Item1
         {
-            get
-            {
-                return _item1;
-            }
+            get { return _item1; }
         }
 
         public override bool Equals(object obj)

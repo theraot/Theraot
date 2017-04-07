@@ -32,10 +32,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type
         {
-            get
-            {
-                return typeof(bool);
-            }
+            get { return typeof(bool); }
         }
 
         /// <summary>
@@ -45,10 +42,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get
-            {
-                return _nodeKind;
-            }
+            get { return _nodeKind; }
         }
 
         /// <summary>
@@ -56,10 +50,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Expression
         {
-            get
-            {
-                return _expression;
-            }
+            get { return _expression; }
         }
 
         /// <summary>
@@ -67,10 +58,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Type TypeOperand
         {
-            get
-            {
-                return _typeOperand;
-            }
+            get { return _typeOperand; }
         }
 
         #region Reduce TypeEqual

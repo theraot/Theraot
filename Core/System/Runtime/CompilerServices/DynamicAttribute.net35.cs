@@ -24,10 +24,7 @@ namespace System.Runtime.CompilerServices
 
         public IList<bool> TransformFlags
         {
-            get
-            {
-                return _transformFlags;
-            }
+            get { return _transformFlags; }
         }
     }
 }

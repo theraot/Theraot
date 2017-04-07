@@ -42,10 +42,7 @@ namespace System.Runtime.CompilerServices
         /// <exception cref="T:System.InvalidOperationException">The builder is not initialized.</exception>
         public Task Task
         {
-            get
-            {
-                return m_builder.Task;
-            }
+            get { return m_builder.Task; }
         }
 
         /// <summary>
@@ -63,10 +60,7 @@ namespace System.Runtime.CompilerServices
         private object ObjectIdForDebugger
         // ReSharper restore UnusedMember.Local
         {
-            get
-            {
-                return Task;
-            }
+            get { return Task; }
         }
 
         static AsyncTaskMethodBuilder()
@@ -224,10 +218,7 @@ namespace System.Runtime.CompilerServices
         /// </returns>
         public Task<TResult> Task
         {
-            get
-            {
-                return CompletionSource.Task;
-            }
+            get { return CompletionSource.Task; }
         }
 
         /// <summary>
@@ -245,10 +236,7 @@ namespace System.Runtime.CompilerServices
         private object ObjectIdForDebugger
         // ReSharper restore UnusedMember.Local
         {
-            get
-            {
-                return Task;
-            }
+            get { return Task; }
         }
 
         /// <summary>

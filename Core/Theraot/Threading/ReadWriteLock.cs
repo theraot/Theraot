@@ -20,34 +20,22 @@ namespace Theraot.Threading
 
         public bool HasReader
         {
-            get
-            {
-                return _wrapped.HasReader;
-            }
+            get { return _wrapped.HasReader; }
         }
 
         public bool HasWriter
         {
-            get
-            {
-                return _wrapped.HasWriter;
-            }
+            get { return _wrapped.HasWriter; }
         }
 
         public bool IsCurrentThreadReader
         {
-            get
-            {
-                return _wrapped.IsCurrentThreadReader;
-            }
+            get { return _wrapped.IsCurrentThreadReader; }
         }
 
         public bool IsCurrentThreadWriter
         {
-            get
-            {
-                return _wrapped.IsCurrentThreadWriter;
-            }
+            get { return _wrapped.IsCurrentThreadWriter; }
         }
 
         public void Dispose()

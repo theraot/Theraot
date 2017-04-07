@@ -18,18 +18,12 @@ namespace System.Numerics
 
         public char[] Buffer
         {
-            get
-            {
-                return _buffer;
-            }
+            get { return _buffer; }
         }
 
         public int Length
         {
-            get
-            {
-                return _buffer.Length - _start;
-            }
+            get { return _buffer.Length - _start; }
         }
 
         public void Prepend(char character)

@@ -45,10 +45,7 @@ namespace System.Threading.Tasks
         /// </summary>
         public bool Observed
         {
-            get
-            {
-                return m_observed;
-            }
+            get { return m_observed; }
         }
 
         /// <summary>
@@ -56,10 +53,7 @@ namespace System.Threading.Tasks
         /// </summary>
         public AggregateException Exception
         {
-            get
-            {
-                return m_exception;
-            }
+            get { return m_exception; }
         }
     }
 }

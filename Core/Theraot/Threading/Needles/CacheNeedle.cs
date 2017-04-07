@@ -85,42 +85,27 @@ namespace Theraot.Threading.Needles
 
         public T CachedTarget
         {
-            get
-            {
-                return base.Value;
-            }
+            get { return base.Value; }
         }
 
         Exception IPromise.Exception
         {
-            get
-            {
-                return Exception;
-            }
+            get { return Exception; }
         }
 
         bool IPromise.IsCanceled
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public bool IsCompleted
         {
-            get
-            {
-                return !_waitHandle.IsAlive;
-            }
+            get { return !_waitHandle.IsAlive; }
         }
 
         bool IPromise.IsFaulted
         {
-            get
-            {
-                return IsFaulted;
-            }
+            get { return IsFaulted; }
         }
 
         public override T Value
@@ -139,10 +124,7 @@ namespace Theraot.Threading.Needles
 
         protected INeedle<ManualResetEventSlim> WaitHandle
         {
-            get
-            {
-                return _waitHandle;
-            }
+            get { return _waitHandle; }
         }
 
         public bool Equals(CacheNeedle<T> other)

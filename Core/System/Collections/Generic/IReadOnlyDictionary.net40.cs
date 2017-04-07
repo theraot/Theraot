@@ -4,23 +4,14 @@ namespace System.Collections.Generic
 {
     public partial interface IReadOnlyDictionary<TKey, TValue> : IReadOnlyCollection<KeyValuePair<TKey, TValue>>
     {
-        IEnumerable<TKey> Keys
-        {
-            get;
-        }
+        IEnumerable<TKey> Keys { get; }
 
-        IEnumerable<TValue> Values
-        {
-            get;
-        }
+        IEnumerable<TValue> Values { get; }
     }
 
     public partial interface IReadOnlyDictionary<TKey, TValue>
     {
-        TValue this[TKey key]
-        {
-            get;
-        }
+        TValue this[TKey key] { get; }
     }
 
     public partial interface IReadOnlyDictionary<TKey, TValue>

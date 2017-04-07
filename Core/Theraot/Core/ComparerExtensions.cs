@@ -71,10 +71,7 @@ namespace Theraot.Core
 
             internal IComparer<T> Wrapped
             {
-                get
-                {
-                    return _wrapped;
-                }
+                get { return _wrapped; }
             }
 
             public int Compare(T x, T y)

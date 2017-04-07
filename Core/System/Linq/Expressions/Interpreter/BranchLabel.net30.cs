@@ -48,38 +48,24 @@ namespace System.Linq.Expressions.Interpreter
 
         internal int LabelIndex
         {
-            get
-            {
-                return _labelIndex;
-            }
-            set
-            {
-                _labelIndex = value;
-            }
+            get { return _labelIndex; }
+
+            set { _labelIndex = value; }
         }
 
         internal bool HasRuntimeLabel
         {
-            get
-            {
-                return _labelIndex != UnknownIndex;
-            }
+            get { return _labelIndex != UnknownIndex; }
         }
 
         internal int TargetIndex
         {
-            get
-            {
-                return _targetIndex;
-            }
+            get { return _targetIndex; }
         }
 
         internal int StackDepth
         {
-            get
-            {
-                return _stackDepth;
-            }
+            get { return _stackDepth; }
         }
 
         internal RuntimeLabel ToRuntimeLabel()

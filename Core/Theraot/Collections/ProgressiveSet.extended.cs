@@ -9,10 +9,7 @@ namespace Theraot.Collections
     {
         IReadOnlySet<T> IExtendedSet<T>.AsReadOnly
         {
-            get
-            {
-                return this;
-            }
+            get { return this; }
         }
 
         bool IExtendedSet<T>.Add(T item)

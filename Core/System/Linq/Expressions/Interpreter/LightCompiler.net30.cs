@@ -27,10 +27,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public bool IsFault
         {
-            get
-            {
-                return ExceptionType == null;
-            }
+            get { return ExceptionType == null; }
         }
 
         internal ExceptionHandler(int start, int end, int labelIndex, int handlerStartIndex, int handlerEndIndex, Type exceptionType)
@@ -105,18 +102,12 @@ namespace System.Linq.Expressions.Interpreter
 
         internal bool IsFinallyBlockExist
         {
-            get
-            {
-                return (FinallyStartIndex != Instruction.UnknownInstrIndex && FinallyEndIndex != Instruction.UnknownInstrIndex);
-            }
+            get { return (FinallyStartIndex != Instruction.UnknownInstrIndex && FinallyEndIndex != Instruction.UnknownInstrIndex); }
         }
 
         internal bool IsCatchBlockExist
         {
-            get
-            {
-                return (_handlers != null);
-            }
+            get { return (_handlers != null); }
         }
 
         /// <summary>
@@ -295,18 +286,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public InstructionList Instructions
         {
-            get
-            {
-                return _instructions;
-            }
+            get { return _instructions; }
         }
 
         public LocalVariables Locals
         {
-            get
-            {
-                return _locals;
-            }
+            get { return _locals; }
         }
 
         public LightDelegateCreator CompileTop(LambdaExpression node)

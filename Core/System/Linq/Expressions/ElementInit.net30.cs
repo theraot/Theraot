@@ -30,10 +30,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public MethodInfo AddMethod
         {
-            get
-            {
-                return _addMethod;
-            }
+            get { return _addMethod; }
         }
 
         /// <summary>
@@ -41,10 +38,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<Expression> Arguments
         {
-            get
-            {
-                return _arguments;
-            }
+            get { return _arguments; }
         }
 
         public Expression GetArgument(int index)
@@ -54,10 +48,7 @@ namespace System.Linq.Expressions
 
         public int ArgumentCount
         {
-            get
-            {
-                return _arguments.Count;
-            }
+            get { return _arguments.Count; }
         }
 
         /// <summary>

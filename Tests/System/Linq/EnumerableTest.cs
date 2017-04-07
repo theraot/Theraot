@@ -471,10 +471,7 @@ namespace MonoTests.System.Linq
 
             public int Age
             {
-                get
-                {
-                    return age + 1;
-                }
+                get { return age + 1; }
             }
 
             public Baz(string name, int age)
@@ -536,15 +533,9 @@ namespace MonoTests.System.Linq
 
         private class Data
         {
-            public int ID
-            {
-                get; set;
-            }
+            public int ID { get; set; }
 
-            public string Name
-            {
-                get; set;
-            }
+            public string Name { get; set; }
 
             public override string ToString()
             {

@@ -78,10 +78,7 @@ namespace System.Threading.Tasks
         /// </remarks>
         public Task Task
         {
-            get
-            {
-                return _canceledTask;
-            }
+            get { return _canceledTask; }
         }
     }
 }

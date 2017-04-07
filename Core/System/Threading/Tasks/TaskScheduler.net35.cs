@@ -31,34 +31,22 @@ namespace System.Threading.Tasks
 
         public static TaskScheduler Default
         {
-            get
-            {
-                return _default;
-            }
+            get { return _default; }
         }
 
         public int Id
         {
-            get
-            {
-                return _id;
-            }
+            get { return _id; }
         }
 
         public int MaximunConcurrencyLevel
         {
-            get
-            {
-                return int.MaxValue;
-            }
+            get { return int.MaxValue; }
         }
 
         internal virtual bool RequiresAtomicStartTransition
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         public static TaskScheduler FromCurrentSynchronizationContext()

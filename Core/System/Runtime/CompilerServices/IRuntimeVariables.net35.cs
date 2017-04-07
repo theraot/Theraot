@@ -13,10 +13,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         /// Count of the variables.
         /// </summary>
-        int Count
-        {
-            get;
-        }
+        int Count { get; }
 
         /// <summary>
         /// An indexer to get/set the values of the runtime variables.

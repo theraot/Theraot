@@ -43,10 +43,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public int Count
         {
-            get
-            {
-                return _count;
-            }
+            get { return _count; }
         }
 
         public void CopyTo(T[] array, int arrayIndex)

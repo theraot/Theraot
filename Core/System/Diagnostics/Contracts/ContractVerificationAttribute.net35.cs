@@ -30,10 +30,7 @@ namespace System.Diagnostics.Contracts
 
         public bool Value
         {
-            get
-            {
-                return _value;
-            }
+            get { return _value; }
         }
     }
 }

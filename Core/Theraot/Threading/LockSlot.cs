@@ -26,23 +26,14 @@ namespace Theraot.Threading
 
         bool IReadOnlyNeedle<T>.IsAlive
         {
-            get
-            {
-                return !ReferenceEquals(Value, null);
-            }
+            get { return !ReferenceEquals(Value, null); }
         }
 
-        public T Value
-        {
-            get; set;
-        }
+        public T Value { get; set; }
 
         internal bool IsOpen
         {
-            get
-            {
-                return Volatile.Read(ref _free) == 0;
-            }
+            get { return Volatile.Read(ref _free) == 0; }
         }
 
         public static bool operator !=(LockSlot<T> left, LockSlot<T> right)

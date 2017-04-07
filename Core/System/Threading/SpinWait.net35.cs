@@ -34,18 +34,12 @@ namespace System.Threading
 
         public int Count
         {
-            get
-            {
-                return _count;
-            }
+            get { return _count; }
         }
 
         public bool NextSpinWillYield
         {
-            get
-            {
-                return EnvironmentHelper.IsSingleCPU || _count % Theraot.Threading.ThreadingHelper._sleepCountHint == 0;
-            }
+            get { return EnvironmentHelper.IsSingleCPU || _count % Theraot.Threading.ThreadingHelper._sleepCountHint == 0; }
         }
 
         public static void SpinUntil(Func<bool> condition)

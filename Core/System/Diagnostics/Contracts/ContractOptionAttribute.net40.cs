@@ -34,34 +34,22 @@ namespace System.Diagnostics.Contracts
 
         public string Category
         {
-            get
-            {
-                return _category;
-            }
+            get { return _category; }
         }
 
         public string Setting
         {
-            get
-            {
-                return _setting;
-            }
+            get { return _setting; }
         }
 
         public bool Enabled
         {
-            get
-            {
-                return _enabled;
-            }
+            get { return _enabled; }
         }
 
         public string Value
         {
-            get
-            {
-                return _value;
-            }
+            get { return _value; }
         }
     }
 }

@@ -89,10 +89,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             public string Foo;
 
-            public string Bar
-            {
-                get; set;
-            }
+            public string Bar { get; set; }
         }
 
         [Test]

@@ -21,34 +21,22 @@ namespace Theraot.Collections.Specialized
 
         public IReadOnlyCollection<T> AsReadOnly
         {
-            get
-            {
-                return _readOnly;
-            }
+            get { return _readOnly; }
         }
 
         public int Count
         {
-            get
-            {
-                return Instance.Count;
-            }
+            get { return Instance.Count; }
         }
 
         public bool IsReadOnly
         {
-            get
-            {
-                return Instance.IsReadOnly;
-            }
+            get { return Instance.IsReadOnly; }
         }
 
         private ICollection<T> Instance
         {
-            get
-            {
-                return _wrapped.Invoke() ?? ArrayReservoir<T>.EmptyArray;
-            }
+            get { return _wrapped.Invoke() ?? ArrayReservoir<T>.EmptyArray; }
         }
 
         public void Add(T item)

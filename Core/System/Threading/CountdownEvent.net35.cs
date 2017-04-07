@@ -49,18 +49,12 @@ namespace System.Threading
 
         public int InitialCount
         {
-            get
-            {
-                return _initialCount;
-            }
+            get { return _initialCount; }
         }
 
         public bool IsSet
         {
-            get
-            {
-                return Thread.VolatileRead(ref _currentCount) <= 0;
-            }
+            get { return Thread.VolatileRead(ref _currentCount) <= 0; }
         }
 
         public WaitHandle WaitHandle

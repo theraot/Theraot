@@ -59,10 +59,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get
-            {
-                return ExpressionType.Constant;
-            }
+            get { return ExpressionType.Constant; }
         }
 
         /// <summary>
@@ -70,10 +67,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public object Value
         {
-            get
-            {
-                return _value;
-            }
+            get { return _value; }
         }
 
         /// <summary>
@@ -97,10 +91,7 @@ namespace System.Linq.Expressions
 
         public sealed override Type Type
         {
-            get
-            {
-                return _type;
-            }
+            get { return _type; }
         }
     }
 

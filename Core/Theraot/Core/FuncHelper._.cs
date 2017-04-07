@@ -41,10 +41,7 @@ namespace Theraot.Core
 
             public static Func<TReturn, TReturn> Instance
             {
-                get
-                {
-                    return _instance;
-                }
+                get { return _instance; }
             }
 
             private static TReturn IdentityFunc(TReturn target)
@@ -64,10 +61,7 @@ namespace Theraot.Core
 
             public static Predicate<T> Instance
             {
-                get
-                {
-                    return _instance;
-                }
+                get { return _instance; }
             }
 
             private static bool NotNullPredicate(T target)
@@ -87,10 +81,7 @@ namespace Theraot.Core
 
             public static Predicate<T> Instance
             {
-                get
-                {
-                    return _instance;
-                }
+                get { return _instance; }
             }
 
             private static bool NullPredicate(T target)

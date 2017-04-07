@@ -13,10 +13,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string ReducibleMustOverrideReduce
         {
-            get
-            {
-                return SR.ReducibleMustOverrideReduce;
-            }
+            get { return SR.ReducibleMustOverrideReduce; }
         }
 
         /// <summary>
@@ -24,10 +21,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string MustReduceToDifferent
         {
-            get
-            {
-                return SR.MustReduceToDifferent;
-            }
+            get { return SR.MustReduceToDifferent; }
         }
 
         /// <summary>
@@ -35,10 +29,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string ReducedNotCompatible
         {
-            get
-            {
-                return SR.ReducedNotCompatible;
-            }
+            get { return SR.ReducedNotCompatible; }
         }
 
         /// <summary>
@@ -46,10 +37,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string SetterHasNoParams
         {
-            get
-            {
-                return SR.SetterHasNoParams;
-            }
+            get { return SR.SetterHasNoParams; }
         }
 
         /// <summary>
@@ -57,10 +45,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string PropertyCannotHaveRefType
         {
-            get
-            {
-                return SR.PropertyCannotHaveRefType;
-            }
+            get { return SR.PropertyCannotHaveRefType; }
         }
 
         /// <summary>
@@ -68,10 +53,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string IndexesOfSetGetMustMatch
         {
-            get
-            {
-                return SR.IndexesOfSetGetMustMatch;
-            }
+            get { return SR.IndexesOfSetGetMustMatch; }
         }
 
         /// <summary>
@@ -79,10 +61,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string AccessorsCannotHaveVarArgs
         {
-            get
-            {
-                return SR.AccessorsCannotHaveVarArgs;
-            }
+            get { return SR.AccessorsCannotHaveVarArgs; }
         }
 
         /// <summary>
@@ -90,10 +69,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string AccessorsCannotHaveByRefArgs
         {
-            get
-            {
-                return SR.AccessorsCannotHaveByRefArgs;
-            }
+            get { return SR.AccessorsCannotHaveByRefArgs; }
         }
 
         /// <summary>
@@ -101,10 +77,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string BoundsCannotBeLessThanOne
         {
-            get
-            {
-                return SR.BoundsCannotBeLessThanOne;
-            }
+            get { return SR.BoundsCannotBeLessThanOne; }
         }
 
         /// <summary>
@@ -112,10 +85,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string TypeMustNotBeByRef
         {
-            get
-            {
-                return SR.TypeMustNotBeByRef;
-            }
+            get { return SR.TypeMustNotBeByRef; }
         }
 
         /// <summary>
@@ -123,10 +93,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string TypeDoesNotHaveConstructorForTheSignature
         {
-            get
-            {
-                return SR.TypeDoesNotHaveConstructorForTheSignature;
-            }
+            get { return SR.TypeDoesNotHaveConstructorForTheSignature; }
         }
 
         /// <summary>
@@ -134,10 +101,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string CountCannotBeNegative
         {
-            get
-            {
-                return SR.CountCannotBeNegative;
-            }
+            get { return SR.CountCannotBeNegative; }
         }
 
         /// <summary>
@@ -145,10 +109,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string ArrayTypeMustBeArray
         {
-            get
-            {
-                return SR.ArrayTypeMustBeArray;
-            }
+            get { return SR.ArrayTypeMustBeArray; }
         }
 
         /// <summary>
@@ -156,10 +117,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string SetterMustBeVoid
         {
-            get
-            {
-                return SR.SetterMustBeVoid;
-            }
+            get { return SR.SetterMustBeVoid; }
         }
 
         /// <summary>
@@ -167,10 +125,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string PropertyTyepMustMatchSetter
         {
-            get
-            {
-                return SR.PropertyTyepMustMatchSetter;
-            }
+            get { return SR.PropertyTyepMustMatchSetter; }
         }
 
         /// <summary>
@@ -178,10 +133,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string BothAccessorsMustBeStatic
         {
-            get
-            {
-                return SR.BothAccessorsMustBeStatic;
-            }
+            get { return SR.BothAccessorsMustBeStatic; }
         }
 
         /// <summary>
@@ -189,10 +141,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string OnlyStaticFieldsHaveNullInstance
         {
-            get
-            {
-                return SR.OnlyStaticFieldsHaveNullInstance;
-            }
+            get { return SR.OnlyStaticFieldsHaveNullInstance; }
         }
 
         /// <summary>
@@ -200,10 +149,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string OnlyStaticPropertiesHaveNullInstance
         {
-            get
-            {
-                return SR.OnlyStaticPropertiesHaveNullInstance;
-            }
+            get { return SR.OnlyStaticPropertiesHaveNullInstance; }
         }
 
         /// <summary>
@@ -211,10 +157,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string OnlyStaticMethodsHaveNullInstance
         {
-            get
-            {
-                return SR.OnlyStaticMethodsHaveNullInstance;
-            }
+            get { return SR.OnlyStaticMethodsHaveNullInstance; }
         }
 
         /// <summary>
@@ -222,10 +165,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string PropertyTypeCannotBeVoid
         {
-            get
-            {
-                return SR.PropertyTypeCannotBeVoid;
-            }
+            get { return SR.PropertyTypeCannotBeVoid; }
         }
 
         /// <summary>
@@ -233,10 +173,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string InvalidUnboxType
         {
-            get
-            {
-                return SR.InvalidUnboxType;
-            }
+            get { return SR.InvalidUnboxType; }
         }
 
         /// <summary>
@@ -244,10 +181,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string ExpressionMustBeWriteable
         {
-            get
-            {
-                return SR.ExpressionMustBeWriteable;
-            }
+            get { return SR.ExpressionMustBeWriteable; }
         }
 
         /// <summary>
@@ -255,10 +189,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string ArgumentMustNotHaveValueType
         {
-            get
-            {
-                return SR.ArgumentMustNotHaveValueType;
-            }
+            get { return SR.ArgumentMustNotHaveValueType; }
         }
 
         /// <summary>
@@ -266,10 +197,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string MustBeReducible
         {
-            get
-            {
-                return SR.MustBeReducible;
-            }
+            get { return SR.MustBeReducible; }
         }
 
         /// <summary>
@@ -277,10 +205,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string AllTestValuesMustHaveSameType
         {
-            get
-            {
-                return SR.AllTestValuesMustHaveSameType;
-            }
+            get { return SR.AllTestValuesMustHaveSameType; }
         }
 
         /// <summary>
@@ -288,10 +213,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string AllCaseBodiesMustHaveSameType
         {
-            get
-            {
-                return SR.AllCaseBodiesMustHaveSameType;
-            }
+            get { return SR.AllCaseBodiesMustHaveSameType; }
         }
 
         /// <summary>
@@ -299,10 +221,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string DefaultBodyMustBeSupplied
         {
-            get
-            {
-                return SR.DefaultBodyMustBeSupplied;
-            }
+            get { return SR.DefaultBodyMustBeSupplied; }
         }
 
         /// <summary>
@@ -310,10 +229,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string MethodBuilderDoesNotHaveTypeBuilder
         {
-            get
-            {
-                return SR.MethodBuilderDoesNotHaveTypeBuilder;
-            }
+            get { return SR.MethodBuilderDoesNotHaveTypeBuilder; }
         }
 
         /// <summary>
@@ -321,10 +237,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string LabelMustBeVoidOrHaveExpression
         {
-            get
-            {
-                return SR.LabelMustBeVoidOrHaveExpression;
-            }
+            get { return SR.LabelMustBeVoidOrHaveExpression; }
         }
 
         /// <summary>
@@ -332,10 +245,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string LabelTypeMustBeVoid
         {
-            get
-            {
-                return SR.LabelTypeMustBeVoid;
-            }
+            get { return SR.LabelTypeMustBeVoid; }
         }
 
         /// <summary>
@@ -343,10 +253,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string QuotedExpressionMustBeLambda
         {
-            get
-            {
-                return SR.QuotedExpressionMustBeLambda;
-            }
+            get { return SR.QuotedExpressionMustBeLambda; }
         }
 
         /// <summary>
@@ -370,10 +277,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string StartEndMustBeOrdered
         {
-            get
-            {
-                return SR.StartEndMustBeOrdered;
-            }
+            get { return SR.StartEndMustBeOrdered; }
         }
 
         /// <summary>
@@ -381,10 +285,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string FaultCannotHaveCatchOrFinally
         {
-            get
-            {
-                return SR.FaultCannotHaveCatchOrFinally;
-            }
+            get { return SR.FaultCannotHaveCatchOrFinally; }
         }
 
         /// <summary>
@@ -392,10 +293,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string TryMustHaveCatchFinallyOrFault
         {
-            get
-            {
-                return SR.TryMustHaveCatchFinallyOrFault;
-            }
+            get { return SR.TryMustHaveCatchFinallyOrFault; }
         }
 
         /// <summary>
@@ -403,10 +301,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string BodyOfCatchMustHaveSameTypeAsBodyOfTry
         {
-            get
-            {
-                return SR.BodyOfCatchMustHaveSameTypeAsBodyOfTry;
-            }
+            get { return SR.BodyOfCatchMustHaveSameTypeAsBodyOfTry; }
         }
 
         /// <summary>
@@ -486,10 +381,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string ConversionIsNotSupportedForArithmeticTypes
         {
-            get
-            {
-                return SR.ConversionIsNotSupportedForArithmeticTypes;
-            }
+            get { return SR.ConversionIsNotSupportedForArithmeticTypes; }
         }
 
         /// <summary>
@@ -497,10 +389,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string ArgumentMustBeArray
         {
-            get
-            {
-                return SR.ArgumentMustBeArray;
-            }
+            get { return SR.ArgumentMustBeArray; }
         }
 
         /// <summary>
@@ -508,10 +397,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string ArgumentMustBeBoolean
         {
-            get
-            {
-                return SR.ArgumentMustBeBoolean;
-            }
+            get { return SR.ArgumentMustBeBoolean; }
         }
 
         /// <summary>
@@ -527,10 +413,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string ArgumentMustBeFieldInfoOrPropertInfo
         {
-            get
-            {
-                return SR.ArgumentMustBeFieldInfoOrPropertInfo;
-            }
+            get { return SR.ArgumentMustBeFieldInfoOrPropertInfo; }
         }
 
         /// <summary>
@@ -538,10 +421,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string ArgumentMustBeFieldInfoOrPropertInfoOrMethod
         {
-            get
-            {
-                return SR.ArgumentMustBeFieldInfoOrPropertInfoOrMethod;
-            }
+            get { return SR.ArgumentMustBeFieldInfoOrPropertInfoOrMethod; }
         }
 
         /// <summary>
@@ -549,10 +429,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string ArgumentMustBeInstanceMember
         {
-            get
-            {
-                return SR.ArgumentMustBeInstanceMember;
-            }
+            get { return SR.ArgumentMustBeInstanceMember; }
         }
 
         /// <summary>
@@ -560,10 +437,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string ArgumentMustBeInteger
         {
-            get
-            {
-                return SR.ArgumentMustBeInteger;
-            }
+            get { return SR.ArgumentMustBeInteger; }
         }
 
         /// <summary>
@@ -571,10 +445,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string ArgumentMustBeArrayIndexType
         {
-            get
-            {
-                return SR.ArgumentMustBeArrayIndexType;
-            }
+            get { return SR.ArgumentMustBeArrayIndexType; }
         }
 
         /// <summary>
@@ -582,10 +453,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string ArgumentMustBeSingleDimensionalArrayType
         {
-            get
-            {
-                return SR.ArgumentMustBeSingleDimensionalArrayType;
-            }
+            get { return SR.ArgumentMustBeSingleDimensionalArrayType; }
         }
 
         /// <summary>
@@ -593,10 +461,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string ArgumentTypesMustMatch
         {
-            get
-            {
-                return SR.ArgumentTypesMustMatch;
-            }
+            get { return SR.ArgumentTypesMustMatch; }
         }
 
         /// <summary>
@@ -628,10 +493,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string CoalesceUsedOnNonNullType
         {
-            get
-            {
-                return SR.CoalesceUsedOnNonNullType;
-            }
+            get { return SR.CoalesceUsedOnNonNullType; }
         }
 
         /// <summary>
@@ -719,10 +581,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string IncorrectNumberOfIndexes
         {
-            get
-            {
-                return SR.IncorrectNumberOfIndexes;
-            }
+            get { return SR.IncorrectNumberOfIndexes; }
         }
 
         /// <summary>
@@ -730,10 +589,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string IncorrectNumberOfLambdaDeclarationParameters
         {
-            get
-            {
-                return SR.IncorrectNumberOfLambdaDeclarationParameters;
-            }
+            get { return SR.IncorrectNumberOfLambdaDeclarationParameters; }
         }
 
         /// <summary>
@@ -741,10 +597,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string IncorrectNumberOfMembersForGivenConstructor
         {
-            get
-            {
-                return SR.IncorrectNumberOfMembersForGivenConstructor;
-            }
+            get { return SR.IncorrectNumberOfMembersForGivenConstructor; }
         }
 
         /// <summary>
@@ -752,10 +605,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string IncorrectNumberOfArgumentsForMembers
         {
-            get
-            {
-                return SR.IncorrectNumberOfArgumentsForMembers;
-            }
+            get { return SR.IncorrectNumberOfArgumentsForMembers; }
         }
 
         /// <summary>
@@ -763,10 +613,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string LambdaTypeMustBeDerivedFromSystemDelegate
         {
-            get
-            {
-                return SR.LambdaTypeMustBeDerivedFromSystemDelegate;
-            }
+            get { return SR.LambdaTypeMustBeDerivedFromSystemDelegate; }
         }
 
         /// <summary>
@@ -910,10 +757,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string ListInitializerWithZeroMembers
         {
-            get
-            {
-                return SR.ListInitializerWithZeroMembers;
-            }
+            get { return SR.ListInitializerWithZeroMembers; }
         }
 
         /// <summary>
@@ -921,10 +765,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string ElementInitializerMethodNotAdd
         {
-            get
-            {
-                return SR.ElementInitializerMethodNotAdd;
-            }
+            get { return SR.ElementInitializerMethodNotAdd; }
         }
 
         /// <summary>
@@ -940,10 +781,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string ElementInitializerMethodWithZeroArgs
         {
-            get
-            {
-                return SR.ElementInitializerMethodWithZeroArgs;
-            }
+            get { return SR.ElementInitializerMethodWithZeroArgs; }
         }
 
         /// <summary>
@@ -951,10 +789,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string ElementInitializerMethodStatic
         {
-            get
-            {
-                return SR.ElementInitializerMethodStatic;
-            }
+            get { return SR.ElementInitializerMethodStatic; }
         }
 
         /// <summary>
@@ -970,10 +805,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string UnexpectedCoalesceOperator
         {
-            get
-            {
-                return SR.UnexpectedCoalesceOperator;
-            }
+            get { return SR.UnexpectedCoalesceOperator; }
         }
 
         /// <summary>
@@ -997,10 +829,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string UnhandledBinding
         {
-            get
-            {
-                return SR.UnhandledBinding;
-            }
+            get { return SR.UnhandledBinding; }
         }
 
         /// <summary>
@@ -1040,10 +869,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string UnknownBindingType
         {
-            get
-            {
-                return SR.UnknownBindingType;
-            }
+            get { return SR.UnknownBindingType; }
         }
 
         /// <summary>
@@ -1115,10 +941,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string IncorrectNumberOfTypeArgsForFunc
         {
-            get
-            {
-                return SR.IncorrectNumberOfTypeArgsForFunc;
-            }
+            get { return SR.IncorrectNumberOfTypeArgsForFunc; }
         }
 
         /// <summary>
@@ -1126,10 +949,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string IncorrectNumberOfTypeArgsForAction
         {
-            get
-            {
-                return SR.IncorrectNumberOfTypeArgsForAction;
-            }
+            get { return SR.IncorrectNumberOfTypeArgsForAction; }
         }
 
         /// <summary>
@@ -1137,10 +957,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string ArgumentCannotBeOfTypeVoid
         {
-            get
-            {
-                return SR.ArgumentCannotBeOfTypeVoid;
-            }
+            get { return SR.ArgumentCannotBeOfTypeVoid; }
         }
 
         /// <summary>
@@ -1164,10 +981,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string QueueEmpty
         {
-            get
-            {
-                return SR.QueueEmpty;
-            }
+            get { return SR.QueueEmpty; }
         }
 
         /// <summary>
@@ -1191,10 +1005,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string ControlCannotLeaveFinally
         {
-            get
-            {
-                return SR.ControlCannotLeaveFinally;
-            }
+            get { return SR.ControlCannotLeaveFinally; }
         }
 
         /// <summary>
@@ -1202,10 +1013,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string ControlCannotLeaveFilterTest
         {
-            get
-            {
-                return SR.ControlCannotLeaveFilterTest;
-            }
+            get { return SR.ControlCannotLeaveFilterTest; }
         }
 
         /// <summary>
@@ -1221,10 +1029,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string ControlCannotEnterTry
         {
-            get
-            {
-                return SR.ControlCannotEnterTry;
-            }
+            get { return SR.ControlCannotEnterTry; }
         }
 
         /// <summary>
@@ -1232,10 +1037,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string ControlCannotEnterExpression
         {
-            get
-            {
-                return SR.ControlCannotEnterExpression;
-            }
+            get { return SR.ControlCannotEnterExpression; }
         }
 
         /// <summary>
@@ -1251,10 +1053,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string ExtensionNotReduced
         {
-            get
-            {
-                return SR.ExtensionNotReduced;
-            }
+            get { return SR.ExtensionNotReduced; }
         }
 
         /// <summary>
@@ -1270,10 +1069,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string CannotCompileDynamic
         {
-            get
-            {
-                return SR.CannotCompileDynamic;
-            }
+            get { return SR.CannotCompileDynamic; }
         }
 
         /// <summary>
@@ -1305,10 +1101,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string InvalidOutputDir
         {
-            get
-            {
-                return SR.InvalidOutputDir;
-            }
+            get { return SR.InvalidOutputDir; }
         }
 
         /// <summary>
@@ -1316,10 +1109,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string InvalidAsmNameOrExtension
         {
-            get
-            {
-                return SR.InvalidAsmNameOrExtension;
-            }
+            get { return SR.InvalidAsmNameOrExtension; }
         }
 
         /// <summary>
@@ -1359,10 +1149,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string RethrowRequiresCatch
         {
-            get
-            {
-                return SR.RethrowRequiresCatch;
-            }
+            get { return SR.RethrowRequiresCatch; }
         }
 
         /// <summary>
@@ -1370,10 +1157,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string TryNotAllowedInFilter
         {
-            get
-            {
-                return SR.TryNotAllowedInFilter;
-            }
+            get { return SR.TryNotAllowedInFilter; }
         }
 
         /// <summary>
@@ -1421,10 +1205,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string HomogenousAppDomainRequired
         {
-            get
-            {
-                return SR.HomogenousAppDomainRequired;
-            }
+            get { return SR.HomogenousAppDomainRequired; }
         }
 
         /// <summary>
@@ -1448,10 +1229,7 @@ namespace System.Linq.Expressions
         /// </summary>
         internal static string PdbGeneratorNeedsExpressionCompiler
         {
-            get
-            {
-                return SR.PdbGeneratorNeedsExpressionCompiler;
-            }
+            get { return SR.PdbGeneratorNeedsExpressionCompiler; }
         }
 
         /// <summary>

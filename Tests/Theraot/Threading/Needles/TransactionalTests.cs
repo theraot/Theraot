@@ -680,10 +680,7 @@ namespace Tests.Theraot.Threading.Needles
                 Value = value;
             }
 
-            public int Value
-            {
-                get; set;
-            }
+            public int Value { get; set; }
 
             public ClonableClass Clone()
             {

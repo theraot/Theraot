@@ -32,18 +32,12 @@ namespace System.Numerics
 
         public uint High
         {
-            get
-            {
-                return (_iuLast != 0 ? _bits[_iuLast] : _uSmall);
-            }
+            get { return (_iuLast != 0 ? _bits[_iuLast] : _uSmall); }
         }
 
         public int Size
         {
-            get
-            {
-                return _iuLast + 1;
-            }
+            get { return _iuLast + 1; }
         }
 
         public BigIntegerBuilder(ref BigIntegerBuilder reg)

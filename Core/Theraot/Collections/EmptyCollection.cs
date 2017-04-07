@@ -19,10 +19,7 @@ namespace Theraot.Collections
 
         public static EmptyCollection<T> Instance
         {
-            get
-            {
-                return _instance;
-            }
+            get { return _instance; }
         }
     }
 }

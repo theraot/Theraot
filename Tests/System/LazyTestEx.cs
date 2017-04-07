@@ -173,11 +173,7 @@ namespace MonoTests.System
                 Prop = count;
             }
 
-            public int Prop
-            {
-                get;
-                private set;
-            }
+            public int Prop { get; private set; }
         }
     }
 }

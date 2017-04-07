@@ -75,42 +75,27 @@ namespace Theraot.Collections.ThreadSafe
 
         public int Count
         {
-            get
-            {
-                return _bucket.Count;
-            }
+            get { return _bucket.Count; }
         }
 
         bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public IEqualityComparer<TKey> KeyComparer
         {
-            get
-            {
-                return _keyComparer;
-            }
+            get { return _keyComparer; }
         }
 
         public ICollection<TKey> Keys
         {
-            get
-            {
-                return _keyCollection;
-            }
+            get { return _keyCollection; }
         }
 
         public ICollection<TValue> Values
         {
-            get
-            {
-                return _valueCollection;
-            }
+            get { return _valueCollection; }
         }
 
         public TValue this[TKey key]
@@ -124,10 +109,8 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 throw new KeyNotFoundException();
             }
-            set
-            {
-                Set(key, value);
-            }
+
+            set { Set(key, value); }
         }
 
         /// <summary>

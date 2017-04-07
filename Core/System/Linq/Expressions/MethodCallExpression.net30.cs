@@ -40,10 +40,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get
-            {
-                return ExpressionType.Call;
-            }
+            get { return ExpressionType.Call; }
         }
 
         /// <summary>
@@ -52,10 +49,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type
         {
-            get
-            {
-                return _method.ReturnType;
-            }
+            get { return _method.ReturnType; }
         }
 
         /// <summary>
@@ -63,10 +57,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public MethodInfo Method
         {
-            get
-            {
-                return _method;
-            }
+            get { return _method; }
         }
 
         /// <summary>
@@ -75,10 +66,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Object
         {
-            get
-            {
-                return GetInstance();
-            }
+            get { return GetInstance(); }
         }
 
         /// <summary>
@@ -86,10 +74,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<Expression> Arguments
         {
-            get
-            {
-                return GetOrMakeArguments();
-            }
+            get { return GetOrMakeArguments(); }
         }
 
         /// <summary>
@@ -144,10 +129,7 @@ namespace System.Linq.Expressions
 
         public virtual int ArgumentCount
         {
-            get
-            {
-                throw ContractUtils.Unreachable;
-            }
+            get { throw ContractUtils.Unreachable; }
         }
 
         #endregion IArgumentProvider Members
@@ -174,10 +156,7 @@ namespace System.Linq.Expressions
 
         public override int ArgumentCount
         {
-            get
-            {
-                return _arguments.Count;
-            }
+            get { return _arguments.Count; }
         }
 
         internal override ReadOnlyCollection<Expression> GetOrMakeArguments()
@@ -213,10 +192,7 @@ namespace System.Linq.Expressions
 
         public override int ArgumentCount
         {
-            get
-            {
-                return _arguments.Count;
-            }
+            get { return _arguments.Count; }
         }
 
         internal override Expression GetInstance()
@@ -262,10 +238,7 @@ namespace System.Linq.Expressions
 
         public override int ArgumentCount
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         internal override ReadOnlyCollection<Expression> GetOrMakeArguments()
@@ -316,10 +289,7 @@ namespace System.Linq.Expressions
 
         public override int ArgumentCount
         {
-            get
-            {
-                return 2;
-            }
+            get { return 2; }
         }
 
         internal override ReadOnlyCollection<Expression> GetOrMakeArguments()
@@ -373,10 +343,7 @@ namespace System.Linq.Expressions
 
         public override int ArgumentCount
         {
-            get
-            {
-                return 3;
-            }
+            get { return 3; }
         }
 
         internal override ReadOnlyCollection<Expression> GetOrMakeArguments()
@@ -434,10 +401,7 @@ namespace System.Linq.Expressions
 
         public override int ArgumentCount
         {
-            get
-            {
-                return 4;
-            }
+            get { return 4; }
         }
 
         internal override ReadOnlyCollection<Expression> GetOrMakeArguments()
@@ -499,10 +463,7 @@ namespace System.Linq.Expressions
 
         public override int ArgumentCount
         {
-            get
-            {
-                return 5;
-            }
+            get { return 5; }
         }
 
         internal override ReadOnlyCollection<Expression> GetOrMakeArguments()
@@ -557,10 +518,7 @@ namespace System.Linq.Expressions
 
         public override int ArgumentCount
         {
-            get
-            {
-                return 2;
-            }
+            get { return 2; }
         }
 
         internal override Expression GetInstance()
@@ -623,10 +581,7 @@ namespace System.Linq.Expressions
 
         public override int ArgumentCount
         {
-            get
-            {
-                return 3;
-            }
+            get { return 3; }
         }
 
         internal override Expression GetInstance()

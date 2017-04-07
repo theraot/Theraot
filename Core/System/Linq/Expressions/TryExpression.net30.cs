@@ -46,10 +46,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type
         {
-            get
-            {
-                return _type;
-            }
+            get { return _type; }
         }
 
         /// <summary>
@@ -58,10 +55,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get
-            {
-                return ExpressionType.Try;
-            }
+            get { return ExpressionType.Try; }
         }
 
         /// <summary>
@@ -69,10 +63,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Body
         {
-            get
-            {
-                return _body;
-            }
+            get { return _body; }
         }
 
         /// <summary>
@@ -80,10 +71,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<CatchBlock> Handlers
         {
-            get
-            {
-                return _handlers;
-            }
+            get { return _handlers; }
         }
 
         /// <summary>
@@ -91,10 +79,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Finally
         {
-            get
-            {
-                return _finally;
-            }
+            get { return _finally; }
         }
 
         /// <summary>
@@ -102,10 +87,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Fault
         {
-            get
-            {
-                return _fault;
-            }
+            get { return _fault; }
         }
 
         /// <summary>

@@ -38,10 +38,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get
-            {
-                return ExpressionType.ListInit;
-            }
+            get { return ExpressionType.ListInit; }
         }
 
         /// <summary>
@@ -50,10 +47,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type
         {
-            get
-            {
-                return _newExpression.Type;
-            }
+            get { return _newExpression.Type; }
         }
 
         /// <summary>
@@ -61,10 +55,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public override bool CanReduce
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         /// <summary>
@@ -72,10 +63,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public NewExpression NewExpression
         {
-            get
-            {
-                return _newExpression;
-            }
+            get { return _newExpression; }
         }
 
         /// <summary>
@@ -83,10 +71,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<ElementInit> Initializers
         {
-            get
-            {
-                return _initializers;
-            }
+            get { return _initializers; }
         }
 
         /// <summary>

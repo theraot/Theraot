@@ -35,10 +35,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<MemberBinding> Bindings
         {
-            get
-            {
-                return _bindings;
-            }
+            get { return _bindings; }
         }
 
         /// <summary>

@@ -159,26 +159,17 @@ namespace System.Threading.Tasks
 
         public static TaskFactory Factory
         {
-            get
-            {
-                return TaskFactory.DefaultInstance;
-            }
+            get { return TaskFactory.DefaultInstance; }
         }
 
         public object AsyncState
         {
-            get
-            {
-                return State;
-            }
+            get { return State; }
         }
 
         public TaskCreationOptions CreationOptions
         {
-            get
-            {
-                return _creationOptions;
-            }
+            get { return _creationOptions; }
         }
 
         public AggregateException Exception
@@ -216,18 +207,12 @@ namespace System.Threading.Tasks
 
         bool IAsyncResult.CompletedSynchronously
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public int Id
         {
-            get
-            {
-                return _id;
-            }
+            get { return _id; }
         }
 
         public bool IsCanceled
@@ -266,30 +251,18 @@ namespace System.Threading.Tasks
             }
         }
 
-        internal CancellationToken CancellationToken
-        {
-            get; set;
-        }
+        internal CancellationToken CancellationToken { get; set; }
 
-        internal ExecutionContext CapturedContext
-        {
-            get; set;
-        }
+        internal ExecutionContext CapturedContext { get; set; }
 
         private bool IsContinuationTask
         {
-            get
-            {
-                return (_internalOptions & InternalTaskOptions.ContinuationTask) != 0;
-            }
+            get { return (_internalOptions & InternalTaskOptions.ContinuationTask) != 0; }
         }
 
         private bool IsPromiseTask
         {
-            get
-            {
-                return (_internalOptions & InternalTaskOptions.PromiseTask) != 0;
-            }
+            get { return (_internalOptions & InternalTaskOptions.PromiseTask) != 0; }
         }
 
         private bool IsScheduled

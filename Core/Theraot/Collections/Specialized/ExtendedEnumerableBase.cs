@@ -19,18 +19,12 @@ namespace Theraot.Collections.Specialized
 
         protected IEnumerable<T> Append
         {
-            get
-            {
-                return _append;
-            }
+            get { return _append; }
         }
 
         protected IEnumerable<T> Target
         {
-            get
-            {
-                return _target;
-            }
+            get { return _target; }
         }
 
         public abstract IEnumerator<T> GetEnumerator();

@@ -10,10 +10,7 @@ namespace Theraot.Core
 
         public static ReferenceEqualityComparer<object> Default
         {
-            get
-            {
-                return _default;
-            }
+            get { return _default; }
         }
     }
 
@@ -28,10 +25,7 @@ namespace Theraot.Core
 
         public static ReferenceEqualityComparer<T> Instance
         {
-            get
-            {
-                return _instance;
-            }
+            get { return _instance; }
         }
 
         public int GetHashCode(T obj)

@@ -98,10 +98,7 @@ namespace Theraot.Collections
 
         bool ICollection<T>.IsReadOnly
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         public bool IsProperSubsetOf(IEnumerable<T> other)

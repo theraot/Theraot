@@ -17,26 +17,17 @@ namespace Theraot.Threading.Needles
 
         public static DefaultNeedle<T> Instance
         {
-            get
-            {
-                return _instance;
-            }
+            get { return _instance; }
         }
 
         bool IReadOnlyNeedle<T>.IsAlive
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         public T Value
         {
-            get
-            {
-                return default(T);
-            }
+            get { return default(T); }
         }
 
         public static explicit operator T(DefaultNeedle<T> needle)

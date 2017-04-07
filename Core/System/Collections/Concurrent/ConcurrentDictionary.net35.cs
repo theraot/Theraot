@@ -92,82 +92,52 @@ namespace System.Collections.Concurrent
 
         public bool IsEmpty
         {
-            get
-            {
-                return Count == 0;
-            }
+            get { return Count == 0; }
         }
 
         bool IDictionary.IsFixedSize
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         bool IDictionary.IsReadOnly
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         bool ICollection.IsSynchronized
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public ICollection<TKey> Keys
         {
-            get
-            {
-                return _wrapped.Keys;
-            }
+            get { return _wrapped.Keys; }
         }
 
         ICollection IDictionary.Keys
         {
-            get
-            {
-                return (ICollection)_wrapped.Keys;
-            }
+            get { return (ICollection)_wrapped.Keys; }
         }
 
         object ICollection.SyncRoot
         {
-            get
-            {
-                return this;
-            }
+            get { return this; }
         }
 
         public ICollection<TValue> Values
         {
-            get
-            {
-                return _valueCollection;
-            }
+            get { return _valueCollection; }
         }
 
         ICollection IDictionary.Values
         {
-            get
-            {
-                return _valueCollection;
-            }
+            get { return _valueCollection; }
         }
 
         public TValue this[TKey key]
@@ -553,10 +523,7 @@ namespace System.Collections.Concurrent
 
             public object Current
             {
-                get
-                {
-                    return Entry;
-                }
+                get { return Entry; }
             }
 
             public DictionaryEntry Entry

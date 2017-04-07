@@ -36,26 +36,17 @@ namespace System.Threading.Tasks
 
         internal bool IsCancellationAcknowledged
         {
-            get
-            {
-                return Thread.VolatileRead(ref _cancellationAcknowledged) == 1;
-            }
+            get { return Thread.VolatileRead(ref _cancellationAcknowledged) == 1; }
         }
 
         internal bool IsCancellationRequested
         {
-            get
-            {
-                return Thread.VolatileRead(ref _cancellationRequested) == 1;
-            }
+            get { return Thread.VolatileRead(ref _cancellationRequested) == 1; }
         }
 
         internal bool IsChildReplica
         {
-            get
-            {
-                return (_internalOptions & InternalTaskOptions.ChildReplica) != 0;
-            }
+            get { return (_internalOptions & InternalTaskOptions.ChildReplica) != 0; }
         }
 
         /// <summary>
@@ -64,10 +55,7 @@ namespace System.Threading.Tasks
         /// </summary>
         internal bool IsExceptionObservedByParent
         {
-            get
-            {
-                return Thread.VolatileRead(ref _exceptionObservedByParent) == 1;
-            }
+            get { return Thread.VolatileRead(ref _exceptionObservedByParent) == 1; }
         }
 
         internal bool IsSelfReplicatingRoot

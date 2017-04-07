@@ -70,10 +70,7 @@ namespace System.Runtime.CompilerServices
             /// <exception cref="T:System.NullReferenceException">The awaiter was not properly initialized.</exception>
             public bool IsCompleted
             {
-                get
-                {
-                    return m_task.IsCompleted;
-                }
+                get { return m_task.IsCompleted; }
             }
 
             /// <summary>
@@ -193,10 +190,7 @@ namespace System.Runtime.CompilerServices
             /// <exception cref="T:System.NullReferenceException">The awaiter was not properly initialized.</exception>
             public bool IsCompleted
             {
-                get
-                {
-                    return m_task.IsCompleted;
-                }
+                get { return m_task.IsCompleted; }
             }
 
             /// <summary>

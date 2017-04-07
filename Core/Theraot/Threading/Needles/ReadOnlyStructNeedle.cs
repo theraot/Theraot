@@ -18,30 +18,19 @@ namespace Theraot.Threading.Needles
 
         T INeedle<T>.Value
         {
-            get
-            {
-                return _value;
-            }
-            set
-            {
-                throw new NotSupportedException();
-            }
+            get { return _value; }
+
+            set { throw new NotSupportedException(); }
         }
 
         public bool IsAlive
         {
-            get
-            {
-                return !ReferenceEquals(_value, null);
-            }
+            get { return !ReferenceEquals(_value, null); }
         }
 
         public T Value
         {
-            get
-            {
-                return _value;
-            }
+            get { return _value; }
         }
 
         public static explicit operator T(ReadOnlyStructNeedle<T> needle)

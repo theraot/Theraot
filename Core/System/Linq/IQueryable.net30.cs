@@ -7,20 +7,11 @@ namespace System.Linq
 {
     public interface IQueryable : IEnumerable
     {
-        Type ElementType
-        {
-            get;
-        }
+        Type ElementType { get; }
 
-        Expression Expression
-        {
-            get;
-        }
+        Expression Expression { get; }
 
-        IQueryProvider Provider
-        {
-            get;
-        }
+        IQueryProvider Provider { get; }
     }
 }
 

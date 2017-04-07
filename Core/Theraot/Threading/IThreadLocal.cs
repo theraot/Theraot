@@ -7,25 +7,12 @@ namespace Theraot.Threading
 {
     internal interface IThreadLocal<T> : IDisposable
     {
-        bool IsValueCreated
-        {
-            get;
-        }
+        bool IsValueCreated { get; }
 
-        T Value
-        {
-            get;
-            set;
-        }
+        T Value { get; set; }
 
-        T ValueForDebugDisplay
-        {
-            get;
-        }
+        T ValueForDebugDisplay { get; }
 
-        IList<T> Values
-        {
-            get;
-        }
+        IList<T> Values { get; }
     }
 }

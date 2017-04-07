@@ -31,10 +31,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type
         {
-            get
-            {
-                return _target.Type;
-            }
+            get { return _target.Type; }
         }
 
         /// <summary>
@@ -43,10 +40,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get
-            {
-                return ExpressionType.Label;
-            }
+            get { return ExpressionType.Label; }
         }
 
         /// <summary>
@@ -54,10 +48,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public LabelTarget Target
         {
-            get
-            {
-                return _target;
-            }
+            get { return _target; }
         }
 
         /// <summary>
@@ -66,10 +57,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression DefaultValue
         {
-            get
-            {
-                return _defaultValue;
-            }
+            get { return _defaultValue; }
         }
 
         /// <summary>

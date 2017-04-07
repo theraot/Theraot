@@ -13,7 +13,7 @@ namespace System
     [DebuggerDisplay("Count = {InnerExceptions.Count}")]
     public class AggregateException : Exception
     {
-        private const string STR_BaseMessage = "Exception(s) occurred while inside the Parallel loop. {0}.";
+        private const string _baseMessage = "Exception(s) occurred while inside the Parallel loop. {0}.";
 
         private readonly ReadOnlyCollection<Exception> _innerExceptions;
 
@@ -94,10 +94,7 @@ namespace System
 
         public ReadOnlyCollection<Exception> InnerExceptions
         {
-            get
-            {
-                return _innerExceptions;
-            }
+            get { return _innerExceptions; }
         }
 
         public AggregateException Flatten()
@@ -208,7 +205,7 @@ namespace System
             public CreationInfo(string customMessage, IEnumerable<Exception> innerExceptions)
             {
                 var exceptions = new List<Exception>();
-                var result = new Text.StringBuilder(string.Format(STR_BaseMessage, customMessage));
+                var result = new Text.StringBuilder(string.Format(_baseMessage, customMessage));
                 var first = true;
                 _exception = null;
                 foreach (var exception in innerExceptions)
@@ -235,26 +232,17 @@ namespace System
 
             public Exception Exception
             {
-                get
-                {
-                    return _exception;
-                }
+                get { return _exception; }
             }
 
             public ReadOnlyCollection<Exception> InnerExceptions
             {
-                get
-                {
-                    return _innerExceptions;
-                }
+                get { return _innerExceptions; }
             }
 
             public string String
             {
-                get
-                {
-                    return _string;
-                }
+                get { return _string; }
             }
         }
     }

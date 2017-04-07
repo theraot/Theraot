@@ -23,10 +23,7 @@ namespace System.Diagnostics.Contracts
 
         public string Name
         {
-            get
-            {
-                return _publicName;
-            }
+            get { return _publicName; }
         }
     }
 }

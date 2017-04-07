@@ -51,10 +51,8 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool AutoRemoveDeadItems
         {
-            get
-            {
-                return _handle != null;
-            }
+            get { return _handle != null; }
+
 
             set
             {
@@ -79,50 +77,32 @@ namespace Theraot.Collections.ThreadSafe
 
         public int Count
         {
-            get
-            {
-                return _wrapped.Count;
-            }
+            get { return _wrapped.Count; }
         }
 
         bool ICollection<KeyValuePair<TKey, TValue>>.IsReadOnly
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public IEqualityComparer<TKey> KeyComparer
         {
-            get
-            {
-                return _keyComparer;
-            }
+            get { return _keyComparer; }
         }
 
         public ICollection<TKey> Keys
         {
-            get
-            {
-                return _keyCollection;
-            }
+            get { return _keyCollection; }
         }
 
         public ICollection<TValue> Values
         {
-            get
-            {
-                return _valueCollection;
-            }
+            get { return _valueCollection; }
         }
 
         protected SafeDictionary<WeakNeedle<TKey>, TValue> Wrapped
         {
-            get
-            {
-                return _wrapped;
-            }
+            get { return _wrapped; }
         }
 
         public TValue this[TKey key]
@@ -136,10 +116,8 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 throw new KeyNotFoundException();
             }
-            set
-            {
-                Set(key, value);
-            }
+
+            set { Set(key, value); }
         }
 
         void IDictionary<TKey, TValue>.Add(TKey key, TValue value)

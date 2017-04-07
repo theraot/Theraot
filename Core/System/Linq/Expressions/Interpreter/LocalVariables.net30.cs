@@ -20,10 +20,8 @@ namespace System.Linq.Expressions.Interpreter
 
         public bool IsBoxed
         {
-            get
-            {
-                return (_flags & IsBoxedFlag) != 0;
-            }
+            get { return (_flags & IsBoxedFlag) != 0; }
+
             set
             {
                 if (value)
@@ -39,18 +37,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public bool InClosure
         {
-            get
-            {
-                return (_flags & InClosureFlag) != 0;
-            }
+            get { return (_flags & InClosureFlag) != 0; }
         }
 
         public bool InClosureOrBoxed
         {
-            get
-            {
-                return InClosure | IsBoxed;
-            }
+            get { return InClosure | IsBoxed; }
         }
 
         internal LocalVariable(int index, bool closure, bool boxed)
@@ -84,18 +76,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public int Index
         {
-            get
-            {
-                return _index;
-            }
+            get { return _index; }
         }
 
         public ParameterExpression Parameter
         {
-            get
-            {
-                return _parameter;
-            }
+            get { return _parameter; }
         }
 
         public override bool Equals(object obj)
@@ -203,10 +189,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public int LocalCount
         {
-            get
-            {
-                return _maxLocalCount;
-            }
+            get { return _maxLocalCount; }
         }
 
         public int GetOrDefineLocal(ParameterExpression var)
@@ -269,10 +252,7 @@ namespace System.Linq.Expressions.Interpreter
         /// </summary>
         internal Dictionary<ParameterExpression, LocalVariable> ClosureVariables
         {
-            get
-            {
-                return _closureVariables;
-            }
+            get { return _closureVariables; }
         }
 
         internal LocalVariable AddClosureVariable(ParameterExpression variable)

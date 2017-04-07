@@ -30,10 +30,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type
         {
-            get
-            {
-                return typeof(void);
-            }
+            get { return typeof(void); }
         }
 
         /// <summary>
@@ -42,10 +39,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get
-            {
-                return ExpressionType.DebugInfo;
-            }
+            get { return ExpressionType.DebugInfo; }
         }
 
         /// <summary>
@@ -53,10 +47,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public virtual int StartLine
         {
-            get
-            {
-                throw ContractUtils.Unreachable;
-            }
+            get { throw ContractUtils.Unreachable; }
         }
 
         /// <summary>
@@ -64,10 +55,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public virtual int StartColumn
         {
-            get
-            {
-                throw ContractUtils.Unreachable;
-            }
+            get { throw ContractUtils.Unreachable; }
         }
 
         /// <summary>
@@ -75,10 +63,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public virtual int EndLine
         {
-            get
-            {
-                throw ContractUtils.Unreachable;
-            }
+            get { throw ContractUtils.Unreachable; }
         }
 
         /// <summary>
@@ -86,10 +71,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public virtual int EndColumn
         {
-            get
-            {
-                throw ContractUtils.Unreachable;
-            }
+            get { throw ContractUtils.Unreachable; }
         }
 
         /// <summary>
@@ -97,10 +79,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public SymbolDocumentInfo Document
         {
-            get
-            {
-                return _document;
-            }
+            get { return _document; }
         }
 
         /// <summary>
@@ -108,10 +87,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public virtual bool IsClear
         {
-            get
-            {
-                throw ContractUtils.Unreachable;
-            }
+            get { throw ContractUtils.Unreachable; }
         }
 
         /// <summary>
@@ -140,42 +116,27 @@ namespace System.Linq.Expressions
 
         public override int StartLine
         {
-            get
-            {
-                return _startLine;
-            }
+            get { return _startLine; }
         }
 
         public override int StartColumn
         {
-            get
-            {
-                return _startColumn;
-            }
+            get { return _startColumn; }
         }
 
         public override int EndLine
         {
-            get
-            {
-                return _endLine;
-            }
+            get { return _endLine; }
         }
 
         public override int EndColumn
         {
-            get
-            {
-                return _endColumn;
-            }
+            get { return _endColumn; }
         }
 
         public override bool IsClear
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         protected internal override Expression Accept(ExpressionVisitor visitor)
@@ -193,42 +154,27 @@ namespace System.Linq.Expressions
 
         public override bool IsClear
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         public override int StartLine
         {
-            get
-            {
-                return 0xfeefee;
-            }
+            get { return 0xfeefee; }
         }
 
         public override int StartColumn
         {
-            get
-            {
-                return 0;
-            }
+            get { return 0; }
         }
 
         public override int EndLine
         {
-            get
-            {
-                return 0xfeefee;
-            }
+            get { return 0xfeefee; }
         }
 
         public override int EndColumn
         {
-            get
-            {
-                return 0;
-            }
+            get { return 0; }
         }
     }
 

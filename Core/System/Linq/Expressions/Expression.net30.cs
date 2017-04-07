@@ -113,10 +113,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public virtual bool CanReduce
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         /// <summary>

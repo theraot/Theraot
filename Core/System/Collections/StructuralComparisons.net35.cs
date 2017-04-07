@@ -11,18 +11,12 @@ namespace System.Collections
 
         public static IComparer StructuralComparer
         {
-            get
-            {
-                return _comparer;
-            }
+            get { return _comparer; }
         }
 
         public static IEqualityComparer StructuralEqualityComparer
         {
-            get
-            {
-                return _comparer;
-            }
+            get { return _comparer; }
         }
 
         private sealed class InternalComparer : IComparer, IEqualityComparer

@@ -78,10 +78,7 @@ namespace Theraot.Threading.Needles
 
         protected Thread RunnerThread
         {
-            get
-            {
-                return _runnerThread;
-            }
+            get { return _runnerThread; }
         }
 
         public override bool Equals(object obj)

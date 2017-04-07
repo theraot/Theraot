@@ -62,10 +62,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public string Name
         {
-            get
-            {
-                return Interpreter._name;
-            }
+            get { return Interpreter._name; }
         }
 
         #region Data Stack Operations
@@ -133,10 +130,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public InterpretedFrame Parent
         {
-            get
-            {
-                return _parent;
-            }
+            get { return _parent; }
         }
 
         public static bool IsInterpretedFrame(MethodBase method)
@@ -273,18 +267,12 @@ namespace System.Linq.Expressions.Interpreter
 
         internal static MethodInfo GotoMethod
         {
-            get
-            {
-                return s_goto ?? (s_goto = typeof(InterpretedFrame).GetMethod("Goto"));
-            }
+            get { return s_goto ?? (s_goto = typeof(InterpretedFrame).GetMethod("Goto")); }
         }
 
         internal static MethodInfo VoidGotoMethod
         {
-            get
-            {
-                return s_voidGoto ?? (s_voidGoto = typeof(InterpretedFrame).GetMethod("VoidGoto"));
-            }
+            get { return s_voidGoto ?? (s_voidGoto = typeof(InterpretedFrame).GetMethod("VoidGoto")); }
         }
 
         public int VoidGoto(int labelIndex)

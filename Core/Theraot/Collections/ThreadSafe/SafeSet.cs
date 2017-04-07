@@ -62,26 +62,17 @@ namespace Theraot.Collections.ThreadSafe
 
         public IEqualityComparer<T> Comparer
         {
-            get
-            {
-                return _comparer;
-            }
+            get { return _comparer; }
         }
 
         public int Count
         {
-            get
-            {
-                return _bucket.Count;
-            }
+            get { return _bucket.Count; }
         }
 
         bool ICollection<T>.IsReadOnly
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public bool Add(T item)

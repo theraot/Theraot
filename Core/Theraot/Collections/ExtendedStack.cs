@@ -29,34 +29,22 @@ namespace Theraot.Collections
 
         public IReadOnlyCollection<T> AsReadOnly
         {
-            get
-            {
-                return _readOnly;
-            }
+            get { return _readOnly; }
         }
 
         public int Count
         {
-            get
-            {
-                return _wrapped.Count;
-            }
+            get { return _wrapped.Count; }
         }
 
         bool ICollection<T>.IsReadOnly
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public T Item
         {
-            get
-            {
-                return _wrapped.Peek();
-            }
+            get { return _wrapped.Peek(); }
         }
 
         public bool Add(T item)

@@ -20,18 +20,12 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string InstructionName
         {
-            get
-            {
-                return "LoadStaticField";
-            }
+            get { return "LoadStaticField"; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -53,26 +47,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string InstructionName
         {
-            get
-            {
-                return "LoadField";
-            }
+            get { return "LoadField"; }
         }
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -94,26 +79,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string InstructionName
         {
-            get
-            {
-                return "StoreField";
-            }
+            get { return "StoreField"; }
         }
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 2;
-            }
+            get { return 2; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 0;
-            }
+            get { return 0; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -137,26 +113,17 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string InstructionName
         {
-            get
-            {
-                return "StoreStaticField";
-            }
+            get { return "StoreStaticField"; }
         }
 
         public override int ConsumedStack
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         public override int ProducedStack
         {
-            get
-            {
-                return 0;
-            }
+            get { return 0; }
         }
 
         public override int Run(InterpretedFrame frame)

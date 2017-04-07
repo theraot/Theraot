@@ -130,30 +130,19 @@ namespace MonoTests.System.Linq.Expressions
 
             public List<string> List
             {
-                get
-                {
-                    return list;
-                }
+                get { return list; }
             }
 
             public string[] Bar
             {
-                get
-                {
-                    return foo;
-                }
-                set
-                {
-                    foo = value;
-                }
+                get { return foo; }
+
+                set { foo = value; }
             }
 
             public int BarBar
             {
-                get
-                {
-                    return 0;
-                }
+                get { return 0; }
             }
 
             public string[] test()

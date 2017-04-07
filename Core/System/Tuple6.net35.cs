@@ -28,50 +28,32 @@ namespace System
 
         public T1 Item1
         {
-            get
-            {
-                return _item1;
-            }
+            get { return _item1; }
         }
 
         public T2 Item2
         {
-            get
-            {
-                return _item2;
-            }
+            get { return _item2; }
         }
 
         public T3 Item3
         {
-            get
-            {
-                return _item3;
-            }
+            get { return _item3; }
         }
 
         public T4 Item4
         {
-            get
-            {
-                return _item4;
-            }
+            get { return _item4; }
         }
 
         public T5 Item5
         {
-            get
-            {
-                return _item5;
-            }
+            get { return _item5; }
         }
 
         public T6 Item6
         {
-            get
-            {
-                return _item6;
-            }
+            get { return _item6; }
         }
 
         public override bool Equals(object obj)

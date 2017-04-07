@@ -30,18 +30,12 @@ namespace Theraot.Core
 
         public T Maximun
         {
-            get
-            {
-                return _maximun;
-            }
+            get { return _maximun; }
         }
 
         public T Minimun
         {
-            get
-            {
-                return _minimun;
-            }
+            get { return _minimun; }
         }
 
         public static bool operator !=(Range<T> left, Range<T> right)

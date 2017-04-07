@@ -22,26 +22,17 @@ namespace System
 
         public T1 Item1
         {
-            get
-            {
-                return _item1;
-            }
+            get { return _item1; }
         }
 
         public T2 Item2
         {
-            get
-            {
-                return _item2;
-            }
+            get { return _item2; }
         }
 
         public T3 Item3
         {
-            get
-            {
-                return _item3;
-            }
+            get { return _item3; }
         }
 
         public override bool Equals(object obj)

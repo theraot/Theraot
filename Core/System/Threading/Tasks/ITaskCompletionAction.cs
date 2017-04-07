@@ -73,10 +73,7 @@ namespace System.Threading.Tasks
 
             public bool IsDone
             {
-                get
-                {
-                    return Interlocked.CompareExchange(ref _done, null, null) == null;
-                }
+                get { return Interlocked.CompareExchange(ref _done, null, null) == null; }
             }
 
             public void Dispose()
@@ -211,10 +208,7 @@ namespace System.Threading.Tasks
             /// </summary>
             internal override bool ShouldNotifyDebuggerOfWaitCompletion
             {
-                get
-                {
-                    return base.ShouldNotifyDebuggerOfWaitCompletion && AnyTaskRequiresNotifyDebuggerOfWaitCompletion(_tasks);
-                }
+                get { return base.ShouldNotifyDebuggerOfWaitCompletion && AnyTaskRequiresNotifyDebuggerOfWaitCompletion(_tasks); }
             }
 
             public void Invoke(Task completedTask)
@@ -347,10 +341,7 @@ namespace System.Threading.Tasks
             /// </summary>
             internal override bool ShouldNotifyDebuggerOfWaitCompletion
             {
-                get
-                {
-                    return base.ShouldNotifyDebuggerOfWaitCompletion && AnyTaskRequiresNotifyDebuggerOfWaitCompletion(_tasks);
-                }
+                get { return base.ShouldNotifyDebuggerOfWaitCompletion && AnyTaskRequiresNotifyDebuggerOfWaitCompletion(_tasks); }
             }
 
             public void Invoke(Task completedTask)

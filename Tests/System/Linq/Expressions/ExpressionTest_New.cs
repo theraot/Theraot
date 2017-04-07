@@ -59,10 +59,7 @@ namespace MonoTests.System.Linq.Expressions
 
         public class Bar
         {
-            public string Value
-            {
-                get; set;
-            }
+            public string Value { get; set; }
 
             public Bar()
             {
@@ -189,31 +186,17 @@ namespace MonoTests.System.Linq.Expressions
 
         public class FakeAnonymousType
         {
-            public string Foo
-            {
-                get; set;
-            }
+            public string Foo { get; set; }
 
-            public string Bar
-            {
-                get; set;
-            }
+            public string Bar { get; set; }
 
-            public string Baz
-            {
-                get; set;
-            }
+            public string Baz { get; set; }
 
-            public int Gazonk
-            {
-                get; set;
-            }
+            public int Gazonk { get; set; }
 
             public string Tzap
             {
-                set
-                {
-                }
+                set { }
             }
 
             public FakeAnonymousType(string foo)
@@ -323,15 +306,9 @@ namespace MonoTests.System.Linq.Expressions
 
         public class EineKlass
         {
-            public string Left
-            {
-                get; set;
-            }
+            public string Left { get; set; }
 
-            public string Right
-            {
-                get; set;
-            }
+            public string Right { get; set; }
 
             public EineKlass()
             {

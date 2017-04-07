@@ -102,18 +102,12 @@ namespace System.Threading
 
         public IList<T> Values
         {
-            get
-            {
-                return _wrapped.Values;
-            }
+            get { return _wrapped.Values; }
         }
 
         internal T ValueForDebugDisplay
         {
-            get
-            {
-                return _wrapped.ValueForDebugDisplay;
-            }
+            get { return _wrapped.ValueForDebugDisplay; }
         }
 
         [Diagnostics.DebuggerNonUserCode]

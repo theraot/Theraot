@@ -37,10 +37,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public override Type Type
         {
-            get
-            {
-                return _constructor.DeclaringType;
-            }
+            get { return _constructor.DeclaringType; }
         }
 
         /// <summary>
@@ -49,10 +46,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get
-            {
-                return ExpressionType.New;
-            }
+            get { return ExpressionType.New; }
         }
 
         /// <summary>
@@ -60,10 +54,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public ConstructorInfo Constructor
         {
-            get
-            {
-                return _constructor;
-            }
+            get { return _constructor; }
         }
 
         /// <summary>
@@ -71,10 +62,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<Expression> Arguments
         {
-            get
-            {
-                return ReturnReadOnly(ref _arguments);
-            }
+            get { return ReturnReadOnly(ref _arguments); }
         }
 
         public Expression GetArgument(int index)
@@ -84,10 +72,7 @@ namespace System.Linq.Expressions
 
         public int ArgumentCount
         {
-            get
-            {
-                return _arguments.Count;
-            }
+            get { return _arguments.Count; }
         }
 
         /// <summary>
@@ -95,10 +80,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<MemberInfo> Members
         {
-            get
-            {
-                return _members;
-            }
+            get { return _members; }
         }
 
         /// <summary>
@@ -142,10 +124,7 @@ namespace System.Linq.Expressions
 
         public sealed override Type Type
         {
-            get
-            {
-                return _valueType;
-            }
+            get { return _valueType; }
         }
     }
 

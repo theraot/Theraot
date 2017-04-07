@@ -33,10 +33,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public ParameterExpression Variable
         {
-            get
-            {
-                return _var;
-            }
+            get { return _var; }
         }
 
         /// <summary>
@@ -44,10 +41,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Type Test
         {
-            get
-            {
-                return _test;
-            }
+            get { return _test; }
         }
 
         /// <summary>
@@ -55,10 +49,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Body
         {
-            get
-            {
-                return _body;
-            }
+            get { return _body; }
         }
 
         /// <summary>
@@ -66,10 +57,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Filter
         {
-            get
-            {
-                return _filter;
-            }
+            get { return _filter; }
         }
 
         /// <summary>

@@ -163,10 +163,7 @@ namespace System.Threading
         /// </summary>
         public int ParticipantCount
         {
-            get
-            {
-                return (int)(_currentTotalCount & TOTAL_MASK);
-            }
+            get { return (int)(_currentTotalCount & TOTAL_MASK); }
         }
 
         /// <summary>
@@ -175,15 +172,9 @@ namespace System.Threading
         public long CurrentPhaseNumber
         {
             // use the new Volatile.Read/Write method because it is cheaper than Interlocked.Read on AMD64 architecture
-            get
-            {
-                return Volatile.Read(ref _currentPhase);
-            }
+            get { return Volatile.Read(ref _currentPhase); }
 
-            internal set
-            {
-                Volatile.Write(ref _currentPhase, value);
-            }
+            internal set { Volatile.Write(ref _currentPhase, value); }
         }
 
         #endregion Properties

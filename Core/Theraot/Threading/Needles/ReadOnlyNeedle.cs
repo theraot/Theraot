@@ -36,10 +36,7 @@ namespace Theraot.Threading.Needles
 
         public T Value
         {
-            get
-            {
-                return (T)_target;
-            }
+            get { return (T)_target; }
         }
 
         public static explicit operator T(ReadOnlyNeedle<T> needle)

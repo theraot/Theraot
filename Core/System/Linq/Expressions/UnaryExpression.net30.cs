@@ -36,10 +36,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type
         {
-            get
-            {
-                return _type;
-            }
+            get { return _type; }
         }
 
         /// <summary>
@@ -48,10 +45,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get
-            {
-                return _nodeType;
-            }
+            get { return _nodeType; }
         }
 
         /// <summary>
@@ -60,10 +54,7 @@ namespace System.Linq.Expressions
         /// <returns> An <see cref="ExpressionType"/> that represents the operand of the unary operation.</returns>
         public Expression Operand
         {
-            get
-            {
-                return _operand;
-            }
+            get { return _operand; }
         }
 
         /// <summary>
@@ -72,10 +63,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="MethodInfo"/> that represents the implementing method.</returns>
         public MethodInfo Method
         {
-            get
-            {
-                return _method;
-            }
+            get { return _method; }
         }
 
         /// <summary>
@@ -107,10 +95,7 @@ namespace System.Linq.Expressions
         /// <returns>true if the operator's return type is lifted to a nullable type; otherwise, false.</returns>
         public bool IsLiftedToNull
         {
-            get
-            {
-                return IsLifted && TypeHelper.IsNullableType(Type);
-            }
+            get { return IsLifted && TypeHelper.IsNullableType(Type); }
         }
 
         protected internal override Expression Accept(ExpressionVisitor visitor)
@@ -165,10 +150,7 @@ namespace System.Linq.Expressions
 
         private bool IsPrefix
         {
-            get
-            {
-                return _nodeType == ExpressionType.PreIncrementAssign || _nodeType == ExpressionType.PreDecrementAssign;
-            }
+            get { return _nodeType == ExpressionType.PreIncrementAssign || _nodeType == ExpressionType.PreDecrementAssign; }
         }
 
         private UnaryExpression FunctionalOp(Expression operand)

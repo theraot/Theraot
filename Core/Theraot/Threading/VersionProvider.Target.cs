@@ -19,10 +19,7 @@ namespace Theraot.Threading
 
             public long Number
             {
-                get
-                {
-                    return _number;
-                }
+                get { return _number; }
             }
 
             public static bool operator !=(Target left, Target right)

@@ -33,26 +33,17 @@ namespace Theraot.Collections.Specialized
 
         public IReadOnlyCollection<T> AsReadOnly
         {
-            get
-            {
-                return _readOnly;
-            }
+            get { return _readOnly; }
         }
 
         public int Count
         {
-            get
-            {
-                return _count;
-            }
+            get { return _count; }
         }
 
         bool ICollection<T>.IsReadOnly
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public void Add(T item)

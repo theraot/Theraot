@@ -21,10 +21,7 @@ namespace Theraot.Threading
 
             public static WeakDelegateCollection CollectedEventHandlers
             {
-                get
-                {
-                    return _collectedEventHandlers;
-                }
+                get { return _collectedEventHandlers; }
             }
 
             public static void Invoke()

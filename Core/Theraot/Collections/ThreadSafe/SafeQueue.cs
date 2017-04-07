@@ -41,10 +41,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         public int Count
         {
-            get
-            {
-                return Thread.VolatileRead(ref _count);
-            }
+            get { return Thread.VolatileRead(ref _count); }
         }
 
         /// <summary>

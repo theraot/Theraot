@@ -23,18 +23,12 @@ namespace Theraot.Collections.ThreadSafe
 
         public int Count
         {
-            get
-            {
-                return _eventHandlers.Count;
-            }
+            get { return _eventHandlers.Count; }
         }
 
         protected WeakDelegateCollection EventHandlers
         {
-            get
-            {
-                return _eventHandlers;
-            }
+            get { return _eventHandlers; }
         }
 
         public void Add(EventHandler<TEventArgs> value)

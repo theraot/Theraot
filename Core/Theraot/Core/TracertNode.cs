@@ -22,26 +22,17 @@ namespace Theraot.Core
 
         public int Ttl
         {
-            get
-            {
-                return _ttl;
-            }
+            get { return _ttl; }
         }
 
         internal IPAddress Address
         {
-            get
-            {
-                return _address;
-            }
+            get { return _address; }
         }
 
         internal IPStatus Status
         {
-            get
-            {
-                return _status;
-            }
+            get { return _status; }
         }
     }
 }

@@ -26,10 +26,7 @@ namespace System.Linq.Expressions.Compiler
 
             internal RewriteAction Action
             {
-                get
-                {
-                    return _action;
-                }
+                get { return _action; }
             }
 
             internal abstract MemberBinding AsBinding();

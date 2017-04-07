@@ -53,10 +53,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public sealed override Type Type
         {
-            get
-            {
-                return _delegateType;
-            }
+            get { return _delegateType; }
         }
 
         /// <summary>
@@ -65,10 +62,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get
-            {
-                return ExpressionType.Lambda;
-            }
+            get { return ExpressionType.Lambda; }
         }
 
         /// <summary>
@@ -76,10 +70,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<ParameterExpression> Parameters
         {
-            get
-            {
-                return _parameters;
-            }
+            get { return _parameters; }
         }
 
         /// <summary>
@@ -88,10 +79,7 @@ namespace System.Linq.Expressions
         /// <remarks>Used for debugging purposes.</remarks>
         public string Name
         {
-            get
-            {
-                return _name;
-            }
+            get { return _name; }
         }
 
         /// <summary>
@@ -99,10 +87,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Expression Body
         {
-            get
-            {
-                return _body;
-            }
+            get { return _body; }
         }
 
         /// <summary>
@@ -110,10 +95,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public Type ReturnType
         {
-            get
-            {
-                return Type.GetMethod("Invoke").ReturnType;
-            }
+            get { return Type.GetMethod("Invoke").ReturnType; }
         }
 
         /// <summary>
@@ -122,10 +104,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public bool TailCall
         {
-            get
-            {
-                return _tailCall;
-            }
+            get { return _tailCall; }
         }
 
         /// <summary>

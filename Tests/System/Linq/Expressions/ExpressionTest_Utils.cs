@@ -188,22 +188,14 @@ namespace MonoTests.System.Linq.Expressions
 
         public int TestProperty1
         {
-            get
-            {
-                return TestField1;
-            }
+            get { return TestField1; }
         }
 
         public int TestProperty2
         {
-            get
-            {
-                return TestField1;
-            }
-            set
-            {
-                TestField1 = value;
-            }
+            get { return TestField1; }
+
+            set { TestField1 = value; }
         }
 
         public int TestMethod(int i)
@@ -233,14 +225,8 @@ namespace MonoTests.System.Linq.Expressions
 
         public static int StaticProperty
         {
-            get
-            {
-                return StaticField;
-            }
-            set
-            {
-                StaticField = value;
-            }
+            get { return StaticField; }
+            set { StaticField = value; }
         }
 
         public static int StaticMethod(int i)
@@ -357,10 +343,7 @@ namespace MonoTests.System.Linq.Expressions
 
         public bool LeftCalled
         {
-            get
-            {
-                return left_called;
-            }
+            get { return left_called; }
         }
 
         private bool right_called;
@@ -377,10 +360,7 @@ namespace MonoTests.System.Linq.Expressions
 
         public bool RightCalled
         {
-            get
-            {
-                return right_called;
-            }
+            get { return right_called; }
         }
 
         public Item(T left, T right)

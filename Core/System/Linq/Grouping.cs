@@ -39,14 +39,9 @@ namespace System.Linq
 
         public TK Key
         {
-            get
-            {
-                return key;
-            }
-            set
-            {
-                key = value;
-            }
+            get { return key; }
+
+            set { key = value; }
         }
 
         public IEnumerator<T> GetEnumerator()

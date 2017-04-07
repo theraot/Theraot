@@ -24,10 +24,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<Expression> Expressions
         {
-            get
-            {
-                return GetOrMakeExpressions();
-            }
+            get { return GetOrMakeExpressions(); }
         }
 
         /// <summary>
@@ -35,10 +32,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public ReadOnlyCollection<ParameterExpression> Variables
         {
-            get
-            {
-                return GetOrMakeVariables();
-            }
+            get { return GetOrMakeVariables(); }
         }
 
         /// <summary>
@@ -72,10 +66,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="ExpressionType"/> of the expression.</returns>
         public sealed override ExpressionType NodeType
         {
-            get
-            {
-                return ExpressionType.Block;
-            }
+            get { return ExpressionType.Block; }
         }
 
         /// <summary>
@@ -84,10 +75,7 @@ namespace System.Linq.Expressions
         /// <returns>The <see cref="Type"/> that represents the static type of the expression.</returns>
         public override Type Type
         {
-            get
-            {
-                return GetExpression(ExpressionCount - 1).Type;
-            }
+            get { return GetExpression(ExpressionCount - 1).Type; }
         }
 
         /// <summary>
@@ -115,10 +103,7 @@ namespace System.Linq.Expressions
 
         internal virtual int ExpressionCount
         {
-            get
-            {
-                throw ContractUtils.Unreachable;
-            }
+            get { throw ContractUtils.Unreachable; }
         }
 
         internal virtual ReadOnlyCollection<Expression> GetOrMakeExpressions()
@@ -133,10 +118,7 @@ namespace System.Linq.Expressions
 
         internal virtual int VariableCount
         {
-            get
-            {
-                return 0;
-            }
+            get { return 0; }
         }
 
         internal virtual ReadOnlyCollection<ParameterExpression> GetOrMakeVariables()
@@ -220,10 +202,7 @@ namespace System.Linq.Expressions
 
         internal override int ExpressionCount
         {
-            get
-            {
-                return 2;
-            }
+            get { return 2; }
         }
 
         internal override ReadOnlyCollection<Expression> GetOrMakeExpressions()
@@ -272,10 +251,7 @@ namespace System.Linq.Expressions
 
         internal override int ExpressionCount
         {
-            get
-            {
-                return 3;
-            }
+            get { return 3; }
         }
 
         internal override ReadOnlyCollection<Expression> GetOrMakeExpressions()
@@ -328,10 +304,7 @@ namespace System.Linq.Expressions
 
         internal override int ExpressionCount
         {
-            get
-            {
-                return 4;
-            }
+            get { return 4; }
         }
 
         internal override ReadOnlyCollection<Expression> GetOrMakeExpressions()
@@ -388,10 +361,7 @@ namespace System.Linq.Expressions
 
         internal override int ExpressionCount
         {
-            get
-            {
-                return 5;
-            }
+            get { return 5; }
         }
 
         internal override ReadOnlyCollection<Expression> GetOrMakeExpressions()
@@ -428,10 +398,7 @@ namespace System.Linq.Expressions
 
         internal override int ExpressionCount
         {
-            get
-            {
-                return _expressions.Count;
-            }
+            get { return _expressions.Count; }
         }
 
         internal override ReadOnlyCollection<Expression> GetOrMakeExpressions()
@@ -458,10 +425,7 @@ namespace System.Linq.Expressions
 
         internal override int VariableCount
         {
-            get
-            {
-                return _variables.Count;
-            }
+            get { return _variables.Count; }
         }
 
         internal override ParameterExpression GetVariable(int index)
@@ -476,10 +440,7 @@ namespace System.Linq.Expressions
 
         protected IList<ParameterExpression> VariablesList
         {
-            get
-            {
-                return _variables;
-            }
+            get { return _variables; }
         }
 
         // Used for rewrite of the nodes to either reuse existing set of variables if not rewritten.
@@ -522,10 +483,7 @@ namespace System.Linq.Expressions
 
         internal override int ExpressionCount
         {
-            get
-            {
-                return 1;
-            }
+            get { return 1; }
         }
 
         internal override ReadOnlyCollection<Expression> GetOrMakeExpressions()
@@ -559,10 +517,7 @@ namespace System.Linq.Expressions
 
         internal override int ExpressionCount
         {
-            get
-            {
-                return _body.Count;
-            }
+            get { return _body.Count; }
         }
 
         internal override ReadOnlyCollection<Expression> GetOrMakeExpressions()
@@ -591,10 +546,7 @@ namespace System.Linq.Expressions
 
         public sealed override Type Type
         {
-            get
-            {
-                return _type;
-            }
+            get { return _type; }
         }
 
         internal override BlockExpression Rewrite(ReadOnlyCollection<ParameterExpression> variables, Expression[] args)
@@ -672,10 +624,8 @@ namespace System.Linq.Expressions
 
                 return _block.GetExpression(index);
             }
-            set
-            {
-                throw ContractUtils.Unreachable;
-            }
+
+            set { throw ContractUtils.Unreachable; }
         }
 
         #endregion IList<Expression> Members
@@ -708,18 +658,12 @@ namespace System.Linq.Expressions
 
         public int Count
         {
-            get
-            {
-                return _block.ExpressionCount;
-            }
+            get { return _block.ExpressionCount; }
         }
 
         public bool IsReadOnly
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         public bool Remove(Expression item)

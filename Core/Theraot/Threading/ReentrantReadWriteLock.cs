@@ -18,34 +18,22 @@ namespace Theraot.Threading
 
         public bool HasReader
         {
-            get
-            {
-                return _readCount > 0;
-            }
+            get { return _readCount > 0; }
         }
 
         public bool HasWriter
         {
-            get
-            {
-                return _ownerThread != null;
-            }
+            get { return _ownerThread != null; }
         }
 
         public bool IsCurrentThreadReader
         {
-            get
-            {
-                return _currentReadingCount.IsValueCreated && _currentReadingCount.Value > 0;
-            }
+            get { return _currentReadingCount.IsValueCreated && _currentReadingCount.Value > 0; }
         }
 
         public bool IsCurrentThreadWriter
         {
-            get
-            {
-                return Thread.CurrentThread == _ownerThread;
-            }
+            get { return Thread.CurrentThread == _ownerThread; }
         }
 
         public IDisposable EnterRead()

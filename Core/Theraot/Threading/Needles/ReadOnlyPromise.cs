@@ -37,34 +37,22 @@ namespace Theraot.Threading.Needles
 
         public Exception Exception
         {
-            get
-            {
-                return _promised.Exception;
-            }
+            get { return _promised.Exception; }
         }
 
         public bool IsCanceled
         {
-            get
-            {
-                return _promised.IsCanceled;
-            }
+            get { return _promised.IsCanceled; }
         }
 
         public bool IsCompleted
         {
-            get
-            {
-                return _promised.IsCompleted;
-            }
+            get { return _promised.IsCompleted; }
         }
 
         public bool IsFaulted
         {
-            get
-            {
-                return _promised.IsFaulted;
-            }
+            get { return _promised.IsFaulted; }
         }
 
         public override int GetHashCode()

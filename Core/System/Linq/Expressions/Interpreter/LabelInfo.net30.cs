@@ -186,10 +186,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private bool HasDefinitions
         {
-            get
-            {
-                return _definitions != null;
-            }
+            get { return _definitions != null; }
         }
 
         private LabelScopeInfo FirstDefinition()
@@ -225,10 +222,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private bool HasMultipleDefinitions
         {
-            get
-            {
-                return _definitions is HashSet<LabelScopeInfo>;
-            }
+            get { return _definitions is HashSet<LabelScopeInfo>; }
         }
 
         internal static T CommonNode<T>(T first, T second, Func<T, T> parent) where T : class

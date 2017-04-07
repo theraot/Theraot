@@ -48,10 +48,7 @@ namespace System.Threading
 
         public int CurrentCount
         {
-            get
-            {
-                return _maxCount - Thread.VolatileRead(ref _count);
-            }
+            get { return _maxCount - Thread.VolatileRead(ref _count); }
         }
 
         public void Dispose()

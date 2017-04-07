@@ -16,22 +16,14 @@ namespace System.Linq.Expressions.Interpreter
 
         int IRuntimeVariables.Count
         {
-            get
-            {
-                return _boxes.Length;
-            }
+            get { return _boxes.Length; }
         }
 
         object IRuntimeVariables.this[int index]
         {
-            get
-            {
-                return _boxes[index].Value;
-            }
-            set
-            {
-                _boxes[index].Value = value;
-            }
+            get { return _boxes[index].Value; }
+
+            set { _boxes[index].Value = value; }
         }
 
         internal static IRuntimeVariables Create(IStrongBox[] boxes)

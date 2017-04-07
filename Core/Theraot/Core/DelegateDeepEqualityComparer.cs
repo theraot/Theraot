@@ -16,10 +16,7 @@ namespace Theraot.Core
 
         public static DelegateDeepEqualityComparer Default
         {
-            get
-            {
-                return _default;
-            }
+            get { return _default; }
         }
 
         public bool Equals(Delegate x, Delegate y)
