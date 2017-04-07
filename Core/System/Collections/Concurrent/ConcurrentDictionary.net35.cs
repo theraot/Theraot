@@ -282,7 +282,8 @@ namespace System.Collections.Concurrent
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
             // This method is not locking
-            return _wrapped.GetEnumerator();
+            // We need a snapshot, MSDN says
+            return _wrapped.Clone().GetEnumerator();
         }
 
         public TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)

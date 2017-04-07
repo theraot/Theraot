@@ -3,7 +3,10 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
+using NUnit.Framework.Constraints;
+using Theraot.Collections.ThreadSafe;
 
 namespace MonoTests.System.Collections.Concurrent
 {
@@ -21,13 +24,16 @@ namespace MonoTests.System.Collections.Concurrent
             string a = null;
             var foundCount = 0;
             var didAdd = false;
+            var didRemove = false;
+            var found = new CircularBucket<string>(16);
             // MSDN says: "it does not represent a moment-in-time snapshot of the dictionary."
             // And also "The contents exposed through the enumerator may contain modifications made to the dictionary after GetEnumerator was called."
             foreach (var item in d)
             {
+                found.Add(item.Key);
                 foundCount++;
                 Assert.AreEqual(expectedCount, d.Count);
-                var didRemove = d.TryRemove("a", out a);
+                didRemove = d.TryRemove("a", out a);
                 if (foundCount == 1)
                 {
                     Assert.IsTrue(didRemove);
@@ -55,7 +61,13 @@ namespace MonoTests.System.Collections.Concurrent
                 Assert.AreEqual(expectedCount, d.Count);
             }
             Assert.IsNull(a);
-            Assert.AreEqual(2, foundCount);
+            var copy = found.ToArray();
+            Assert.AreEqual("a", copy[0]);
+            Assert.AreEqual("0", copy[1]);
+            Assert.AreEqual(2, expectedCount);
+            Assert.AreEqual(true, didAdd);
+            Assert.AreEqual(false, didRemove);
+            Assert.AreEqual(expectedCount, foundCount);
             Assert.AreEqual(expectedCount, d.Count);
         }
 
@@ -69,40 +81,33 @@ namespace MonoTests.System.Collections.Concurrent
             Assert.AreEqual(expectedCount[0], d.Count);
             string a = null;
             var foundCount = 0;
-            var didadd = 0;
+            var didAdd = 0;
+            var didRemove = 0;
+            var found = new CircularBucket<string>(16);
 
             ThreadStart remover = () =>
             {
-                var didRemove = d.TryRemove("a", out a);
-                if (didRemove)
+                var removed = d.TryRemove("a", out a);
+                if (Thread.VolatileRead(ref didRemove) == 0 && removed)
                 {
-                    Assert.IsTrue(didRemove);
                     expectedCount[0]--;
                 }
-                else
+                if (removed)
                 {
-                    Assert.IsFalse(didRemove);
+                    Interlocked.CompareExchange(ref didRemove, 1, 0);
                 }
             };
 
             ThreadStart adder = () =>
             {
                 var added = d.TryAdd("c", "d");
-                if (added)
-                {
-                    Assert.IsTrue(added);
-                }
-                else
-                {
-                    Assert.IsFalse(added);
-                }
-                if (Thread.VolatileRead(ref didadd) == 0 && added)
+                if (Thread.VolatileRead(ref didAdd) == 0 && added)
                 {
                     expectedCount[0]++;
                 }
                 if (added)
                 {
-                    Interlocked.CompareExchange(ref didadd, 1, 0);
+                    Interlocked.CompareExchange(ref didAdd, 1, 0);
                 }
             };
 
@@ -110,6 +115,7 @@ namespace MonoTests.System.Collections.Concurrent
             // And also "The contents exposed through the enumerator may contain modifications made to the dictionary after GetEnumerator was called."
             foreach (var item in d)
             {
+                found.Add(item.Key);
                 foundCount++;
                 var old = expectedCount[0];
                 Assert.AreEqual(expectedCount[0], d.Count);
@@ -144,7 +150,13 @@ namespace MonoTests.System.Collections.Concurrent
                 Assert.AreEqual(expectedCount[0], d.Count);
             }
             Assert.IsNull(a);
-            Assert.AreEqual(2, foundCount);
+            var copy = found.ToArray();
+            Assert.AreEqual("a", copy[0]);
+            Assert.AreEqual("0", copy[1]);
+            Assert.AreEqual(2, expectedCount[0]);
+            Assert.AreEqual(1, didAdd);
+            Assert.AreEqual(1, didRemove);
+            Assert.AreEqual(expectedCount[0], foundCount);
             Assert.AreEqual(expectedCount[0], d.Count);
         }
 
