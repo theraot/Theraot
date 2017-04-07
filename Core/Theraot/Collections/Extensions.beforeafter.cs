@@ -13,14 +13,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            if (action == null)
-            {
-                return source;
-            }
-            else
-            {
-                return AfterExtracted(source, action);
-            }
+            return action == null ? source : AfterExtracted(source, action);
         }
 
         public static IEnumerable<T> AfterCounted<T>(this IEnumerable<T> source, Action<int> action)
@@ -29,14 +22,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            if (action == null)
-            {
-                return source;
-            }
-            else
-            {
-                return AfterCountedExtracted(source, action);
-            }
+            return action == null ? source : AfterCountedExtracted(source, action);
         }
 
         public static IEnumerable<T> AfterEach<T>(this IEnumerable<T> source, Action action)
@@ -45,14 +31,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            if (action == null)
-            {
-                return source;
-            }
-            else
-            {
-                return AfterEachExtracted(source, action);
-            }
+            return action == null ? source : AfterEachExtracted(source, action);
         }
 
         public static IEnumerable<T> AfterEach<T>(this IEnumerable<T> source, Action<T> action)
@@ -61,14 +40,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            if (action == null)
-            {
-                return source;
-            }
-            else
-            {
-                return AfterEachExtracted(source, action);
-            }
+            return action == null ? source : AfterEachExtracted(source, action);
         }
 
         public static IEnumerable<T> AfterEachCounted<T>(this IEnumerable<T> source, Action<int, T> action)
@@ -77,14 +49,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            if (action == null)
-            {
-                return source;
-            }
-            else
-            {
-                return AfterEachCountedExtracted(source, action);
-            }
+            return action == null ? source : AfterEachCountedExtracted(source, action);
         }
 
         public static IEnumerable<T> AfterEachCounted<T>(this IEnumerable<T> source, Action<int> action)
@@ -93,14 +58,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            if (action == null)
-            {
-                return source;
-            }
-            else
-            {
-                return AfterEachCountedExtracted(source, action);
-            }
+            return action == null ? source : AfterEachCountedExtracted(source, action);
         }
 
         public static IEnumerable<T> AfterAny<T>(this IEnumerable<T> source, Action action)
@@ -109,14 +67,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            if (action == null)
-            {
-                return source;
-            }
-            else
-            {
-                return AfterLastExtracted(source, action);
-            }
+            return action == null ? source : AfterLastExtracted(source, action);
         }
 
         public static IEnumerable<T> AfterAny<T>(this IEnumerable<T> source, Action<T> action)
@@ -125,14 +76,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            if (action == null)
-            {
-                return source;
-            }
-            else
-            {
-                return AfterLastExtracted(source, action);
-            }
+            return action == null ? source : AfterLastExtracted(source, action);
         }
 
         public static IEnumerable<T> AfterLastCounted<T>(this IEnumerable<T> source, Action<int, T> action)
@@ -141,14 +85,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            if (action == null)
-            {
-                return source;
-            }
-            else
-            {
-                return AfterLastCountedExtracted(source, action);
-            }
+            return action == null ? source : AfterLastCountedExtracted(source, action);
         }
 
         public static IEnumerable<T> AfterLastCounted<T>(this IEnumerable<T> source, Action<int> action)
@@ -157,14 +94,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            if (action == null)
-            {
-                return source;
-            }
-            else
-            {
-                return AfterLastCountedExtracted(source, action);
-            }
+            return action == null ? source : AfterLastCountedExtracted(source, action);
         }
 
         public static IEnumerable<T> Before<T>(this IEnumerable<T> source, Action action)
@@ -173,14 +103,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            if (action == null)
-            {
-                return source;
-            }
-            else
-            {
-                return BeforeExtracted(source, action);
-            }
+            return action == null ? source : BeforeExtracted(source, action);
         }
 
         public static IEnumerable<T> BeforeEach<T>(this IEnumerable<T> source, Action action)
@@ -189,14 +112,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            if (action == null)
-            {
-                return source;
-            }
-            else
-            {
-                return BeforeEachExtracted(source, action);
-            }
+            return action == null ? source : BeforeEachExtracted(source, action);
         }
 
         public static IEnumerable<T> BeforeEach<T>(this IEnumerable<T> source, Action<T> action)
@@ -205,14 +121,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            if (action == null)
-            {
-                return source;
-            }
-            else
-            {
-                return BeforeEachExtracted(source, action);
-            }
+            return action == null ? source : BeforeEachExtracted(source, action);
         }
 
         public static IEnumerable<T> BeforeEachCounted<T>(this IEnumerable<T> source, Action<int, T> action)
@@ -221,14 +130,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            if (action == null)
-            {
-                return source;
-            }
-            else
-            {
-                return BeforeEachCountedExtracted(source, action);
-            }
+            return action == null ? source : BeforeEachCountedExtracted(source, action);
         }
 
         public static IEnumerable<T> BeforeEachCounted<T>(this IEnumerable<T> source, Action<int> action)
@@ -237,14 +139,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            if (action == null)
-            {
-                return source;
-            }
-            else
-            {
-                return BeforeEachCountedExtracted(source, action);
-            }
+            return action == null ? source : BeforeEachCountedExtracted(source, action);
         }
 
         public static IEnumerable<T> BeforeAny<T>(this IEnumerable<T> source, Action action)
@@ -253,14 +148,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            if (action == null)
-            {
-                return source;
-            }
-            else
-            {
-                return BeforeFirstExtracted(source, action);
-            }
+            return action == null ? source : BeforeFirstExtracted(source, action);
         }
 
         public static IEnumerable<T> BeforeAny<T>(this IEnumerable<T> source, Action<T> action)
@@ -269,14 +157,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            if (action == null)
-            {
-                return source;
-            }
-            else
-            {
-                return BeforeFirstExtracted(source, action);
-            }
+            return action == null ? source : BeforeFirstExtracted(source, action);
         }
 
         private static IEnumerable<T> AfterCountedExtracted<T>(IEnumerable<T> source, Action<int> action)

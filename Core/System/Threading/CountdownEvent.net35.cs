@@ -36,14 +36,7 @@ namespace System.Threading
             get
             {
                 var currentCount = Thread.VolatileRead(ref _currentCount);
-                if (currentCount >= 0)
-                {
-                    return currentCount;
-                }
-                else
-                {
-                    return 0;
-                }
+                return currentCount >= 0 ? currentCount : 0;
             }
         }
 

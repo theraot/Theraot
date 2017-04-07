@@ -131,14 +131,7 @@ namespace System.Linq
             else
             {
                 var constant = _expression as ConstantExpression;
-                if (constant != null && constant.Value == this)
-                {
-                    return base.ToString();
-                }
-                else
-                {
-                    return _expression.ToString();
-                }
+                return constant != null && constant.Value == this ? base.ToString() : _expression.ToString();
             }
         }
 

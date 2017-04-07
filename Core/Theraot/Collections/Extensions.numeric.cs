@@ -184,14 +184,7 @@ namespace Theraot.Collections
                     found = true;
                 }
             }
-            if (found)
-            {
-                return max;
-            }
-            else
-            {
-                return null;
-            }
+            return found ? max : (int?)null;
         }
 
         public static long? Max(this IEnumerable<long?> source, IComparer<long> comparer)
@@ -217,14 +210,7 @@ namespace Theraot.Collections
                     found = true;
                 }
             }
-            if (found)
-            {
-                return max;
-            }
-            else
-            {
-                return null;
-            }
+            return found ? max : (long?)null;
         }
 
         public static double? Max(this IEnumerable<double?> source, IComparer<double> comparer)
@@ -250,14 +236,7 @@ namespace Theraot.Collections
                     found = true;
                 }
             }
-            if (found)
-            {
-                return max;
-            }
-            else
-            {
-                return null;
-            }
+            return found ? max : (double?)null;
         }
 
         public static float? Max(this IEnumerable<float?> source, IComparer<float> comparer)
@@ -283,14 +262,7 @@ namespace Theraot.Collections
                     found = true;
                 }
             }
-            if (found)
-            {
-                return max;
-            }
-            else
-            {
-                return null;
-            }
+            return found ? max : (float?)null;
         }
 
         public static decimal? Max(this IEnumerable<decimal?> source, IComparer<decimal> comparer)
@@ -316,14 +288,7 @@ namespace Theraot.Collections
                     found = true;
                 }
             }
-            if (found)
-            {
-                return max;
-            }
-            else
-            {
-                return null;
-            }
+            return found ? max : (decimal?)null;
         }
 
         public static TSource Max<TSource>(this IEnumerable<TSource> source, IComparer<TSource> comparer)
@@ -587,14 +552,7 @@ namespace Theraot.Collections
                 }
                 found = true;
             }
-            if (found)
-            {
-                return max;
-            }
-            else
-            {
-                return null;
-            }
+            return found ? max : (int?)null;
         }
 
         public static long? Max<TSource>(this IEnumerable<TSource> source, Func<TSource, long?> selector, IComparer<long> comparer)
@@ -629,14 +587,7 @@ namespace Theraot.Collections
                 }
                 found = true;
             }
-            if (found)
-            {
-                return max;
-            }
-            else
-            {
-                return null;
-            }
+            return found ? max : (long?)null;
         }
 
         public static double? Max<TSource>(this IEnumerable<TSource> source, Func<TSource, double?> selector, IComparer<double> comparer)
@@ -671,14 +622,7 @@ namespace Theraot.Collections
                 }
                 found = true;
             }
-            if (found)
-            {
-                return max;
-            }
-            else
-            {
-                return null;
-            }
+            return found ? max : (double?)null;
         }
 
         public static float? Max<TSource>(this IEnumerable<TSource> source, Func<TSource, float?> selector, IComparer<float> comparer)
@@ -713,14 +657,7 @@ namespace Theraot.Collections
                 }
                 found = true;
             }
-            if (found)
-            {
-                return max;
-            }
-            else
-            {
-                return null;
-            }
+            return found ? max : (float?)null;
         }
 
         public static decimal? Max<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal?> selector, IComparer<decimal> comparer)
@@ -755,14 +692,7 @@ namespace Theraot.Collections
                 }
                 found = true;
             }
-            if (found)
-            {
-                return max;
-            }
-            else
-            {
-                return null;
-            }
+            return found ? max : (decimal?)null;
         }
 
         public static TResult Max<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector, Comparer<TResult> comparer)
@@ -957,14 +887,7 @@ namespace Theraot.Collections
                     found = true;
                 }
             }
-            if (found)
-            {
-                return min;
-            }
-            else
-            {
-                return null;
-            }
+            return found ? min : (int?)null;
         }
 
         public static long? Min(this IEnumerable<long?> source, IComparer<long> comparer)
@@ -990,14 +913,7 @@ namespace Theraot.Collections
                     found = true;
                 }
             }
-            if (found)
-            {
-                return min;
-            }
-            else
-            {
-                return null;
-            }
+            return found ? min : (long?)null;
         }
 
         public static double? Min(this IEnumerable<double?> source, IComparer<double> comparer)
@@ -1023,14 +939,7 @@ namespace Theraot.Collections
                     found = true;
                 }
             }
-            if (found)
-            {
-                return min;
-            }
-            else
-            {
-                return null;
-            }
+            return found ? min : (double?)null;
         }
 
         public static float? Min(this IEnumerable<float?> source, IComparer<float> comparer)
@@ -1056,14 +965,7 @@ namespace Theraot.Collections
                     found = true;
                 }
             }
-            if (found)
-            {
-                return min;
-            }
-            else
-            {
-                return null;
-            }
+            return found ? min : (float?)null;
         }
 
         public static decimal? Min(this IEnumerable<decimal?> source, IComparer<decimal> comparer)
@@ -1089,14 +991,7 @@ namespace Theraot.Collections
                     found = true;
                 }
             }
-            if (found)
-            {
-                return min;
-            }
-            else
-            {
-                return null;
-            }
+            return found ? min : (decimal?)null;
         }
 
         public static TSource Min<TSource>(this IEnumerable<TSource> source, IComparer<TSource> comparer)
@@ -1360,14 +1255,7 @@ namespace Theraot.Collections
                 }
                 found = true;
             }
-            if (found)
-            {
-                return min;
-            }
-            else
-            {
-                return null;
-            }
+            return found ? min : (int?)null;
         }
 
         public static long? Min<TSource>(this IEnumerable<TSource> source, Func<TSource, long?> selector, IComparer<long> comparer)
@@ -1402,14 +1290,7 @@ namespace Theraot.Collections
                 }
                 found = true;
             }
-            if (found)
-            {
-                return min;
-            }
-            else
-            {
-                return null;
-            }
+            return found ? min : (long?)null;
         }
 
         public static double? Min<TSource>(this IEnumerable<TSource> source, Func<TSource, double?> selector, IComparer<double> comparer)
@@ -1444,14 +1325,7 @@ namespace Theraot.Collections
                 }
                 found = true;
             }
-            if (found)
-            {
-                return min;
-            }
-            else
-            {
-                return null;
-            }
+            return found ? min : (double?)null;
         }
 
         public static float? Min<TSource>(this IEnumerable<TSource> source, Func<TSource, float?> selector, IComparer<float> comparer)
@@ -1486,14 +1360,7 @@ namespace Theraot.Collections
                 }
                 found = true;
             }
-            if (found)
-            {
-                return min;
-            }
-            else
-            {
-                return null;
-            }
+            return found ? min : (float?)null;
         }
 
         public static decimal? Min<TSource>(this IEnumerable<TSource> source, Func<TSource, decimal?> selector, IComparer<decimal> comparer)
@@ -1528,14 +1395,7 @@ namespace Theraot.Collections
                 }
                 found = true;
             }
-            if (found)
-            {
-                return min;
-            }
-            else
-            {
-                return null;
-            }
+            return found ? min : (decimal?)null;
         }
 
         public static TResult Min<TSource, TResult>(this IEnumerable<TSource> source, Func<TSource, TResult> selector, Comparer<TResult> comparer)

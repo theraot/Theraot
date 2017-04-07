@@ -39,14 +39,7 @@ namespace System
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
         {
             var tuple = other as Tuple<T1>;
-            if (tuple == null)
-            {
-                return false;
-            }
-            else
-            {
-                return comparer.Equals(_item1, tuple._item1);
-            }
+            return tuple == null ? false : comparer.Equals(_item1, tuple._item1);
         }
 
         int IStructuralEquatable.GetHashCode(IEqualityComparer comparer)

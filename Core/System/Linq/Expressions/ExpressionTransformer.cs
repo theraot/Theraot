@@ -134,14 +134,7 @@ namespace System.Linq.Expressions
             var conversion = Visit(b.Conversion);
             if (left != b.Left || right != b.Right || conversion != b.Conversion)
             {
-                if (b.NodeType == ExpressionType.Coalesce && b.Conversion != null)
-                {
-                    return Expression.Coalesce(left, right, conversion as LambdaExpression);
-                }
-                else
-                {
-                    return Expression.MakeBinary(b.NodeType, left, right, b.IsLiftedToNull, b.Method);
-                }
+                return b.NodeType == ExpressionType.Coalesce && b.Conversion != null ? Expression.Coalesce(left, right, conversion as LambdaExpression) : Expression.MakeBinary(b.NodeType, left, right, b.IsLiftedToNull, b.Method);
             }
             return b;
         }
@@ -220,14 +213,7 @@ namespace System.Linq.Expressions
         {
             var n = VisitNew(init.NewExpression);
             var initializers = VisitElementInitializerList(init.Initializers);
-            if (n != init.NewExpression || initializers != init.Initializers)
-            {
-                return Expression.ListInit(n, initializers);
-            }
-            else
-            {
-                return init;
-            }
+            return n != init.NewExpression || initializers != init.Initializers ? Expression.ListInit(n, initializers) : init;
         }
 
         protected virtual Expression VisitMemberAccess(MemberExpression m)
@@ -291,14 +277,7 @@ namespace System.Linq.Expressions
             IEnumerable<Expression> exprs = VisitExpressionList(na.Expressions);
             if (exprs != na.Expressions)
             {
-                if (na.NodeType == ExpressionType.NewArrayInit)
-                {
-                    return Expression.NewArrayInit(na.Type.GetElementType(), exprs);
-                }
-                else
-                {
-                    return Expression.NewArrayBounds(na.Type.GetElementType(), exprs);
-                }
+                return na.NodeType == ExpressionType.NewArrayInit ? Expression.NewArrayInit(na.Type.GetElementType(), exprs) : Expression.NewArrayBounds(na.Type.GetElementType(), exprs);
             }
             return na;
         }

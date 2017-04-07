@@ -311,14 +311,7 @@ namespace System.Numerics
 
         public static Complex Reciprocal(Complex value)
         {
-            if (value == Zero)
-            {
-                return value;
-            }
-            else
-            {
-                return One / value;
-            }
+            return value == Zero ? value : One / value;
         }
 
         public static Complex Sin(Complex value)

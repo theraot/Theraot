@@ -68,14 +68,7 @@ namespace System.Threading
         {
             get
             {
-                if (_source == null)
-                {
-                    return false;
-                }
-                else
-                {
-                    return Source.IsCancellationRequested;
-                }
+                return _source == null ? false : Source.IsCancellationRequested;
             }
         }
 
