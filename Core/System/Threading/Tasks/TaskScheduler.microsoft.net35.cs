@@ -167,7 +167,7 @@ namespace System.Threading.Tasks
             // touch all Task.Id fields so that the debugger doesn't need to do a lot of cross-proc calls to generate them
             foreach (Task t in activeTasksArray)
             {
-                int tmp = t.Id;
+                var tmp = t.Id;
             }
 
             return activeTasksArray;

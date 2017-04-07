@@ -52,7 +52,7 @@ namespace System.Linq.Expressions.Compiler
 
             var sb = new StringBuilder(name);
 
-            int index = Interlocked.Increment(ref _index);
+            var index = Interlocked.Increment(ref _index);
             sb.Append("$");
             sb.Append(index);
 

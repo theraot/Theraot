@@ -91,7 +91,7 @@ namespace System.Linq
         // the left side, and the median becomes our pivot.
         private int MedianOfThree(int left, int right)
         {
-            int center = (left + right) / 2;
+            var center = (left + right) / 2;
             if (CompareItems(_indexes[center], _indexes[left]) < 0)
             {
                 Swap(left, center);
@@ -125,7 +125,9 @@ namespace System.Linq
         {
             if (left + 3 <= right)
             {
-                int l = left, r = right - 1, pivot = MedianOfThree(left, right);
+                var l = left;
+                var r = right - 1;
+                var pivot = MedianOfThree(left, right);
                 while (true)
                 {
                     while (CompareItems(_indexes[++l], pivot) < 0)
@@ -158,7 +160,7 @@ namespace System.Linq
 
         private void Swap(int left, int right)
         {
-            int temp = _indexes[right];
+            var temp = _indexes[right];
             _indexes[right] = _indexes[left];
             _indexes[left] = temp;
         }

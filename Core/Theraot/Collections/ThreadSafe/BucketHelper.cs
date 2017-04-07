@@ -291,7 +291,7 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException("bucket");
             }
             isNew = true;
-            bool factoryUsed = false;
+            var factoryUsed = false;
             var created = default(T);
             while (true)
             {
@@ -363,7 +363,7 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException("bucket");
             }
             isNew = true;
-            bool factoryUsed = false;
+            var factoryUsed = false;
             var created = default(T);
             while (true)
             {
@@ -437,7 +437,7 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException("bucket");
             }
             isNew = true;
-            bool factoryUsed = false;
+            var factoryUsed = false;
             var created = default(T);
             while (true)
             {

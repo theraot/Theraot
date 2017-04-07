@@ -93,7 +93,7 @@ namespace System
                         {
                             Thread thread = null;
                             var waitHandle = new ManualResetEvent(false);
-                            int preIsValueCreated = 0;
+                            var preIsValueCreated = 0;
                             _valueFactory =
                                 () => FullMode(__valueFactory, waitHandle, ref thread, ref preIsValueCreated);
                         }

@@ -45,7 +45,7 @@ namespace System.Linq
 
         public override int Compare(int firstIndex, int secondIndex)
         {
-            int comparison = _comparer.Compare(keys[firstIndex], keys[secondIndex]);
+            var comparison = _comparer.Compare(keys[firstIndex], keys[secondIndex]);
             if (comparison == 0)
             {
                 if (ChildContext != null)

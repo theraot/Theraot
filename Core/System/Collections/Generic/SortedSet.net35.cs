@@ -300,7 +300,7 @@ namespace System.Collections.Generic
                     throw new SerializationException();
                 }
                 _comparer = (IComparer<T>)_serializationInfo.GetValue("Comparer", typeof(IComparer<T>));
-                int count = _serializationInfo.GetInt32("Count");
+                var count = _serializationInfo.GetInt32("Count");
                 if (count != 0)
                 {
                     var value = (T[])_serializationInfo.GetValue("Items", typeof(T[]));

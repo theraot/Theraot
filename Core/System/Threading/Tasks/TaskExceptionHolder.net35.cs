@@ -248,7 +248,7 @@ namespace System.Threading.Tasks
                     if (exColl != null)
                     {
 #if DEBUG
-                        int numExceptions = 0;
+                        var numExceptions = 0;
 #endif
                         foreach (var exc in exColl)
                         {
