@@ -67,8 +67,8 @@ namespace System.Dynamic.Utils
         /// </summary>
         internal bool TryGetValue(TKey key, out TValue value)
         {
-            int hash = key.GetHashCode();
-            int idx = hash & mask;
+            var hash = key.GetHashCode();
+            var idx = hash & mask;
 
             var entry = Volatile.Read(ref entries[idx]);
             if (entry != null && entry.hash == hash && entry.key.Equals(key))

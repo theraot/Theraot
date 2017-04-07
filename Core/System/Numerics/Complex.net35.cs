@@ -123,7 +123,7 @@ namespace System.Numerics
 
         public static Complex Divide(Complex dividend, Complex divisor)
         {
-            double divisorMagnitudeSquared = divisor.MagnitudeSquared;
+            var divisorMagnitudeSquared = divisor.MagnitudeSquared;
             return new Complex
                 (
                     ((dividend._real * divisor._real) + (dividend._imaginary * divisor._imaginary)) / divisorMagnitudeSquared,
@@ -277,7 +277,7 @@ namespace System.Numerics
 
         public static Complex operator /(Complex left, Complex right)
         {
-            double rsri = (right._real * right._real) + (right._imaginary * right._imaginary);
+            var rsri = (right._real * right._real) + (right._imaginary * right._imaginary);
             return new Complex
                 (
                     ((left._real * right._real) + (left._imaginary * right._imaginary)) / rsri,

@@ -42,7 +42,7 @@ namespace System.Dynamic.Utils
             var delegateInvokeMethod = delegateType.GetMethod("Invoke");
 
             var returnType = delegateInvokeMethod.ReturnType;
-            bool hasReturnValue = returnType != typeof(void);
+            var hasReturnValue = returnType != typeof(void);
 
             var parameters = delegateInvokeMethod.GetParameters();
             var paramTypes = new Type[parameters.Length + 1];
@@ -64,10 +64,10 @@ namespace System.Dynamic.Utils
             ilgen.Emit(OpCodes.Stloc, argArray);
 
             // populate object array
-            bool hasRefArgs = false;
+            var hasRefArgs = false;
             for (int i = 0; i < parameters.Length; i++)
             {
-                bool paramIsByReference = parameters[i].ParameterType.IsByRef;
+                var paramIsByReference = parameters[i].ParameterType.IsByRef;
                 var paramType = parameters[i].ParameterType;
                 if (paramIsByReference)
                     paramType = paramType.GetElementType();

@@ -35,7 +35,7 @@ namespace System.Threading
         {
             get
             {
-                int currentCount = Thread.VolatileRead(ref _currentCount);
+                var currentCount = Thread.VolatileRead(ref _currentCount);
                 if (currentCount >= 0)
                 {
                     return currentCount;
@@ -121,7 +121,7 @@ namespace System.Threading
             }
             else
             {
-                int currentCount = Interlocked.Decrement(ref _currentCount);
+                var currentCount = Interlocked.Decrement(ref _currentCount);
                 if (currentCount == 0)
                 {
                     _event.Set();
@@ -231,7 +231,7 @@ namespace System.Threading
         {
             CheckDisposed();
             cancellationToken.ThrowIfCancellationRequested();
-            bool isSet = IsSet;
+            var isSet = IsSet;
             if (!isSet)
             {
                 isSet = _event.Wait(timeout, cancellationToken);

@@ -572,7 +572,7 @@ namespace System
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2> other)
         {
-            int c = Comparer<T1>.Default.Compare(Item1, other.Item1);
+            var c = Comparer<T1>.Default.Compare(Item1, other.Item1);
             if (c != 0)
                 return c;
 
@@ -591,7 +591,7 @@ namespace System
 
             var objTuple = (ValueTuple<T1, T2>)other;
 
-            int c = comparer.Compare(Item1, objTuple.Item1);
+            var c = comparer.Compare(Item1, objTuple.Item1);
             if (c != 0)
                 return c;
 
@@ -758,7 +758,7 @@ namespace System
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2, T3> other)
         {
-            int c = Comparer<T1>.Default.Compare(Item1, other.Item1);
+            var c = Comparer<T1>.Default.Compare(Item1, other.Item1);
             if (c != 0)
                 return c;
 
@@ -781,7 +781,7 @@ namespace System
 
             var objTuple = (ValueTuple<T1, T2, T3>)other;
 
-            int c = comparer.Compare(Item1, objTuple.Item1);
+            var c = comparer.Compare(Item1, objTuple.Item1);
             if (c != 0)
                 return c;
 
@@ -962,7 +962,7 @@ namespace System
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2, T3, T4> other)
         {
-            int c = Comparer<T1>.Default.Compare(Item1, other.Item1);
+            var c = Comparer<T1>.Default.Compare(Item1, other.Item1);
             if (c != 0)
                 return c;
 
@@ -989,7 +989,7 @@ namespace System
 
             var objTuple = (ValueTuple<T1, T2, T3, T4>)other;
 
-            int c = comparer.Compare(Item1, objTuple.Item1);
+            var c = comparer.Compare(Item1, objTuple.Item1);
             if (c != 0)
                 return c;
 
@@ -1186,7 +1186,7 @@ namespace System
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2, T3, T4, T5> other)
         {
-            int c = Comparer<T1>.Default.Compare(Item1, other.Item1);
+            var c = Comparer<T1>.Default.Compare(Item1, other.Item1);
             if (c != 0)
                 return c;
 
@@ -1217,7 +1217,7 @@ namespace System
 
             var objTuple = (ValueTuple<T1, T2, T3, T4, T5>)other;
 
-            int c = comparer.Compare(Item1, objTuple.Item1);
+            var c = comparer.Compare(Item1, objTuple.Item1);
             if (c != 0)
                 return c;
 
@@ -1430,7 +1430,7 @@ namespace System
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2, T3, T4, T5, T6> other)
         {
-            int c = Comparer<T1>.Default.Compare(Item1, other.Item1);
+            var c = Comparer<T1>.Default.Compare(Item1, other.Item1);
             if (c != 0)
                 return c;
 
@@ -1465,7 +1465,7 @@ namespace System
 
             var objTuple = (ValueTuple<T1, T2, T3, T4, T5, T6>)other;
 
-            int c = comparer.Compare(Item1, objTuple.Item1);
+            var c = comparer.Compare(Item1, objTuple.Item1);
             if (c != 0)
                 return c;
 
@@ -1694,7 +1694,7 @@ namespace System
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2, T3, T4, T5, T6, T7> other)
         {
-            int c = Comparer<T1>.Default.Compare(Item1, other.Item1);
+            var c = Comparer<T1>.Default.Compare(Item1, other.Item1);
             if (c != 0)
                 return c;
 
@@ -1733,7 +1733,7 @@ namespace System
 
             var objTuple = (ValueTuple<T1, T2, T3, T4, T5, T6, T7>)other;
 
-            int c = comparer.Compare(Item1, objTuple.Item1);
+            var c = comparer.Compare(Item1, objTuple.Item1);
             if (c != 0)
                 return c;
 
@@ -1984,7 +1984,7 @@ namespace System
         /// </returns>
         public int CompareTo(ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest> other)
         {
-            int c = Comparer<T1>.Default.Compare(Item1, other.Item1);
+            var c = Comparer<T1>.Default.Compare(Item1, other.Item1);
             if (c != 0)
                 return c;
 
@@ -2027,7 +2027,7 @@ namespace System
 
             var objTuple = (ValueTuple<T1, T2, T3, T4, T5, T6, T7, TRest>)other;
 
-            int c = comparer.Compare(Item1, objTuple.Item1);
+            var c = comparer.Compare(Item1, objTuple.Item1);
             if (c != 0)
                 return c;
 
@@ -2077,14 +2077,14 @@ namespace System
                                                    EqualityComparer<T7>.Default.GetHashCode(Item7));
             }
 
-            int size = rest.Size;
+            var size = rest.Size;
             if (size >= 8)
             {
                 return rest.GetHashCode();
             }
 
             // In this case, the rest member has less than 8 elements so we need to combine some our elements with the elements in rest
-            int k = 8 - size;
+            var k = 8 - size;
             switch (k)
             {
                 case 1:
@@ -2158,14 +2158,14 @@ namespace System
                                                    comparer.GetHashCode(Item7));
             }
 
-            int size = rest.Size;
+            var size = rest.Size;
             if (size >= 8)
             {
                 return rest.GetHashCode(comparer);
             }
 
             // In this case, the rest member has less than 8 elements so we need to combine some our elements with the elements in rest
-            int k = 8 - size;
+            var k = 8 - size;
             switch (k)
             {
                 case 1:

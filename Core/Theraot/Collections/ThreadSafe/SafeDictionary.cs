@@ -846,7 +846,7 @@ namespace Theraot.Collections.ThreadSafe
         public bool TryGetValue(TKey key, out TValue value)
         {
             value = default(TValue);
-            int hashCode = GetHashCode(key);
+            var hashCode = GetHashCode(key);
             for (var attempts = 0; attempts < _probing; attempts++)
             {
                 KeyValuePair<TKey, TValue> found;

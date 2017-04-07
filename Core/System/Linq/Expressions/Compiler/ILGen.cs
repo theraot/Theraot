@@ -752,8 +752,8 @@ namespace System.Linq.Expressions.Compiler
                 throw ContractUtils.Unreachable;
             }
 
-            bool isTypeFromNullable = TypeHelper.IsNullableType(typeFrom);
-            bool isTypeToNullable = TypeHelper.IsNullableType(typeTo);
+            var isTypeFromNullable = TypeHelper.IsNullableType(typeFrom);
+            var isTypeToNullable = TypeHelper.IsNullableType(typeTo);
 
             var nnExprType = TypeHelper.GetNonNullableType(typeFrom);
             var nnType = TypeHelper.GetNonNullableType(typeTo);
@@ -816,8 +816,8 @@ namespace System.Linq.Expressions.Compiler
 
         private static void EmitNumericConversion(this ILGenerator il, Type typeFrom, Type typeTo, bool isChecked)
         {
-            bool isFromUnsigned = TypeHelper.IsUnsigned(typeFrom);
-            bool isFromFloatingPoint = TypeHelper.IsFloatingPoint(typeFrom);
+            var isFromUnsigned = TypeHelper.IsUnsigned(typeFrom);
+            var isFromFloatingPoint = TypeHelper.IsFloatingPoint(typeFrom);
             if (typeTo == typeof(Single))
             {
                 if (isFromUnsigned)
@@ -1060,8 +1060,8 @@ namespace System.Linq.Expressions.Compiler
 
         private static void EmitNullableConversion(this ILGenerator il, Type typeFrom, Type typeTo, bool isChecked)
         {
-            bool isTypeFromNullable = TypeHelper.IsNullableType(typeFrom);
-            bool isTypeToNullable = TypeHelper.IsNullableType(typeTo);
+            var isTypeFromNullable = TypeHelper.IsNullableType(typeFrom);
+            var isTypeToNullable = TypeHelper.IsNullableType(typeTo);
             Debug.Assert(isTypeFromNullable || isTypeToNullable);
             if (isTypeFromNullable && isTypeToNullable)
                 il.EmitNullableToNullableConversion(typeFrom, typeTo, isChecked);
@@ -1150,7 +1150,7 @@ namespace System.Linq.Expressions.Compiler
             if (!arrayType.IsArray)
                 throw Error.ArrayTypeMustBeArray();
 
-            int rank = arrayType.GetArrayRank();
+            var rank = arrayType.GetArrayRank();
             if (rank == 1)
             {
                 il.Emit(OpCodes.Newarr, arrayType.GetElementType());
@@ -1176,13 +1176,13 @@ namespace System.Linq.Expressions.Compiler
             {
                 if (Int32.MinValue <= value && value <= Int32.MaxValue)
                 {
-                    int intValue = Decimal.ToInt32(value);
+                    var intValue = Decimal.ToInt32(value);
                     il.EmitInt(intValue);
                     il.EmitNew(typeof(Decimal).GetConstructor(new Type[] { typeof(int) }));
                 }
                 else if (Int64.MinValue <= value && value <= Int64.MaxValue)
                 {
-                    long longValue = Decimal.ToInt64(value);
+                    var longValue = Decimal.ToInt64(value);
                     il.EmitLong(longValue);
                     il.EmitNew(typeof(Decimal).GetConstructor(new Type[] { typeof(long) }));
                 }

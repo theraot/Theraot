@@ -63,7 +63,7 @@ namespace System.Numerics
             else
             {
                 // Normalize so that 0x0010 0000 0000 0000 is the highest bit set.
-                int cbitShift = CbitHighZero(man) - 11;
+                var cbitShift = CbitHighZero(man) - 11;
                 if (cbitShift < 0)
                     man >>= -cbitShift;
                 else
@@ -116,7 +116,7 @@ namespace System.Numerics
             {
                 d[0] = ~d[0] + 1;
 
-                int i = 1;
+                var i = 1;
                 // first do complement and +1 as long as carry is needed
                 for (; d[i - 1] == 0 && i < d.Length; i++)
                 {
@@ -137,7 +137,7 @@ namespace System.Numerics
 
         public static uint Abs(int a)
         {
-            uint mask = (uint)(a >> 31);
+            var mask = (uint)(a >> 31);
             return ((uint)a ^ mask) - mask;
         }
 
@@ -156,7 +156,7 @@ namespace System.Numerics
             if (u == 0)
                 return 32;
 
-            int cbit = 0;
+            var cbit = 0;
             if ((u & 0xFFFF0000) == 0)
             {
                 cbit += 16;

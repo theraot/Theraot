@@ -151,9 +151,9 @@ namespace System.Threading
         {
             get
             {
-                int currentTotal = _currentTotalCount;
-                int total = (int)(currentTotal & TOTAL_MASK);
-                int current = (int)((currentTotal & CURRENT_MASK) >> 16);
+                var currentTotal = _currentTotalCount;
+                var total = (int)(currentTotal & TOTAL_MASK);
+                var current = (int)((currentTotal & CURRENT_MASK) >> 16);
                 return total - current;
             }
         }
@@ -251,7 +251,7 @@ namespace System.Threading
         /// <returns>True if the CAS succeeded, false otherwise</returns>
         private bool SetCurrentTotal(int currentTotal, int current, int total, bool sense)
         {
-            int newCurrentTotal = (current << 16) | total;
+            var newCurrentTotal = (current << 16) | total;
 
             if (!sense)
             {
@@ -331,7 +331,7 @@ namespace System.Threading
             long newPhase = 0;
             while (true)
             {
-                int currentTotal = _currentTotalCount;
+                var currentTotal = _currentTotalCount;
                 int total;
                 int current;
                 bool sense;
@@ -347,7 +347,7 @@ namespace System.Threading
                     // Calculating the first phase for that participant, if the current phase already finished return the next phase else return the current phase
                     // To know that the current phase is  the sense doesn't match the
                     // phase odd even, so that means it didn't yet change the phase count, so currentPhase +1 is returned, otherwise currentPhase is returned
-                    long currPhase = CurrentPhaseNumber;
+                    var currPhase = CurrentPhaseNumber;
                     newPhase = (sense != (currPhase % 2 == 0)) ? currPhase + 1 : currPhase;
 
                     // If this participant is going to join the next phase, which means the postPhaseAction is being running, this participants must wait until this done
@@ -431,7 +431,7 @@ namespace System.Threading
             var spinner = new SpinWait();
             while (true)
             {
-                int currentTotal = _currentTotalCount;
+                var currentTotal = _currentTotalCount;
                 int total;
                 int current;
                 bool sense;
@@ -447,7 +447,7 @@ namespace System.Threading
                     throw new InvalidOperationException("The participantCount argument is greater than the number of participants that haven't yet arrived at the barrier in this phase.");
                 }
                 // If the remaining participants = current participants, then finish the current phase
-                int remaingParticipants = total - participantCount;
+                var remaingParticipants = total - participantCount;
                 if (remaingParticipants > 0 && current == remaingParticipants)
                 {
                     if (SetCurrentTotal(currentTotal, 0, total - participantCount, !sense))
@@ -499,7 +499,7 @@ namespace System.Threading
         public void SignalAndWait(CancellationToken cancellationToken)
         {
 #if DEBUG
-            bool result =
+            var result =
 #endif
  SignalAndWait(Timeout.Infinite, cancellationToken);
 #if DEBUG
@@ -553,7 +553,7 @@ namespace System.Threading
         /// disposed.</exception>
         public Boolean SignalAndWait(TimeSpan timeout, CancellationToken cancellationToken)
         {
-            Int64 totalMilliseconds = (Int64)timeout.TotalMilliseconds;
+            var totalMilliseconds = (Int64)timeout.TotalMilliseconds;
             if (totalMilliseconds < -1 || totalMilliseconds > int.MaxValue)
             {
                 throw new ArgumentOutOfRangeException("timeout", timeout,
@@ -663,8 +663,8 @@ namespace System.Threading
             // select the correct event to wait on, based on the current sense.
             var eventToWaitOn = (sense) ? _evenEvent : _oddEvent;
 
-            bool waitWasCanceled = false;
-            bool waitResult = false;
+            var waitWasCanceled = false;
+            var waitResult = false;
             try
             {
                 waitResult = DiscontinuousWait(eventToWaitOn, millisecondsTimeout, cancellationToken, phase);
@@ -844,12 +844,12 @@ namespace System.Threading
         /// <returns>True if the event is set or the phase number changed, false if the timeout expired</returns>
         private bool DiscontinuousWait(ManualResetEventSlim currentPhaseEvent, int totalTimeout, CancellationToken token, long observedPhase)
         {
-            int maxWait = 100; // 100 ms
-            int waitTimeCeiling = 10000; // 10 seconds
+            var maxWait = 100; // 100 ms
+            var waitTimeCeiling = 10000; // 10 seconds
             while (observedPhase == CurrentPhaseNumber)
             {
                 // the next wait time, the min of the maxWait and the totalTimeout
-                int waitTime = totalTimeout == Timeout.Infinite ? maxWait : Math.Min(maxWait, totalTimeout);
+                var waitTime = totalTimeout == Timeout.Infinite ? maxWait : Math.Min(maxWait, totalTimeout);
 
                 if (currentPhaseEvent.Wait(waitTime, token))
                     return true;
