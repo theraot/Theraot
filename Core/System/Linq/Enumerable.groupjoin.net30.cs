@@ -25,11 +25,11 @@ namespace System.Linq
 
         private static IEnumerable<TResult> CreateGroupJoinIterator<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<TOuter, IEnumerable<TInner>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
         {
-            ILookup<TKey, TInner> innerKeys = ToLookup(inner, innerKeySelector, comparer);
+            var innerKeys = ToLookup(inner, innerKeySelector, comparer);
 
             foreach (TOuter element in outer)
             {
-                TKey outerKey = outerKeySelector(element);
+                var outerKey = outerKeySelector(element);
                 if (!ReferenceEquals(outerKey, null) && innerKeys.Contains(outerKey))
                 {
                     yield return resultSelector(element, innerKeys[outerKey]);

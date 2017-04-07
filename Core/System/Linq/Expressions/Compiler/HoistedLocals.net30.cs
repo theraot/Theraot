@@ -66,7 +66,7 @@ namespace System.Linq.Expressions.Compiler
                 vars = new TrueReadOnlyCollection<ParameterExpression>(vars.AddFirst(parent.SelfVariable));
             }
 
-            Dictionary<Expression, int> indexes = new Dictionary<Expression, int>(vars.Count);
+            var indexes = new Dictionary<Expression, int>(vars.Count);
             for (int i = 0; i < vars.Count; i++)
             {
                 indexes.Add(vars[i], i);

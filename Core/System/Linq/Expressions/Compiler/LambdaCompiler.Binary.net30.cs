@@ -20,7 +20,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitBinaryExpression(Expression expr, CompilationFlags flags)
         {
-            BinaryExpression b = (BinaryExpression)expr;
+            var b = (BinaryExpression)expr;
 
             Debug.Assert(b.NodeType != ExpressionType.AndAlso && b.NodeType != ExpressionType.OrElse && b.NodeType != ExpressionType.Coalesce);
 
@@ -93,9 +93,9 @@ namespace System.Linq.Expressions.Compiler
         {
             if (b.IsLifted)
             {
-                ParameterExpression p1 = Expression.Variable(TypeHelper.GetNonNullableType(b.Left.Type), null);
-                ParameterExpression p2 = Expression.Variable(TypeHelper.GetNonNullableType(b.Right.Type), null);
-                MethodCallExpression mc = Expression.Call(null, b.Method, p1, p2);
+                var p1 = Expression.Variable(TypeHelper.GetNonNullableType(b.Left.Type), null);
+                var p2 = Expression.Variable(TypeHelper.GetNonNullableType(b.Right.Type), null);
+                var mc = Expression.Call(null, b.Method, p1, p2);
                 Type resultType = null;
                 if (b.IsLiftedToNull)
                 {
@@ -282,8 +282,8 @@ namespace System.Linq.Expressions.Compiler
 
                 case ExpressionType.LessThanOrEqual:
                     {
-                        Label labFalse = _ilg.DefineLabel();
-                        Label labEnd = _ilg.DefineLabel();
+                        var labFalse = _ilg.DefineLabel();
+                        var labEnd = _ilg.DefineLabel();
                         if (TypeHelper.IsUnsigned(leftType))
                         {
                             _ilg.Emit(OpCodes.Ble_Un_S, labFalse);
@@ -313,8 +313,8 @@ namespace System.Linq.Expressions.Compiler
 
                 case ExpressionType.GreaterThanOrEqual:
                     {
-                        Label labFalse = _ilg.DefineLabel();
-                        Label labEnd = _ilg.DefineLabel();
+                        var labFalse = _ilg.DefineLabel();
+                        var labEnd = _ilg.DefineLabel();
                         if (TypeHelper.IsUnsigned(leftType))
                         {
                             _ilg.Emit(OpCodes.Bge_Un_S, labFalse);
@@ -467,9 +467,9 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(TypeHelper.IsNullableType(leftType));
 
-            Label shortCircuit = _ilg.DefineLabel();
-            LocalBuilder locLeft = GetLocal(leftType);
-            LocalBuilder locRight = GetLocal(rightType);
+            var shortCircuit = _ilg.DefineLabel();
+            var locLeft = GetLocal(leftType);
+            var locRight = GetLocal(rightType);
 
             // store values (reverse order since they are already on the stack)
             _ilg.Emit(OpCodes.Stloc, locRight);
@@ -571,7 +571,7 @@ namespace System.Linq.Expressions.Compiler
 
             if (liftedToNull)
             {
-                Label labEnd = _ilg.DefineLabel();
+                var labEnd = _ilg.DefineLabel();
                 _ilg.Emit(OpCodes.Br, labEnd);
                 _ilg.MarkLabel(shortCircuit);
                 _ilg.Emit(OpCodes.Pop);
@@ -588,11 +588,11 @@ namespace System.Linq.Expressions.Compiler
 
             Debug.Assert(leftIsNullable || rightIsNullable);
 
-            Label labIfNull = _ilg.DefineLabel();
-            Label labEnd = _ilg.DefineLabel();
-            LocalBuilder locLeft = GetLocal(leftType);
-            LocalBuilder locRight = GetLocal(rightType);
-            LocalBuilder locResult = GetLocal(resultType);
+            var labIfNull = _ilg.DefineLabel();
+            var labEnd = _ilg.DefineLabel();
+            var locLeft = GetLocal(leftType);
+            var locRight = GetLocal(rightType);
+            var locResult = GetLocal(resultType);
 
             // store values (reverse order since they are already on the stack)
             _ilg.Emit(OpCodes.Stloc, locRight);
@@ -641,7 +641,7 @@ namespace System.Linq.Expressions.Compiler
             EmitBinaryOperator(op, TypeHelper.GetNonNullableType(leftType), TypeHelper.GetNonNullableType(rightType), TypeHelper.GetNonNullableType(resultType), false);
 
             // construct result type
-            ConstructorInfo ci = resultType.GetConstructor(new Type[] { TypeHelper.GetNonNullableType(resultType) });
+            var ci = resultType.GetConstructor(new Type[] { TypeHelper.GetNonNullableType(resultType) });
             _ilg.Emit(OpCodes.Newobj, ci);
             _ilg.Emit(OpCodes.Stloc, locResult);
             _ilg.Emit(OpCodes.Br_S, labEnd);
@@ -661,16 +661,16 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitLiftedBooleanAnd()
         {
-            Type type = typeof(bool?);
-            Label labComputeRight = _ilg.DefineLabel();
-            Label labReturnFalse = _ilg.DefineLabel();
-            Label labReturnNull = _ilg.DefineLabel();
-            Label labReturnValue = _ilg.DefineLabel();
-            Label labExit = _ilg.DefineLabel();
+            var type = typeof(bool?);
+            var labComputeRight = _ilg.DefineLabel();
+            var labReturnFalse = _ilg.DefineLabel();
+            var labReturnNull = _ilg.DefineLabel();
+            var labReturnValue = _ilg.DefineLabel();
+            var labExit = _ilg.DefineLabel();
 
             // store values (reverse order since they are already on the stack)
-            LocalBuilder locLeft = GetLocal(type);
-            LocalBuilder locRight = GetLocal(type);
+            var locLeft = GetLocal(type);
+            var locRight = GetLocal(type);
             _ilg.Emit(OpCodes.Stloc, locRight);
             _ilg.Emit(OpCodes.Stloc, locLeft);
 
@@ -714,7 +714,7 @@ namespace System.Linq.Expressions.Compiler
             _ilg.Emit(OpCodes.Br_S, labReturnValue);
 
             _ilg.MarkLabel(labReturnValue);
-            ConstructorInfo ci = type.GetConstructor(new Type[] { typeof(bool) });
+            var ci = type.GetConstructor(new Type[] { typeof(bool) });
             _ilg.Emit(OpCodes.Newobj, ci);
             _ilg.Emit(OpCodes.Stloc, locLeft);
             _ilg.Emit(OpCodes.Br, labExit);
@@ -733,16 +733,16 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitLiftedBooleanOr()
         {
-            Type type = typeof(bool?);
-            Label labComputeRight = _ilg.DefineLabel();
-            Label labReturnTrue = _ilg.DefineLabel();
-            Label labReturnNull = _ilg.DefineLabel();
-            Label labReturnValue = _ilg.DefineLabel();
-            Label labExit = _ilg.DefineLabel();
+            var type = typeof(bool?);
+            var labComputeRight = _ilg.DefineLabel();
+            var labReturnTrue = _ilg.DefineLabel();
+            var labReturnNull = _ilg.DefineLabel();
+            var labReturnValue = _ilg.DefineLabel();
+            var labExit = _ilg.DefineLabel();
 
             // store values (reverse order since they are already on the stack)
-            LocalBuilder locLeft = GetLocal(type);
-            LocalBuilder locRight = GetLocal(type);
+            var locLeft = GetLocal(type);
+            var locRight = GetLocal(type);
             _ilg.Emit(OpCodes.Stloc, locRight);
             _ilg.Emit(OpCodes.Stloc, locLeft);
 
@@ -786,7 +786,7 @@ namespace System.Linq.Expressions.Compiler
             _ilg.Emit(OpCodes.Br_S, labReturnValue);
 
             _ilg.MarkLabel(labReturnValue);
-            ConstructorInfo ci = type.GetConstructor(new Type[] { typeof(bool) });
+            var ci = type.GetConstructor(new Type[] { typeof(bool) });
             _ilg.Emit(OpCodes.Newobj, ci);
             _ilg.Emit(OpCodes.Stloc, locLeft);
             _ilg.Emit(OpCodes.Br, labExit);

@@ -80,7 +80,7 @@ namespace System.Linq.Expressions.Compiler
 
         protected internal override Expression VisitInvocation(InvocationExpression node)
         {
-            LambdaExpression lambda = node.LambdaOperand;
+            var lambda = node.LambdaOperand;
 
             // optimization: inline code for literal lambda's directly
             if (lambda != null)

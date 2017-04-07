@@ -102,7 +102,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (obj is LocalDefinition)
             {
-                LocalDefinition other = (LocalDefinition)obj;
+                var other = (LocalDefinition)obj;
                 return other.Index == Index && other.Parameter == Parameter;
             }
 
@@ -138,7 +138,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public LocalDefinition DefineLocal(ParameterExpression variable, int start)
         {
-            LocalVariable result = new LocalVariable(_localCount++, false, false);
+            var result = new LocalVariable(_localCount++, false, false);
             _maxLocalCount = Math.Max(_localCount, _maxLocalCount);
 
             VariableScope existing, newScope;
@@ -180,7 +180,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             var scope = _variables[variable];
 
-            LocalVariable local = scope.Variable;
+            var local = scope.Variable;
             Debug.Assert(!local.IsBoxed && !local.InClosure);
             _variables[variable].Variable.IsBoxed = true;
 
@@ -281,7 +281,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 _closureVariables = new Dictionary<ParameterExpression, LocalVariable>();
             }
-            LocalVariable result = new LocalVariable(_closureVariables.Count, true, false);
+            var result = new LocalVariable(_closureVariables.Count, true, false);
             _closureVariables.Add(variable, result);
             return result;
         }

@@ -162,13 +162,13 @@ namespace System.Linq.Expressions
                 throw Error.ArgumentCannotBeOfTypeVoid();
             }
 
-            ReadOnlyCollection<Expression> initializerList = initializers.ToReadOnly();
+            var initializerList = initializers.ToReadOnly();
 
             Expression[] newList = null;
             var n = initializerList.Count;
             for (int i = 0; i < n; i++)
             {
-                Expression expr = initializerList[i];
+                var expr = initializerList[i];
                 RequiresCanRead(expr, "initializers");
 
                 if (!TypeHelper.AreReferenceAssignable(type, expr.Type))
@@ -230,7 +230,7 @@ namespace System.Linq.Expressions
                 throw Error.ArgumentCannotBeOfTypeVoid();
             }
 
-            ReadOnlyCollection<Expression> boundsList = bounds.ToReadOnly();
+            var boundsList = bounds.ToReadOnly();
 
             int dimensions = boundsList.Count;
             if (dimensions <= 0)
@@ -238,7 +238,7 @@ namespace System.Linq.Expressions
 
             for (int i = 0; i < dimensions; i++)
             {
-                Expression expr = boundsList[i];
+                var expr = boundsList[i];
                 RequiresCanRead(expr, "bounds");
                 if (!TypeHelper.IsInteger(expr.Type))
                 {

@@ -131,7 +131,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitLoopExpression(Expression expr)
         {
-            LoopExpression node = (LoopExpression)expr;
+            var node = (LoopExpression)expr;
 
             PushLabelBlock(LabelScopeKind.Statement);
             var breakTarget = DefineLabel(node.BreakLabel);
@@ -152,7 +152,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitSwitchExpression(Expression expr, CompilationFlags flags)
         {
-            SwitchExpression node = (SwitchExpression)expr;
+            var node = (SwitchExpression)expr;
 
             // Try to emit it as an IL switch. Works for integer types.
             if (TryEmitSwitchInstruction(node, flags))
@@ -577,7 +577,7 @@ namespace System.Linq.Expressions.Compiler
 
             // Collect labels
             int len = (int)(bucket[bucket.Count - 1].Key - bucket[0].Key + 1);
-            Label[] jmpLabels = new Label[len];
+            var jmpLabels = new Label[len];
 
             // Initialize all labels to the default
             var slot = 0;

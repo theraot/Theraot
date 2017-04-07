@@ -116,7 +116,7 @@ namespace System.Runtime.CompilerServices
                 long closureKey = _indexes[index];
 
                 // walk up the parent chain to find the real environment
-                object[] result = _data;
+                var result = _data;
                 for (int parents = (int)(closureKey >> 32); parents > 0; parents--)
                 {
                     result = HoistedLocals.GetParent(result);

@@ -47,7 +47,7 @@ namespace System.Linq.Expressions.Compiler
         /// </summary>
         private static AnalyzeTypeIsResult AnalyzeTypeIs(Expression operand, Type testType)
         {
-            Type operandType = operand.Type;
+            var operandType = operand.Type;
 
             // Oddly, we allow void operands
             // This is LinqV1 behavior of TypeIs
@@ -61,8 +61,8 @@ namespace System.Linq.Expressions.Compiler
             // underlying type. The reason is when you box a nullable it
             // becomes a boxed value of the underlying type, or null.
             //
-            Type nnOperandType = operandType.GetNonNullableType();
-            Type nnTestType = testType.GetNonNullableType();
+            var nnOperandType = operandType.GetNonNullableType();
+            var nnTestType = testType.GetNonNullableType();
 
             //
             // See if we can determine the answer based on the static types

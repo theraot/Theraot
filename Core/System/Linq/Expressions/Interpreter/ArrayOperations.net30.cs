@@ -42,7 +42,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            Array array = Array.CreateInstance(_elementType, _elementCount);
+            var array = Array.CreateInstance(_elementType, _elementCount);
             for (int i = _elementCount - 1; i >= 0; i--)
             {
                 array.SetValue(frame.Pop(), i);
@@ -181,7 +181,7 @@ namespace System.Linq.Expressions.Interpreter
         public override int Run(InterpretedFrame frame)
         {
             int index = ConvertHelper.ToInt32NoNull(frame.Pop());
-            Array array = (Array)frame.Pop();
+            var array = (Array)frame.Pop();
             frame.Push(array.GetValue(index));
             return +1;
         }
@@ -221,9 +221,9 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            object value = frame.Pop();
+            var value = frame.Pop();
             int index = ConvertHelper.ToInt32NoNull(frame.Pop());
-            Array array = (Array)frame.Pop();
+            var array = (Array)frame.Pop();
             array.SetValue(value, index);
             return +1;
         }

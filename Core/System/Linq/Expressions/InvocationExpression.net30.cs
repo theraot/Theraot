@@ -200,10 +200,10 @@ namespace System.Linq.Expressions
         /// <param name="expression">The expression to be invoked.</param>
         internal static MethodInfo GetInvokeMethod(Expression expression)
         {
-            Type delegateType = expression.Type;
+            var delegateType = expression.Type;
             if (!expression.Type.IsSubclassOf(typeof(MulticastDelegate)))
             {
-                Type exprType = TypeHelper.FindGenericType(typeof(Expression<>), expression.Type);
+                var exprType = TypeHelper.FindGenericType(typeof(Expression<>), expression.Type);
                 if (exprType == null)
                 {
                     throw Error.ExpressionTypeNotInvocable(expression.Type);

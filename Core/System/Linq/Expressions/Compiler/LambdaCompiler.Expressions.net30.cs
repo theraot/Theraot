@@ -175,7 +175,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitInvocationExpression(Expression expr, CompilationFlags flags)
         {
-            InvocationExpression node = (InvocationExpression)expr;
+            var node = (InvocationExpression)expr;
 
             // Optimization: inline code for literal lambda's directly
             //
@@ -338,7 +338,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitMethodCallExpression(Expression expr, CompilationFlags flags)
         {
-            MethodCallExpression node = (MethodCallExpression)expr;
+            var node = (MethodCallExpression)expr;
 
             EmitMethodCall(node.Object, node.Method, node, flags);
         }
@@ -404,7 +404,7 @@ namespace System.Linq.Expressions.Compiler
             if (mi.CallingConvention == CallingConventions.VarArgs)
             {
                 var count = args.ArgumentCount;
-                Type[] types = new Type[count];
+                var types = new Type[count];
                 for (var i = 0; i < count; i++)
                 {
                     types[i] = args.GetArgument(i).Type;
@@ -538,7 +538,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitConstantExpression(Expression expr)
         {
-            ConstantExpression node = (ConstantExpression)expr;
+            var node = (ConstantExpression)expr;
 
             EmitConstant(node.Value, node.Type);
         }
@@ -587,7 +587,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitNewExpression(Expression expr)
         {
-            NewExpression node = (NewExpression)expr;
+            var node = (NewExpression)expr;
 
             if (node.Constructor != null)
             {
@@ -609,7 +609,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitTypeBinaryExpression(Expression expr)
         {
-            TypeBinaryExpression node = (TypeBinaryExpression)expr;
+            var node = (TypeBinaryExpression)expr;
 
             if (node.NodeType == ExpressionType.TypeEqual)
             {
@@ -724,7 +724,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitParameterExpression(Expression expr)
         {
-            ParameterExpression node = (ParameterExpression)expr;
+            var node = (ParameterExpression)expr;
             _scope.EmitGet(node);
             if (node.IsByRef)
             {
@@ -734,19 +734,19 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitLambdaExpression(Expression expr)
         {
-            LambdaExpression node = (LambdaExpression)expr;
+            var node = (LambdaExpression)expr;
             EmitDelegateConstruction(node);
         }
 
         private void EmitRuntimeVariablesExpression(Expression expr)
         {
-            RuntimeVariablesExpression node = (RuntimeVariablesExpression)expr;
+            var node = (RuntimeVariablesExpression)expr;
             _scope.EmitVariableAccess(this, node.Variables);
         }
 
         private void EmitMemberAssignment(BinaryExpression node, CompilationFlags flags)
         {
-            MemberExpression lvalue = (MemberExpression)node.Left;
+            var lvalue = (MemberExpression)node.Left;
             var member = lvalue.Member;
 
             // emit "this", if any
@@ -795,7 +795,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitMemberExpression(Expression expr)
         {
-            MemberExpression node = (MemberExpression)expr;
+            var node = (MemberExpression)expr;
 
             // emit "this", if any
             Type instanceType = null;
@@ -873,7 +873,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitNewArrayExpression(Expression expr)
         {
-            NewArrayExpression node = (NewArrayExpression)expr;
+            var node = (NewArrayExpression)expr;
 
             if (node.NodeType == ExpressionType.NewArrayInit)
             {
@@ -947,14 +947,14 @@ namespace System.Linq.Expressions.Compiler
         private void EmitMemberAssignment(MemberAssignment binding, Type objectType)
         {
             EmitExpression(binding.Expression);
-            FieldInfo fi = binding.Member as FieldInfo;
+            var fi = binding.Member as FieldInfo;
             if (fi != null)
             {
                 _ilg.Emit(OpCodes.Stfld, fi);
             }
             else
             {
-                PropertyInfo pi = binding.Member as PropertyInfo;
+                var pi = binding.Member as PropertyInfo;
                 if (pi != null)
                 {
                     EmitCall(objectType, pi.GetSetMethod(true));
@@ -1097,10 +1097,10 @@ namespace System.Linq.Expressions.Compiler
 
         private static Type GetMemberType(MemberInfo member)
         {
-            FieldInfo fi = member as FieldInfo;
+            var fi = member as FieldInfo;
             if (fi != null)
                 return fi.FieldType;
-            PropertyInfo pi = member as PropertyInfo;
+            var pi = member as PropertyInfo;
             if (pi != null)
                 return pi.PropertyType;
             throw Error.MemberNotFieldOrProperty(member);

@@ -93,7 +93,7 @@ namespace MonoTests.System.Linq.Expressions
             // exists in the very simple class we're using for the tests.
             var mi = typeof(OpClass).GetMethod("op_Subtraction");
 
-            BinaryExpression expr = Expression.Subtract(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
+            var expr = Expression.Subtract(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
             Assert.AreEqual(ExpressionType.Subtract, expr.NodeType, "Subtract#09");
             Assert.AreEqual(typeof(OpClass), expr.Type, "Subtract#10");
             Assert.AreEqual(mi, expr.Method, "Subtract#11");

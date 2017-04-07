@@ -424,7 +424,7 @@ namespace System.Linq.Expressions.Interpreter
 #endif
 
             // goto the target label or the current finally continuation:
-            object value = _hasValue ? frame.Pop() : Interpreter.NoValue;
+            var value = _hasValue ? frame.Pop() : Interpreter.NoValue;
             return frame.Goto(_labelIndex, _labelTargetGetsValue ? value : Interpreter.NoValue, /*gotoExceptionHandler*/ false);
         }
     }
@@ -863,7 +863,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            object exception = frame.Pop();
+            var exception = frame.Pop();
             throw new RethrowException();
         }
     }
@@ -998,7 +998,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            object value = frame.Pop();
+            var value = frame.Pop();
 
             if (value == null)
             {

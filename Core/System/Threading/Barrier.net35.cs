@@ -336,7 +336,7 @@ namespace System.Threading
                 throw new InvalidOperationException("This method may not be called from within the postPhaseAction.");
             }
 
-            SpinWait spinner = new SpinWait();
+            var spinner = new SpinWait();
             long newPhase = 0;
             while (true)
             {
@@ -437,7 +437,7 @@ namespace System.Threading
                 throw new InvalidOperationException("This method may not be called from within the postPhaseAction.");
             }
 
-            SpinWait spinner = new SpinWait();
+            var spinner = new SpinWait();
             while (true)
             {
                 int currentTotal = _currentTotalCount;
@@ -634,7 +634,7 @@ namespace System.Threading
             int current;
             int currentTotal;
             long phase;
-            SpinWait spinner = new SpinWait();
+            var spinner = new SpinWait();
             while (true)
             {
                 currentTotal = _currentTotalCount;
@@ -670,7 +670,7 @@ namespace System.Threading
 
             // ** Perform the real wait **
             // select the correct event to wait on, based on the current sense.
-            ManualResetEventSlim eventToWaitOn = (sense) ? _evenEvent : _oddEvent;
+            var eventToWaitOn = (sense) ? _evenEvent : _oddEvent;
 
             bool waitWasCanceled = false;
             bool waitResult = false;
@@ -758,7 +758,7 @@ namespace System.Threading
                     {
                         var currentContext = _ownerThreadContext;
 
-                        ContextCallback handler = s_invokePostPhaseAction;
+                        var handler = s_invokePostPhaseAction;
                         if (handler == null)
                         {
                             s_invokePostPhaseAction = handler = InvokePostPhaseAction;
@@ -833,7 +833,7 @@ namespace System.Threading
             //1- The event is set
             //2- the phase count is incremented more than one time, this means the next phase is finished as well,
             //but the event will be reset again, so we check the phase count instead
-            SpinWait spinner = new SpinWait();
+            var spinner = new SpinWait();
             while (!currentPhaseEvent.IsSet && CurrentPhaseNumber - observedPhase <= 1)
             {
                 spinner.SpinOnce();

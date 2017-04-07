@@ -16,7 +16,7 @@ namespace System.Linq.Expressions.Compiler
 
             bool emitStart = (flags & CompilationFlags.EmitExpressionStartMask) == CompilationFlags.EmitExpressionStart;
 
-            CompilationFlags startEmitted = emitStart ? EmitExpressionStart(node) : CompilationFlags.EmitNoExpressionStart;
+            var startEmitted = emitStart ? EmitExpressionStart(node) : CompilationFlags.EmitNoExpressionStart;
             // only pass tail call flags to emit the expression
             flags = flags & CompilationFlags.EmitAsTailCallMask;
 

@@ -158,7 +158,7 @@ namespace System.Linq.Expressions.Compiler
 
             // Clear state that is associated with this parent
             // (because the scope can be reused in another context)
-            CompilerScope parent = _parent;
+            var parent = _parent;
             _parent = null;
             _hoistedLocals = null;
             _closureHoistedLocals = null;
@@ -180,7 +180,7 @@ namespace System.Linq.Expressions.Compiler
                 {
                     // For each variable, find what array it's defined on
                     ulong parents = 0;
-                    HoistedLocals locals = NearestHoistedLocals;
+                    var locals = NearestHoistedLocals;
                     while (!locals.Indexes.ContainsKey(variable))
                     {
                         parents++;
@@ -326,7 +326,7 @@ namespace System.Linq.Expressions.Compiler
                 // array[i] = new StrongBox<T>(...);
                 lc.IL.Emit(OpCodes.Dup);
                 lc.IL.EmitInt(i++);
-                Type boxType = typeof(StrongBox<>).MakeGenericType(v.Type);
+                var boxType = typeof(StrongBox<>).MakeGenericType(v.Type);
 
                 if (IsMethod && lc.Parameters.Contains(v))
                 {
@@ -499,7 +499,7 @@ namespace System.Linq.Expressions.Compiler
         {
             get
             {
-                CompilerScope s = this;
+                var s = this;
                 while (true)
                 {
                     var lambda = s.Node as LambdaExpression;

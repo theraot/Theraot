@@ -93,7 +93,7 @@ namespace MonoTests.System.Linq.Expressions
             // exists in the very simple class we're using for the tests.
             var mi = typeof(OpClass).GetMethod("op_Multiply");
 
-            BinaryExpression expr = Expression.MultiplyChecked(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
+            var expr = Expression.MultiplyChecked(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
             Assert.AreEqual(ExpressionType.MultiplyChecked, expr.NodeType, "MultiplyChecked#07");
             Assert.AreEqual(typeof(OpClass), expr.Type, "MultiplyChecked#08");
             Assert.AreEqual(mi, expr.Method, "MultiplyChecked#09");
@@ -109,7 +109,7 @@ namespace MonoTests.System.Linq.Expressions
             // exists in the very simple class we're using for the tests.
             var mi = typeof(OpStruct).GetMethod("op_Multiply");
 
-            BinaryExpression expr = Expression.MultiplyChecked(Expression.Constant(new OpStruct()), Expression.Constant(new OpStruct()));
+            var expr = Expression.MultiplyChecked(Expression.Constant(new OpStruct()), Expression.Constant(new OpStruct()));
             Assert.AreEqual(ExpressionType.MultiplyChecked, expr.NodeType, "MultiplyChecked#11");
             Assert.AreEqual(typeof(OpStruct), expr.Type, "MultiplyChecked#12");
             Assert.AreEqual(mi, expr.Method, "MultiplyChecked#13");

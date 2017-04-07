@@ -107,7 +107,7 @@ namespace System
             queue.Enqueue(this);
             while (queue.Count > 0)
             {
-                AggregateException current = queue.Dequeue();
+                var current = queue.Dequeue();
                 foreach (var exception in current._innerExceptions)
                 {
                     var aggregatedException = exception as AggregateException;
@@ -126,7 +126,7 @@ namespace System
 
         public override Exception GetBaseException()
         {
-            AggregateException result = this;
+            var result = this;
             while (true)
             {
                 Exception item;

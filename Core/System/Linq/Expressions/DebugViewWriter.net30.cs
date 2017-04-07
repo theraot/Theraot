@@ -349,7 +349,7 @@ namespace System.Linq.Expressions
 
                 string op;
                 bool isChecked = false;
-                Flow beforeOp = Flow.Space;
+                var beforeOp = Flow.Space;
                 switch (node.NodeType)
                 {
                     case ExpressionType.Assign:
@@ -635,7 +635,7 @@ namespace System.Linq.Expressions
 
         protected internal override Expression VisitConstant(ConstantExpression node)
         {
-            object value = node.Value;
+            var value = node.Value;
 
             if (value == null)
             {
@@ -662,7 +662,7 @@ namespace System.Linq.Expressions
             }
             else
             {
-                string suffix = GetConstantValueSuffix(node.Type);
+                var suffix = GetConstantValueSuffix(node.Type);
                 if (suffix != null)
                 {
                     Out(value.ToString());
@@ -804,7 +804,7 @@ namespace System.Linq.Expressions
                     case ExpressionType.SubtractChecked:
                     case ExpressionType.Divide:
                     case ExpressionType.Modulo:
-                        BinaryExpression binary = parent as BinaryExpression;
+                        var binary = parent as BinaryExpression;
                         Debug.Assert(binary != null);
                         // Need to have parenthesis for the right operand.
                         return child == binary.Right;

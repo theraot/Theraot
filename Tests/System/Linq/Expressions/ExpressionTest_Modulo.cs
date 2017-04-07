@@ -103,7 +103,7 @@ namespace MonoTests.System.Linq.Expressions
             // exists in the very simple class we're using for the tests.
             var mi = typeof(OpClass).GetMethod("op_Modulus");
 
-            BinaryExpression expr = Expression.Modulo(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
+            var expr = Expression.Modulo(Expression.Constant(new OpClass()), Expression.Constant(new OpClass()));
             Assert.AreEqual(ExpressionType.Modulo, expr.NodeType, "Modulo#09");
             Assert.AreEqual(typeof(OpClass), expr.Type, "Modulo#10");
             Assert.AreEqual(mi, expr.Method, "Modulo#11");

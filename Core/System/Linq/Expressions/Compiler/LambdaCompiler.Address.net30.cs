@@ -135,7 +135,7 @@ namespace System.Linq.Expressions.Compiler
         // assumes the instance is already on the stack
         private void EmitMemberAddress(MemberInfo member, Type objectType)
         {
-            FieldInfo field = member as FieldInfo;
+            var field = member as FieldInfo;
             if ((object)field != null)
             {
                 // Verifiable code may not take the address of an init-only field.
@@ -280,7 +280,7 @@ namespace System.Linq.Expressions.Compiler
                 _ilg.Emit(OpCodes.Stloc, instanceLocal = GetLocal(instanceType));
             }
 
-            PropertyInfo pi = (PropertyInfo)node.Member;
+            var pi = (PropertyInfo)node.Member;
 
             // emit the get
             EmitCall(instanceType, pi.GetGetMethod(true));
@@ -325,7 +325,7 @@ namespace System.Linq.Expressions.Compiler
 
             // Emit indexes. We don't allow byref args, so no need to worry
             // about writebacks or EmitAddress
-            List<LocalBuilder> args = new List<LocalBuilder>();
+            var args = new List<LocalBuilder>();
             foreach (var arg in node.Arguments)
             {
                 EmitExpression(arg);

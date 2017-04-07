@@ -25,7 +25,7 @@ namespace System.Linq.Expressions.Interpreter
                 throw Assert.Unreachable;
             }
 
-            Type returnType = types[types.Length - 1];
+            var returnType = types[types.Length - 1];
             if (returnType == typeof(void))
             {
                 Array.Resize(ref types, types.Length - 1);

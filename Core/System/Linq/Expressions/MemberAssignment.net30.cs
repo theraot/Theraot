@@ -88,10 +88,10 @@ namespace System.Linq.Expressions
 
         private static void ValidateSettableFieldOrPropertyMember(MemberInfo member, out Type memberType)
         {
-            FieldInfo fi = member as FieldInfo;
+            var fi = member as FieldInfo;
             if (fi == null)
             {
-                PropertyInfo pi = member as PropertyInfo;
+                var pi = member as PropertyInfo;
                 if (pi == null)
                 {
                     throw Error.ArgumentMustBeFieldInfoOrPropertInfo();

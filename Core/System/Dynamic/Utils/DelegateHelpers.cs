@@ -39,24 +39,24 @@ namespace System.Dynamic.Utils
         // return (TRet)ret;
         private static Delegate CreateObjectArrayDelegateRefEmit(Type delegateType, Func<object[], object> handler)
         {
-            MethodInfo delegateInvokeMethod = delegateType.GetMethod("Invoke");
+            var delegateInvokeMethod = delegateType.GetMethod("Invoke");
 
-            Type returnType = delegateInvokeMethod.ReturnType;
+            var returnType = delegateInvokeMethod.ReturnType;
             bool hasReturnValue = returnType != typeof(void);
 
-            ParameterInfo[] parameters = delegateInvokeMethod.GetParameters();
-            Type[] paramTypes = new Type[parameters.Length + 1];
+            var parameters = delegateInvokeMethod.GetParameters();
+            var paramTypes = new Type[parameters.Length + 1];
             paramTypes[0] = typeof(Func<object[], object>);
             for (int i = 0; i < parameters.Length; i++)
             {
                 paramTypes[i + 1] = parameters[i].ParameterType;
             }
 
-            DynamicMethod thunkMethod = new DynamicMethod("Thunk", returnType, paramTypes);
-            ILGenerator ilgen = thunkMethod.GetILGenerator();
+            var thunkMethod = new DynamicMethod("Thunk", returnType, paramTypes);
+            var ilgen = thunkMethod.GetILGenerator();
 
-            LocalBuilder argArray = ilgen.DeclareLocal(typeof(object[]));
-            LocalBuilder retValue = ilgen.DeclareLocal(typeof(object));
+            var argArray = ilgen.DeclareLocal(typeof(object[]));
+            var retValue = ilgen.DeclareLocal(typeof(object));
 
             // create the argument array
             ilgen.Emit(OpCodes.Ldc_I4, parameters.Length);
@@ -68,7 +68,7 @@ namespace System.Dynamic.Utils
             for (int i = 0; i < parameters.Length; i++)
             {
                 bool paramIsByReference = parameters[i].ParameterType.IsByRef;
-                Type paramType = parameters[i].ParameterType;
+                var paramType = parameters[i].ParameterType;
                 if (paramIsByReference)
                     paramType = paramType.GetElementType();
 
@@ -82,7 +82,7 @@ namespace System.Dynamic.Utils
                 {
                     ilgen.Emit(OpCodes.Ldobj, paramType);
                 }
-                Type boxType = ConvertToBoxableType(paramType);
+                var boxType = ConvertToBoxableType(paramType);
                 ilgen.Emit(OpCodes.Box, boxType);
                 ilgen.Emit(OpCodes.Stelem_Ref);
             }
@@ -99,7 +99,7 @@ namespace System.Dynamic.Utils
             ilgen.Emit(OpCodes.Ldloc, argArray);
 
             // invoke Invoke
-            MethodInfo invoke = typeof(Func<object[], object>).GetMethod("Invoke");
+            var invoke = typeof(Func<object[], object>).GetMethod("Invoke");
             ilgen.Emit(OpCodes.Callvirt, invoke);
             ilgen.Emit(OpCodes.Stloc, retValue);
 
@@ -111,7 +111,7 @@ namespace System.Dynamic.Utils
                 {
                     if (parameters[i].ParameterType.IsByRef)
                     {
-                        Type byrefToType = parameters[i].ParameterType.GetElementType();
+                        var byrefToType = parameters[i].ParameterType.GetElementType();
 
                         // update parameter
                         ilgen.Emit(OpCodes.Ldarg, i + 1);

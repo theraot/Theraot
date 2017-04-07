@@ -149,7 +149,7 @@ namespace MonoTests.System.Linq.Expressions
         private static T Check<T>(T val)
         {
             var l = Expression.Lambda<Func<T>>(Expression.Constant(val), new ParameterExpression[0]);
-            Func<T> fi = l.Compile();
+            var fi = l.Compile();
             return fi();
         }
 

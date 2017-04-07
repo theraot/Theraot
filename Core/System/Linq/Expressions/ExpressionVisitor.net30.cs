@@ -527,8 +527,8 @@ namespace System.Linq.Expressions
             Expression[] nodes = null;
             for (int i = 0; i < count; i++)
             {
-                Expression oldNode = node.GetExpression(i);
-                Expression newNode = Visit(oldNode);
+                var oldNode = node.GetExpression(i);
+                var newNode = Visit(oldNode);
 
                 if (oldNode != newNode)
                 {
@@ -628,8 +628,8 @@ namespace System.Linq.Expressions
         /// otherwise, returns the original expression.</returns>
         protected internal virtual Expression VisitInvocation(InvocationExpression node)
         {
-            Expression e = Visit(node.Expression);
-            Expression[] a = VisitArguments(node);
+            var e = Visit(node.Expression);
+            var a = VisitArguments(node);
             if (e == node.Expression && a == null)
             {
                 return node;
@@ -690,8 +690,8 @@ namespace System.Linq.Expressions
         /// otherwise, returns the original expression.</returns>
         protected internal virtual Expression VisitIndex(IndexExpression node)
         {
-            Expression o = Visit(node.Object);
-            Expression[] a = VisitArguments(node);
+            var o = Visit(node.Object);
+            var a = VisitArguments(node);
             if (o == node.Object && a == null)
             {
                 return node;
@@ -708,8 +708,8 @@ namespace System.Linq.Expressions
         /// otherwise, returns the original expression.</returns>
         protected internal virtual Expression VisitMethodCall(MethodCallExpression node)
         {
-            Expression o = Visit(node.Object);
-            Expression[] a = VisitArguments((IArgumentProvider)node);
+            var o = Visit(node.Object);
+            var a = VisitArguments((IArgumentProvider)node);
             if (o == node.Object && a == null)
             {
                 return node;
@@ -946,7 +946,7 @@ namespace System.Linq.Expressions
             var n = nodes.Count;
             for (int i = 0; i < n; i++)
             {
-                Expression node = Visit(nodes[i]);
+                var node = Visit(nodes[i]);
 
                 if (newNodes != null)
                 {
@@ -989,7 +989,7 @@ namespace System.Linq.Expressions
             var n = nodes.Count;
             for (int i = 0; i < n; i++)
             {
-                T node = elementVisitor(nodes[i]);
+                var node = elementVisitor(nodes[i]);
                 if (newNodes != null)
                 {
                     newNodes[i] = node;
@@ -1049,7 +1049,7 @@ namespace System.Linq.Expressions
             var n = nodes.Count;
             for (int i = 0; i < n; i++)
             {
-                T node = Visit(nodes[i]) as T;
+                var node = Visit(nodes[i]) as T;
                 if (node == null)
                 {
                     throw Error.MustRewriteToSameNode(callerName, typeof(T), callerName);

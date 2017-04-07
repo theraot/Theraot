@@ -123,7 +123,7 @@ namespace MonoTests.System.Linq.Expressions
         public void ParameterOutOfScope()
         {
             var a = Expression.Parameter(typeof(int), "a");
-            ParameterExpression second_a = Expression.Parameter(typeof(int), "a");
+            var second_a = Expression.Parameter(typeof(int), "a");
 
             // Here we have the same name for the parameter expression, but
             // we pass a different object to the Lambda expression, so they are
@@ -136,7 +136,7 @@ namespace MonoTests.System.Linq.Expressions
         public void ParameterRefTest()
         {
             var a = Expression.Parameter(typeof(int), "a");
-            ParameterExpression b = Expression.Parameter(typeof(int), "b");
+            var b = Expression.Parameter(typeof(int), "b");
 
             var l = Expression.Lambda<Func<int, int, int>>(
                 Expression.Add(a, b), new ParameterExpression[] { a, b });
@@ -165,7 +165,7 @@ namespace MonoTests.System.Linq.Expressions
         public void ReturnValueCheck()
         {
             var p1 = Expression.Parameter(typeof(int?), "va");
-            ParameterExpression p2 = Expression.Parameter(typeof(int?), "vb");
+            var p2 = Expression.Parameter(typeof(int?), "vb");
             Expression add = Expression.Add(p1, p2);
 
             // This should throw, since the add.Type is "int?" and the return

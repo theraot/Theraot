@@ -131,7 +131,7 @@ namespace MonoTests.System.Linq.Expressions
         public void TestMethodAddition()
         {
             var expr = Expression.Add(Expression.Constant(1), Expression.Constant(2), typeof(S).GetMethod("MyAdder"));
-            Expression<Func<int>> l = Expression.Lambda<Func<int>>(expr);
+            var l = Expression.Lambda<Func<int>>(expr);
 
             var compiled = l.Compile();
             Assert.AreEqual(1000, compiled());

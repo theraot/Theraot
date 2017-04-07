@@ -32,8 +32,8 @@ namespace System.Linq.Expressions.Compiler
             {
                 // store into field in our type builder, we will initialize
                 // the value only once.
-                FieldBuilder fb = CreateStaticField("ConstantArray", typeof(T[]));
-                Label l = _ilg.DefineLabel();
+                var fb = CreateStaticField("ConstantArray", typeof(T[]));
+                var l = _ilg.DefineLabel();
                 _ilg.Emit(OpCodes.Ldsfld, fb);
                 _ilg.Emit(OpCodes.Ldnull);
                 _ilg.Emit(OpCodes.Bne_Un, l);
@@ -87,8 +87,8 @@ namespace System.Linq.Expressions.Compiler
         /// </summary>
         private void EmitDelegateConstruction(LambdaCompiler inner)
         {
-            Type delegateType = inner._lambda.Type;
-            DynamicMethod dynamicMethod = inner._method as DynamicMethod;
+            var delegateType = inner._lambda.Type;
+            var dynamicMethod = inner._method as DynamicMethod;
             if (dynamicMethod != null)
             {
                 var types = new[] { typeof(Type), typeof(object) };
@@ -138,8 +138,8 @@ namespace System.Linq.Expressions.Compiler
             else
             {
                 // When the lambda does not have a name or the name is empty, generate a unique name for it.
-                string name = String.IsNullOrEmpty(lambda.Name) ? GetUniqueMethodName() : lambda.Name;
-                MethodBuilder mb = _typeBuilder.DefineMethod(name, MethodAttributes.Private | MethodAttributes.Static);
+                var name = String.IsNullOrEmpty(lambda.Name) ? GetUniqueMethodName() : lambda.Name;
+                var mb = _typeBuilder.DefineMethod(name, MethodAttributes.Private | MethodAttributes.Static);
                 impl = new LambdaCompiler(_tree, lambda, mb);
             }
 
@@ -164,7 +164,7 @@ namespace System.Linq.Expressions.Compiler
         private void EmitLambdaBody()
         {
             // The lambda body is the "last" expression of the lambda
-            CompilationFlags tailCallFlag = _lambda.TailCall ? CompilationFlags.EmitAsTail : CompilationFlags.EmitAsNoTail;
+            var tailCallFlag = _lambda.TailCall ? CompilationFlags.EmitAsTail : CompilationFlags.EmitAsNoTail;
             EmitLambdaBody(null, false, tailCallFlag);
         }
 

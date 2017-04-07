@@ -136,7 +136,7 @@ namespace System.Linq.Expressions.Interpreter
 
                     int stackDiff = instructions[i].StackBalance;
                     int contDiff = instructions[i].ContinuationsBalance;
-                    string name = instructions[i].ToDebugString(i, cookie, labelIndexer, objects);
+                    var name = instructions[i].ToDebugString(i, cookie, labelIndexer, objects);
                     result.Add(new InstructionView(instructions[i], name, i, stackDepth, continuationsDepth));
 
                     index++;
@@ -627,7 +627,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public void EmitInitializeLocal(int index, Type type)
         {
-            object value = ScriptingRuntimeHelpers.GetPrimitiveDefaultValue(type);
+            var value = ScriptingRuntimeHelpers.GetPrimitiveDefaultValue(type);
             if (value != null)
             {
                 Emit(new InitializeLocalInstruction.ImmutableValue(index, value));
@@ -1048,7 +1048,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public int MarkRuntimeLabel()
         {
-            BranchLabel handlerLabel = MakeLabel();
+            var handlerLabel = MakeLabel();
             MarkLabel(handlerLabel);
             return EnsureLabelIndex(handlerLabel);
         }

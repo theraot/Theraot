@@ -388,7 +388,7 @@ namespace System.Linq.Expressions.Compiler
             ContractUtils.RequiresNotNull(type, "type");
             ContractUtils.RequiresNotNull(paramTypes, "paramTypes");
 
-            ConstructorInfo ci = type.GetConstructor(paramTypes);
+            var ci = type.GetConstructor(paramTypes);
             if (ci == null)
                 throw Error.TypeDoesNotHaveConstructorForTheSignature();
             il.EmitNew(ci);
@@ -553,13 +553,13 @@ namespace System.Linq.Expressions.Compiler
                 return true;
             }
 
-            Type t = value as Type;
+            var t = value as Type;
             if (t != null && ShouldLdtoken(t))
             {
                 return true;
             }
 
-            MethodBase mb = value as MethodBase;
+            var mb = value as MethodBase;
             if (mb != null && ShouldLdtoken(mb))
             {
                 return true;
@@ -619,7 +619,7 @@ namespace System.Linq.Expressions.Compiler
             }
 
             // Check for a few more types that we support emitting as constants
-            Type t = value as Type;
+            var t = value as Type;
             if (t != null && ShouldLdtoken(t))
             {
                 il.EmitType(t);
@@ -630,11 +630,11 @@ namespace System.Linq.Expressions.Compiler
                 return;
             }
 
-            MethodBase mb = value as MethodBase;
+            var mb = value as MethodBase;
             if (mb != null && ShouldLdtoken(mb))
             {
                 il.Emit(OpCodes.Ldtoken, mb);
-                Type dt = mb.DeclaringType;
+                var dt = mb.DeclaringType;
                 if (dt != null && dt.IsGenericType)
                 {
                     il.Emit(OpCodes.Ldtoken, dt);
@@ -667,7 +667,7 @@ namespace System.Linq.Expressions.Compiler
                 return false;
             }
 
-            Type dt = mb.DeclaringType;
+            var dt = mb.DeclaringType;
             return dt == null || ShouldLdtoken(dt);
         }
 
@@ -755,8 +755,8 @@ namespace System.Linq.Expressions.Compiler
             bool isTypeFromNullable = TypeHelper.IsNullableType(typeFrom);
             bool isTypeToNullable = TypeHelper.IsNullableType(typeTo);
 
-            Type nnExprType = TypeHelper.GetNonNullableType(typeFrom);
-            Type nnType = TypeHelper.GetNonNullableType(typeTo);
+            var nnExprType = TypeHelper.GetNonNullableType(typeFrom);
+            var nnType = TypeHelper.GetNonNullableType(typeTo);
 
             if (typeFrom.IsInterface || // interface cast
                typeTo.IsInterface ||
@@ -832,7 +832,7 @@ namespace System.Linq.Expressions.Compiler
             }
             else
             {
-                TypeCode tc = typeTo.GetTypeCode();
+                var tc = typeTo.GetTypeCode();
                 if (isChecked)
                 {
                     // Overflow checking needs to know if the source value on the IL stack is unsigned or not.
@@ -981,8 +981,8 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(TypeHelper.IsNullableType(typeFrom));
             Debug.Assert(TypeHelper.IsNullableType(typeTo));
-            Label labIfNull = default(Label);
-            Label labEnd = default(Label);
+            var labIfNull = default(Label);
+            var labEnd = default(Label);
             LocalBuilder locFrom = null;
             LocalBuilder locTo = null;
             locFrom = il.DeclareLocal(typeFrom);
@@ -995,11 +995,11 @@ namespace System.Linq.Expressions.Compiler
             il.Emit(OpCodes.Brfalse_S, labIfNull);
             il.Emit(OpCodes.Ldloca, locFrom);
             il.EmitGetValueOrDefault(typeFrom);
-            Type nnTypeFrom = TypeHelper.GetNonNullableType(typeFrom);
-            Type nnTypeTo = TypeHelper.GetNonNullableType(typeTo);
+            var nnTypeFrom = TypeHelper.GetNonNullableType(typeFrom);
+            var nnTypeTo = TypeHelper.GetNonNullableType(typeTo);
             il.EmitConvertToType(nnTypeFrom, nnTypeTo, isChecked);
             // construct result type
-            ConstructorInfo ci = typeTo.GetConstructor(new Type[] { nnTypeTo });
+            var ci = typeTo.GetConstructor(new Type[] { nnTypeTo });
             il.Emit(OpCodes.Newobj, ci);
             il.Emit(OpCodes.Stloc, locTo);
             labEnd = il.DefineLabel();
@@ -1018,9 +1018,9 @@ namespace System.Linq.Expressions.Compiler
             Debug.Assert(TypeHelper.IsNullableType(typeTo));
             LocalBuilder locTo = null;
             locTo = il.DeclareLocal(typeTo);
-            Type nnTypeTo = TypeHelper.GetNonNullableType(typeTo);
+            var nnTypeTo = TypeHelper.GetNonNullableType(typeTo);
             il.EmitConvertToType(typeFrom, nnTypeTo, isChecked);
-            ConstructorInfo ci = typeTo.GetConstructor(new Type[] { nnTypeTo });
+            var ci = typeTo.GetConstructor(new Type[] { nnTypeTo });
             il.Emit(OpCodes.Newobj, ci);
             il.Emit(OpCodes.Stloc, locTo);
             il.Emit(OpCodes.Ldloc, locTo);
@@ -1046,7 +1046,7 @@ namespace System.Linq.Expressions.Compiler
             il.Emit(OpCodes.Stloc, locFrom);
             il.Emit(OpCodes.Ldloca, locFrom);
             il.EmitGetValue(typeFrom);
-            Type nnTypeFrom = TypeHelper.GetNonNullableType(typeFrom);
+            var nnTypeFrom = TypeHelper.GetNonNullableType(typeFrom);
             il.EmitConvertToType(nnTypeFrom, typeTo, isChecked);
         }
 
@@ -1073,21 +1073,21 @@ namespace System.Linq.Expressions.Compiler
 
         internal static void EmitHasValue(this ILGenerator il, Type nullableType)
         {
-            MethodInfo mi = nullableType.GetMethod("get_HasValue", BindingFlags.Instance | BindingFlags.Public);
+            var mi = nullableType.GetMethod("get_HasValue", BindingFlags.Instance | BindingFlags.Public);
             Debug.Assert(nullableType.IsValueType);
             il.Emit(OpCodes.Call, mi);
         }
 
         internal static void EmitGetValue(this ILGenerator il, Type nullableType)
         {
-            MethodInfo mi = nullableType.GetMethod("get_Value", BindingFlags.Instance | BindingFlags.Public);
+            var mi = nullableType.GetMethod("get_Value", BindingFlags.Instance | BindingFlags.Public);
             Debug.Assert(nullableType.IsValueType);
             il.Emit(OpCodes.Call, mi);
         }
 
         internal static void EmitGetValueOrDefault(this ILGenerator il, Type nullableType)
         {
-            MethodInfo mi = nullableType.GetMethod("GetValueOrDefault", Type.EmptyTypes);
+            var mi = nullableType.GetMethod("GetValueOrDefault", Type.EmptyTypes);
             Debug.Assert(nullableType.IsValueType);
             il.Emit(OpCodes.Call, mi);
         }
@@ -1157,7 +1157,7 @@ namespace System.Linq.Expressions.Compiler
             }
             else
             {
-                Type[] types = new Type[rank];
+                var types = new Type[rank];
                 for (int i = 0; i < rank; i++)
                 {
                     types[i] = typeof(int);
@@ -1199,7 +1199,7 @@ namespace System.Linq.Expressions.Compiler
 
         private static void EmitDecimalBits(this ILGenerator il, decimal value)
         {
-            int[] bits = Decimal.GetBits(value);
+            var bits = Decimal.GetBits(value);
             il.EmitInt(bits[0]);
             il.EmitInt(bits[1]);
             il.EmitInt(bits[2]);
@@ -1227,7 +1227,7 @@ namespace System.Linq.Expressions.Compiler
                         // This is the IL for default(T) if T is a generic type
                         // parameter, so it should work for any type. It's also
                         // the standard pattern for structs.
-                        LocalBuilder lb = il.DeclareLocal(type);
+                        var lb = il.DeclareLocal(type);
                         il.Emit(OpCodes.Ldloca, lb);
                         il.Emit(OpCodes.Initobj, type);
                         il.Emit(OpCodes.Ldloc, lb);

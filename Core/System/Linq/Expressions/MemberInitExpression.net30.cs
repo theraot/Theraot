@@ -125,7 +125,7 @@ namespace System.Linq.Expressions
             block[0] = Assign(listVar, listExpression);
             for (int i = 0; i < count; i++)
             {
-                ElementInit element = initializers[i];
+                var element = initializers[i];
                 block[i + 1] = Call(listVar, element.AddMethod, element.Arguments);
             }
             block[count + 1] = keepOnStack ? (Expression)listVar : Empty();
@@ -134,7 +134,7 @@ namespace System.Linq.Expressions
 
         internal static Expression ReduceMemberBinding(ParameterExpression objVar, MemberBinding binding)
         {
-            MemberExpression member = MakeMemberAccess(objVar, binding.Member);
+            var member = MakeMemberAccess(objVar, binding.Member);
             switch (binding.BindingType)
             {
                 case MemberBindingType.Assignment:

@@ -231,12 +231,12 @@ namespace System.Linq.Expressions.Interpreter
         public int YieldToPendingContinuation()
         {
             Debug.Assert(_pendingContinuation >= 0);
-            RuntimeLabel pendingTarget = Interpreter._labels[_pendingContinuation];
+            var pendingTarget = Interpreter._labels[_pendingContinuation];
 
             // the current continuation might have higher priority (continuationIndex is the depth of the current continuation):
             if (pendingTarget.ContinuationStackDepth < _continuationIndex)
             {
-                RuntimeLabel currentTarget = Interpreter._labels[_continuations[_continuationIndex - 1]];
+                var currentTarget = Interpreter._labels[_continuations[_continuationIndex - 1]];
                 SetStackDepth(currentTarget.StackDepth);
                 return currentTarget.Index - InstructionIndex;
             }
@@ -295,7 +295,7 @@ namespace System.Linq.Expressions.Interpreter
         public int Goto(int labelIndex, object value, bool gotoExceptionHandler)
         {
             // TODO: we know this at compile time (except for compiled loop):
-            RuntimeLabel target = Interpreter._labels[labelIndex];
+            var target = Interpreter._labels[labelIndex];
             Debug.Assert(!gotoExceptionHandler || (gotoExceptionHandler && _continuationIndex == target.ContinuationStackDepth),
                 "When it's time to jump to the exception handler, all previous finally blocks should already be processed");
 

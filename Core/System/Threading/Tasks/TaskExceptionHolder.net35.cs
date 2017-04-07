@@ -99,10 +99,10 @@ namespace System.Threading.Tasks
                 foreach (ExceptionDispatchInfo edi in m_faultExceptions)
                 {
                     var exp = edi.SourceException;
-                    AggregateException aggExp = exp as AggregateException;
+                    var aggExp = exp as AggregateException;
                     if (aggExp != null)
                     {
-                        AggregateException flattenedAggExp = aggExp.Flatten();
+                        var flattenedAggExp = aggExp.Flatten();
                         foreach (Exception innerExp in flattenedAggExp.InnerExceptions)
                         {
                             if (innerExp is ThreadAbortException)
@@ -123,10 +123,10 @@ namespace System.Threading.Tasks
                 // Give users a chance to keep this exception from crashing the process
 
                 // First, publish the unobserved exception and allow users to observe it
-                AggregateException exceptionToThrow = new AggregateException(
+                var exceptionToThrow = new AggregateException(
                     "A Task's exception(s) were not observed either by Waiting on the Task or accessing its Exception property. As a result, the unobserved exception was rethrown by the finalizer thread.",
                     m_faultExceptions.Select(exceptionDispatchInfo => exceptionDispatchInfo.SourceException));
-                UnobservedTaskExceptionEventArgs ueea = new UnobservedTaskExceptionEventArgs(exceptionToThrow);
+                var ueea = new UnobservedTaskExceptionEventArgs(exceptionToThrow);
                 TaskScheduler.PublishUnobservedTaskException(m_task, ueea);
 
                 // Now, if we are still unobserved and we're configured to crash on unobserved, throw the exception.
@@ -368,7 +368,7 @@ namespace System.Threading.Tasks
 
             // Otherwise, the caller wants a specific exception to be included,
             // so return an aggregate containing that exception and the rest.
-            Exception[] combinedExceptions = new Exception[exceptions.Count + 1];
+            var combinedExceptions = new Exception[exceptions.Count + 1];
             for (int i = 0; i < combinedExceptions.Length - 1; i++)
             {
                 combinedExceptions[i] = exceptions[i].SourceException;

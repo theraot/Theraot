@@ -159,7 +159,7 @@ namespace System.Linq.Expressions
                 throw Error.ListInitializerWithZeroMembers();
             }
 
-            MethodInfo addMethod = FindMethod(newExpression.Type, "Add", null, new Expression[] { initializerlist[0] }, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            var addMethod = FindMethod(newExpression.Type, "Add", null, new Expression[] { initializerlist[0] }, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             return ListInit(newExpression, addMethod, initializers);
         }
 
@@ -202,7 +202,7 @@ namespace System.Linq.Expressions
             {
                 throw Error.ListInitializerWithZeroMembers();
             }
-            ElementInit[] initList = new ElementInit[initializerlist.Count];
+            var initList = new ElementInit[initializerlist.Count];
             for (int i = 0; i < initializerlist.Count; i++)
             {
                 initList[i] = ElementInit(addMethod, initializerlist[i]);
