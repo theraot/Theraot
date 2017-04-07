@@ -92,7 +92,7 @@ namespace System.Threading
                 {
                     if (waiter.Task.IsCompleted)
                     {
-                        // Skip - either cancelled or timed out
+                        // Skip - either canceled or timed out
                         continue;
                     }
                     if (TryEnter())
