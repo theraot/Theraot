@@ -18,14 +18,7 @@ namespace Theraot.Collections
         public int Compare(KeyValuePair<TKey, TValue> x, KeyValuePair<TKey, TValue> y)
         {
             var result = _keyComparer.Compare(x.Key, y.Key);
-            if (result == 0)
-            {
-                return _valueComparer.Compare(x.Value, y.Value);
-            }
-            else
-            {
-                return result;
-            }
+            return result == 0 ? _valueComparer.Compare(x.Value, y.Value) : result;
         }
     }
 }

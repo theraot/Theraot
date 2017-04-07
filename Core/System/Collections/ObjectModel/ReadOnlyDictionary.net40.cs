@@ -104,14 +104,11 @@ namespace System.Collections.ObjectModel
                 {
                     throw new ArgumentNullException("key");
                 }
-                else if (key is TKey)
+                if (key is TKey)
                 {
                     return this[(TKey)key];
                 }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
 
             set { throw new NotSupportedException(); }
@@ -185,14 +182,7 @@ namespace System.Collections.ObjectModel
             {
                 throw new ArgumentNullException("key");
             }
-            else if (key is TKey)
-            {
-                return ContainsKey((TKey)key);
-            }
-            else
-            {
-                return false;
-            }
+            return key is TKey && ContainsKey((TKey)key);
         }
 
         IDictionaryEnumerator IDictionary.GetEnumerator()

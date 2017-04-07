@@ -2218,27 +2218,13 @@ namespace System
         public override string ToString()
         {
             var rest = Rest as ITupleInternal;
-            if (rest == null)
-            {
-                return "(" + (ReferenceEquals(Item1, null) ? "" : Item1.ToString()) + ", " + (ReferenceEquals(Item2, null) ? "" : Item2.ToString()) + ", " + (ReferenceEquals(Item3, null) ? "" : Item3.ToString()) + ", " + (ReferenceEquals(Item4, null) ? "" : Item4.ToString()) + ", " + (ReferenceEquals(Item5, null) ? "" : Item5.ToString()) + ", " + (ReferenceEquals(Item6, null) ? "" : Item6.ToString()) + ", " + (ReferenceEquals(Item7, null) ? "" : Item7.ToString()) + ", " + Rest.ToString() + ")";
-            }
-            else
-            {
-                return "(" + (ReferenceEquals(Item1, null) ? "" : Item1.ToString()) + ", " + (ReferenceEquals(Item2, null) ? "" : Item2.ToString()) + ", " + (ReferenceEquals(Item3, null) ? "" : Item3.ToString()) + ", " + (ReferenceEquals(Item4, null) ? "" : Item4.ToString()) + ", " + (ReferenceEquals(Item5, null) ? "" : Item5.ToString()) + ", " + (ReferenceEquals(Item6, null) ? "" : Item6.ToString()) + ", " + (ReferenceEquals(Item7, null) ? "" : Item7.ToString()) + ", " + rest.ToStringEnd();
-            }
+            return rest == null ? "(" + (ReferenceEquals(Item1, null) ? "" : Item1.ToString()) + ", " + (ReferenceEquals(Item2, null) ? "" : Item2.ToString()) + ", " + (ReferenceEquals(Item3, null) ? "" : Item3.ToString()) + ", " + (ReferenceEquals(Item4, null) ? "" : Item4.ToString()) + ", " + (ReferenceEquals(Item5, null) ? "" : Item5.ToString()) + ", " + (ReferenceEquals(Item6, null) ? "" : Item6.ToString()) + ", " + (ReferenceEquals(Item7, null) ? "" : Item7.ToString()) + ", " + Rest.ToString() + ")" : "(" + (ReferenceEquals(Item1, null) ? "" : Item1.ToString()) + ", " + (ReferenceEquals(Item2, null) ? "" : Item2.ToString()) + ", " + (ReferenceEquals(Item3, null) ? "" : Item3.ToString()) + ", " + (ReferenceEquals(Item4, null) ? "" : Item4.ToString()) + ", " + (ReferenceEquals(Item5, null) ? "" : Item5.ToString()) + ", " + (ReferenceEquals(Item6, null) ? "" : Item6.ToString()) + ", " + (ReferenceEquals(Item7, null) ? "" : Item7.ToString()) + ", " + rest.ToStringEnd();
         }
 
         string ITupleInternal.ToStringEnd()
         {
             var rest = Rest as ITupleInternal;
-            if (rest == null)
-            {
-                return (ReferenceEquals(Item1, null) ? "" : Item1.ToString()) + ", " + (ReferenceEquals(Item2, null) ? "" : Item2.ToString()) + ", " + (ReferenceEquals(Item3, null) ? "" : Item3.ToString()) + ", " + (ReferenceEquals(Item4, null) ? "" : Item4.ToString()) + ", " + (ReferenceEquals(Item5, null) ? "" : Item5.ToString()) + ", " + (ReferenceEquals(Item6, null) ? "" : Item6.ToString()) + ", " + (ReferenceEquals(Item7, null) ? "" : Item7.ToString()) + ", " + Rest.ToString() + ")";
-            }
-            else
-            {
-                return (ReferenceEquals(Item1, null) ? "" : Item1.ToString()) + ", " + (ReferenceEquals(Item2, null) ? "" : Item2.ToString()) + ", " + (ReferenceEquals(Item3, null) ? "" : Item3.ToString()) + ", " + (ReferenceEquals(Item4, null) ? "" : Item4.ToString()) + ", " + (ReferenceEquals(Item5, null) ? "" : Item5.ToString()) + ", " + (ReferenceEquals(Item6, null) ? "" : Item6.ToString()) + ", " + (ReferenceEquals(Item7, null) ? "" : Item7.ToString()) + ", " + rest.ToStringEnd();
-            }
+            return rest == null ? (ReferenceEquals(Item1, null) ? "" : Item1.ToString()) + ", " + (ReferenceEquals(Item2, null) ? "" : Item2.ToString()) + ", " + (ReferenceEquals(Item3, null) ? "" : Item3.ToString()) + ", " + (ReferenceEquals(Item4, null) ? "" : Item4.ToString()) + ", " + (ReferenceEquals(Item5, null) ? "" : Item5.ToString()) + ", " + (ReferenceEquals(Item6, null) ? "" : Item6.ToString()) + ", " + (ReferenceEquals(Item7, null) ? "" : Item7.ToString()) + ", " + Rest.ToString() + ")" : (ReferenceEquals(Item1, null) ? "" : Item1.ToString()) + ", " + (ReferenceEquals(Item2, null) ? "" : Item2.ToString()) + ", " + (ReferenceEquals(Item3, null) ? "" : Item3.ToString()) + ", " + (ReferenceEquals(Item4, null) ? "" : Item4.ToString()) + ", " + (ReferenceEquals(Item5, null) ? "" : Item5.ToString()) + ", " + (ReferenceEquals(Item6, null) ? "" : Item6.ToString()) + ", " + (ReferenceEquals(Item7, null) ? "" : Item7.ToString()) + ", " + rest.ToStringEnd();
         }
 
         int ITupleInternal.Size

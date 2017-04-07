@@ -221,10 +221,7 @@ namespace MonoTests.System.Linq.Expressions
                 {
                     return new SlotFromNullable(-s.Value.Value);
                 }
-                else
-                {
-                    return new SlotFromNullable(-1);
-                }
+                return new SlotFromNullable(-1);
             }
         }
 
@@ -259,10 +256,7 @@ namespace MonoTests.System.Linq.Expressions
                 {
                     return new SlotFromNullableToNullable(-s.Value.Value);
                 }
-                else
-                {
-                    return s;
-                }
+                return s;
             }
         }
 
