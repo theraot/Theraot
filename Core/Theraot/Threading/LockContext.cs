@@ -14,7 +14,7 @@ namespace Theraot.Threading
         private readonly NeedleBucket<LockSlot<T>, LazyNeedle<LockSlot<T>>> _slots;
         private readonly VersionProvider _version = new VersionProvider();
         private int _index;
-        private int _capacity;
+        private readonly int _capacity;
 
         public LockContext(int capacity)
         {

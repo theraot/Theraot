@@ -16,8 +16,8 @@ namespace System.Linq.Expressions
     /// </summary>
     public sealed class ElementInit : IArgumentProvider
     {
-        private MethodInfo _addMethod;
-        private ReadOnlyCollection<Expression> _arguments;
+        private readonly MethodInfo _addMethod;
+        private readonly ReadOnlyCollection<Expression> _arguments;
 
         internal ElementInit(MethodInfo addMethod, ReadOnlyCollection<Expression> arguments)
         {

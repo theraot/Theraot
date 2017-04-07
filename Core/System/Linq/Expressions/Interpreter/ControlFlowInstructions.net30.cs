@@ -675,7 +675,7 @@ namespace System.Linq.Expressions.Interpreter
     /// </summary>
     internal sealed class LeaveExceptionHandlerInstruction : IndexedBranchInstruction
     {
-        private static LeaveExceptionHandlerInstruction[] s_cache = new LeaveExceptionHandlerInstruction[2 * CacheSize];
+        private static readonly LeaveExceptionHandlerInstruction[] s_cache = new LeaveExceptionHandlerInstruction[2 * CacheSize];
 
         private readonly bool _hasValue;
 
@@ -881,9 +881,9 @@ namespace System.Linq.Expressions.Interpreter
     internal sealed class EnterLoopInstruction : Instruction
     {
         private readonly int _instructionIndex;
-        private Dictionary<ParameterExpression, LocalVariable> _variables;
-        private Dictionary<ParameterExpression, LocalVariable> _closureVariables;
-        private LoopExpression _loop;
+        private readonly Dictionary<ParameterExpression, LocalVariable> _variables;
+        private readonly Dictionary<ParameterExpression, LocalVariable> _closureVariables;
+        private readonly LoopExpression _loop;
         private int _loopEnd;
 
         public override string InstructionName

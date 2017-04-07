@@ -27,10 +27,10 @@ namespace System.Linq.Expressions
         private const int Tab = 4;
         private const int MaxColumn = 120;
 
-        private TextWriter _out;
+        private readonly TextWriter _out;
         private int _column;
 
-        private Stack<int> _stack = new Stack<int>();
+        private readonly Stack<int> _stack = new Stack<int>();
         private int _delta;
         private Flow _flow;
 

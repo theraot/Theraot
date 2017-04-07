@@ -514,7 +514,7 @@ namespace System.Collections.Concurrent
 
         private sealed class DictionaryEnumerator : IDictionaryEnumerator
         {
-            private IEnumerator<KeyValuePair<TKey, TValue>> _wrapped;
+            private readonly IEnumerator<KeyValuePair<TKey, TValue>> _wrapped;
 
             internal DictionaryEnumerator(ConcurrentDictionary<TKey, TValue> wrapped)
             {

@@ -67,7 +67,7 @@ namespace MonoTests.System.Linq
 
         private class BigEnumerator : IEnumerator<int>
         {
-            private BigEnumerable Parent;
+            private readonly BigEnumerable Parent;
             private ulong current;
 
             public BigEnumerator(BigEnumerable parent)

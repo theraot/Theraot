@@ -33,7 +33,7 @@ namespace System.Linq.Expressions.Compiler
             /// <summary>
             /// List of all temps created by stackspiller for this rule/lambda
             /// </summary>
-            private List<ParameterExpression> _temps = new List<ParameterExpression>();
+            private readonly List<ParameterExpression> _temps = new List<ParameterExpression>();
 
             internal List<ParameterExpression> Temps
             {

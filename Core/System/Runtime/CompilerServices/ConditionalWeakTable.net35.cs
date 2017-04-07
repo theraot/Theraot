@@ -31,7 +31,7 @@ namespace System.Runtime.CompilerServices
     where TKey : class
         where TValue : class
     {
-        private WeakDictionary<TKey, TValue> _wrapped;
+        private readonly WeakDictionary<TKey, TValue> _wrapped;
 
         public ConditionalWeakTable()
         {

@@ -16,7 +16,7 @@ namespace System.Linq.Expressions
 {
     internal sealed class ExpressionStringBuilder : ExpressionVisitor
     {
-        private StringBuilder _out;
+        private readonly StringBuilder _out;
 
         // Associate every unique label or anonymous parameter in the tree with an integer.
         // The label is displayed as Label_#.

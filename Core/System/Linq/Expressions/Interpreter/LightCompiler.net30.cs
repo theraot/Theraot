@@ -271,7 +271,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private readonly LightCompiler _parent;
 
-        private static LocalDefinition[] s_emptyLocals = ArrayReservoir<LocalDefinition>.EmptyArray;
+        private static readonly LocalDefinition[] s_emptyLocals = ArrayReservoir<LocalDefinition>.EmptyArray;
 
         public LightCompiler()
         {

@@ -136,7 +136,7 @@ namespace MonoTests.System.Linq.Expressions
 
         public class Gazonk
         {
-            private string value;
+            private readonly string value;
 
             public Gazonk(string s)
             {

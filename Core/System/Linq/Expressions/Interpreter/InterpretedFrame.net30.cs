@@ -18,7 +18,7 @@ namespace System.Linq.Expressions.Interpreter
         internal readonly Interpreter Interpreter;
         internal InterpretedFrame _parent;
 
-        private int[] _continuations;
+        private readonly int[] _continuations;
 
         private int _continuationIndex;
         private int _pendingContinuation;

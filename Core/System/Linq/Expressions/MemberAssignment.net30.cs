@@ -13,7 +13,7 @@ namespace System.Linq.Expressions
     /// </summary>
     public sealed class MemberAssignment : MemberBinding
     {
-        private Expression _expression;
+        private readonly Expression _expression;
 
         internal MemberAssignment(MemberInfo member, Expression expression)
 #pragma warning disable 618

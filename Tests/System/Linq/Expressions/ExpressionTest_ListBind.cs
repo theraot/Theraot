@@ -126,7 +126,7 @@ namespace MonoTests.System.Linq.Expressions
             public string str;
 
             public int baz;
-            private List<string> list = new List<string>();
+            private readonly List<string> list = new List<string>();
 
             public List<string> List
             {

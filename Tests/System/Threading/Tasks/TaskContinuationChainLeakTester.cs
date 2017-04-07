@@ -9,7 +9,7 @@ namespace MonoTests.System.Threading.Tasks
     {
         private volatile bool m_bStop;
         private int counter;
-        private ManualResetEvent mre = new ManualResetEvent(false);
+        private readonly ManualResetEvent mre = new ManualResetEvent(false);
         private WeakReference<Task> headTaskWeakRef;
 
         public ManualResetEvent TasksPilledUp
