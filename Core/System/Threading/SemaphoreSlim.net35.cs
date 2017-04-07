@@ -216,13 +216,7 @@ namespace System.Threading
         {
             CheckDisposed();
             var source = new TaskCompletionSource<bool>();
-            GC.KeepAlive
-            (
-                new Theraot.Threading.Timeout(() => source.SetResult(false), millisecondsTimeout)
-                {
-                    Rooted = true
-                }
-            );
+            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), millisecondsTimeout);
             _asyncWaiters.Add(source);
             return source.Task;
         }
@@ -231,13 +225,7 @@ namespace System.Threading
         {
             CheckDisposed();
             var source = new TaskCompletionSource<bool>();
-            GC.KeepAlive
-            (
-                new Theraot.Threading.Timeout(() => source.SetResult(false), timeout)
-                {
-                    Rooted = true
-                }
-            );
+            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), timeout);
             _asyncWaiters.Add(source);
             return source.Task;
         }
@@ -250,13 +238,7 @@ namespace System.Threading
             }
             CheckDisposed();
             var source = new TaskCompletionSource<bool>();
-            GC.KeepAlive
-            (
-                new Theraot.Threading.Timeout(() => source.SetResult(false), millisecondsTimeout, cancellationToken)
-                {
-                    Rooted = true
-                }
-            );
+            Theraot.Threading.Timeout.Launch(() => source.SetResult(false), millisecondsTimeout, cancellationToken);
             cancellationToken.Register(() => source.SetCanceled());
             _asyncWaiters.Add(source);
             return source.Task;
@@ -270,28 +252,22 @@ namespace System.Threading
             }
             CheckDisposed();
             var source = new TaskCompletionSource<bool>();
-            GC.KeepAlive
+            Theraot.Threading.Timeout.Launch
             (
-                new Theraot.Threading.Timeout
-                (
-                    () =>
-                    {
-                        try
-                        {
-                            source.SetResult(false);
-                        }
-                        catch (InvalidOperationException exception)
-                        {
-                            // Already cancelled
-                            GC.KeepAlive(exception);
-                        }
-                    },
-                    timeout,
-                    cancellationToken
-                )
+                () =>
                 {
-                    Rooted = true
-                }
+                    try
+                    {
+                        source.SetResult(false);
+                    }
+                    catch (InvalidOperationException exception)
+                    {
+                        // Already cancelled
+                        GC.KeepAlive(exception);
+                    }
+                },
+                timeout,
+                cancellationToken
             );
             cancellationToken.Register
                 (

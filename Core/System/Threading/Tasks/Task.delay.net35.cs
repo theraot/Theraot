@@ -125,7 +125,7 @@ namespace System.Threading.Tasks
             {
                 var timeout =
                     new Theraot.Threading.Timeout
-                        (
+                    (
                         () =>
                         {
                             try
@@ -140,10 +140,7 @@ namespace System.Threading.Tasks
                         },
                         millisecondsDelay,
                         cancellationToken
-                        )
-                    {
-                        Rooted = true
-                    };
+                    );
                 source.Task.SetPromiseCheck(() => timeout.CheckRemaining());
             }
             if (cancellationToken.CanBeCanceled)

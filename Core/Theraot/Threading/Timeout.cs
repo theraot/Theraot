@@ -1,29 +1,29 @@
 ﻿// Needed for NET35 (TASK)
 
 using System;
-using System.Collections.Generic;
 using System.Threading;
+using Theraot.Collections.ThreadSafe;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
 {
     public class Timeout : IPromise
     {
-        private static readonly HashSet<Timeout> _root;
-
+        private const int _canceled = 4;
+        private const int _canceling = 3;
+        private const int _created = 0;
+        private const int _executed = 2;
+        private const int _executing = 1;
+        private const int _starting = 6;
+        private static readonly Bucket<Timeout> _root = new Bucket<Timeout>();
+        private static int _lastRootIndex = -1;
         private readonly int _hashcode;
         private Action _callback;
-        private int _completed;
-        private int _executed;
-        private bool _rooted;
-        private long _start;
+        private int _rootIndex = -1;
+        private long _startTime;
+        private int _status;
         private long _targetTime;
         private Timer _wrapped;
-
-        static Timeout()
-        {
-            _root = new HashSet<Timeout>();
-        }
 
         public Timeout(Action callback, long dueTime)
         {
@@ -32,7 +32,7 @@ namespace Theraot.Threading
                 throw new ArgumentNullException("callback");
             }
             _callback = callback;
-            Initialize(dueTime);
+            Start(dueTime);
             _hashcode = unchecked((int)DateTime.Now.Ticks);
         }
 
@@ -42,7 +42,6 @@ namespace Theraot.Threading
             {
                 throw new ArgumentNullException("callback");
             }
-            _start = ThreadingHelper.TicksNow();
             if (token.IsCancellationRequested)
             {
                 _callback = null;
@@ -51,7 +50,7 @@ namespace Theraot.Threading
             else
             {
                 _callback = callback;
-                Initialize(dueTime);
+                Start(dueTime);
                 token.Register(Cancel);
             }
             _hashcode = unchecked((int)DateTime.Now.Ticks);
@@ -69,6 +68,11 @@ namespace Theraot.Threading
             // Empty
         }
 
+        private Timeout()
+        {
+            _hashcode = unchecked((int)DateTime.Now.Ticks);
+        }
+
         ~Timeout()
         {
             Cancel();
@@ -82,6 +86,22 @@ namespace Theraot.Threading
             }
         }
 
+        public bool IsCanceled
+        {
+            get
+            {
+                return Volatile.Read(ref _status) == _canceled;
+            }
+        }
+
+        public bool IsCompleted
+        {
+            get
+            {
+                return Volatile.Read(ref _status) == _executed;
+            }
+        }
+
         bool IPromise.IsFaulted
         {
             get
@@ -90,74 +110,108 @@ namespace Theraot.Threading
             }
         }
 
-        public bool IsCanceled
+        public static void Launch(Action callback, long dueTime)
         {
-            get
+            if (callback == null)
             {
-                return Volatile.Read(ref _completed) == 0 && _wrapped == null;
+                throw new ArgumentNullException("callback");
             }
+            var timeout = new Timeout();
+            timeout._callback = () =>
+            {
+                try
+                {
+                    callback();
+                }
+                finally
+                {
+                    UnRoot(timeout);
+                }
+            };
+            timeout.Start(dueTime);
+            Root(timeout);
         }
 
-        public bool IsCompleted
+        public static void Launch(Action callback, long dueTime, CancellationToken token)
         {
-            get
+            if (callback == null)
             {
-                return Volatile.Read(ref _completed) == 1;
+                throw new ArgumentNullException("callback");
             }
+            if (token.IsCancellationRequested)
+            {
+                return;
+            }
+            var timeout = new Timeout();
+            timeout._callback = () =>
+            {
+                try
+                {
+                    callback();
+                }
+                finally
+                {
+                    UnRoot(timeout);
+                }
+            };
+            timeout.Start(dueTime);
+            token.Register(timeout.Cancel);
+            Root(timeout);
         }
 
-        public bool Rooted
+        public static void Launch(Action callback, TimeSpan dueTime)
         {
-            get
-            {
-                return _rooted;
-            }
-            set
-            {
-                if (value == _rooted)
-                {
-                    return;
-                }
-                if (value)
-                {
-                    _root.Add(this);
-                }
-                else
-                {
-                    _root.Remove(this);
-                }
-                _rooted = value;
-            }
+            Launch(callback, (long)dueTime.TotalMilliseconds);
+        }
+
+        public static void Launch(Action callback, TimeSpan dueTime, CancellationToken token)
+        {
+            Launch(callback, (long)dueTime.TotalMilliseconds, token);
         }
 
         public void Cancel()
         {
-            var wrapped = Interlocked.Exchange(ref _wrapped, null);
-            if (wrapped != null)
+            // Protected by status
+            if (Interlocked.CompareExchange(ref _status, _canceling, _created) == _created)
             {
-                wrapped.Dispose();
+                Close();
+                Volatile.Write(ref _status, _canceled);
             }
-            _callback = null;
-            _root.Remove(this);
-            GC.SuppressFinalize(this);
         }
 
         public void Change(long dueTime)
         {
-            Initialize(dueTime);
+            // Protected by status
+            MarkChanging();
+            _startTime = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
+            _targetTime = _startTime + dueTime;
+            var wrapped = Interlocked.CompareExchange(ref _wrapped, null, null);
+            if (wrapped == null)
+            {
+                var created = new Timer(Finish, null, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
+                wrapped = Interlocked.CompareExchange(ref _wrapped, created, null);
+                if (wrapped == null)
+                {
+                    return;
+                }
+            }
+            wrapped.Change(TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
+            Volatile.Write(ref _status, _created);
         }
 
         public void Change(TimeSpan dueTime)
         {
-            Initialize((long)dueTime.TotalMilliseconds);
+            // Protected by status
+            Change((long)dueTime.TotalMilliseconds);
         }
 
         public long CheckRemaining()
         {
+            // Protected by status
             var remaining = _targetTime - ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
             if (remaining <= 0)
             {
-                Callback(null);
+                Finish(null);
                 return 0;
             }
             return remaining;
@@ -177,34 +231,64 @@ namespace Theraot.Threading
             return _hashcode;
         }
 
-        private void Callback(object state)
+        private static void Root(Timeout timeout)
         {
-            if (Interlocked.CompareExchange(ref _executed, 1, 0) == 0)
+            timeout._rootIndex = Interlocked.Increment(ref _lastRootIndex);
+            _root.Set(timeout._rootIndex, timeout);
+        }
+
+        private static void UnRoot(Timeout timeout)
+        {
+            var rootIndex = Interlocked.Exchange(ref timeout._rootIndex, -1);
+            if (rootIndex != -1)
             {
-                GC.KeepAlive(state);
-                _callback.Invoke();
-                Cancel();
-                Volatile.Write(ref _completed, 1);
+                _root.RemoveAt(rootIndex);
             }
         }
 
-        private void Initialize(long dueTime)
+        private void Close()
         {
-            if (Volatile.Read(ref _executed) == 1)
+            // Protected by status
+            var wrapped = Interlocked.Exchange(ref _wrapped, null);
+            if (wrapped != null)
             {
-                ThreadingHelper.SpinWaitWhile(ref _completed, 1);
-                Volatile.Write(ref _executed, 0);
+                wrapped.Dispose();
             }
-            _start = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
-            _targetTime = _start + dueTime;
-            if (_wrapped == null)
+            _callback = null;
+            GC.SuppressFinalize(this);
+        }
+
+        private void Finish(object state)
+        {
+            // Protected by status
+            GC.KeepAlive(state);
+            if (Interlocked.CompareExchange(ref _status, _executing, _created) == _created)
             {
-                _wrapped = new Timer(Callback, null, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
+                _callback.Invoke();
+                Close();
+                Volatile.Write(ref _status, _executed);
             }
-            else
+        }
+
+        private void MarkChanging()
+        {
+            // Protected by status
+            Interlocked.CompareExchange(ref _status, _executed, _starting);
+            var found = Interlocked.CompareExchange(ref _status, _canceled, _starting);
+            while ((found & _executing) == _executing)
             {
-                _wrapped.Change(TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
+                ThreadingHelper.SpinWaitWhile(ref _status, found);
+                Interlocked.CompareExchange(ref _status, _executed, _starting);
+                found = Interlocked.CompareExchange(ref _status, _canceled, _starting);
             }
+        }
+
+        private void Start(long dueTime)
+        {
+            // Protected by constructor
+            _startTime = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
+            _targetTime = _startTime + dueTime;
+            _wrapped = new Timer(Finish, null, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
         }
     }
 }
