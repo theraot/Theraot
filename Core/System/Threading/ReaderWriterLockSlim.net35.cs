@@ -439,8 +439,9 @@ namespace System.Threading
 
                 --numUpgradeWaiters;
             }
-            catch
+            catch (Exception ex)
             {
+                GC.KeepAlive(ex);
                 // An async exception occured, if we had taken the upgradable mode, release it
                 if (taken && !success)
                 {
