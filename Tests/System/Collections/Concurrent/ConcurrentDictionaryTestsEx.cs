@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using NUnit.Framework.Constraints;
+using Theraot.Collections;
 using Theraot.Collections.ThreadSafe;
 
 namespace MonoTests.System.Collections.Concurrent
@@ -61,9 +62,15 @@ namespace MonoTests.System.Collections.Concurrent
                 Assert.AreEqual(expectedCount, d.Count);
             }
             Assert.IsNull(a);
-            var copy = found.ToArray();
-            Assert.AreEqual("a", copy[0]);
-            Assert.AreEqual("0", copy[1]);
+            var array = found.ToArray();
+            if (!array.SetEquals(new[] { "0", "c" }))
+            {
+                foreach (var item in array)
+                {
+                    Console.WriteLine(item);
+                }
+                Assert.Fail();
+            }
             Assert.AreEqual(2, expectedCount);
             Assert.AreEqual(true, didAdd);
             Assert.AreEqual(false, didRemove);
@@ -150,9 +157,15 @@ namespace MonoTests.System.Collections.Concurrent
                 Assert.AreEqual(expectedCount[0], d.Count);
             }
             Assert.IsNull(a);
-            var copy = found.ToArray();
-            Assert.AreEqual("a", copy[0]);
-            Assert.AreEqual("0", copy[1]);
+            var array = found.ToArray();
+            if (!array.SetEquals(new[] { "0", "c" }))
+            {
+                foreach (var item in array)
+                {
+                    Console.WriteLine(item);
+                }
+                Assert.Fail();
+            }
             Assert.AreEqual(2, expectedCount[0]);
             Assert.AreEqual(1, didAdd);
             Assert.AreEqual(1, didRemove);
