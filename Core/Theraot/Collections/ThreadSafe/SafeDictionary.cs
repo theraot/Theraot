@@ -955,7 +955,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         // This is the item that has been stored with the key
                         // Throw to abort overwrite
-                        throw new ArgumentException("An item with the same key has already been added", "key"); // This exception will buble up to the context where "key" is an argument.
+                        throw CreateKeyArgumentException(null); // This exception will buble up to the context where "key" is an argument.
                     }
                     // This is not the key, overwrite?
                     return keyOverwriteCheck(found.Key);
@@ -1053,7 +1053,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         // This is the item that has been stored with the key
                         // Throw to abort overwrite
-                        throw new ArgumentException("An item with the same key has already been added", "key"); // This exception will buble up to the context where "key" is an argument.
+                        throw CreateKeyArgumentException(null); // This exception will buble up to the context where "key" is an argument.
                     }
                     // This is not the key, overwrite?
                     return keyOverwriteCheck(found.Key);
@@ -1094,7 +1094,7 @@ namespace Theraot.Collections.ThreadSafe
                         // This is the item that has been stored with the key
                         value = found.Value;
                         // Throw to abort overwrite
-                        throw new ArgumentException("An item with the same key has already been added", "key"); // This exception will buble up to the context where "key" is an argument.
+                        throw CreateKeyArgumentException(null); // This exception will buble up to the context where "key" is an argument.
                     }
                     // This is not the key, overwrite?
                     return keyOverwriteCheck(found.Key);
@@ -1373,7 +1373,7 @@ namespace Theraot.Collections.ThreadSafe
                     {
                         // This is the item that has been stored with the key
                         // Throw to abort overwrite
-                        throw new ArgumentException("An item with the same key has already been added", "key"); // This exception will buble up to the context where "key" is an argument.
+                        throw CreateKeyArgumentException(null); // This exception will buble up to the context where "key" is an argument.
                     }
                     // This is not the key, overwrite?
                     return keyOverwriteCheck(foundPair.Key);
@@ -1417,7 +1417,7 @@ namespace Theraot.Collections.ThreadSafe
                         // This is the item that has been stored with the key
                         value = found.Value;
                         // Throw to abort overwrite
-                        throw new ArgumentException("An item with the same key has already been added", "key"); // This exception will buble up to the context where "key" is an argument.
+                        throw CreateKeyArgumentException(null); // This exception will buble up to the context where "key" is an argument.
                     }
                     value = updateValueFactory(found.Key, found.Value);
                     return new KeyValuePair<TKey, TValue>(key, value);
@@ -1442,6 +1442,12 @@ namespace Theraot.Collections.ThreadSafe
                 }
                 attempts++;
             }
+        }
+
+        private static ArgumentException CreateKeyArgumentException(object key)
+        {
+            GC.KeepAlive(key);
+            return new ArgumentException("An item with the same key has already been added", "key");
         }
     }
 }
