@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
 using System.Runtime.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace MonoTests.System.Threading.Tasks
@@ -8,6 +9,26 @@ namespace MonoTests.System.Threading.Tasks
     [TestFixture]
     public class MinimalTaskTestsEx
     {
+#if NET20 || NET30 || NET35 || NET45
+
+        [Test]
+        public void Run()
+        {
+            var expectedScheduler = TaskScheduler.Current;
+            TaskScheduler foundScheduler = null;
+            var t = Task.Run(() =>
+            {
+                foundScheduler = TaskScheduler.Current;
+                Console.WriteLine("Task Scheduler: {0}", TaskScheduler.Current);
+                Console.WriteLine("IsThreadPoolThread: {0}", Thread.CurrentThread.IsThreadPoolThread);
+            });
+            Assert.AreEqual(TaskCreationOptions.DenyChildAttach, t.CreationOptions, "#1");
+            t.Wait();
+            Assert.AreEqual(expectedScheduler, foundScheduler);
+        }
+
+#endif
+
         [Test]
         public void WrapAggregateExceptionCorrectly()
         {
@@ -69,29 +90,6 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
-        public void WrapObjectDisposedExceptionCorrectly()
-        {
-            var objectName = "AAAAAAAAAAAAAAAA";
-            using (var x = new Task(() =>
-            {
-                throw new ObjectDisposedException(objectName);
-            }))
-            {
-                try
-                {
-                    x.Start();
-                    x.Wait();
-                }
-                catch (Exception ex)
-                {
-                    Assert.IsTrue(ex is AggregateException);
-                    Assert.IsTrue(ex.InnerException is ObjectDisposedException);
-                    Assert.IsTrue(((ObjectDisposedException)ex.InnerException).ObjectName == objectName);
-                }
-            }
-        }
-
-        [Test]
         public void WrapCustomExceptionCorrectly()
         {
             using (var x = new Task(() =>
@@ -108,6 +106,29 @@ namespace MonoTests.System.Threading.Tasks
                 {
                     Assert.IsTrue(ex is AggregateException);
                     Assert.IsTrue(ex.InnerException is CustomException);
+                }
+            }
+        }
+
+        [Test]
+        public void WrapObjectDisposedExceptionCorrectly()
+        {
+            const string ObjectName = "AAAAAAAAAAAAAAAA";
+            using (var x = new Task(() =>
+            {
+                throw new ObjectDisposedException(ObjectName);
+            }))
+            {
+                try
+                {
+                    x.Start();
+                    x.Wait();
+                }
+                catch (Exception ex)
+                {
+                    Assert.IsTrue(ex is AggregateException);
+                    Assert.IsTrue(ex.InnerException is ObjectDisposedException);
+                    Assert.IsTrue(((ObjectDisposedException)ex.InnerException).ObjectName == ObjectName);
                 }
             }
         }
