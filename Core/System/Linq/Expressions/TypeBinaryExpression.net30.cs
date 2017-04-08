@@ -162,9 +162,6 @@ namespace System.Linq.Expressions
 
         #endregion Reduce TypeEqual
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitTypeBinary(this);

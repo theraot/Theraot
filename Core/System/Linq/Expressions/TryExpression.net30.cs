@@ -90,9 +90,6 @@ namespace System.Linq.Expressions
             get { return _fault; }
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitTry(this);

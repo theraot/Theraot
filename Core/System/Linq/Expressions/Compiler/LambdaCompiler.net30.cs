@@ -228,20 +228,11 @@ namespace System.Linq.Expressions.Compiler
             return lb;
         }
 
-        /// <summary>
-        /// Gets the argument slot corresponding to the parameter at the given
-        /// index. Assumes that the method takes a certain number of prefix
-        /// arguments, followed by the real parameters stored in Parameters
-        /// </summary>
         internal int GetLambdaArgument(int index)
         {
             return index + (_hasClosureArgument ? 1 : 0) + (_method.IsStatic ? 0 : 1);
         }
 
-        /// <summary>
-        /// Returns the index-th argument. This method provides access to the actual arguments
-        /// defined on the lambda itself, and excludes the possible 0-th closure argument.
-        /// </summary>
         internal void EmitLambdaArgument(int index)
         {
             _ilg.EmitLoadArg(GetLambdaArgument(index));
@@ -270,10 +261,6 @@ namespace System.Linq.Expressions.Compiler
             return _typeBuilder.DefineField("<ExpressionCompilerImplementationDetails>{" + Interlocked.Increment(ref s_counter) + "}" + name, type, FieldAttributes.Static | FieldAttributes.Private);
         }
 
-        /// <summary>
-        /// Creates an unitialized field suitable for private implementation details
-        /// Works with DynamicMethods or TypeBuilders.
-        /// </summary>
         private MemberExpression CreateLazyInitializedField<T>(string name)
         {
             if (_method is DynamicMethod)

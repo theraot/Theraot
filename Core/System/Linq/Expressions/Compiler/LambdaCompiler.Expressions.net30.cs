@@ -32,9 +32,6 @@ namespace System.Linq.Expressions.Compiler
             EmitAsTailCallMask = 0x0f00
         }
 
-        /// <summary>
-        /// Update the flag with a new EmitAsTailCall flag
-        /// </summary>
         private static CompilationFlags UpdateEmitAsTailCallFlag(CompilationFlags flags, CompilationFlags newValue)
         {
             Debug.Assert(newValue == CompilationFlags.EmitAsTail || newValue == CompilationFlags.EmitAsMiddle || newValue == CompilationFlags.EmitAsNoTail);
@@ -42,9 +39,6 @@ namespace System.Linq.Expressions.Compiler
             return flags ^ oldValue | newValue;
         }
 
-        /// <summary>
-        /// Update the flag with a new EmitExpressionStart flag
-        /// </summary>
         private static CompilationFlags UpdateEmitExpressionStartFlag(CompilationFlags flags, CompilationFlags newValue)
         {
             Debug.Assert(newValue == CompilationFlags.EmitExpressionStart || newValue == CompilationFlags.EmitNoExpressionStart);
@@ -52,9 +46,6 @@ namespace System.Linq.Expressions.Compiler
             return flags ^ oldValue | newValue;
         }
 
-        /// <summary>
-        /// Update the flag with a new EmitAsType flag
-        /// </summary>
         private static CompilationFlags UpdateEmitAsTypeFlag(CompilationFlags flags, CompilationFlags newValue)
         {
             Debug.Assert(newValue == CompilationFlags.EmitAsDefaultType || newValue == CompilationFlags.EmitAsVoidType);
@@ -62,20 +53,11 @@ namespace System.Linq.Expressions.Compiler
             return flags ^ oldValue | newValue;
         }
 
-        /// <summary>
-        /// Generates code for this expression in a value position.
-        /// This method will leave the value of the expression
-        /// on the top of the stack typed as Type.
-        /// </summary>
         internal void EmitExpression(Expression node)
         {
             EmitExpression(node, CompilationFlags.EmitAsNoTail | CompilationFlags.EmitExpressionStart);
         }
 
-        /// <summary>
-        /// Emits an expression and discards the result.  For some nodes this emits
-        /// more optimal code then EmitExpression/Pop
-        /// </summary>
         private void EmitExpressionAsVoid(Expression node)
         {
             EmitExpressionAsVoid(node, CompilationFlags.EmitAsNoTail);
@@ -481,20 +463,11 @@ namespace System.Linq.Expressions.Compiler
             return true;
         }
 
-        /// <summary>
-        /// Emits arguments to a call, and returns an array of writebacks that
-        /// should happen after the call.
-        /// </summary>
         private List<WriteBack> EmitArguments(MethodBase method, IArgumentProvider args)
         {
             return EmitArguments(method, args, 0);
         }
 
-        /// <summary>
-        /// Emits arguments to a call, and returns an array of writebacks that
-        /// should happen after the call. For emitting dynamic expressions, we
-        /// need to skip the first parameter of the method (the call site).
-        /// </summary>
         private List<WriteBack> EmitArguments(MethodBase method, IArgumentProvider args, int skipParameters)
         {
             var pis = method.GetParameters();

@@ -127,9 +127,6 @@ namespace System.Linq.Expressions
             return GetId(target, ref _labelIds);
         }
 
-        /// <summary>
-        /// Write out the given AST
-        /// </summary>
         internal static void WriteTo(Expression node, TextWriter writer)
         {
             Debug.Assert(node != null);
@@ -1411,10 +1408,6 @@ namespace System.Linq.Expressions
             return GetDisplayName(lambda.Name);
         }
 
-        /// <summary>
-        /// Return true if the input string contains any whitespace character.
-        /// Otherwise false.
-        /// </summary>
         private static bool ContainsWhiteSpace(string name)
         {
             foreach (char c in name)

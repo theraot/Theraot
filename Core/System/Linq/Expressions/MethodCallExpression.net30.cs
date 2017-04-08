@@ -99,22 +99,11 @@ namespace System.Linq.Expressions
             throw ContractUtils.Unreachable;
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitMethodCall(this);
         }
 
-        /// <summary>
-        /// Returns a new MethodCallExpression replacing the existing instance/args with the
-        /// newly provided instance and args.    Arguments can be null to use the existing
-        /// arguments.
-        ///
-        /// This helper is provided to allow re-writing of nodes to not depend on the specific optimized
-        /// subclass of MethodCallExpression which is being used.
-        /// </summary>
         internal virtual MethodCallExpression Rewrite(Expression instance, IList<Expression> args)
         {
             throw ContractUtils.Unreachable;
