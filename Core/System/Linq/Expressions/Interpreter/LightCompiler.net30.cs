@@ -3226,7 +3226,7 @@ namespace System.Linq.Expressions.Interpreter
     {
         public readonly int ArgumentIndex;
 
-        public ByRefUpdater(int argumentIndex)
+        protected ByRefUpdater(int argumentIndex)
         {
             ArgumentIndex = argumentIndex;
         }
