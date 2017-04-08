@@ -31,8 +31,7 @@ namespace System.Threading.Tasks
     /// and may be used from multiple threads concurrently.
     /// </para>
     /// </remarks>
-    /// <typeparam name="TResult">The type of the result value assocatied with this <see
-    /// cref="TaskCompletionSource{TResult}"/>.</typeparam>
+    /// <typeparam name="TResult">The type of the result value assocatied with this <see cref="TaskCompletionSource{TResult}"/>.</typeparam>
     [HostProtection(Synchronization = true, ExternalThreading = true)]
     public class TaskCompletionSource<TResult>
     {
@@ -101,8 +100,7 @@ namespace System.Threading.Tasks
         /// by this <see cref="TaskCompletionSource{TResult}"/>.
         /// </summary>
         /// <remarks>
-        /// This property enables a consumer access to the <see
-        /// cref="T:System.Threading.Tasks.Task{TResult}"/> that is controlled by this instance.
+        /// This property enables a consumer access to the <see cref="T:System.Threading.Tasks.Task{TResult}"/> that is controlled by this instance.
         /// The <see cref="SetResult"/>, <see cref="SetException(System.Exception)"/>,
         /// <see cref="SetException(System.Collections.Generic.IEnumerable{System.Exception})"/>, and <see cref="SetCanceled"/>
         /// methods (and their "Try" variants) on this instance all result in the relevant state
@@ -129,8 +127,7 @@ namespace System.Threading.Tasks
         /// <see cref="System.Threading.Tasks.TaskStatus.Faulted">Faulted</see>
         /// state.
         /// </summary>
-        /// <param name="exception">The exception to bind to this <see
-        /// cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
+        /// <param name="exception">The exception to bind to this <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
         /// <returns>True if the operation was successful; otherwise, false.</returns>
         /// <remarks>This operation will return false if the
         /// <see cref="T:System.Threading.Tasks.Task{TResult}"/> is already in one
@@ -159,8 +156,7 @@ namespace System.Threading.Tasks
         /// <see cref="System.Threading.Tasks.TaskStatus.Faulted">Faulted</see>
         /// state.
         /// </summary>
-        /// <param name="exceptions">The collection of exceptions to bind to this <see
-        /// cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
+        /// <param name="exceptions">The collection of exceptions to bind to this <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
         /// <returns>True if the operation was successful; otherwise, false.</returns>
         /// <remarks>This operation will return false if the
         /// <see cref="T:System.Threading.Tasks.Task{TResult}"/> is already in one
@@ -200,8 +196,7 @@ namespace System.Threading.Tasks
         /// <see cref="System.Threading.Tasks.TaskStatus.Faulted">Faulted</see>
         /// state.
         /// </summary>
-        /// <param name="exception">The exception to bind to this <see
-        /// cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
+        /// <param name="exception">The exception to bind to this <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="exception"/> argument is null.</exception>
         /// <exception cref="T:System.InvalidOperationException">
         /// The underlying <see cref="T:System.Threading.Tasks.Task{TResult}"/> is already in one
@@ -228,8 +223,7 @@ namespace System.Threading.Tasks
         /// <see cref="System.Threading.Tasks.TaskStatus.Faulted">Faulted</see>
         /// state.
         /// </summary>
-        /// <param name="exceptions">The collection of exceptions to bind to this <see
-        /// cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
+        /// <param name="exceptions">The collection of exceptions to bind to this <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="exceptions"/> argument is null.</exception>
         /// <exception cref="T:System.ArgumentException">There are one or more null elements in <paramref name="exceptions"/>.</exception>
         /// <exception cref="T:System.InvalidOperationException">
@@ -254,8 +248,7 @@ namespace System.Threading.Tasks
         /// <see cref="System.Threading.Tasks.TaskStatus.RanToCompletion">RanToCompletion</see>
         /// state.
         /// </summary>
-        /// <param name="result">The result value to bind to this <see
-        /// cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
+        /// <param name="result">The result value to bind to this <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
         /// <returns>True if the operation was successful; otherwise, false.</returns>
         /// <remarks>This operation will return false if the
         /// <see cref="T:System.Threading.Tasks.Task{TResult}"/> is already in one
@@ -279,8 +272,7 @@ namespace System.Threading.Tasks
         /// <see cref="System.Threading.Tasks.TaskStatus.RanToCompletion">RanToCompletion</see>
         /// state.
         /// </summary>
-        /// <param name="result">The result value to bind to this <see
-        /// cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
+        /// <param name="result">The result value to bind to this <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
         /// <exception cref="T:System.InvalidOperationException">
         /// The underlying <see cref="T:System.Threading.Tasks.Task{TResult}"/> is already in one
         /// of the three final states:
