@@ -91,7 +91,7 @@ namespace System.Linq.Expressions
         internal static Expression ReduceMemberInit(Expression objExpression, ReadOnlyCollection<MemberBinding> bindings, bool keepOnStack)
         {
             var objVar = Variable(objExpression.Type, null);
-            int count = bindings.Count;
+            var count = bindings.Count;
             var block = new Expression[count + 2];
             block[0] = Assign(objVar, objExpression);
             for (int i = 0; i < count; i++)
@@ -105,7 +105,7 @@ namespace System.Linq.Expressions
         internal static Expression ReduceListInit(Expression listExpression, ReadOnlyCollection<ElementInit> initializers, bool keepOnStack)
         {
             var listVar = Variable(listExpression.Type, null);
-            int count = initializers.Count;
+            var count = initializers.Count;
             var block = new Expression[count + 2];
             block[0] = Assign(listVar, listExpression);
             for (int i = 0; i < count; i++)

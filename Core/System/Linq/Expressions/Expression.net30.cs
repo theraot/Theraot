@@ -315,7 +315,7 @@ namespace System.Linq.Expressions
                 throw new ArgumentNullException(paramName);
             }
 
-            bool canWrite = false;
+            var canWrite = false;
             switch (expression.NodeType)
             {
                 case ExpressionType.Index:

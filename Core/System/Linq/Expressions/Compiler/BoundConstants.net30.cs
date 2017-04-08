@@ -125,7 +125,7 @@ namespace System.Linq.Expressions.Compiler
         /// </summary>
         internal void EmitCacheConstants(LambdaCompiler lc)
         {
-            int count = 0;
+            var count = 0;
             foreach (var reference in _references)
             {
                 if (!lc.CanEmitBoundConstants)

@@ -524,7 +524,7 @@ namespace System.Linq.Expressions
         /// otherwise, returns the original expression.</returns>
         protected internal virtual Expression VisitBlock(BlockExpression node)
         {
-            int count = node.ExpressionCount;
+            var count = node.ExpressionCount;
             Expression[] nodes = null;
             for (int i = 0; i < count; i++)
             {

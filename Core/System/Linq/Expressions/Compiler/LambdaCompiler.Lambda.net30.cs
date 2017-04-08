@@ -50,8 +50,8 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitClosureCreation(LambdaCompiler inner)
         {
-            bool closure = inner._scope.NeedsClosure;
-            bool boundConstants = inner._boundConstants.Count > 0;
+            var closure = inner._scope.NeedsClosure;
+            var boundConstants = inner._boundConstants.Count > 0;
 
             if (!closure && !boundConstants)
             {

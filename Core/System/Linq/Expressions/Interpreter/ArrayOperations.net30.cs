@@ -69,7 +69,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            int length = ConvertHelper.ToInt32NoNull(frame.Pop());
+            var length = ConvertHelper.ToInt32NoNull(frame.Pop());
             if (length < 0)
             {
                 // to make behavior aligned with array creation emitted by C# compiler
@@ -144,7 +144,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            int index = ConvertHelper.ToInt32NoNull(frame.Pop());
+            var index = ConvertHelper.ToInt32NoNull(frame.Pop());
             var array = (Array)frame.Pop();
             frame.Push(array.GetValue(index));
             return +1;
@@ -177,7 +177,7 @@ namespace System.Linq.Expressions.Interpreter
         public override int Run(InterpretedFrame frame)
         {
             var value = frame.Pop();
-            int index = ConvertHelper.ToInt32NoNull(frame.Pop());
+            var index = ConvertHelper.ToInt32NoNull(frame.Pop());
             var array = (Array)frame.Pop();
             array.SetValue(value, index);
             return +1;

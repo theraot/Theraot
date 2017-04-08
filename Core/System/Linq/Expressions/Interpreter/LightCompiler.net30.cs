@@ -210,7 +210,7 @@ namespace System.Linq.Expressions.Interpreter
 
             //to find the closest debug info before the current index
 
-            int i = Array.BinarySearch<DebugInfo>(debugInfos, d, s_debugComparer);
+            var i = Array.BinarySearch<DebugInfo>(debugInfos, d, s_debugComparer);
             if (i < 0)
             {
                 //~i is the index for the first bigger element
@@ -516,7 +516,7 @@ namespace System.Linq.Expressions.Interpreter
                 // TODO: basic flow analysis so we don't have to initialize all
                 // variables.
                 locals = new LocalDefinition[variables.Count];
-                int localCnt = 0;
+                var localCnt = 0;
                 foreach (var variable in variables)
                 {
                     var local = _locals.DefineLocal(variable, start);
@@ -646,7 +646,7 @@ namespace System.Linq.Expressions.Interpreter
                 var method = pi.GetSetMethod(true);
                 EmitThisForMethodCall(value);
 
-                int start = _instructions.Count;
+                var start = _instructions.Count;
                 if (!asVoid)
                 {
                     var local = _locals.DefineLocal(Expression.Parameter(value.Type), start);
@@ -669,7 +669,7 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     EmitThisForMethodCall(value);
 
-                    int start = _instructions.Count;
+                    var start = _instructions.Count;
                     if (!asVoid)
                     {
                         var local = _locals.DefineLocal(Expression.Parameter(value.Type), start);
@@ -1578,11 +1578,11 @@ namespace System.Linq.Expressions.Interpreter
         private void CompileIntSwitchExpression<T>(SwitchExpression node)
         {
             var end = DefineLabel(null);
-            bool hasValue = node.Type != typeof(void);
+            var hasValue = node.Type != typeof(void);
 
             Compile(node.SwitchValue);
             var caseDict = new Dictionary<T, int>();
-            int switchIndex = _instructions.Count;
+            var switchIndex = _instructions.Count;
             _instructions.EmitIntSwitch(caseDict);
 
             if (node.DefaultBody != null)
@@ -1599,7 +1599,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 var switchCase = node.Cases[i];
 
-                int caseOffset = _instructions.Count - switchIndex;
+                var caseOffset = _instructions.Count - switchIndex;
                 foreach (ConstantExpression testValue in switchCase.TestValues)
                 {
                     var key = (T)testValue.Value;
@@ -1623,11 +1623,11 @@ namespace System.Linq.Expressions.Interpreter
         private void CompileStringSwitchExpression(SwitchExpression node)
         {
             var end = DefineLabel(null);
-            bool hasValue = node.Type != typeof(void);
+            var hasValue = node.Type != typeof(void);
 
             Compile(node.SwitchValue);
             var caseDict = new Dictionary<string, int>();
-            int switchIndex = _instructions.Count;
+            var switchIndex = _instructions.Count;
             // by default same as default
             var nullCase = new StrongBox<int>(1);
             _instructions.EmitStringSwitch(caseDict, nullCase);
@@ -1646,7 +1646,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 var switchCase = node.Cases[i];
 
-                int caseOffset = _instructions.Count - switchIndex;
+                var caseOffset = _instructions.Count - switchIndex;
                 foreach (ConstantExpression testValue in switchCase.TestValues)
                 {
                     var key = (string)testValue.Value;
@@ -1955,7 +1955,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private void CompileAsVoidRemoveRethrow(Expression expr)
         {
-            int stackDepth = _instructions.CurrentStackDepth;
+            var stackDepth = _instructions.CurrentStackDepth;
 
             if (expr.NodeType == ExpressionType.Throw)
             {
@@ -1979,7 +1979,7 @@ namespace System.Linq.Expressions.Interpreter
 
             var end = _instructions.MakeLabel();
             var gotoEnd = _instructions.MakeLabel();
-            int tryStart = _instructions.Count;
+            var tryStart = _instructions.Count;
 
             BranchLabel startOfFinally = null;
             if (node.Finally != null)
@@ -1999,8 +1999,8 @@ namespace System.Linq.Expressions.Interpreter
             PushLabelBlock(LabelScopeKind.Try);
             Compile(node.Body);
 
-            bool hasValue = node.Body.Type != typeof(void);
-            int tryEnd = _instructions.Count;
+            var hasValue = node.Body.Type != typeof(void);
+            var tryEnd = _instructions.Count;
 
             // handlers jump here:
             _instructions.MarkLabel(gotoEnd);
@@ -2029,8 +2029,8 @@ namespace System.Linq.Expressions.Interpreter
                             }
 
                             // at this point the stack balance is prepared for the hidden exception variable:
-                            int handlerLabel = _instructions.MarkRuntimeLabel();
-                            int handlerStart = _instructions.Count;
+                            var handlerLabel = _instructions.MarkRuntimeLabel();
+                            var handlerStart = _instructions.Count;
 
                             CompileAsVoidRemoveRethrow(handler.Body);
                             _instructions.EmitLeaveFault(hasValue);
@@ -2069,8 +2069,8 @@ namespace System.Linq.Expressions.Interpreter
                     }
 
                     // at this point the stack balance is prepared for the hidden exception variable:
-                    int handlerLabel = _instructions.MarkRuntimeLabel();
-                    int handlerStart = _instructions.Count;
+                    var handlerLabel = _instructions.MarkRuntimeLabel();
+                    var handlerStart = _instructions.Count;
 
                     CompileSetVariable(parameter, true);
                     Compile(handler.Body);
@@ -2468,7 +2468,7 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             var elementType = node.Type.GetElementType();
-            int rank = node.Expressions.Count;
+            var rank = node.Expressions.Count;
 
             if (node.NodeType == ExpressionType.NewArrayInit)
             {
@@ -2510,7 +2510,7 @@ namespace System.Linq.Expressions.Interpreter
         private void CompileDebugInfoExpression(Expression expr)
         {
             var node = (DebugInfoExpression)expr;
-            int start = _instructions.Count;
+            var start = _instructions.Count;
             var info = new DebugInfo()
             {
                 Index = start,
@@ -2783,7 +2783,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 foreach (var param in parameters)
                 {
-                    int count = _definedParameters[param];
+                    var count = _definedParameters[param];
                     if (count == 0)
                     {
                         _definedParameters.Remove(param);
@@ -2878,8 +2878,8 @@ namespace System.Linq.Expressions.Interpreter
 
         internal void CompileAsVoid(Expression expr)
         {
-            bool pushLabelBlock = TryPushLabelBlock(expr);
-            int startingStackDepth = _instructions.CurrentStackDepth;
+            var pushLabelBlock = TryPushLabelBlock(expr);
+            var startingStackDepth = _instructions.CurrentStackDepth;
             switch (expr.NodeType)
             {
                 case ExpressionType.Assign:
@@ -2917,7 +2917,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private void CompileNoLabelPush(Expression expr)
         {
-            int startingStackDepth = _instructions.CurrentStackDepth;
+            var startingStackDepth = _instructions.CurrentStackDepth;
             switch (expr.NodeType)
             {
                 case ExpressionType.Add:
@@ -3216,7 +3216,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public void Compile(Expression expr)
         {
-            bool pushLabelBlock = TryPushLabelBlock(expr);
+            var pushLabelBlock = TryPushLabelBlock(expr);
             CompileNoLabelPush(expr);
             if (pushLabelBlock)
             {

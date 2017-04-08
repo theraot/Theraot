@@ -2684,7 +2684,7 @@ namespace System.Linq.Expressions.Interpreter
 
             protected internal override Expression VisitRuntimeVariables(RuntimeVariablesExpression node)
             {
-                int count = node.Variables.Count;
+                var count = node.Variables.Count;
                 var boxes = new List<IStrongBox>();
                 var vars = new List<ParameterExpression>();
                 var indexes = new int[count];

@@ -164,8 +164,8 @@ namespace System.Collections.Generic
             }
             else
             {
-                int copiedCount = 0;
-                int currentIndex = arrayIndex;
+                var copiedCount = 0;
+                var currentIndex = arrayIndex;
                 foreach (T item in this)
                 {
                     array[currentIndex] = item;
@@ -293,7 +293,7 @@ namespace System.Collections.Generic
             {
                 throw new ArgumentNullException("other");
             }
-            int containsCount = 0;
+            var containsCount = 0;
             foreach (T item in ToHashSet(other))
             {
                 if (!_wrapped.ContainsKey(item))
@@ -356,8 +356,8 @@ namespace System.Collections.Generic
             }
             else
             {
-                int elementCount = 0;
-                int matchCount = 0;
+                var elementCount = 0;
+                var matchCount = 0;
                 foreach (T item in other)
                 {
                     elementCount++;
@@ -385,7 +385,7 @@ namespace System.Collections.Generic
             }
             else
             {
-                int elementCount = 0;
+                var elementCount = 0;
                 foreach (T item in other)
                 {
                     elementCount++;
@@ -507,7 +507,7 @@ namespace System.Collections.Generic
                 try
                 {
                     IEqualityComparer<T> comparer = EqualityComparer<T>.Default;
-                    int hash = 0;
+                    var hash = 0;
                     foreach (var item in hashset)
                     {
                         hash ^= comparer.GetHashCode(item);

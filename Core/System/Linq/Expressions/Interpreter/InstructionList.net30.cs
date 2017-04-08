@@ -115,9 +115,9 @@ namespace System.Linq.Expressions.Interpreter
                 Func<int, int> labelIndexer, IList<KeyValuePair<int, object>> debugCookies)
             {
                 var result = new List<InstructionView>();
-                int index = 0;
-                int stackDepth = 0;
-                int continuationsDepth = 0;
+                var index = 0;
+                var stackDepth = 0;
+                var continuationsDepth = 0;
 
                 var cookieEnumerator = (debugCookies != null ? debugCookies : new KeyValuePair<int, object>[0]).GetEnumerator();
                 var hasCookie = cookieEnumerator.MoveNext();
@@ -131,8 +131,8 @@ namespace System.Linq.Expressions.Interpreter
                         hasCookie = cookieEnumerator.MoveNext();
                     }
 
-                    int stackDiff = instructions[i].StackBalance;
-                    int contDiff = instructions[i].ContinuationsBalance;
+                    var stackDiff = instructions[i].StackBalance;
+                    var contDiff = instructions[i].ContinuationsBalance;
                     var name = instructions[i].ToDebugString(i, cookie, labelIndexer, objects);
                     result.Add(new InstructionView(instructions[i], name, i, stackDepth, continuationsDepth));
 
@@ -361,7 +361,7 @@ namespace System.Linq.Expressions.Interpreter
 
                 if (value is int)
                 {
-                    int i = (int)value;
+                    var i = (int)value;
                     if (i >= PushIntMinCachedValue && i <= PushIntMaxCachedValue)
                     {
                         if (s_ints == null)
@@ -386,7 +386,7 @@ namespace System.Linq.Expressions.Interpreter
 
             if (_objects.Count < s_loadObjectCached.Length)
             {
-                uint index = (uint)_objects.Count;
+                var index = (uint)_objects.Count;
                 _objects.Add(value);
                 Emit(s_loadObjectCached[index] ?? (s_loadObjectCached[index] = new LoadCachedObjectInstruction(index)));
             }

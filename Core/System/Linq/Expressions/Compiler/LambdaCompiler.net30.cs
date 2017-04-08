@@ -102,7 +102,7 @@ namespace System.Linq.Expressions.Compiler
             method.SetParameters(paramTypes);
             var paramNames = lambda.Parameters.Map(p => p.Name);
             // parameters are index from 1, with closure argument we need to skip the first arg
-            int startIndex = _hasClosureArgument ? 2 : 1;
+            var startIndex = _hasClosureArgument ? 2 : 1;
             for (int i = 0; i < paramNames.Length; i++)
             {
                 method.DefineParameter(i + startIndex, ParameterAttributes.None, paramNames[i]);

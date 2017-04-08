@@ -187,7 +187,7 @@ namespace System.Linq.Expressions.Compiler
 
                     // combine the number of parents we walked, with the
                     // real index of variable to get the index to emit.
-                    ulong index = (parents << 32) | (uint)locals.Indexes[variable];
+                    var index = (parents << 32) | (uint)locals.Indexes[variable];
 
                     indexes.Add((long)index);
                 }
@@ -317,7 +317,7 @@ namespace System.Linq.Expressions.Compiler
             lc.IL.Emit(OpCodes.Newarr, typeof(object));
 
             // initialize all elements
-            int i = 0;
+            var i = 0;
             foreach (ParameterExpression v in _hoistedLocals.Variables)
             {
                 // array[i] = new StrongBox<T>(...);
@@ -328,7 +328,7 @@ namespace System.Linq.Expressions.Compiler
                 if (IsMethod && lc.Parameters.Contains(v))
                 {
                     // array[i] = new StrongBox<T>(argument);
-                    int index = lc.Parameters.IndexOf(v);
+                    var index = lc.Parameters.IndexOf(v);
                     lc.EmitLambdaArgument(index);
                     lc.IL.Emit(OpCodes.Newobj, boxType.GetConstructor(new Type[] { v.Type }));
                 }

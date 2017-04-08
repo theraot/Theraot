@@ -170,7 +170,7 @@ namespace System.Linq.Expressions.Interpreter
             Debug.Assert(!local.IsBoxed && !local.InClosure);
             _variables[variable].Variable.IsBoxed = true;
 
-            int curChild = 0;
+            var curChild = 0;
             for (int i = scope.Start; i < scope.Stop && i < instructions.Count; i++)
             {
                 if (scope.ChildScopes != null && scope.ChildScopes[curChild].Start == i)
@@ -194,7 +194,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public int GetOrDefineLocal(ParameterExpression var)
         {
-            int index = GetLocalIndex(var);
+            var index = GetLocalIndex(var);
             if (index == -1)
             {
                 return DefineLocal(var, 0).Index;

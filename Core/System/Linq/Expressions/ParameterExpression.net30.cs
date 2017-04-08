@@ -243,7 +243,7 @@ namespace System.Linq.Expressions
                 throw Error.ArgumentCannotBeOfTypeVoid();
             }
 
-            bool byref = type.IsByRef;
+            var byref = type.IsByRef;
             if (byref)
             {
                 type = type.GetElementType();

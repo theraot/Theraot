@@ -56,7 +56,7 @@ namespace System.Linq.Expressions.Compiler
         {
             if (node.NodeType == ExpressionType.Quote)
             {
-                bool savedInQuote = _inQuote;
+                var savedInQuote = _inQuote;
                 _inQuote = true;
                 Visit(node.Operand);
                 _inQuote = savedInQuote;

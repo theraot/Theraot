@@ -220,7 +220,7 @@ namespace System.Linq.Expressions
 
             var boundsList = bounds.ToReadOnly();
 
-            int dimensions = boundsList.Count;
+            var dimensions = boundsList.Count;
             if (dimensions <= 0)
                 throw Error.BoundsCannotBeLessThanOne();
 
