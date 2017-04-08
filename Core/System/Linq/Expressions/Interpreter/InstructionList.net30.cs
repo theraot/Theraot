@@ -212,9 +212,6 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        /// <summary>
-        /// Attaches a cookie to the last emitted instruction.
-        /// </summary>
         [Conditional("DEBUG")]
         public void SetDebugCookie(object cookie)
         {

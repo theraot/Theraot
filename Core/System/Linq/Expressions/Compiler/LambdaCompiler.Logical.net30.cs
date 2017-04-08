@@ -44,9 +44,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        /// <summary>
-        /// returns true if the expression is not empty, otherwise false.
-        /// </summary>
         private static bool NotEmpty(Expression node)
         {
             var empty = node as DefaultExpression;
@@ -58,10 +55,6 @@ namespace System.Linq.Expressions.Compiler
             return false;
         }
 
-        /// <summary>
-        /// returns true if the expression is NOT empty and is not debug info,
-        /// or a block that contains only insignificant expressions.
-        /// </summary>
         private static bool Significant(Expression node)
         {
             var block = node as BlockExpression;

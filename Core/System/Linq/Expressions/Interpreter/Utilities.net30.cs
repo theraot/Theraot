@@ -251,10 +251,6 @@ namespace System.Linq.Expressions.Interpreter
     {
         private const string prevStackTraces = "PreviousStackTraces";
 
-        /// <summary>
-        /// Updates an exception before it's getting re-thrown so
-        /// we can present a reasonable stack trace to the user.
-        /// </summary>
         public static Exception UpdateForRethrow(Exception rethrow)
         {
 #if FEATURE_STACK_TRACES

@@ -92,9 +92,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        /// <summary>
-        /// Emits a Ldind* instruction for the appropriate type
-        /// </summary>
         internal static void EmitLoadValueIndirect(this ILGenerator il, Type type)
         {
             ContractUtils.RequiresNotNull(type, "type");
@@ -148,9 +145,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        /// <summary>
-        /// Emits a Stind* instruction for the appropriate type.
-        /// </summary>
         internal static void EmitStoreValueIndirect(this ILGenerator il, Type type)
         {
             ContractUtils.RequiresNotNull(type, "type");
@@ -260,9 +254,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        /// <summary>
-        /// Emits a Stelem* instruction for the appropriate type.
-        /// </summary>
         internal static void EmitStoreElement(this ILGenerator il, Type type)
         {
             ContractUtils.RequiresNotNull(type, "type");
@@ -1096,10 +1087,6 @@ namespace System.Linq.Expressions.Compiler
 
         #region Arrays
 
-        /// <summary>
-        /// Emits an array of constant values provided in the given list.
-        /// The array is strongly typed.
-        /// </summary>
         internal static void EmitArray<T>(this ILGenerator il, IList<T> items)
         {
             ContractUtils.RequiresNotNull(items, "items");
@@ -1115,14 +1102,14 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        /// <summary>
-        /// Emits an array of values of count size.  The items are emitted via the callback
-        /// which is provided with the current item index to emit.
-        /// </summary>
         internal static void EmitArray(this ILGenerator il, Type elementType, int count, Action<int> emit)
         {
             ContractUtils.RequiresNotNull(elementType, "elementType");
-            ContractUtils.RequiresNotNull(emit, "emit");
+            if (emit == null)
+            {
+                ContractUtils.RequiresNotNull(emit, "emit");
+                throw new ArgumentNullException("emit");
+            }
             if (count < 0)
                 throw Error.CountCannotBeNegative();
 
@@ -1139,11 +1126,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        /// <summary>
-        /// Emits an array construction code.
-        /// The code assumes that bounds for all dimensions
-        /// are already emitted.
-        /// </summary>
         internal static void EmitArray(this ILGenerator il, Type arrayType)
         {
             ContractUtils.RequiresNotNull(arrayType, "arrayType");
@@ -1208,10 +1190,6 @@ namespace System.Linq.Expressions.Compiler
             il.EmitNew(typeof(decimal).GetConstructor(new Type[] { typeof(int), typeof(int), typeof(int), typeof(bool), typeof(byte) }));
         }
 
-        /// <summary>
-        /// Emits default(T)
-        /// Semantics match C# compiler behavior
-        /// </summary>
         internal static void EmitDefault(this ILGenerator il, Type type)
         {
             switch (type.GetTypeCode())

@@ -150,9 +150,6 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        /// <summary>
-        /// Goto the index of the first instruction of the suitable catch block
-        /// </summary>
         internal int GotoHandler(InterpretedFrame frame, object exception, out ExceptionHandler handler)
         {
             Debug.Assert(_handlers != null, "we should have at least one handler if the method gets called");

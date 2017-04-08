@@ -83,9 +83,6 @@ namespace System.Linq.Expressions
             get { return _members; }
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitNew(this);

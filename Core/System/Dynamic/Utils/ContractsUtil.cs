@@ -46,9 +46,6 @@ namespace System.Dynamic.Utils
             }
         }
 
-        /// <summary>
-        /// Requires the array and all its items to be non-null.
-        /// </summary>
         public static void RequiresNotNullItems<T>(IList<T> array, string arrayName)
         {
             Debug.Assert(arrayName != null);
@@ -63,11 +60,6 @@ namespace System.Dynamic.Utils
             }
         }
 
-        /// <summary>
-        /// Requires the range [offset, offset + count] to be a subset of [0, array.Count].
-        /// </summary>
-        /// <exception cref="ArgumentNullException">Array is <c>null</c>.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Offset or count are out of range.</exception>
         public static void RequiresArrayRange<T>(IList<T> array, int offset, int count, string offsetName, string countName)
         {
             Debug.Assert(!string.IsNullOrEmpty(offsetName));

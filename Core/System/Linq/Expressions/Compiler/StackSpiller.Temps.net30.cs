@@ -290,11 +290,6 @@ namespace System.Linq.Expressions.Compiler
             _tm.VerifyTemps();
         }
 
-        /// <summary>
-        /// Will perform:
-        ///     save: temp = expression
-        ///     return value: temp
-        /// </summary>
         private ParameterExpression ToTemp(Expression expression, out Expression save)
         {
             var temp = MakeTemp(expression.Type);
@@ -302,21 +297,11 @@ namespace System.Linq.Expressions.Compiler
             return temp;
         }
 
-        /// <summary>
-        /// Creates a special block that is marked as not allowing jumps in.
-        /// This should not be used for rewriting BlockExpression itself, or
-        /// anything else that supports jumping.
-        /// </summary>
         private static Expression MakeBlock(params Expression[] expressions)
         {
             return MakeBlock((IList<Expression>)expressions);
         }
 
-        /// <summary>
-        /// Creates a special block that is marked as not allowing jumps in.
-        /// This should not be used for rewriting BlockExpression itself, or
-        /// anything else that supports jumping.
-        /// </summary>
         private static Expression MakeBlock(IList<Expression> expressions)
         {
             return new SpilledExpressionBlock(expressions);

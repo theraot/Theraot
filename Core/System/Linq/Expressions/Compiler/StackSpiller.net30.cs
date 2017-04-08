@@ -74,12 +74,6 @@ namespace System.Linq.Expressions.Compiler
         /// </summary>
         private RewriteAction _lambdaRewrite;
 
-        /// <summary>
-        /// Analyzes a lambda, producing a new one that has correct invariants
-        /// for codegen. In particular, it spills the IL stack to temps in
-        /// places where it's invalid to have a non-empty stack (for example,
-        /// entering a try statement).
-        /// </summary>
         internal static LambdaExpression AnalyzeLambda(LambdaExpression lambda)
         {
             return lambda.Accept(new StackSpiller(Stack.Empty));
@@ -1021,11 +1015,6 @@ namespace System.Linq.Expressions.Compiler
 
         #region Cloning
 
-        /// <summary>
-        /// Will clone an IList into an array of the same size, and copy
-        /// all vaues up to (and NOT including) the max index
-        /// </summary>
-        /// <returns>The cloned array.</returns>
         private static T[] Clone<T>(ReadOnlyCollection<T> original, int max)
         {
             Debug.Assert(original != null);
@@ -1041,23 +1030,6 @@ namespace System.Linq.Expressions.Compiler
 
         #endregion Cloning
 
-        /// <summary>
-        /// If we are spilling, requires that there are no byref arguments to
-        /// the method call.
-        ///
-        /// Used for:
-        ///   NewExpression,
-        ///   MethodCallExpression,
-        ///   InvocationExpression,
-        ///   DynamicExpression,
-        ///   UnaryExpression,
-        ///   BinaryExpression.
-        /// </summary>
-        /// <remarks>
-        /// We could support this if spilling happened later in the compiler.
-        /// Other expressions that can emit calls with arguments (such as
-        /// ListInitExpression and IndexExpression) don't allow byref arguments.
-        /// </remarks>
         private static void RequireNoRefArgs(MethodBase method)
         {
             if (method != null && method.GetParameters().Any(p => p.ParameterType.IsByRef))
@@ -1066,22 +1038,6 @@ namespace System.Linq.Expressions.Compiler
             }
         }
 
-        /// <summary>
-        /// Requires that the instance is not a value type (primitive types are
-        /// okay because they're immutable).
-        ///
-        /// Used for:
-        ///  MethodCallExpression,
-        ///  MemberExpression (for properties),
-        ///  IndexExpression,
-        ///  ListInitExpression,
-        ///  MemberInitExpression,
-        ///  assign to MemberExpression,
-        ///  assign to IndexExpression.
-        /// </summary>
-        /// <remarks>
-        /// We could support this if spilling happened later in the compiler.
-        /// </remarks>
         private static void RequireNotRefInstance(Expression instance)
         {
             // Primitive value types are okay because they are all readonly,

@@ -83,10 +83,6 @@ namespace System.Linq.Expressions.Compiler
             return _values.ToArray();
         }
 
-        /// <summary>
-        /// Called by VariableBinder. Adds the constant to the list (if needed)
-        /// and increases the reference count by one
-        /// </summary>
         internal void AddReference(object value, Type type)
         {
             if (!_indexes.ContainsKey(value))
@@ -97,9 +93,6 @@ namespace System.Linq.Expressions.Compiler
             Helpers.IncrementCount(new TypedConstant(value, type), _references);
         }
 
-        /// <summary>
-        /// Emits a live object as a constant
-        /// </summary>
         internal void EmitConstant(LambdaCompiler lc, object value, Type type)
         {
             Debug.Assert(!ILGen.CanEmitConstant(value, type));
@@ -119,10 +112,6 @@ namespace System.Linq.Expressions.Compiler
             EmitConstantFromArray(lc, value, type);
         }
 
-        /// <summary>
-        /// Emit code to cache frequently used constants into IL locals,
-        /// instead of pulling them out of the array each time
-        /// </summary>
         internal void EmitCacheConstants(LambdaCompiler lc)
         {
             var count = 0;

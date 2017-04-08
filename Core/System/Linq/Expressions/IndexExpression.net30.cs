@@ -117,9 +117,6 @@ namespace System.Linq.Expressions
             get { return _arguments.Count; }
         }
 
-        /// <summary>
-        /// Dispatches to the specific visit method for this node type.
-        /// </summary>
         protected internal override Expression Accept(ExpressionVisitor visitor)
         {
             return visitor.VisitIndex(this);
@@ -227,10 +224,6 @@ namespace System.Linq.Expressions
 
         #region methods for finding a PropertyInfo by its name
 
-        /// <summary>
-        /// The method finds the instance property with the specified name in a type. The property's type signature needs to be compatible with
-        /// the arguments if it is a indexer. If the arguments is null or empty, we get a normal property.
-        /// </summary>
         private static PropertyInfo FindInstanceProperty(Type type, string propertyName, Expression[] arguments)
         {
             // bind to public names first
