@@ -31,7 +31,7 @@ namespace System
         public Progress(Action<T> handler)
             : this()
         {
-            if (ReferenceEquals(handler, null))
+            if (handler == null)
             {
                 throw new ArgumentNullException("handler");
             }

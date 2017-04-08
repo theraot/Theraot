@@ -312,6 +312,11 @@ namespace MonoTests.System.Linq.Expressions
 
         public static void AssertThrows(this Action action, Type type)
         {
+            if (action == null)
+            {
+                Assert.Fail();
+                return;
+            }
             try
             {
                 action();
