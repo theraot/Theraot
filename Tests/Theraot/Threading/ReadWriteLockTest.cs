@@ -13,240 +13,31 @@ namespace Tests.Theraot.Threading
         [Test]
         public void CanEnterRead()
         {
-            var x = new ReadWriteLock();
-            using (x.EnterRead())
+            using (var x = new ReadWriteLock())
             {
-                Assert.IsFalse(x.IsCurrentThreadWriter);
+                using (x.EnterRead())
+                {
+                    Assert.IsFalse(x.IsCurrentThreadWriter);
+                }
             }
         }
 
         [Test]
         public void CanEnterReadEx()
         {
-            var x = new ReadWriteLock();
-            IDisposable engagement = null;
-            try
+            using (var x = new ReadWriteLock())
             {
-                if (x.TryEnterRead(out engagement))
-                {
-                    Assert.IsFalse(x.IsCurrentThreadWriter);
-                }
-                else
-                {
-                    Assert.Fail();
-                }
-            }
-            finally
-            {
-                if (engagement != null)
-                {
-                    engagement.Dispose();
-                }
-            }
-        }
-
-        [Test]
-        public void CanEnterWrite()
-        {
-            var x = new ReadWriteLock();
-            using (x.EnterWrite())
-            {
-                Assert.IsTrue(x.IsCurrentThreadWriter);
-            }
-        }
-
-        [Test]
-        public void CanEnterWriteEx()
-        {
-            var x = new ReadWriteLock();
-            IDisposable engagement = null;
-            try
-            {
-                if (x.TryEnterWrite(out engagement))
-                {
-                    Assert.IsTrue(x.IsCurrentThreadWriter);
-                }
-                else
-                {
-                    Assert.Fail();
-                }
-            }
-            finally
-            {
-                if (engagement != null)
-                {
-                    engagement.Dispose();
-                }
-            }
-        }
-
-        [Test]
-        public void CanKnowIsReader()
-        {
-            // Reentrant ReadWriteLock is able to tell if a therad is a reader
-            var x = new ReadWriteLock(true);
-            Assert.IsFalse(x.HasReader);
-            using (x.EnterRead())
-            {
-                Assert.IsTrue(x.IsCurrentThreadReader);
-                Assert.IsTrue(x.HasReader);
-            }
-            // Not Reentrant ReadWriteLock is not
-            var y = new ReadWriteLock(false);
-            Assert.IsFalse(y.HasReader);
-            using (y.EnterRead())
-            {
-                Assert.Throws(typeof(NotSupportedException), () => GC.KeepAlive(y.IsCurrentThreadReader));
-                Assert.IsTrue(y.HasReader);
-            }
-            // ReadWriteLock is not reentrant by default
-            var z = new ReadWriteLock();
-            Assert.IsFalse(z.HasReader);
-            using (z.EnterRead())
-            {
-                Assert.Throws(typeof(NotSupportedException), () => GC.KeepAlive(z.IsCurrentThreadReader));
-                Assert.IsTrue(z.HasReader);
-            }
-        }
-
-        [Test]
-        public void CanKnowIsWriter()
-        {
-            // ReadWriteLock always able to tell if a therad is the writer
-            var x = new ReadWriteLock(true);
-            Assert.IsFalse(x.HasWriter);
-            using (x.EnterWrite())
-            {
-                Assert.IsTrue(x.IsCurrentThreadWriter);
-                Assert.IsTrue(x.HasWriter);
-            }
-            // Not Reentrant ReadWriteLock is not
-            var y = new ReadWriteLock(false);
-            Assert.IsFalse(y.HasWriter);
-            using (y.EnterWrite())
-            {
-                Assert.IsTrue(y.IsCurrentThreadWriter);
-                Assert.IsTrue(y.HasWriter);
-            }
-            // ReadWriteLock is not reentrant by default
-            var z = new ReadWriteLock();
-            Assert.IsFalse(z.HasWriter);
-            using (z.EnterWrite())
-            {
-                Assert.IsTrue(z.IsCurrentThreadWriter);
-                Assert.IsTrue(z.HasWriter);
-            }
-        }
-
-        [Test]
-        public void CannotReadWhileWriting()
-        {
-            var x = new ReadWriteLock();
-            var ok = true;
-            var doneThread = false;
-            using (x.EnterWrite())
-            {
-                Assert.IsTrue(x.IsCurrentThreadWriter);
-                var a = new Thread
-                (
-                    () =>
-                    {
-                        IDisposable engagement = null;
-                        try
-                        {
-                            ok &= !x.TryEnterRead(out engagement);
-                        }
-                        finally
-                        {
-                            if (engagement != null)
-                            {
-                                engagement.Dispose();
-                            }
-                            doneThread = true;
-                        }
-                    }
-                );
-                a.Start();
-                a.Join();
-            }
-            Assert.IsTrue(ok);
-            Assert.IsTrue(doneThread);
-        }
-
-        [Test]
-        public void CannotReadWhileWritingEx()
-        {
-            var x = new ReadWriteLock();
-            var ok = true;
-            var doneThread = false;
-            IDisposable engagementA = null;
-            try
-            {
-                if (x.TryEnterWrite(out engagementA))
-                {
-                    Assert.IsTrue(x.IsCurrentThreadWriter);
-                    var a = new Thread
-                    (
-                        () =>
-                        {
-                            IDisposable engagementB = null;
-                            try
-                            {
-                                ok &= !x.TryEnterRead(out engagementB);
-                            }
-                            finally
-                            {
-                                if (engagementB != null)
-                                {
-                                    engagementB.Dispose();
-                                }
-                                doneThread = true;
-                            }
-                        }
-                    );
-                    a.Start();
-                    a.Join();
-                }
-            }
-            finally
-            {
-                if (engagementA != null)
-                {
-                    engagementA.Dispose();
-                }
-                doneThread = true;
-            }
-            Assert.IsTrue(ok);
-            Assert.IsTrue(doneThread);
-        }
-
-        [Test]
-        public void CannotReentryReadToWriteWhenThereAreMoreReaders()
-        {
-            var w1 = new ManualResetEvent(false);
-            var w2 = new ManualResetEvent(false);
-            var x = new ReadWriteLock(true); // This code results in a dead lock in a not reentrant ReadWriteLock
-            var ok = true;
-            var a = new Thread
-            (
-                () =>
-                {
-                    using (x.EnterRead())
-                    {
-                        w2.Set();
-                        w1.WaitOne();
-                    }
-                }
-            );
-            a.Start();
-            w2.WaitOne();
-            using (x.EnterRead())
-            {
-                Assert.IsFalse(x.IsCurrentThreadWriter);
                 IDisposable engagement = null;
                 try
                 {
-                    ok &= !x.TryEnterWrite(out engagement);
+                    if (x.TryEnterRead(out engagement))
+                    {
+                        Assert.IsFalse(x.IsCurrentThreadWriter);
+                    }
+                    else
+                    {
+                        Assert.Fail();
+                    }
                 }
                 finally
                 {
@@ -256,14 +47,253 @@ namespace Tests.Theraot.Threading
                     }
                 }
             }
-            w1.Set();
-            a.Join();
-            using (x.EnterRead())
+        }
+
+        [Test]
+        public void CanEnterWrite()
+        {
+            using (var x = new ReadWriteLock())
             {
                 using (x.EnterWrite())
                 {
                     Assert.IsTrue(x.IsCurrentThreadWriter);
-                    Assert.IsTrue(ok);
+                }
+            }
+        }
+
+        [Test]
+        public void CanEnterWriteEx()
+        {
+            using (var x = new ReadWriteLock())
+            {
+                IDisposable engagement = null;
+                try
+                {
+                    if (x.TryEnterWrite(out engagement))
+                    {
+                        Assert.IsTrue(x.IsCurrentThreadWriter);
+                    }
+                    else
+                    {
+                        Assert.Fail();
+                    }
+                }
+                finally
+                {
+                    if (engagement != null)
+                    {
+                        engagement.Dispose();
+                    }
+                }
+            }
+        }
+
+        [Test]
+        public void CanKnowIsReader()
+        {
+            // Reentrant ReadWriteLock is able to tell if a therad is a reader
+            using (var x = new ReadWriteLock(true))
+            {
+                Assert.IsFalse(x.HasReader);
+                using (x.EnterRead())
+                {
+                    Assert.IsTrue(x.IsCurrentThreadReader);
+                    Assert.IsTrue(x.HasReader);
+                }
+                // Not Reentrant ReadWriteLock is not
+                using (var y = new ReadWriteLock(false))
+                {
+                    Assert.IsFalse(y.HasReader);
+                    using (y.EnterRead())
+                    {
+                        Assert.Throws(typeof(NotSupportedException), () => GC.KeepAlive(y.IsCurrentThreadReader));
+                        Assert.IsTrue(y.HasReader);
+                    }
+                    // ReadWriteLock is not reentrant by default
+                    using (var z = new ReadWriteLock())
+                    {
+                        Assert.IsFalse(z.HasReader);
+                        using (z.EnterRead())
+                        {
+                            Assert.Throws(typeof(NotSupportedException), () => GC.KeepAlive(z.IsCurrentThreadReader));
+                            Assert.IsTrue(z.HasReader);
+                        }
+                    }
+                }
+            }
+        }
+
+        [Test]
+        public void CanKnowIsWriter()
+        {
+            // ReadWriteLock always able to tell if a therad is the writer
+            using (var x = new ReadWriteLock(true))
+            {
+                Assert.IsFalse(x.HasWriter);
+                using (x.EnterWrite())
+                {
+                    Assert.IsTrue(x.IsCurrentThreadWriter);
+                    Assert.IsTrue(x.HasWriter);
+                }
+                // Not Reentrant ReadWriteLock is not
+                using (var y = new ReadWriteLock(false))
+                {
+                    Assert.IsFalse(y.HasWriter);
+                    using (y.EnterWrite())
+                    {
+                        Assert.IsTrue(y.IsCurrentThreadWriter);
+                        Assert.IsTrue(y.HasWriter);
+                    }
+                    // ReadWriteLock is not reentrant by default
+                    using (var z = new ReadWriteLock())
+                    {
+                        Assert.IsFalse(z.HasWriter);
+                        using (z.EnterWrite())
+                        {
+                            Assert.IsTrue(z.IsCurrentThreadWriter);
+                            Assert.IsTrue(z.HasWriter);
+                        }
+                    }
+                }
+            }
+        }
+
+        [Test]
+        public void CannotReadWhileWriting()
+        {
+            using (var x = new ReadWriteLock())
+            {
+                var ok = true;
+                var doneThread = false;
+                using (x.EnterWrite())
+                {
+                    Assert.IsTrue(x.IsCurrentThreadWriter);
+                    var a = new Thread
+                    (
+                        () =>
+                        {
+                            IDisposable engagement = null;
+                            try
+                            {
+                                ok &= !x.TryEnterRead(out engagement);
+                            }
+                            finally
+                            {
+                                if (engagement != null)
+                                {
+                                    engagement.Dispose();
+                                }
+                                doneThread = true;
+                            }
+                        }
+                    );
+                    a.Start();
+                    a.Join();
+                }
+                Assert.IsTrue(ok);
+                Assert.IsTrue(doneThread);
+            }
+        }
+
+        [Test]
+        public void CannotReadWhileWritingEx()
+        {
+            using (var x = new ReadWriteLock())
+            {
+                var ok = true;
+                var doneThread = false;
+                IDisposable engagementA = null;
+                try
+                {
+                    if (x.TryEnterWrite(out engagementA))
+                    {
+                        Assert.IsTrue(x.IsCurrentThreadWriter);
+                        var a = new Thread
+                        (
+                            () =>
+                            {
+                                IDisposable engagementB = null;
+                                try
+                                {
+                                    ok &= !x.TryEnterRead(out engagementB);
+                                }
+                                finally
+                                {
+                                    if (engagementB != null)
+                                    {
+                                        engagementB.Dispose();
+                                    }
+                                    doneThread = true;
+                                }
+                            }
+                        );
+                        a.Start();
+                        a.Join();
+                    }
+                }
+                finally
+                {
+                    if (engagementA != null)
+                    {
+                        engagementA.Dispose();
+                    }
+                    doneThread = true;
+                }
+                Assert.IsTrue(ok);
+                Assert.IsTrue(doneThread);
+            }
+        }
+
+        [Test]
+        public void CannotReentryReadToWriteWhenThereAreMoreReaders()
+        {
+            using (var w1 = new ManualResetEvent(false))
+            {
+                using (var w2 = new ManualResetEvent(false))
+                {
+                    using (var x = new ReadWriteLock(true))
+                    {
+                        var ok = true;
+                        var a = new Thread
+                        (
+                            () =>
+                            {
+                                using (x.EnterRead())
+                                {
+                                    w2.Set();
+                                    w1.WaitOne();
+                                }
+                            }
+                        );
+                        a.Start();
+                        w2.WaitOne();
+                        using (x.EnterRead())
+                        {
+                            Assert.IsFalse(x.IsCurrentThreadWriter);
+                            IDisposable engagement = null;
+                            try
+                            {
+                                ok &= !x.TryEnterWrite(out engagement);
+                            }
+                            finally
+                            {
+                                if (engagement != null)
+                                {
+                                    engagement.Dispose();
+                                }
+                            }
+                        }
+                        w1.Set();
+                        a.Join();
+                        using (x.EnterRead())
+                        {
+                            using (x.EnterWrite())
+                            {
+                                Assert.IsTrue(x.IsCurrentThreadWriter);
+                                Assert.IsTrue(ok);
+                            }
+                        }
+                    } // This code results in a dead lock in a not reentrant ReadWriteLock
                 }
             }
         }
@@ -271,64 +301,27 @@ namespace Tests.Theraot.Threading
         [Test]
         public void CannotWriteWhileReading()
         {
-            var x = new ReadWriteLock();
-            var ok = true;
-            var doneThread = false;
-            using (x.EnterRead())
+            using (var x = new ReadWriteLock())
             {
-                Assert.IsFalse(x.IsCurrentThreadWriter);
-                var a = new Thread
-                (
-                    () =>
-                    {
-                        IDisposable engagement = null;
-                        try
-                        {
-                            ok &= !x.TryEnterWrite(out engagement);
-                        }
-                        finally
-                        {
-                            if (engagement != null)
-                            {
-                                engagement.Dispose();
-                            }
-                            doneThread = true;
-                        }
-                    }
-                );
-                a.Start();
-                a.Join();
-            }
-            Assert.IsTrue(ok);
-            Assert.IsTrue(doneThread);
-        }
-
-        [Test]
-        public void CannotWriteWhileReadingEx()
-        {
-            var x = new ReadWriteLock();
-            var ok = true;
-            var doneThread = false;
-            IDisposable engagementA = null;
-            try
-            {
-                if (x.TryEnterRead(out engagementA))
+                var ok = true;
+                var doneThread = false;
+                using (x.EnterRead())
                 {
                     Assert.IsFalse(x.IsCurrentThreadWriter);
                     var a = new Thread
                     (
                         () =>
                         {
-                            IDisposable engagementB = null;
+                            IDisposable engagement = null;
                             try
                             {
-                                ok &= !x.TryEnterWrite(out engagementB);
+                                ok &= !x.TryEnterWrite(out engagement);
                             }
                             finally
                             {
-                                if (engagementB != null)
+                                if (engagement != null)
                                 {
-                                    engagementB.Dispose();
+                                    engagement.Dispose();
                                 }
                                 doneThread = true;
                             }
@@ -337,80 +330,84 @@ namespace Tests.Theraot.Threading
                     a.Start();
                     a.Join();
                 }
+                Assert.IsTrue(ok);
+                Assert.IsTrue(doneThread);
             }
-            finally
+        }
+
+        [Test]
+        public void CannotWriteWhileReadingEx()
+        {
+            using (var x = new ReadWriteLock())
             {
-                if (engagementA != null)
+                var ok = true;
+                var doneThread = false;
+                IDisposable engagementA = null;
+                try
                 {
-                    engagementA.Dispose();
+                    if (x.TryEnterRead(out engagementA))
+                    {
+                        Assert.IsFalse(x.IsCurrentThreadWriter);
+                        var a = new Thread
+                        (
+                            () =>
+                            {
+                                IDisposable engagementB = null;
+                                try
+                                {
+                                    ok &= !x.TryEnterWrite(out engagementB);
+                                }
+                                finally
+                                {
+                                    if (engagementB != null)
+                                    {
+                                        engagementB.Dispose();
+                                    }
+                                    doneThread = true;
+                                }
+                            }
+                        );
+                        a.Start();
+                        a.Join();
+                    }
                 }
-                doneThread = true;
+                finally
+                {
+                    if (engagementA != null)
+                    {
+                        engagementA.Dispose();
+                    }
+                    doneThread = true;
+                }
+                Assert.IsTrue(ok);
+                Assert.IsTrue(doneThread);
             }
-            Assert.IsTrue(ok);
-            Assert.IsTrue(doneThread);
         }
 
         [Test]
         public void CannotWriteWhileWriting()
         {
-            var x = new ReadWriteLock();
-            var ok = true;
-            var doneThread = false;
-            using (x.EnterWrite())
+            using (var x = new ReadWriteLock())
             {
-                Assert.IsTrue(x.IsCurrentThreadWriter);
-                var a = new Thread
-                (
-                    () =>
-                    {
-                        IDisposable engagement = null;
-                        try
-                        {
-                            ok &= !x.TryEnterWrite(out engagement);
-                        }
-                        finally
-                        {
-                            if (engagement != null)
-                            {
-                                engagement.Dispose();
-                            }
-                            doneThread = true;
-                        }
-                    }
-                );
-                a.Start();
-                a.Join();
-            }
-            Assert.IsTrue(ok);
-            Assert.IsTrue(doneThread);
-        }
-
-        [Test]
-        public void CannotWriteWhileWritingEx()
-        {
-            var x = new ReadWriteLock();
-            var ok = true;
-            var doneThread = false;
-            IDisposable engagementA = null;
-            try
-            {
-                if (x.TryEnterWrite(out engagementA))
+                var ok = true;
+                var doneThread = false;
+                using (x.EnterWrite())
                 {
                     Assert.IsTrue(x.IsCurrentThreadWriter);
                     var a = new Thread
                     (
                         () =>
                         {
-                            IDisposable engagementB = null;
+                            IDisposable engagement = null;
                             try
                             {
-                                ok &= !x.TryEnterWrite(out engagementB);
+                                ok &= !x.TryEnterWrite(out engagement);
                             }
                             finally
                             {
-                                if (engagementB != null)
+                                if (engagement != null)
                                 {
-                                    engagementB.Dispose();
+                                    engagement.Dispose();
                                 }
                                 doneThread = true;
                             }
@@ -419,80 +416,78 @@ namespace Tests.Theraot.Threading
                     a.Start();
                     a.Join();
                 }
+                Assert.IsTrue(ok);
+                Assert.IsTrue(doneThread);
             }
-            finally
+        }
+
+        [Test]
+        public void CannotWriteWhileWritingEx()
+        {
+            using (var x = new ReadWriteLock())
             {
-                if (engagementA != null)
+                var ok = true;
+                var doneThread = false;
+                IDisposable engagementA = null;
+                try
                 {
-                    engagementA.Dispose();
+                    if (x.TryEnterWrite(out engagementA))
+                    {
+                        Assert.IsTrue(x.IsCurrentThreadWriter);
+                        var a = new Thread
+                        (
+                            () =>
+                            {
+                                IDisposable engagementB = null;
+                                try
+                                {
+                                    ok &= !x.TryEnterWrite(out engagementB);
+                                }
+                                finally
+                                {
+                                    if (engagementB != null)
+                                    {
+                                        engagementB.Dispose();
+                                    }
+                                    doneThread = true;
+                                }
+                            }
+                        );
+                        a.Start();
+                        a.Join();
+                    }
                 }
-                doneThread = true;
+                finally
+                {
+                    if (engagementA != null)
+                    {
+                        engagementA.Dispose();
+                    }
+                    doneThread = true;
+                }
+                Assert.IsTrue(ok);
+                Assert.IsTrue(doneThread);
             }
-            Assert.IsTrue(ok);
-            Assert.IsTrue(doneThread);
         }
 
         [Test]
         public void CanReadWhileReading()
         {
-            var x = new ReadWriteLock();
-            var ok = true;
-            var doneThread = false;
-            using (x.EnterRead())
+            using (var x = new ReadWriteLock())
             {
-                Assert.IsFalse(x.IsCurrentThreadWriter);
-                var a = new Thread
-                (
-                    () =>
-                    {
-                        IDisposable engagement = null;
-                        try
-                        {
-                            if (x.TryEnterRead(out engagement))
-                            {
-                            }
-                            else
-                            {
-                                ok = false;
-                            }
-                        }
-                        finally
-                        {
-                            if (engagement != null)
-                            {
-                                engagement.Dispose();
-                            }
-                            doneThread = true;
-                        }
-                    }
-                );
-                a.Start();
-                a.Join();
-            }
-            Assert.IsTrue(ok);
-            Assert.IsTrue(doneThread);
-        }
-
-        [Test]
-        public void CanReadWhileReadingEx()
-        {
-            var x = new ReadWriteLock();
-            var ok = true;
-            var doneThread = false;
-            IDisposable engagementA = null;
-            try
-            {
-                if (x.TryEnterRead(out engagementA))
+                var ok = true;
+                var doneThread = false;
+                using (x.EnterRead())
                 {
                     Assert.IsFalse(x.IsCurrentThreadWriter);
                     var a = new Thread
                     (
                         () =>
                         {
-                            IDisposable engagementB = null;
+                            IDisposable engagement = null;
                             try
                             {
-                                if (x.TryEnterRead(out engagementB))
+                                if (x.TryEnterRead(out engagement))
                                 {
                                 }
                                 else
@@ -502,9 +497,9 @@ namespace Tests.Theraot.Threading
                             }
                             finally
                             {
-                                if (engagementB != null)
+                                if (engagement != null)
                                 {
-                                    engagementB.Dispose();
+                                    engagement.Dispose();
                                 }
                                 doneThread = true;
                             }
@@ -513,364 +508,52 @@ namespace Tests.Theraot.Threading
                     a.Start();
                     a.Join();
                 }
-            }
-            finally
-            {
-                if (engagementA != null)
-                {
-                    engagementA.Dispose();
-                }
-                doneThread = true;
-            }
-            Assert.IsTrue(ok);
-            Assert.IsTrue(doneThread);
-        }
-
-        [Test]
-        public void CanReentryReadToRead()
-        {
-            var x = new ReadWriteLock();
-            using (x.EnterRead())
-            {
-                Assert.IsFalse(x.IsCurrentThreadWriter);
-                using (x.EnterRead())
-                {
-                    Assert.IsFalse(x.IsCurrentThreadWriter);
-                }
+                Assert.IsTrue(ok);
+                Assert.IsTrue(doneThread);
             }
         }
 
         [Test]
-        public void CanReentryReadToReadEx()
+        public void CanReadWhileReadingEx()
         {
-            var x = new ReadWriteLock();
-            IDisposable engagementA = null;
-            try
+            using (var x = new ReadWriteLock())
             {
-                if (x.TryEnterRead(out engagementA))
-                {
-                    Assert.IsFalse(x.IsCurrentThreadWriter);
-                    IDisposable engagementB = null;
-                    try
-                    {
-                        if (x.TryEnterRead(out engagementB))
-                        {
-                            Assert.IsFalse(x.IsCurrentThreadWriter);
-                        }
-                        else
-                        {
-                            Assert.Fail();
-                        }
-                    }
-                    finally
-                    {
-                        if (engagementB != null)
-                        {
-                            engagementB.Dispose();
-                        }
-                    }
-                }
-                else
-                {
-                    Assert.Fail();
-                }
-            }
-            finally
-            {
-                if (engagementA != null)
-                {
-                    engagementA.Dispose();
-                }
-            }
-        }
-
-        [Test]
-        public void CanReentryReadToWrite()
-        {
-            var x = new ReadWriteLock(true); // This code results in a dead lock in a not reentrant ReadWriteLock
-            using (x.EnterRead())
-            {
-                Assert.IsFalse(x.IsCurrentThreadWriter);
-                // If a thread is a reader it can become a writer as long as there are no other readers
-                using (x.EnterWrite())
-                {
-                    Assert.IsTrue(x.IsCurrentThreadWriter);
-                }
-            }
-        }
-
-        [Test]
-        public void CanReentryReadToWriteEx()
-        {
-            var x = new ReadWriteLock(false);
-            IDisposable engagementA = null;
-            try
-            {
-                if (x.TryEnterRead(out engagementA))
-                {
-                    Assert.IsFalse(x.IsCurrentThreadWriter);
-                    IDisposable engagementB = null;
-                    try
-                    {
-                        if (x.TryEnterWrite(out engagementB))
-                        {
-                            Assert.Fail();
-                        }
-                        else
-                        {
-                            // Not reentrant ReadWriteLock will not be able to upgrade the lock
-                            Assert.IsFalse(x.IsCurrentThreadWriter);
-                        }
-                    }
-                    finally
-                    {
-                        if (engagementB != null)
-                        {
-                            engagementB.Dispose();
-                        }
-                    }
-                }
-                else
-                {
-                    Assert.Fail();
-                }
-            }
-            finally
-            {
-                if (engagementA != null)
-                {
-                    engagementA.Dispose();
-                }
-            }
-            //
-            var y = new ReadWriteLock(true);
-            IDisposable engagementC = null;
-            try
-            {
-                if (y.TryEnterRead(out engagementC))
-                {
-                    Assert.IsFalse(y.IsCurrentThreadWriter);
-                    IDisposable engagementD = null;
-                    try
-                    {
-                        if (y.TryEnterWrite(out engagementD))
-                        {
-                            // Reentrant ReadWriteLock will be able to upgrade the lock
-                            Assert.IsTrue(y.IsCurrentThreadWriter);
-                        }
-                        else
-                        {
-                            Assert.Fail();
-                        }
-                    }
-                    finally
-                    {
-                        if (engagementD != null)
-                        {
-                            engagementD.Dispose();
-                        }
-                    }
-                }
-                else
-                {
-                    Assert.Fail();
-                }
-            }
-            finally
-            {
-                if (engagementC != null)
-                {
-                    engagementC.Dispose();
-                }
-            }
-        }
-
-        [Test]
-        public void CanReentryWriteToRead()
-        {
-            var x = new ReadWriteLock();
-            using (x.EnterWrite())
-            {
-                // If a thread is a writer it can be also a reader
-                using (x.EnterRead())
-                {
-                }
-            }
-        }
-
-        [Test]
-        public void CanReentryWriteToReadEx()
-        {
-            var x = new ReadWriteLock();
-            IDisposable engagementA = null;
-            try
-            {
-                if (x.TryEnterWrite(out engagementA))
-                {
-                    Assert.IsTrue(x.IsCurrentThreadWriter);
-                    IDisposable engagementB = null;
-                    try
-                    {
-                        if (x.TryEnterRead(out engagementB))
-                        {
-                            Assert.IsTrue(x.IsCurrentThreadWriter);
-                        }
-                        else
-                        {
-                            Assert.Fail();
-                        }
-                    }
-                    finally
-                    {
-                        if (engagementB != null)
-                        {
-                            engagementB.Dispose();
-                        }
-                    }
-                }
-                else
-                {
-                    Assert.Fail();
-                }
-            }
-            finally
-            {
-                if (engagementA != null)
-                {
-                    engagementA.Dispose();
-                }
-            }
-        }
-
-        [Test]
-        public void CanReentryWriteToWriteEx()
-        {
-            var x = new ReadWriteLock();
-            IDisposable engagementA = null;
-            try
-            {
-                if (x.TryEnterWrite(out engagementA))
-                {
-                    Assert.IsTrue(x.IsCurrentThreadWriter);
-                    IDisposable engagementB = null;
-                    try
-                    {
-                        if (x.TryEnterWrite(out engagementB))
-                        {
-                            Assert.IsTrue(x.IsCurrentThreadWriter);
-                        }
-                        else
-                        {
-                            Assert.Fail();
-                        }
-                    }
-                    finally
-                    {
-                        if (engagementB != null)
-                        {
-                            engagementB.Dispose();
-                        }
-                    }
-                }
-                else
-                {
-                    Assert.Fail();
-                }
-            }
-            finally
-            {
-                if (engagementA != null)
-                {
-                    engagementA.Dispose();
-                }
-            }
-        }
-
-        [Test]
-        public void MultipleReadersAtTheTime()
-        {
-            var w = new ManualResetEvent(false);
-            var x = new ReadWriteLock();
-            int[] z = { 0 };
-            var threads = new Thread[5];
-            for (int index = 0; index < 5; index++)
-            {
-                threads[index] = new Thread
-                (
-                    () =>
-                    {
-                        w.WaitOne();
-                        using (x.EnterRead())
-                        {
-                            Interlocked.Increment(ref z[0]);
-                            Thread.Sleep(10);
-                        }
-                    }
-                );
-            }
-            for (int index = 0; index < 5; index++)
-            {
-                threads[index].Start();
-            }
-            w.Set();
-            for (int index = 0; index < 5; index++)
-            {
-                threads[index].Join();
-            }
-            Assert.AreEqual(6, Interlocked.Increment(ref z[0]));
-        }
-
-        [Test]
-        public void OnlyOneWriterAtTheTime()
-        {
-            var w = new ManualResetEvent(false);
-            var x = new ReadWriteLock();
-            int[] z = { 0 };
-            var ok = true;
-            var threads = new Thread[5];
-            for (int index = 0; index < 5; index++)
-            {
-                threads[index] = new Thread
-                (
-                    () =>
-                    {
-                        w.WaitOne();
-                        using (x.EnterWrite())
-                        {
-                            var got = Interlocked.Increment(ref z[0]);
-                            Thread.Sleep(10);
-                            ok = ok && Interlocked.Increment(ref z[0]) == got + 1;
-                        }
-                    }
-                );
-            }
-            for (int index = 0; index < 5; index++)
-            {
-                threads[index].Start();
-            }
-            w.Set();
-            for (int index = 0; index < 5; index++)
-            {
-                threads[index].Join();
-            }
-            Assert.IsTrue(ok);
-            Assert.AreEqual(11, Interlocked.Increment(ref z[0]));
-        }
-
-        [Test]
-        public void OnlyOneWriterAtTheTimeEx()
-        {
-            var w = new ManualResetEvent(false);
-            var x = new ReadWriteLock();
-            var doneThread = 0;
-            var ok = true;
-            ThreadStart tmp = () =>
-            {
-                w.WaitOne();
+                var ok = true;
+                var doneThread = false;
                 IDisposable engagementA = null;
                 try
                 {
-                    ok &= !x.TryEnterWrite(out engagementA);
+                    if (x.TryEnterRead(out engagementA))
+                    {
+                        Assert.IsFalse(x.IsCurrentThreadWriter);
+                        var a = new Thread
+                        (
+                            () =>
+                            {
+                                IDisposable engagementB = null;
+                                try
+                                {
+                                    if (x.TryEnterRead(out engagementB))
+                                    {
+                                    }
+                                    else
+                                    {
+                                        ok = false;
+                                    }
+                                }
+                                finally
+                                {
+                                    if (engagementB != null)
+                                    {
+                                        engagementB.Dispose();
+                                    }
+                                    doneThread = true;
+                                }
+                            }
+                        );
+                        a.Start();
+                        a.Join();
+                    }
                 }
                 finally
                 {
@@ -878,250 +561,655 @@ namespace Tests.Theraot.Threading
                     {
                         engagementA.Dispose();
                     }
-                    Interlocked.Increment(ref doneThread);
+                    doneThread = true;
                 }
-            };
-            var a = new Thread(tmp);
-            using (x.EnterWrite())
-            {
-                a.Start();
-                w.Set();
-                Thread.Sleep(10);
+                Assert.IsTrue(ok);
+                Assert.IsTrue(doneThread);
             }
-            a.Join();
-            Assert.IsTrue(ok);
-            Assert.AreEqual(1, doneThread);
-            var b = new Thread(tmp);
-            IDisposable engagementB = null;
-            try
+        }
+
+        [Test]
+        public void CanReentryReadToRead()
+        {
+            using (var x = new ReadWriteLock())
             {
-                if (x.TryEnterWrite(out engagementB))
+                using (x.EnterRead())
                 {
-                    Assert.IsTrue(x.IsCurrentThreadWriter);
-                    b.Start();
+                    Assert.IsFalse(x.IsCurrentThreadWriter);
+                    using (x.EnterRead())
+                    {
+                        Assert.IsFalse(x.IsCurrentThreadWriter);
+                    }
+                }
+            }
+        }
+
+        [Test]
+        public void CanReentryReadToReadEx()
+        {
+            using (var x = new ReadWriteLock())
+            {
+                IDisposable engagementA = null;
+                try
+                {
+                    if (x.TryEnterRead(out engagementA))
+                    {
+                        Assert.IsFalse(x.IsCurrentThreadWriter);
+                        IDisposable engagementB = null;
+                        try
+                        {
+                            if (x.TryEnterRead(out engagementB))
+                            {
+                                Assert.IsFalse(x.IsCurrentThreadWriter);
+                            }
+                            else
+                            {
+                                Assert.Fail();
+                            }
+                        }
+                        finally
+                        {
+                            if (engagementB != null)
+                            {
+                                engagementB.Dispose();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Assert.Fail();
+                    }
+                }
+                finally
+                {
+                    if (engagementA != null)
+                    {
+                        engagementA.Dispose();
+                    }
+                }
+            }
+        }
+
+        [Test]
+        public void CanReentryReadToWrite()
+        {
+            using (var x = new ReadWriteLock(true))
+            {
+                using (x.EnterRead())
+                {
+                    Assert.IsFalse(x.IsCurrentThreadWriter);
+                    // If a thread is a reader it can become a writer as long as there are no other readers
+                    using (x.EnterWrite())
+                    {
+                        Assert.IsTrue(x.IsCurrentThreadWriter);
+                    }
+                }
+            } // This code results in a dead lock in a not reentrant ReadWriteLock
+        }
+
+        [Test]
+        public void CanReentryReadToWriteEx()
+        {
+            using (var x = new ReadWriteLock(false))
+            {
+                IDisposable engagementA = null;
+                try
+                {
+                    if (x.TryEnterRead(out engagementA))
+                    {
+                        Assert.IsFalse(x.IsCurrentThreadWriter);
+                        IDisposable engagementB = null;
+                        try
+                        {
+                            if (x.TryEnterWrite(out engagementB))
+                            {
+                                Assert.Fail();
+                            }
+                            else
+                            {
+                                // Not reentrant ReadWriteLock will not be able to upgrade the lock
+                                Assert.IsFalse(x.IsCurrentThreadWriter);
+                            }
+                        }
+                        finally
+                        {
+                            if (engagementB != null)
+                            {
+                                engagementB.Dispose();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Assert.Fail();
+                    }
+                }
+                finally
+                {
+                    if (engagementA != null)
+                    {
+                        engagementA.Dispose();
+                    }
+                }
+                //
+                using (var y = new ReadWriteLock(true))
+                {
+                    IDisposable engagementC = null;
+                    try
+                    {
+                        if (y.TryEnterRead(out engagementC))
+                        {
+                            Assert.IsFalse(y.IsCurrentThreadWriter);
+                            IDisposable engagementD = null;
+                            try
+                            {
+                                if (y.TryEnterWrite(out engagementD))
+                                {
+                                    // Reentrant ReadWriteLock will be able to upgrade the lock
+                                    Assert.IsTrue(y.IsCurrentThreadWriter);
+                                }
+                                else
+                                {
+                                    Assert.Fail();
+                                }
+                            }
+                            finally
+                            {
+                                if (engagementD != null)
+                                {
+                                    engagementD.Dispose();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            Assert.Fail();
+                        }
+                    }
+                    finally
+                    {
+                        if (engagementC != null)
+                        {
+                            engagementC.Dispose();
+                        }
+                    }
+                }
+            }
+        }
+
+        [Test]
+        public void CanReentryWriteToRead()
+        {
+            using (var x = new ReadWriteLock())
+            {
+                using (x.EnterWrite())
+                {
+                    // If a thread is a writer it can be also a reader
+                    using (x.EnterRead())
+                    {
+                    }
+                }
+            }
+        }
+
+        [Test]
+        public void CanReentryWriteToReadEx()
+        {
+            using (var x = new ReadWriteLock())
+            {
+                IDisposable engagementA = null;
+                try
+                {
+                    if (x.TryEnterWrite(out engagementA))
+                    {
+                        Assert.IsTrue(x.IsCurrentThreadWriter);
+                        IDisposable engagementB = null;
+                        try
+                        {
+                            if (x.TryEnterRead(out engagementB))
+                            {
+                                Assert.IsTrue(x.IsCurrentThreadWriter);
+                            }
+                            else
+                            {
+                                Assert.Fail();
+                            }
+                        }
+                        finally
+                        {
+                            if (engagementB != null)
+                            {
+                                engagementB.Dispose();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Assert.Fail();
+                    }
+                }
+                finally
+                {
+                    if (engagementA != null)
+                    {
+                        engagementA.Dispose();
+                    }
+                }
+            }
+        }
+
+        [Test]
+        public void CanReentryWriteToWriteEx()
+        {
+            using (var x = new ReadWriteLock())
+            {
+                IDisposable engagementA = null;
+                try
+                {
+                    if (x.TryEnterWrite(out engagementA))
+                    {
+                        Assert.IsTrue(x.IsCurrentThreadWriter);
+                        IDisposable engagementB = null;
+                        try
+                        {
+                            if (x.TryEnterWrite(out engagementB))
+                            {
+                                Assert.IsTrue(x.IsCurrentThreadWriter);
+                            }
+                            else
+                            {
+                                Assert.Fail();
+                            }
+                        }
+                        finally
+                        {
+                            if (engagementB != null)
+                            {
+                                engagementB.Dispose();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Assert.Fail();
+                    }
+                }
+                finally
+                {
+                    if (engagementA != null)
+                    {
+                        engagementA.Dispose();
+                    }
+                }
+            }
+        }
+
+        [Test]
+        public void MultipleReadersAtTheTime()
+        {
+            using (var w = new ManualResetEvent(false))
+            {
+                using (var x = new ReadWriteLock())
+                {
+                    int[] z = { 0 };
+                    var threads = new Thread[5];
+                    for (int index = 0; index < 5; index++)
+                    {
+                        threads[index] = new Thread
+                        (
+                            () =>
+                            {
+                                w.WaitOne();
+                                using (x.EnterRead())
+                                {
+                                    Interlocked.Increment(ref z[0]);
+                                    Thread.Sleep(10);
+                                }
+                            }
+                        );
+                    }
+                    for (int index = 0; index < 5; index++)
+                    {
+                        threads[index].Start();
+                    }
                     w.Set();
-                    b.Join();
-                }
-                else
-                {
-                    Assert.Fail();
+                    for (int index = 0; index < 5; index++)
+                    {
+                        threads[index].Join();
+                    }
+                    Assert.AreEqual(6, Interlocked.Increment(ref z[0]));
                 }
             }
-            finally
+        }
+
+        [Test]
+        public void OnlyOneWriterAtTheTime()
+        {
+            using (var w = new ManualResetEvent(false))
             {
-                if (engagementB != null)
+                using (var x = new ReadWriteLock())
                 {
-                    engagementB.Dispose();
+                    int[] z = { 0 };
+                    var ok = true;
+                    var threads = new Thread[5];
+                    for (int index = 0; index < 5; index++)
+                    {
+                        threads[index] = new Thread
+                        (
+                            () =>
+                            {
+                                w.WaitOne();
+                                using (x.EnterWrite())
+                                {
+                                    var got = Interlocked.Increment(ref z[0]);
+                                    Thread.Sleep(10);
+                                    ok = ok && Interlocked.Increment(ref z[0]) == got + 1;
+                                }
+                            }
+                        );
+                    }
+                    for (int index = 0; index < 5; index++)
+                    {
+                        threads[index].Start();
+                    }
+                    w.Set();
+                    for (int index = 0; index < 5; index++)
+                    {
+                        threads[index].Join();
+                    }
+                    Assert.IsTrue(ok);
+                    Assert.AreEqual(11, Interlocked.Increment(ref z[0]));
                 }
             }
-            Assert.IsTrue(ok);
-            Assert.AreEqual(2, doneThread);
+        }
+
+        [Test]
+        public void OnlyOneWriterAtTheTimeEx()
+        {
+            using (var w = new ManualResetEvent(false))
+            {
+                using (var x = new ReadWriteLock())
+                {
+                    var doneThread = 0;
+                    var ok = true;
+                    ThreadStart tmp = () =>
+                    {
+                        w.WaitOne();
+                        IDisposable engagementA = null;
+                        try
+                        {
+                            ok &= !x.TryEnterWrite(out engagementA);
+                        }
+                        finally
+                        {
+                            if (engagementA != null)
+                            {
+                                engagementA.Dispose();
+                            }
+                            Interlocked.Increment(ref doneThread);
+                        }
+                    };
+                    var a = new Thread(tmp);
+                    using (x.EnterWrite())
+                    {
+                        a.Start();
+                        w.Set();
+                        Thread.Sleep(10);
+                    }
+                    a.Join();
+                    Assert.IsTrue(ok);
+                    Assert.AreEqual(1, doneThread);
+                    var b = new Thread(tmp);
+                    IDisposable engagementB = null;
+                    try
+                    {
+                        if (x.TryEnterWrite(out engagementB))
+                        {
+                            Assert.IsTrue(x.IsCurrentThreadWriter);
+                            b.Start();
+                            w.Set();
+                            b.Join();
+                        }
+                        else
+                        {
+                            Assert.Fail();
+                        }
+                    }
+                    finally
+                    {
+                        if (engagementB != null)
+                        {
+                            engagementB.Dispose();
+                        }
+                    }
+                    Assert.IsTrue(ok);
+                    Assert.AreEqual(2, doneThread);
+                }
+            }
         }
 
         [Test]
         public void ReentryReadToWriteCheck()
         {
-            var w = new ManualResetEvent(false);
-            var x = new ReadWriteLock();
-            var enterCount = 0;
-            var doneCount = 0;
-            var errorCount = 0;
-            var successCount = 0;
-            ThreadStart tmp = () =>
+            using (var w = new ManualResetEvent(false))
             {
-                using (x.EnterRead())
+                using (var x = new ReadWriteLock())
                 {
-                    Interlocked.Increment(ref enterCount);
-                    w.WaitOne();
-                    // If a thread is a reader it can become a writer as long as there are no other readers
-                    // When we have multiple readers trying to become a writer...
-                    IDisposable engagement = null;
-                    try
+                    var enterCount = 0;
+                    var doneCount = 0;
+                    var errorCount = 0;
+                    var successCount = 0;
+                    ThreadStart tmp = () =>
                     {
-                        // Write mode is not requested - there are other readers which we don't wait to leave
-                        if (x.TryEnterWrite(out engagement))
+                        using (x.EnterRead())
                         {
-                            Interlocked.Increment(ref successCount);
+                            Interlocked.Increment(ref enterCount);
+                            w.WaitOne();
+                            // If a thread is a reader it can become a writer as long as there are no other readers
+                            // When we have multiple readers trying to become a writer...
+                            IDisposable engagement = null;
+                            try
+                            {
+                                // Write mode is not requested - there are other readers which we don't wait to leave
+                                if (x.TryEnterWrite(out engagement))
+                                {
+                                    Interlocked.Increment(ref successCount);
+                                }
+                                else
+                                {
+                                    Interlocked.Increment(ref errorCount);
+                                }
+                            }
+                            finally
+                            {
+                                if (engagement != null)
+                                {
+                                    engagement.Dispose();
+                                }
+                            }
                         }
-                        else
-                        {
-                            Interlocked.Increment(ref errorCount);
-                        }
-                    }
-                    finally
+                        Interlocked.Increment(ref doneCount);
+                    };
+                    var threads = new Thread[5];
+                    for (int index = 0; index < 5; index++)
                     {
-                        if (engagement != null)
-                        {
-                            engagement.Dispose();
-                        }
+                        threads[index] = new Thread(tmp);
                     }
+                    for (int index = 0; index < 5; index++)
+                    {
+                        threads[index].Start();
+                    }
+                    Thread.Sleep(10);
+                    Assert.AreEqual(5, enterCount);
+                    w.Set();
+                    for (int index = 0; index < 5; index++)
+                    {
+                        threads[index].Join();
+                    }
+                    Assert.AreEqual(5, doneCount);
+                    Assert.AreEqual(0, successCount); // None succeds
+                    Assert.AreEqual(5, errorCount); // All fail
                 }
-                Interlocked.Increment(ref doneCount);
-            };
-            var threads = new Thread[5];
-            for (int index = 0; index < 5; index++)
-            {
-                threads[index] = new Thread(tmp);
             }
-            for (int index = 0; index < 5; index++)
-            {
-                threads[index].Start();
-            }
-            Thread.Sleep(10);
-            Assert.AreEqual(5, enterCount);
-            w.Set();
-            for (int index = 0; index < 5; index++)
-            {
-                threads[index].Join();
-            }
-            Assert.AreEqual(5, doneCount);
-            Assert.AreEqual(0, successCount); // None succeds
-            Assert.AreEqual(5, errorCount); // All fail
         }
 
         [Test]
         public void ReentryReadToWriteRaceCondition()
         {
-            var w = new ManualResetEvent(false);
-            var x = new ReadWriteLock(true); // This code results in a dead lock in a not reentrant ReadWriteLock
-            var enterCount = 0;
-            var doneCount = 0;
-            var errorCount = 0;
-            var successCount = 0;
-            ThreadStart tmp = () =>
+            using (var w = new ManualResetEvent(false))
             {
-                using (x.EnterRead())
+                using (var x = new ReadWriteLock(true))
                 {
-                    Interlocked.Increment(ref enterCount);
-                    w.WaitOne();
-                    // If a thread is a reader it can become a writer as long as there are no other readers
-                    // When we have multiple readers trying to become a writer...
-                    try
+                    var enterCount = 0;
+                    var doneCount = 0;
+                    var errorCount = 0;
+                    var successCount = 0;
+                    ThreadStart tmp = () =>
                     {
-                        // write mode is requested and reserved by one thread - others fail
-                        using (x.EnterWrite())
+                        using (x.EnterRead())
                         {
-                            Interlocked.Increment(ref successCount);
+                            Interlocked.Increment(ref enterCount);
+                            w.WaitOne();
+                            // If a thread is a reader it can become a writer as long as there are no other readers
+                            // When we have multiple readers trying to become a writer...
+                            try
+                            {
+                                // write mode is requested and reserved by one thread - others fail
+                                using (x.EnterWrite())
+                                {
+                                    Interlocked.Increment(ref successCount);
+                                }
+                            }
+                            catch (InvalidOperationException)
+                            {
+                                Interlocked.Increment(ref errorCount);
+                            }
                         }
-                    }
-                    catch (InvalidOperationException)
+                        Interlocked.Increment(ref doneCount);
+                    };
+                    var threads = new Thread[5];
+                    for (int index = 0; index < 5; index++)
                     {
-                        Interlocked.Increment(ref errorCount);
+                        threads[index] = new Thread(tmp);
                     }
-                }
-                Interlocked.Increment(ref doneCount);
-            };
-            var threads = new Thread[5];
-            for (int index = 0; index < 5; index++)
-            {
-                threads[index] = new Thread(tmp);
+                    for (int index = 0; index < 5; index++)
+                    {
+                        threads[index].Start();
+                    }
+                    do
+                    {
+                        Thread.Sleep(10);
+                    } while (enterCount < 5);
+                    w.Set();
+                    for (int index = 0; index < 5; index++)
+                    {
+                        threads[index].Join();
+                    }
+                    Assert.AreEqual(5, doneCount);
+                    Assert.AreEqual(1, successCount); // One succeds - the thread that succeds to reserve write waits for others to leave
+                    Assert.AreEqual(4, errorCount); // The others get InvalidOperationException - the threads that fail the reserve fail
+                } // This code results in a dead lock in a not reentrant ReadWriteLock
             }
-            for (int index = 0; index < 5; index++)
-            {
-                threads[index].Start();
-            }
-            do
-            {
-                Thread.Sleep(10);
-            } while (enterCount < 5);
-            w.Set();
-            for (int index = 0; index < 5; index++)
-            {
-                threads[index].Join();
-            }
-            Assert.AreEqual(5, doneCount);
-            Assert.AreEqual(1, successCount); // One succeds - the thread that succeds to reserve write waits for others to leave
-            Assert.AreEqual(4, errorCount); // The others get InvalidOperationException - the threads that fail the reserve fail
         }
 
         [Test]
         public void WriteWaitsMultipleReadsToFinish()
         {
-            var w0 = new ManualResetEvent(false);
-            var w1 = new ManualResetEvent(false);
-            var x = new ReadWriteLock();
-            var ok = false;
-            int[] z = { 0 };
-            var threads = new Thread[5];
-            for (int index = 0; index < 5; index++)
+            using (var w0 = new ManualResetEvent(false))
             {
-                threads[index] = new Thread
-                (
-                    () =>
-                    {
-                        w0.WaitOne();
-                        using (x.EnterRead())
-                        {
-                            w1.Set();
-                            Interlocked.Increment(ref z[0]);
-                            Thread.Sleep(10);
-                        }
-                    }
-                );
-            }
-            var a = new Thread
-            (
-                () =>
+                using (var w1 = new ManualResetEvent(false))
                 {
-                    w1.WaitOne();
-                    using (x.EnterWrite())
+                    using (var x = new ReadWriteLock())
                     {
-                        Assert.IsTrue(x.IsCurrentThreadWriter);
-                        ok = Interlocked.Increment(ref z[0]) == 6;
+                        var ok = false;
+                        int[] z = { 0 };
+                        var threads = new Thread[5];
+                        for (int index = 0; index < 5; index++)
+                        {
+                            threads[index] = new Thread
+                            (
+                                () =>
+                                {
+                                    w0.WaitOne();
+                                    using (x.EnterRead())
+                                    {
+                                        w1.Set();
+                                        Interlocked.Increment(ref z[0]);
+                                        Thread.Sleep(10);
+                                    }
+                                }
+                            );
+                        }
+                        var a = new Thread
+                        (
+                            () =>
+                            {
+                                w1.WaitOne();
+                                using (x.EnterWrite())
+                                {
+                                    Assert.IsTrue(x.IsCurrentThreadWriter);
+                                    ok = Interlocked.Increment(ref z[0]) == 6;
+                                }
+                            }
+                        );
+                        for (int index = 0; index < 5; index++)
+                        {
+                            threads[index].Start();
+                        }
+                        a.Start();
+                        w0.Set();
+                        for (int index = 0; index < 5; index++)
+                        {
+                            threads[index].Join();
+                        }
+                        a.Join();
+                        Assert.IsTrue(ok);
+                        Assert.AreEqual(7, Interlocked.Increment(ref z[0]));
                     }
                 }
-            );
-            for (int index = 0; index < 5; index++)
-            {
-                threads[index].Start();
             }
-            a.Start();
-            w0.Set();
-            for (int index = 0; index < 5; index++)
-            {
-                threads[index].Join();
-            }
-            a.Join();
-            Assert.IsTrue(ok);
-            Assert.AreEqual(7, Interlocked.Increment(ref z[0]));
         }
 
         [Test]
         public void WriteWaitsReadToFinish()
         {
-            var w = new ManualResetEvent(false);
-            var x = new ReadWriteLock();
-            int[] z = { 0 };
-            var ok = true;
-            var a = new Thread
-            (
-                () =>
+            using (var w = new ManualResetEvent(false))
+            {
+                using (var x = new ReadWriteLock())
                 {
-                    w.WaitOne();
-                    using (x.EnterWrite())
-                    {
-                        ok = ok && Interlocked.Increment(ref z[0]) == 2;
-                    }
+                    int[] z = { 0 };
+                    var ok = true;
+                    var a = new Thread
+                    (
+                        () =>
+                        {
+                            w.WaitOne();
+                            using (x.EnterWrite())
+                            {
+                                ok = ok && Interlocked.Increment(ref z[0]) == 2;
+                            }
+                        }
+                    );
+                    var b = new Thread
+                    (
+                        () =>
+                        {
+                            using (x.EnterRead())
+                            {
+                                w.Set();
+                                Thread.Sleep(10);
+                                ok = ok && Interlocked.Increment(ref z[0]) == 1;
+                            }
+                        }
+                    );
+                    a.Start();
+                    b.Start();
+                    a.Join();
+                    b.Join();
+                    Assert.IsTrue(ok);
+                    Assert.AreEqual(3, Interlocked.Increment(ref z[0]));
                 }
-            );
-            var b = new Thread
-            (
-                () =>
-                {
-                    using (x.EnterRead())
-                    {
-                        w.Set();
-                        Thread.Sleep(10);
-                        ok = ok && Interlocked.Increment(ref z[0]) == 1;
-                    }
-                }
-            );
-            a.Start();
-            b.Start();
-            a.Join();
-            b.Join();
-            Assert.IsTrue(ok);
-            Assert.AreEqual(3, Interlocked.Increment(ref z[0]));
+            }
         }
     }
 }
