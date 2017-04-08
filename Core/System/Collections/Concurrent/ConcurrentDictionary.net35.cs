@@ -377,9 +377,7 @@ namespace System.Collections.Concurrent
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            // This method is not locking
-            // We need a snapshot, MSDN says
-            return _wrapped.Clone().GetEnumerator();
+            return _wrapped.GetEnumerator();
         }
 
         IDictionaryEnumerator IDictionary.GetEnumerator()
