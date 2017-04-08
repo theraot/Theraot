@@ -1681,57 +1681,6 @@ namespace MonoTests.System.Threading.Tasks
                 return TryExecuteTask(task);
             }
         }
-
-        private class TaskContinuationChainLeakTester
-        {
-            private readonly ManualResetEvent _mre = new ManualResetEvent(false);
-            private volatile bool _bStop;
-            private int _counter;
-
-            // Leaked
-            private WeakReference<Task> _headTaskWeakRef;
-
-            public ManualResetEvent TasksPilledUp
-            {
-                get { return _mre; }
-            }
-
-            public void Run()
-            {
-                _headTaskWeakRef = new WeakReference<Task>(StartNewTaskAsync());
-            }
-
-            public Task StartNewTaskAsync()
-            {
-                if (_bStop)
-                {
-                    return null;
-                }
-
-                if (++_counter == 50)
-                {
-                    _mre.Set();
-                }
-
-                return Task.Factory.StartNew(DummyWorker).ContinueWith(task => StartNewTaskAsync());
-            }
-
-            public void Stop()
-            {
-                _bStop = true;
-            }
-
-            public void Verify()
-            {
-                Task task;
-                Assert.IsFalse(_headTaskWeakRef.TryGetTarget(out task));
-            }
-
-            private static void DummyWorker()
-            {
-                Thread.Sleep(0);
-            }
-        }
     }
 
     public partial class TaskTests
