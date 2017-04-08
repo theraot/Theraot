@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Security;
+using System.Security.Permissions;
 using Theraot.Core;
 
 namespace System
@@ -141,6 +142,7 @@ namespace System
         }
 
         [SecurityCritical]
+        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
