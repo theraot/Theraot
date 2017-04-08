@@ -2131,7 +2131,7 @@ namespace System.Linq.Expressions.Interpreter
                 var updater = CompileAddress(node.Object, -1);
                 if (updater != null)
                 {
-                    updaters = new List<ByRefUpdater>() { updater };
+                    updaters = new List<ByRefUpdater> { updater };
                 }
             }
 
@@ -2508,7 +2508,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             var node = (DebugInfoExpression)expr;
             var start = _instructions.Count;
-            var info = new DebugInfo()
+            var info = new DebugInfo
             {
                 Index = start,
                 FileName = node.Document.FileName,

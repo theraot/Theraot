@@ -86,7 +86,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             var add = typeof(List<string>).GetMethod("Add");
 
-            var list = new List<ElementInit>() {
+            var list = new List<ElementInit> {
                 Expression.ElementInit (add, Expression.Constant ("foo")),
                 Expression.ElementInit (add, Expression.Constant ("bar")),
                 Expression.ElementInit (add, Expression.Constant ("baz")),

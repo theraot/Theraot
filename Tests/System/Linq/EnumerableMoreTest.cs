@@ -1785,18 +1785,18 @@ namespace MonoTests.System.Linq
             string[] data = { "2", "1", "5", "3", "4", "3" };
 
             var expected = new Dictionary<string, IEnumerable<string>>();
-            expected.Add("2", new List<string>() { "2" });
-            expected.Add("1", new List<string>() { "1" });
-            expected.Add("5", new List<string>() { "5" });
-            expected.Add("3", new List<string>() { "3", "3" });
-            expected.Add("4", new List<string>() { "4" });
+            expected.Add("2", new List<string> { "2" });
+            expected.Add("1", new List<string> { "1" });
+            expected.Add("5", new List<string> { "5" });
+            expected.Add("3", new List<string> { "3", "3" });
+            expected.Add("4", new List<string> { "4" });
 
             var expected2 = new Dictionary<string, IEnumerable<string>>();
-            expected2.Add("2", new List<string>() { "22" });
-            expected2.Add("1", new List<string>() { "11" });
-            expected2.Add("5", new List<string>() { "55" });
-            expected2.Add("3", new List<string>() { "33", "33" });
-            expected2.Add("4", new List<string>() { "44" });
+            expected2.Add("2", new List<string> { "22" });
+            expected2.Add("1", new List<string> { "11" });
+            expected2.Add("5", new List<string> { "55" });
+            expected2.Add("3", new List<string> { "33", "33" });
+            expected2.Add("4", new List<string> { "44" });
 
             var expected3 = new string[] { "22", "11", "55", "333", "44" };
 
@@ -2195,10 +2195,10 @@ namespace MonoTests.System.Linq
         {
             string[] data = { "23", "12", "55", "42", "41" };
             var expected = new Dictionary<string, IEnumerable<string>>();
-            expected.Add("2", new List<string>() { "23" });
-            expected.Add("1", new List<string>() { "12" });
-            expected.Add("5", new List<string>() { "55" });
-            expected.Add("4", new List<string>() { "42", "41" });
+            expected.Add("2", new List<string> { "23" });
+            expected.Add("1", new List<string> { "12" });
+            expected.Add("5", new List<string> { "55" });
+            expected.Add("4", new List<string> { "42", "41" });
 
             Assert.AreEqual(expected.Count, ((IEnumerable<string>)data).ToLookup(x => x[0].ToString()).Count);
 
