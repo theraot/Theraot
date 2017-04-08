@@ -554,4 +554,58 @@ namespace Tests.Theraot.Core
             }
         }
     }
+
+    internal partial class NumericHelperTest
+    {
+        [Test]
+        public static void GDCZero()
+        {
+            Assert.AreEqual(180, NumericHelper.GCD(0, 180));
+            Assert.AreEqual(180, NumericHelper.GCD(0, -180));
+
+            Assert.AreEqual(13456489866, NumericHelper.GCD(0, 13456489866));
+            Assert.AreEqual(13456489866, NumericHelper.GCD(0, -13456489866));
+        }
+
+        [Test]
+        public static void GDCIgnoresSign()
+        {
+            Assert.AreEqual(12, NumericHelper.GCD(48, 180));
+            Assert.AreEqual(12, NumericHelper.GCD(-48, 180));
+            Assert.AreEqual(12, NumericHelper.GCD(48, -180));
+            Assert.AreEqual(12, NumericHelper.GCD(-48, -180));
+
+            Assert.AreEqual(6, NumericHelper.GCD(48, 13456489866));
+            Assert.AreEqual(6, NumericHelper.GCD(-48, 13456489866));
+            Assert.AreEqual(6, NumericHelper.GCD(48, -13456489866));
+            Assert.AreEqual(6, NumericHelper.GCD(-48, -13456489866));
+        }
+
+        [Test]
+        public static void GDCMics()
+        {
+            Assert.AreEqual(1, NumericHelper.GCD(43154552, 521995751));
+            Assert.AreEqual(3, NumericHelper.GCD(467216955, 136307028));
+            Assert.AreEqual(2, NumericHelper.GCD(676733084, 883191742));
+            Assert.AreEqual(1, NumericHelper.GCD(461854585, 503034297));
+            Assert.AreEqual(2, NumericHelper.GCD(423541676, 978926918));
+            Assert.AreEqual(17, NumericHelper.GCD(883027226, 914620757));
+            Assert.AreEqual(2, NumericHelper.GCD(843545372, 614288570));
+            Assert.AreEqual(2, NumericHelper.GCD(339473804, 955338346));
+            Assert.AreEqual(1, NumericHelper.GCD(266469934, 670394525));
+            Assert.AreEqual(2, NumericHelper.GCD(412756198, 678862818));
+        }
+
+        [Test]
+        public static void GDCMaxValue()
+        {
+            Assert.AreEqual(15, NumericHelper.GCD(ulong.MaxValue, 180));
+        }
+
+        [Test]
+        public static void GDCMinValue()
+        {
+            Assert.AreEqual(4, NumericHelper.GCD(long.MinValue, 180));
+        }
+    }
 }
