@@ -280,7 +280,7 @@ namespace System.Linq.Expressions
 
             PropertyInfo pi;
             var propertyInfos = members.Map(t => (PropertyInfo)t);
-            int count = FindBestProperty(propertyInfos, arguments, out pi);
+            var count = FindBestProperty(propertyInfos, arguments, out pi);
 
             if (count == 0)
                 return null;
@@ -291,7 +291,7 @@ namespace System.Linq.Expressions
 
         private static int FindBestProperty(IEnumerable<PropertyInfo> properties, Expression[] args, out PropertyInfo property)
         {
-            int count = 0;
+            var count = 0;
             property = null;
             foreach (PropertyInfo pi in properties)
             {

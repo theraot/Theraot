@@ -97,7 +97,7 @@ namespace System.Runtime.CompilerServices
                 // We lookup the closure using two ints:
                 // 1. The high dword is the number of parents to go up
                 // 2. The low dword is the index into that array
-                long closureKey = _indexes[index];
+                var closureKey = _indexes[index];
 
                 // walk up the parent chain to find the real environment
                 var result = _data;

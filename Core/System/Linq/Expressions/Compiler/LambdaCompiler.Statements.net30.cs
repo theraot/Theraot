@@ -511,7 +511,7 @@ namespace System.Linq.Expressions.Compiler
             // Split the buckets into two groups, and use an if test to find
             // the right bucket. This ensures we'll only need O(lg(B)) tests
             // where B is the number of buckets
-            int mid = (int)(((long)first + last + 1) / 2);
+            var mid = (int)(((long)first + last + 1) / 2);
 
             if (first == mid - 1)
             {
@@ -576,7 +576,7 @@ namespace System.Linq.Expressions.Compiler
             }
 
             // Collect labels
-            int len = (int)(bucket[bucket.Count - 1].Key - bucket[0].Key + 1);
+            var len = (int)(bucket[bucket.Count - 1].Key - bucket[0].Key + 1);
             var jmpLabels = new Label[len];
 
             // Initialize all labels to the default

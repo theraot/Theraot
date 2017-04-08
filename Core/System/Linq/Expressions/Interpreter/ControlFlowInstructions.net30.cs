@@ -266,7 +266,7 @@ namespace System.Linq.Expressions.Interpreter
         public override string ToDebugString(int instructionIndex, object cookie, Func<int, int> labelIndexer, IList<object> objects)
         {
             Debug.Assert(_labelIndex != UnknownInstrIndex);
-            int targetIndex = labelIndexer(_labelIndex);
+            var targetIndex = labelIndexer(_labelIndex);
             return ToString() + (targetIndex != BranchLabel.UnknownIndex ? " -> " + targetIndex : "");
         }
 
@@ -413,7 +413,7 @@ namespace System.Linq.Expressions.Interpreter
                 // Push finally.
                 frame.PushContinuation(_labelIndex);
             }
-            int prevInstrIndex = frame.InstructionIndex;
+            var prevInstrIndex = frame.InstructionIndex;
             frame.InstructionIndex++;
 
             // Start to run the try/catch/finally blocks
@@ -421,7 +421,7 @@ namespace System.Linq.Expressions.Interpreter
             try
             {
                 // run the try block
-                int index = frame.InstructionIndex;
+                var index = frame.InstructionIndex;
                 while (index >= _tryHandler.TryStartIndex && index < _tryHandler.TryEndIndex)
                 {
                     index += instructions[index].Run(frame);
@@ -468,11 +468,11 @@ namespace System.Linq.Expressions.Interpreter
                 }
 #endif
 
-                bool rethrow = false;
+                var rethrow = false;
                 try
                 {
                     // run the catch block
-                    int index = frame.InstructionIndex;
+                    var index = frame.InstructionIndex;
                     while (index >= exHandler.HandlerStartIndex && index < exHandler.HandlerEndIndex)
                     {
                         index += instructions[index].Run(frame);
@@ -510,12 +510,12 @@ namespace System.Linq.Expressions.Interpreter
                     // In the first path, the continuation mechanism works and frame.InstructionIndex will be updated to point to the first instruction of the finally block
                     // In the second path, the continuation mechanism is not involved and frame.InstructionIndex is not updated
 #if DEBUG
-                    bool isFromJump = frame.IsJumpHappened();
+                    var isFromJump = frame.IsJumpHappened();
                     Debug.Assert(!isFromJump || (isFromJump && _tryHandler.FinallyStartIndex == frame.InstructionIndex), "we should already jump to the first instruction of the finally");
 #endif
                     // run the finally block
                     // we cannot jump out of the finally block, and we cannot have an immediate rethrow in it
-                    int index = frame.InstructionIndex = _tryHandler.FinallyStartIndex;
+                    var index = frame.InstructionIndex = _tryHandler.FinallyStartIndex;
                     while (index >= _tryHandler.FinallyStartIndex && index < _tryHandler.FinallyEndIndex)
                     {
                         index += instructions[index].Run(frame);
@@ -705,7 +705,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (labelIndex < CacheSize)
             {
-                int index = (2 * labelIndex) | (hasValue ? 1 : 0);
+                var index = (2 * labelIndex) | (hasValue ? 1 : 0);
                 return s_cache[index] ?? (s_cache[index] = new LeaveExceptionHandlerInstruction(labelIndex, hasValue));
             }
             return new LeaveExceptionHandlerInstruction(labelIndex, hasValue);

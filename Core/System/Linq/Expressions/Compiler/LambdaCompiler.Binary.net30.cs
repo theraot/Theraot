@@ -136,8 +136,8 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitBinaryOperator(ExpressionType op, Type leftType, Type rightType, Type resultType, bool liftedToNull)
         {
-            bool leftIsNullable = TypeHelper.IsNullableType(leftType);
-            bool rightIsNullable = TypeHelper.IsNullableType(rightType);
+            var leftIsNullable = TypeHelper.IsNullableType(leftType);
+            var rightIsNullable = TypeHelper.IsNullableType(rightType);
 
             switch (op)
             {
@@ -583,8 +583,8 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitLiftedBinaryArithmetic(ExpressionType op, Type leftType, Type rightType, Type resultType)
         {
-            bool leftIsNullable = TypeHelper.IsNullableType(leftType);
-            bool rightIsNullable = TypeHelper.IsNullableType(rightType);
+            var leftIsNullable = TypeHelper.IsNullableType(leftType);
+            var rightIsNullable = TypeHelper.IsNullableType(rightType);
 
             Debug.Assert(leftIsNullable || rightIsNullable);
 

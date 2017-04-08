@@ -14,7 +14,7 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(node != null);
 
-            bool emitStart = (flags & CompilationFlags.EmitExpressionStartMask) == CompilationFlags.EmitExpressionStart;
+            var emitStart = (flags & CompilationFlags.EmitExpressionStartMask) == CompilationFlags.EmitExpressionStart;
 
             var startEmitted = emitStart ? EmitExpressionStart(node) : CompilationFlags.EmitNoExpressionStart;
             // only pass tail call flags to emit the expression

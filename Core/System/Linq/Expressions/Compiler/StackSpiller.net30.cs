@@ -148,7 +148,7 @@ namespace System.Linq.Expressions.Compiler
 
         private Result RewriteExpressionFreeTemps(Expression expression, Stack stack)
         {
-            int mark = Mark();
+            var mark = Mark();
             var result = RewriteExpression(expression, stack);
             Free(mark);
             return result;
@@ -760,7 +760,7 @@ namespace System.Linq.Expressions.Compiler
         {
             var node = (BlockExpression)expr;
 
-            int count = node.ExpressionCount;
+            var count = node.ExpressionCount;
             var action = RewriteAction.None;
             Expression[] clone = null;
             for (int i = 0; i < count; i++)

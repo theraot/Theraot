@@ -274,7 +274,7 @@ namespace System.Linq.Expressions
             if (expressions != null)
             {
                 Indent();
-                bool isFirst = true;
+                var isFirst = true;
                 foreach (T e in expressions)
                 {
                     if (isFirst)
@@ -335,11 +335,11 @@ namespace System.Linq.Expressions
             }
             else
             {
-                bool parenthesizeLeft = NeedsParentheses(node, node.Left);
-                bool parenthesizeRight = NeedsParentheses(node, node.Right);
+                var parenthesizeLeft = NeedsParentheses(node, node.Left);
+                var parenthesizeRight = NeedsParentheses(node, node.Right);
 
                 string op;
-                bool isChecked = false;
+                var isChecked = false;
                 var beforeOp = Flow.Space;
                 switch (node.NodeType)
                 {
@@ -551,7 +551,7 @@ namespace System.Linq.Expressions
                 // If no name if provided, generate a name as $var1, $var2.
                 // No guarantee for not having name conflicts with user provided variable names.
                 //
-                int id = GetParamId(node);
+                var id = GetParamId(node);
                 Out("var" + id);
             }
             else
@@ -756,8 +756,8 @@ namespace System.Linq.Expressions
                     return true;
             }
 
-            int childOpPrec = GetOperatorPrecedence(child);
-            int parentOpPrec = GetOperatorPrecedence(parent);
+            var childOpPrec = GetOperatorPrecedence(child);
+            var parentOpPrec = GetOperatorPrecedence(parent);
 
             if (childOpPrec == parentOpPrec)
             {

@@ -586,7 +586,7 @@ namespace System.Linq.Expressions.Interpreter
         private static int ListHashCode(IEnumerable<T> list)
         {
             var cmp = EqualityComparer<T>.Default;
-            int h = 6551;
+            var h = 6551;
             foreach (T t in list)
             {
                 h ^= (h << 5) ^ cmp.GetHashCode(t);

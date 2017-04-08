@@ -189,7 +189,7 @@ namespace System.Linq.Expressions.Compiler
                     if (_action == RewriteAction.SpillStack)
                     {
                         var clone = _expressions;
-                        int count = clone.Length;
+                        var count = clone.Length;
                         var comma = new List<Expression>(count + 1);
                         for (int i = 0; i < count; i++)
                         {
@@ -252,7 +252,7 @@ namespace System.Linq.Expressions.Compiler
                     {
                         last += _expressions.Length;
                     }
-                    int count = last - first + 1;
+                    var count = last - first + 1;
                     ContractUtils.RequiresArrayRange(_expressions, first, count, "first", "last");
 
                     if (count == _expressions.Length)

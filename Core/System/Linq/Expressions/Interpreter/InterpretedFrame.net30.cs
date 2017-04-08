@@ -43,7 +43,7 @@ namespace System.Linq.Expressions.Interpreter
             StackIndex = interpreter.LocalCount;
             Data = new object[StackIndex + interpreter.Instructions.MaxStackDepth];
 
-            int c = interpreter.Instructions.MaxContinuationDepth;
+            var c = interpreter.Instructions.MaxContinuationDepth;
             if (c > 0)
             {
                 _continuations = new int[c];
@@ -119,7 +119,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public void Dup()
         {
-            int i = StackIndex;
+            var i = StackIndex;
             Data[i] = Data[i - 1];
             StackIndex = i + 1;
         }

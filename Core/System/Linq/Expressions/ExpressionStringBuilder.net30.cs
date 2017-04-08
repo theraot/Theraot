@@ -181,7 +181,7 @@ namespace System.Linq.Expressions
             Out(open);
             if (expressions != null)
             {
-                bool isFirst = true;
+                var isFirst = true;
                 foreach (T e in expressions)
                 {
                     if (isFirst)
@@ -639,7 +639,7 @@ namespace System.Linq.Expressions
 
         protected internal override Expression VisitMethodCall(MethodCallExpression node)
         {
-            int start = 0;
+            var start = 0;
             var ob = node.Object;
 
             if (TypeHelper.HasAttribute<ExtensionAttribute>(node.Method))
@@ -950,7 +950,7 @@ namespace System.Linq.Expressions
             }
             else
             {
-                int labelId = GetLabelId(target);
+                var labelId = GetLabelId(target);
                 Out("UnamedLabel_" + labelId);
             }
         }

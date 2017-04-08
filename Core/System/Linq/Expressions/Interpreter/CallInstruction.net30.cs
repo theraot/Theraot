@@ -40,7 +40,7 @@ namespace System.Linq.Expressions.Interpreter
         /// </summary>
         public static CallInstruction Create(MethodInfo info, ParameterInfo[] parameters)
         {
-            int argumentCount = parameters.Length;
+            var argumentCount = parameters.Length;
             if (!info.IsStatic)
             {
                 argumentCount++;
@@ -137,7 +137,7 @@ namespace System.Linq.Expressions.Interpreter
         private static CallInstruction GetArrayAccessor(MethodInfo info, int argumentCount)
         {
             var arrayType = info.DeclaringType;
-            bool isGetter = info.Name == "Get";
+            var isGetter = info.Name == "Get";
             MethodInfo alternativeMethod = null;
 
             switch (arrayType.GetArrayRank())
@@ -426,7 +426,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            int first = frame.StackIndex - _argumentCount;
+            var first = frame.StackIndex - _argumentCount;
             var args = new object[_argumentCount];
             for (int i = 0; i < args.Length; i++)
             {
@@ -472,7 +472,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public sealed override int Run(InterpretedFrame frame)
         {
-            int first = frame.StackIndex - _argumentCount;
+            var first = frame.StackIndex - _argumentCount;
             object[] args = null;
             object instance = null;
             try

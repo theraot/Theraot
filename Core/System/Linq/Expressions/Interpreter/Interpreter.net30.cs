@@ -94,7 +94,7 @@ namespace System.Linq.Expressions.Interpreter
         public void Run(InterpretedFrame frame)
         {
             var instructions = _instructions.Instructions;
-            int index = frame.InstructionIndex;
+            var index = frame.InstructionIndex;
             while (index < instructions.Length)
             {
                 index += instructions[index].Run(frame);
