@@ -131,39 +131,44 @@ namespace Tests.Theraot.Threading.Needles
                 Interlocked.Increment(ref control);
                 return 5;
             });
-            var manual = new ManualResetEvent(false);
-            var threadA = new Thread(() =>
+            using (var manual = new ManualResetEvent(false))
             {
-                manual.WaitOne();
+                var threadA = new Thread
+                (
+                    () =>
+                    {
+                        manual.WaitOne();
+                        needle.Initialize();
+                        Interlocked.Increment(ref threadDone);
+                    }
+                );
+                var threadB = new Thread(() =>
+                {
+                    manual.WaitOne();
+                    needle.Initialize();
+                    Interlocked.Increment(ref threadDone);
+                });
+                var threadC = new Thread(() =>
+                {
+                    manual.WaitOne();
+                    needle.Initialize();
+                    Interlocked.Increment(ref threadDone);
+                });
+                threadA.Start();
+                threadB.Start();
+                threadC.Start();
+                manual.Set();
+                threadA.Join();
+                threadB.Join();
+                threadC.Join();
                 needle.Initialize();
-                Interlocked.Increment(ref threadDone);
-            });
-            var threadB = new Thread(() =>
-            {
-                manual.WaitOne();
                 needle.Initialize();
-                Interlocked.Increment(ref threadDone);
-            });
-            var threadC = new Thread(() =>
-            {
-                manual.WaitOne();
-                needle.Initialize();
-                Interlocked.Increment(ref threadDone);
-            });
-            threadA.Start();
-            threadB.Start();
-            threadC.Start();
-            manual.Set();
-            threadA.Join();
-            threadB.Join();
-            threadC.Join();
-            needle.Initialize();
-            needle.Initialize();
-            Assert.IsTrue(needle.IsCompleted);
-            Assert.AreEqual(needle.Value, 5);
-            Assert.AreEqual(control, 1);
-            Assert.AreEqual(threadDone, 3);
-            manual.Close();
+                Assert.IsTrue(needle.IsCompleted);
+                Assert.AreEqual(needle.Value, 5);
+                Assert.AreEqual(control, 1);
+                Assert.AreEqual(threadDone, 3);
+                manual.Close();
+            }
         }
 
         [Test]
