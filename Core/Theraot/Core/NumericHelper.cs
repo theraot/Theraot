@@ -7,6 +7,166 @@ namespace Theraot.Core
     [System.Diagnostics.DebuggerStepThrough]
     public static partial class NumericHelper
     {
+        public static int GCD(int left, int right)
+        {
+            if (left < 0)
+            {
+                left = -left;
+            }
+            if (right < 0)
+            {
+                right = -right;
+            }
+            return (int)GCD((uint)left, (uint)right);
+        }
+
+        [CLSCompliant(false)]
+        public static uint GCD(uint left, uint right)
+        {
+            const int CvMax = 32;
+            if (left < right)
+            {
+                Swap(ref left, ref right);
+            }
+            while (true)
+            {
+                if (right == 0)
+                {
+                    return left;
+                }
+                for (int cv = CvMax; ;)
+                {
+                    left -= right;
+                    if (left < right)
+                    {
+                        break;
+                    }
+                    if (--cv == 0)
+                    {
+                        left %= right;
+                        break;
+                    }
+                }
+                Swap(ref left, ref right);
+            }
+        }
+
+        public static long GCD(long left, long right)
+        {
+            if (left < 0)
+            {
+                left = -left;
+            }
+            if (right < 0)
+            {
+                right = -right;
+            }
+            return (long)GCD((ulong)left, (ulong)right);
+        }
+
+        [CLSCompliant(false)]
+        public static ulong GCD(ulong uu1, ulong uu2)
+        {
+            const int CvMax = 32;
+            if (uu1 < uu2)
+            {
+                goto LOther;
+            }
+            LTop:
+            if (uu1 <= uint.MaxValue)
+            {
+                goto LSmall;
+            }
+            if (uu2 == 0)
+            {
+                return uu1;
+            }
+            for (int cv = CvMax; ;)
+            {
+                uu1 -= uu2;
+                if (uu1 < uu2)
+                {
+                    break;
+                }
+
+                if (--cv == 0)
+                {
+                    uu1 %= uu2;
+                    break;
+                }
+            }
+            LOther:
+            if (uu2 <= uint.MaxValue)
+            {
+                goto LSmall;
+            }
+            if (uu1 == 0)
+            {
+                return uu2;
+            }
+            for (int cv = CvMax; ;)
+            {
+                uu2 -= uu1;
+                if (uu2 < uu1)
+                {
+                    break;
+                }
+
+                if (--cv == 0)
+                {
+                    uu2 %= uu1;
+                    break;
+                }
+            }
+            goto LTop;
+            LSmall:
+            var u1 = (uint)uu1;
+            var u2 = (uint)uu2;
+            if (u1 < u2)
+            {
+                goto LOtherSmall;
+            }
+            LTopSmall:
+            if (u2 == 0)
+            {
+                return u1;
+            }
+            for (int cv = CvMax; ;)
+            {
+                u1 -= u2;
+                if (u1 < u2)
+                {
+                    break;
+                }
+
+                if (--cv == 0)
+                {
+                    u1 %= u2;
+                    break;
+                }
+            }
+            LOtherSmall:
+            if (u1 == 0)
+            {
+                return u2;
+            }
+            for (int cv = CvMax; ;)
+            {
+                u2 -= u1;
+                if (u2 < u1)
+                {
+                    break;
+                }
+
+                if (--cv == 0)
+                {
+                    u2 %= u1;
+                    break;
+                }
+            }
+            goto LTopSmall;
+        }
+
         [System.Diagnostics.DebuggerNonUserCode]
         public static int Log2(int number)
         {
@@ -168,156 +328,6 @@ namespace Theraot.Core
             var tmp = a;
             a = b;
             b = tmp;
-        }
-
-        internal static uint GCD(uint u1, uint u2)
-        {
-            const int cvMax = 32;
-            if (u1 < u2)
-            {
-                goto LOther;
-            }
-            LTop:
-            if (u2 == 0)
-            {
-                return u1;
-            }
-            for (int cv = cvMax; ;)
-            {
-                u1 -= u2;
-                if (u1 < u2)
-                {
-                    break;
-                }
-
-                if (--cv == 0)
-                {
-                    u1 %= u2;
-                    break;
-                }
-            }
-            LOther:
-            if (u1 == 0)
-            {
-                return u2;
-            }
-            for (int cv = cvMax; ;)
-            {
-                u2 -= u1;
-                if (u2 < u1)
-                {
-                    break;
-                }
-
-                if (--cv == 0)
-                {
-                    u2 %= u1;
-                    break;
-                }
-            }
-            goto LTop;
-        }
-
-        internal static ulong GCD(ulong uu1, ulong uu2)
-        {
-            const int cvMax = 32;
-            if (uu1 < uu2)
-            {
-                goto LOther;
-            }
-            LTop:
-            if (uu1 <= uint.MaxValue)
-            {
-                goto LSmall;
-            }
-            if (uu2 == 0)
-            {
-                return uu1;
-            }
-            for (int cv = cvMax; ;)
-            {
-                uu1 -= uu2;
-                if (uu1 < uu2)
-                {
-                    break;
-                }
-
-                if (--cv == 0)
-                {
-                    uu1 %= uu2;
-                    break;
-                }
-            }
-            LOther:
-            if (uu2 <= uint.MaxValue)
-            {
-                goto LSmall;
-            }
-            if (uu1 == 0)
-            {
-                return uu2;
-            }
-            for (int cv = cvMax; ;)
-            {
-                uu2 -= uu1;
-                if (uu2 < uu1)
-                {
-                    break;
-                }
-
-                if (--cv == 0)
-                {
-                    uu2 %= uu1;
-                    break;
-                }
-            }
-            goto LTop;
-            LSmall:
-            var u1 = (uint)uu1;
-            var u2 = (uint)uu2;
-            if (u1 < u2)
-            {
-                goto LOtherSmall;
-            }
-            LTopSmall:
-            if (u2 == 0)
-            {
-                return u1;
-            }
-            for (int cv = cvMax; ;)
-            {
-                u1 -= u2;
-                if (u1 < u2)
-                {
-                    break;
-                }
-
-                if (--cv == 0)
-                {
-                    u1 %= u2;
-                    break;
-                }
-            }
-            LOtherSmall:
-            if (u1 == 0)
-            {
-                return u2;
-            }
-            for (int cv = cvMax; ;)
-            {
-                u2 -= u1;
-                if (u2 < u1)
-                {
-                    break;
-                }
-
-                if (--cv == 0)
-                {
-                    u2 %= u1;
-                    break;
-                }
-            }
-            goto LTopSmall;
         }
 
         internal static uint GetHi(ulong uu)
