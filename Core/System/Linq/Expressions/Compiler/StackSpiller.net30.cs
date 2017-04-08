@@ -308,6 +308,7 @@ namespace System.Linq.Expressions.Compiler
         // LambdaExpression
         private static Result RewriteLambdaExpression(Expression expr, Stack stack)
         {
+            GC.KeepAlive(stack);
             var node = (LambdaExpression)expr;
 
             // Call back into the rewriter

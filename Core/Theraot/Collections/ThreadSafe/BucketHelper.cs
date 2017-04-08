@@ -555,6 +555,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private static bool Tautology<T>(T item)
         {
+            GC.KeepAlive(item);
             return true;
         }
     }
