@@ -91,7 +91,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             Expression.Field(
                 Expression.Parameter(GetType(), "t"),
-                GetType().GetField("foo"));
+                GetType().GetField("Foo"));
         }
 
         public static string Foo = "foo";
@@ -101,18 +101,18 @@ namespace MonoTests.System.Linq.Expressions
         {
             var foo = Expression.Lambda<Func<string>>(
                 Expression.Field(null, GetType().GetField(
-                    "foo", BindingFlags.Static | BindingFlags.Public))).Compile();
+                    "Foo", BindingFlags.Static | BindingFlags.Public))).Compile();
 
             Assert.AreEqual("foo", foo());
         }
 
         public class Bar
         {
-            public string baz;
+            public string Baz;
 
             public Bar()
             {
-                baz = "baz";
+                Baz = "baz";
             }
         }
 
@@ -122,7 +122,7 @@ namespace MonoTests.System.Linq.Expressions
             var p = Expression.Parameter(typeof(Bar), "bar");
             var baz = Expression.Lambda<Func<Bar, string>>(
                 Expression.Field(p, typeof(Bar).GetField(
-                    "baz", BindingFlags.Public | BindingFlags.Instance)), p).Compile();
+                    "Baz", BindingFlags.Public | BindingFlags.Instance)), p).Compile();
 
             Assert.AreEqual("baz", baz(new Bar()));
         }
