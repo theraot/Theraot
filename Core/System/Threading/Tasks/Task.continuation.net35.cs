@@ -1478,8 +1478,7 @@ namespace System.Threading.Tasks
         /// <param name="continuationOptions">
         /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
         /// as <see cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
-        /// well as execution options, such as <see
-        /// cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// well as execution options, such as <see cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
         /// </param>
         /// <returns>A new continuation <see cref="Task{TNewResult}"/>.</returns>
         /// <remarks>
@@ -1489,8 +1488,7 @@ namespace System.Threading.Tasks
         /// to an unhandled exception, or exiting out early due to being canceled.
         /// </para>
         /// <para>
-        /// The <paramref name="continuationFunction"/>, when executed, should return a <see
-        /// cref="Task{TNewResult}"/>. This task's completion state will be transferred to the task returned
+        /// The <paramref name="continuationFunction"/>, when executed, should return a <see cref="Task{TNewResult}"/>. This task's completion state will be transferred to the task returned
         /// from the ContinueWith call.
         /// </para>
         /// </remarks>
@@ -1498,8 +1496,7 @@ namespace System.Threading.Tasks
         /// The <paramref name="continuationFunction"/> argument is null.
         /// </exception>
         /// <exception cref="T:System.ArgumentOutOfRangeException">
-        /// The <paramref name="continuationOptions"/> argument specifies an invalid value for <see
-        /// cref="T:System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        /// The <paramref name="continuationOptions"/> argument specifies an invalid value for <see cref="T:System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
         [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, TNewResult> continuationFunction, TaskContinuationOptions continuationOptions)
@@ -1520,10 +1517,8 @@ namespace System.Threading.Tasks
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new task.</param>
         /// <param name="continuationOptions">
         /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
-        /// as <see
-        /// cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
-        /// well as execution options, such as <see
-        /// cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// as <see cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
         /// </param>
         /// <param name="scheduler">
         /// The <see cref="TaskScheduler"/> to associate with the continuation task and to use for its
@@ -1546,8 +1541,7 @@ namespace System.Threading.Tasks
         /// The <paramref name="continuationFunction"/> argument is null.
         /// </exception>
         /// <exception cref="T:System.ArgumentOutOfRangeException">
-        /// The <paramref name="continuationOptions"/> argument specifies an invalid value for <see
-        /// cref="T:System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        /// The <paramref name="continuationOptions"/> argument specifies an invalid value for <see cref="T:System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="scheduler"/> argument is null.
@@ -1662,10 +1656,8 @@ namespace System.Threading.Tasks
         /// <param name="state">An object representing data to be used by the continuation function.</param>
         /// <param name="continuationOptions">
         /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
-        /// as <see
-        /// cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
-        /// well as execution options, such as <see
-        /// cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// as <see cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
         /// </param>
         /// <returns>A new continuation <see cref="Task{TNewResult}"/>.</returns>
         /// <remarks>
@@ -1675,8 +1667,7 @@ namespace System.Threading.Tasks
         /// to an unhandled exception, or exiting out early due to being canceled.
         /// </para>
         /// <para>
-        /// The <paramref name="continuationFunction"/>, when executed, should return a <see
-        /// cref="Task{TNewResult}"/>. This task's completion state will be transferred to the task returned
+        /// The <paramref name="continuationFunction"/>, when executed, should return a <see cref="Task{TNewResult}"/>. This task's completion state will be transferred to the task returned
         /// from the ContinueWith call.
         /// </para>
         /// </remarks>
@@ -1684,8 +1675,7 @@ namespace System.Threading.Tasks
         /// The <paramref name="continuationFunction"/> argument is null.
         /// </exception>
         /// <exception cref="T:System.ArgumentOutOfRangeException">
-        /// The <paramref name="continuationOptions"/> argument specifies an invalid value for <see
-        /// cref="T:System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        /// The <paramref name="continuationOptions"/> argument specifies an invalid value for <see cref="T:System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
         [MethodImplAttribute(MethodImplOptions.NoInlining)] // Methods containing StackCrawlMark local var have to be marked non-inlineable
         public Task<TNewResult> ContinueWith<TNewResult>(Func<Task<TResult>, object, TNewResult> continuationFunction, object state, TaskContinuationOptions continuationOptions)
@@ -1707,10 +1697,8 @@ namespace System.Threading.Tasks
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new task.</param>
         /// <param name="continuationOptions">
         /// Options for when the continuation is scheduled and how it behaves. This includes criteria, such
-        /// as <see
-        /// cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
-        /// well as execution options, such as <see
-        /// cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
+        /// as <see cref="System.Threading.Tasks.TaskContinuationOptions.OnlyOnCanceled">OnlyOnCanceled</see>, as
+        /// well as execution options, such as <see cref="System.Threading.Tasks.TaskContinuationOptions.ExecuteSynchronously">ExecuteSynchronously</see>.
         /// </param>
         /// <param name="scheduler">
         /// The <see cref="TaskScheduler"/> to associate with the continuation task and to use for its
@@ -1733,8 +1721,7 @@ namespace System.Threading.Tasks
         /// The <paramref name="continuationFunction"/> argument is null.
         /// </exception>
         /// <exception cref="T:System.ArgumentOutOfRangeException">
-        /// The <paramref name="continuationOptions"/> argument specifies an invalid value for <see
-        /// cref="T:System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
+        /// The <paramref name="continuationOptions"/> argument specifies an invalid value for <see cref="T:System.Threading.Tasks.TaskContinuationOptions">TaskContinuationOptions</see>.
         /// </exception>
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="scheduler"/> argument is null.
