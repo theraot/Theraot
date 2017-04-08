@@ -14,7 +14,8 @@ namespace System.Collections.ObjectModel
         // This field is disposable and will not be disposed
         private readonly StructNeedle<TrackingThreadLocal<int>> _entryCheck;
 
-        private readonly ReentryBlockage _reentryBlockage;
+        // This field is disposable and will not be disposed either
+        private readonly StructNeedle<ReentryBlockage> _reentryBlockage;
 
         public ObservableCollection()
             : base(new List<T>())
@@ -47,7 +48,7 @@ namespace System.Collections.ObjectModel
         protected IDisposable BlockReentrancy()
         {
             _entryCheck.Value.Value++;
-            return _reentryBlockage;
+            return _reentryBlockage.Value;
         }
 
         protected void CheckReentrancy()
