@@ -624,21 +624,20 @@ namespace MonoTests.System.Threading.Tasks
             using (var source = new CancellationTokenSource())
             {
                 source.Cancel();
-                using (var parent = new Task(ActionHelper.GetNoopAction()))
-                {
-                    var cont = parent.ContinueWith(ActionHelper.GetNoopAction<Task>(), source.Token, TaskContinuationOptions.LazyCancellation, TaskScheduler.Default);
+                // Do not dispose Task
+                var parent = new Task(ActionHelper.GetNoopAction());
+                var cont = parent.ContinueWith(ActionHelper.GetNoopAction<Task>(), source.Token, TaskContinuationOptions.LazyCancellation, TaskScheduler.Default);
 
-                    Assert.AreNotEqual(TaskStatus.Canceled, cont.Status, "#1");
-                    parent.Start();
-                    try
-                    {
-                        Assert.IsTrue(cont.Wait(1000), "#2");
-                        Assert.Fail();
-                    }
-                    catch (AggregateException ex)
-                    {
-                        Assert.That(ex.InnerException, Is.TypeOf(typeof(TaskCanceledException)), "#3");
-                    }
+                Assert.AreNotEqual(TaskStatus.Canceled, cont.Status, "#1");
+                parent.Start();
+                try
+                {
+                    Assert.IsTrue(cont.Wait(1000), "#2");
+                    Assert.Fail();
+                }
+                catch (AggregateException ex)
+                {
+                    Assert.That(ex.InnerException, Is.TypeOf(typeof(TaskCanceledException)), "#3");
                 }
             }
         }
