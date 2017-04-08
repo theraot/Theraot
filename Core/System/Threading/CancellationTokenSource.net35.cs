@@ -202,6 +202,7 @@ namespace System.Threading
 
         internal CancellationTokenRegistration Register(Action callback, bool useSynchronizationContext)
         {
+            // NOTICE this method has no null check
             var callbacks = CheckDisposedGetCallbacks();
             var tokenReg = new CancellationTokenRegistration(Interlocked.Decrement(ref _currentId), this);
             // If the source is already canceled run the callback inline.
@@ -278,6 +279,7 @@ namespace System.Threading
 
         private static void RunCallback(bool throwOnFirstException, Action callback, ref List<Exception> exceptions)
         {
+            // NOTICE this method has no null check
             if (throwOnFirstException)
             {
                 callback();

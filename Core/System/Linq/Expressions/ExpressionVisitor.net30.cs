@@ -984,8 +984,9 @@ namespace System.Linq.Expressions
         /// optionally replacing it with a new element.</param>
         /// <returns>The modified node list, if any of the elements were modified;
         /// otherwise, returns the original node list.</returns>
-        public static ReadOnlyCollection<T> Visit<T>(ReadOnlyCollection<T> nodes, Func<T, T> elementVisitor)
+        internal static ReadOnlyCollection<T> Visit<T>(ReadOnlyCollection<T> nodes, Func<T, T> elementVisitor)
         {
+            // NOTICE this method has no null check
             T[] newNodes = null;
             var n = nodes.Count;
             for (int i = 0; i < n; i++)

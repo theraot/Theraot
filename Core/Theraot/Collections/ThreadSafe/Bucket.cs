@@ -181,6 +181,10 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool RemoveAt(int index, Predicate<T> check)
         {
+            if (check == null)
+            {
+                throw new ArgumentNullException("check");
+            }
             return _bucketCore.DoMayDecrement
                 (
                     index,
@@ -244,6 +248,14 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool Update(int index, Func<T, T> itemUpdateFactory, Predicate<T> check, out bool isEmpty)
         {
+            if (itemUpdateFactory == null)
+            {
+                throw new ArgumentNullException("itemUpdateFactory");
+            }
+            if (check == null)
+            {
+                throw new ArgumentNullException("check");
+            }
             var found = BucketHelper.Null;
             var compare = BucketHelper.Null;
             var result = false;
@@ -277,6 +289,10 @@ namespace Theraot.Collections.ThreadSafe
 
         public IEnumerable<T> Where(Predicate<T> check)
         {
+            if (check == null)
+            {
+                throw new ArgumentNullException("check");
+            }
             foreach (var value in _bucketCore)
             {
                 var castedValue = value == BucketHelper.Null ? default(T) : (T)value;

@@ -191,7 +191,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </returns>
         public bool ContainsKey(int hashCode, Predicate<TKey> keyCheck)
         {
-            if (ReferenceEquals(keyCheck, null))
+            if (keyCheck == null)
             {
                 throw new ArgumentNullException("keyCheck");
             }
@@ -268,7 +268,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)
         {
-            if (ReferenceEquals(valueFactory, null))
+            if (valueFactory == null)
             {
                 throw new ArgumentNullException("valueFactory");
             }
@@ -639,7 +639,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </remarks>
         public IEnumerable<TValue> RemoveWhereKeyEnumerable(Predicate<TKey> keyCheck)
         {
-            if (ReferenceEquals(keyCheck, null))
+            if (keyCheck == null)
             {
                 throw new ArgumentNullException("keyCheck");
             }
@@ -815,6 +815,10 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool TryGetOrAdd(TKey key, Func<TKey, TValue> valueFactory, out TValue stored)
         {
+            if (valueFactory == null)
+            {
+                throw new ArgumentException("valueFactory");
+            }
             var hashCode = GetHashCode(key);
             var attempts = 0;
             while (true)
@@ -889,6 +893,10 @@ namespace Theraot.Collections.ThreadSafe
 
         public bool TryUpdate(TKey key, TValue newValue, Predicate<TValue> valueCheck)
         {
+            if (valueCheck == null)
+            {
+                throw new ArgumentNullException("valueCheck");
+            }
             var hashCode = GetHashCode(key);
             var insertPair = new KeyValuePair<TKey, TValue>(key, newValue);
             for (var attempts = 0; attempts < _probing; attempts++)
@@ -1151,11 +1159,11 @@ namespace Theraot.Collections.ThreadSafe
     {
         public TValue AddOrUpdate(TKey key, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory)
         {
-            if (ReferenceEquals(addValueFactory, null))
+            if (addValueFactory == null)
             {
                 throw new ArgumentNullException("addValueFactory");
             }
-            if (ReferenceEquals(updateValueFactory, null))
+            if (updateValueFactory == null)
             {
                 throw new ArgumentNullException("updateValueFactory");
             }
@@ -1197,7 +1205,7 @@ namespace Theraot.Collections.ThreadSafe
 
         public TValue AddOrUpdate(TKey key, TValue addValue, Func<TKey, TValue, TValue> updateValueFactory)
         {
-            if (ReferenceEquals(updateValueFactory, null))
+            if (updateValueFactory == null)
             {
                 throw new ArgumentNullException("updateValueFactory");
             }
@@ -1235,11 +1243,11 @@ namespace Theraot.Collections.ThreadSafe
 
         public TValue AddOrUpdate(TKey key, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory, out bool isNew)
         {
-            if (ReferenceEquals(addValueFactory, null))
+            if (addValueFactory == null)
             {
                 throw new ArgumentNullException("addValueFactory");
             }
-            if (ReferenceEquals(updateValueFactory, null))
+            if (updateValueFactory == null)
             {
                 throw new ArgumentNullException("updateValueFactory");
             }

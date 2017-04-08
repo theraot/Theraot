@@ -266,6 +266,7 @@ namespace System.Linq.Expressions
 
         private void VisitExpressions<T>(char open, char separator, IList<T> expressions, Action<T> visit)
         {
+            // NOTICE this method has no null check
             Out(open.ToString());
 
             if (expressions != null)
