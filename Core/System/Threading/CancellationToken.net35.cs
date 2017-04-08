@@ -97,9 +97,9 @@ namespace System.Threading
             return Source == other.Source;
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return (other is CancellationToken) && Equals((CancellationToken)other);
+            return (obj is CancellationToken) && Equals((CancellationToken)obj);
         }
 
         public override int GetHashCode()
