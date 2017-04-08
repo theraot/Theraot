@@ -840,20 +840,8 @@ namespace System.Linq.Expressions.Compiler
 
         private static bool TryGetRawConstantValue(FieldInfo fi, out object value)
         {
-            // TODO: It looks like GetRawConstantValue is not available at the moment, use it when it comes back.
-            //value = fi.GetRawConstantValue();
-            //return true;
-
-            try
-            {
-                value = fi.GetValue(null);
-                return true;
-            }
-            catch
-            {
-                value = null;
-                return false;
-            }
+            value = fi.GetRawConstantValue();
+            return true;
         }
 
         private void EmitInstance(Expression instance, Type type)
