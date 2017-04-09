@@ -9,6 +9,10 @@ namespace System.Diagnostics.Contracts.Tests
     {
         internal static void AssertThrowsContractException(Action action)
         {
+            if (action == null)
+            {
+                return;
+            }
             try
             {
                 action();
