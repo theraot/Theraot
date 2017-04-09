@@ -1488,7 +1488,9 @@ namespace MonoTests.System.Numerics
             Assert.AreEqual(0, (ulong)a, "#11");
 
             a = new BigInteger();
-            Assert.AreEqual(true, a.Equals(a), "#12"); // Intentional
+            b = a;
+            Assert.AreEqual(true, a.Equals(b), "#12");
+            Assert.AreEqual(true, b.Equals(a), "#12");
 
             a = new BigInteger();
             Assert.AreEqual(a, BigInteger.Min(a, a), "#13");
