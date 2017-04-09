@@ -479,6 +479,10 @@ namespace MonoTests.System.Collections.Generic
 
         private bool Throws(D d)
         {
+            if (d == null)
+            {
+                return false;
+            }
             try
             {
                 d();
