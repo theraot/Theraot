@@ -3,22 +3,23 @@
 using System;
 using System.Threading;
 using Theraot.Collections.ThreadSafe;
+using Theraot.Core;
 using Theraot.Threading.Needles;
 
 namespace Theraot.Threading
 {
     public class Timeout : IPromise
     {
+        protected Action Callback;
         private const int _canceled = 4;
         private const int _canceling = 3;
+        private const int _changing = 6;
         private const int _created = 0;
         private const int _executed = 2;
         private const int _executing = 1;
-        private const int _changing = 6;
         private static readonly Bucket<Timeout> _root = new Bucket<Timeout>();
         private static int _lastRootIndex = -1;
         private readonly int _hashcode;
-        private Action _callback;
         private int _rootIndex = -1;
         private long _startTime;
         private int _status;
@@ -31,7 +32,7 @@ namespace Theraot.Threading
             {
                 throw new ArgumentNullException("callback");
             }
-            _callback = callback;
+            Callback = callback;
             Start(dueTime);
             _hashcode = unchecked((int)DateTime.Now.Ticks);
         }
@@ -44,13 +45,13 @@ namespace Theraot.Threading
             }
             if (token.IsCancellationRequested)
             {
-                _callback = null;
+                Callback = null;
                 _wrapped = null;
                 _status = _canceled;
             }
             else
             {
-                _callback = callback;
+                Callback = callback;
                 Start(dueTime);
                 token.Register(Cancel);
             }
@@ -69,7 +70,7 @@ namespace Theraot.Threading
             // Empty
         }
 
-        private Timeout()
+        protected Timeout()
         {
             _hashcode = unchecked((int)DateTime.Now.Ticks);
         }
@@ -106,7 +107,7 @@ namespace Theraot.Threading
                 throw new ArgumentNullException("callback");
             }
             var timeout = new Timeout();
-            timeout._callback = () =>
+            timeout.Callback = () =>
             {
                 try
                 {
@@ -132,7 +133,7 @@ namespace Theraot.Threading
                 return;
             }
             var timeout = new Timeout();
-            timeout._callback = () =>
+            timeout.Callback = () =>
             {
                 try
                 {
@@ -215,19 +216,26 @@ namespace Theraot.Threading
             return _hashcode;
         }
 
-        private static void Root(Timeout timeout)
+        protected static void Root(Timeout timeout)
         {
             timeout._rootIndex = Interlocked.Increment(ref _lastRootIndex);
             _root.Set(timeout._rootIndex, timeout);
         }
 
-        private static void UnRoot(Timeout timeout)
+        protected static void UnRoot(Timeout timeout)
         {
             var rootIndex = Interlocked.Exchange(ref timeout._rootIndex, -1);
             if (rootIndex != -1)
             {
                 _root.RemoveAt(rootIndex);
             }
+        }
+
+        protected void Start(long dueTime)
+        {
+            _startTime = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
+            _targetTime = _startTime + dueTime;
+            _wrapped = new Timer(Finish, null, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
         }
 
         private void Close()
@@ -237,7 +245,7 @@ namespace Theraot.Threading
             {
                 wrapped.Dispose();
             }
-            Volatile.Write(ref _callback, null);
+            Volatile.Write(ref Callback, null);
             GC.SuppressFinalize(this);
         }
 
@@ -247,7 +255,7 @@ namespace Theraot.Threading
             ThreadingHelper.SpinWaitWhile(ref _status, _changing);
             if (Interlocked.CompareExchange(ref _status, _executing, _created) == _created)
             {
-                var callback = Volatile.Read(ref _callback);
+                var callback = Volatile.Read(ref Callback);
                 if (callback != null)
                 {
                     callback.Invoke();
@@ -256,12 +264,113 @@ namespace Theraot.Threading
                 }
             }
         }
+    }
 
-        private void Start(long dueTime)
+    public class Timeout<T> : Timeout
+    {
+        public Timeout(Action<T> callback, long dueTime, T target)
         {
-            _startTime = ThreadingHelper.Milliseconds(ThreadingHelper.TicksNow());
-            _targetTime = _startTime + dueTime;
-            _wrapped = new Timer(Finish, null, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(-1));
+            if (callback == null)
+            {
+                throw new ArgumentNullException("callback");
+            }
+            Callback = new ErsatzAction<T>(callback, target).Invoke;
+            Start(dueTime);
+        }
+
+        public Timeout(Action<T> callback, long dueTime, CancellationToken token, T target)
+        {
+            if (callback == null)
+            {
+                throw new ArgumentNullException("callback");
+            }
+            if (token.IsCancellationRequested)
+            {
+                Callback = null;
+                Cancel();
+            }
+            else
+            {
+                Callback = new ErsatzAction<T>(callback, target).Invoke;
+                Start(dueTime);
+                token.Register(Cancel);
+            }
+        }
+
+        public Timeout(Action<T> callback, TimeSpan dueTime, T target)
+            : this(callback, (long)dueTime.TotalMilliseconds, target)
+        {
+            // Empty
+        }
+
+        public Timeout(Action<T> callback, TimeSpan dueTime, CancellationToken token, T target)
+            : this(callback, (long)dueTime.TotalMilliseconds, token, target)
+        {
+            // Empty
+        }
+
+        private Timeout()
+        {
+            // Empty
+        }
+
+        public static void Launch(Action<T> callback, long dueTime, T target)
+        {
+            if (callback == null)
+            {
+                throw new ArgumentNullException("callback");
+            }
+            var timeout = new Timeout<T>();
+            timeout.Callback = () =>
+            {
+                try
+                {
+                    callback(target);
+                }
+                finally
+                {
+                    UnRoot(timeout);
+                }
+            };
+            timeout.Start(dueTime);
+            Root(timeout);
+        }
+
+        public static void Launch(Action<T> callback, long dueTime, CancellationToken token, T target)
+        {
+            if (callback == null)
+            {
+                throw new ArgumentNullException("callback");
+            }
+            if (token.IsCancellationRequested)
+            {
+                return;
+            }
+            var timeout = new Timeout<T>();
+            timeout.Callback = () =>
+            {
+                try
+                {
+                    callback(target);
+                }
+                finally
+                {
+                    UnRoot(timeout);
+                }
+            };
+            timeout.Start(dueTime);
+            token.Register(timeout.Cancel);
+            Root(timeout);
+        }
+
+        public static void Launch(Action<T> callback, TimeSpan dueTime, T target)
+        {
+            Launch(callback, (long)dueTime.TotalMilliseconds, target);
+        }
+
+        public static void Launch(Action<T> callback, TimeSpan dueTime, CancellationToken token, T target)
+        {
+            Launch(callback, (long)dueTime.TotalMilliseconds, token, target);
         }
     }
 }
