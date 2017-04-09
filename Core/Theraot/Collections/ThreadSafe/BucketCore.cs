@@ -269,6 +269,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private static bool Do(ref int use, ref object first, ref object second, DoAction callback)
         {
+            // NOTICE this method has no null check
             var foundFirst = Interlocked.CompareExchange(ref first, null, null);
             if (foundFirst == null)
             {
@@ -287,6 +288,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private static void DoEnsureSize(ref int use, ref object first, ref object second, Func<object> factory)
         {
+            // NOTICE this method has no null check
             try
             {
                 Interlocked.Increment(ref use);
@@ -341,6 +343,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private static bool DoMayDecrement(ref int use, ref object first, ref object second, DoAction callback)
         {
+            // NOTICE this method has no null check
             try
             {
                 Interlocked.Increment(ref use);
@@ -363,6 +366,7 @@ namespace Theraot.Collections.ThreadSafe
 
         private static bool DoMayIncrement(ref int use, ref object first, ref object second, Func<object> factory, DoAction callback)
         {
+            // NOTICE this method has no null check
             try
             {
                 Interlocked.Increment(ref use);
