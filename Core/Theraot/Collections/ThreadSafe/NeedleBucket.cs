@@ -42,8 +42,9 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("needleFactory");
             }
+            var valueFactoryCopy = valueFactory;
             _reservoir = new NeedleReservoir<T, TNeedle>(needleFactory);
-            _needleFactory = index => _reservoir.GetNeedle(valueFactory(index));
+            _needleFactory = index => _reservoir.GetNeedle(valueFactoryCopy(index));
             _entries = new FixedSizeBucket<TNeedle>(capacity);
             _comparer = EqualityComparer<T>.Default;
         }
@@ -66,8 +67,9 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("needleFactory");
             }
+            var valueFactoryCopy = valueFactory;
             _reservoir = new NeedleReservoir<T, TNeedle>(needleFactory);
-            _needleFactory = index => _reservoir.GetNeedle(valueFactory());
+            _needleFactory = index => _reservoir.GetNeedle(valueFactoryCopy());
             _entries = new FixedSizeBucket<TNeedle>(capacity);
             _comparer = EqualityComparer<T>.Default;
         }
@@ -95,8 +97,9 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("needleFactory");
             }
+            var valueFactoryCopy = valueFactory;
             _reservoir = new NeedleReservoir<T, TNeedle>(needleFactory);
-            _needleFactory = index => _reservoir.GetNeedle(valueFactory(index));
+            _needleFactory = index => _reservoir.GetNeedle(valueFactoryCopy(index));
             _entries = new FixedSizeBucket<TNeedle>(capacity);
         }
 
@@ -123,8 +126,9 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("comparer");
             }
+            var valueFactoryCopy = valueFactory;
             _reservoir = new NeedleReservoir<T, TNeedle>(needleFactory);
-            _needleFactory = index => _reservoir.GetNeedle(valueFactory());
+            _needleFactory = index => _reservoir.GetNeedle(valueFactoryCopy());
             _entries = new FixedSizeBucket<TNeedle>(capacity);
             _comparer = comparer;
         }
