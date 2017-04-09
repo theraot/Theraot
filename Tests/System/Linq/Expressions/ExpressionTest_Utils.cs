@@ -208,14 +208,14 @@ namespace MonoTests.System.Linq.Expressions
             return arg;
         }
 
-        public delegate int TestDelegate(int i);
+        public delegate int Delegate(int i);
 
-        public event TestDelegate TestEvent;
+        public event Delegate OnTest;
 
         public void DoNothing()
         {
             // Just to avoid a compiler warning
-            if (TestEvent != null)
+            if (OnTest != null)
             {
                 return;
             }
@@ -266,7 +266,7 @@ namespace MonoTests.System.Linq.Expressions
 
         public static EventInfo GetEventInfo()
         {
-            return typeof(MemberClass).GetEvent("TestEvent");
+            return typeof(MemberClass).GetEvent("OnTest");
         }
 
         public static FieldInfo GetStaticFieldInfo()
