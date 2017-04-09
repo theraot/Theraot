@@ -23,7 +23,9 @@ namespace System.Linq.Expressions
         private readonly ReadOnlyCollection<MemberBinding> _bindings;
 
         internal MemberMemberBinding(MemberInfo member, ReadOnlyCollection<MemberBinding> bindings)
+#pragma warning disable CS0618 // El tipo o el miembro están obsoletos
             : base(MemberBindingType.MemberBinding, member)
+#pragma warning restore CS0618 // El tipo o el miembro están obsoletos
         {
             _bindings = bindings;
         }
