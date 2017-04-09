@@ -8,7 +8,7 @@ namespace Theraot.Core
     {#>
 
     [global::System.Diagnostics.DebuggerNonUserCode]
-    public class ErsatzAction<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#>
+    public class ValueActionClosure<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#>
     
     {
         private readonly Action<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#> _target;
@@ -16,7 +16,7 @@ namespace Theraot.Core
         private readonly <#}#>T<#=subindice#> _arg<#=subindice#><#} #>;
         <#}#>
 
-        public ErsatzAction(Action<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#> target<# if (indice != 0) { #>, <# if (indice == 1) #>T obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#> arg<#=subindice#><#}}#>)
+        public ValueActionClosure(Action<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#> target<# if (indice != 0) { #>, <# if (indice == 1) #>T obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#> arg<#=subindice#><#}}#>)
         {
             _target = target ?? ActionHelper.GetNoopAction<# if (indice != 0) {#><<# if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>><#}#>();
 <# if (indice != 0)
