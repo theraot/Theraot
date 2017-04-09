@@ -1463,10 +1463,14 @@ namespace MonoTests.System.Numerics
             Assert.AreEqual("0", a.ToString(), "#4");
 
             a = new BigInteger();
-            Assert.AreEqual(true, a == a, "#5"); // Intentional
+            var b = a;
+            Assert.AreEqual(true, a == b, "#5");
+            Assert.AreEqual(true, b == a, "#5");
 
             a = new BigInteger();
-            Assert.AreEqual(false, a < a, "#6"); // Intentional
+            b = a;
+            Assert.AreEqual(false, a < b, "#6");
+            Assert.AreEqual(false, b < a, "#6");
 
             a = new BigInteger();
             Assert.AreEqual(true, a < 10L, "#7");
