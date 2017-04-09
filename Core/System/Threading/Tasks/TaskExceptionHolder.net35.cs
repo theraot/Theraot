@@ -27,23 +27,23 @@ namespace System.Threading.Tasks
         /// <summary>Whether we should propagate exceptions on the finalizer.</summary>
         private readonly static bool s_failFastOnUnobservedException = ShouldFailFastOnUnobservedException();
 
-        /// <summary>Whether the AppDomain has started to unload.</summary>
-        private static volatile bool s_domainUnloadStarted;
-
         /// <summary>An event handler used to notify of domain unload.</summary>
         private static EventHandler s_adUnloadEventHandler;
 
+        /// <summary>Whether the AppDomain has started to unload.</summary>
+        private static volatile bool s_domainUnloadStarted;
+
         /// <summary>The task with which this holder is associated.</summary>
         private readonly Task m_task;
+
+        /// <summary>An exception that triggered the task to cancel.</summary>
+        private ExceptionDispatchInfo m_cancellationException;
 
         /// <summary>
         /// The lazily-initialized list of faulting exceptions.  Volatile
         /// so that it may be read to determine whether any exceptions were stored.
         /// </summary>
         private volatile List<ExceptionDispatchInfo> m_faultExceptions;
-
-        /// <summary>An exception that triggered the task to cancel.</summary>
-        private ExceptionDispatchInfo m_cancellationException;
 
         /// <summary>Whether the holder was "observed" and thus doesn't cause finalization behavior.</summary>
         private volatile bool m_isHandled;
@@ -57,28 +57,6 @@ namespace System.Threading.Tasks
             Contract.Requires(task != null, "Expected a non-null task.");
             m_task = task;
             EnsureADUnloadCallbackRegistered();
-        }
-
-        private static bool ShouldFailFastOnUnobservedException()
-        {
-            return false;
-        }
-
-        private static void EnsureADUnloadCallbackRegistered()
-        {
-            if (Volatile.Read(ref s_adUnloadEventHandler) == null)
-            {
-                EventHandler handler = AppDomainUnloadCallback;
-                if (Interlocked.CompareExchange(ref s_adUnloadEventHandler, handler, null) == null)
-                {
-                    AppDomain.CurrentDomain.DomainUnload += handler;
-                }
-            }
-        }
-
-        private static void AppDomainUnloadCallback(object sender, EventArgs e)
-        {
-            s_domainUnloadStarted = true;
         }
 
         /// <summary>
@@ -114,18 +92,7 @@ namespace System.Threading.Tasks
                         return;
                     }
                 }
-
-                // We will only propagate if this is truly unhandled. The reason this could
-                // ever occur is somewhat subtle: if a Task's exceptions are observed in some
-                // other finalizer, and the Task was finalized before the holder, the holder
-                // will have been marked as handled before even getting here.
-
-                // Give users a chance to keep this exception from crashing the process
-
-                // First, publish the unobserved exception and allow users to observe it
-                var exceptionToThrow = new AggregateException(
-                    "A Task's exception(s) were not observed either by Waiting on the Task or accessing its Exception property. As a result, the unobserved exception was rethrown by the finalizer thread.",
-                    m_faultExceptions.Select(exceptionDispatchInfo => exceptionDispatchInfo.SourceException));
+                var exceptionToThrow = CreateAggregateException();
                 var ueea = new UnobservedTaskExceptionEventArgs(exceptionToThrow);
                 TaskScheduler.PublishUnobservedTaskException(m_task, ueea);
 
@@ -174,41 +141,106 @@ namespace System.Threading.Tasks
                 AddFaultException(exceptionObject);
         }
 
-        /// <summary>Sets the cancellation exception.</summary>
-        /// <param name="exceptionObject">The cancellation exception.</param>
-        /// <remarks>
-        /// Must be called under lock.
-        /// </remarks>
-        private void SetCancellationException(object exceptionObject)
+        /// <summary>
+        /// Allocates a new aggregate exception and adds the contents of the list to
+        /// it. By calling this method, the holder assumes exceptions to have been
+        /// "observed", such that the finalization check will be subsequently skipped.
+        /// </summary>
+        /// <param name="calledFromFinalizer">Whether this is being called from a finalizer.</param>
+        /// <param name="includeThisException">An extra exception to be included (optionally).</param>
+        /// <returns>The aggregate exception to throw.</returns>
+        internal AggregateException CreateExceptionObject(bool calledFromFinalizer, Exception includeThisException)
         {
-            Contract.Requires(exceptionObject != null, "Expected exceptionObject to be non-null.");
+            var exceptions = m_faultExceptions;
+            Debug.Assert(exceptions != null, "Expected an initialized list.");
+            Debug.Assert(exceptions.Count > 0, "Expected at least one exception.");
 
-            Debug.Assert(m_cancellationException == null,
-                "Expected SetCancellationException to be called only once.");
-            // Breaking this assumption will overwrite a previously OCE,
-            // and implies something may be wrong elsewhere, since there should only ever be one.
+            // Mark as handled and aggregate the exceptions.
+            MarkAsHandled(calledFromFinalizer);
 
-            Debug.Assert(m_faultExceptions == null,
-                "Expected SetCancellationException to be called before any faults were added.");
-            // Breaking this assumption shouldn't hurt anything here, but it implies something may be wrong elsewhere.
-            // If this changes, make sure to only conditionally mark as handled below.
+            // If we're only including the previously captured exceptions,
+            // return them immediately in an aggregate.
+            if (includeThisException == null)
+                return new AggregateException(exceptions.Select(exceptionDispatchInfo => exceptionDispatchInfo.SourceException));
 
-            // Store the cancellation exception
-            var oce = exceptionObject as OperationCanceledException;
-            if (oce != null)
+            // Otherwise, the caller wants a specific exception to be included,
+            // so return an aggregate containing that exception and the rest.
+            var combinedExceptions = new Exception[exceptions.Count + 1];
+            for (int i = 0; i < combinedExceptions.Length - 1; i++)
             {
-                m_cancellationException = ExceptionDispatchInfo.Capture(oce);
+                combinedExceptions[i] = exceptions[i].SourceException;
             }
-            else
-            {
-                var edi = exceptionObject as ExceptionDispatchInfo;
-                Debug.Assert(edi != null && edi.SourceException is OperationCanceledException,
-                    "Expected an OCE or an EDI that contained an OCE");
-                m_cancellationException = edi;
-            }
+            combinedExceptions[combinedExceptions.Length - 1] = includeThisException;
+            return new AggregateException(combinedExceptions);
+        }
 
-            // This is just cancellation, and there are no faults, so mark the holder as handled.
+        /// <summary>
+        /// Gets the ExceptionDispatchInfo representing the singular exception
+        /// that was the cause of the task's cancellation.
+        /// </summary>
+        /// <returns>
+        /// The ExceptionDispatchInfo for the cancellation exception.  May be null.
+        /// </returns>
+        internal ExceptionDispatchInfo GetCancellationExceptionDispatchInfo()
+        {
+            var edi = m_cancellationException;
+            Debug.Assert(edi == null || edi.SourceException is OperationCanceledException,
+                "Expected the EDI to be for an OperationCanceledException");
+            return edi;
+        }
+
+        /// <summary>
+        /// Wraps the exception dispatch infos into a new read-only collection. By calling this method,
+        /// the holder assumes exceptions to have been "observed", such that the finalization
+        /// check will be subsequently skipped.
+        /// </summary>
+        internal ReadOnlyCollection<ExceptionDispatchInfo> GetExceptionDispatchInfos()
+        {
+            var exceptions = m_faultExceptions;
+            Debug.Assert(exceptions != null, "Expected an initialized list.");
+            Debug.Assert(exceptions.Count > 0, "Expected at least one exception.");
             MarkAsHandled(false);
+            return new ReadOnlyCollection<ExceptionDispatchInfo>(exceptions);
+        }
+
+        /// <summary>
+        /// A private helper method that ensures the holder is considered
+        /// handled, i.e. it is not registered for finalization.
+        /// </summary>
+        /// <param name="calledFromFinalizer">Whether this is called from the finalizer thread.</param>
+        internal void MarkAsHandled(bool calledFromFinalizer)
+        {
+            if (!m_isHandled)
+            {
+                if (!calledFromFinalizer)
+                {
+                    GC.SuppressFinalize(this);
+                }
+
+                m_isHandled = true;
+            }
+        }
+
+        private static void AppDomainUnloadCallback(object sender, EventArgs e)
+        {
+            s_domainUnloadStarted = true;
+        }
+
+        private static void EnsureADUnloadCallbackRegistered()
+        {
+            if (Volatile.Read(ref s_adUnloadEventHandler) == null)
+            {
+                EventHandler handler = AppDomainUnloadCallback;
+                if (Interlocked.CompareExchange(ref s_adUnloadEventHandler, handler, null) == null)
+                {
+                    AppDomain.CurrentDomain.DomainUnload += handler;
+                }
+            }
+        }
+
+        private static bool ShouldFailFastOnUnobservedException()
+        {
+            return false;
         }
 
         /// <summary>Adds the exception to the fault list.</summary>
@@ -306,6 +338,21 @@ namespace System.Threading.Tasks
             }
         }
 
+        private AggregateException CreateAggregateException()
+        {
+            // We will only propagate if this is truly unhandled. The reason this could
+            // ever occur is somewhat subtle: if a Task's exceptions are observed in some
+            // other finalizer, and the Task was finalized before the holder, the holder
+            // will have been marked as handled before even getting here.
+
+            // Give users a chance to keep this exception from crashing the process
+
+            // First, publish the unobserved exception and allow users to observe it
+            return new AggregateException(
+                "A Task's exception(s) were not observed either by Waiting on the Task or accessing its Exception property. As a result, the unobserved exception was rethrown by the finalizer thread.",
+                m_faultExceptions.Select(exceptionDispatchInfo => exceptionDispatchInfo.SourceException));
+        }
+
         /// <summary>
         /// A private helper method that ensures the holder is considered
         /// unhandled, i.e. it is registered for finalization.
@@ -323,84 +370,41 @@ namespace System.Threading.Tasks
             }
         }
 
-        /// <summary>
-        /// A private helper method that ensures the holder is considered
-        /// handled, i.e. it is not registered for finalization.
-        /// </summary>
-        /// <param name="calledFromFinalizer">Whether this is called from the finalizer thread.</param>
-        internal void MarkAsHandled(bool calledFromFinalizer)
+        /// <summary>Sets the cancellation exception.</summary>
+        /// <param name="exceptionObject">The cancellation exception.</param>
+        /// <remarks>
+        /// Must be called under lock.
+        /// </remarks>
+        private void SetCancellationException(object exceptionObject)
         {
-            if (!m_isHandled)
+            Contract.Requires(exceptionObject != null, "Expected exceptionObject to be non-null.");
+
+            Debug.Assert(m_cancellationException == null,
+                "Expected SetCancellationException to be called only once.");
+            // Breaking this assumption will overwrite a previously OCE,
+            // and implies something may be wrong elsewhere, since there should only ever be one.
+
+            Debug.Assert(m_faultExceptions == null,
+                "Expected SetCancellationException to be called before any faults were added.");
+            // Breaking this assumption shouldn't hurt anything here, but it implies something may be wrong elsewhere.
+            // If this changes, make sure to only conditionally mark as handled below.
+
+            // Store the cancellation exception
+            var oce = exceptionObject as OperationCanceledException;
+            if (oce != null)
             {
-                if (!calledFromFinalizer)
-                {
-                    GC.SuppressFinalize(this);
-                }
-
-                m_isHandled = true;
+                m_cancellationException = ExceptionDispatchInfo.Capture(oce);
             }
-        }
-
-        /// <summary>
-        /// Allocates a new aggregate exception and adds the contents of the list to
-        /// it. By calling this method, the holder assumes exceptions to have been
-        /// "observed", such that the finalization check will be subsequently skipped.
-        /// </summary>
-        /// <param name="calledFromFinalizer">Whether this is being called from a finalizer.</param>
-        /// <param name="includeThisException">An extra exception to be included (optionally).</param>
-        /// <returns>The aggregate exception to throw.</returns>
-        internal AggregateException CreateExceptionObject(bool calledFromFinalizer, Exception includeThisException)
-        {
-            var exceptions = m_faultExceptions;
-            Debug.Assert(exceptions != null, "Expected an initialized list.");
-            Debug.Assert(exceptions.Count > 0, "Expected at least one exception.");
-
-            // Mark as handled and aggregate the exceptions.
-            MarkAsHandled(calledFromFinalizer);
-
-            // If we're only including the previously captured exceptions,
-            // return them immediately in an aggregate.
-            if (includeThisException == null)
-                return new AggregateException(exceptions.Select(exceptionDispatchInfo => exceptionDispatchInfo.SourceException));
-
-            // Otherwise, the caller wants a specific exception to be included,
-            // so return an aggregate containing that exception and the rest.
-            var combinedExceptions = new Exception[exceptions.Count + 1];
-            for (int i = 0; i < combinedExceptions.Length - 1; i++)
+            else
             {
-                combinedExceptions[i] = exceptions[i].SourceException;
+                var edi = exceptionObject as ExceptionDispatchInfo;
+                Debug.Assert(edi != null && edi.SourceException is OperationCanceledException,
+                    "Expected an OCE or an EDI that contained an OCE");
+                m_cancellationException = edi;
             }
-            combinedExceptions[combinedExceptions.Length - 1] = includeThisException;
-            return new AggregateException(combinedExceptions);
-        }
 
-        /// <summary>
-        /// Wraps the exception dispatch infos into a new read-only collection. By calling this method,
-        /// the holder assumes exceptions to have been "observed", such that the finalization
-        /// check will be subsequently skipped.
-        /// </summary>
-        internal ReadOnlyCollection<ExceptionDispatchInfo> GetExceptionDispatchInfos()
-        {
-            var exceptions = m_faultExceptions;
-            Debug.Assert(exceptions != null, "Expected an initialized list.");
-            Debug.Assert(exceptions.Count > 0, "Expected at least one exception.");
+            // This is just cancellation, and there are no faults, so mark the holder as handled.
             MarkAsHandled(false);
-            return new ReadOnlyCollection<ExceptionDispatchInfo>(exceptions);
-        }
-
-        /// <summary>
-        /// Gets the ExceptionDispatchInfo representing the singular exception
-        /// that was the cause of the task's cancellation.
-        /// </summary>
-        /// <returns>
-        /// The ExceptionDispatchInfo for the cancellation exception.  May be null.
-        /// </returns>
-        internal ExceptionDispatchInfo GetCancellationExceptionDispatchInfo()
-        {
-            var edi = m_cancellationException;
-            Debug.Assert(edi == null || edi.SourceException is OperationCanceledException,
-                "Expected the EDI to be for an OperationCanceledException");
-            return edi;
         }
     }
 }
