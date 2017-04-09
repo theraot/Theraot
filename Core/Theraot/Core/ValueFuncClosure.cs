@@ -27,7 +27,7 @@ namespace Theraot.Core
             }
         }
 
-        Action IErsatz<TReturn>.InvokeAction()
+        public Action InvokeAction()
         {
             return new Action(Invoke);
         }
@@ -70,7 +70,7 @@ namespace Theraot.Core
             }
         }
 
-        Action IErsatz<TReturn>.InvokeAction()
+        public Action InvokeAction()
         {
             return new Action(Invoke);
         }
@@ -115,7 +115,7 @@ namespace Theraot.Core
             }
         }
 
-        Action IErsatz<TReturn>.InvokeAction()
+        public Action InvokeAction()
         {
             return new Action(Invoke);
         }
@@ -162,7 +162,7 @@ namespace Theraot.Core
             }
         }
 
-        Action IErsatz<TReturn>.InvokeAction()
+        public Action InvokeAction()
         {
             return new Action(Invoke);
         }
@@ -211,7 +211,7 @@ namespace Theraot.Core
             }
         }
 
-        Action IErsatz<TReturn>.InvokeAction()
+        public Action InvokeAction()
         {
             return new Action(Invoke);
         }
@@ -262,7 +262,7 @@ namespace Theraot.Core
             }
         }
 
-        Action IErsatz<TReturn>.InvokeAction()
+        public Action InvokeAction()
         {
             return new Action(Invoke);
         }
@@ -315,7 +315,7 @@ namespace Theraot.Core
             }
         }
 
-        Action IErsatz<TReturn>.InvokeAction()
+        public Action InvokeAction()
         {
             return new Action(Invoke);
         }
@@ -370,7 +370,7 @@ namespace Theraot.Core
             }
         }
 
-        Action IErsatz<TReturn>.InvokeAction()
+        public Action InvokeAction()
         {
             return new Action(Invoke);
         }
@@ -427,7 +427,7 @@ namespace Theraot.Core
             }
         }
 
-        Action IErsatz<TReturn>.InvokeAction()
+        public Action InvokeAction()
         {
             return new Action(Invoke);
         }
@@ -486,7 +486,7 @@ namespace Theraot.Core
             }
         }
 
-        Action IErsatz<TReturn>.InvokeAction()
+        public Action InvokeAction()
         {
             return new Action(Invoke);
         }
@@ -547,7 +547,7 @@ namespace Theraot.Core
             }
         }
 
-        Action IErsatz<TReturn>.InvokeAction()
+        public Action InvokeAction()
         {
             return new Action(Invoke);
         }
@@ -610,7 +610,7 @@ namespace Theraot.Core
             }
         }
 
-        Action IErsatz<TReturn>.InvokeAction()
+        public Action InvokeAction()
         {
             return new Action(Invoke);
         }
@@ -675,7 +675,7 @@ namespace Theraot.Core
             }
         }
 
-        Action IErsatz<TReturn>.InvokeAction()
+        public Action InvokeAction()
         {
             return new Action(Invoke);
         }
@@ -742,7 +742,7 @@ namespace Theraot.Core
             }
         }
 
-        Action IErsatz<TReturn>.InvokeAction()
+        public Action InvokeAction()
         {
             return new Action(Invoke);
         }
@@ -811,7 +811,7 @@ namespace Theraot.Core
             }
         }
 
-        Action IErsatz<TReturn>.InvokeAction()
+        public Action InvokeAction()
         {
             return new Action(Invoke);
         }
@@ -882,7 +882,7 @@ namespace Theraot.Core
             }
         }
 
-        Action IErsatz<TReturn>.InvokeAction()
+        public Action InvokeAction()
         {
             return new Action(Invoke);
         }
@@ -955,7 +955,7 @@ namespace Theraot.Core
             }
         }
 
-        Action IErsatz<TReturn>.InvokeAction()
+        public Action InvokeAction()
         {
             return new Action(Invoke);
         }
