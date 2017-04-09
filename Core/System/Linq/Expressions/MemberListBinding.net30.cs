@@ -124,7 +124,8 @@ namespace System.Linq.Expressions
             {
                 throw Error.TypeNotIEnumerable(listType);
             }
-            for (int i = 0, n = initializers.Count; i < n; i++)
+            var n = initializers.Count;
+            for (int i = 0; i < n; i++)
             {
                 var element = initializers[i];
                 ContractUtils.RequiresNotNull(element, "initializers");
