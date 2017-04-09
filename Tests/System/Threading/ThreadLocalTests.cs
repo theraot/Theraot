@@ -33,40 +33,49 @@ using System.Threading;
 namespace MonoTests.System.Threading
 {
     [TestFixtureAttribute]
-    public class ThreadLocalTests : IDisposable
+    public sealed class ThreadLocalTests : IDisposable
     {
-        private ThreadLocal<int> _threadLocal;
         private int _nTimes;
+        private ThreadLocal<int> _threadLocal;
 
-        [SetUp]
-        public void Setup()
+        ~ThreadLocalTests()
         {
-            _nTimes = 0;
-            _threadLocal = new ThreadLocal<int>(() =>
-            {
-                Interlocked.Increment(ref _nTimes);
-                return 42;
-            });
+            Dispose(false);
         }
 
         [Test]
-        public void SingleThreadTest()
+        public void DefaultThreadLocalInitTest()
         {
-            AssertThreadLocal();
+            using (var local = new ThreadLocal<DateTime>())
+            {
+                using (var local2 = new ThreadLocal<object>())
+                {
+                    Assert.AreEqual(default(DateTime), local.Value);
+                    Assert.AreEqual(default(object), local2.Value);
+                }
+            }
         }
 
-        [Test]
-        public void ThreadedTest()
+        [TearDown]
+        public void Dispose()
         {
-            AssertThreadLocal();
+            Dispose(true);
+        }
 
-            var t = new Thread((object o) =>
-            {
-                Interlocked.Decrement(ref _nTimes);
-                AssertThreadLocal();
-            });
-            t.Start();
-            t.Join();
+        [Test, ExpectedException(typeof(ObjectDisposedException))]
+        public void DisposedOnIsValueCreatedTest()
+        {
+            var tl = new ThreadLocal<int>();
+            tl.Dispose();
+            var value = tl.IsValueCreated;
+        }
+
+        [Test, ExpectedException(typeof(ObjectDisposedException))]
+        public void DisposedOnValueTest()
+        {
+            var tl = new ThreadLocal<int>();
+            tl.Dispose();
+            var value = tl.Value;
         }
 
         [Test]
@@ -125,35 +134,6 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void DefaultThreadLocalInitTest()
-        {
-            using (var local = new ThreadLocal<DateTime>())
-            {
-                using (var local2 = new ThreadLocal<object>())
-                {
-                    Assert.AreEqual(default(DateTime), local.Value);
-                    Assert.AreEqual(default(object), local2.Value);
-                }
-            }
-        }
-
-        [Test, ExpectedException(typeof(ObjectDisposedException))]
-        public void DisposedOnValueTest()
-        {
-            var tl = new ThreadLocal<int>();
-            tl.Dispose();
-            var value = tl.Value;
-        }
-
-        [Test, ExpectedException(typeof(ObjectDisposedException))]
-        public void DisposedOnIsValueCreatedTest()
-        {
-            var tl = new ThreadLocal<int>();
-            tl.Dispose();
-            var value = tl.IsValueCreated;
-        }
-
-        [Test]
         public void PerThreadException()
         {
             var callTime = 0;
@@ -193,6 +173,37 @@ namespace MonoTests.System.Threading
             Assert.That(exception, Is.TypeOf(typeof(ApplicationException)), "#6");
         }
 
+        [SetUp]
+        public void Setup()
+        {
+            _nTimes = 0;
+            _threadLocal = new ThreadLocal<int>(() =>
+            {
+                Interlocked.Increment(ref _nTimes);
+                return 42;
+            });
+        }
+
+        [Test]
+        public void SingleThreadTest()
+        {
+            AssertThreadLocal();
+        }
+
+        [Test]
+        public void ThreadedTest()
+        {
+            AssertThreadLocal();
+
+            var t = new Thread((object o) =>
+            {
+                Interlocked.Decrement(ref _nTimes);
+                AssertThreadLocal();
+            });
+            t.Start();
+            t.Join();
+        }
+
         private void AssertThreadLocal()
         {
             Assert.IsFalse(_threadLocal.IsValueCreated, "#1");
@@ -202,10 +213,13 @@ namespace MonoTests.System.Threading
             Assert.AreEqual(1, _nTimes, "#5");
         }
 
-        [TearDown]
-        public void Dispose()
+        private void Dispose(bool disposing)
         {
-            _threadLocal.Dispose();
+            if (disposing)
+            {
+                _threadLocal.Dispose();
+                GC.SuppressFinalize(this);
+            }
         }
     }
 }
