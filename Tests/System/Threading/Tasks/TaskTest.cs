@@ -1897,7 +1897,11 @@ namespace MonoTests.System.Threading.Tasks
             Assert.IsTrue(t.IsCompleted, "#1");
             Assert.AreEqual(null, t.Result, "#2");
             t.Dispose();
-            t.Dispose();
+            t.Dispose(); // Dispose should be indempotent
+            // I lament you static analysis, but avoiding double call to Dispose to avoid ObjectDisposedException is stupid
+            // my philosophy is that Dispose should hold itself to higher standards, one able to be called safely by multiple threads
+            // If Dispose can be called concurrently by multiple threads without risk, it should be possible to call it serially too
+            // This is particularly true when we talk about a class intended for threading or asynchronous operations, such as Task
         }
 
         [Test]
