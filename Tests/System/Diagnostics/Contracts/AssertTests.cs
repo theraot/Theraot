@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System.Security.Permissions;
 using NUnit.Framework;
 
 namespace System.Diagnostics.Contracts.Tests
@@ -9,6 +10,7 @@ namespace System.Diagnostics.Contracts.Tests
     public class AssertTests
     {
         [Test]
+        [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         public static void AssertTrueDoesNotRaiseEvent()
         {
             var eventRaised = false;
@@ -25,6 +27,7 @@ namespace System.Diagnostics.Contracts.Tests
         }
 
         [Test]
+        [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         public static void AssertFalseRaisesEvent()
         {
             var eventRaised = false;
@@ -45,6 +48,7 @@ namespace System.Diagnostics.Contracts.Tests
         }
 
         [Test]
+        [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         public static void AssertFalseThrows()
         {
             var eventRaised = false;
