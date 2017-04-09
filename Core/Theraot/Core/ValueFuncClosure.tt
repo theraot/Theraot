@@ -4,21 +4,12 @@ using System;
 
 namespace Theraot.Core
 {
-    internal interface IErsatz<out T>
-    {
-        T Result
-        {
-            get;
-        }
-
-        Action InvokeAction();
-    }
 <#
     for (var indice = 0; indice < 17; indice++)
     {#>
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ValueFuncClosure<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>
     {
         private readonly Func<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn> _target;
         private TReturn _result;

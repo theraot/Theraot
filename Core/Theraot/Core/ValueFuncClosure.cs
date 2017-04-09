@@ -4,18 +4,9 @@ using System;
 
 namespace Theraot.Core
 {
-    internal interface IErsatz<out T>
-    {
-        T Result
-        {
-            get;
-        }
-
-        Action InvokeAction();
-    }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ValueFuncClosure<TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<TReturn>
     {
         private readonly Func<TReturn> _target;
         private TReturn _result;
@@ -58,7 +49,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ValueFuncClosure<T, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T, TReturn>
     {
         private readonly Func<T, TReturn> _target;
         private TReturn _result;
@@ -101,7 +92,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ValueFuncClosure<T1, T2, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, TReturn>
     {
         private readonly Func<T1, T2, TReturn> _target;
         private TReturn _result;
@@ -146,7 +137,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ValueFuncClosure<T1, T2, T3, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, TReturn>
     {
         private readonly Func<T1, T2, T3, TReturn> _target;
         private TReturn _result;
@@ -193,7 +184,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ValueFuncClosure<T1, T2, T3, T4, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, T4, TReturn>
     {
         private readonly Func<T1, T2, T3, T4, TReturn> _target;
         private TReturn _result;
@@ -242,7 +233,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ValueFuncClosure<T1, T2, T3, T4, T5, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, T4, T5, TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, TReturn> _target;
         private TReturn _result;
@@ -293,7 +284,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, TReturn> _target;
         private TReturn _result;
@@ -346,7 +337,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, TReturn> _target;
         private TReturn _result;
@@ -401,7 +392,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> _target;
         private TReturn _result;
@@ -458,7 +449,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> _target;
         private TReturn _result;
@@ -517,7 +508,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> _target;
         private TReturn _result;
@@ -578,7 +569,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> _target;
         private TReturn _result;
@@ -641,7 +632,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> _target;
         private TReturn _result;
@@ -706,7 +697,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> _target;
         private TReturn _result;
@@ -773,7 +764,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> _target;
         private TReturn _result;
@@ -842,7 +833,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> _target;
         private TReturn _result;
@@ -913,7 +904,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> _target;
         private TReturn _result;
