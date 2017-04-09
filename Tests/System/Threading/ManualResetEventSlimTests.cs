@@ -37,7 +37,7 @@ using System.Threading;
 namespace MonoTests.System.Threading
 {
     [TestFixture]
-    public class ManualResetEventSlimTests
+    public class ManualResetEventSlimTests : IDisposable
     {
         private ManualResetEventSlim _mre;
 
@@ -346,7 +346,7 @@ namespace MonoTests.System.Threading
         }
 
         [Test]
-        public void Dispose()
+        public void DisposeTest()
         {
             var mre = new ManualResetEventSlim(false);
             mre.Dispose();
@@ -391,6 +391,12 @@ namespace MonoTests.System.Threading
             var mre = new ManualResetEventSlim();
             mre.Dispose();
             mre.Dispose();
+        }
+
+        [TearDown]
+        public void Dispose()
+        {
+            _mre.Dispose();
         }
     }
 }
