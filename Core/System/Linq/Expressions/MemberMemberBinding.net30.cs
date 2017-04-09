@@ -23,10 +23,8 @@ namespace System.Linq.Expressions
         private readonly ReadOnlyCollection<MemberBinding> _bindings;
 
         internal MemberMemberBinding(MemberInfo member, ReadOnlyCollection<MemberBinding> bindings)
-#pragma warning disable 618
             : base(MemberBindingType.MemberBinding, member)
         {
-#pragma warning restore 618
             _bindings = bindings;
         }
 

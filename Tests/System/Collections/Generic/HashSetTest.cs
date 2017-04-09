@@ -494,7 +494,6 @@ namespace MonoTests.System.Collections.Generic
         // based on #491858, #517415
         public void Enumerator_Current()
         {
-#pragma warning disable 0168
             var e1 = new HashSet<int>.Enumerator();
             Assert.IsFalse(Throws(delegate
             {
@@ -549,7 +548,6 @@ namespace MonoTests.System.Collections.Generic
             {
                 var x = e4.Current;
             }));
-#pragma warning restore 0168
         }
 
         [Test]

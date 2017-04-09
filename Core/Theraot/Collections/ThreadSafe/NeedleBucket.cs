@@ -43,9 +43,7 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException("needleFactory");
             }
             _reservoir = new NeedleReservoir<T, TNeedle>(needleFactory);
-#pragma warning disable CC0031 // Check for null before calling a delegate
             _needleFactory = index => _reservoir.GetNeedle(valueFactory(index));
-#pragma warning restore CC0031 // Check for null before calling a delegate
             _entries = new FixedSizeBucket<TNeedle>(capacity);
             _comparer = EqualityComparer<T>.Default;
         }
@@ -69,9 +67,7 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException("needleFactory");
             }
             _reservoir = new NeedleReservoir<T, TNeedle>(needleFactory);
-#pragma warning disable CC0031 // Check for null before calling a delegate
             _needleFactory = index => _reservoir.GetNeedle(valueFactory());
-#pragma warning restore CC0031 // Check for null before calling a delegate
             _entries = new FixedSizeBucket<TNeedle>(capacity);
             _comparer = EqualityComparer<T>.Default;
         }
@@ -100,9 +96,7 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException("needleFactory");
             }
             _reservoir = new NeedleReservoir<T, TNeedle>(needleFactory);
-#pragma warning disable CC0031 // Check for null before calling a delegate
             _needleFactory = index => _reservoir.GetNeedle(valueFactory(index));
-#pragma warning restore CC0031 // Check for null before calling a delegate
             _entries = new FixedSizeBucket<TNeedle>(capacity);
         }
 
@@ -130,9 +124,7 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException("comparer");
             }
             _reservoir = new NeedleReservoir<T, TNeedle>(needleFactory);
-#pragma warning disable CC0031 // Check for null before calling a delegate
             _needleFactory = index => _reservoir.GetNeedle(valueFactory());
-#pragma warning restore CC0031 // Check for null before calling a delegate
             _entries = new FixedSizeBucket<TNeedle>(capacity);
             _comparer = comparer;
         }
