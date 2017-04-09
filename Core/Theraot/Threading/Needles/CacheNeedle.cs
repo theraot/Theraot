@@ -17,9 +17,7 @@ namespace Theraot.Threading.Needles
         private Func<T> _valueFactory;
 
         // Can be null
-#pragma warning disable RCS1169 // Mark field as read-only.
         private StructNeedle<ManualResetEventSlim> _waitHandle;
-#pragma warning restore RCS1169 // Mark field as read-only.
 
         public CacheNeedle(Func<T> valueFactory)
             : base(default(T))

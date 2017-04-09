@@ -147,14 +147,10 @@ namespace Theraot.Threading
                 return obj is VersionProvider && Equals((VersionToken)obj);
             }
 
-#pragma warning disable RCS1132 // Remove redundant overriding member.
-
             public override int GetHashCode()
             {
                 return base.GetHashCode();
             }
-
-#pragma warning restore RCS1132 // Remove redundant overriding member.
         }
     }
 }

@@ -16,10 +16,8 @@ namespace System.Linq.Expressions
         private readonly Expression _expression;
 
         internal MemberAssignment(MemberInfo member, Expression expression)
-#pragma warning disable 618
             : base(MemberBindingType.Assignment, member)
         {
-#pragma warning restore 618
             _expression = expression;
         }
 

@@ -28,9 +28,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         /// The generic builder object to which this non-generic instance delegates.
         /// </summary>
-#pragma warning disable 649
         private AsyncTaskMethodBuilder<VoidTaskResult> m_builder;
-#pragma warning restore 649
 
         /// <summary>
         /// Gets the <see cref="T:System.Threading.Tasks.Task"/> for this builder.
@@ -96,9 +94,7 @@ namespace System.Runtime.CompilerServices
 
         void IAsyncMethodBuilder.PreBoxInitialization()
         {
-#pragma warning disable 168
             var task = Task;
-#pragma warning restore 168
         }
 
         /// <summary>
@@ -182,9 +178,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         /// State related to the IAsyncStateMachine.
         /// </summary>
-#pragma warning disable 649
         private AsyncMethodBuilderCore m_coreState;
-#pragma warning restore 649
 
         /// <summary>
         /// The lazily-initialized task completion source.
@@ -283,9 +277,7 @@ namespace System.Runtime.CompilerServices
 
         void IAsyncMethodBuilder.PreBoxInitialization()
         {
-#pragma warning disable 168
             var task = Task;
-#pragma warning restore 168
         }
 
         /// <summary>

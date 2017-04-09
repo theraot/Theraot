@@ -33,9 +33,6 @@ using NUnit.Framework;
 using System;
 using System.Threading;
 
-#pragma warning disable 219
-#pragma warning disable 168
-
 namespace MonoTests.System
 {
     [TestFixture]

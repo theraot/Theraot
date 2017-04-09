@@ -130,14 +130,10 @@ namespace Theraot.Threading.Needles
                 }
             }
 
-#pragma warning disable RCS1132 // Remove redundant overriding member.
-
             public override bool Equals(object obj)
             {
                 return base.Equals(obj);
             }
-
-#pragma warning restore RCS1132 // Remove redundant overriding member.
 
             public override void Free()
             {

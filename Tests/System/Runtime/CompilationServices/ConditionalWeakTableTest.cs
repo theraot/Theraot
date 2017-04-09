@@ -556,11 +556,10 @@ namespace MonoTests.System.Runtime.CompilerServices
         public class FinalizableLink
         {
             // The sole purpose of this object is to keep a reference to another object, so it is fine to not use it.
-#pragma warning disable 414
             private readonly ConditionalWeakTable<object, object> _cwt;
+
             private readonly int _id;
             private readonly object _obj;
-#pragma warning restore 414
 
             public FinalizableLink(int id, object obj, ConditionalWeakTable<object, object> cwt)
             {
