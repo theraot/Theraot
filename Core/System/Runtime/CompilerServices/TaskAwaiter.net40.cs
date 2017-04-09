@@ -66,10 +66,6 @@ namespace System.Runtime.CompilerServices
             }
         }
 
-        static TaskAwaiter()
-        {
-        }
-
         /// <summary>
         ///   Initializes the <see cref="TaskAwaiter" /> .
         /// </summary>
