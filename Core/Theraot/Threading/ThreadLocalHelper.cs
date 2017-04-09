@@ -11,12 +11,17 @@ namespace Theraot.Threading
 
         static ThreadLocalHelper()
         {
-            _recursionGuardException = new InvalidOperationException("Recursion");
+            _recursionGuardException = GetInvalidOperationException();
         }
 
         public static Exception RecursionGuardException
         {
             get { return _recursionGuardException; }
+        }
+
+        private static InvalidOperationException GetInvalidOperationException()
+        {
+            return new InvalidOperationException("Recursion");
         }
     }
 
