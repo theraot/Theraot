@@ -37,21 +37,20 @@ namespace System.Threading
     {
         internal static readonly CancellationTokenSource CanceledSource = new CancellationTokenSource(); // Leaked
         internal static readonly CancellationTokenSource NoneSource = new CancellationTokenSource(); // Leaked
-        private static readonly TimerCallback _timerCallback;
+        private static readonly Action<CancellationTokenSource> _timerCallback;
         private readonly ManualResetEvent _handle;
         private SafeDictionary<CancellationTokenRegistration, Action> _callbacks;
         private int _cancelRequested;
         private int _currentId = int.MaxValue;
         private int _disposeRequested;
         private CancellationTokenRegistration[] _linkedTokens;
-        private Timer _timer;
+        private Theraot.Threading.Timeout<CancellationTokenSource> _timeout;
 
         static CancellationTokenSource()
         {
             CanceledSource._cancelRequested = 1;
-            _timerCallback = token =>
+            _timerCallback = cancellationTokenSource =>
             {
-                var cancellationTokenSource = (CancellationTokenSource)token;
                 var callbacks = cancellationTokenSource._callbacks;
                 if (callbacks != null)
                 {
@@ -75,7 +74,7 @@ namespace System.Threading
             }
             if (millisecondsDelay != Timeout.Infinite)
             {
-                _timer = new Timer(_timerCallback, this, millisecondsDelay, Timeout.Infinite);
+                _timeout = new Theraot.Threading.Timeout<CancellationTokenSource>(_timerCallback, millisecondsDelay, this);
             }
         }
 
@@ -163,16 +162,16 @@ namespace System.Threading
             CheckDisposed();
             if (Thread.VolatileRead(ref _cancelRequested) == 0 && millisecondsDelay != Timeout.Infinite)
             {
-                if (_timer == null)
+                if (_timeout == null)
                 {
                     // Have to be careful not to create secondary background timer
-                    var newTimer = new Timer(_timerCallback, this, Timeout.Infinite, Timeout.Infinite);
-                    var oldTimer = Interlocked.CompareExchange(ref _timer, newTimer, null);
+                    var newTimer = new Theraot.Threading.Timeout<CancellationTokenSource>(_timerCallback, Timeout.Infinite, this);
+                    var oldTimer = Interlocked.CompareExchange(ref _timeout, newTimer, null);
                     if (!ReferenceEquals(oldTimer, null))
                     {
-                        newTimer.Dispose();
+                        newTimer.Cancel();
                     }
-                    _timer.Change(millisecondsDelay, Timeout.Infinite);
+                    _timeout.Change(millisecondsDelay);
                 }
             }
         }
@@ -256,10 +255,10 @@ namespace System.Threading
                     UnregisterLinkedTokens();
                     _callbacks = null;
                 }
-                var timer = Interlocked.Exchange(ref _timer, null);
+                var timer = Interlocked.Exchange(ref _timeout, null);
                 if (timer != null)
                 {
-                    timer.Dispose();
+                    timer.Cancel();
                 }
                 _handle.Close();
             }
