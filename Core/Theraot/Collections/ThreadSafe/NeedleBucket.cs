@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Theraot.Core;
 using Theraot.Threading.Needles;
 
@@ -22,8 +23,11 @@ namespace Theraot.Collections.ThreadSafe
     {
         private readonly IEqualityComparer<T> _comparer;
         private readonly FixedSizeBucket<TNeedle> _entries;
-        private readonly Func<int, TNeedle> _needleFactory;
-        private readonly NeedleReservoir<T, TNeedle> _reservoir;
+        private readonly Func<T, TNeedle> _needleFactory;
+        private readonly Func<int, TNeedle> _needleIndexFactory;
+
+        [NonSerialized]
+        private NeedleReservoir<T, TNeedle> _reservoir;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NeedleBucket{T, TNeedle}" /> class.
@@ -43,8 +47,9 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("needleFactory");
             }
-            _reservoir = new NeedleReservoir<T, TNeedle>(needleFactory);
-            _needleFactory = index => _reservoir.GetNeedle(new ValueFuncClosure<int, T>(valueFactory, index).InvokeReturn());
+            _needleFactory = needleFactory;
+            _reservoir = new NeedleReservoir<T, TNeedle>(_needleFactory);
+            _needleIndexFactory = index => Reservoir.GetNeedle(new ValueFuncClosure<int, T>(valueFactory, index).InvokeReturn());
             _entries = new FixedSizeBucket<TNeedle>(capacity);
             _comparer = EqualityComparer<T>.Default;
         }
@@ -67,8 +72,9 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("needleFactory");
             }
-            _reservoir = new NeedleReservoir<T, TNeedle>(needleFactory);
-            _needleFactory = index => _reservoir.GetNeedle(new ValueFuncClosure<T>(valueFactory).InvokeReturn());
+            _needleFactory = needleFactory;
+            _reservoir = new NeedleReservoir<T, TNeedle>(_needleFactory);
+            _needleIndexFactory = index => Reservoir.GetNeedle(new ValueFuncClosure<T>(valueFactory).InvokeReturn());
             _entries = new FixedSizeBucket<TNeedle>(capacity);
             _comparer = EqualityComparer<T>.Default;
         }
@@ -96,8 +102,9 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("needleFactory");
             }
-            _reservoir = new NeedleReservoir<T, TNeedle>(needleFactory);
-            _needleFactory = index => _reservoir.GetNeedle(new ValueFuncClosure<int, T>(valueFactory, index).InvokeReturn());
+            _needleFactory = needleFactory;
+            _reservoir = new NeedleReservoir<T, TNeedle>(_needleFactory);
+            _needleIndexFactory = index => Reservoir.GetNeedle(new ValueFuncClosure<int, T>(valueFactory, index).InvokeReturn());
             _entries = new FixedSizeBucket<TNeedle>(capacity);
         }
 
@@ -124,8 +131,9 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("comparer");
             }
-            _reservoir = new NeedleReservoir<T, TNeedle>(needleFactory);
-            _needleFactory = index => _reservoir.GetNeedle(new ValueFuncClosure<T>(valueFactory).InvokeReturn());
+            _needleFactory = needleFactory;
+            _reservoir = new NeedleReservoir<T, TNeedle>(_needleFactory);
+            _needleIndexFactory = index => Reservoir.GetNeedle(new ValueFuncClosure<T>(valueFactory).InvokeReturn());
             _entries = new FixedSizeBucket<TNeedle>(capacity);
             _comparer = comparer;
         }
@@ -144,6 +152,21 @@ namespace Theraot.Collections.ThreadSafe
         public int Count
         {
             get { return _entries.Count; }
+        }
+
+        public NeedleReservoir<T, TNeedle> Reservoir
+        {
+            get
+            {
+                var found = Interlocked.CompareExchange(ref _reservoir, null, null);
+                if (found != null)
+                {
+                    return found;
+                }
+                var created = new NeedleReservoir<T, TNeedle>(_needleFactory);
+                found = Interlocked.CompareExchange(ref _reservoir, created, null);
+                return found ?? created;
+            }
         }
 
         /// <summary>
@@ -172,7 +195,7 @@ namespace Theraot.Collections.ThreadSafe
         public bool Exchange(int index, T item, out T previous)
         {
             TNeedle found;
-            if (_entries.Exchange(index, _reservoir.GetNeedle(item), out found))
+            if (_entries.Exchange(index, Reservoir.GetNeedle(item), out found))
             {
                 previous = default(T);
                 return true;
@@ -180,7 +203,7 @@ namespace Theraot.Collections.ThreadSafe
             // TryGetValue is null resistant
             found.TryGetValue(out previous);
             // This is a needle that is no longer referenced, we donate it
-            _reservoir.DonateNeedle(found);
+            Reservoir.DonateNeedle(found);
             return false;
         }
 
@@ -223,14 +246,14 @@ namespace Theraot.Collections.ThreadSafe
                 return previous;
                 // We don't donate because we didn't remove
             }
-            var newNeedle = _needleFactory(index);
+            var newNeedle = _needleIndexFactory(index);
             if (_entries.InsertInternal(index, newNeedle, out found))
             {
                 return ((INeedle<T>)newNeedle).Value;
             }
             // we just failed to insert, meaning that we created a usless needle
             // donate it
-            _reservoir.DonateNeedle(newNeedle);
+            Reservoir.DonateNeedle(newNeedle);
             return ((INeedle<T>)found).Value;
         }
 
@@ -252,6 +275,11 @@ namespace Theraot.Collections.ThreadSafe
             }
         }
 
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         /// <summary>
         /// Retrieve or creates a new needle at the specified index.
         /// </summary>
@@ -260,7 +288,7 @@ namespace Theraot.Collections.ThreadSafe
         /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
         public TNeedle GetNeedle(int index)
         {
-            var newNeedle = _needleFactory(index);
+            var newNeedle = _needleIndexFactory(index);
             TNeedle found;
             if (_entries.Insert(index, newNeedle, out found))
             {
@@ -268,7 +296,7 @@ namespace Theraot.Collections.ThreadSafe
             }
             // we just failed to insert, meaning that we created a usless needle
             // donate it
-            _reservoir.DonateNeedle(newNeedle);
+            Reservoir.DonateNeedle(newNeedle);
             return found;
         }
 
@@ -290,12 +318,12 @@ namespace Theraot.Collections.ThreadSafe
             // Only succeeds if there was nothing there before
             // meaning that if this succeeds it replaced nothing
             // If this fails whatever was there is still there
-            var newNeedle = _reservoir.GetNeedle(item);
+            var newNeedle = Reservoir.GetNeedle(item);
             if (_entries.Insert(index, newNeedle))
             {
                 return true;
             }
-            _reservoir.DonateNeedle(newNeedle);
+            Reservoir.DonateNeedle(newNeedle);
             return false;
         }
 
@@ -318,14 +346,14 @@ namespace Theraot.Collections.ThreadSafe
             // Only succeeds if there was nothing there before
             // meaning that if this succeeds it replaced nothing
             // If this fails whatever was there is still there
-            var newNeedle = _reservoir.GetNeedle(item);
+            var newNeedle = Reservoir.GetNeedle(item);
             TNeedle found;
             if (_entries.Insert(index, newNeedle, out found))
             {
                 previous = default(T);
                 return true;
             }
-            _reservoir.DonateNeedle(newNeedle);
+            Reservoir.DonateNeedle(newNeedle);
             // TryGetValue is null resistant
             found.TryGetValue(out previous);
             return false;
@@ -400,25 +428,11 @@ namespace Theraot.Collections.ThreadSafe
                 // TryGetValue is null resistant
                 found.TryGetValue(out previous);
                 // Donate it
-                _reservoir.DonateNeedle(found);
+                Reservoir.DonateNeedle(found);
                 return true;
             }
             previous = default(T);
             return false;
-        }
-
-        /// <summary>
-        /// Removes the needle at the specified index.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <param name="previous">The previous needle in the specified index.</param>
-        /// <returns>
-        ///   <c>true</c> if the needle was removed; otherwise, <c>false</c>.
-        /// </returns>
-        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
-        public bool RemoveNeedleAt(int index, out TNeedle previous)
-        {
-            return _entries.RemoveAt(index, out previous);
         }
 
         public bool RemoveAt(int index, Predicate<T> check)
@@ -436,10 +450,24 @@ namespace Theraot.Collections.ThreadSafe
             if (_entries.RemoveAt(index, replacementCheck))
             {
                 // Donate it
-                _reservoir.DonateNeedle(found);
+                Reservoir.DonateNeedle(found);
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// Removes the needle at the specified index.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="previous">The previous needle in the specified index.</param>
+        /// <returns>
+        ///   <c>true</c> if the needle was removed; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">index;index must be greater or equal to 0 and less than capacity</exception>
+        public bool RemoveNeedleAt(int index, out TNeedle previous)
+        {
+            return _entries.RemoveAt(index, out previous);
         }
 
         /// <summary>
@@ -452,7 +480,7 @@ namespace Theraot.Collections.ThreadSafe
         public void Set(int index, T item, out bool isNew)
         {
             // This may have replaced something
-            _entries.Set(index, _reservoir.GetNeedle(item), out isNew);
+            _entries.Set(index, Reservoir.GetNeedle(item), out isNew);
         }
 
         /// <summary>
@@ -466,11 +494,6 @@ namespace Theraot.Collections.ThreadSafe
         {
             // This may allow null to enter
             _entries.Set(index, needle, out isNew);
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         /// <summary>
@@ -521,7 +544,7 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException("check");
             }
             TNeedle newNeedle = null;
-            Func<TNeedle, TNeedle> replacementFactory = needle => newNeedle = _reservoir.GetNeedle(itemUpdateFactory(((INeedle<T>)needle).Value));
+            Func<TNeedle, TNeedle> replacementFactory = needle => newNeedle = Reservoir.GetNeedle(itemUpdateFactory(((INeedle<T>)needle).Value));
             Predicate<TNeedle> replacementCheck = needle => check(((INeedle<T>)needle).Value);
             if (_entries.Update(index, replacementFactory, replacementCheck, out isEmpty))
             {
@@ -529,7 +552,7 @@ namespace Theraot.Collections.ThreadSafe
             }
             if (newNeedle != null)
             {
-                _reservoir.DonateNeedle(newNeedle);
+                Reservoir.DonateNeedle(newNeedle);
             }
             return false;
         }
