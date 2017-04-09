@@ -97,7 +97,7 @@ namespace Theraot.Core
                 else
                 {
                     _createOrDefault = FuncHelper.GetDefaultFunc<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>();
-                    _createOrFail = typeof(TReturn).IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>(new MissingMemberException());
+                    _createOrFail = typeof(TReturn).IsValueType ? _createOrDefault : FuncHelper.GetThrowFunc<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>(CreateMissingMemberException());
                 }
             }
 
@@ -144,6 +144,11 @@ namespace Theraot.Core
                     <# if (indice == 0) { #>return (TReturn)_constructorInfo.Invoke(EmptyObjects);<# } else { #>return (TReturn)_constructorInfo.Invoke(new object[]{<# if (indice != 0) { if (indice == 1) #>obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>arg<#=subindice#><#}}#>});<# } #>
 
                 }
+            }
+
+            private static MissingMemberException CreateMissingMemberException()
+            {
+                return new MissingMemberException();
             }
         }
 <#
