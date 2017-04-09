@@ -484,8 +484,9 @@ namespace MonoTests.System.Collections.Generic
                 d();
                 return false;
             }
-            catch
+            catch (Exception ex)
             {
+                GC.KeepAlive(ex);
                 return true;
             }
         }
