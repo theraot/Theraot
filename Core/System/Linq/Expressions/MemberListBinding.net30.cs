@@ -20,7 +20,9 @@ namespace System.Linq.Expressions
         private readonly ReadOnlyCollection<ElementInit> _initializers;
 
         internal MemberListBinding(MemberInfo member, ReadOnlyCollection<ElementInit> initializers)
+#pragma warning disable CS0618 // El tipo o el miembro están obsoletos
             : base(MemberBindingType.ListBinding, member)
+#pragma warning restore CS0618 // El tipo o el miembro están obsoletos
         {
             _initializers = initializers;
         }
