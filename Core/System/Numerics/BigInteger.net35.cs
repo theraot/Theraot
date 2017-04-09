@@ -13,13 +13,13 @@ namespace System.Numerics
 
         internal readonly uint[] InternalBits;
 
-        private readonly static BigInteger _sBnMinInt;
+        private readonly static BigInteger _sBnMinInt = new BigInteger(-1, new[] { unchecked((uint)int.MinValue) });
 
-        private readonly static BigInteger _sBnOneInt;
+        private readonly static BigInteger _sBnOneInt = new BigInteger(1);
 
-        private readonly static BigInteger _sBnZeroInt;
+        private readonly static BigInteger _sBnZeroInt = new BigInteger(0);
 
-        private readonly static BigInteger _sBnMinusOneInt;
+        private readonly static BigInteger _sBnMinusOneInt = new BigInteger(-1);
 
         /// <summary>Indicates whether the value of the current <see cref="T:System.Numerics.BigInteger" /> object is an even number.</summary>
         /// <returns>true if the value of the <see cref="T:System.Numerics.BigInteger" /> object is an even number; otherwise, false.</returns>
@@ -101,14 +101,6 @@ namespace System.Numerics
         public static BigInteger Zero
         {
             get { return _sBnZeroInt; }
-        }
-
-        static BigInteger()
-        {
-            _sBnMinInt = new BigInteger(-1, new[] { unchecked((uint)int.MinValue) });
-            _sBnOneInt = new BigInteger(1);
-            _sBnZeroInt = new BigInteger(0);
-            _sBnMinusOneInt = new BigInteger(-1);
         }
 
         /// <summary>Initializes a new instance of the <see cref="T:System.Numerics.BigInteger" /> structure using a 32-bit signed integer value.</summary>
