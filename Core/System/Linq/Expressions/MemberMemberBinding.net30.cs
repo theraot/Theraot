@@ -143,7 +143,8 @@ namespace System.Linq.Expressions
 
         private static void ValidateMemberInitArgs(Type type, ReadOnlyCollection<MemberBinding> bindings)
         {
-            for (int i = 0, n = bindings.Count; i < n; i++)
+            var n = bindings.Count;
+            for (int i = 0; i < n; i++)
             {
                 var b = bindings[i];
                 ContractUtils.RequiresNotNull(b, "bindings");
