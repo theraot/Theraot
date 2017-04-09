@@ -274,7 +274,7 @@ namespace Theraot.Threading
             {
                 throw new ArgumentNullException("callback");
             }
-            Callback = new ErsatzAction<T>(callback, target).Invoke;
+            Callback = new ValueActionClosure<T>(callback, target).Invoke;
             Start(dueTime);
         }
 
@@ -291,7 +291,7 @@ namespace Theraot.Threading
             }
             else
             {
-                Callback = new ErsatzAction<T>(callback, target).Invoke;
+                Callback = new ValueActionClosure<T>(callback, target).Invoke;
                 Start(dueTime);
                 token.Register(Cancel);
             }

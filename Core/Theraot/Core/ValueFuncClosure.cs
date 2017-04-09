@@ -15,13 +15,13 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ErsatzFunc<TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<TReturn>: IErsatz<TReturn>
     {
         private readonly Func<TReturn> _target;
         private TReturn _result;
         
 
-        public ErsatzFunc(Func<TReturn> target)
+        public ValueFuncClosure(Func<TReturn> target)
         {
             
             _result = default(TReturn);
@@ -58,13 +58,13 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ErsatzFunc<T, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T, TReturn> _target;
         private TReturn _result;
         private readonly T _obj;
 
-        public ErsatzFunc(Func<T, TReturn> target, T obj)
+        public ValueFuncClosure(Func<T, TReturn> target, T obj)
         {
             _obj = obj;
             _result = default(TReturn);
@@ -101,14 +101,14 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ErsatzFunc<T1, T2, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, TReturn> _target;
         private TReturn _result;
         private readonly T1 _arg1;
         private readonly T2 _arg2;
 
-        public ErsatzFunc(Func<T1, T2, TReturn> target, T1 arg1, T2 arg2)
+        public ValueFuncClosure(Func<T1, T2, TReturn> target, T1 arg1, T2 arg2)
         {
             _arg1 = arg1;
             _arg2 = arg2;
@@ -146,7 +146,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ErsatzFunc<T1, T2, T3, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, TReturn> _target;
         private TReturn _result;
@@ -154,7 +154,7 @@ namespace Theraot.Core
         private readonly T2 _arg2;
         private readonly T3 _arg3;
 
-        public ErsatzFunc(Func<T1, T2, T3, TReturn> target, T1 arg1, T2 arg2, T3 arg3)
+        public ValueFuncClosure(Func<T1, T2, T3, TReturn> target, T1 arg1, T2 arg2, T3 arg3)
         {
             _arg1 = arg1;
             _arg2 = arg2;
@@ -193,7 +193,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ErsatzFunc<T1, T2, T3, T4, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, T4, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, T4, TReturn> _target;
         private TReturn _result;
@@ -202,7 +202,7 @@ namespace Theraot.Core
         private readonly T3 _arg3;
         private readonly T4 _arg4;
 
-        public ErsatzFunc(Func<T1, T2, T3, T4, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
+        public ValueFuncClosure(Func<T1, T2, T3, T4, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
         {
             _arg1 = arg1;
             _arg2 = arg2;
@@ -242,7 +242,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ErsatzFunc<T1, T2, T3, T4, T5, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, T4, T5, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, TReturn> _target;
         private TReturn _result;
@@ -252,7 +252,7 @@ namespace Theraot.Core
         private readonly T4 _arg4;
         private readonly T5 _arg5;
 
-        public ErsatzFunc(Func<T1, T2, T3, T4, T5, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
+        public ValueFuncClosure(Func<T1, T2, T3, T4, T5, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
         {
             _arg1 = arg1;
             _arg2 = arg2;
@@ -293,7 +293,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ErsatzFunc<T1, T2, T3, T4, T5, T6, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, TReturn> _target;
         private TReturn _result;
@@ -304,7 +304,7 @@ namespace Theraot.Core
         private readonly T5 _arg5;
         private readonly T6 _arg6;
 
-        public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
+        public ValueFuncClosure(Func<T1, T2, T3, T4, T5, T6, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
         {
             _arg1 = arg1;
             _arg2 = arg2;
@@ -346,7 +346,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, TReturn> _target;
         private TReturn _result;
@@ -358,7 +358,7 @@ namespace Theraot.Core
         private readonly T6 _arg6;
         private readonly T7 _arg7;
 
-        public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
+        public ValueFuncClosure(Func<T1, T2, T3, T4, T5, T6, T7, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
         {
             _arg1 = arg1;
             _arg2 = arg2;
@@ -401,7 +401,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> _target;
         private TReturn _result;
@@ -414,7 +414,7 @@ namespace Theraot.Core
         private readonly T7 _arg7;
         private readonly T8 _arg8;
 
-        public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)
+        public ValueFuncClosure(Func<T1, T2, T3, T4, T5, T6, T7, T8, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)
         {
             _arg1 = arg1;
             _arg2 = arg2;
@@ -458,7 +458,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> _target;
         private TReturn _result;
@@ -472,7 +472,7 @@ namespace Theraot.Core
         private readonly T8 _arg8;
         private readonly T9 _arg9;
 
-        public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)
+        public ValueFuncClosure(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)
         {
             _arg1 = arg1;
             _arg2 = arg2;
@@ -517,7 +517,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> _target;
         private TReturn _result;
@@ -532,7 +532,7 @@ namespace Theraot.Core
         private readonly T9 _arg9;
         private readonly T10 _arg10;
 
-        public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10)
+        public ValueFuncClosure(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10)
         {
             _arg1 = arg1;
             _arg2 = arg2;
@@ -578,7 +578,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> _target;
         private TReturn _result;
@@ -594,7 +594,7 @@ namespace Theraot.Core
         private readonly T10 _arg10;
         private readonly T11 _arg11;
 
-        public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11)
+        public ValueFuncClosure(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11)
         {
             _arg1 = arg1;
             _arg2 = arg2;
@@ -641,7 +641,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> _target;
         private TReturn _result;
@@ -658,7 +658,7 @@ namespace Theraot.Core
         private readonly T11 _arg11;
         private readonly T12 _arg12;
 
-        public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12)
+        public ValueFuncClosure(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12)
         {
             _arg1 = arg1;
             _arg2 = arg2;
@@ -706,7 +706,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> _target;
         private TReturn _result;
@@ -724,7 +724,7 @@ namespace Theraot.Core
         private readonly T12 _arg12;
         private readonly T13 _arg13;
 
-        public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13)
+        public ValueFuncClosure(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13)
         {
             _arg1 = arg1;
             _arg2 = arg2;
@@ -773,7 +773,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> _target;
         private TReturn _result;
@@ -792,7 +792,7 @@ namespace Theraot.Core
         private readonly T13 _arg13;
         private readonly T14 _arg14;
 
-        public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14)
+        public ValueFuncClosure(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14)
         {
             _arg1 = arg1;
             _arg2 = arg2;
@@ -842,7 +842,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> _target;
         private TReturn _result;
@@ -862,7 +862,7 @@ namespace Theraot.Core
         private readonly T14 _arg14;
         private readonly T15 _arg15;
 
-        public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15)
+        public ValueFuncClosure(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15)
         {
             _arg1 = arg1;
             _arg2 = arg2;
@@ -913,7 +913,7 @@ namespace Theraot.Core
     }
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ErsatzFunc<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn>: IErsatz<TReturn>
     {
         private readonly Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> _target;
         private TReturn _result;
@@ -934,7 +934,7 @@ namespace Theraot.Core
         private readonly T15 _arg15;
         private readonly T16 _arg16;
 
-        public ErsatzFunc(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15, T16 arg16)
+        public ValueFuncClosure(Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TReturn> target, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10, T11 arg11, T12 arg12, T13 arg13, T14 arg14, T15 arg15, T16 arg16)
         {
             _arg1 = arg1;
             _arg2 = arg2;

@@ -18,7 +18,7 @@ namespace Theraot.Core
     {#>
 
     [System.Diagnostics.DebuggerNonUserCode]
-    public class ErsatzFunc<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>: IErsatz<TReturn>
+    public class ValueFuncClosure<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn>: IErsatz<TReturn>
     {
         private readonly Func<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn> _target;
         private TReturn _result;
@@ -26,7 +26,7 @@ namespace Theraot.Core
         private readonly <#}#>T<#=subindice#> _arg<#=subindice#><#}#>;<#}#>
 
 
-        public ErsatzFunc(Func<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn> target<# if (indice != 0) { #>, <# if (indice == 1) #>T obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#> arg<#=subindice#><#}}#>)
+        public ValueFuncClosure(Func<<# if (indice != 0) { if (indice == 1) #>T<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#><#}#>, <#}#>TReturn> target<# if (indice != 0) { #>, <# if (indice == 1) #>T obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>, <#}#>T<#=subindice#> arg<#=subindice#><#}}#>)
         {
             <# if (indice != 0) { if (indice == 1) #>_obj = obj<# else for (var subindice = 1; subindice <= indice; subindice++){ if (subindice != 1) {#>;
             <#}#>_arg<#=subindice#> = arg<#=subindice#><#}#>;<#}#>
