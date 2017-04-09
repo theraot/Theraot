@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System.Security.Permissions;
+
 namespace System.Diagnostics.Contracts.Tests
 {
     internal static class Utilities
@@ -18,6 +20,7 @@ namespace System.Diagnostics.Contracts.Tests
             }
         }
 
+        [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         internal static IDisposable WithContractFailed(EventHandler<ContractFailedEventArgs> handler)
         {
             Contract.ContractFailed += handler;

@@ -33,6 +33,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Security.Permissions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -102,6 +103,7 @@ namespace MonoTests.System.Runtime.CompilerServices
         }
 
         [TearDown]
+        [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         public void TearDown()
         {
             SynchronizationContext.SetSynchronizationContext(_sc);
@@ -130,6 +132,7 @@ namespace MonoTests.System.Runtime.CompilerServices
         }
 
         [Test]
+        [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         public void OnCompleted_2()
         {
             TaskScheduler scheduler = null;
@@ -149,6 +152,7 @@ namespace MonoTests.System.Runtime.CompilerServices
         }
 
         [Test]
+        [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         public void OnCompleted_3()
         {
             var scheduler = new MyScheduler();
@@ -174,6 +178,7 @@ namespace MonoTests.System.Runtime.CompilerServices
         }
 
         [Test]
+        [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         public void OnCompleted_4()
         {
             SynchronizationContext context_ran = null;
