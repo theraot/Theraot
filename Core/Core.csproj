@@ -560,6 +560,16 @@
     <Compile Include="Theraot\Core\NumericHelper.checks.cs" />
     <Compile Include="Theraot\Core\PathHelper.cs" />
     <Compile Include="Theraot\Core\StringProcessor.cs" />
+    <Compile Include="Theraot\Core\ValueActionClosure.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ValueActionClosure.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Theraot\Core\ValueFuncClosure.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ValueFuncClosure.tt</DependentUpon>
+    </Compile>
     <Compile Include="Theraot\Threading\AtomicBoolean.cs" />
     <Compile Include="Theraot\Core\CancellationTokenHelper.cs" />
     <Compile Include="Theraot\Core\Check.cs" />
@@ -572,16 +582,6 @@
     <Compile Include="Theraot\Core\EnumerableHelper.cs" />
     <Compile Include="Theraot\Core\EnumHelper.cs" />
     <Compile Include="Theraot\Core\EqualityComparerHelper.cs" />
-    <Compile Include="Theraot\Core\ErsatzAction.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ErsatzAction.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Theraot\Core\ErsatzFunc.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ErsatzFunc.tt</DependentUpon>
-    </Compile>
     <Compile Include="Theraot\Core\FolderEnumeration.cs" />
     <Compile Include="Theraot\Core\FuncHelper.cs">
       <DependentUpon>FuncHelper.tt</DependentUpon>
@@ -904,14 +904,13 @@
     <None Include="OpenSourceKey.snk" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Theraot\Core\ErsatzAction.tt">
+    <Content Include="Theraot\Core\ValueActionClosure.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ErsatzAction.cs</LastGenOutput>
+      <LastGenOutput>ValueActionClosure.cs</LastGenOutput>
     </Content>
-    <Content Include="Theraot\Core\ErsatzFunc.tt">
+    <Content Include="Theraot\Core\ValueFuncClosure.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ErsatzFunc.cs</LastGenOutput>
+      <LastGenOutput>ValueFuncClosure.cs</LastGenOutput>
     </Content>
   </ItemGroup>
-  <ItemGroup />
 </Project>
