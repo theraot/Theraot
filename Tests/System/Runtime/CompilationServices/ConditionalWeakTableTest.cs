@@ -34,6 +34,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security.Permissions;
 using System.Threading;
 
 namespace MonoTests.System.Runtime.CompilerServices
@@ -47,6 +48,7 @@ namespace MonoTests.System.Runtime.CompilerServices
 
         private static int _reachable;
 
+        [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         public static void PromotedCwtPointingToYoungStuff()
         {
             var cwt = new ConditionalWeakTable<object, object>();
@@ -449,6 +451,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             keys.Add(new WeakReference(c));
         }
 
+        [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         private static List<GCHandle> FillTable3(ConditionalWeakTable<object, object> cwt)
         {
             var handles = new List<GCHandle>();
@@ -543,6 +546,7 @@ namespace MonoTests.System.Runtime.CompilerServices
             }
         }
 
+        [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         private static void MakeObjMovable(List<GCHandle> handles)
         {
             for (int i = 0; i < handles.Count; ++i)
