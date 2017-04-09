@@ -60,8 +60,9 @@ namespace System.Runtime.CompilerServices
             {
                 PreventUnobservedTaskExceptions();
             }
-            catch
+            catch (Exception ex)
             {
+                GC.KeepAlive(ex);
             }
         }
 
