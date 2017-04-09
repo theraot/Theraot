@@ -63,10 +63,6 @@ namespace System.Runtime.CompilerServices
             get { return Task; }
         }
 
-        static AsyncTaskMethodBuilder()
-        {
-        }
-
         /// <summary>
         /// Initializes a new <see cref="T:System.Runtime.CompilerServices.AsyncTaskMethodBuilder"/>.
         /// </summary>
@@ -248,8 +244,9 @@ namespace System.Runtime.CompilerServices
             {
                 AsyncVoidMethodBuilder.PreventUnobservedTaskExceptions();
             }
-            catch
+            catch (Exception ex)
             {
+                GC.KeepAlive(ex);
             }
         }
 
@@ -391,6 +388,7 @@ namespace System.Runtime.CompilerServices
         /// </remarks>
         internal void SetNotificationForWaitCompletion(bool enabled)
         {
+            GC.KeepAlive(enabled);
         }
 
         /// <summary>
