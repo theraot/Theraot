@@ -33,7 +33,7 @@ using System.Threading;
 namespace MonoTests.System.Threading
 {
     [TestFixtureAttribute]
-    public class ThreadLocalTests
+    public class ThreadLocalTests : IDisposable
     {
         private ThreadLocal<int> _threadLocal;
         private int _nTimes;
@@ -200,6 +200,12 @@ namespace MonoTests.System.Threading
             Assert.IsTrue(_threadLocal.IsValueCreated, "#3");
             Assert.AreEqual(42, _threadLocal.Value, "#4");
             Assert.AreEqual(1, _nTimes, "#5");
+        }
+
+        [TearDown]
+        public void Dispose()
+        {
+            _threadLocal.Dispose();
         }
     }
 }
