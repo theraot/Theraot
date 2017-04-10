@@ -235,7 +235,7 @@ namespace System.Linq.Expressions
 
         public static ReadOnlyCollection<T> ReturnReadOnly<T>(ref IList<T> collection)
         {
-            return ExpressionUtils.ReturnReadOnly<T>(ref collection);
+            return ExpressionUtils.ReturnReadOnly(ref collection);
         }
 
         internal static ReadOnlyCollection<Expression> ReturnReadOnly(IArgumentProvider provider, ref object collection)
