@@ -665,7 +665,7 @@ namespace System.Linq.Expressions
             {
                 case ExpressionType.NewArrayBounds:
                     // new MyType[](expr1, expr2)
-                    Out("new " + node.Type.ToString());
+                    Out("new " + node.Type);
                     VisitExpressions('(', node.Expressions, ')');
                     break;
 

@@ -278,7 +278,7 @@ namespace System.Linq.Expressions.Interpreter
                     return _SByte ?? (_SByte = new SByteNot());
 
                 default:
-                    throw new InvalidOperationException("Not for " + t.ToString());
+                    throw new InvalidOperationException("Not for " + t);
             }
         }
     }
