@@ -98,9 +98,9 @@ namespace MonoTests.System.Linq.Expressions
 
             Assert.AreEqual((double?)1, power(1, 10));
             Assert.AreEqual((double?)16, power(2, 4));
-            Assert.AreEqual((double?)null, power(1, null));
-            Assert.AreEqual((double?)null, power(null, 1));
-            Assert.AreEqual((double?)null, power(null, null));
+            Assert.AreEqual(null, power(1, null));
+            Assert.AreEqual(null, power(null, 1));
+            Assert.AreEqual(null, power(null, null));
         }
     }
 }

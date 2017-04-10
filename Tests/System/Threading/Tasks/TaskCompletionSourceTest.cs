@@ -45,7 +45,7 @@ namespace MonoTests.System.Threading.Tasks
         public void ContinuationTest()
         {
             var result = false;
-            var t = _completionSource.Task.ContinueWith((p) => result |= ((Task<int>)p).Result == 2);
+            var t = _completionSource.Task.ContinueWith((p) => result |= p.Result == 2);
             Assert.AreEqual(TaskStatus.WaitingForActivation, _completionSource.Task.Status, "#A");
             _completionSource.SetResult(2);
             t.Wait();
@@ -207,7 +207,7 @@ namespace MonoTests.System.Threading.Tasks
             Assert.AreEqual(TaskStatus.Faulted, _completionSource.Task.Status, "#3");
             Assert.That(_completionSource.Task.Exception, Is.TypeOf(typeof(AggregateException)), "#4.1");
 
-            var aggr = (AggregateException)_completionSource.Task.Exception;
+            var aggr = _completionSource.Task.Exception;
             Assert.AreEqual(1, aggr.InnerExceptions.Count, "#4.2");
             Assert.AreEqual(e, aggr.InnerExceptions[0], "#4.3");
 

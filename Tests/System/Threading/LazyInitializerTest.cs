@@ -64,7 +64,7 @@ namespace MonoTests.System.Threading
             C c = null;
             try
             {
-                LazyInitializer.EnsureInitialized(ref c, () => (C)null);
+                LazyInitializer.EnsureInitialized(ref c, () => null);
                 Assert.Fail();
             }
             catch (InvalidOperationException ex)

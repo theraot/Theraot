@@ -249,12 +249,12 @@ namespace Theraot.Collections.ThreadSafe
             var newNeedle = _needleIndexFactory(index);
             if (_entries.InsertInternal(index, newNeedle, out found))
             {
-                return ((INeedle<T>)newNeedle).Value;
+                return newNeedle.Value;
             }
             // we just failed to insert, meaning that we created a usless needle
             // donate it
             Reservoir.DonateNeedle(newNeedle);
-            return ((INeedle<T>)found).Value;
+            return found.Value;
         }
 
         /// <summary>
@@ -445,7 +445,7 @@ namespace Theraot.Collections.ThreadSafe
             Predicate<TNeedle> replacementCheck = needle =>
             {
                 found = needle;
-                return check(((INeedle<T>)needle).Value);
+                return check(needle.Value);
             };
             if (_entries.RemoveAt(index, replacementCheck))
             {
@@ -544,8 +544,8 @@ namespace Theraot.Collections.ThreadSafe
                 throw new ArgumentNullException("check");
             }
             TNeedle newNeedle = null;
-            Func<TNeedle, TNeedle> replacementFactory = needle => newNeedle = Reservoir.GetNeedle(itemUpdateFactory(((INeedle<T>)needle).Value));
-            Predicate<TNeedle> replacementCheck = needle => check(((INeedle<T>)needle).Value);
+            Func<TNeedle, TNeedle> replacementFactory = needle => newNeedle = Reservoir.GetNeedle(itemUpdateFactory(needle.Value));
+            Predicate<TNeedle> replacementCheck = needle => check(needle.Value);
             if (_entries.Update(index, replacementFactory, replacementCheck, out isEmpty))
             {
                 return true;
@@ -563,9 +563,9 @@ namespace Theraot.Collections.ThreadSafe
             {
                 throw new ArgumentNullException("check");
             }
-            foreach (var needle in _entries.Where(needle => check(((INeedle<T>)needle).Value)))
+            foreach (var needle in _entries.Where(needle => check(needle.Value)))
             {
-                yield return ((INeedle<T>)needle).Value;
+                yield return needle.Value;
             }
         }
     }

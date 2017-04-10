@@ -154,12 +154,12 @@ namespace MonoTests.System.Linq.Expressions
 
         public static bool operator ==(OpClass a, OpClass b)
         {
-            return ((object)a) == ((object)b);
+            return a == (object)b;
         }
 
         public static bool operator !=(OpClass a, OpClass b)
         {
-            return ((object)a) != ((object)b);
+            return a != (object)b;
         }
 
         //

@@ -121,7 +121,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((Int64)~(Int64)value);
+                    frame.Push(~(Int64)value);
                 }
                 return +1;
             }
@@ -138,7 +138,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((Int32)(~(Int32)value));
+                    frame.Push(~(Int32)value);
                 }
                 return +1;
             }
@@ -172,7 +172,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((UInt64)(~(UInt64)value));
+                    frame.Push(~(UInt64)value);
                 }
                 return +1;
             }
@@ -189,7 +189,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((UInt32)(~(UInt32)value));
+                    frame.Push(~(UInt32)value);
                 }
                 return +1;
             }

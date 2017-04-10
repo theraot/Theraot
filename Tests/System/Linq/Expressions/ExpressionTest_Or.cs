@@ -207,11 +207,11 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual((int?)1, c(0, 1), "o3");
             Assert.AreEqual((int?)0, c(0, 0), "o4");
 
-            Assert.AreEqual((int?)null, c(1, null), "o5");
-            Assert.AreEqual((int?)null, c(0, null), "o6");
-            Assert.AreEqual((int?)null, c(null, 0), "o7");
-            Assert.AreEqual((int?)null, c(1, null), "o8");
-            Assert.AreEqual((int?)null, c(null, null), "o9");
+            Assert.AreEqual(null, c(1, null), "o5");
+            Assert.AreEqual(null, c(0, null), "o6");
+            Assert.AreEqual(null, c(null, 0), "o7");
+            Assert.AreEqual(null, c(1, null), "o8");
+            Assert.AreEqual(null, c(null, null), "o9");
         }
     }
 }

@@ -339,7 +339,7 @@ namespace MonoTests.System.Linq.Expressions
             var b = Expression.Lambda<Func<object>>(
                 Expression.Convert(42.ToConstant(), typeof(object))).Compile();
 
-            Assert.AreEqual((object)42, b());
+            Assert.AreEqual(42, b());
         }
 
         [Test]
@@ -350,7 +350,7 @@ namespace MonoTests.System.Linq.Expressions
             var u = Expression.Lambda<Func<object, int>>(
                 Expression.Convert(p, typeof(int)), p).Compile();
 
-            Assert.AreEqual(42, u((object)42));
+            Assert.AreEqual(42, u(42));
         }
 
         [Test]
@@ -386,8 +386,8 @@ namespace MonoTests.System.Linq.Expressions
             var c = Expression.Lambda<Func<int?, int>>(
                 Expression.Convert(p, typeof(int)), p).Compile();
 
-            Assert.AreEqual(0, c((int?)0));
-            Assert.AreEqual(42, c((int?)42));
+            Assert.AreEqual(0, c(0));
+            Assert.AreEqual(42, c(42));
 
             Action a = () => c(null);
 
@@ -415,7 +415,7 @@ namespace MonoTests.System.Linq.Expressions
             var c = Expression.Lambda<Func<int?, short?>>(
                 Expression.Convert(p, typeof(short?)), p).Compile();
 
-            Assert.AreEqual((short?)null, c(null));
+            Assert.AreEqual(null, c(null));
             Assert.AreEqual((short?)12, c(12));
         }
 
@@ -427,7 +427,7 @@ namespace MonoTests.System.Linq.Expressions
                 Expression.Convert(p, typeof(object)), p).Compile();
 
             Assert.AreEqual(null, c(null));
-            Assert.AreEqual((object)(int?)42, c(42));
+            Assert.AreEqual((int?)42, c(42));
         }
 
         [Test]
@@ -437,7 +437,7 @@ namespace MonoTests.System.Linq.Expressions
             var c = Expression.Lambda<Func<object, int?>>(
                 Expression.Convert(p, typeof(int?)), p).Compile();
 
-            Assert.AreEqual((int?)null, c(null));
+            Assert.AreEqual(null, c(null));
             Assert.AreEqual((int?)42, c((int?)42));
         }
 

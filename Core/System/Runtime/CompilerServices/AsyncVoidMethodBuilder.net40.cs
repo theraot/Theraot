@@ -86,7 +86,7 @@ namespace System.Runtime.CompilerServices
         {
             if (Interlocked.CompareExchange(ref s_preventUnobservedTaskExceptionsInvoked, 1, 0) != 0)
                 return;
-            TaskScheduler.UnobservedTaskException += (EventHandler<UnobservedTaskExceptionEventArgs>)((s, e) => e.SetObserved());
+            TaskScheduler.UnobservedTaskException += (s, e) => e.SetObserved();
         }
 
         /// <summary>

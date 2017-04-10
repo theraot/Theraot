@@ -50,7 +50,7 @@ namespace Theraot.Collections.ThreadSafe
             if (_pool.TryGet(out result))
             {
                 NeedleReservoir.InternalRecycling++;
-                ((INeedle<T>)result).Value = value;
+                result.Value = value;
                 NeedleReservoir.InternalRecycling--;
             }
             else

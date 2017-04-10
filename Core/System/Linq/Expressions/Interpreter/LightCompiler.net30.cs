@@ -935,7 +935,7 @@ namespace System.Linq.Expressions.Interpreter
                     case ExpressionType.LessThanOrEqual:
                     case ExpressionType.GreaterThan:
                     case ExpressionType.GreaterThanOrEqual:
-                        CompileComparison((BinaryExpression)node);
+                        CompileComparison(node);
                         return;
 
                     case ExpressionType.LeftShift:
@@ -1155,7 +1155,7 @@ namespace System.Linq.Expressions.Interpreter
                     _instructions.EmitNumericConvertUnchecked(from, to, isLiftedToNull);
                 }
 
-                if ((object)enumTypeTo != null)
+                if (enumTypeTo != null)
                 {
                     // Convert from underlying to the enum
                     _instructions.EmitCastToEnum(enumTypeTo);

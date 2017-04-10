@@ -908,8 +908,8 @@ namespace MonoTests.System.Numerics
         [Test]
         public void ShortOperators()
         {
-            Assert.AreEqual(22, (int)new BigInteger((short)22), "#1");
-            Assert.AreEqual(-22, (int)new BigInteger((short)-22), "#2");
+            Assert.AreEqual(22, (int)new BigInteger(22), "#1");
+            Assert.AreEqual(-22, (int)new BigInteger(-22), "#2");
 
             try
             {

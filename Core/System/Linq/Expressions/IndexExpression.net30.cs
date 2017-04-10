@@ -272,7 +272,7 @@ namespace System.Linq.Expressions
                 return null;
 
             PropertyInfo pi;
-            var propertyInfos = members.Map(t => (PropertyInfo)t);
+            var propertyInfos = members.Map(t => t);
             var count = FindBestProperty(propertyInfos, arguments, out pi);
 
             if (count == 0)

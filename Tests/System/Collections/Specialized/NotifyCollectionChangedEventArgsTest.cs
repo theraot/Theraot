@@ -114,7 +114,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying to add a null array
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, (IList)null);
+                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, null);
                 Assert.Fail("Cannot call .ctor if changedItems is null.");
             }
             catch (ArgumentNullException)
@@ -127,7 +127,7 @@ namespace MonoTests.System.Collections.Specialized
             CollectionChangedEventValidators.ValidateRemoveOperation(args, changedItems, "#B02");
 
             // Trying with Reset (works if changedItems is null)
-            args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, (IList)null);
+            args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, null);
 
             CollectionChangedEventValidators.ValidateResetOperation(args, "#B03");
 
@@ -280,7 +280,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with null arguments.
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, (IList)null, oldItems);
+                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, null, oldItems);
                 Assert.Fail("The newItems argument cannot be null.");
             }
             catch (ArgumentNullException)
@@ -289,7 +289,7 @@ namespace MonoTests.System.Collections.Specialized
 
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItems, (IList)null);
+                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItems, null);
                 Assert.Fail("The oldItems argument cannot be null.");
             }
             catch (ArgumentNullException)
@@ -387,7 +387,7 @@ namespace MonoTests.System.Collections.Specialized
 
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, (IList)null, startingIndex);
+                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, null, startingIndex);
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Add if changedItems is null.");
             }
             catch (ArgumentNullException)
@@ -410,7 +410,7 @@ namespace MonoTests.System.Collections.Specialized
 
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, (IList)null, startingIndex);
+                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, null, startingIndex);
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Remove if changedItems is null.");
             }
             catch (ArgumentNullException)
@@ -418,7 +418,7 @@ namespace MonoTests.System.Collections.Specialized
             }
 
             // Trying with Reset
-            args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, (IList)null, -1);
+            args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, null, -1);
 
             try
             {
@@ -431,7 +431,7 @@ namespace MonoTests.System.Collections.Specialized
 
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, (IList)null, 1);
+                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, null, 1);
                 Assert.Fail("Should not be able to call .ctor with NotifyCollectionChangedAction.Reset unless startingIndex is -1");
             }
             catch (ArgumentException)
@@ -548,10 +548,10 @@ namespace MonoTests.System.Collections.Specialized
             CollectionChangedEventValidators.ValidateReplaceOperation(args, new object[] { oldItem }, new object[] { newItem }, "#G01");
 
             // Trying null items
-            args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, (object)null, oldItem);
+            args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, null, oldItem);
             CollectionChangedEventValidators.ValidateReplaceOperation(args, new object[] { oldItem }, new object[] { null }, "#G02");
 
-            args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem, (object)null);
+            args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem, null);
             CollectionChangedEventValidators.ValidateReplaceOperation(args, new object[] { null }, new object[] { newItem }, "#G03");
 
             // Trying with Reset
@@ -630,7 +630,7 @@ namespace MonoTests.System.Collections.Specialized
             // Trying with null arguments.
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, (IList)null, oldItems, startIndex);
+                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, null, oldItems, startIndex);
                 Assert.Fail("The newItems argument cannot be null.");
             }
             catch (ArgumentNullException)
@@ -639,7 +639,7 @@ namespace MonoTests.System.Collections.Specialized
 
             try
             {
-                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItems, (IList)null, startIndex);
+                args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItems, null, startIndex);
                 Assert.Fail("The oldItems argument cannot be null.");
             }
             catch (ArgumentNullException)

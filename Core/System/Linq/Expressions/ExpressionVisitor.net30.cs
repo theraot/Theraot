@@ -709,7 +709,7 @@ namespace System.Linq.Expressions
         protected internal virtual Expression VisitMethodCall(MethodCallExpression node)
         {
             var o = Visit(node.Object);
-            var a = VisitArguments((IArgumentProvider)node);
+            var a = VisitArguments(node);
             if (o == node.Object && a == null)
             {
                 return node;
