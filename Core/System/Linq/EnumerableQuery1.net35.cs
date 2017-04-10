@@ -8,46 +8,46 @@ namespace System.Linq
 {
     public class EnumerableQuery<T> : EnumerableQuery, IOrderedQueryable<T>, IQueryProvider
     {
-        private readonly QueryableEnumerable<T> queryable;
+        private readonly QueryableEnumerable<T> _queryable;
 
         public EnumerableQuery(Expression expression)
         {
-            queryable = new QueryableEnumerable<T>(expression);
+            _queryable = new QueryableEnumerable<T>(expression);
         }
 
         public EnumerableQuery(IEnumerable<T> enumerable)
         {
-            queryable = new QueryableEnumerable<T>(enumerable);
+            _queryable = new QueryableEnumerable<T>(enumerable);
         }
 
         Type IQueryable.ElementType
         {
-            get { return queryable.ElementType; }
+            get { return _queryable.ElementType; }
         }
 
         Expression IQueryable.Expression
         {
-            get { return queryable.Expression; }
+            get { return _queryable.Expression; }
         }
 
         IQueryProvider IQueryable.Provider
         {
-            get { return queryable; }
+            get { return _queryable; }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return queryable.GetEnumerator();
+            return _queryable.GetEnumerator();
         }
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
-            return queryable.GetEnumerator();
+            return _queryable.GetEnumerator();
         }
 
         IQueryable IQueryProvider.CreateQuery(Expression expression)
         {
-            return queryable.CreateQuery(expression);
+            return _queryable.CreateQuery(expression);
         }
 
         IQueryable<TElem> IQueryProvider.CreateQuery<TElem>(Expression expression)
@@ -57,17 +57,17 @@ namespace System.Linq
 
         object IQueryProvider.Execute(Expression expression)
         {
-            return queryable.Execute(expression);
+            return _queryable.Execute(expression);
         }
 
         TResult IQueryProvider.Execute<TResult>(Expression expression)
         {
-            return queryable.Execute<TResult>(expression);
+            return _queryable.Execute<TResult>(expression);
         }
 
         public override string ToString()
         {
-            return queryable.ToString();
+            return _queryable.ToString();
         }
     }
 }
