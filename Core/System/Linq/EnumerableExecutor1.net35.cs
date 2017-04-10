@@ -2,7 +2,7 @@
 
 namespace System.Linq
 {
-    public class EnumerableExecutor<T> : EnumerableExecutor
+    public abstract class EnumerableExecutor<T> : EnumerableExecutor
     {
         //Empty
     }
