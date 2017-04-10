@@ -29,7 +29,7 @@ namespace System.Runtime.CompilerServices
         internal void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
         {
             // ReSharper disable RedundantCast
-            if ((object)stateMachine == null)
+            if (stateMachine == null)
                 // ReSharper restore RedundantCast
                 throw new ArgumentNullException("stateMachine");
             stateMachine.MoveNext();

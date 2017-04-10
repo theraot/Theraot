@@ -152,8 +152,8 @@ namespace System.Threading
             get
             {
                 var currentTotal = _currentTotalCount;
-                var total = (int)(currentTotal & TOTAL_MASK);
-                var current = (int)((currentTotal & CURRENT_MASK) >> 16);
+                var total = currentTotal & TOTAL_MASK;
+                var current = (currentTotal & CURRENT_MASK) >> 16;
                 return total - current;
             }
         }
@@ -163,7 +163,7 @@ namespace System.Threading
         /// </summary>
         public int ParticipantCount
         {
-            get { return (int)(_currentTotalCount & TOTAL_MASK); }
+            get { return _currentTotalCount & TOTAL_MASK; }
         }
 
         /// <summary>
@@ -211,7 +211,7 @@ namespace System.Threading
             {
                 throw new ArgumentOutOfRangeException("participantCount", participantCount, "The participantCount argument must be non-negative and less than or equal to 32767");
             }
-            _currentTotalCount = (int)participantCount;
+            _currentTotalCount = participantCount;
             _postPhaseAction = postPhaseAction;
 
             //Lazily initialize the events
@@ -236,8 +236,8 @@ namespace System.Threading
         /// <param name="sense">The sense flag</param>
         private void GetCurrentTotal(int currentTotal, out int current, out int total, out bool sense)
         {
-            total = (int)(currentTotal & TOTAL_MASK);
-            current = (int)((currentTotal & CURRENT_MASK) >> 16);
+            total = currentTotal & TOTAL_MASK;
+            current = (currentTotal & CURRENT_MASK) >> 16;
             sense = (currentTotal & SENSE_MASK) == 0 ? true : false;
         }
 

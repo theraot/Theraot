@@ -133,11 +133,11 @@ namespace MonoTests.System.Linq.Expressions
             var lte = Expression.Lambda<Func<int?, int?, bool?>>(
                 Expression.LessThanOrEqual(l, r, true, null), l, r).Compile();
 
-            Assert.AreEqual((bool?)null, lte(null, null));
-            Assert.AreEqual((bool?)null, lte(null, 1));
-            Assert.AreEqual((bool?)null, lte(null, -1));
-            Assert.AreEqual((bool?)null, lte(1, null));
-            Assert.AreEqual((bool?)null, lte(-1, null));
+            Assert.AreEqual(null, lte(null, null));
+            Assert.AreEqual(null, lte(null, 1));
+            Assert.AreEqual(null, lte(null, -1));
+            Assert.AreEqual(null, lte(1, null));
+            Assert.AreEqual(null, lte(-1, null));
             Assert.AreEqual((bool?)true, lte(1, 2));
             Assert.AreEqual((bool?)false, lte(2, 1));
             Assert.AreEqual((bool?)true, lte(1, 1));

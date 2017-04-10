@@ -33,7 +33,7 @@ namespace Theraot.Core
             {
                 // Empty
             }
-            return fileEntries ?? (IEnumerable<string>)ArrayReservoir<string>.EmptyArray;
+            return fileEntries ?? ArrayReservoir<string>.EmptyArray;
         }
 
         public static IEnumerable<string> GetFilesAndFoldersRecursive(string folder, string pattern)

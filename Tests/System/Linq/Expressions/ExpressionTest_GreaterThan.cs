@@ -159,11 +159,11 @@ namespace MonoTests.System.Linq.Expressions
             var gt = Expression.Lambda<Func<int?, int?, bool?>>(
                 Expression.GreaterThan(l, r, true, null), l, r).Compile();
 
-            Assert.AreEqual((bool?)null, gt(null, null));
-            Assert.AreEqual((bool?)null, gt(null, 1));
-            Assert.AreEqual((bool?)null, gt(null, -1));
-            Assert.AreEqual((bool?)null, gt(1, null));
-            Assert.AreEqual((bool?)null, gt(-1, null));
+            Assert.AreEqual(null, gt(null, null));
+            Assert.AreEqual(null, gt(null, 1));
+            Assert.AreEqual(null, gt(null, -1));
+            Assert.AreEqual(null, gt(1, null));
+            Assert.AreEqual(null, gt(-1, null));
             Assert.AreEqual((bool?)false, gt(1, 2));
             Assert.AreEqual((bool?)true, gt(2, 1));
             Assert.AreEqual((bool?)false, gt(1, 1));

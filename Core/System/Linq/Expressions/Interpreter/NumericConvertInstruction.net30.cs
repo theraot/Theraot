@@ -139,7 +139,7 @@ namespace System.Linq.Expressions.Interpreter
                             return (Char)obj;
 
                         case TypeCode.Int32:
-                            return (Int32)obj;
+                            return obj;
 
                         case TypeCode.Int64:
                             return (Int64)obj;
@@ -187,7 +187,7 @@ namespace System.Linq.Expressions.Interpreter
                             return (Int32)obj;
 
                         case TypeCode.Int64:
-                            return (Int64)obj;
+                            return obj;
 
                         case TypeCode.UInt16:
                             return (UInt16)obj;
@@ -241,7 +241,7 @@ namespace System.Linq.Expressions.Interpreter
                             return (UInt32)obj;
 
                         case TypeCode.UInt64:
-                            return (UInt64)obj;
+                            return obj;
 
                         case TypeCode.Single:
                             return (Single)obj;
@@ -292,7 +292,7 @@ namespace System.Linq.Expressions.Interpreter
                             return (Single)obj;
 
                         case TypeCode.Double:
-                            return (Double)obj;
+                            return obj;
 
                         default:
                             throw Assert.Unreachable;
@@ -374,7 +374,7 @@ namespace System.Linq.Expressions.Interpreter
                             return (Char)obj;
 
                         case TypeCode.Int32:
-                            return (Int32)obj;
+                            return obj;
 
                         case TypeCode.Int64:
                             return (Int64)obj;
@@ -422,7 +422,7 @@ namespace System.Linq.Expressions.Interpreter
                             return (Int32)obj;
 
                         case TypeCode.Int64:
-                            return (Int64)obj;
+                            return obj;
 
                         case TypeCode.UInt16:
                             return (UInt16)obj;
@@ -476,7 +476,7 @@ namespace System.Linq.Expressions.Interpreter
                             return (UInt32)obj;
 
                         case TypeCode.UInt64:
-                            return (UInt64)obj;
+                            return obj;
 
                         case TypeCode.Single:
                             return (Single)obj;
@@ -527,7 +527,7 @@ namespace System.Linq.Expressions.Interpreter
                             return (Single)obj;
 
                         case TypeCode.Double:
-                            return (Double)obj;
+                            return obj;
 
                         default:
                             throw Assert.Unreachable;

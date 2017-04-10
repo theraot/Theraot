@@ -281,7 +281,7 @@ namespace MonoTests.System.Linq.Expressions
                     Expression.Property(i, "Right")), i).Compile();
 
             var item = new Item<Slot?>(null, new Slot(1));
-            Assert.AreEqual((Slot?)null, and(item));
+            Assert.AreEqual(null, and(item));
             Assert.IsTrue(item.LeftCalled);
             Assert.IsFalse(item.RightCalled);
         }

@@ -93,7 +93,7 @@ namespace MonoTests.System.Linq.Expressions
                 Expression.Coalesce(a, b), a, b).Compile();
 
             Assert.AreEqual((int?)1, coalesce(1, 2));
-            Assert.AreEqual((int?)null, coalesce(null, null));
+            Assert.AreEqual(null, coalesce(null, null));
             Assert.AreEqual((int?)2, coalesce(null, 2));
             Assert.AreEqual((int?)2, coalesce(2, null));
         }

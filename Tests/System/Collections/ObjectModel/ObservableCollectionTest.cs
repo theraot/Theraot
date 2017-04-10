@@ -64,7 +64,7 @@ namespace MonoTests.System.Collections.ObjectModel
         {
             try
             {
-                var x = new ObservableCollection<int>((List<int>)null);
+                var x = new ObservableCollection<int>(null);
                 GC.KeepAlive(x);
                 Assert.Fail("#1");
             }

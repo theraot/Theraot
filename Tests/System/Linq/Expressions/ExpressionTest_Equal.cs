@@ -185,13 +185,13 @@ namespace MonoTests.System.Linq.Expressions
             var eq = Expression.Lambda<Func<int?, int?, bool?>>(
                 Expression.Equal(l, r, true, null), l, r).Compile();
 
-            Assert.AreEqual((bool?)null, eq(null, null));
-            Assert.AreEqual((bool?)null, eq(null, 1));
-            Assert.AreEqual((bool?)null, eq(1, null));
+            Assert.AreEqual(null, eq(null, null));
+            Assert.AreEqual(null, eq(null, 1));
+            Assert.AreEqual(null, eq(1, null));
             Assert.AreEqual((bool?)false, eq(1, 2));
             Assert.AreEqual((bool?)true, eq(1, 1));
-            Assert.AreEqual((bool?)null, eq(null, 0));
-            Assert.AreEqual((bool?)null, eq(0, null));
+            Assert.AreEqual(null, eq(null, 0));
+            Assert.AreEqual(null, eq(0, null));
         }
 
         private struct Slot
@@ -285,9 +285,9 @@ namespace MonoTests.System.Linq.Expressions
 
             var eq = Expression.Lambda<Func<Slot?, Slot?, bool?>>(node, l, r).Compile();
 
-            Assert.AreEqual((bool?)null, eq(null, null));
-            Assert.AreEqual((bool?)null, eq((Slot?)new Slot(2), null));
-            Assert.AreEqual((bool?)null, eq(null, (Slot?)new Slot(2)));
+            Assert.AreEqual(null, eq(null, null));
+            Assert.AreEqual(null, eq((Slot?)new Slot(2), null));
+            Assert.AreEqual(null, eq(null, (Slot?)new Slot(2)));
             Assert.AreEqual((bool?)true, eq((Slot?)new Slot(21), (Slot?)new Slot(21)));
             Assert.AreEqual((bool?)false, eq((Slot?)new Slot(21), (Slot?)new Slot(-21)));
         }
@@ -319,12 +319,12 @@ namespace MonoTests.System.Linq.Expressions
 
             public static bool? operator ==(SlotToNullable a, SlotToNullable b)
             {
-                return (bool?)(a.Value == b.Value);
+                return a.Value == b.Value;
             }
 
             public static bool? operator !=(SlotToNullable a, SlotToNullable b)
             {
-                return (bool?)(a.Value != b.Value);
+                return a.Value != b.Value;
             }
         }
 
