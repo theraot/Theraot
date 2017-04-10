@@ -55,8 +55,10 @@ namespace MonoTests.System.Linq.Expressions
         [ExpectedException(typeof(ArgumentNullException))]
         public void ArgNull()
         {
-            var list = new List<ElementInit>();
-            list.Add(null);
+            var list = new List<ElementInit>
+            {
+                null
+            };
             Expression.ListBind(typeof(Foo).GetProperty("Bar").GetSetMethod(), list);
         }
 

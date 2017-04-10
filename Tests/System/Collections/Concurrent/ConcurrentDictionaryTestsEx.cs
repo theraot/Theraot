@@ -175,9 +175,11 @@ namespace MonoTests.System.Collections.Concurrent
         [Test]
         public void InitWithConflictingData()
         {
-            var data = new List<KeyValuePair<int, int>>();
-            data.Add(new KeyValuePair<int, int>(0, 0));
-            data.Add(new KeyValuePair<int, int>(0, 1));
+            var data = new List<KeyValuePair<int, int>>
+            {
+                new KeyValuePair<int, int>(0, 0),
+                new KeyValuePair<int, int>(0, 1)
+            };
             Assert.Throws<ArgumentException>(() => new ConcurrentDictionary<int, int>(data));
         }
 
@@ -194,8 +196,10 @@ namespace MonoTests.System.Collections.Concurrent
             var firstPair = new KeyValuePair<string, string>("key", "validValue");
             var secondPair = new KeyValuePair<string, string>("key", "wrongValue");
 
-            IDictionary<string, string> dict = new ConcurrentDictionary<string, string>();
-            dict.Add(firstPair);
+            IDictionary<string, string> dict = new ConcurrentDictionary<string, string>
+            {
+                firstPair
+            };
             Assert.Throws<ArgumentException>(() => dict.Add(secondPair));
 
             Assert.IsTrue(dict.Contains(firstPair));

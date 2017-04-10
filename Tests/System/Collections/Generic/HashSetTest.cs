@@ -411,9 +411,10 @@ namespace MonoTests.System.Collections.Generic
         [Test]
         public void TestCopyToPrecise()
         {
-            var set = new HashSet<int>();
-            set.Add(42);
-
+            var set = new HashSet<int>
+            {
+                42
+            };
             var dest = new int[12];
 
             set.CopyTo(dest, 6, 1);

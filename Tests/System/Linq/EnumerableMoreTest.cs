@@ -1784,20 +1784,22 @@ namespace MonoTests.System.Linq
         {
             string[] data = { "2", "1", "5", "3", "4", "3" };
 
-            var expected = new Dictionary<string, IEnumerable<string>>();
-            expected.Add("2", new List<string> { "2" });
-            expected.Add("1", new List<string> { "1" });
-            expected.Add("5", new List<string> { "5" });
-            expected.Add("3", new List<string> { "3", "3" });
-            expected.Add("4", new List<string> { "4" });
-
-            var expected2 = new Dictionary<string, IEnumerable<string>>();
-            expected2.Add("2", new List<string> { "22" });
-            expected2.Add("1", new List<string> { "11" });
-            expected2.Add("5", new List<string> { "55" });
-            expected2.Add("3", new List<string> { "33", "33" });
-            expected2.Add("4", new List<string> { "44" });
-
+            var expected = new Dictionary<string, IEnumerable<string>>
+            {
+                { "2", new List<string> { "2" } },
+                { "1", new List<string> { "1" } },
+                { "5", new List<string> { "5" } },
+                { "3", new List<string> { "3", "3" } },
+                { "4", new List<string> { "4" } }
+            };
+            var expected2 = new Dictionary<string, IEnumerable<string>>
+            {
+                { "2", new List<string> { "22" } },
+                { "1", new List<string> { "11" } },
+                { "5", new List<string> { "55" } },
+                { "3", new List<string> { "33", "33" } },
+                { "4", new List<string> { "44" } }
+            };
             var expected3 = new string[] { "22", "11", "55", "333", "44" };
 
             // GroupBy<int,int> (Func<int, int>)
@@ -1872,14 +1874,14 @@ namespace MonoTests.System.Linq
         [Test]
         public void GroupByLastNullGroup()
         {
-            var values = new List<Data>();
-
-            values.Add(new Data(0, "a"));
-            values.Add(new Data(1, "a"));
-            values.Add(new Data(2, "b"));
-            values.Add(new Data(3, "b"));
-            values.Add(new Data(4, null));
-
+            var values = new List<Data>
+            {
+                new Data(0, "a"),
+                new Data(1, "a"),
+                new Data(2, "b"),
+                new Data(3, "b"),
+                new Data(4, null)
+            };
             var groups = values.GroupBy(d => d.String);
 
             Assert.AreEqual(3, groups.Count());
@@ -2142,12 +2144,14 @@ namespace MonoTests.System.Linq
         public void ToDictionaryTest()
         {
             string[] data = { "2", "1", "5", "3", "4" };
-            var expected = new Dictionary<string, string>();
-            expected.Add("k2", "2");
-            expected.Add("k1", "1");
-            expected.Add("k5", "5");
-            expected.Add("k3", "3");
-            expected.Add("k4", "4");
+            var expected = new Dictionary<string, string>
+            {
+                { "k2", "2" },
+                { "k1", "1" },
+                { "k5", "5" },
+                { "k3", "3" },
+                { "k4", "4" }
+            };
 
             // ToDictionary<TSource,TKey> (Func<TSource, TKey>)
             AssertAreSame(expected, ((IEnumerable<string>)data).ToDictionary(x => "k" + x));
@@ -2194,12 +2198,13 @@ namespace MonoTests.System.Linq
         public void ToLookupTest()
         {
             string[] data = { "23", "12", "55", "42", "41" };
-            var expected = new Dictionary<string, IEnumerable<string>>();
-            expected.Add("2", new List<string> { "23" });
-            expected.Add("1", new List<string> { "12" });
-            expected.Add("5", new List<string> { "55" });
-            expected.Add("4", new List<string> { "42", "41" });
-
+            var expected = new Dictionary<string, IEnumerable<string>>
+            {
+                { "2", new List<string> { "23" } },
+                { "1", new List<string> { "12" } },
+                { "5", new List<string> { "55" } },
+                { "4", new List<string> { "42", "41" } }
+            };
             Assert.AreEqual(expected.Count, ((IEnumerable<string>)data).ToLookup(x => x[0].ToString()).Count);
 
             // ToLookup<string,string> (Func<string, string>)
