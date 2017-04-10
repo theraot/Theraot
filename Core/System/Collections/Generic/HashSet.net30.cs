@@ -2,6 +2,7 @@
 
 using System.Runtime.Serialization;
 using System.Security.Permissions;
+using System.Threading;
 using Theraot.Collections;
 using Theraot.Collections.Specialized;
 
@@ -454,21 +455,34 @@ namespace System.Collections.Generic
 
             public void Dispose()
             {
-                _enumerator.Dispose();
+                var enumerator = _enumerator;
+                if (enumerator != null)
+                {
+                    enumerator.Dispose();
+                }
             }
 
             void IEnumerator.Reset()
             {
                 valid = false;
-                current = _enumerator.Current.Key;
-                _enumerator.Reset();
+                var enumerator = _enumerator;
+                if (enumerator != null)
+                {
+                    current = _enumerator.Current.Key;
+                    _enumerator.Reset();
+                }
             }
 
             public bool MoveNext()
             {
-                valid = _enumerator.MoveNext();
-                current = _enumerator.Current.Key;
-                return valid;
+                var enumerator = _enumerator;
+                if (enumerator != null)
+                {
+                    valid = _enumerator.MoveNext();
+                    current = _enumerator.Current.Key;
+                    return valid;
+                }
+                return false;
             }
         }
 
