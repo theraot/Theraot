@@ -240,6 +240,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasicAsyncTest.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="System\Collections\Concurrent\CollectionStressTestHelper.cs" />
     <Compile Include="System\Collections\Concurrent\ConcurrentDictionaryTestsEx.cs" />
     <Compile Include="System\Collections\Concurrent\ConcurrentDictionaryTests.cs" />
