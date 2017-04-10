@@ -170,7 +170,6 @@ namespace System.Linq.Expressions.Compiler
                         currentScope.Definitions.Add(v, VariableStorageKind.Local);
                     }
                 }
-                node = block;
                 body = block.Expressions;
             }
             return body;
