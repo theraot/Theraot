@@ -44,7 +44,7 @@ namespace System.Linq.Expressions.Compiler
             public bool Equals(TypedConstant other)
             {
                 // Note: Type.Equals compares the underlaying CLR type.
-                return ReferenceEquals(Value, other.Value) && Type.Equals(other.Type);
+                return ReferenceEquals(Value, other.Value) && Type == other.Type;
             }
 
             public override bool Equals(object obj)
