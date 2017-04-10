@@ -499,12 +499,12 @@ namespace System.Linq.Expressions
             _nodeType = nodeType;
         }
 
-        public sealed override Type Type
+        public override Type Type
         {
             get { return typeof(bool); }
         }
 
-        public sealed override ExpressionType NodeType
+        public override ExpressionType NodeType
         {
             get { return _nodeType; }
         }
@@ -518,12 +518,12 @@ namespace System.Linq.Expressions
         {
         }
 
-        public sealed override Type Type
+        public override Type Type
         {
             get { return Left.Type; }
         }
 
-        public sealed override ExpressionType NodeType
+        public override ExpressionType NodeType
         {
             get { return ExpressionType.Assign; }
         }
@@ -547,12 +547,12 @@ namespace System.Linq.Expressions
             return _conversion;
         }
 
-        public sealed override ExpressionType NodeType
+        public override ExpressionType NodeType
         {
             get { return ExpressionType.Coalesce; }
         }
 
-        public sealed override Type Type
+        public override Type Type
         {
             get { return Right.Type; }
         }
