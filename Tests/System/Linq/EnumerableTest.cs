@@ -322,11 +322,12 @@ namespace MonoTests.System.Linq
         [Test]
         public void TestToArray()
         {
-            ICollection<int> coll = new List<int>();
-            coll.Add(0);
-            coll.Add(1);
-            coll.Add(2);
-
+            ICollection<int> coll = new List<int>
+            {
+                0,
+                1,
+                2
+            };
             int[] result = { 0, 1, 2 };
 
             var array = coll.ToArray();
@@ -376,9 +377,11 @@ namespace MonoTests.System.Linq
         [Test]
         public void TestAverageOnLongNullable()
         {
-            var list = new List<long?>();
-            list.Add(2);
-            list.Add(3);
+            var list = new List<long?>
+            {
+                2,
+                3
+            };
             Assert.AreEqual(2.5d, list.Average());
         }
 

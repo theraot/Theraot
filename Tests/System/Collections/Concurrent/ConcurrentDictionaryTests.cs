@@ -104,8 +104,10 @@ namespace MonoTests.System.Collections.Concurrent
             var validKeyPair = new KeyValuePair<string, string>("key", "validValue");
             var wrongKeyPair = new KeyValuePair<string, string>("key", "wrongValue");
 
-            IDictionary<string, string> dict = new ConcurrentDictionary<string, string>(); // Do not change to object initialization
-            dict.Add(validKeyPair);
+            IDictionary<string, string> dict = new ConcurrentDictionary<string, string>
+            {
+                validKeyPair
+            }; // Do not change to object initialization
 
             Assert.IsTrue(dict.Contains(validKeyPair));
             Assert.IsFalse(dict.Contains(wrongKeyPair));

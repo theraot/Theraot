@@ -92,8 +92,10 @@ namespace System.Linq.Expressions
         {
             if (ids == null)
             {
-                ids = new Dictionary<T, int>();
-                ids.Add(e, 1);
+                ids = new Dictionary<T, int>
+                {
+                    { e, 1 }
+                };
                 return 1;
             }
             else
@@ -211,9 +213,7 @@ namespace System.Linq.Expressions
 
         private Flow GetFlow(Flow flow)
         {
-            Flow last;
-
-            last = CheckBreak(_flow);
+            var last = CheckBreak(_flow);
             flow = CheckBreak(flow);
 
             // Get the biggest flow that is requested None < Space < NewLine
