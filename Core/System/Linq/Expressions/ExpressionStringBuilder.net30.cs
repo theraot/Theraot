@@ -36,8 +36,10 @@ namespace System.Linq.Expressions
         {
             if (_ids == null)
             {
-                _ids = new Dictionary<object, int>();
-                _ids.Add(label, 0);
+                _ids = new Dictionary<object, int>
+                {
+                    { label, 0 }
+                };
             }
             else
             {
