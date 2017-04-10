@@ -10,9 +10,6 @@ namespace System.Linq.Expressions.Interpreter
 {
     internal partial class CallInstruction
     {
-        private const int MaxHelpers = 3;
-        private const int MaxArgs = 3;
-
         public virtual object InvokeInstance(object instance, params object[] args)
         {
             switch (args.Length)
