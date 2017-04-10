@@ -94,7 +94,7 @@ namespace System.Linq.Expressions
         /// Returns the node type of this <see cref="Expression" />. (Inherited from <see cref="Expression" />.)
         /// </summary>
         /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
-        public sealed override ExpressionType NodeType
+        public override ExpressionType NodeType
         {
             get { return ExpressionType.NewArrayInit; }
         }
@@ -111,7 +111,7 @@ namespace System.Linq.Expressions
         /// Returns the node type of this <see cref="Expression" />. (Inherited from <see cref="Expression" />.)
         /// </summary>
         /// <returns>The <see cref="ExpressionType"/> that represents this expression.</returns>
-        public sealed override ExpressionType NodeType
+        public override ExpressionType NodeType
         {
             get { return ExpressionType.NewArrayBounds; }
         }
