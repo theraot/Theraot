@@ -261,9 +261,9 @@ namespace System.Linq.Expressions
                 var listItems = items as IList<Expression>;
                 if (listItems != null)
                 {
-                    for (int i = 0; i < listItems.Count; i++)
+                    foreach (var item in listItems)
                     {
-                        RequiresCanRead(listItems[i], paramName);
+                        RequiresCanRead(item, paramName);
                     }
                     return;
                 }
