@@ -254,10 +254,6 @@ namespace System.Linq.Expressions.Interpreter
     {
         public static readonly ValueTypeCopyInstruction Instruction = new ValueTypeCopyInstruction();
 
-        public ValueTypeCopyInstruction()
-        {
-        }
-
         public override int ConsumedStack
         {
             get { return 1; }

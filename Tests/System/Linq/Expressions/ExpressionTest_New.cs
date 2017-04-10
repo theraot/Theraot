@@ -60,10 +60,6 @@ namespace MonoTests.System.Linq.Expressions
         public class Bar
         {
             public string Value { get; set; }
-
-            public Bar()
-            {
-            }
         }
 
         public struct Baz

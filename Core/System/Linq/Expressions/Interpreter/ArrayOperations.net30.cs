@@ -123,10 +123,6 @@ namespace System.Linq.Expressions.Interpreter
     {
         internal static readonly GetArrayItemInstruction Instruction = new GetArrayItemInstruction();
 
-        internal GetArrayItemInstruction()
-        {
-        }
-
         public override int ConsumedStack
         {
             get { return 2; }
@@ -154,10 +150,6 @@ namespace System.Linq.Expressions.Interpreter
     internal sealed class SetArrayItemInstruction : Instruction
     {
         internal static readonly SetArrayItemInstruction Instruction = new SetArrayItemInstruction();
-
-        internal SetArrayItemInstruction()
-        {
-        }
 
         public override int ConsumedStack
         {

@@ -17,10 +17,6 @@ namespace System.Linq.Expressions.Interpreter
 
         #region Construction
 
-        internal CallInstruction()
-        {
-        }
-
         public override string InstructionName
         {
             get { return "Call"; }
