@@ -197,7 +197,7 @@ namespace System.Linq.Expressions
         {
         }
 
-        public sealed override Type Type
+        public override Type Type
         {
             get { return typeof(T); }
         }
