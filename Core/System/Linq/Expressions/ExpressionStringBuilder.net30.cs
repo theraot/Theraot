@@ -635,7 +635,7 @@ namespace System.Linq.Expressions
             var start = 0;
             var ob = node.Object;
 
-            if (TypeHelper.HasAttribute<ExtensionAttribute>(node.Method))
+            if (node.Method.HasAttribute<ExtensionAttribute>())
             {
                 start = 1;
                 ob = node.Arguments[0];

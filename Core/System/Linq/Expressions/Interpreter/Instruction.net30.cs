@@ -248,7 +248,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public static Instruction Create(Type t)
         {
-            switch (TypeHelper.GetNonNullableType(t).GetTypeCode())
+            switch (t.GetNonNullableType().GetTypeCode())
             {
                 case TypeCode.Boolean:
                     return _Bool ?? (_Bool = new BoolNot());
