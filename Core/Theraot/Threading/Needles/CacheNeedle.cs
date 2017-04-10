@@ -12,6 +12,7 @@ namespace Theraot.Threading.Needles
     public class CacheNeedle<T> : WeakNeedle<T>, ICacheNeedle<T>, IEquatable<CacheNeedle<T>>, IWaitablePromise<T>
         where T : class
     {
+        [NonSerialized]
         private Thread _initializerThread;
 
         private Func<T> _valueFactory;
