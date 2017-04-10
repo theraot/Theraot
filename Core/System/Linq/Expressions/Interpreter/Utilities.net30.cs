@@ -160,7 +160,7 @@ namespace System.Linq.Expressions.Interpreter
 
         internal static object GetPrimitiveDefaultValue(Type type)
         {
-            switch (TypeHelper.GetTypeCode(type))
+            switch (type.GetTypeCode())
             {
                 case TypeCode.Boolean:
                     return False;

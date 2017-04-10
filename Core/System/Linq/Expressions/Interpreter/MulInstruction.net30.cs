@@ -186,7 +186,7 @@ namespace System.Linq.Expressions.Interpreter
         public static Instruction Create(Type type)
         {
             Debug.Assert(!type.IsEnum);
-            switch (TypeHelper.GetTypeCode(TypeHelper.GetNonNullableType(type)))
+            switch (TypeHelper.GetNonNullableType(type).GetTypeCode())
             {
                 case TypeCode.Int16:
                     return s_int16 ?? (s_int16 = new MulInt16());
@@ -401,7 +401,7 @@ namespace System.Linq.Expressions.Interpreter
         public static Instruction Create(Type type)
         {
             Debug.Assert(!type.IsEnum);
-            switch (TypeHelper.GetTypeCode(TypeHelper.GetNonNullableType(type)))
+            switch (TypeHelper.GetNonNullableType(type).GetTypeCode())
             {
                 case TypeCode.Int16:
                     return s_int16 ?? (s_int16 = new MulOvfInt16());

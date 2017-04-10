@@ -1077,13 +1077,13 @@ namespace System.Linq.Expressions
                     pType = pType.GetElementType();
                 }
                 if (!TypeHelper.AreReferenceAssignable(pType, argType) &&
-                    !(TypeHelper.IsSameOrSubclassOf(pType, typeof(LambdaExpression)) && pType.IsAssignableFrom(arg.GetType())))
+                    !(pType.IsSameOrSubclassOf(typeof(LambdaExpression)) && pType.IsAssignableFrom(arg.GetType())))
                 {
                     if (pType.IsExpression())
                     {
                         argType = arg.GetType();
                         if (!TypeHelper.AreReferenceAssignable(pType, argType) &&
-                            !(TypeHelper.IsSameOrSubclassOf(pType, typeof(LambdaExpression)) &&
+                            !(pType.IsSameOrSubclassOf(typeof(LambdaExpression)) &&
                               pType.IsAssignableFrom(arg.GetType())))
                         {
                             return false;

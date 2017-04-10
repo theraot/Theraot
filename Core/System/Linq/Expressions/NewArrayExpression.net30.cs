@@ -225,7 +225,7 @@ namespace System.Linq.Expressions
             {
                 var expr = boundsList[i];
                 RequiresCanRead(expr, "bounds");
-                if (!TypeHelper.IsInteger(expr.Type))
+                if (!expr.Type.IsInteger())
                 {
                     throw Error.ArgumentMustBeInteger();
                 }

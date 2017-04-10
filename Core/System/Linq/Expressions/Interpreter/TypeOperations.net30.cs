@@ -534,7 +534,7 @@ namespace System.Linq.Expressions.Interpreter
         public static Instruction Create(Type type)
         {
             Debug.Assert(!type.IsEnum);
-            switch (TypeHelper.GetTypeCode(TypeHelper.GetNonNullableType(type)))
+            switch (TypeHelper.GetNonNullableType(type).GetTypeCode())
             {
                 case TypeCode.Int16:
                     return s_int16 ?? (s_int16 = new NegateInt16());
@@ -713,7 +713,7 @@ namespace System.Linq.Expressions.Interpreter
         public static Instruction Create(Type type)
         {
             Debug.Assert(!type.IsEnum);
-            switch (TypeHelper.GetTypeCode(TypeHelper.GetNonNullableType(type)))
+            switch (TypeHelper.GetNonNullableType(type).GetTypeCode())
             {
                 case TypeCode.Int16:
                     return s_int16 ?? (s_int16 = new NegateCheckedInt16());
@@ -892,7 +892,7 @@ namespace System.Linq.Expressions.Interpreter
         public static Instruction Create(Type type)
         {
             Debug.Assert(!type.IsEnum);
-            switch (TypeHelper.GetTypeCode(type))
+            switch (type.GetTypeCode())
             {
                 case TypeCode.Int16:
                     return s_int16 ?? (s_int16 = new IncrementInt16());
@@ -1071,7 +1071,7 @@ namespace System.Linq.Expressions.Interpreter
         public static Instruction Create(Type type)
         {
             Debug.Assert(!type.IsEnum);
-            switch (TypeHelper.GetTypeCode(type))
+            switch (type.GetTypeCode())
             {
                 case TypeCode.Int16:
                     return s_int16 ?? (s_int16 = new DecrementInt16());
@@ -1276,7 +1276,7 @@ namespace System.Linq.Expressions.Interpreter
         public static Instruction Create(Type type)
         {
             // Boxed enums can be unboxed as their underlying types:
-            switch (TypeHelper.GetTypeCode(type.IsEnum ? Enum.GetUnderlyingType(type) : TypeHelper.GetNonNullableType(type)))
+            switch ((type.IsEnum ? Enum.GetUnderlyingType(type) : TypeHelper.GetNonNullableType(type)).GetTypeCode())
             {
                 case TypeCode.SByte:
                     return s_SByte ?? (s_SByte = new LeftShiftSByte());
@@ -1484,7 +1484,7 @@ namespace System.Linq.Expressions.Interpreter
         public static Instruction Create(Type type)
         {
             // Boxed enums can be unboxed as their underlying types:
-            switch (TypeHelper.GetTypeCode(type.IsEnum ? Enum.GetUnderlyingType(type) : TypeHelper.GetNonNullableType(type)))
+            switch ((type.IsEnum ? Enum.GetUnderlyingType(type) : TypeHelper.GetNonNullableType(type)).GetTypeCode())
             {
                 case TypeCode.SByte:
                     return s_SByte ?? (s_SByte = new RightShiftSByte());
@@ -1728,7 +1728,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private static TypeCode GetTypeCode(Type type)
         {
-            return TypeHelper.GetTypeCode(type.IsEnum ? Enum.GetUnderlyingType(type) : TypeHelper.GetNonNullableType(type));
+            return (type.IsEnum ? Enum.GetUnderlyingType(type) : TypeHelper.GetNonNullableType(type)).GetTypeCode();
         }
 
         public override string ToString()
@@ -1920,7 +1920,7 @@ namespace System.Linq.Expressions.Interpreter
         public static Instruction Create(Type type)
         {
             // Boxed enums can be unboxed as their underlying types:
-            switch (TypeHelper.GetTypeCode(type.IsEnum ? Enum.GetUnderlyingType(type) : TypeHelper.GetNonNullableType(type)))
+            switch ((type.IsEnum ? Enum.GetUnderlyingType(type) : TypeHelper.GetNonNullableType(type)).GetTypeCode())
             {
                 case TypeCode.SByte:
                     return s_SByte ?? (s_SByte = new OrSByte());
@@ -2143,7 +2143,7 @@ namespace System.Linq.Expressions.Interpreter
         public static Instruction Create(Type type)
         {
             // Boxed enums can be unboxed as their underlying types:
-            switch (TypeHelper.GetTypeCode(type.IsEnum ? Enum.GetUnderlyingType(type) : TypeHelper.GetNonNullableType(type)))
+            switch ((type.IsEnum ? Enum.GetUnderlyingType(type) : TypeHelper.GetNonNullableType(type)).GetTypeCode())
             {
                 case TypeCode.SByte:
                     return s_SByte ?? (s_SByte = new AndSByte());
@@ -2430,7 +2430,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (!t.IsEnum)
             {
-                switch (TypeHelper.GetTypeCode(t))
+                switch (t.GetTypeCode())
                 {
                     case TypeCode.Boolean:
                         return s_boolean ?? (s_boolean = new CastInstructionT<Boolean>());

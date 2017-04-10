@@ -297,7 +297,7 @@ namespace System.Linq.Expressions.Interpreter
             Debug.Assert(!type.IsEnum);
             if (liftedToNull)
             {
-                switch (TypeHelper.GetTypeCode(TypeHelper.GetNonNullableType(type)))
+                switch (TypeHelper.GetNonNullableType(type).GetTypeCode())
                 {
                     case TypeCode.SByte:
                         return s_liftedToNullSByte ?? (s_liftedToNullSByte = new GreaterThanSByte(null));
@@ -338,7 +338,7 @@ namespace System.Linq.Expressions.Interpreter
             }
             else
             {
-                switch (TypeHelper.GetTypeCode(TypeHelper.GetNonNullableType(type)))
+                switch (TypeHelper.GetNonNullableType(type).GetTypeCode())
                 {
                     case TypeCode.SByte:
                         return s_SByte ?? (s_SByte = new GreaterThanSByte(ScriptingRuntimeHelpers.False));
@@ -674,7 +674,7 @@ namespace System.Linq.Expressions.Interpreter
             Debug.Assert(!type.IsEnum);
             if (liftedToNull)
             {
-                switch (TypeHelper.GetTypeCode(TypeHelper.GetNonNullableType(type)))
+                switch (TypeHelper.GetNonNullableType(type).GetTypeCode())
                 {
                     case TypeCode.SByte:
                         return s_liftedToNullSByte ?? (s_liftedToNullSByte = new GreaterThanOrEqualSByte(null));
@@ -715,7 +715,7 @@ namespace System.Linq.Expressions.Interpreter
             }
             else
             {
-                switch (TypeHelper.GetTypeCode(TypeHelper.GetNonNullableType(type)))
+                switch (TypeHelper.GetNonNullableType(type).GetTypeCode())
                 {
                     case TypeCode.SByte:
                         return s_SByte ?? (s_SByte = new GreaterThanOrEqualSByte(ScriptingRuntimeHelpers.False));
