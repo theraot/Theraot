@@ -213,6 +213,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CLSCompliant.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="System\Action.net30.cs" />
     <Compile Include="System\Action10.net35.cs" />
     <Compile Include="System\Action11.net35.cs" />
