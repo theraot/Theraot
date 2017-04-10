@@ -927,14 +927,6 @@ namespace System.Linq.Expressions
     public abstract partial class ExpressionVisitor
     {
         /// <summary>
-        /// Initializes a new instance of <see cref="ExpressionVisitor"/>.
-        /// </summary>
-        protected ExpressionVisitor()
-        {
-            // Empty
-        }
-
-        /// <summary>
         /// Dispatches the list of expressions to one of the more specialized visit methods in this class.
         /// </summary>
         /// <param name="nodes">The expressions to visit.</param>
