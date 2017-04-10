@@ -3,7 +3,6 @@
 // Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Dynamic.Utils;
 using System.Runtime.CompilerServices;
@@ -11,6 +10,8 @@ using System.Runtime.CompilerServices;
 namespace System.Linq.Expressions
 {
 #if NET35
+    using System.Collections.Generic;
+
     // Code by Matt Warren from "LINQ: Building an IQueryable Provider - Part II"
 
     public abstract partial class ExpressionVisitor
@@ -904,6 +905,7 @@ namespace System.Linq.Expressions
         // We wouldn't need this if switch didn't infer the method.
         private static SwitchExpression ValidateSwitch(SwitchExpression before, SwitchExpression after)
         {
+            GC.KeepAlive(before);
             // If we did not have a method, we don't want to bind to one,
             // it might not be the right thing.
             if (before.Comparison == null && after.Comparison != null)
