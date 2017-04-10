@@ -53,7 +53,10 @@ namespace System
 
         private Lazy(Func<T> valueFactory, LazyThreadSafetyMode mode, bool cacheExceptions)
         {
-            var __valueFactory = Check.NotNullArgument(valueFactory, "valueFactory");
+            if (valueFactory == null)
+            {
+                throw new ArgumentNullException("valueFactory");
+            }
             switch (mode)
             {
                 case LazyThreadSafetyMode.None:
@@ -62,13 +65,13 @@ namespace System
                         {
                             var threads = new HashSet<Thread>();
                             _valueFactory =
-                                () => CachingNoneMode(__valueFactory, threads);
+                                () => CachingNoneMode(valueFactory, threads);
                         }
                         else
                         {
                             var threads = new HashSet<Thread>();
                             _valueFactory =
-                                () => NoneMode(__valueFactory, threads);
+                                () => NoneMode(valueFactory, threads);
                         }
                     }
                     break;
@@ -76,7 +79,7 @@ namespace System
                 case LazyThreadSafetyMode.PublicationOnly:
                     {
                         _valueFactory =
-                            () => PublicationOnlyMode(__valueFactory);
+                            () => PublicationOnlyMode(valueFactory);
                     }
                     break;
 
@@ -87,7 +90,7 @@ namespace System
                             Thread thread = null;
                             var waitHandle = new ManualResetEvent(false);
                             _valueFactory =
-                                () => CachingFullMode(__valueFactory, waitHandle, ref thread);
+                                () => CachingFullMode(valueFactory, waitHandle, ref thread);
                         }
                         else
                         {
@@ -95,7 +98,7 @@ namespace System
                             var waitHandle = new ManualResetEvent(false);
                             var preIsValueCreated = 0;
                             _valueFactory =
-                                () => FullMode(__valueFactory, waitHandle, ref thread, ref preIsValueCreated);
+                                () => FullMode(valueFactory, waitHandle, ref thread, ref preIsValueCreated);
                         }
                     }
                     break;
