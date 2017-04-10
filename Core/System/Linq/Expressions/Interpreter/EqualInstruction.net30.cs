@@ -545,7 +545,7 @@ namespace System.Linq.Expressions.Interpreter
             // Boxed enums can be unboxed as their underlying types:
             if (liftedToNull)
             {
-                switch ((type.IsEnum ? Enum.GetUnderlyingType(type) : TypeHelper.GetNonNullableType(type)).GetTypeCode())
+                switch ((type.IsEnum ? Enum.GetUnderlyingType(type) : type.GetNonNullableType()).GetTypeCode())
                 {
                     case TypeCode.Boolean:
                         return s_booleanLiftedToNull ?? (s_booleanLiftedToNull = new EqualBooleanLiftedToNull());
@@ -598,7 +598,7 @@ namespace System.Linq.Expressions.Interpreter
             }
             else
             {
-                switch ((type.IsEnum ? Enum.GetUnderlyingType(type) : TypeHelper.GetNonNullableType(type)).GetTypeCode())
+                switch ((type.IsEnum ? Enum.GetUnderlyingType(type) : type.GetNonNullableType()).GetTypeCode())
                 {
                     case TypeCode.Boolean:
                         return s_boolean ?? (s_boolean = new EqualBoolean());
