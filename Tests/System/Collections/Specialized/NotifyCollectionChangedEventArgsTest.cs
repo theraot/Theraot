@@ -32,10 +32,6 @@ namespace MonoTests.System.Collections.Specialized
     [TestFixture]
     public class NotifyCollectionChangedEventArgsTest
     {
-        public NotifyCollectionChangedEventArgsTest()
-        {
-        }
-
         [Test]
         public void NotifyCollectionChangedEventArgsConstructor1Test()
         {

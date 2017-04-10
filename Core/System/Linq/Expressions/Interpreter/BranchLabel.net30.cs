@@ -42,10 +42,6 @@ namespace System.Linq.Expressions.Interpreter
         // that need to be updated after we emit the label.
         private List<int> _forwardBranchFixups;
 
-        public BranchLabel()
-        {
-        }
-
         internal int LabelIndex
         {
             get { return _labelIndex; }
