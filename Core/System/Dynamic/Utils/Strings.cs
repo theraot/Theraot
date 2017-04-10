@@ -3,7 +3,7 @@
 
 namespace System.Dynamic.Utils
 {
-    internal static partial class Strings
+    internal static class Strings
     {
         /// <summary>
         /// A string like "Invalid argument value"
