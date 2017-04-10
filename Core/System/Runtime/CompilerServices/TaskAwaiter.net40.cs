@@ -153,9 +153,6 @@ namespace System.Runtime.CompilerServices
             ThrowForNonSuccess(task);
         }
 
-        /// <summary>
-        ///   Throws an exception to handle a task that completed in a state other than RanToCompletion.
-        /// </summary>
         private static void ThrowForNonSuccess(Task task)
         {
             switch (task.Status)
@@ -233,12 +230,12 @@ namespace System.Runtime.CompilerServices
             }
         }
 
-        /// <summary>
-        ///   Invokes the delegate in a try/catch that will propagate the exception asynchronously on the ThreadPool.
-        /// </summary>
-        /// <param name="continuation" />
         private static void RunNoException(Action continuation)
         {
+            if (continuation == null)
+            {
+                return;
+            }
             try
             {
                 continuation();
@@ -338,8 +335,7 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        ///   Schedules the continuation onto the <see cref="Task" /> associated with this <see
-        ///    cref="TaskAwaiter" /> .
+        ///   Schedules the continuation onto the <see cref="Task" /> associated with this <see cref="TaskAwaiter" /> .
         /// </summary>
         /// <param name="continuation"> The action to invoke when the await operation completes. </param>
         /// <exception cref="ArgumentNullException">The
