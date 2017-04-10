@@ -78,8 +78,8 @@ namespace System.Linq.Expressions
                 {
                     return false;
                 }
-                var operandIsNullable = TypeHelper.IsNullableType(_operand.Type);
-                var resultIsNullable = TypeHelper.IsNullableType(Type);
+                var operandIsNullable = _operand.Type.IsNullableType();
+                var resultIsNullable = Type.IsNullableType();
                 if (_method != null)
                 {
                     return (operandIsNullable && _method.GetParameters()[0].ParameterType != _operand.Type) ||
@@ -95,7 +95,7 @@ namespace System.Linq.Expressions
         /// <returns>true if the operator's return type is lifted to a nullable type; otherwise, false.</returns>
         public bool IsLiftedToNull
         {
-            get { return IsLifted && TypeHelper.IsNullableType(Type); }
+            get { return IsLifted && Type.IsNullableType(); }
         }
 
         protected internal override Expression Accept(ExpressionVisitor visitor)
@@ -412,20 +412,20 @@ namespace System.Linq.Expressions
         {
             var operandType = operand.Type;
             var types = new Type[] { operandType };
-            var nnOperandType = TypeHelper.GetNonNullableType(operandType);
+            var nnOperandType = operandType.GetNonNullableType();
             var method = nnOperandType.GetStaticMethod(name, types);
             if (method != null)
             {
                 return new UnaryExpression(unaryType, operand, method.ReturnType, method);
             }
             // try lifted call
-            if (TypeHelper.IsNullableType(operandType))
+            if (operandType.IsNullableType())
             {
                 types[0] = nnOperandType;
                 method = nnOperandType.GetStaticMethod(name, types);
-                if (method != null && method.ReturnType.IsValueType && !TypeHelper.IsNullableType(method.ReturnType))
+                if (method != null && method.ReturnType.IsValueType && !method.ReturnType.IsNullableType())
                 {
-                    return new UnaryExpression(unaryType, operand, TypeHelper.GetNullableType(method.ReturnType), method);
+                    return new UnaryExpression(unaryType, operand, method.ReturnType.GetNullableType(), method);
                 }
             }
             return null;
@@ -444,11 +444,11 @@ namespace System.Linq.Expressions
                 return new UnaryExpression(unaryType, operand, method.ReturnType, method);
             }
             // check for lifted call
-            if (TypeHelper.IsNullableType(operand.Type) &&
-                ParameterIsAssignable(pms[0], TypeHelper.GetNonNullableType(operand.Type)) &&
-                method.ReturnType.IsValueType && !TypeHelper.IsNullableType(method.ReturnType))
+            if (operand.Type.IsNullableType() &&
+                ParameterIsAssignable(pms[0], operand.Type.GetNonNullableType()) &&
+                method.ReturnType.IsValueType && !method.ReturnType.IsNullableType())
             {
-                return new UnaryExpression(unaryType, operand, TypeHelper.GetNullableType(method.ReturnType), method);
+                return new UnaryExpression(unaryType, operand, method.ReturnType.GetNullableType(), method);
             }
 
             throw Error.OperandTypesDoNotMatchParameters(unaryType, method.Name);
@@ -491,9 +491,9 @@ namespace System.Linq.Expressions
                 return new UnaryExpression(unaryType, operand, method.ReturnType, method);
             }
             // check for lifted call
-            if ((TypeHelper.IsNullableType(operand.Type) || TypeHelper.IsNullableType(convertToType)) &&
-                ParameterIsAssignable(pms[0], TypeHelper.GetNonNullableType(operand.Type)) &&
-                method.ReturnType == TypeHelper.GetNonNullableType(convertToType))
+            if ((operand.Type.IsNullableType() || convertToType.IsNullableType()) &&
+                ParameterIsAssignable(pms[0], operand.Type.GetNonNullableType()) &&
+                method.ReturnType == convertToType.GetNonNullableType())
             {
                 return new UnaryExpression(unaryType, operand, convertToType, method);
             }
@@ -526,7 +526,7 @@ namespace System.Linq.Expressions
             RequiresCanRead(expression, "expression");
             if (method == null)
             {
-                if (TypeHelper.IsArithmetic(expression.Type) && !TypeHelper.IsUnsignedInteger(expression.Type))
+                if (expression.Type.IsArithmetic() && !expression.Type.IsUnsignedInteger())
                 {
                     return new UnaryExpression(ExpressionType.Negate, expression, expression.Type, null);
                 }
@@ -561,7 +561,7 @@ namespace System.Linq.Expressions
             RequiresCanRead(expression, "expression");
             if (method == null)
             {
-                if (TypeHelper.IsArithmetic(expression.Type))
+                if (expression.Type.IsArithmetic())
                 {
                     return new UnaryExpression(ExpressionType.UnaryPlus, expression, expression.Type, null);
                 }
@@ -596,7 +596,7 @@ namespace System.Linq.Expressions
             RequiresCanRead(expression, "expression");
             if (method == null)
             {
-                if (TypeHelper.IsArithmetic(expression.Type) && !TypeHelper.IsUnsignedInteger(expression.Type))
+                if (expression.Type.IsArithmetic() && !expression.Type.IsUnsignedInteger())
                 {
                     return new UnaryExpression(ExpressionType.NegateChecked, expression, expression.Type, null);
                 }
@@ -631,7 +631,7 @@ namespace System.Linq.Expressions
             RequiresCanRead(expression, "expression");
             if (method == null)
             {
-                if (TypeHelper.IsIntegerOrBool(expression.Type))
+                if (expression.Type.IsIntegerOrBool())
                 {
                     return new UnaryExpression(ExpressionType.Not, expression, expression.Type, null);
                 }
@@ -666,7 +666,7 @@ namespace System.Linq.Expressions
             RequiresCanRead(expression, "expression");
             if (method == null)
             {
-                if (TypeHelper.IsBool(expression.Type))
+                if (expression.Type.IsBool())
                 {
                     return new UnaryExpression(ExpressionType.IsFalse, expression, expression.Type, null);
                 }
@@ -696,7 +696,7 @@ namespace System.Linq.Expressions
             RequiresCanRead(expression, "expression");
             if (method == null)
             {
-                if (TypeHelper.IsBool(expression.Type))
+                if (expression.Type.IsBool())
                 {
                     return new UnaryExpression(ExpressionType.IsTrue, expression, expression.Type, null);
                 }
@@ -726,7 +726,7 @@ namespace System.Linq.Expressions
             RequiresCanRead(expression, "expression");
             if (method == null)
             {
-                if (TypeHelper.IsInteger(expression.Type))
+                if (expression.Type.IsInteger())
                 {
                     return new UnaryExpression(ExpressionType.OnesComplement, expression, expression.Type, null);
                 }
@@ -747,7 +747,7 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(type, "type");
             TypeHelper.ValidateType(type);
 
-            if (type.IsValueType && !TypeHelper.IsNullableType(type))
+            if (type.IsValueType && !type.IsNullableType())
             {
                 throw Error.IncorrectTypeForTypeAs(type);
             }
@@ -964,7 +964,7 @@ namespace System.Linq.Expressions
             RequiresCanRead(expression, "expression");
             if (method == null)
             {
-                if (TypeHelper.IsArithmetic(expression.Type))
+                if (expression.Type.IsArithmetic())
                 {
                     return new UnaryExpression(ExpressionType.Increment, expression, expression.Type, null);
                 }
@@ -994,7 +994,7 @@ namespace System.Linq.Expressions
             RequiresCanRead(expression, "expression");
             if (method == null)
             {
-                if (TypeHelper.IsArithmetic(expression.Type))
+                if (expression.Type.IsArithmetic())
                 {
                     return new UnaryExpression(ExpressionType.Decrement, expression, expression.Type, null);
                 }
@@ -1103,7 +1103,7 @@ namespace System.Linq.Expressions
             UnaryExpression result;
             if (method == null)
             {
-                if (TypeHelper.IsArithmetic(expression.Type))
+                if (expression.Type.IsArithmetic())
                 {
                     return new UnaryExpression(kind, expression, expression.Type, null);
                 }

@@ -40,7 +40,7 @@ namespace System.Linq
 
         private QuickSort(IEnumerable<TElement> source, SortContext<TElement> context)
         {
-            _elements = Enumerable.ToArray(source);
+            _elements = source.ToArray();
             _indexes = CreateIndexes(_elements.Length);
             _context = context;
         }

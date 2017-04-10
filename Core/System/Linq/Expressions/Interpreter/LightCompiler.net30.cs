@@ -718,7 +718,7 @@ namespace System.Linq.Expressions.Interpreter
         private bool EmitLiftedNullCheck(Expression node, BranchLabel makeCall)
         {
             Compile(node);
-            if (TypeHelper.IsNullableType(node.Type) || !node.Type.IsValueType)
+            if (node.Type.IsNullableType() || !node.Type.IsValueType)
             {
                 _instructions.EmitDup();
                 _instructions.EmitLoad(null, typeof(object));
@@ -732,7 +732,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private static bool IsNullableOrReferenceType(Type t)
         {
-            return !t.IsValueType || TypeHelper.IsNullableType(t);
+            return !t.IsValueType || t.IsNullableType();
         }
 
         private void CompileBinaryExpression(Expression expr)
@@ -777,7 +777,7 @@ namespace System.Linq.Expressions.Interpreter
                                 goto default;
                             }
 
-                            var resultType = TypeHelper.GetNullableType(node.Type);
+                            var resultType = node.Type.GetNullableType();
                             var testRight = _instructions.MakeLabel();
                             var callMethod = _instructions.MakeLabel();
 
@@ -829,7 +829,7 @@ namespace System.Linq.Expressions.Interpreter
                         default:
                             var loadDefault = _instructions.MakeLabel();
 
-                            if (!node.Left.Type.IsValueType || TypeHelper.IsNullableType(node.Left.Type))
+                            if (!node.Left.Type.IsValueType || node.Left.Type.IsNullableType())
                             {
                                 _instructions.EmitLoadLocal(leftTemp.Index);
                                 _instructions.EmitLoad(null, typeof(object));
@@ -837,7 +837,7 @@ namespace System.Linq.Expressions.Interpreter
                                 _instructions.EmitBranchTrue(loadDefault);
                             }
 
-                            if (!node.Right.Type.IsValueType || TypeHelper.IsNullableType(node.Right.Type))
+                            if (!node.Right.Type.IsValueType || node.Right.Type.IsNullableType())
                             {
                                 _instructions.EmitLoadLocal(rightTemp.Index);
                                 _instructions.EmitLoad(null, typeof(object));
@@ -976,7 +976,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             var left = node.Left;
             var right = node.Right;
-            Debug.Assert(left.Type == right.Type && TypeHelper.IsNumeric(left.Type));
+            Debug.Assert(left.Type == right.Type && left.Type.IsNumeric());
 
             Compile(left);
             Compile(right);
@@ -1006,7 +1006,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private void CompileArithmetic(ExpressionType nodeType, Expression left, Expression right)
         {
-            Debug.Assert(left.Type == right.Type && TypeHelper.IsArithmetic(left.Type));
+            Debug.Assert(left.Type == right.Type && left.Type.IsArithmetic());
             Compile(left);
             Compile(right);
             switch (nodeType)
@@ -1061,7 +1061,7 @@ namespace System.Linq.Expressions.Interpreter
                 _instructions.EmitStoreLocal(opTemp.Index);
 
                 if (!node.Operand.Type.IsValueType ||
-                    (TypeHelper.IsNullableType(node.Operand.Type) && node.IsLiftedToNull))
+                    (node.Operand.Type.IsNullableType() && node.IsLiftedToNull))
                 {
                     _instructions.EmitLoadLocal(opTemp.Index);
                     _instructions.EmitLoad(null, typeof(object));
@@ -1070,8 +1070,8 @@ namespace System.Linq.Expressions.Interpreter
                 }
 
                 _instructions.EmitLoadLocal(opTemp.Index);
-                if (TypeHelper.IsNullableType(node.Operand.Type) &&
-                    node.Method.GetParameters()[0].ParameterType.Equals(TypeHelper.GetNonNullableType(node.Operand.Type)))
+                if (node.Operand.Type.IsNullableType() &&
+                    node.Method.GetParameters()[0].ParameterType.Equals(node.Operand.Type.GetNonNullableType()))
                 {
                     _instructions.Emit(NullableMethodCallInstruction.Create("get_Value", 1));
                 }
@@ -1108,16 +1108,16 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             if (typeFrom.IsValueType &&
-                TypeHelper.IsNullableType(typeTo) &&
-                TypeHelper.GetNonNullableType(typeTo).Equals(typeFrom))
+                typeTo.IsNullableType() &&
+                typeTo.GetNonNullableType().Equals(typeFrom))
             {
                 // VT -> vt?, no conversion necessary
                 return;
             }
 
             if (typeTo.IsValueType &&
-                TypeHelper.IsNullableType(typeFrom) &&
-                TypeHelper.GetNonNullableType(typeFrom).Equals(typeTo))
+                typeFrom.IsNullableType() &&
+                typeFrom.GetNonNullableType().Equals(typeTo))
             {
                 // VT? -> vt, call get_Value
                 _instructions.Emit(NullableMethodCallInstruction.Create("get_Value", 1));
@@ -1128,8 +1128,8 @@ namespace System.Linq.Expressions.Interpreter
             var nonNullableTo = typeTo.GetNonNullableType();
 
             // use numeric conversions for both numeric types and enums
-            if ((TypeHelper.IsNumeric(nonNullableFrom) || nonNullableFrom.IsEnum)
-                 && (TypeHelper.IsNumeric(nonNullableTo) || nonNullableTo.IsEnum))
+            if ((nonNullableFrom.IsNumeric() || nonNullableFrom.IsEnum)
+                 && (nonNullableTo.IsNumeric() || nonNullableTo.IsEnum))
             {
                 Type enumTypeTo = null;
 
@@ -1497,7 +1497,7 @@ namespace System.Linq.Expressions.Interpreter
 
             if (node.Cases.All(c => c.TestValues.All(t => t is ConstantExpression)))
             {
-                var switchType = TypeHelper.GetTypeCode(node.SwitchValue.Type);
+                var switchType = node.SwitchValue.Type.GetTypeCode();
 
                 if (node.Comparison == null)
                 {

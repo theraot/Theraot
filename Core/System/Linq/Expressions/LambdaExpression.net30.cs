@@ -239,7 +239,7 @@ public class ExpressionCreator<TDelegate>
 #else
                 create = typeof(ExpressionCreator<>).MakeGenericType(delegateType).GetMethod("CreateExpressionFunc", BindingFlags.Static | BindingFlags.Public);
 #endif
-                if (TypeHelper.CanCache(delegateType))
+                if (delegateType.CanCache())
                 {
                     factories[delegateType] = fastPath = (Func<Expression, string, bool, ReadOnlyCollection<ParameterExpression>, LambdaExpression>)create.CreateDelegate(typeof(Func<Expression, string, bool, ReadOnlyCollection<ParameterExpression>, LambdaExpression>));
                 }
@@ -527,7 +527,7 @@ public class ExpressionCreator<TDelegate>
             if (!ldc.TryGetValue(delegateType, out mi))
             {
                 mi = delegateType.GetMethod("Invoke");
-                if (TypeHelper.CanCache(delegateType))
+                if (delegateType.CanCache())
                 {
                     ldc[delegateType] = mi;
                 }
