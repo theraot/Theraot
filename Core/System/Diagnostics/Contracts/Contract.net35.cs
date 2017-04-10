@@ -165,6 +165,7 @@ namespace System.Diagnostics.Contracts
         public static void EnsuresOnThrow<TException>(bool condition)
             where TException : Exception
         {
+            GC.KeepAlive(typeof(TException));
             GC.KeepAlive(condition);
             AssertMustUseRewriter(ContractFailureKind.PostconditionOnException, "EnsuresOnThrow");
         }
@@ -185,6 +186,7 @@ namespace System.Diagnostics.Contracts
         public static void EnsuresOnThrow<TException>(bool condition, string userMessage)
             where TException : Exception
         {
+            GC.KeepAlive(typeof(TException));
             GC.KeepAlive(condition);
             GC.KeepAlive(userMessage);
             AssertMustUseRewriter(ContractFailureKind.PostconditionOnException, "EnsuresOnThrow");
@@ -429,6 +431,7 @@ namespace System.Diagnostics.Contracts
         public static void Requires<TException>(bool condition)
             where TException : Exception
         {
+            GC.KeepAlive(typeof(TException));
             GC.KeepAlive(condition);
             AssertMustUseRewriter(ContractFailureKind.Precondition, "Requires<TException>");
         }
@@ -448,6 +451,7 @@ namespace System.Diagnostics.Contracts
         public static void Requires<TException>(bool condition, string userMessage)
             where TException : Exception
         {
+            GC.KeepAlive(typeof(TException));
             GC.KeepAlive(condition);
             GC.KeepAlive(userMessage);
             AssertMustUseRewriter(ContractFailureKind.Precondition, "Requires<TException>");
