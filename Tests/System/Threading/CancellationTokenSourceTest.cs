@@ -153,8 +153,9 @@ namespace MonoTests.System.Threading
                 });
                 Assert.Fail("#11");
             }
-            catch (ApplicationException)
+            catch (ApplicationException ex)
             {
+                GC.KeepAlive(ex);
             }
 
             cts.Cancel();
@@ -183,8 +184,9 @@ namespace MonoTests.System.Threading
                 cts.Cancel(true);
                 Assert.Fail("#1");
             }
-            catch (ApplicationException)
+            catch (ApplicationException ex)
             {
+                GC.KeepAlive(ex);
             }
 
             cts.Cancel();
@@ -329,8 +331,9 @@ namespace MonoTests.System.Threading
                 CancellationTokenSource.CreateLinkedTokenSource(null);
                 Assert.Fail("#1");
             }
-            catch (ArgumentNullException)
+            catch (ArgumentNullException ex)
             {
+                GC.KeepAlive(ex);
             }
 
             try
@@ -338,8 +341,9 @@ namespace MonoTests.System.Threading
                 CancellationTokenSource.CreateLinkedTokenSource(new CancellationToken[0]);
                 Assert.Fail("#2");
             }
-            catch (ArgumentException)
+            catch (ArgumentException ex)
             {
+                GC.KeepAlive(ex);
             }
         }
 
@@ -359,8 +363,9 @@ namespace MonoTests.System.Threading
                 cts.Cancel();
                 Assert.Fail("#1");
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException ex)
             {
+                GC.KeepAlive(ex);
             }
 
             try
@@ -368,8 +373,9 @@ namespace MonoTests.System.Threading
                 GC.KeepAlive(cts.Token);
                 Assert.Fail("#2");
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException ex)
             {
+                GC.KeepAlive(ex);
             }
 
             try
@@ -379,8 +385,9 @@ namespace MonoTests.System.Threading
                 });
                 Assert.Fail("#3");
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException ex)
             {
+                GC.KeepAlive(ex);
             }
 
             try
@@ -388,8 +395,9 @@ namespace MonoTests.System.Threading
                 GC.KeepAlive(token.WaitHandle);
                 Assert.Fail("#4");
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException ex)
             {
+                GC.KeepAlive(ex);
             }
 
             try
@@ -397,8 +405,9 @@ namespace MonoTests.System.Threading
                 CancellationTokenSource.CreateLinkedTokenSource(token);
                 Assert.Fail("#5");
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException ex)
             {
+                GC.KeepAlive(ex);
             }
 
 #if NET20 || NET30 || NET35 || NET_45
@@ -407,8 +416,9 @@ namespace MonoTests.System.Threading
                 cts.CancelAfter(1);
                 Assert.Fail("#6");
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException ex)
             {
+                GC.KeepAlive(ex);
             }
 #endif
         }
@@ -472,8 +482,9 @@ namespace MonoTests.System.Threading
                 cts2.Cancel();
                 Assert.Fail("#3");
             }
-            catch (AggregateException)
+            catch (AggregateException ex)
             {
+                GC.KeepAlive(ex);
             }
         }
 
@@ -545,8 +556,9 @@ namespace MonoTests.System.Threading
                 cts.CancelAfter(-9);
                 Assert.Fail("#1");
             }
-            catch (ArgumentException)
+            catch (ArgumentException ex)
             {
+                GC.KeepAlive(ex);
             }
         }
 
@@ -558,8 +570,9 @@ namespace MonoTests.System.Threading
                 GC.KeepAlive(new CancellationTokenSource(-4));
                 Assert.Fail("#1");
             }
-            catch (ArgumentException)
+            catch (ArgumentException ex)
             {
+                GC.KeepAlive(ex);
             }
         }
 
@@ -589,8 +602,9 @@ namespace MonoTests.System.Threading
                 cts.Cancel();
                 Assert.Fail("#1");
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException ex)
             {
+                GC.KeepAlive(ex);
             }
 
             try
@@ -598,8 +612,9 @@ namespace MonoTests.System.Threading
                 GC.KeepAlive(cts.Token);
                 Assert.Fail("#2");
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException ex)
             {
+                GC.KeepAlive(ex);
             }
 
             try
@@ -609,8 +624,9 @@ namespace MonoTests.System.Threading
                 });
                 Assert.Fail("#3");
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException ex)
             {
+                GC.KeepAlive(ex);
             }
 
             try
@@ -618,8 +634,9 @@ namespace MonoTests.System.Threading
                 GC.KeepAlive(token.WaitHandle);
                 Assert.Fail("#4");
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException ex)
             {
+                GC.KeepAlive(ex);
             }
 
             try
@@ -627,16 +644,18 @@ namespace MonoTests.System.Threading
                 CancellationTokenSource.CreateLinkedTokenSource(token);
                 Assert.Fail("#5");
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException ex)
             {
+                GC.KeepAlive(ex);
             }
             try
             {
                 cts.CancelAfter(1);
                 Assert.Fail("#6");
             }
-            catch (ObjectDisposedException)
+            catch (ObjectDisposedException ex)
             {
+                GC.KeepAlive(ex);
             }
         }
 
