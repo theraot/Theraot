@@ -6,7 +6,7 @@ namespace System.Linq.Expressions
     /// <summary>
     ///    Strongly-typed and parameterized exception factory.
     /// </summary>
-    internal static partial class Error
+    internal static class Error
     {
         /// <summary>
         /// ArgumentException with message like "reducible nodes must override Expression.Reduce()"

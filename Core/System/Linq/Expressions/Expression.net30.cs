@@ -19,8 +19,8 @@ namespace System.Linq.Expressions
     /// </summary>
     public abstract partial class Expression
     {
-        private static readonly CacheDict<Type, MethodInfo> s_lambdaDelegateCache = new CacheDict<Type, MethodInfo>(40);
-        private static volatile CacheDict<Type, Func<Expression, string, bool, ReadOnlyCollection<ParameterExpression>, LambdaExpression>> s_lambdaFactories;
+        private static readonly CacheDict<Type, MethodInfo> _lambdaDelegateCache = new CacheDict<Type, MethodInfo>(40);
+        private static volatile CacheDict<Type, Func<Expression, string, bool, ReadOnlyCollection<ParameterExpression>, LambdaExpression>> _lambdaFactories;
 
         // For 4.0, many frequently used Expression nodes have had their memory
         // footprint reduced by removing the Type and NodeType fields. This has
@@ -41,7 +41,7 @@ namespace System.Linq.Expressions
             internal readonly Type Type;
         }
 
-        private static ConditionalWeakTable<Expression, ExtensionInfo> s_legacyCtorSupportTable;
+        private static ConditionalWeakTable<Expression, ExtensionInfo> _legacyCtorSupportTable;
 
         /// <summary>
         /// Constructs a new instance of <see cref="Expression"/>.
@@ -52,16 +52,16 @@ namespace System.Linq.Expressions
         protected Expression(ExpressionType nodeType, Type type)
         {
             // Can't enforce anything that V1 didn't
-            if (s_legacyCtorSupportTable == null)
+            if (_legacyCtorSupportTable == null)
             {
                 Interlocked.CompareExchange(
-                    ref s_legacyCtorSupportTable,
+                    ref _legacyCtorSupportTable,
                     new ConditionalWeakTable<Expression, ExtensionInfo>(),
                     null
                 );
             }
 
-            s_legacyCtorSupportTable.Add(this, new ExtensionInfo(nodeType, type));
+            _legacyCtorSupportTable.Add(this, new ExtensionInfo(nodeType, type));
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace System.Linq.Expressions
             get
             {
                 ExtensionInfo extInfo;
-                if (s_legacyCtorSupportTable != null && s_legacyCtorSupportTable.TryGetValue(this, out extInfo))
+                if (_legacyCtorSupportTable != null && _legacyCtorSupportTable.TryGetValue(this, out extInfo))
                 {
                     return extInfo.NodeType;
                 }
@@ -97,7 +97,7 @@ namespace System.Linq.Expressions
             get
             {
                 ExtensionInfo extInfo;
-                if (s_legacyCtorSupportTable != null && s_legacyCtorSupportTable.TryGetValue(this, out extInfo))
+                if (_legacyCtorSupportTable != null && _legacyCtorSupportTable.TryGetValue(this, out extInfo))
                 {
                     return extInfo.Type;
                 }

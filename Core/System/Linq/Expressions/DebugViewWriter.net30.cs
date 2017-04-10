@@ -24,8 +24,8 @@ namespace System.Linq.Expressions
             Break = 0x8000      // newline if column > MaxColumn
         };
 
-        private const int Tab = 4;
-        private const int MaxColumn = 120;
+        private const int _tab = 4;
+        private const int _maxColumn = 120;
 
         private readonly TextWriter _out;
         private int _column;
@@ -75,12 +75,12 @@ namespace System.Linq.Expressions
 
         private void Indent()
         {
-            _delta += Tab;
+            _delta += _tab;
         }
 
         private void Dedent()
         {
-            _delta -= Tab;
+            _delta -= _tab;
         }
 
         private void NewLine()
@@ -224,7 +224,7 @@ namespace System.Linq.Expressions
         {
             if ((flow & Flow.Break) != 0)
             {
-                if (_column > (MaxColumn + Depth))
+                if (_column > (_maxColumn + Depth))
                 {
                     flow = Flow.NewLine;
                 }
@@ -242,7 +242,7 @@ namespace System.Linq.Expressions
 
         private void VisitExpressions<T>(char open, IList<T> expressions) where T : Expression
         {
-            VisitExpressions<T>(open, ',', expressions);
+            VisitExpressions(open, ',', expressions);
         }
 
         private void VisitExpressions<T>(char open, char separator, IList<T> expressions) where T : Expression
@@ -716,7 +716,7 @@ namespace System.Linq.Expressions
             else
             {
                 // For static members, include the type name
-                Out(member.DeclaringType.ToString() + "." + member.Name);
+                Out(member.DeclaringType + "." + member.Name);
             }
         }
 
@@ -921,8 +921,8 @@ namespace System.Linq.Expressions
 
                 // Primary, which includes all other node types:
                 //   member access, calls, indexing, new.
-                case ExpressionType.PostIncrementAssign:
-                case ExpressionType.PostDecrementAssign:
+                /*case ExpressionType.PostIncrementAssign:
+                case ExpressionType.PostDecrementAssign:*/
                 default:
                     return 14;
 
@@ -974,13 +974,13 @@ namespace System.Linq.Expressions
             if (node.NodeType == ExpressionType.NewArrayBounds)
             {
                 // .NewArray MyType[expr1, expr2]
-                Out(".NewArray " + node.Type.GetElementType().ToString());
+                Out(".NewArray " + node.Type.GetElementType());
                 VisitExpressions('[', node.Expressions);
             }
             else
             {
                 // .NewArray MyType {expr1, expr2}
-                Out(".NewArray " + node.Type.ToString(), Flow.Space);
+                Out(".NewArray " + node.Type, Flow.Space);
                 VisitExpressions('{', node.Expressions);
             }
             return node;
@@ -988,7 +988,7 @@ namespace System.Linq.Expressions
 
         protected internal override Expression VisitNew(NewExpression node)
         {
-            Out(".New " + node.Type.ToString());
+            Out(".New " + node.Type);
             VisitExpressions('(', node.Arguments);
             return node;
         }
@@ -1066,11 +1066,11 @@ namespace System.Linq.Expressions
             switch (node.NodeType)
             {
                 case ExpressionType.Convert:
-                    Out("(" + node.Type.ToString() + ")");
+                    Out("(" + node.Type + ")");
                     break;
 
                 case ExpressionType.ConvertChecked:
-                    Out("#(" + node.Type.ToString() + ")");
+                    Out("#(" + node.Type + ")");
                     break;
 
                 case ExpressionType.TypeAs:
@@ -1188,7 +1188,7 @@ namespace System.Linq.Expressions
 
         protected internal override Expression VisitDefault(DefaultExpression node)
         {
-            Out(".Default(" + node.Type.ToString() + ")");
+            Out(".Default(" + node.Type + ")");
             return node;
         }
 
@@ -1273,7 +1273,7 @@ namespace System.Linq.Expressions
 
         protected override CatchBlock VisitCatchBlock(CatchBlock node)
         {
-            Out(Flow.NewLine, "} .Catch (" + node.Test.ToString());
+            Out(Flow.NewLine, "} .Catch (" + node.Test);
             if (node.Variable != null)
             {
                 Out(Flow.Space, "");

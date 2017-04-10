@@ -101,12 +101,12 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(addMethod, "addMethod");
             ContractUtils.RequiresNotNull(arguments, "arguments");
 
-            var argumentsRO = arguments.ToReadOnly();
+            var argumentsReadOnly = arguments.ToReadOnly();
 
-            RequiresCanRead(argumentsRO, "arguments");
+            RequiresCanRead(argumentsReadOnly, "arguments");
             ValidateElementInitAddMethodInfo(addMethod);
-            ValidateArgumentTypes(addMethod, ExpressionType.Call, ref argumentsRO);
-            return new ElementInit(addMethod, argumentsRO);
+            ValidateArgumentTypes(addMethod, ExpressionType.Call, ref argumentsReadOnly);
+            return new ElementInit(addMethod, argumentsReadOnly);
         }
 
         private static void ValidateElementInitAddMethodInfo(MethodInfo addMethod)
