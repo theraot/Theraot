@@ -9,28 +9,28 @@ namespace System.Linq.Expressions.Compiler
     /// A simple dictionary of queues, keyed off a particular type
     /// This is useful for storing free lists of variables
     /// </summary>
-    internal sealed class KeyedQueue<K, V>
+    internal sealed class KeyedQueue<TK, TV>
     {
-        private readonly Dictionary<K, Queue<V>> _data;
+        private readonly Dictionary<TK, Queue<TV>> _data;
 
         internal KeyedQueue()
         {
-            _data = new Dictionary<K, Queue<V>>();
+            _data = new Dictionary<TK, Queue<TV>>();
         }
 
-        internal void Enqueue(K key, V value)
+        internal void Enqueue(TK key, TV value)
         {
-            Queue<V> queue;
+            Queue<TV> queue;
             if (!_data.TryGetValue(key, out queue))
             {
-                _data.Add(key, queue = new Queue<V>());
+                _data.Add(key, queue = new Queue<TV>());
             }
             queue.Enqueue(value);
         }
 
-        internal V Dequeue(K key)
+        internal TV Dequeue(TK key)
         {
-            Queue<V> queue;
+            Queue<TV> queue;
             if (!_data.TryGetValue(key, out queue))
             {
                 throw Error.QueueEmpty();
@@ -43,9 +43,9 @@ namespace System.Linq.Expressions.Compiler
             return result;
         }
 
-        internal bool TryDequeue(K key, out V value)
+        internal bool TryDequeue(TK key, out TV value)
         {
-            Queue<V> queue;
+            Queue<TV> queue;
             if (_data.TryGetValue(key, out queue) && queue.Count > 0)
             {
                 value = queue.Dequeue();
@@ -55,13 +55,13 @@ namespace System.Linq.Expressions.Compiler
                 }
                 return true;
             }
-            value = default(V);
+            value = default(TV);
             return false;
         }
 
-        internal V Peek(K key)
+        internal TV Peek(TK key)
         {
-            Queue<V> queue;
+            Queue<TV> queue;
             if (!_data.TryGetValue(key, out queue))
             {
                 throw Error.QueueEmpty();
@@ -69,9 +69,9 @@ namespace System.Linq.Expressions.Compiler
             return queue.Peek();
         }
 
-        internal int GetCount(K key)
+        internal int GetCount(TK key)
         {
-            Queue<V> queue;
+            Queue<TV> queue;
             if (!_data.TryGetValue(key, out queue))
             {
                 return 0;
