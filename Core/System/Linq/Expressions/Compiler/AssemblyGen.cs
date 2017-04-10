@@ -13,10 +13,10 @@ namespace System.Linq.Expressions.Compiler
 {
     internal sealed class AssemblyGen
     {
-        private static AssemblyGen s_assembly;
+        private static AssemblyGen _assembly;
 
-        private readonly AssemblyBuilder _myAssembly;
-        private readonly ModuleBuilder _myModule;
+        private readonly AssemblyBuilder _assemblyBuilder;
+        private readonly ModuleBuilder _moduleBuilder;
 
         private int _index;
 
@@ -24,11 +24,11 @@ namespace System.Linq.Expressions.Compiler
         {
             get
             {
-                if (s_assembly == null)
+                if (_assembly == null)
                 {
-                    Interlocked.CompareExchange(ref s_assembly, new AssemblyGen(), null);
+                    Interlocked.CompareExchange(ref _assembly, new AssemblyGen(), null);
                 }
-                return s_assembly;
+                return _assembly;
             }
         }
 
@@ -41,8 +41,8 @@ namespace System.Linq.Expressions.Compiler
                 new CustomAttributeBuilder(typeof(SecurityTransparentAttribute).GetConstructor(Type.EmptyTypes), ArrayReservoir<object>.EmptyArray)
             };
 
-            _myAssembly = AssemblyBuilderEx.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run, attributes);
-            _myModule = _myAssembly.DefineDynamicModule(name.Name);
+            _assemblyBuilder = AssemblyBuilderEx.DefineDynamicAssembly(name, AssemblyBuilderAccess.Run, attributes);
+            _moduleBuilder = _assemblyBuilder.DefineDynamicModule(name.Name);
         }
 
         private TypeBuilder DefineType(string name, Type parent, TypeAttributes attr)
@@ -62,7 +62,7 @@ namespace System.Linq.Expressions.Compiler
 
             name = sb.ToString();
 
-            return _myModule.DefineType(name, attr, parent);
+            return _moduleBuilder.DefineType(name, attr, parent);
         }
 
         internal static TypeBuilder DefineDelegateType(string name)
