@@ -59,7 +59,7 @@ namespace System.Linq.Expressions.Compiler
         /// Variables defined in this scope, and whether they're hoisted or not
         /// Populated by VariableBinder
         /// </summary>
-        internal readonly Dictionary<ParameterExpression, VariableStorageKind> Definitions = new Dictionary<ParameterExpression, VariableStorageKind>();
+        internal readonly Dictionary<ParameterExpression, VariableStorageKind> Definitions;
 
         /// <summary>
         /// Each variable referenced within this scope, and how often it was referenced
@@ -203,7 +203,6 @@ namespace System.Linq.Expressions.Compiler
 
             // No visible variables
             lc.IL.Emit(OpCodes.Call, typeof(RuntimeOps).GetMethod("CreateRuntimeVariables", Type.EmptyTypes));
-            return;
         }
 
         #endregion LocalScopeExpression support
@@ -330,13 +329,13 @@ namespace System.Linq.Expressions.Compiler
                     // array[i] = new StrongBox<T>(argument);
                     var index = lc.Parameters.IndexOf(v);
                     lc.EmitLambdaArgument(index);
-                    lc.IL.Emit(OpCodes.Newobj, boxType.GetConstructor(new Type[] { v.Type }));
+                    lc.IL.Emit(OpCodes.Newobj, boxType.GetConstructor(new[] { v.Type }));
                 }
                 else if (v == _hoistedLocals.ParentVariable)
                 {
                     // array[i] = new StrongBox<T>(closure.Locals);
                     ResolveVariable(v, _closureHoistedLocals).EmitLoad();
-                    lc.IL.Emit(OpCodes.Newobj, boxType.GetConstructor(new Type[] { v.Type }));
+                    lc.IL.Emit(OpCodes.Newobj, boxType.GetConstructor(new[] { v.Type }));
                 }
                 else
                 {
