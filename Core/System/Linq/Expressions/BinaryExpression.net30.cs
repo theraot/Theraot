@@ -877,7 +877,6 @@ namespace System.Linq.Expressions
             if (IsValidLiftedConditionalLogicalOperator(left, right, pms))
             {
                 left = left.GetNonNullableType();
-                right = left.GetNonNullableType();
             }
             var opTrue = TypeHelper.GetBooleanOperator(method.DeclaringType, "op_True");
             var opFalse = TypeHelper.GetBooleanOperator(method.DeclaringType, "op_False");
