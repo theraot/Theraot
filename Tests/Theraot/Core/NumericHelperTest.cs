@@ -558,7 +558,7 @@ namespace Tests.Theraot.Core
     internal partial class NumericHelperTest
     {
         [Test]
-        public static void GDCZero()
+        public static void GCDZero()
         {
             Assert.AreEqual(180, NumericHelper.GCD(0, 180));
             Assert.AreEqual(180, NumericHelper.GCD(0, -180));
@@ -568,7 +568,7 @@ namespace Tests.Theraot.Core
         }
 
         [Test]
-        public static void GDCIgnoresSign()
+        public static void GCDIgnoresSign()
         {
             Assert.AreEqual(12, NumericHelper.GCD(48, 180));
             Assert.AreEqual(12, NumericHelper.GCD(-48, 180));
@@ -582,7 +582,7 @@ namespace Tests.Theraot.Core
         }
 
         [Test]
-        public static void GDCMics()
+        public static void GCDMics()
         {
             Assert.AreEqual(1, NumericHelper.GCD(43154552, 521995751));
             Assert.AreEqual(3, NumericHelper.GCD(467216955, 136307028));
@@ -597,13 +597,13 @@ namespace Tests.Theraot.Core
         }
 
         [Test]
-        public static void GDCMaxValue()
+        public static void GCDMaxValue()
         {
             Assert.AreEqual(15, NumericHelper.GCD(ulong.MaxValue, 180));
         }
 
         [Test]
-        public static void GDCMinValue()
+        public static void GCDMinValue()
         {
             Assert.AreEqual(4, NumericHelper.GCD(long.MinValue, 180));
         }
