@@ -117,7 +117,7 @@ namespace System.Diagnostics.Contracts
         /// <summary>
         /// Specifies a public contract such that the expression <paramref name="condition"/> will be true when the enclosing method or property returns normally.
         /// </summary>
-        /// <param name="condition">Boolean expression representing the contract.  May include <seealso cref="OldValue"/> and <seealso cref="Result"/>.</param>
+        /// <param name="condition">Boolean expression representing the contract.  May include <seealso cref="OldValue{T}"/> and <seealso cref="Result{T}"/>.</param>
         /// <remarks>
         /// This call must happen at the beginning of a method or property before any other code.
         /// This contract is exposed to clients so must only reference members at least as visible as the enclosing method.
@@ -134,7 +134,7 @@ namespace System.Diagnostics.Contracts
         /// <summary>
         /// Specifies a public contract such that the expression <paramref name="condition"/> will be true when the enclosing method or property returns normally.
         /// </summary>
-        /// <param name="condition">Boolean expression representing the contract.  May include <seealso cref="OldValue"/> and <seealso cref="Result"/>.</param>
+        /// <param name="condition">Boolean expression representing the contract.  May include <seealso cref="OldValue{T}"/> and <seealso cref="Result{T}"/>.</param>
         /// <param name="userMessage">If it is not a constant string literal, then the contract may not be understood by tools.</param>
         /// <remarks>
         /// This call must happen at the beginning of a method or property before any other code.
@@ -154,7 +154,7 @@ namespace System.Diagnostics.Contracts
         /// Specifies a contract such that if an exception of type <typeparamref name="TException"/> is thrown then the expression <paramref name="condition"/> will be true when the enclosing method or property terminates abnormally.
         /// </summary>
         /// <typeparam name="TException">Type of exception related to this postcondition.</typeparam>
-        /// <param name="condition">Boolean expression representing the contract.  May include <seealso cref="OldValue"/> and <seealso cref="Result"/>.</param>
+        /// <param name="condition">Boolean expression representing the contract.  May include <seealso cref="OldValue{T}"/> and <seealso cref="Result{T}"/>.</param>
         /// <remarks>
         /// This call must happen at the beginning of a method or property before any other code.
         /// This contract is exposed to clients so must only reference types and members at least as visible as the enclosing method.
@@ -162,7 +162,8 @@ namespace System.Diagnostics.Contracts
         /// </remarks>
         [Conditional("CONTRACTS_FULL")]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-        public static void EnsuresOnThrow<TException>(bool condition) where TException : Exception
+        public static void EnsuresOnThrow<TException>(bool condition)
+            where TException : Exception
         {
             GC.KeepAlive(condition);
             AssertMustUseRewriter(ContractFailureKind.PostconditionOnException, "EnsuresOnThrow");
@@ -172,7 +173,7 @@ namespace System.Diagnostics.Contracts
         /// Specifies a contract such that if an exception of type <typeparamref name="TException"/> is thrown then the expression <paramref name="condition"/> will be true when the enclosing method or property terminates abnormally.
         /// </summary>
         /// <typeparam name="TException">Type of exception related to this postcondition.</typeparam>
-        /// <param name="condition">Boolean expression representing the contract.  May include <seealso cref="OldValue"/> and <seealso cref="Result"/>.</param>
+        /// <param name="condition">Boolean expression representing the contract.  May include <seealso cref="OldValue{T}"/> and <seealso cref="Result{T}"/>.</param>
         /// <param name="userMessage">If it is not a constant string literal, then the contract may not be understood by tools.</param>
         /// <remarks>
         /// This call must happen at the beginning of a method or property before any other code.
@@ -181,7 +182,8 @@ namespace System.Diagnostics.Contracts
         /// </remarks>
         [Conditional("CONTRACTS_FULL")]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-        public static void EnsuresOnThrow<TException>(bool condition, string userMessage) where TException : Exception
+        public static void EnsuresOnThrow<TException>(bool condition, string userMessage)
+            where TException : Exception
         {
             GC.KeepAlive(condition);
             GC.KeepAlive(userMessage);
@@ -424,7 +426,8 @@ namespace System.Diagnostics.Contracts
         /// Use this form when you want to throw a particular exception.
         /// </remarks>
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-        public static void Requires<TException>(bool condition) where TException : Exception
+        public static void Requires<TException>(bool condition)
+            where TException : Exception
         {
             GC.KeepAlive(condition);
             AssertMustUseRewriter(ContractFailureKind.Precondition, "Requires<TException>");
@@ -442,7 +445,8 @@ namespace System.Diagnostics.Contracts
         /// Use this form when you want to throw a particular exception.
         /// </remarks>
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-        public static void Requires<TException>(bool condition, string userMessage) where TException : Exception
+        public static void Requires<TException>(bool condition, string userMessage)
+            where TException : Exception
         {
             GC.KeepAlive(condition);
             GC.KeepAlive(userMessage);
