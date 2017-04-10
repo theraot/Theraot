@@ -2,7 +2,6 @@
 
 using System.Runtime.Serialization;
 using System.Security.Permissions;
-using System.Threading;
 using Theraot.Collections;
 using Theraot.Collections.Specialized;
 
@@ -423,28 +422,28 @@ namespace System.Collections.Generic
         public struct Enumerator : IEnumerator<T>
         {
             private readonly IEnumerator<KeyValuePair<T, object>> _enumerator;
-            private bool valid;
-            private T current;
+            private bool _valid;
+            private T _current;
 
             public Enumerator(HashSet<T> hashSet)
             {
                 _enumerator = hashSet._wrapped.GetEnumerator();
-                valid = false;
-                current = default(T);
+                _valid = false;
+                _current = default(T);
             }
 
             public T Current
             {
-                get { return current; }
+                get { return _current; }
             }
 
             object IEnumerator.Current
             {
                 get
                 {
-                    if (valid)
+                    if (_valid)
                     {
-                        return current;
+                        return _current;
                     }
                     else
                     {
@@ -464,11 +463,11 @@ namespace System.Collections.Generic
 
             void IEnumerator.Reset()
             {
-                valid = false;
+                _valid = false;
                 var enumerator = _enumerator;
                 if (enumerator != null)
                 {
-                    current = _enumerator.Current.Key;
+                    _current = _enumerator.Current.Key;
                     _enumerator.Reset();
                 }
             }
@@ -478,9 +477,9 @@ namespace System.Collections.Generic
                 var enumerator = _enumerator;
                 if (enumerator != null)
                 {
-                    valid = _enumerator.MoveNext();
-                    current = _enumerator.Current.Key;
-                    return valid;
+                    _valid = _enumerator.MoveNext();
+                    _current = _enumerator.Current.Key;
+                    return _valid;
                 }
                 return false;
             }
