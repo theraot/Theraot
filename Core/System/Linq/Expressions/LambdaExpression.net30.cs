@@ -225,10 +225,10 @@ public class ExpressionCreator<TDelegate>
             // method and call that will be used for creating instances of this
             // delegate type
             Func<Expression, string, bool, ReadOnlyCollection<ParameterExpression>, LambdaExpression> fastPath;
-            var factories = s_lambdaFactories;
+            var factories = _lambdaFactories;
             if (factories == null)
             {
-                s_lambdaFactories = factories = new CacheDict<Type, Func<Expression, string, bool, ReadOnlyCollection<ParameterExpression>, LambdaExpression>>(50);
+                _lambdaFactories = factories = new CacheDict<Type, Func<Expression, string, bool, ReadOnlyCollection<ParameterExpression>, LambdaExpression>>(50);
             }
 
             MethodInfo create = null;
@@ -523,7 +523,7 @@ public class ExpressionCreator<TDelegate>
             }
 
             MethodInfo mi;
-            var ldc = s_lambdaDelegateCache;
+            var ldc = _lambdaDelegateCache;
             if (!ldc.TryGetValue(delegateType, out mi))
             {
                 mi = delegateType.GetMethod("Invoke");
