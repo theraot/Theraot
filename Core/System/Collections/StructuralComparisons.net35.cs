@@ -45,54 +45,54 @@ namespace System.Collections
                     {
                         return comparable.Equals(y, this);
                     }
-                    var type_x = x.GetType();
-                    var type_y = x.GetType();
-                    if (type_x.IsArray && type_y.IsArray)
+                    var typeX = x.GetType();
+                    var typeY = x.GetType();
+                    if (typeX.IsArray && typeY.IsArray)
                     {
-                        if (type_x.GetElementType() == type_y.GetElementType())
+                        if (typeX.GetElementType() == typeY.GetElementType())
                         {
-                            CheckRank(x, y, type_x, type_y);
-                            var x_length_info = type_x.GetProperty("Length");
-                            var y_length_info = type_y.GetProperty("Length");
-                            if ((int)x_length_info.GetValue(x, TypeHelper.EmptyObjects) != (int)y_length_info.GetValue(y, TypeHelper.EmptyObjects))
+                            CheckRank(x, y, typeX, typeY);
+                            var xLengthInfo = typeX.GetProperty("Length");
+                            var yLengthInfo = typeY.GetProperty("Length");
+                            if ((int)xLengthInfo.GetValue(x, TypeHelper.EmptyObjects) != (int)yLengthInfo.GetValue(y, TypeHelper.EmptyObjects))
                             {
                                 return false;
                             }
                             else
                             {
-                                var x_enumerator_info = type_x.GetMethod("GetEnumerator");
-                                var y_enumerator_info = type_x.GetMethod("GetEnumerator");
-                                IEnumerator first_enumerator = null;
-                                IEnumerator second_enumerator = null;
+                                var xEnumeratorInfo = typeX.GetMethod("GetEnumerator");
+                                var yEnumeratorInfo = typeX.GetMethod("GetEnumerator");
+                                IEnumerator firstEnumerator = null;
+                                IEnumerator secondEnumerator = null;
                                 var comparer = this as IEqualityComparer;
                                 try
                                 {
-                                    first_enumerator = (IEnumerator)x_enumerator_info.Invoke(x, TypeHelper.EmptyObjects);
-                                    second_enumerator = (IEnumerator)y_enumerator_info.Invoke(y, TypeHelper.EmptyObjects);
-                                    while (first_enumerator.MoveNext())
+                                    firstEnumerator = (IEnumerator)xEnumeratorInfo.Invoke(x, TypeHelper.EmptyObjects);
+                                    secondEnumerator = (IEnumerator)yEnumeratorInfo.Invoke(y, TypeHelper.EmptyObjects);
+                                    while (firstEnumerator.MoveNext())
                                     {
-                                        if (!second_enumerator.MoveNext())
+                                        if (!secondEnumerator.MoveNext())
                                         {
                                             return false;
                                         }
-                                        if (!comparer.Equals(first_enumerator.Current, second_enumerator.Current))
+                                        if (!comparer.Equals(firstEnumerator.Current, secondEnumerator.Current))
                                         {
                                             return false;
                                         }
                                     }
-                                    return !second_enumerator.MoveNext();
+                                    return !secondEnumerator.MoveNext();
                                 }
                                 finally
                                 {
-                                    var disposable_x = first_enumerator as IDisposable;
-                                    if (disposable_x != null)
+                                    var disposableX = firstEnumerator as IDisposable;
+                                    if (disposableX != null)
                                     {
-                                        disposable_x.Dispose();
+                                        disposableX.Dispose();
                                     }
-                                    var disposable_y = second_enumerator as IDisposable;
-                                    if (disposable_y != null)
+                                    var disposableY = secondEnumerator as IDisposable;
+                                    if (disposableY != null)
                                     {
-                                        disposable_y.Dispose();
+                                        disposableY.Dispose();
                                     }
                                 }
                             }
@@ -116,15 +116,15 @@ namespace System.Collections
                 return EqualityComparer<object>.Default.GetHashCode(obj);
             }
 
-            private static void CheckRank(object x, object y, Type type_x, Type type_y)
+            private static void CheckRank(object x, object y, Type typeX, Type typeY)
             {
-                var x_rank_info = type_x.GetProperty("Rank");
-                var y_rank_info = type_y.GetProperty("Rank");
-                if ((int)x_rank_info.GetValue(x, TypeHelper.EmptyObjects) != 1)
+                var xRankInfo = typeX.GetProperty("Rank");
+                var yRankInfo = typeY.GetProperty("Rank");
+                if ((int)xRankInfo.GetValue(x, TypeHelper.EmptyObjects) != 1)
                 {
                     throw new ArgumentException("Only one-dimensional arrays are supported", "x");
                 }
-                if ((int)y_rank_info.GetValue(y, TypeHelper.EmptyObjects) != 1)
+                if ((int)yRankInfo.GetValue(y, TypeHelper.EmptyObjects) != 1)
                 {
                     throw new ArgumentException("Only one-dimensional arrays are supported", "y");
                 }
@@ -132,10 +132,10 @@ namespace System.Collections
 
             private static bool NullComparison(object x, object y, out bool result)
             {
-                var x_null = ReferenceEquals(x, null);
-                var y_null = ReferenceEquals(y, null);
-                result = x_null == y_null;
-                return x_null || y_null;
+                var xNull = ReferenceEquals(x, null);
+                var yNull = ReferenceEquals(y, null);
+                result = xNull == yNull;
+                return xNull || yNull;
             }
         }
     }

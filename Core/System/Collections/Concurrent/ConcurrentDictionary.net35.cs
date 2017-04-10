@@ -336,10 +336,10 @@ namespace System.Collections.Concurrent
                 var pairs = array as KeyValuePair<TKey, TValue>[]; // most decent alternative
                 if (pairs != null)
                 {
-                    var _array = pairs;
+                    var keyValuePairs = pairs;
                     foreach (var pair in _wrapped)
                     {
-                        _array[index] = pair;
+                        keyValuePairs[index] = pair;
                         index++;
                     }
                     return;
@@ -347,10 +347,10 @@ namespace System.Collections.Concurrent
                 var objects = array as object[];
                 if (objects != null)
                 {
-                    var _array = objects;
+                    var valuePairs = objects;
                     foreach (var pair in _wrapped)
                     {
-                        _array[index] = pair;
+                        valuePairs[index] = pair;
                         index++;
                     }
                     return;
@@ -359,10 +359,10 @@ namespace System.Collections.Concurrent
                 // that thing exists, I was totally unaware, I may as well use it.
                 if (entries != null)
                 {
-                    var _array = entries;
+                    var dictionaryEntries = entries;
                     foreach (var pair in _wrapped)
                     {
-                        _array[index] = new DictionaryEntry(pair.Key, pair.Value);
+                        dictionaryEntries[index] = new DictionaryEntry(pair.Key, pair.Value);
                         index++;
                     }
                     return;
