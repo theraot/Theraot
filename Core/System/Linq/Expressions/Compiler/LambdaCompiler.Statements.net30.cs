@@ -220,7 +220,7 @@ namespace System.Linq.Expressions.Compiler
             var result = node.Comparison.GetParameters()[1].ParameterType.GetNonRefType();
             if (node.IsLifted)
             {
-                result = TypeHelper.GetNullableType(result);
+                result = result.GetNullableType();
             }
             return result;
         }
@@ -256,7 +256,7 @@ namespace System.Linq.Expressions.Compiler
                 Value = value;
                 Default = @default;
                 Type = Node.SwitchValue.Type;
-                IsUnsigned = TypeHelper.IsUnsigned(Type);
+                IsUnsigned = Type.IsUnsigned();
                 var code = Type.GetTypeCode();
                 Is64BitSwitch = code == TypeCode.UInt64 || code == TypeCode.Int64;
             }
@@ -421,7 +421,7 @@ namespace System.Linq.Expressions.Compiler
         {
             if (value is char)
             {
-                return (int)(char)value;
+                return (char)value;
             }
             return Convert.ToDecimal(value, CultureInfo.InvariantCulture);
         }

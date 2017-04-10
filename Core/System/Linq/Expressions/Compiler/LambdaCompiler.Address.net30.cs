@@ -74,7 +74,7 @@ namespace System.Linq.Expressions.Compiler
                 EmitExpression(node.Left);
                 EmitExpression(node.Right);
                 var rightType = node.Right.Type;
-                if (TypeHelper.IsNullableType(rightType))
+                if (rightType.IsNullableType())
                 {
                     var loc = GetLocal(rightType);
                     _ilg.Emit(OpCodes.Stloc, loc);
@@ -82,7 +82,7 @@ namespace System.Linq.Expressions.Compiler
                     _ilg.EmitGetValue(rightType);
                     FreeLocal(loc);
                 }
-                var indexType = TypeHelper.GetNonNullableType(rightType);
+                var indexType = rightType.GetNonNullableType();
                 if (indexType != typeof(int))
                 {
                     _ilg.EmitConvertToType(indexType, typeof(int), true);
@@ -136,7 +136,7 @@ namespace System.Linq.Expressions.Compiler
         private void EmitMemberAddress(MemberInfo member, Type objectType)
         {
             var field = member as FieldInfo;
-            if ((object)field != null)
+            if (field != null)
             {
                 // Verifiable code may not take the address of an init-only field.
                 // If we are asked to do so then get the value out of the field, stuff it
@@ -212,7 +212,7 @@ namespace System.Linq.Expressions.Compiler
         private void AddressOf(UnaryExpression node, Type type)
         {
             Debug.Assert(node.NodeType == ExpressionType.Unbox);
-            Debug.Assert(type.IsValueType && !TypeHelper.IsNullableType(type));
+            Debug.Assert(type.IsValueType && !type.IsNullableType());
 
             // Unbox leaves a pointer to the boxed value on the stack
             EmitExpression(node.Operand);
@@ -264,7 +264,7 @@ namespace System.Linq.Expressions.Compiler
         private WriteBack AddressOfWriteBack(MemberExpression node)
         {
             var property = node.Member as PropertyInfo;
-            if ((object)property == null || !property.CanWrite)
+            if (property == null || !property.CanWrite)
             {
                 return null;
             }
@@ -292,7 +292,7 @@ namespace System.Linq.Expressions.Compiler
 
             // Set the property after the method call
             // don't re-evaluate anything
-            return delegate ()
+            return () =>
             {
                 if (instanceLocal != null)
                 {
@@ -346,7 +346,7 @@ namespace System.Linq.Expressions.Compiler
 
             // Set the property after the method call
             // don't re-evaluate anything
-            return delegate ()
+            return () =>
             {
                 if (instanceLocal != null)
                 {
