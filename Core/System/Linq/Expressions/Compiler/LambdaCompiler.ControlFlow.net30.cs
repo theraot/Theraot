@@ -47,6 +47,7 @@ namespace System.Linq.Expressions.Compiler
 
         private void PopLabelBlock(LabelScopeKind kind)
         {
+            GC.KeepAlive(kind);
             Debug.Assert(_labelBlock != null && _labelBlock.Kind == kind);
             _labelBlock = _labelBlock.Parent;
         }

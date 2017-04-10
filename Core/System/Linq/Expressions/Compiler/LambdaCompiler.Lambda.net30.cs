@@ -18,7 +18,7 @@ namespace System.Linq.Expressions.Compiler
     /// </summary>
     internal partial class LambdaCompiler
     {
-        private static int s_counter;
+        private static int _counter;
 
         internal void EmitConstantArray<T>(T[] array)
         {
@@ -76,7 +76,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 _ilg.EmitNull();
             }
-            _ilg.EmitNew(typeof(Closure).GetConstructor(new Type[] { typeof(object[]), typeof(object[]) }));
+            _ilg.EmitNew(typeof(Closure).GetConstructor(new[] { typeof(object[]), typeof(object[]) }));
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace System.Linq.Expressions.Compiler
             {
                 // new DelegateType(closure)
                 EmitClosureCreation(inner);
-                _ilg.Emit(OpCodes.Ldftn, (MethodInfo)inner._method);
+                _ilg.Emit(OpCodes.Ldftn, inner._method);
                 _ilg.Emit(OpCodes.Newobj, (ConstructorInfo)(delegateType.GetMember(".ctor")[0]));
             }
         }
@@ -158,7 +158,7 @@ namespace System.Linq.Expressions.Compiler
 
         private static string GetUniqueMethodName()
         {
-            return "<ExpressionCompilerImplementationDetails>{" + Interlocked.Increment(ref s_counter) + "}lambda_method";
+            return "<ExpressionCompilerImplementationDetails>{" + Interlocked.Increment(ref _counter) + "}lambda_method";
         }
 
         private void EmitLambdaBody()

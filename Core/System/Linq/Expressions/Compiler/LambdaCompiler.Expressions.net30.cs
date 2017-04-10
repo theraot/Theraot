@@ -742,14 +742,14 @@ namespace System.Linq.Expressions.Compiler
             }
 
             var fld = member as FieldInfo;
-            if ((object)fld != null)
+            if (fld != null)
             {
                 _ilg.EmitFieldSet((FieldInfo)member);
             }
             else
             {
                 var prop = member as PropertyInfo;
-                if ((object)prop != null)
+                if (prop != null)
                 {
                     EmitCall(objectType, prop.GetSetMethod(true));
                 }
@@ -784,7 +784,7 @@ namespace System.Linq.Expressions.Compiler
         private void EmitMemberGet(MemberInfo member, Type objectType)
         {
             var fi = member as FieldInfo;
-            if ((object)fi != null)
+            if (fi != null)
             {
                 object value;
 
@@ -800,7 +800,7 @@ namespace System.Linq.Expressions.Compiler
             else
             {
                 var prop = member as PropertyInfo;
-                if ((object)prop != null)
+                if (prop != null)
                 {
                     EmitCall(objectType, prop.GetGetMethod(true));
                 }
@@ -850,9 +850,9 @@ namespace System.Linq.Expressions.Compiler
             else
             {
                 var bounds = node.Expressions;
-                for (var i = 0; i < bounds.Count; i++)
+                foreach (var item in bounds)
                 {
-                    var x = bounds[i];
+                    var x = item;
                     EmitExpression(x);
                     _ilg.EmitConvertToType(x.Type, typeof(int), true);
                 }
@@ -863,7 +863,6 @@ namespace System.Linq.Expressions.Compiler
         private void EmitDebugInfoExpression(Expression expr)
         {
             GC.KeepAlive(expr);
-            return;
         }
 
         private static void EmitExtensionExpression(Expression expr)
@@ -1082,7 +1081,7 @@ namespace System.Linq.Expressions.Compiler
             }
             for (int i = 0; i < n; i++)
             {
-                if (!TypeHelper.AreReferenceAssignable(variables[i].Type, TypeHelper.GetNonNullableType(arguments[i].Type)))
+                if (!TypeHelper.AreReferenceAssignable(variables[i].Type, arguments[i].Type.GetNonNullableType()))
                 {
                     throw Error.ArgumentTypesMustMatch();
                 }
@@ -1091,15 +1090,15 @@ namespace System.Linq.Expressions.Compiler
 
         private void EmitLift(ExpressionType nodeType, Type resultType, MethodCallExpression mc, ParameterExpression[] paramList, Expression[] argList)
         {
-            Debug.Assert(TypeHelper.GetNonNullableType(resultType) == TypeHelper.GetNonNullableType(mc.Type));
+            Debug.Assert(resultType.GetNonNullableType() == mc.Type.GetNonNullableType());
 
             switch (nodeType)
             {
                 default:
-                case ExpressionType.LessThan:
-                case ExpressionType.LessThanOrEqual:
-                case ExpressionType.GreaterThan:
-                case ExpressionType.GreaterThanOrEqual:
+                    /*case ExpressionType.LessThan:
+                    case ExpressionType.LessThanOrEqual:
+                    case ExpressionType.GreaterThan:
+                    case ExpressionType.GreaterThanOrEqual:*/
                     {
                         var exit = _ilg.DefineLabel();
                         var exitNull = _ilg.DefineLabel();
@@ -1109,7 +1108,7 @@ namespace System.Linq.Expressions.Compiler
                         {
                             var v = paramList[i];
                             var arg = argList[i];
-                            if (TypeHelper.IsNullableType(arg.Type))
+                            if (arg.Type.IsNullableType())
                             {
                                 _scope.AddLocal(this, v);
                                 EmitAddress(arg, arg.Type);
@@ -1138,14 +1137,14 @@ namespace System.Linq.Expressions.Compiler
                             _ilg.Emit(OpCodes.Brtrue, exitNull);
                         }
                         EmitMethodCallExpression(mc);
-                        if (TypeHelper.IsNullableType(resultType) && resultType != mc.Type)
+                        if (resultType.IsNullableType() && resultType != mc.Type)
                         {
                             var ci = resultType.GetConstructor(new Type[] { mc.Type });
                             _ilg.Emit(OpCodes.Newobj, ci);
                         }
                         _ilg.Emit(OpCodes.Br_S, exit);
                         _ilg.MarkLabel(exitNull);
-                        if (resultType == TypeHelper.GetNullableType(mc.Type))
+                        if (resultType == mc.Type.GetNullableType())
                         {
                             if (resultType.IsValueType)
                             {
@@ -1181,7 +1180,7 @@ namespace System.Linq.Expressions.Compiler
                 case ExpressionType.Equal:
                 case ExpressionType.NotEqual:
                     {
-                        if (resultType == TypeHelper.GetNullableType(mc.Type))
+                        if (resultType == mc.Type.GetNullableType())
                         {
                             goto default;
                         }
@@ -1202,7 +1201,7 @@ namespace System.Linq.Expressions.Compiler
                             var v = paramList[i];
                             var arg = argList[i];
                             _scope.AddLocal(this, v);
-                            if (TypeHelper.IsNullableType(arg.Type))
+                            if (arg.Type.IsNullableType())
                             {
                                 EmitAddress(arg, arg.Type);
                                 _ilg.Emit(OpCodes.Dup);
@@ -1248,7 +1247,7 @@ namespace System.Linq.Expressions.Compiler
                         _ilg.Emit(OpCodes.Brtrue, exitAnyNull);
 
                         EmitMethodCallExpression(mc);
-                        if (TypeHelper.IsNullableType(resultType) && resultType != mc.Type)
+                        if (resultType.IsNullableType() && resultType != mc.Type)
                         {
                             var ci = resultType.GetConstructor(new Type[] { mc.Type });
                             _ilg.Emit(OpCodes.Newobj, ci);
