@@ -33,50 +33,33 @@ namespace System.Linq.Expressions.Interpreter
         internal const int UnknownIndex = Int32.MinValue;
         internal const int UnknownDepth = Int32.MinValue;
 
-        internal int _labelIndex = UnknownIndex;
-        internal int _targetIndex = UnknownIndex;
-        internal int _stackDepth = UnknownDepth;
-        internal int _continuationStackDepth = UnknownDepth;
+        internal int LabelIndex = UnknownIndex;
+        internal int TargetIndex = UnknownIndex;
+        internal int StackDepth = UnknownDepth;
+        internal int ContinuationStackDepth = UnknownDepth;
 
         // Offsets of forward branching instructions targetting this label
         // that need to be updated after we emit the label.
         private List<int> _forwardBranchFixups;
 
-        internal int LabelIndex
-        {
-            get { return _labelIndex; }
-
-            set { _labelIndex = value; }
-        }
-
         internal bool HasRuntimeLabel
         {
-            get { return _labelIndex != UnknownIndex; }
-        }
-
-        internal int TargetIndex
-        {
-            get { return _targetIndex; }
-        }
-
-        internal int StackDepth
-        {
-            get { return _stackDepth; }
+            get { return LabelIndex != UnknownIndex; }
         }
 
         internal RuntimeLabel ToRuntimeLabel()
         {
-            Debug.Assert(_targetIndex != UnknownIndex && _stackDepth != UnknownDepth && _continuationStackDepth != UnknownDepth);
-            return new RuntimeLabel(_targetIndex, _continuationStackDepth, _stackDepth);
+            Debug.Assert(TargetIndex != UnknownIndex && StackDepth != UnknownDepth && ContinuationStackDepth != UnknownDepth);
+            return new RuntimeLabel(TargetIndex, ContinuationStackDepth, StackDepth);
         }
 
         internal void Mark(InstructionList instructions)
         {
             //ContractUtils.Requires(_targetIndex == UnknownIndex && _stackDepth == UnknownDepth && _continuationStackDepth == UnknownDepth);
 
-            _stackDepth = instructions.CurrentStackDepth;
-            _continuationStackDepth = instructions.CurrentContinuationsDepth;
-            _targetIndex = instructions.Count;
+            StackDepth = instructions.CurrentStackDepth;
+            ContinuationStackDepth = instructions.CurrentContinuationsDepth;
+            TargetIndex = instructions.Count;
 
             if (_forwardBranchFixups != null)
             {
@@ -90,10 +73,10 @@ namespace System.Linq.Expressions.Interpreter
 
         internal void AddBranch(InstructionList instructions, int branchIndex)
         {
-            Debug.Assert(((_targetIndex == UnknownIndex) == (_stackDepth == UnknownDepth)));
-            Debug.Assert(((_targetIndex == UnknownIndex) == (_continuationStackDepth == UnknownDepth)));
+            Debug.Assert(((TargetIndex == UnknownIndex) == (StackDepth == UnknownDepth)));
+            Debug.Assert(((TargetIndex == UnknownIndex) == (ContinuationStackDepth == UnknownDepth)));
 
-            if (_targetIndex == UnknownIndex)
+            if (TargetIndex == UnknownIndex)
             {
                 if (_forwardBranchFixups == null)
                 {
@@ -109,8 +92,8 @@ namespace System.Linq.Expressions.Interpreter
 
         internal void FixupBranch(InstructionList instructions, int branchIndex)
         {
-            Debug.Assert(_targetIndex != UnknownIndex);
-            instructions.FixupBranch(branchIndex, _targetIndex - branchIndex);
+            Debug.Assert(TargetIndex != UnknownIndex);
+            instructions.FixupBranch(branchIndex, TargetIndex - branchIndex);
         }
     }
 }
