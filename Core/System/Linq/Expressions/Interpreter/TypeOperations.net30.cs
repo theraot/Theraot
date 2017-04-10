@@ -246,7 +246,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToString()
         {
-            return "TypeIs " + _type.ToString();
+            return "TypeIs " + _type;
         }
     }
 
@@ -290,7 +290,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToString()
         {
-            return "TypeAs " + _type.ToString();
+            return "TypeAs " + _type;
         }
     }
 
