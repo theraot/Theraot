@@ -16,7 +16,7 @@ namespace System.Linq.Expressions.Compiler
             internal readonly LambdaCompiler Compiler;
             internal readonly ParameterExpression Variable;
 
-            internal Storage(LambdaCompiler compiler, ParameterExpression variable)
+            protected Storage(LambdaCompiler compiler, ParameterExpression variable)
             {
                 Compiler = compiler;
                 Variable = variable;
