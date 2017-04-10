@@ -40,7 +40,6 @@ namespace System.Diagnostics.Contracts
         /// In debug builds, perform a runtime check that <paramref name="condition"/> is true.
         /// </summary>
         /// <param name="condition">Expression to check to always be true.</param>
-        [Pure]
         [Conditional("DEBUG")]
         [Conditional("CONTRACTS_FULL")]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
@@ -57,7 +56,6 @@ namespace System.Diagnostics.Contracts
         /// </summary>
         /// <param name="condition">Expression to check to always be true.</param>
         /// <param name="userMessage">If it is not a constant string literal, then the contract may not be understood by tools.</param>
-        [Pure]
         [Conditional("DEBUG")]
         [Conditional("CONTRACTS_FULL")]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
@@ -76,7 +74,6 @@ namespace System.Diagnostics.Contracts
         /// <remarks>
         /// At runtime this is equivalent to an <seealso cref="System.Diagnostics.Contracts.Contract.Assert(bool)"/>.
         /// </remarks>
-        [Pure]
         [Conditional("DEBUG")]
         [Conditional("CONTRACTS_FULL")]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
@@ -96,7 +93,6 @@ namespace System.Diagnostics.Contracts
         /// <remarks>
         /// At runtime this is equivalent to an <seealso cref="System.Diagnostics.Contracts.Contract.Assert(bool)"/>.
         /// </remarks>
-        [Pure]
         [Conditional("DEBUG")]
         [Conditional("CONTRACTS_FULL")]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
@@ -127,7 +123,6 @@ namespace System.Diagnostics.Contracts
         /// This contract is exposed to clients so must only reference members at least as visible as the enclosing method.
         /// The contract rewriter must be used for runtime enforcement of this postcondition.
         /// </remarks>
-        [Pure]
         [Conditional("CONTRACTS_FULL")]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Ensures(bool condition)
@@ -146,7 +141,6 @@ namespace System.Diagnostics.Contracts
         /// This contract is exposed to clients so must only reference members at least as visible as the enclosing method.
         /// The contract rewriter must be used for runtime enforcement of this postcondition.
         /// </remarks>
-        [Pure]
         [Conditional("CONTRACTS_FULL")]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Ensures(bool condition, string userMessage)
@@ -166,7 +160,6 @@ namespace System.Diagnostics.Contracts
         /// This contract is exposed to clients so must only reference types and members at least as visible as the enclosing method.
         /// The contract rewriter must be used for runtime enforcement of this postcondition.
         /// </remarks>
-        [Pure]
         [Conditional("CONTRACTS_FULL")]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void EnsuresOnThrow<TException>(bool condition) where TException : Exception
@@ -186,7 +179,6 @@ namespace System.Diagnostics.Contracts
         /// This contract is exposed to clients so must only reference types and members at least as visible as the enclosing method.
         /// The contract rewriter must be used for runtime enforcement of this postcondition.
         /// </remarks>
-        [Pure]
         [Conditional("CONTRACTS_FULL")]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void EnsuresOnThrow<TException>(bool condition, string userMessage) where TException : Exception
@@ -341,7 +333,6 @@ namespace System.Diagnostics.Contracts
         /// This contract is not exposed to clients so may reference members less visible as the enclosing method.
         /// The contract rewriter must be used for runtime enforcement of this invariant.
         /// </remarks>
-        [Pure]
         [Conditional("CONTRACTS_FULL")]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Invariant(bool condition)
@@ -360,7 +351,6 @@ namespace System.Diagnostics.Contracts
         /// This contract is not exposed to clients so may reference members less visible as the enclosing method.
         /// The contract rewriter must be used for runtime enforcement of this invariant.
         /// </remarks>
-        [Pure]
         [Conditional("CONTRACTS_FULL")]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Invariant(bool condition, string userMessage)
@@ -396,7 +386,6 @@ namespace System.Diagnostics.Contracts
         /// This contract is exposed to clients so must only reference members at least as visible as the enclosing method.
         /// Use this form when backward compatibility does not force you to throw a particular exception.
         /// </remarks>
-        [Pure]
         [Conditional("CONTRACTS_FULL")]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Requires(bool condition)
@@ -415,7 +404,6 @@ namespace System.Diagnostics.Contracts
         /// This contract is exposed to clients so must only reference members at least as visible as the enclosing method.
         /// Use this form when backward compatibility does not force you to throw a particular exception.
         /// </remarks>
-        [Pure]
         [Conditional("CONTRACTS_FULL")]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Requires(bool condition, string userMessage)
@@ -435,7 +423,6 @@ namespace System.Diagnostics.Contracts
         /// This contract is exposed to clients so must only reference members at least as visible as the enclosing method.
         /// Use this form when you want to throw a particular exception.
         /// </remarks>
-        [Pure]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Requires<TException>(bool condition) where TException : Exception
         {
@@ -454,7 +441,6 @@ namespace System.Diagnostics.Contracts
         /// This contract is exposed to clients so must only reference members at least as visible as the enclosing method.
         /// Use this form when you want to throw a particular exception.
         /// </remarks>
-        [Pure]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
         public static void Requires<TException>(bool condition, string userMessage) where TException : Exception
         {
