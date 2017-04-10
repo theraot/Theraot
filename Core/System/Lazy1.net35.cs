@@ -7,7 +7,7 @@ using Theraot.Core;
 
 namespace System
 {
-    [DebuggerDisplay("ThreadSafetyMode={Mode}, IsValueCreated={IsValueCreated}, IsValueFaulted={IsValueFaulted}, Value={ValueForDebugDisplay}")]
+    [DebuggerDisplay("IsValueCreated={IsValueCreated}, Value={ValueForDebugDisplay}")]
     [Serializable]
     public class Lazy<T>
     {
