@@ -652,7 +652,6 @@ namespace System.Linq.Expressions
         /// <summary>
         /// Visits the children of the <see cref="LambdaExpression" />.
         /// </summary>
-        /// <typeparam name="T">The type of the delegate.</typeparam>
         /// <param name="node">The expression to visit.</param>
         /// <returns>The modified expression, if it or any subexpression was modified;
         /// otherwise, returns the original expression.</returns>
