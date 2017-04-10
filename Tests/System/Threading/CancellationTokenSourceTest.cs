@@ -39,237 +39,252 @@ namespace MonoTests.System.Threading
         [Test]
         public void Cancel()
         {
-            var cts = new CancellationTokenSource();
-
-            int[] called = { 0 };
-            cts.Token.Register(l =>
+            using (var cts = new CancellationTokenSource())
             {
-                Assert.AreEqual("v", l);
-                ++called[0];
-            }, "v");
-            cts.Cancel();
-            Assert.AreEqual(1, called[0], "#1");
+                int[] called = { 0 };
+                cts.Token.Register(l =>
+                {
+                    Assert.AreEqual("v", l);
+                    ++called[0];
+                }, "v");
+                cts.Cancel();
+                Assert.AreEqual(1, called[0], "#1");
 
-            called[0] = 0;
-            cts.Token.Register(() => called[0] += 12);
-            cts.Cancel();
-            Assert.AreEqual(12, called[0], "#2");
+                called[0] = 0;
+                cts.Token.Register(() => called[0] += 12);
+                cts.Cancel();
+                Assert.AreEqual(12, called[0], "#2");
+            }
         }
 
         [Test]
         public void Cancel_ExceptionOrder()
         {
-            var cts = new CancellationTokenSource();
+            using (var cts = new CancellationTokenSource())
+            {
+                cts.Token.Register(() =>
+                {
+                    throw new ApplicationException("1");
+                });
+                cts.Token.Register(() =>
+                {
+                    throw new ApplicationException("2");
+                });
+                cts.Token.Register(() =>
+                {
+                    throw new ApplicationException("3");
+                });
 
-            cts.Token.Register(() =>
-            {
-                throw new ApplicationException("1");
-            });
-            cts.Token.Register(() =>
-            {
-                throw new ApplicationException("2");
-            });
-            cts.Token.Register(() =>
-            {
-                throw new ApplicationException("3");
-            });
-
-            try
-            {
-                cts.Cancel();
-            }
-            catch (AggregateException e)
-            {
-                Assert.AreEqual(3, e.InnerExceptions.Count, "#2");
-                Assert.AreEqual("3", e.InnerExceptions[0].Message, "#3");
-                Assert.AreEqual("2", e.InnerExceptions[1].Message, "#4");
-                Assert.AreEqual("1", e.InnerExceptions[2].Message, "#5");
+                try
+                {
+                    cts.Cancel();
+                }
+                catch (AggregateException e)
+                {
+                    Assert.AreEqual(3, e.InnerExceptions.Count, "#2");
+                    Assert.AreEqual("3", e.InnerExceptions[0].Message, "#3");
+                    Assert.AreEqual("2", e.InnerExceptions[1].Message, "#4");
+                    Assert.AreEqual("1", e.InnerExceptions[2].Message, "#5");
+                }
             }
         }
 
         [Test]
         public void Cancel_MultipleException_Recursive()
         {
-            var cts = new CancellationTokenSource();
-            var c = cts.Token;
-            c.Register(cts.Cancel);
+            using (var cts = new CancellationTokenSource())
+            {
+                var c = cts.Token;
+                c.Register(cts.Cancel);
 
-            c.Register(() =>
-            {
-                throw new ApplicationException();
-            });
+                c.Register(() =>
+                {
+                    throw new ApplicationException();
+                });
 
-            c.Register(() =>
-            {
-                throw new NotSupportedException();
-            });
+                c.Register(() =>
+                {
+                    throw new NotSupportedException();
+                });
 
-            try
-            {
-                cts.Cancel(false);
-                Assert.Fail("#1");
-            }
-            catch (AggregateException e)
-            {
-                Assert.AreEqual(2, e.InnerExceptions.Count, "#2");
+                try
+                {
+                    cts.Cancel(false);
+                    Assert.Fail("#1");
+                }
+                catch (AggregateException e)
+                {
+                    Assert.AreEqual(2, e.InnerExceptions.Count, "#2");
+                }
             }
         }
 
         [Test]
         public void Cancel_MultipleExceptions()
         {
-            var cts = new CancellationTokenSource();
-
-            cts.Token.Register(() =>
-            {
-                throw new ApplicationException("1");
-            });
-            cts.Token.Register(() =>
-            {
-                throw new ApplicationException("2");
-            });
-            cts.Token.Register(() =>
-            {
-                throw new ApplicationException("3");
-            });
-
-            try
-            {
-                cts.Cancel();
-                Assert.Fail("#1");
-            }
-            catch (AggregateException e)
-            {
-                Assert.AreEqual(3, e.InnerExceptions.Count, "#2");
-            }
-
-            cts.Cancel();
-
-            try
+            using (var cts = new CancellationTokenSource())
             {
                 cts.Token.Register(() =>
                 {
                     throw new ApplicationException("1");
                 });
-                Assert.Fail("#11");
-            }
-            catch (ApplicationException ex)
-            {
-                GC.KeepAlive(ex);
-            }
+                cts.Token.Register(() =>
+                {
+                    throw new ApplicationException("2");
+                });
+                cts.Token.Register(() =>
+                {
+                    throw new ApplicationException("3");
+                });
 
-            cts.Cancel();
+                try
+                {
+                    cts.Cancel();
+                    Assert.Fail("#1");
+                }
+                catch (AggregateException e)
+                {
+                    Assert.AreEqual(3, e.InnerExceptions.Count, "#2");
+                }
+
+                cts.Cancel();
+
+                try
+                {
+                    cts.Token.Register(() =>
+                    {
+                        throw new ApplicationException("1");
+                    });
+                    Assert.Fail("#11");
+                }
+                catch (ApplicationException ex)
+                {
+                    GC.KeepAlive(ex);
+                }
+
+                cts.Cancel();
+            }
         }
 
         [Test]
         public void Cancel_MultipleExceptionsFirstThrows()
         {
-            var cts = new CancellationTokenSource();
+            using (var cts = new CancellationTokenSource())
+            {
+                cts.Token.Register(() =>
+                {
+                    throw new ApplicationException("1");
+                });
+                cts.Token.Register(() =>
+                {
+                    throw new ApplicationException("2");
+                });
+                cts.Token.Register(() =>
+                {
+                    throw new ApplicationException("3");
+                });
 
-            cts.Token.Register(() =>
-            {
-                throw new ApplicationException("1");
-            });
-            cts.Token.Register(() =>
-            {
-                throw new ApplicationException("2");
-            });
-            cts.Token.Register(() =>
-            {
-                throw new ApplicationException("3");
-            });
+                try
+                {
+                    cts.Cancel(true);
+                    Assert.Fail("#1");
+                }
+                catch (ApplicationException ex)
+                {
+                    GC.KeepAlive(ex);
+                }
 
-            try
-            {
-                cts.Cancel(true);
-                Assert.Fail("#1");
+                cts.Cancel();
             }
-            catch (ApplicationException ex)
-            {
-                GC.KeepAlive(ex);
-            }
-
-            cts.Cancel();
         }
 
         [Test]
         public void Cancel_NoRegistration()
         {
-            var cts = new CancellationTokenSource();
-            cts.Cancel();
+            using (var cts = new CancellationTokenSource())
+            {
+                cts.Cancel();
+            }
         }
 
         [Test]
         public void Cancel_Order()
         {
-            var cts = new CancellationTokenSource();
-            var current = 0;
-            Action<object> a = x =>
+            using (var cts = new CancellationTokenSource())
             {
-                Assert.AreEqual(current, x);
-                current++;
-            };
+                var current = 0;
+                Action<object> a = x =>
+                {
+                    Assert.AreEqual(current, x);
+                    current++;
+                };
 
-            cts.Token.Register(a, 2);
-            cts.Token.Register(a, 1);
-            cts.Token.Register(a, 0);
-            cts.Cancel();
+                cts.Token.Register(a, 2);
+                cts.Token.Register(a, 1);
+                cts.Token.Register(a, 0);
+                cts.Cancel();
+            }
         }
 
         [Test]
         public void Cancel_SingleException()
         {
-            var cts = new CancellationTokenSource();
+            using (var cts = new CancellationTokenSource())
+            {
+                cts.Token.Register(() =>
+                {
+                    throw new ApplicationException();
+                });
+                try
+                {
+                    cts.Cancel();
+                    Assert.Fail("#1");
+                }
+                catch (AggregateException e)
+                {
+                    Assert.AreEqual(1, e.InnerExceptions.Count, "#2");
+                }
 
-            cts.Token.Register(() =>
-            {
-                throw new ApplicationException();
-            });
-            try
-            {
                 cts.Cancel();
-                Assert.Fail("#1");
             }
-            catch (AggregateException e)
-            {
-                Assert.AreEqual(1, e.InnerExceptions.Count, "#2");
-            }
-
-            cts.Cancel();
         }
 
         [Test]
         public void CancelLinkedTokenSource()
         {
-            var cts = new CancellationTokenSource();
-            var canceled = false;
-            cts.Token.Register(() => canceled = true);
-
-            using (CancellationTokenSource.CreateLinkedTokenSource(cts.Token))
+            using (var cts = new CancellationTokenSource())
             {
-                // Empty
+                var canceled = false;
+                cts.Token.Register(() => canceled = true);
+
+                using (CancellationTokenSource.CreateLinkedTokenSource(cts.Token))
+                {
+                    // Empty
+                }
+
+                Assert.IsFalse(canceled, "#1");
+                Assert.IsFalse(cts.IsCancellationRequested, "#2");
+
+                cts.Cancel();
+
+                Assert.IsTrue(canceled, "#3");
             }
-
-            Assert.IsFalse(canceled, "#1");
-            Assert.IsFalse(cts.IsCancellationRequested, "#2");
-
-            cts.Cancel();
-
-            Assert.IsTrue(canceled, "#3");
         }
 
         [Test]
         public void CancelWithDispose()
         {
-            var cts = new CancellationTokenSource();
-            var c = cts.Token;
-            c.Register(cts.Dispose);
+            using (var cts = new CancellationTokenSource())
+            {
+                var c = cts.Token;
+                c.Register(cts.Dispose);
 
-            var called = 0;
-            c.Register(() => called++);
+                var called = 0;
+                c.Register(() => called++);
 
-            cts.Cancel();
-            Assert.AreEqual(1, called, "#1");
+                cts.Cancel();
+                Assert.AreEqual(1, called, "#1");
+            }
         }
 
         [Test]
@@ -277,73 +292,80 @@ namespace MonoTests.System.Threading
         {
             ParallelTestHelper.Repeat(delegate
             {
-                var src = new CancellationTokenSource();
-                var linked = CancellationTokenSource.CreateLinkedTokenSource(src.Token);
-                var cntd = new CountdownEvent(2);
-
-                var t1 = new Thread(() =>
+                using (var src = new CancellationTokenSource())
                 {
-                    if (!cntd.Signal())
+                    var linked = CancellationTokenSource.CreateLinkedTokenSource(src.Token);
+                    using (var cntd = new CountdownEvent(2))
                     {
-                        cntd.Wait(200);
+                        var t1 = new Thread(() =>
+                        {
+                            if (!cntd.Signal())
+                            {
+                                cntd.Wait(200);
+                            }
+
+                            src.Cancel();
+                        });
+                        var t2 = new Thread(() =>
+                        {
+                            if (!cntd.Signal())
+                            {
+                                cntd.Wait(200);
+                            }
+
+                            linked.Dispose();
+                        });
+
+                        t1.Start();
+                        t2.Start();
+                        t1.Join(500);
+                        t2.Join(500);
                     }
-
-                    src.Cancel();
-                });
-                var t2 = new Thread(() =>
-                {
-                    if (!cntd.Signal())
-                    {
-                        cntd.Wait(200);
-                    }
-
-                    linked.Dispose();
-                });
-
-                t1.Start();
-                t2.Start();
-                t1.Join(500);
-                t2.Join(500);
+                }
             }, 500);
         }
 
         [Test]
         public void CreateLinkedTokenSource()
         {
-            var cts = new CancellationTokenSource();
-            cts.Cancel();
+            using (var cts = new CancellationTokenSource())
+            {
+                cts.Cancel();
 
-            var linked = CancellationTokenSource.CreateLinkedTokenSource(cts.Token);
-            Assert.IsTrue(linked.IsCancellationRequested, "#1");
+                var linked = CancellationTokenSource.CreateLinkedTokenSource(cts.Token);
+                Assert.IsTrue(linked.IsCancellationRequested, "#1");
 
-            linked = CancellationTokenSource.CreateLinkedTokenSource(new CancellationToken());
-            Assert.IsFalse(linked.IsCancellationRequested, "#2");
+                linked = CancellationTokenSource.CreateLinkedTokenSource(new CancellationToken());
+                Assert.IsFalse(linked.IsCancellationRequested, "#2");
+            }
         }
 
         [Test]
         public void CreateLinkedTokenSource_InvalidArguments()
         {
-            var cts = new CancellationTokenSource();
-            GC.KeepAlive(cts.Token);
+            using (var cts = new CancellationTokenSource())
+            {
+                GC.KeepAlive(cts.Token);
 
-            try
-            {
-                CancellationTokenSource.CreateLinkedTokenSource(null);
-                Assert.Fail("#1");
-            }
-            catch (ArgumentNullException ex)
-            {
-                GC.KeepAlive(ex);
-            }
+                try
+                {
+                    CancellationTokenSource.CreateLinkedTokenSource(null);
+                    Assert.Fail("#1");
+                }
+                catch (ArgumentNullException ex)
+                {
+                    GC.KeepAlive(ex);
+                }
 
-            try
-            {
-                CancellationTokenSource.CreateLinkedTokenSource(new CancellationToken[0]);
-                Assert.Fail("#2");
-            }
-            catch (ArgumentException ex)
-            {
-                GC.KeepAlive(ex);
+                try
+                {
+                    CancellationTokenSource.CreateLinkedTokenSource(new CancellationToken[0]);
+                    Assert.Fail("#2");
+                }
+                catch (ArgumentException ex)
+                {
+                    GC.KeepAlive(ex);
+                }
             }
         }
 
@@ -439,21 +461,23 @@ namespace MonoTests.System.Threading
         {
             var unregister = false;
             var register = false;
-            var source = new CancellationTokenSource();
-            var token = source.Token;
-
-            Console.WriteLine("Test1");
-            var reg = token.Register(() => unregister = true);
-            token.Register(reg.Dispose);
-            token.Register(() =>
+            using (var source = new CancellationTokenSource())
             {
-                Console.WriteLine("Gnyah");
-                token.Register(() => register = true);
-            });
-            source.Cancel();
+                var token = source.Token;
 
-            Assert.IsFalse(unregister);
-            Assert.IsTrue(register);
+                Console.WriteLine("Test1");
+                var reg = token.Register(() => unregister = true);
+                token.Register(reg.Dispose);
+                token.Register(() =>
+                {
+                    Console.WriteLine("Gnyah");
+                    token.Register(() => register = true);
+                });
+                source.Cancel();
+
+                Assert.IsFalse(unregister);
+                Assert.IsTrue(register);
+            }
         }
 
         [Test]
@@ -491,10 +515,12 @@ namespace MonoTests.System.Threading
         [Test]
         public void Token()
         {
-            var cts = new CancellationTokenSource();
-            Assert.IsTrue(cts.Token.CanBeCanceled, "#1");
-            Assert.IsFalse(cts.Token.IsCancellationRequested, "#2");
-            Assert.IsNotNull(cts.Token.WaitHandle, "#3");
+            using (var cts = new CancellationTokenSource())
+            {
+                Assert.IsTrue(cts.Token.CanBeCanceled, "#1");
+                Assert.IsFalse(cts.Token.IsCancellationRequested, "#2");
+                Assert.IsNotNull(cts.Token.WaitHandle, "#3");
+            }
         }
 
         //[Test]
@@ -528,11 +554,13 @@ namespace MonoTests.System.Threading
         public void CancelAfter()
         {
             var called = 0;
-            var cts = new CancellationTokenSource();
-            cts.Token.Register(() => called++);
-            cts.CancelAfter(20);
-            Thread.Sleep(50);
-            Assert.AreEqual(1, called, "#1");
+            using (var cts = new CancellationTokenSource())
+            {
+                cts.Token.Register(() => called++);
+                cts.CancelAfter(20);
+                Thread.Sleep(50);
+                Assert.AreEqual(1, called, "#1");
+            }
         }
 
         [Test]
@@ -550,15 +578,17 @@ namespace MonoTests.System.Threading
         [Test]
         public void CancelAfter_Invalid()
         {
-            var cts = new CancellationTokenSource();
-            try
+            using (var cts = new CancellationTokenSource())
             {
-                cts.CancelAfter(-9);
-                Assert.Fail("#1");
-            }
-            catch (ArgumentException ex)
-            {
-                GC.KeepAlive(ex);
+                try
+                {
+                    cts.CancelAfter(-9);
+                    Assert.Fail("#1");
+                }
+                catch (ArgumentException ex)
+                {
+                    GC.KeepAlive(ex);
+                }
             }
         }
 
@@ -567,7 +597,10 @@ namespace MonoTests.System.Threading
         {
             try
             {
-                GC.KeepAlive(new CancellationTokenSource(-4));
+                using (var cancellationTokenSource = new CancellationTokenSource(-4))
+                {
+                    GC.KeepAlive(cancellationTokenSource);
+                }
                 Assert.Fail("#1");
             }
             catch (ArgumentException ex)
@@ -580,10 +613,12 @@ namespace MonoTests.System.Threading
         public void Ctor_Timeout()
         {
             var called = 0;
-            var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(20));
-            cts.Token.Register(() => called++);
-            Thread.Sleep(50);
-            Assert.AreEqual(1, called, "#1");
+            using (var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(20)))
+            {
+                cts.Token.Register(() => called++);
+                Thread.Sleep(50);
+                Assert.AreEqual(1, called, "#1");
+            }
         }
 
         [Test]
@@ -664,8 +699,7 @@ namespace MonoTests.System.Threading
         {
             for (int i = 0; i < 1000; ++i)
             {
-                var c1 = new CancellationTokenSource();
-                using (c1)
+                using (var c1 = new CancellationTokenSource())
                 {
                     GC.KeepAlive(c1.Token.WaitHandle);
                     c1.CancelAfter(1);
