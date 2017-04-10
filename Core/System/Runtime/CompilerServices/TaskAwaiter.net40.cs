@@ -143,8 +143,9 @@ namespace System.Runtime.CompilerServices
                 {
                     task.Wait();
                 }
-                catch
+                catch (Exception ex)
                 {
+                    GC.KeepAlive(ex);
                 }
             }
             if (task.Status == TaskStatus.RanToCompletion)
@@ -260,8 +261,9 @@ namespace System.Runtime.CompilerServices
                 {
                     s_prepForRemoting.Invoke(exc, s_emptyParams);
                 }
-                catch
+                catch (Exception ex)
                 {
+                    GC.KeepAlive(ex);
                 }
             }
             return exc;
@@ -277,8 +279,9 @@ namespace System.Runtime.CompilerServices
             {
                 return typeof(Exception).GetMethod("PrepForRemoting", BindingFlags.Instance | BindingFlags.NonPublic);
             }
-            catch
+            catch (Exception ex)
             {
+                GC.KeepAlive(ex);
                 return null;
             }
         }
