@@ -70,101 +70,35 @@ namespace Theraot.Core
             const int CvMax = 32;
             if (uu1 < uu2)
             {
-                goto LOther;
+                Swap(ref uu1, ref uu2);
             }
-            LTop:
-            if (uu1 <= uint.MaxValue)
+            while (true)
             {
-                goto LSmall;
-            }
-            if (uu2 == 0)
-            {
-                return uu1;
-            }
-            for (int cv = CvMax; ;)
-            {
-                uu1 -= uu2;
-                if (uu1 < uu2)
+                if (uu1 <= uint.MaxValue)
                 {
                     break;
                 }
+                if (uu2 == 0)
+                {
+                    return uu1;
+                }
+                for (int cv = CvMax; ;)
+                {
+                    uu1 -= uu2;
+                    if (uu1 < uu2)
+                    {
+                        break;
+                    }
 
-                if (--cv == 0)
-                {
-                    uu1 %= uu2;
-                    break;
+                    if (--cv == 0)
+                    {
+                        uu1 %= uu2;
+                        break;
+                    }
                 }
+                Swap(ref uu1, ref uu2);
             }
-            LOther:
-            if (uu2 <= uint.MaxValue)
-            {
-                goto LSmall;
-            }
-            if (uu1 == 0)
-            {
-                return uu2;
-            }
-            for (int cv = CvMax; ;)
-            {
-                uu2 -= uu1;
-                if (uu2 < uu1)
-                {
-                    break;
-                }
-
-                if (--cv == 0)
-                {
-                    uu2 %= uu1;
-                    break;
-                }
-            }
-            goto LTop;
-            LSmall:
-            var u1 = (uint)uu1;
-            var u2 = (uint)uu2;
-            if (u1 < u2)
-            {
-                goto LOtherSmall;
-            }
-            LTopSmall:
-            if (u2 == 0)
-            {
-                return u1;
-            }
-            for (int cv = CvMax; ;)
-            {
-                u1 -= u2;
-                if (u1 < u2)
-                {
-                    break;
-                }
-
-                if (--cv == 0)
-                {
-                    u1 %= u2;
-                    break;
-                }
-            }
-            LOtherSmall:
-            if (u1 == 0)
-            {
-                return u2;
-            }
-            for (int cv = CvMax; ;)
-            {
-                u2 -= u1;
-                if (u2 < u1)
-                {
-                    break;
-                }
-
-                if (--cv == 0)
-                {
-                    u2 %= u1;
-                    break;
-                }
-            }
-            goto LTopSmall;
+            return GCD((uint)uu1, (uint)uu2);
         }
 
         [System.Diagnostics.DebuggerNonUserCode]
