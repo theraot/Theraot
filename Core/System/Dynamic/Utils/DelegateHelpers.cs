@@ -1,10 +1,9 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System.Reflection;
-
 #if !FEATURE_DYNAMIC_DELEGATE
 
+using System.Reflection;
 using System.Reflection.Emit;
 
 #endif
@@ -13,6 +12,8 @@ namespace System.Dynamic.Utils
 {
     internal static class DelegateHelpers
     {
+        private static readonly MethodInfo _funcInvoke = typeof(Func<object[], object>).GetMethod("Invoke");
+
         internal static Delegate CreateObjectArrayDelegate(Type delegateType, Func<object[], object> handler)
         {
 #if !FEATURE_DYNAMIC_DELEGATE
@@ -99,7 +100,7 @@ namespace System.Dynamic.Utils
             ilgen.Emit(OpCodes.Ldloc, argArray);
 
             // invoke Invoke
-            var invoke = typeof(Func<object[], object>).GetMethod("Invoke");
+            var invoke = _funcInvoke;
             ilgen.Emit(OpCodes.Callvirt, invoke);
             ilgen.Emit(OpCodes.Stloc, retValue);
 
