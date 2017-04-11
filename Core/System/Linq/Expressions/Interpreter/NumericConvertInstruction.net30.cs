@@ -7,13 +7,13 @@ namespace System.Linq.Expressions.Interpreter
 {
     internal abstract class NumericConvertInstruction : Instruction
     {
-        internal readonly TypeCode _from, _to;
+        internal readonly TypeCode From, To;
         private readonly bool _isLiftedToNull;
 
         protected NumericConvertInstruction(TypeCode from, TypeCode to, bool isLiftedToNull)
         {
-            _from = from;
-            _to = to;
+            From = from;
+            To = to;
             _isLiftedToNull = isLiftedToNull;
         }
 
@@ -63,7 +63,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToString()
         {
-            return InstructionName + "(" + _from + "->" + _to + ")";
+            return InstructionName + "(" + From + "->" + To + ")";
         }
 
         internal sealed class Unchecked : NumericConvertInstruction
@@ -80,7 +80,7 @@ namespace System.Linq.Expressions.Interpreter
 
             protected override object Convert(object obj)
             {
-                switch (_from)
+                switch (From)
                 {
                     case TypeCode.Byte:
                         return ConvertInt32((Byte)obj);
@@ -124,7 +124,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 unchecked
                 {
-                    switch (_to)
+                    switch (To)
                     {
                         case TypeCode.Byte:
                             return (Byte)obj;
@@ -169,7 +169,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 unchecked
                 {
-                    switch (_to)
+                    switch (To)
                     {
                         case TypeCode.Byte:
                             return (Byte)obj;
@@ -214,7 +214,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 unchecked
                 {
-                    switch (_to)
+                    switch (To)
                     {
                         case TypeCode.Byte:
                             return (Byte)obj;
@@ -259,7 +259,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 unchecked
                 {
-                    switch (_to)
+                    switch (To)
                     {
                         case TypeCode.Byte:
                             return (Byte)obj;
@@ -315,7 +315,7 @@ namespace System.Linq.Expressions.Interpreter
 
             protected override object Convert(object obj)
             {
-                switch (_from)
+                switch (From)
                 {
                     case TypeCode.Byte:
                         return ConvertInt32((Byte)obj);
@@ -359,7 +359,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 checked
                 {
-                    switch (_to)
+                    switch (To)
                     {
                         case TypeCode.Byte:
                             return (Byte)obj;
@@ -404,7 +404,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 checked
                 {
-                    switch (_to)
+                    switch (To)
                     {
                         case TypeCode.Byte:
                             return (Byte)obj;
@@ -449,7 +449,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 checked
                 {
-                    switch (_to)
+                    switch (To)
                     {
                         case TypeCode.Byte:
                             return (Byte)obj;
@@ -494,7 +494,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 checked
                 {
-                    switch (_to)
+                    switch (To)
                     {
                         case TypeCode.Byte:
                             return (Byte)obj;
