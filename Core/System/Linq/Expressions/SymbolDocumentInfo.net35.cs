@@ -45,7 +45,7 @@ namespace System.Linq.Expressions
             get { return Guid.Empty; }
         }
 
-        internal static readonly Guid DocumentType_Text = new Guid(0x5a869d0b, 0x6611, 0x11d3, 0xbd, 0x2a, 0, 0, 0xf8, 8, 0x49, 0xbd);
+        internal static readonly Guid DocumentTypeText = new Guid(0x5a869d0b, 0x6611, 0x11d3, 0xbd, 0x2a, 0, 0, 0xf8, 8, 0x49, 0xbd);
 
         /// <summary>
         /// Returns the document type's unique identifier, if any.
@@ -53,7 +53,7 @@ namespace System.Linq.Expressions
         /// </summary>
         public virtual Guid DocumentType
         {
-            get { return DocumentType_Text; }
+            get { return DocumentTypeText; }
         }
     }
 
@@ -67,7 +67,7 @@ namespace System.Linq.Expressions
             : base(fileName)
         {
             _language = language;
-            _documentType = DocumentType_Text;
+            _documentType = DocumentTypeText;
         }
 
         internal SymbolDocumentWithGuids(string fileName, ref Guid language, ref Guid vendor)
@@ -75,7 +75,7 @@ namespace System.Linq.Expressions
         {
             _language = language;
             _vendor = vendor;
-            _documentType = DocumentType_Text;
+            _documentType = DocumentTypeText;
         }
 
         internal SymbolDocumentWithGuids(string fileName, ref Guid language, ref Guid vendor, ref Guid documentType)

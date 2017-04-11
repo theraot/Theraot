@@ -205,15 +205,14 @@ namespace System.Linq.Expressions
             {
                 throw Error.ArgumentCannotBeOfTypeVoid();
             }
-            ConstructorInfo ci = null;
             if (!type.IsValueType)
             {
-                ci = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).SingleOrDefault(c => c.GetParameters().Length == 0);
-                if (ci == null)
+                var constructorInfo = type.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).SingleOrDefault(c => c.GetParameters().Length == 0);
+                if (constructorInfo == null)
                 {
                     throw Error.TypeMissingDefaultConstructor(type);
                 }
-                return New(ci);
+                return New(constructorInfo);
             }
             return new NewValueTypeExpression(type, EmptyCollection<Expression>.Instance, null);
         }

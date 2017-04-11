@@ -108,12 +108,11 @@ namespace System.Linq
         internal sealed class Grouping : IGrouping<TKey, TElement>
         {
             private readonly Collection<TElement> _items;
-            private TKey _key;
 
             internal Grouping(TKey key)
             {
                 _items = new Collection<TElement>();
-                _key = key;
+                Key = key;
             }
 
             public Collection<TElement> Items
@@ -121,11 +120,7 @@ namespace System.Linq
                 get { return _items; }
             }
 
-            public TKey Key
-            {
-                get { return _key; }
-                set { _key = value; }
-            }
+            public TKey Key { get; set; }
 
             public IEnumerator<TElement> GetEnumerator()
             {

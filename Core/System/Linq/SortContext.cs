@@ -30,28 +30,15 @@ namespace System.Linq
 {
     internal abstract class SortContext<TElement>
     {
-        private SortContext<TElement> _childContext;
-        private SortDirection _direction;
-
         protected SortContext(SortDirection direction, SortContext<TElement> childContext)
         {
-            _direction = direction;
-            _childContext = childContext;
+            Direction = direction;
+            ChildContext = childContext;
         }
 
-        protected SortContext<TElement> ChildContext
-        {
-            get { return _childContext; }
+        protected SortContext<TElement> ChildContext { get; set; }
 
-            set { _childContext = value; }
-        }
-
-        protected SortDirection Direction
-        {
-            get { return _direction; }
-
-            set { _direction = value; }
-        }
+        protected SortDirection Direction { get; set; }
 
         public abstract int Compare(int firstIndex, int secondIndex);
 
