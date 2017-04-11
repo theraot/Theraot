@@ -12,7 +12,7 @@ namespace System.Linq.Expressions.Interpreter
 {
     internal static class DelegateHelpers
     {
-        private const int MaximumArity = 17;
+        private const int _maximumArity = 17;
 
         internal static Type MakeDelegate(Type[] types)
         {
@@ -20,7 +20,7 @@ namespace System.Linq.Expressions.Interpreter
 
             // Can only used predefined delegates if we have no byref types and
             // the arity is small enough to fit in Func<...> or Action<...>
-            if (types.Length > MaximumArity || types.Any(t => t.IsByRef))
+            if (types.Length > _maximumArity || types.Any(t => t.IsByRef))
             {
                 throw Assert.Unreachable;
             }
@@ -249,7 +249,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal static class ExceptionHelpers
     {
-        private const string prevStackTraces = "PreviousStackTraces";
+        private const string _prevStackTraces = "PreviousStackTraces"; // TODO not used
 
         public static Exception UpdateForRethrow(Exception rethrow)
         {
@@ -551,11 +551,11 @@ namespace System.Linq.Expressions.Interpreter
 
     internal static class Utils
     {
-        private static readonly DefaultExpression s_voidInstance = Expression.Empty();
+        private static readonly DefaultExpression _voidInstance = Expression.Empty();
 
         public static DefaultExpression Empty()
         {
-            return s_voidInstance;
+            return _voidInstance;
         }
     }
 
