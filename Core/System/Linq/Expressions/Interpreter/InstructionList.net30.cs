@@ -6,6 +6,8 @@
 // Enables instruction counting and displaying stats at process exit.
 // #define STATS
 
+// TODO update from corefx
+
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
