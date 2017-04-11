@@ -17,18 +17,18 @@ namespace System.Linq.Expressions.Interpreter
 
     internal abstract class LocalAccessInstruction : Instruction
     {
-        internal readonly int _index;
+        internal readonly int Index;
 
         protected LocalAccessInstruction(int index)
         {
-            _index = index;
+            Index = index;
         }
 
         public override string ToDebugString(int instructionIndex, object cookie, Func<int, int> labelIndexer, IList<object> objects)
         {
             return cookie == null ?
-                InstructionName + "(" + _index + ")" :
-                InstructionName + "(" + cookie + ": " + _index + ")";
+                InstructionName + "(" + Index + ")" :
+                InstructionName + "(" + cookie + ": " + Index + ")";
         }
     }
 
@@ -48,13 +48,13 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            frame.Data[frame.StackIndex++] = frame.Data[_index];
+            frame.Data[frame.StackIndex++] = frame.Data[Index];
             return +1;
         }
 
         public Instruction BoxIfIndexMatches(int index)
         {
-            return (index == _index) ? InstructionList.LoadLocalBoxed(index) : null;
+            return (index == Index) ? InstructionList.LoadLocalBoxed(index) : null;
         }
     }
 
@@ -72,7 +72,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            var box = (IStrongBox)frame.Data[_index];
+            var box = (IStrongBox)frame.Data[Index];
             frame.Data[frame.StackIndex++] = box.Value;
             return +1;
         }
@@ -92,7 +92,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            var box = frame.Closure[_index];
+            var box = frame.Closure[Index];
             frame.Data[frame.StackIndex++] = box.Value;
             return +1;
         }
@@ -112,7 +112,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            var box = frame.Closure[_index];
+            var box = frame.Closure[Index];
             frame.Data[frame.StackIndex++] = box;
             return +1;
         }
@@ -141,13 +141,13 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            frame.Data[_index] = frame.Peek();
+            frame.Data[Index] = frame.Peek();
             return +1;
         }
 
         public Instruction BoxIfIndexMatches(int index)
         {
-            return (index == _index) ? InstructionList.AssignLocalBoxed(index) : null;
+            return (index == Index) ? InstructionList.AssignLocalBoxed(index) : null;
         }
     }
 
@@ -165,13 +165,13 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            frame.Data[_index] = frame.Pop();
+            frame.Data[Index] = frame.Pop();
             return +1;
         }
 
         public Instruction BoxIfIndexMatches(int index)
         {
-            return (index == _index) ? InstructionList.StoreLocalBoxed(index) : null;
+            return (index == Index) ? InstructionList.StoreLocalBoxed(index) : null;
         }
     }
 
@@ -194,7 +194,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            var box = (IStrongBox)frame.Data[_index];
+            var box = (IStrongBox)frame.Data[Index];
             box.Value = frame.Peek();
             return +1;
         }
@@ -219,7 +219,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            var box = (IStrongBox)frame.Data[_index];
+            var box = (IStrongBox)frame.Data[Index];
             box.Value = frame.Data[--frame.StackIndex];
             return +1;
         }
@@ -244,7 +244,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            var box = frame.Closure[_index];
+            var box = frame.Closure[Index];
             box.Value = frame.Peek();
             return +1;
         }
@@ -267,7 +267,7 @@ namespace System.Linq.Expressions.Interpreter
         public override int Run(InterpretedFrame frame)
         {
             var o = frame.Pop();
-            frame.Push(o == null ? o : RuntimeHelpers.GetObjectValue(o));
+            frame.Push(o == null ? null : RuntimeHelpers.GetObjectValue(o));
             return +1;
         }
     }
@@ -292,13 +292,13 @@ namespace System.Linq.Expressions.Interpreter
 
             public override int Run(InterpretedFrame frame)
             {
-                frame.Data[_index] = null;
+                frame.Data[Index] = null;
                 return 1;
             }
 
             public Instruction BoxIfIndexMatches(int index)
             {
-                return (index == _index) ? InstructionList.InitImmutableRefBox(index) : null;
+                return (index == Index) ? InstructionList.InitImmutableRefBox(index) : null;
             }
 
             public override string InstructionName
@@ -320,13 +320,13 @@ namespace System.Linq.Expressions.Interpreter
 
             public override int Run(InterpretedFrame frame)
             {
-                frame.Data[_index] = _defaultValue;
+                frame.Data[Index] = _defaultValue;
                 return 1;
             }
 
             public Instruction BoxIfIndexMatches(int index)
             {
-                return (index == _index) ? new ImmutableBox(index) : null;
+                return (index == Index) ? new ImmutableBox(index) : null;
             }
 
             public override string InstructionName
@@ -346,7 +346,7 @@ namespace System.Linq.Expressions.Interpreter
 
             public override int Run(InterpretedFrame frame)
             {
-                frame.Data[_index] = new StrongBox<object>();
+                frame.Data[Index] = new StrongBox<object>();
                 return 1;
             }
 
@@ -358,7 +358,7 @@ namespace System.Linq.Expressions.Interpreter
 
         internal sealed class ImmutableRefValue : InitializeLocalInstruction, IBoxableInstruction
         {
-            private readonly Type _type;
+            private readonly Type _type; // TODO not used
 
             internal ImmutableRefValue(int index, Type type)
                 : base(index)
@@ -368,13 +368,13 @@ namespace System.Linq.Expressions.Interpreter
 
             public override int Run(InterpretedFrame frame)
             {
-                frame.Data[_index] = null;
+                frame.Data[Index] = null;
                 return 1;
             }
 
             public Instruction BoxIfIndexMatches(int index)
             {
-                return (index == _index) ? new ImmutableRefBox(index) : null;
+                return (index == Index) ? new ImmutableRefBox(index) : null;
             }
 
             public override string InstructionName
@@ -393,7 +393,7 @@ namespace System.Linq.Expressions.Interpreter
 
             public override int Run(InterpretedFrame frame)
             {
-                frame.Data[_index] = new StrongBox<object>();
+                frame.Data[Index] = new StrongBox<object>();
                 return 1;
             }
 
@@ -412,7 +412,7 @@ namespace System.Linq.Expressions.Interpreter
 
             public override int Run(InterpretedFrame frame)
             {
-                frame.Data[_index] = new StrongBox<object>(frame.Data[_index]);
+                frame.Data[Index] = new StrongBox<object>(frame.Data[Index]);
                 return 1;
             }
         }
@@ -433,7 +433,7 @@ namespace System.Linq.Expressions.Interpreter
 
             public Instruction BoxIfIndexMatches(int index)
             {
-                if (index == _index)
+                if (index == Index)
                 {
                     return InstructionList.ParameterBox(index);
                 }
@@ -460,7 +460,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 try
                 {
-                    frame.Data[_index] = Activator.CreateInstance(_type);
+                    frame.Data[Index] = Activator.CreateInstance(_type);
                 }
                 catch (TargetInvocationException e)
                 {
@@ -473,7 +473,7 @@ namespace System.Linq.Expressions.Interpreter
 
             public Instruction BoxIfIndexMatches(int index)
             {
-                return (index == _index) ? new MutableBox(index) : null;
+                return (index == Index) ? new MutableBox(index) : null;
             }
 
             public override string InstructionName
@@ -491,7 +491,7 @@ namespace System.Linq.Expressions.Interpreter
 
             public override int Run(InterpretedFrame frame)
             {
-                frame.Data[_index] = new StrongBox<object>();
+                frame.Data[Index] = new StrongBox<object>();
                 return 1;
             }
 
