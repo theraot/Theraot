@@ -15,11 +15,12 @@ namespace System.Linq.Expressions.Interpreter
         internal const int CacheSize = 32;
 
         // the offset to jump to (relative to this instruction):
-        protected int _offset = Unknown;
+        private int _offset = Unknown;
 
         public int Offset
         {
             get { return _offset; }
+            protected set { _offset = value; }
         }
 
         public abstract Instruction[] Cache { get; }
@@ -82,11 +83,11 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            Debug.Assert(_offset != Unknown);
+            Debug.Assert(Offset != Unknown);
 
             if (!(bool)frame.Pop())
             {
-                return _offset;
+                return Offset;
             }
 
             return +1;
@@ -121,11 +122,11 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            Debug.Assert(_offset != Unknown);
+            Debug.Assert(Offset != Unknown);
 
             if ((bool)frame.Pop())
             {
-                return _offset;
+                return Offset;
             }
 
             return +1;
@@ -165,11 +166,11 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            Debug.Assert(_offset != Unknown);
+            Debug.Assert(Offset != Unknown);
 
             if (frame.Peek() != null)
             {
-                return _offset;
+                return Offset;
             }
 
             return +1;
@@ -223,9 +224,9 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            Debug.Assert(_offset != Unknown);
+            Debug.Assert(Offset != Unknown);
 
-            return _offset;
+            return Offset;
         }
     }
 
