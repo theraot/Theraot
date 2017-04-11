@@ -22,10 +22,6 @@ namespace System.Linq.Expressions.Interpreter
             get { return "Call"; }
         }
 
-#if FEATURE_DLG_INVOKE
-        private static readonly Dictionary<MethodInfo, CallInstruction> _cache = new Dictionary<MethodInfo, CallInstruction>();
-#endif
-
         public static CallInstruction Create(MethodInfo info)
         {
             return Create(info, info.GetParameters());
@@ -50,84 +46,6 @@ namespace System.Linq.Expressions.Interpreter
             }
 
             return new MethodInfoCallInstruction(info, argumentCount);
-#if FEATURE_DLG_INVOKE
-
-            if (!info.IsStatic && info.DeclaringType.IsValueType)
-            {
-                return new MethodInfoCallInstruction(info, argumentCount);
-            }
-
-            if (argumentCount >= MaxHelpers)
-            {
-                // no delegate for this size, fallback to reflection invoke
-                return new MethodInfoCallInstruction(info, argumentCount);
-            }
-
-            foreach (ParameterInfo pi in parameters)
-            {
-                if (pi.ParameterType.IsByRef)
-                {
-                    // we don't support ref args via generics.
-                    return new MethodInfoCallInstruction(info, argumentCount);
-                }
-            }
-
-            // see if we've created one w/ a delegate
-            CallInstruction res;
-            if (ShouldCache(info))
-            {
-                lock (_cache)
-                {
-                    if (_cache.TryGetValue(info, out res))
-                    {
-                        return res;
-                    }
-                }
-            }
-
-            // create it
-            try
-            {
-#if FEATURE_FAST_CREATE
-                if (argumentCount < MaxArgs)
-                {
-                    res = FastCreate(info, parameters);
-                }
-                else
-#endif
-                {
-                    res = SlowCreate(info, parameters);
-                }
-            }
-            catch (TargetInvocationException tie)
-            {
-                if (!(tie.InnerException is NotSupportedException))
-                {
-                    throw;
-                }
-
-                res = new MethodInfoCallInstruction(info, argumentCount);
-            }
-            catch (NotSupportedException)
-            {
-                // if Delegate.CreateDelegate can't handle the method fallback to
-                // the slow reflection version.  For example this can happen w/
-                // a generic method defined on an interface and implemented on a class or
-                // a virtual generic method.
-                res = new MethodInfoCallInstruction(info, argumentCount);
-            }
-
-            // cache it for future users if it's a reasonable method to cache
-            if (ShouldCache(info))
-            {
-                lock (_cache)
-                {
-                    _cache[info] = res;
-                }
-            }
-
-            return res;
-#endif
         }
 
         private static CallInstruction GetArrayAccessor(MethodInfo info, int argumentCount)
@@ -178,76 +96,6 @@ namespace System.Linq.Expressions.Interpreter
         public static void ArrayItemSetter3(Array array, int index0, int index1, int index2, object value)
         {
             array.SetValue(value, index0, index1, index2);
-        }
-
-#if FEATURE_DLG_INVOKE
-        private static bool ShouldCache(MethodInfo info)
-        {
-            return true;
-        }
-#endif
-
-        /// <summary>
-        /// Gets the next type or null if no more types are available.
-        /// </summary>
-        private static Type TryGetParameterOrReturnType(MethodInfo target, ParameterInfo[] pi, int index)
-        {
-            if (!target.IsStatic)
-            {
-                index--;
-                if (index < 0)
-                {
-                    return target.DeclaringType;
-                }
-            }
-
-            if (index < pi.Length)
-            {
-                // next in signature
-                return pi[index].ParameterType;
-            }
-
-            if (target.ReturnType == typeof(void) || index > pi.Length)
-            {
-                // no more parameters
-                return null;
-            }
-
-            // last parameter on Invoke is return type
-            return target.ReturnType;
-        }
-
-        private static bool IndexIsNotReturnType(int index, MethodInfo target, ParameterInfo[] pi)
-        {
-            return pi.Length != index || (pi.Length == index && !target.IsStatic);
-        }
-
-        /// <summary>
-        /// Uses reflection to create new instance of the appropriate ReflectedCaller
-        /// </summary>
-        private static CallInstruction SlowCreate(MethodInfo info, ParameterInfo[] pis)
-        {
-            var types = new List<Type>();
-            if (!info.IsStatic)
-                types.Add(info.DeclaringType);
-            foreach (ParameterInfo pi in pis)
-            {
-                types.Add(pi.ParameterType);
-            }
-            if (info.ReturnType != typeof(void))
-            {
-                types.Add(info.ReturnType);
-            }
-            var arrTypes = types.ToArray();
-
-            try
-            {
-                return (CallInstruction)Activator.CreateInstance(GetHelperType(info, arrTypes), info);
-            }
-            catch (TargetInvocationException e)
-            {
-                throw ExceptionHelpers.UpdateForRethrow(e.InnerException);
-            }
         }
 
         #endregion Construction
