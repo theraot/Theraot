@@ -742,6 +742,74 @@ namespace Theraot.Collections
             }
         }
 
+        public static IEnumerable<T> EmptyChecked<T>(this IEnumerable<T> source, Action onEmpty)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (onEmpty == null)
+            {
+                throw new ArgumentException("onEmpty");
+            }
+            var sourceCollection = source as ICollection<T>;
+            if (sourceCollection != null)
+            {
+                if (sourceCollection.Count == 0)
+                {
+                    onEmpty();
+                    return ArrayReservoir<T>.EmptyArray;
+                }
+            }
+            return NullOrEmptyCheckedExtracted(source, onEmpty);
+        }
+
+        public static IEnumerable<T> EmptyChecked<T>(this IEnumerable<T> source, Action onEmpty, Action onNotEmpty)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (onEmpty == null)
+            {
+                throw new ArgumentException("onEmpty");
+            }
+            var sourceCollection = source as ICollection<T>;
+            if (sourceCollection != null)
+            {
+                if (sourceCollection.Count == 0)
+                {
+                    onEmpty();
+                    return ArrayReservoir<T>.EmptyArray;
+                }
+                onNotEmpty();
+            }
+            return NullOrEmptyCheckedExtracted(source, onEmpty, onNotEmpty);
+        }
+
+        public static IEnumerable<T> EmptyChecked<T>(this IEnumerable<T> source, Action onEmpty, Action onUnknownSize, Action<int> onKnownSize)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (onEmpty == null)
+            {
+                throw new ArgumentException("onEmpty");
+            }
+            var sourceCollection = source as ICollection<T>;
+            if (sourceCollection != null)
+            {
+                if (sourceCollection.Count == 0)
+                {
+                    onEmpty();
+                    return ArrayReservoir<T>.EmptyArray;
+                }
+                onKnownSize(sourceCollection.Count);
+            }
+            return NullOrEmptyCheckedExtracted(source, onEmpty, onUnknownSize);
+        }
+
         public static int ExceptWith<T>(this ICollection<T> source, IEnumerable<T> other)
         {
             if (source == null)
@@ -1999,6 +2067,77 @@ namespace Theraot.Collections
             list.Insert(newIndex, item);
         }
 
+        public static IEnumerable<T> NullOrEmptyChecked<T>(this IEnumerable<T> source, Action onEmpty)
+        {
+            if (onEmpty == null)
+            {
+                throw new ArgumentException("onEmpty");
+            }
+            if (source == null)
+            {
+                onEmpty();
+                return ArrayReservoir<T>.EmptyArray;
+            }
+            var sourceCollection = source as ICollection<T>;
+            if (sourceCollection != null)
+            {
+                if (sourceCollection.Count == 0)
+                {
+                    onEmpty();
+                    return ArrayReservoir<T>.EmptyArray;
+                }
+            }
+            return NullOrEmptyCheckedExtracted(source, onEmpty);
+        }
+
+        public static IEnumerable<T> NullOrEmptyChecked<T>(this IEnumerable<T> source, Action onEmpty, Action onNotEmpty)
+        {
+            if (onEmpty == null)
+            {
+                throw new ArgumentException("onEmpty");
+            }
+            if (source == null)
+            {
+                onEmpty();
+                return ArrayReservoir<T>.EmptyArray;
+            }
+            var sourceCollection = source as ICollection<T>;
+            if (sourceCollection != null)
+            {
+                if (sourceCollection.Count == 0)
+                {
+                    onEmpty();
+                    return ArrayReservoir<T>.EmptyArray;
+                }
+                onNotEmpty();
+            }
+            return NullOrEmptyCheckedExtracted(source, onEmpty, onNotEmpty);
+        }
+
+        public static IEnumerable<T> NullOrEmptyChecked<T>(this IEnumerable<T> source, Action onEmpty, Action onUnknownSize, Action<int> onKnownSize)
+        {
+            if (onEmpty == null)
+            {
+                throw new ArgumentException("onEmpty");
+            }
+            if (source == null)
+            {
+                onEmpty();
+                return ArrayReservoir<T>.EmptyArray;
+            }
+            var sourceCollection = source as ICollection<T>;
+            if (sourceCollection != null)
+            {
+                if (sourceCollection.Count == 0)
+                {
+                    onEmpty();
+                    return ArrayReservoir<T>.EmptyArray;
+                }
+                onKnownSize(sourceCollection.Count);
+            }
+            return NullOrEmptyCheckedExtracted(source, onEmpty, onUnknownSize);
+        }
+
         public static bool Overlaps<T>(this IEnumerable<T> source, IEnumerable<T> items)
         {
             return ContainsAny(source, items);
@@ -2660,6 +2799,57 @@ namespace Theraot.Collections
                 return elementCount < @this.Count;
             }
             return true;
+        }
+
+        private static IEnumerable<T> NullOrEmptyCheckedExtracted<T>(IEnumerable<T> source, Action onEmpty)
+        {
+            var enumerator = source.GetEnumerator();
+            try
+            {
+                if (enumerator.MoveNext())
+                {
+                    yield return enumerator.Current;
+                }
+                else
+                {
+                    onEmpty();
+                    yield break;
+                }
+                while (enumerator.MoveNext())
+                {
+                    yield return enumerator.Current;
+                }
+            }
+            finally
+            {
+                enumerator.Dispose();
+            }
+        }
+
+        private static IEnumerable<T> NullOrEmptyCheckedExtracted<T>(IEnumerable<T> source, Action onEmpty, Action onNotEmpty)
+        {
+            var enumerator = source.GetEnumerator();
+            try
+            {
+                if (enumerator.MoveNext())
+                {
+                    onNotEmpty();
+                    yield return enumerator.Current;
+                }
+                else
+                {
+                    onEmpty();
+                    yield break;
+                }
+                while (enumerator.MoveNext())
+                {
+                    yield return enumerator.Current;
+                }
+            }
+            finally
+            {
+                enumerator.Dispose();
+            }
         }
 
         private static void SortExtracted<T>(IList<T> list, int indexStart, int indexEnd, IComparer<T> comparer)
