@@ -118,16 +118,14 @@ namespace System.Linq.Expressions
             return ListBind(GetProperty(propertyAccessor), initializers);
         }
 
-        private static void ValidateListInitArgs(Type listType, ReadOnlyCollection<ElementInit> initializers)
+        private static void ValidateListInitArgs(Type listType, IEnumerable<ElementInit> initializers)
         {
             if (!typeof(IEnumerable).IsAssignableFrom(listType))
             {
                 throw Error.TypeNotIEnumerable(listType);
             }
-            var n = initializers.Count;
-            for (int i = 0; i < n; i++)
+            foreach (var element in initializers)
             {
-                var element = initializers[i];
                 ContractUtils.RequiresNotNull(element, "initializers");
                 ValidateCallInstanceType(listType, element.AddMethod);
             }
