@@ -321,7 +321,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             var type = frame.Pop();
             var obj = frame.Pop();
-            frame.Push(ScriptingRuntimeHelpers.BooleanToObject(obj != null && obj.GetType() == type));
+            frame.Push(ScriptingRuntimeHelpers.BooleanToObject(obj != null && ReferenceEquals(obj.GetType(), type)));
             return +1;
         }
     }
@@ -353,7 +353,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             var type = frame.Pop();
             var obj = frame.Pop();
-            frame.Push(ScriptingRuntimeHelpers.BooleanToObject(obj != null && obj.GetType() == type));
+            frame.Push(ScriptingRuntimeHelpers.BooleanToObject(obj != null && ReferenceEquals(obj.GetType(), type)));
             return +1;
         }
     }
@@ -2496,7 +2496,7 @@ namespace System.Linq.Expressions.Interpreter
         public override int Run(InterpretedFrame frame)
         {
             var from = frame.Pop();
-            var to = from != null ? Enum.ToObject(_t, from) : from;
+            var to = from == null ? null : Enum.ToObject(_t, from);
             frame.Push(to);
 
             return +1;
@@ -2553,7 +2553,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal class LogInstruction : Instruction
     {
-        private readonly string _message;
+        private readonly string _message; // TODO never used
 
         public LogInstruction(string message)
         {
