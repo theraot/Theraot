@@ -10,9 +10,9 @@ namespace System.Linq.Expressions.Interpreter
     internal abstract class EqualInstruction : Instruction
     {
         // Perf: EqualityComparer<T> but is 3/2 to 2 times slower.
-        private static Instruction s_reference, s_boolean, s_SByte, s_int16, s_char, s_int32, s_int64, s_byte, s_UInt16, s_UInt32, s_UInt64, s_single, s_double;
+        private static Instruction _reference, _boolean, _sbyte, _int16, _char, _int32, _int64, _byte, _uint16, _uint32, _uint64, _single, _double;
 
-        private static Instruction s_referenceLiftedToNull, s_booleanLiftedToNull, s_SByteLiftedToNull, s_int16LiftedToNull, s_charLiftedToNull, s_int32LiftedToNull, s_int64LiftedToNull, s_byteLiftedToNull, s_UInt16LiftedToNull, s_UInt32LiftedToNull, s_UInt64LiftedToNull, s_singleLiftedToNull, s_doubleLiftedToNull;
+        private static Instruction _referenceLiftedToNull, _booleanLiftedToNull, _sbyteLiftedToNull, _int16LiftedToNull, _charLiftedToNull, _int32LiftedToNull, _int64LiftedToNull, _byteLiftedToNull, _uint16LiftedToNull, _uint32LiftedToNull, _uint64LiftedToNull, _singleLiftedToNull, _doubleLiftedToNull;
 
         public override int ConsumedStack
         {
@@ -269,7 +269,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(ScriptingRuntimeHelpers.BooleanToObject(((Single)left) == ((Single)right)));
+                    frame.Push(ScriptingRuntimeHelpers.BooleanToObject(((Single)left) == ((Single)right))); // No, don't try to be clever about float comparison
                 }
                 return +1;
             }
@@ -291,7 +291,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(ScriptingRuntimeHelpers.BooleanToObject(((Double)left) == ((Double)right)));
+                    frame.Push(ScriptingRuntimeHelpers.BooleanToObject(((Double)left) == ((Double)right))); // No, don't try to be clever about double comparison
                 }
                 return +1;
             }
@@ -301,7 +301,9 @@ namespace System.Linq.Expressions.Interpreter
         {
             public override int Run(InterpretedFrame frame)
             {
-                frame.Push(ScriptingRuntimeHelpers.BooleanToObject(frame.Pop() == frame.Pop()));
+                var left = frame.Pop();
+                var right = frame.Pop();
+                frame.Push(ScriptingRuntimeHelpers.BooleanToObject(left == right));
                 return +1;
             }
         }
@@ -498,7 +500,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(ScriptingRuntimeHelpers.BooleanToObject(((Single)left) == ((Single)right)));
+                    frame.Push(ScriptingRuntimeHelpers.BooleanToObject(((Single)left) == ((Single)right))); // No, don't try to be clever about float comparison
                 }
                 return +1;
             }
@@ -516,7 +518,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(ScriptingRuntimeHelpers.BooleanToObject(((Double)left) == ((Double)right)));
+                    frame.Push(ScriptingRuntimeHelpers.BooleanToObject(((Double)left) == ((Double)right))); // No, don't try to be clever about double comparison
                 }
                 return +1;
             }
@@ -548,46 +550,46 @@ namespace System.Linq.Expressions.Interpreter
                 switch ((type.IsEnum ? Enum.GetUnderlyingType(type) : type.GetNonNullableType()).GetTypeCode())
                 {
                     case TypeCode.Boolean:
-                        return s_booleanLiftedToNull ?? (s_booleanLiftedToNull = new EqualBooleanLiftedToNull());
+                        return _booleanLiftedToNull ?? (_booleanLiftedToNull = new EqualBooleanLiftedToNull());
 
                     case TypeCode.SByte:
-                        return s_SByteLiftedToNull ?? (s_SByteLiftedToNull = new EqualSByteLiftedToNull());
+                        return _sbyteLiftedToNull ?? (_sbyteLiftedToNull = new EqualSByteLiftedToNull());
 
                     case TypeCode.Byte:
-                        return s_byteLiftedToNull ?? (s_byteLiftedToNull = new EqualByteLiftedToNull());
+                        return _byteLiftedToNull ?? (_byteLiftedToNull = new EqualByteLiftedToNull());
 
                     case TypeCode.Char:
-                        return s_charLiftedToNull ?? (s_charLiftedToNull = new EqualCharLiftedToNull());
+                        return _charLiftedToNull ?? (_charLiftedToNull = new EqualCharLiftedToNull());
 
                     case TypeCode.Int16:
-                        return s_int16LiftedToNull ?? (s_int16LiftedToNull = new EqualInt16LiftedToNull());
+                        return _int16LiftedToNull ?? (_int16LiftedToNull = new EqualInt16LiftedToNull());
 
                     case TypeCode.Int32:
-                        return s_int32LiftedToNull ?? (s_int32LiftedToNull = new EqualInt32LiftedToNull());
+                        return _int32LiftedToNull ?? (_int32LiftedToNull = new EqualInt32LiftedToNull());
 
                     case TypeCode.Int64:
-                        return s_int64LiftedToNull ?? (s_int64LiftedToNull = new EqualInt64LiftedToNull());
+                        return _int64LiftedToNull ?? (_int64LiftedToNull = new EqualInt64LiftedToNull());
 
                     case TypeCode.UInt16:
-                        return s_UInt16LiftedToNull ?? (s_UInt16LiftedToNull = new EqualUInt16LiftedToNull());
+                        return _uint16LiftedToNull ?? (_uint16LiftedToNull = new EqualUInt16LiftedToNull());
 
                     case TypeCode.UInt32:
-                        return s_UInt32LiftedToNull ?? (s_UInt32LiftedToNull = new EqualUInt32LiftedToNull());
+                        return _uint32LiftedToNull ?? (_uint32LiftedToNull = new EqualUInt32LiftedToNull());
 
                     case TypeCode.UInt64:
-                        return s_UInt64LiftedToNull ?? (s_UInt64LiftedToNull = new EqualUInt64LiftedToNull());
+                        return _uint64LiftedToNull ?? (_uint64LiftedToNull = new EqualUInt64LiftedToNull());
 
                     case TypeCode.Single:
-                        return s_singleLiftedToNull ?? (s_singleLiftedToNull = new EqualSingleLiftedToNull());
+                        return _singleLiftedToNull ?? (_singleLiftedToNull = new EqualSingleLiftedToNull());
 
                     case TypeCode.Double:
-                        return s_doubleLiftedToNull ?? (s_doubleLiftedToNull = new EqualDoubleLiftedToNull());
+                        return _doubleLiftedToNull ?? (_doubleLiftedToNull = new EqualDoubleLiftedToNull());
 
                     case TypeCode.String:
                     case TypeCode.Object:
                         if (!type.IsValueType)
                         {
-                            return s_referenceLiftedToNull ?? (s_referenceLiftedToNull = new EqualReferenceLiftedToNull());
+                            return _referenceLiftedToNull ?? (_referenceLiftedToNull = new EqualReferenceLiftedToNull());
                         }
                         // TODO: Nullable<T>
                         throw Error.ExpressionNotSupportedForNullableType("Equal", type);
@@ -601,46 +603,46 @@ namespace System.Linq.Expressions.Interpreter
                 switch ((type.IsEnum ? Enum.GetUnderlyingType(type) : type.GetNonNullableType()).GetTypeCode())
                 {
                     case TypeCode.Boolean:
-                        return s_boolean ?? (s_boolean = new EqualBoolean());
+                        return _boolean ?? (_boolean = new EqualBoolean());
 
                     case TypeCode.SByte:
-                        return s_SByte ?? (s_SByte = new EqualSByte());
+                        return _sbyte ?? (_sbyte = new EqualSByte());
 
                     case TypeCode.Byte:
-                        return s_byte ?? (s_byte = new EqualByte());
+                        return _byte ?? (_byte = new EqualByte());
 
                     case TypeCode.Char:
-                        return s_char ?? (s_char = new EqualChar());
+                        return _char ?? (_char = new EqualChar());
 
                     case TypeCode.Int16:
-                        return s_int16 ?? (s_int16 = new EqualInt16());
+                        return _int16 ?? (_int16 = new EqualInt16());
 
                     case TypeCode.Int32:
-                        return s_int32 ?? (s_int32 = new EqualInt32());
+                        return _int32 ?? (_int32 = new EqualInt32());
 
                     case TypeCode.Int64:
-                        return s_int64 ?? (s_int64 = new EqualInt64());
+                        return _int64 ?? (_int64 = new EqualInt64());
 
                     case TypeCode.UInt16:
-                        return s_UInt16 ?? (s_UInt16 = new EqualUInt16());
+                        return _uint16 ?? (_uint16 = new EqualUInt16());
 
                     case TypeCode.UInt32:
-                        return s_UInt32 ?? (s_UInt32 = new EqualUInt32());
+                        return _uint32 ?? (_uint32 = new EqualUInt32());
 
                     case TypeCode.UInt64:
-                        return s_UInt64 ?? (s_UInt64 = new EqualUInt64());
+                        return _uint64 ?? (_uint64 = new EqualUInt64());
 
                     case TypeCode.Single:
-                        return s_single ?? (s_single = new EqualSingle());
+                        return _single ?? (_single = new EqualSingle());
 
                     case TypeCode.Double:
-                        return s_double ?? (s_double = new EqualDouble());
+                        return _double ?? (_double = new EqualDouble());
 
                     case TypeCode.String:
                     case TypeCode.Object:
                         if (!type.IsValueType)
                         {
-                            return s_reference ?? (s_reference = new EqualReference());
+                            return _reference ?? (_reference = new EqualReference());
                         }
                         // TODO: Nullable<T>
                         throw Error.ExpressionNotSupportedForNullableType("Equal", type);
