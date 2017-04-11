@@ -16,7 +16,7 @@ namespace System.Linq.Expressions.Interpreter
         public static InterpretedFrame CurrentFrame;
 
         internal readonly Interpreter Interpreter;
-        internal InterpretedFrame _parent;
+        private InterpretedFrame _parent;
 
         private readonly int[] _continuations;
 
@@ -131,6 +131,7 @@ namespace System.Linq.Expressions.Interpreter
         public InterpretedFrame Parent
         {
             get { return _parent; }
+            internal set { _parent = value; }
         }
 
         public static bool IsInterpretedFrame(MethodBase method)
@@ -262,17 +263,17 @@ namespace System.Linq.Expressions.Interpreter
             _pendingContinuation = (int)Pop();
         }
 
-        private static MethodInfo s_goto;
-        private static MethodInfo s_voidGoto;
+        private static MethodInfo _goto;
+        private static MethodInfo _voidGoto;
 
         internal static MethodInfo GotoMethod
         {
-            get { return s_goto ?? (s_goto = typeof(InterpretedFrame).GetMethod("Goto")); }
+            get { return _goto ?? (_goto = typeof(InterpretedFrame).GetMethod("Goto")); }
         }
 
         internal static MethodInfo VoidGotoMethod
         {
-            get { return s_voidGoto ?? (s_voidGoto = typeof(InterpretedFrame).GetMethod("VoidGoto")); }
+            get { return _voidGoto ?? (_voidGoto = typeof(InterpretedFrame).GetMethod("VoidGoto")); }
         }
 
         public int VoidGoto(int labelIndex)
