@@ -12,32 +12,32 @@ namespace System.Linq.Expressions.Interpreter
 {
     internal sealed class LocalVariable
     {
-        private const int IsBoxedFlag = 1;
-        private const int InClosureFlag = 2;
+        private const int _isBoxedFlag = 1;
+        private const int _inClosureFlag = 2;
 
         public readonly int Index;
         private int _flags;
 
         public bool IsBoxed
         {
-            get { return (_flags & IsBoxedFlag) != 0; }
+            get { return (_flags & _isBoxedFlag) != 0; }
 
             set
             {
                 if (value)
                 {
-                    _flags |= IsBoxedFlag;
+                    _flags |= _isBoxedFlag;
                 }
                 else
                 {
-                    _flags &= ~IsBoxedFlag;
+                    _flags &= ~_isBoxedFlag;
                 }
             }
         }
 
         public bool InClosure
         {
-            get { return (_flags & InClosureFlag) != 0; }
+            get { return (_flags & _inClosureFlag) != 0; }
         }
 
         public bool InClosureOrBoxed
@@ -48,7 +48,7 @@ namespace System.Linq.Expressions.Interpreter
         internal LocalVariable(int index, bool closure, bool boxed)
         {
             Index = index;
-            _flags = (closure ? InClosureFlag : 0) | (boxed ? IsBoxedFlag : 0);
+            _flags = (closure ? _inClosureFlag : 0) | (boxed ? _isBoxedFlag : 0);
         }
 
         internal Expression LoadFromArray(Expression frameData, Expression closure, Type parameterType)
