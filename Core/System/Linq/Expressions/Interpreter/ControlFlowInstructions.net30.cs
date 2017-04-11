@@ -738,7 +738,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            var exception = frame.Pop();
+            GC.KeepAlive(frame.Pop());
             throw new RethrowException();
         }
     }
