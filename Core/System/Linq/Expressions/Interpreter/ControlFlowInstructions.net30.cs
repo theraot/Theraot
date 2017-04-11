@@ -68,10 +68,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             get
             {
-                if (_cache == null)
-                {
-                    _cache = new Instruction[CacheSize];
-                }
+                _cache = _cache ?? new Instruction[CacheSize];
                 return _cache;
             }
         }
@@ -107,10 +104,6 @@ namespace System.Linq.Expressions.Interpreter
         {
             get
             {
-                if (_cache == null)
-                {
-                    _cache = new Instruction[CacheSize];
-                }
                 return _cache;
             }
         }
@@ -146,10 +139,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             get
             {
-                if (_cache == null)
-                {
-                    _cache = new Instruction[CacheSize];
-                }
+                _cache = _cache ?? new Instruction[CacheSize];
                 return _cache;
             }
         }
@@ -190,10 +180,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             get
             {
-                if (_caches == null)
-                {
-                    _caches = new Instruction[2][][] { new Instruction[2][], new Instruction[2][] };
-                }
+                _caches = _caches ?? new Instruction[2][][] { new Instruction[2][], new Instruction[2][] };
                 return _caches[ConsumedStack][ProducedStack] ?? (_caches[ConsumedStack][ProducedStack] = new Instruction[CacheSize]);
             }
         }
@@ -241,7 +228,7 @@ namespace System.Linq.Expressions.Interpreter
 
         internal readonly int LabelIndex;
 
-        public IndexedBranchInstruction(int labelIndex)
+        internal IndexedBranchInstruction(int labelIndex)
         {
             LabelIndex = labelIndex;
         }
@@ -254,6 +241,10 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToDebugString(int instructionIndex, object cookie, Func<int, int> labelIndexer, IList<object> objects)
         {
+            if (labelIndexer == null)
+            {
+                throw new ArgumentNullException("labelIndexer");
+            }
             Debug.Assert(LabelIndex != UnknownInstrIndex);
             var targetIndex = labelIndexer(LabelIndex);
             return ToString() + (targetIndex != BranchLabel.UnknownIndex ? " -> " + targetIndex : "");
@@ -898,13 +889,14 @@ namespace System.Linq.Expressions.Interpreter
             return 1;
         }
 
-        private bool Compiled
+        private bool Compiled // TODO: is this called?
         {
             get { return _loop == null; }
         }
 
-        private void Compile(object frameObj)
+        private void Compile(object frameObj) // TODO: is this called?
         {
+            GC.KeepAlive(frameObj);
         }
     }
 }
