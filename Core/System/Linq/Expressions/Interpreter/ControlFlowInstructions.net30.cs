@@ -236,7 +236,7 @@ namespace System.Linq.Expressions.Interpreter
         public RuntimeLabel GetLabel(InterpretedFrame frame)
         {
             Debug.Assert(LabelIndex != UnknownInstrIndex);
-            return frame.Interpreter._labels[LabelIndex];
+            return frame.Interpreter.Labels[LabelIndex];
         }
 
         public override string ToDebugString(int instructionIndex, object cookie, Func<int, int> labelIndexer, IList<object> objects)
