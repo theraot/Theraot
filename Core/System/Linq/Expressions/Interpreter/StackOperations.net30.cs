@@ -60,7 +60,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override int Run(InterpretedFrame frame)
         {
-            frame.Data[frame.StackIndex++] = frame.Interpreter._objects[_index];
+            frame.Data[frame.StackIndex++] = frame.Interpreter.Objects[_index];
             return +1;
         }
 
