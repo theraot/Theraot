@@ -196,10 +196,8 @@ namespace MonoTests.System.Collections.Concurrent
             var firstPair = new KeyValuePair<string, string>("key", "validValue");
             var secondPair = new KeyValuePair<string, string>("key", "wrongValue");
 
-            IDictionary<string, string> dict = new ConcurrentDictionary<string, string>
-            {
-                firstPair
-            };
+            IDictionary<string, string> dict = new ConcurrentDictionary<string, string>();
+            dict.Add(firstPair); // Do not change to object initialization
             Assert.Throws<ArgumentException>(() => dict.Add(secondPair));
 
             Assert.IsTrue(dict.Contains(firstPair));
