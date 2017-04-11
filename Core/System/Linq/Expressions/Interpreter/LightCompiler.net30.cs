@@ -23,7 +23,7 @@ namespace System.Linq.Expressions.Interpreter
         public readonly int HandlerStartIndex;
         public readonly int HandlerEndIndex;
 
-        internal TryCatchFinallyHandler Parent = null;
+        internal TryCatchFinallyHandler Parent;
 
         public bool IsFault
         {
@@ -92,11 +92,11 @@ namespace System.Linq.Expressions.Interpreter
 
     internal sealed class TryCatchFinallyHandler
     {
-        internal readonly int TryStartIndex = Instruction.UnknownInstrIndex;
-        internal readonly int TryEndIndex = Instruction.UnknownInstrIndex;
-        internal readonly int FinallyStartIndex = Instruction.UnknownInstrIndex;
-        internal readonly int FinallyEndIndex = Instruction.UnknownInstrIndex;
-        internal readonly int GotoEndTargetIndex = Instruction.UnknownInstrIndex;
+        internal readonly int TryStartIndex;
+        internal readonly int TryEndIndex;
+        internal readonly int FinallyStartIndex;
+        internal readonly int FinallyEndIndex;
+        internal readonly int GotoEndTargetIndex;
 
         private readonly ExceptionHandler[] _handlers;
 
