@@ -10,7 +10,7 @@ namespace System.Linq.Expressions.Interpreter
 {
     internal abstract class SubInstruction : Instruction
     {
-        private static Instruction s_int16, s_int32, s_int64, s_UInt16, s_UInt32, s_UInt64, s_single, s_double;
+        private static Instruction _int16, _int32, _int64, _uInt16, _uInt32, _uInt64, _single, _double;
 
         public override int ConsumedStack
         {
@@ -189,28 +189,28 @@ namespace System.Linq.Expressions.Interpreter
             switch (type.GetNonNullableType().GetTypeCode())
             {
                 case TypeCode.Int16:
-                    return s_int16 ?? (s_int16 = new SubInt16());
+                    return _int16 ?? (_int16 = new SubInt16());
 
                 case TypeCode.Int32:
-                    return s_int32 ?? (s_int32 = new SubInt32());
+                    return _int32 ?? (_int32 = new SubInt32());
 
                 case TypeCode.Int64:
-                    return s_int64 ?? (s_int64 = new SubInt64());
+                    return _int64 ?? (_int64 = new SubInt64());
 
                 case TypeCode.UInt16:
-                    return s_UInt16 ?? (s_UInt16 = new SubUInt16());
+                    return _uInt16 ?? (_uInt16 = new SubUInt16());
 
                 case TypeCode.UInt32:
-                    return s_UInt32 ?? (s_UInt32 = new SubUInt32());
+                    return _uInt32 ?? (_uInt32 = new SubUInt32());
 
                 case TypeCode.UInt64:
-                    return s_UInt64 ?? (s_UInt64 = new SubUInt64());
+                    return _uInt64 ?? (_uInt64 = new SubUInt64());
 
                 case TypeCode.Single:
-                    return s_single ?? (s_single = new SubSingle());
+                    return _single ?? (_single = new SubSingle());
 
                 case TypeCode.Double:
-                    return s_double ?? (s_double = new SubDouble());
+                    return _double ?? (_double = new SubDouble());
 
                 default:
                     throw Error.ExpressionNotSupportedForType("Sub", type);
@@ -225,7 +225,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal abstract class SubOvfInstruction : Instruction
     {
-        private static Instruction s_int16, s_int32, s_int64, s_UInt16, s_UInt32, s_UInt64, s_single, s_double;
+        private static Instruction _int16, _int32, _int64, _uInt16, _uInt32, _uInt64, _single, _double;
 
         public override int ConsumedStack
         {
@@ -404,28 +404,28 @@ namespace System.Linq.Expressions.Interpreter
             switch (type.GetNonNullableType().GetTypeCode())
             {
                 case TypeCode.Int16:
-                    return s_int16 ?? (s_int16 = new SubOvfInt16());
+                    return _int16 ?? (_int16 = new SubOvfInt16());
 
                 case TypeCode.Int32:
-                    return s_int32 ?? (s_int32 = new SubOvfInt32());
+                    return _int32 ?? (_int32 = new SubOvfInt32());
 
                 case TypeCode.Int64:
-                    return s_int64 ?? (s_int64 = new SubOvfInt64());
+                    return _int64 ?? (_int64 = new SubOvfInt64());
 
                 case TypeCode.UInt16:
-                    return s_UInt16 ?? (s_UInt16 = new SubOvfUInt16());
+                    return _uInt16 ?? (_uInt16 = new SubOvfUInt16());
 
                 case TypeCode.UInt32:
-                    return s_UInt32 ?? (s_UInt32 = new SubOvfUInt32());
+                    return _uInt32 ?? (_uInt32 = new SubOvfUInt32());
 
                 case TypeCode.UInt64:
-                    return s_UInt64 ?? (s_UInt64 = new SubOvfUInt64());
+                    return _uInt64 ?? (_uInt64 = new SubOvfUInt64());
 
                 case TypeCode.Single:
-                    return s_single ?? (s_single = new SubOvfSingle());
+                    return _single ?? (_single = new SubOvfSingle());
 
                 case TypeCode.Double:
-                    return s_double ?? (s_double = new SubOvfDouble());
+                    return _double ?? (_double = new SubOvfDouble());
 
                 default:
                     throw Error.ExpressionNotSupportedForType("SubOvf", type);
