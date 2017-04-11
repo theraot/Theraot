@@ -73,12 +73,12 @@ namespace System.Runtime.CompilerServices
             /// <summary>
             /// A true task.
             /// </summary>
-            private readonly TaskCompletionSource<bool> m_true = CreateCompleted(true);
+            private readonly TaskCompletionSource<bool> _true = CreateCompleted(true);
 
             /// <summary>
             /// A false task.
             /// </summary>
-            private readonly TaskCompletionSource<bool> m_false = CreateCompleted(false);
+            private readonly TaskCompletionSource<bool> _false = CreateCompleted(false);
 
             /// <summary>
             /// Gets a cached task for the Boolean result.
@@ -89,7 +89,7 @@ namespace System.Runtime.CompilerServices
             /// </returns>
             internal override TaskCompletionSource<bool> FromResult(bool result)
             {
-                return result ? m_true : m_false;
+                return result ? _true : _false;
             }
         }
 
@@ -101,17 +101,17 @@ namespace System.Runtime.CompilerServices
             /// <summary>
             /// The cache of Task{Int32}.
             /// </summary>
-            private static readonly TaskCompletionSource<int>[] Int32Tasks = CreateInt32Tasks();
+            private static readonly TaskCompletionSource<int>[] _int32Tasks = CreateInt32Tasks();
 
             /// <summary>
             /// The minimum value, inclusive, for which we want a cached task.
             /// </summary>
-            private const int INCLUSIVE_INT32_MIN = -1;
+            private const int _minInt32ValueInclusive = -1;
 
             /// <summary>
             /// The maximum value, exclusive, for which we want a cached task.
             /// </summary>
-            private const int EXCLUSIVE_INT32_MAX = 9;
+            private const int _maxInt32ValueExclusive = 9;
 
             static AsyncMethodInt32TaskCache()
             {
@@ -137,10 +137,10 @@ namespace System.Runtime.CompilerServices
             /// </returns>
             internal override TaskCompletionSource<int> FromResult(int result)
             {
-                if (result < INCLUSIVE_INT32_MIN || result >= EXCLUSIVE_INT32_MAX)
+                if (result < _minInt32ValueInclusive || result >= _maxInt32ValueExclusive)
                     return CreateCompleted(result);
 
-                return Int32Tasks[result - -1];
+                return _int32Tasks[result - -1];
             }
         }
     }

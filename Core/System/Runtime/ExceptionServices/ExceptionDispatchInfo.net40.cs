@@ -11,7 +11,7 @@ namespace System.Runtime.ExceptionServices
     {
         private static FieldInfo _remoteStackTraceString;
 
-        private Exception _exception;
+        private readonly Exception _exception;
         private readonly object _stackTraceOriginal;
         private readonly object _stackTrace;
 
@@ -59,13 +59,9 @@ namespace System.Runtime.ExceptionServices
                 // ---
                 // Code by Miguel de Icaza
 
-                var remoteStackTraceString =
-                    typeof(Exception).GetField("_remoteStackTraceString",
-                    BindingFlags.Instance | BindingFlags.NonPublic); // MS.Net
-
-                if (remoteStackTraceString == null)
-                    remoteStackTraceString = typeof(Exception).GetField("remote_stack_trace",
-                        BindingFlags.Instance | BindingFlags.NonPublic); // Mono pre-2.6
+                var remoteStackTraceString = typeof(Exception).GetField("_remoteStackTraceString",
+                    BindingFlags.Instance | BindingFlags.NonPublic) ?? typeof(Exception).GetField("remote_stack_trace",
+                        BindingFlags.Instance | BindingFlags.NonPublic); // MS.Net
 
                 // ---
                 _remoteStackTraceString = remoteStackTraceString;

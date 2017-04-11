@@ -18,7 +18,7 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         /// A reference to the heap-allocated state machine object associated with this builder.
         /// </summary>
-        internal IAsyncStateMachine m_stateMachine;
+        internal IAsyncStateMachine _stateMachine;
 
         /// <summary>
         /// Initiates the builder's execution with the associated state machine.
@@ -43,9 +43,9 @@ namespace System.Runtime.CompilerServices
         {
             if (stateMachine == null)
                 throw new ArgumentNullException("stateMachine");
-            if (m_stateMachine != null)
+            if (_stateMachine != null)
                 throw new InvalidOperationException("The builder was not properly initialized.");
-            m_stateMachine = stateMachine;
+            _stateMachine = stateMachine;
         }
 
         /// <summary>
@@ -64,13 +64,13 @@ namespace System.Runtime.CompilerServices
         {
             var moveNextRunner = new MoveNextRunner(ExecutionContext.Capture());
             Action action = moveNextRunner.Run;
-            if (m_stateMachine == null)
+            if (_stateMachine == null)
             {
                 builder.PreBoxInitialization();
-                m_stateMachine = stateMachine;
-                m_stateMachine.SetStateMachine(m_stateMachine);
+                _stateMachine = stateMachine;
+                _stateMachine.SetStateMachine(_stateMachine);
             }
-            moveNextRunner.m_stateMachine = m_stateMachine;
+            moveNextRunner._stateMachine = _stateMachine;
             return action;
         }
 
@@ -92,7 +92,7 @@ namespace System.Runtime.CompilerServices
                 }
                 catch (Exception ex)
                 {
-                    exception = new AggregateException(new[] { exception, ex });
+                    exception = new AggregateException(exception, ex);
                 }
             }
             ThreadPool.QueueUserWorkItem(state =>
@@ -109,18 +109,18 @@ namespace System.Runtime.CompilerServices
             /// <summary>
             /// The context with which to run MoveNext.
             /// </summary>
-            private readonly ExecutionContext m_context;
+            private readonly ExecutionContext _context;
 
             /// <summary>
             /// The state machine whose MoveNext method should be invoked.
             /// </summary>
-            internal IAsyncStateMachine m_stateMachine;
+            internal IAsyncStateMachine _stateMachine;
 
             /// <summary>
             /// Cached delegate used with ExecutionContext.Run.
             /// </summary>
             [SecurityCritical]
-            private static ContextCallback s_invokeMoveNext;
+            private static ContextCallback _invokeMoveNext;
 
             /// <summary>
             /// Initializes the runner.
@@ -129,7 +129,7 @@ namespace System.Runtime.CompilerServices
             [SecurityCritical]
             internal MoveNextRunner(ExecutionContext context)
             {
-                m_context = context;
+                _context = context;
             }
 
             /// <summary>
@@ -138,22 +138,22 @@ namespace System.Runtime.CompilerServices
             [SecuritySafeCritical]
             internal void Run()
             {
-                if (m_context == null)
+                if (_context == null)
                 {
-                    m_stateMachine.MoveNext();
+                    _stateMachine.MoveNext();
                     return;
                 }
 
                 try
                 {
-                    var callback = s_invokeMoveNext;
+                    var callback = _invokeMoveNext;
                     if (callback == null)
-                        s_invokeMoveNext = callback = InvokeMoveNext;
-                    ExecutionContext.Run(m_context, callback, m_stateMachine);
+                        _invokeMoveNext = callback = InvokeMoveNext;
+                    ExecutionContext.Run(_context, callback, _stateMachine);
                 }
                 finally
                 {
-                    // m_context.Dispose();
+                    // _context.Dispose();
                 }
             }
 

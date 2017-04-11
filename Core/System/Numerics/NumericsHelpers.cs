@@ -19,7 +19,7 @@ namespace System.Numerics
 
     internal static class NumericsHelpers
     {
-        private const int kcbitUint = 32;
+        private const int _uintBitCount = 32;
 
         public static void GetDoubleParts(double dbl, out int sign, out int exp, out ulong man, out bool fFinite)
         {
@@ -132,7 +132,7 @@ namespace System.Numerics
 
         public static ulong MakeUlong(uint uHi, uint uLo)
         {
-            return ((ulong)uHi << kcbitUint) | uLo;
+            return ((ulong)uHi << _uintBitCount) | uLo;
         }
 
         public static uint Abs(int a)

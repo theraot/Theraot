@@ -23,12 +23,12 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         /// A cached VoidTaskResult task used for builders that complete synchronously.
         /// </summary>
-        private static readonly TaskCompletionSource<VoidTaskResult> s_cachedCompleted = AsyncTaskMethodBuilder<VoidTaskResult>.s_defaultResultTask;
+        private static readonly TaskCompletionSource<VoidTaskResult> _cachedCompleted = AsyncTaskMethodBuilder<VoidTaskResult>._defaultResultTask;
 
         /// <summary>
         /// The generic builder object to which this non-generic instance delegates.
         /// </summary>
-        private AsyncTaskMethodBuilder<VoidTaskResult> m_builder;
+        private AsyncTaskMethodBuilder<VoidTaskResult> _builder;
 
         /// <summary>
         /// Gets the <see cref="T:System.Threading.Tasks.Task"/> for this builder.
@@ -40,7 +40,7 @@ namespace System.Runtime.CompilerServices
         /// <exception cref="T:System.InvalidOperationException">The builder is not initialized.</exception>
         public Task Task
         {
-            get { return m_builder.Task; }
+            get { return _builder.Task; }
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace System.Runtime.CompilerServices
         [DebuggerStepThrough]
         public void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
         {
-            m_builder.Start(ref stateMachine);
+            _builder.Start(ref stateMachine);
         }
 
         /// <summary>
@@ -89,12 +89,12 @@ namespace System.Runtime.CompilerServices
         /// <param name="stateMachine">The heap-allocated state machine object.</param><exception cref="T:System.ArgumentNullException">The <paramref name="stateMachine"/> argument was null (Nothing in Visual Basic).</exception><exception cref="T:System.InvalidOperationException">The builder is incorrectly initialized.</exception>
         public void SetStateMachine(IAsyncStateMachine stateMachine)
         {
-            m_builder.SetStateMachine(stateMachine);
+            _builder.SetStateMachine(stateMachine);
         }
 
         void IAsyncMethodBuilder.PreBoxInitialization()
         {
-            var task = Task;
+            GC.KeepAlive(Task);
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace System.Runtime.CompilerServices
             where TAwaiter : INotifyCompletion
             where TStateMachine : IAsyncStateMachine
         {
-            m_builder.AwaitOnCompleted(ref awaiter, ref stateMachine);
+            _builder.AwaitOnCompleted(ref awaiter, ref stateMachine);
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace System.Runtime.CompilerServices
             where TAwaiter : ICriticalNotifyCompletion
             where TStateMachine : IAsyncStateMachine
         {
-            m_builder.AwaitUnsafeOnCompleted(ref awaiter, ref stateMachine);
+            _builder.AwaitUnsafeOnCompleted(ref awaiter, ref stateMachine);
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace System.Runtime.CompilerServices
         /// <exception cref="T:System.InvalidOperationException">The builder is not initialized.</exception><exception cref="T:System.InvalidOperationException">The task has already completed.</exception>
         public void SetResult()
         {
-            m_builder.SetResult(s_cachedCompleted);
+            _builder.SetResult(_cachedCompleted);
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace System.Runtime.CompilerServices
         /// <param name="exception">The <see cref="T:System.Exception"/> to use to fault the task.</param><exception cref="T:System.ArgumentNullException">The <paramref name="exception"/> argument is null (Nothing in Visual Basic).</exception><exception cref="T:System.InvalidOperationException">The builder is not initialized.</exception><exception cref="T:System.InvalidOperationException">The task has already completed.</exception>
         public void SetException(Exception exception)
         {
-            m_builder.SetException(exception);
+            _builder.SetException(exception);
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace System.Runtime.CompilerServices
         ///             </param>
         internal void SetNotificationForWaitCompletion(bool enabled)
         {
-            m_builder.SetNotificationForWaitCompletion(enabled);
+            _builder.SetNotificationForWaitCompletion(enabled);
         }
     }
 
@@ -173,17 +173,17 @@ namespace System.Runtime.CompilerServices
         /// <summary>
         /// A cached task for default(TResult).
         /// </summary>
-        internal static readonly TaskCompletionSource<TResult> s_defaultResultTask = AsyncMethodTaskCache<TResult>.CreateCompleted(default(TResult));
+        internal static readonly TaskCompletionSource<TResult> _defaultResultTask = AsyncMethodTaskCache<TResult>.CreateCompleted(default(TResult));
 
         /// <summary>
         /// State related to the IAsyncStateMachine.
         /// </summary>
-        private AsyncMethodBuilderCore m_coreState;
+        private AsyncMethodBuilderCore _coreState;
 
         /// <summary>
         /// The lazily-initialized task completion source.
         /// </summary>
-        private TaskCompletionSource<TResult> m_task;
+        private TaskCompletionSource<TResult> _task;
 
         /// <summary>
         /// Gets the lazily-initialized TaskCompletionSource.
@@ -192,9 +192,9 @@ namespace System.Runtime.CompilerServices
         {
             get
             {
-                var completionSource = m_task;
+                var completionSource = _task;
                 if (completionSource == null)
-                    m_task = completionSource = new TaskCompletionSource<TResult>();
+                    _task = completionSource = new TaskCompletionSource<TResult>();
                 return completionSource;
             }
         }
@@ -263,7 +263,7 @@ namespace System.Runtime.CompilerServices
         [DebuggerStepThrough]
         public void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
         {
-            m_coreState.Start(ref stateMachine);
+            _coreState.Start(ref stateMachine);
         }
 
         /// <summary>
@@ -272,12 +272,12 @@ namespace System.Runtime.CompilerServices
         /// <param name="stateMachine">The heap-allocated state machine object.</param><exception cref="T:System.ArgumentNullException">The <paramref name="stateMachine"/> argument was null (Nothing in Visual Basic).</exception><exception cref="T:System.InvalidOperationException">The builder is incorrectly initialized.</exception>
         public void SetStateMachine(IAsyncStateMachine stateMachine)
         {
-            m_coreState.SetStateMachine(stateMachine);
+            _coreState.SetStateMachine(stateMachine);
         }
 
         void IAsyncMethodBuilder.PreBoxInitialization()
         {
-            var task = Task;
+            GC.KeepAlive(Task);
         }
 
         /// <summary>
@@ -291,7 +291,7 @@ namespace System.Runtime.CompilerServices
         {
             try
             {
-                var completionAction = m_coreState.GetCompletionAction(ref this, ref stateMachine);
+                var completionAction = _coreState.GetCompletionAction(ref this, ref stateMachine);
                 awaiter.OnCompleted(completionAction);
             }
             catch (Exception ex)
@@ -312,7 +312,7 @@ namespace System.Runtime.CompilerServices
         {
             try
             {
-                var completionAction = m_coreState.GetCompletionAction(ref this, ref stateMachine);
+                var completionAction = _coreState.GetCompletionAction(ref this, ref stateMachine);
                 awaiter.UnsafeOnCompleted(completionAction);
             }
             catch (Exception ex)
@@ -329,9 +329,9 @@ namespace System.Runtime.CompilerServices
         /// <param name="result">The result to use to complete the task.</param><exception cref="T:System.InvalidOperationException">The task has already completed.</exception>
         public void SetResult(TResult result)
         {
-            var completionSource = m_task;
+            var completionSource = _task;
             if (completionSource == null)
-                m_task = GetTaskForResult(result);
+                _task = GetTaskForResult(result);
             else if (!completionSource.TrySetResult(result))
                 throw new InvalidOperationException("The Task was already completed.");
         }
@@ -344,8 +344,8 @@ namespace System.Runtime.CompilerServices
         /// <param name="completedTask">A task already completed with the value default(TResult).</param><exception cref="T:System.InvalidOperationException">The task has already completed.</exception>
         internal void SetResult(TaskCompletionSource<TResult> completedTask)
         {
-            if (m_task == null)
-                m_task = completedTask;
+            if (_task == null)
+                _task = completedTask;
             else
                 SetResult(default(TResult));
         }
