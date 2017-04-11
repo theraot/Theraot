@@ -523,7 +523,7 @@ namespace System.Linq.Expressions.Interpreter
     /// </summary>
     internal sealed class EnterFinallyInstruction : IndexedBranchInstruction
     {
-        private readonly static EnterFinallyInstruction[] _cache = new EnterFinallyInstruction[CacheSize];
+        private static readonly EnterFinallyInstruction[] _cache = new EnterFinallyInstruction[CacheSize];
 
         public override string InstructionName
         {
