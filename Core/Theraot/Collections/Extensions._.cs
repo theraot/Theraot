@@ -122,54 +122,6 @@ namespace Theraot.Collections
             }
         }
 
-#if NET35
-
-        public static bool Contains<T>(this IEnumerable<T> source, IEnumerable<T> items)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException("source");
-            }
-            if (items == null)
-            {
-                throw new ArgumentNullException("items");
-            }
-            var localComparer = EqualityComparer<T>.Default;
-            var localCollection = AsCollection(source);
-            foreach (var item in items)
-            {
-                if (!localCollection.Contains(item, localComparer))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public static bool Contains<T>(this IEnumerable<T> source, IEnumerable<T> items, IEqualityComparer<T> comparer)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException("source");
-            }
-            if (items == null)
-            {
-                throw new ArgumentNullException("items");
-            }
-            var localComparer = comparer ?? EqualityComparer<T>.Default;
-            var localCollection = AsCollection(source);
-            foreach (var item in items)
-            {
-                if (!localCollection.Contains(item, localComparer))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-#endif
-
         public static bool ContainsAny<T>(this IEnumerable<T> source, IEnumerable<T> items)
         {
             if (source == null)
@@ -2853,5 +2805,56 @@ namespace Theraot.Collections
                 index++;
             }
         }
+    }
+
+    public static partial class Extensions
+    {
+#if NET35
+
+        public static bool Contains<T>(this IEnumerable<T> source, IEnumerable<T> items)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (items == null)
+            {
+                throw new ArgumentNullException("items");
+            }
+            var localComparer = EqualityComparer<T>.Default;
+            var localCollection = AsCollection(source);
+            foreach (var item in items)
+            {
+                if (!localCollection.Contains(item, localComparer))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public static bool Contains<T>(this IEnumerable<T> source, IEnumerable<T> items, IEqualityComparer<T> comparer)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            if (items == null)
+            {
+                throw new ArgumentNullException("items");
+            }
+            var localComparer = comparer ?? EqualityComparer<T>.Default;
+            var localCollection = AsCollection(source);
+            foreach (var item in items)
+            {
+                if (!localCollection.Contains(item, localComparer))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+#endif
     }
 }
