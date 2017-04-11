@@ -141,9 +141,9 @@ namespace System.Linq.Expressions.Interpreter
 
             _handlers = handlers;
 
-            if (_handlers != null)
+            if (handlers != null)
             {
-                foreach (var handler in _handlers)
+                foreach (var handler in handlers)
                 {
                     handler.SetParent(this);
                 }
@@ -152,13 +152,14 @@ namespace System.Linq.Expressions.Interpreter
 
         internal int GotoHandler(InterpretedFrame frame, object exception, out ExceptionHandler handler)
         {
-            Debug.Assert(_handlers != null, "we should have at least one handler if the method gets called");
+            var handlers = _handlers;
+            Debug.Assert(handlers != null, "we should have at least one handler if the method gets called");
             handler = null;
-            for (int i = 0; i < _handlers.Length; i++)
+            for (int i = 0; i < handlers.Length; i++)
             {
-                if (_handlers[i].Matches(exception.GetType()))
+                if (handlers[i].Matches(exception.GetType()))
                 {
-                    handler = _handlers[i];
+                    handler = handlers[i];
                     break;
                 }
             }
