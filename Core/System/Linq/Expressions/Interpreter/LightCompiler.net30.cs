@@ -185,7 +185,7 @@ namespace System.Linq.Expressions.Interpreter
         public int Index;
         public string FileName;
         public bool IsClear;
-        private static readonly DebugInfoComparer s_debugComparer = new DebugInfoComparer();
+        private static readonly DebugInfoComparer _debugComparer = new DebugInfoComparer();
 
         private class DebugInfoComparer : IComparer<DebugInfo>
         {
@@ -208,7 +208,7 @@ namespace System.Linq.Expressions.Interpreter
 
             //to find the closest debug info before the current index
 
-            var i = Array.BinarySearch<DebugInfo>(debugInfos, d, s_debugComparer);
+            var i = Array.BinarySearch(debugInfos, d, _debugComparer);
             if (i < 0)
             {
                 //~i is the index for the first bigger element
@@ -269,7 +269,7 @@ namespace System.Linq.Expressions.Interpreter
 
         private readonly LightCompiler _parent;
 
-        private static readonly LocalDefinition[] s_emptyLocals = ArrayReservoir<LocalDefinition>.EmptyArray;
+        private static readonly LocalDefinition[] _emptyLocals = ArrayReservoir<LocalDefinition>.EmptyArray;
 
         public LightCompiler()
         {
@@ -526,7 +526,7 @@ namespace System.Linq.Expressions.Interpreter
             }
             else
             {
-                locals = s_emptyLocals;
+                locals = _emptyLocals;
             }
 
             for (int i = 0; i < node.Expressions.Count - 1; i++)
@@ -657,7 +657,6 @@ namespace System.Linq.Expressions.Interpreter
                 {
                     _instructions.EmitCall(method);
                 }
-                return;
             }
             else
             {
@@ -716,26 +715,6 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        private bool EmitLiftedNullCheck(Expression node, BranchLabel makeCall)
-        {
-            Compile(node);
-            if (node.Type.IsNullableType() || !node.Type.IsValueType)
-            {
-                _instructions.EmitDup();
-                _instructions.EmitLoad(null, typeof(object));
-                _instructions.EmitNotEqual(typeof(object));
-                _instructions.EmitBranch(makeCall);
-                _instructions.EmitPop();
-                return true;
-            }
-            return false;
-        }
-
-        private static bool IsNullableOrReferenceType(Type t)
-        {
-            return !t.IsValueType || t.IsNullableType();
-        }
-
         private void CompileBinaryExpression(Expression expr)
         {
             var node = (BinaryExpression)expr;
@@ -778,7 +757,7 @@ namespace System.Linq.Expressions.Interpreter
                                 goto default;
                             }
 
-                            var resultType = node.Type.GetNullableType();
+                            GC.KeepAlive(node.Type.GetNullableType());
                             var testRight = _instructions.MakeLabel();
                             var callMethod = _instructions.MakeLabel();
 
@@ -1071,8 +1050,8 @@ namespace System.Linq.Expressions.Interpreter
                 }
 
                 _instructions.EmitLoadLocal(opTemp.Index);
-                if (node.Operand.Type.IsNullableType() &&
-                    node.Method.GetParameters()[0].ParameterType.Equals(node.Operand.Type.GetNonNullableType()))
+                if (node.Operand.Type.IsNullableType()
+                    && node.Method.GetParameters()[0].ParameterType == node.Operand.Type.GetNonNullableType())
                 {
                     _instructions.Emit(NullableMethodCallInstruction.Create("get_Value", 1));
                 }
@@ -1103,22 +1082,22 @@ namespace System.Linq.Expressions.Interpreter
         {
             Debug.Assert(typeFrom != typeof(void) && typeTo != typeof(void));
 
-            if (typeTo.Equals(typeFrom))
+            if (typeTo == typeFrom)
             {
                 return;
             }
 
-            if (typeFrom.IsValueType &&
-                typeTo.IsNullableType() &&
-                typeTo.GetNonNullableType().Equals(typeFrom))
+            if (typeFrom.IsValueType
+                && typeTo.IsNullableType()
+                && typeTo.GetNonNullableType() == typeFrom)
             {
                 // VT -> vt?, no conversion necessary
                 return;
             }
 
-            if (typeTo.IsValueType &&
-                typeFrom.IsNullableType() &&
-                typeFrom.GetNonNullableType().Equals(typeTo))
+            if (typeTo.IsValueType
+                && typeFrom.IsNullableType()
+                && typeFrom.GetNonNullableType() == typeTo)
             {
                 // VT? -> vt, call get_Value
                 _instructions.Emit(NullableMethodCallInstruction.Create("get_Value", 1));
@@ -2251,6 +2230,7 @@ namespace System.Linq.Expressions.Interpreter
                         }
 
                         var indexLocals = new List<LocalDefinition>();
+                        // Do not convert to foreach, the loop modifies the list
                         for (int i = 0; i < indexNode.Arguments.Count; i++)
                         {
                             Compile(indexNode.Arguments[i]);
@@ -2341,6 +2321,7 @@ namespace System.Linq.Expressions.Interpreter
             _instructions.EmitStoreLocal(objTmp.Index);
 
             var indexLocals = new List<LocalDefinition>();
+            // Do not convert to foreach, the loop modifies the list
             for (int i = 0; i < arguments.Count; i++)
             {
                 Compile(arguments[i]);
@@ -2437,7 +2418,6 @@ namespace System.Linq.Expressions.Interpreter
                     }
                     _instructions.EmitLoadField(fi);
                 }
-                return;
             }
             else
             {
@@ -2451,7 +2431,6 @@ namespace System.Linq.Expressions.Interpreter
                         EmitThisForMethodCall(from);
                     }
                     _instructions.EmitCall(method);
-                    return;
                 }
             }
         }
@@ -2578,7 +2557,7 @@ namespace System.Linq.Expressions.Interpreter
                 _instructions.EmitStoreLocal(local.Index);
 
                 CompileMethodCallExpression(
-                    Expression.Call(node.Conversion, node.Conversion.Type.GetMethod("Invoke"), new[] { temp })
+                    Expression.Call(node.Conversion, node.Conversion.Type.GetMethod("Invoke"), temp)
                 );
 
                 _locals.UndefineLocal(local, _instructions.Count);
@@ -2623,14 +2602,14 @@ namespace System.Linq.Expressions.Interpreter
 
         private void CompileListInit(IList<ElementInit> initializers)
         {
-            for (int i = 0; i < initializers.Count; i++)
+            foreach (var init in initializers)
             {
                 _instructions.EmitDup();
-                foreach (var arg in initializers[i].Arguments)
+                foreach (var arg in init.Arguments)
                 {
                     Compile(arg);
                 }
-                _instructions.EmitCall(initializers[i].AddMethod);
+                _instructions.EmitCall(init.AddMethod);
             }
         }
 
@@ -2701,7 +2680,7 @@ namespace System.Linq.Expressions.Interpreter
 
             var mapping = new Dictionary<ParameterExpression, LocalVariable>();
 
-            foreach (var local in visitor._hoistedParameters)
+            foreach (var local in visitor.HoistedParameters)
             {
                 EnsureAvailableForClosure(local);
                 mapping[local] = ResolveLocal(local);
@@ -2713,13 +2692,13 @@ namespace System.Linq.Expressions.Interpreter
         private class QuoteVisitor : ExpressionVisitor
         {
             private readonly Dictionary<ParameterExpression, int> _definedParameters = new Dictionary<ParameterExpression, int>();
-            public readonly HashSet<ParameterExpression> _hoistedParameters = new HashSet<ParameterExpression>();
+            public readonly HashSet<ParameterExpression> HoistedParameters = new HashSet<ParameterExpression>();
 
             protected internal override Expression VisitParameter(ParameterExpression node)
             {
                 if (!_definedParameters.ContainsKey(node))
                 {
-                    _hoistedParameters.Add(node);
+                    HoistedParameters.Add(node);
                 }
                 return node;
             }
@@ -3182,7 +3161,7 @@ namespace System.Linq.Expressions.Interpreter
                     CompileUnaryExpression(expr);
                     break;
 
-                case ExpressionType.AddAssign:
+                /*case ExpressionType.AddAssign:
                 case ExpressionType.AndAssign:
                 case ExpressionType.DivideAssign:
                 case ExpressionType.ExclusiveOrAssign:
@@ -3199,7 +3178,7 @@ namespace System.Linq.Expressions.Interpreter
                 case ExpressionType.PreIncrementAssign:
                 case ExpressionType.PreDecrementAssign:
                 case ExpressionType.PostIncrementAssign:
-                case ExpressionType.PostDecrementAssign:
+                case ExpressionType.PostDecrementAssign:*/
                 default:
                     if (expr.CanReduce)
                     {
