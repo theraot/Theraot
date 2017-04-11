@@ -57,7 +57,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal sealed class BranchFalseInstruction : OffsetInstruction
     {
-        private static Instruction[] s_cache;
+        private static Instruction[] _cache;
 
         public override string InstructionName
         {
@@ -68,11 +68,11 @@ namespace System.Linq.Expressions.Interpreter
         {
             get
             {
-                if (s_cache == null)
+                if (_cache == null)
                 {
-                    s_cache = new Instruction[CacheSize];
+                    _cache = new Instruction[CacheSize];
                 }
-                return s_cache;
+                return _cache;
             }
         }
 
@@ -96,7 +96,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal sealed class BranchTrueInstruction : OffsetInstruction
     {
-        private static Instruction[] s_cache;
+        private static Instruction[] _cache;
 
         public override string InstructionName
         {
@@ -107,11 +107,11 @@ namespace System.Linq.Expressions.Interpreter
         {
             get
             {
-                if (s_cache == null)
+                if (_cache == null)
                 {
-                    s_cache = new Instruction[CacheSize];
+                    _cache = new Instruction[CacheSize];
                 }
-                return s_cache;
+                return _cache;
             }
         }
 
@@ -135,7 +135,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal sealed class CoalescingBranchInstruction : OffsetInstruction
     {
-        private static Instruction[] s_cache;
+        private static Instruction[] _cache;
 
         public override string InstructionName
         {
@@ -146,11 +146,11 @@ namespace System.Linq.Expressions.Interpreter
         {
             get
             {
-                if (s_cache == null)
+                if (_cache == null)
                 {
-                    s_cache = new Instruction[CacheSize];
+                    _cache = new Instruction[CacheSize];
                 }
-                return s_cache;
+                return _cache;
             }
         }
 
@@ -179,7 +179,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal class BranchInstruction : OffsetInstruction
     {
-        private static Instruction[][][] s_caches;
+        private static Instruction[][][] _caches;
 
         public override string InstructionName
         {
@@ -190,16 +190,16 @@ namespace System.Linq.Expressions.Interpreter
         {
             get
             {
-                if (s_caches == null)
+                if (_caches == null)
                 {
-                    s_caches = new Instruction[2][][] { new Instruction[2][], new Instruction[2][] };
+                    _caches = new Instruction[2][][] { new Instruction[2][], new Instruction[2][] };
                 }
-                return s_caches[ConsumedStack][ProducedStack] ?? (s_caches[ConsumedStack][ProducedStack] = new Instruction[CacheSize]);
+                return _caches[ConsumedStack][ProducedStack] ?? (_caches[ConsumedStack][ProducedStack] = new Instruction[CacheSize]);
             }
         }
 
-        internal readonly bool _hasResult;
-        internal readonly bool _hasValue;
+        internal readonly bool HasResult;
+        internal readonly bool HasValue;
 
         internal BranchInstruction()
             : this(false, false)
@@ -208,18 +208,18 @@ namespace System.Linq.Expressions.Interpreter
 
         public BranchInstruction(bool hasResult, bool hasValue)
         {
-            _hasResult = hasResult;
-            _hasValue = hasValue;
+            HasResult = hasResult;
+            HasValue = hasValue;
         }
 
         public override int ConsumedStack
         {
-            get { return _hasValue ? 1 : 0; }
+            get { return HasValue ? 1 : 0; }
         }
 
         public override int ProducedStack
         {
-            get { return _hasResult ? 1 : 0; }
+            get { return HasResult ? 1 : 0; }
         }
 
         public override int Run(InterpretedFrame frame)
@@ -239,30 +239,30 @@ namespace System.Linq.Expressions.Interpreter
             get { return "IndexedBranch"; }
         }
 
-        internal readonly int _labelIndex;
+        internal readonly int LabelIndex;
 
         public IndexedBranchInstruction(int labelIndex)
         {
-            _labelIndex = labelIndex;
+            LabelIndex = labelIndex;
         }
 
         public RuntimeLabel GetLabel(InterpretedFrame frame)
         {
-            Debug.Assert(_labelIndex != UnknownInstrIndex);
-            return frame.Interpreter._labels[_labelIndex];
+            Debug.Assert(LabelIndex != UnknownInstrIndex);
+            return frame.Interpreter._labels[LabelIndex];
         }
 
         public override string ToDebugString(int instructionIndex, object cookie, Func<int, int> labelIndexer, IList<object> objects)
         {
-            Debug.Assert(_labelIndex != UnknownInstrIndex);
-            var targetIndex = labelIndexer(_labelIndex);
+            Debug.Assert(LabelIndex != UnknownInstrIndex);
+            var targetIndex = labelIndexer(LabelIndex);
             return ToString() + (targetIndex != BranchLabel.UnknownIndex ? " -> " + targetIndex : "");
         }
 
         public override string ToString()
         {
-            Debug.Assert(_labelIndex != UnknownInstrIndex);
-            return InstructionName + "[" + _labelIndex + "]";
+            Debug.Assert(LabelIndex != UnknownInstrIndex);
+            return InstructionName + "[" + LabelIndex + "]";
         }
     }
 
@@ -292,8 +292,8 @@ namespace System.Linq.Expressions.Interpreter
     /// </summary>
     internal sealed class GotoInstruction : IndexedBranchInstruction
     {
-        private const int Variants = 8;
-        private static readonly GotoInstruction[] s_cache = new GotoInstruction[Variants * CacheSize];
+        private const int _variants = 8;
+        private static readonly GotoInstruction[] _cache = new GotoInstruction[_variants * CacheSize];
 
         public override string InstructionName
         {
@@ -342,8 +342,8 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (labelIndex < CacheSize)
             {
-                var index = Variants * labelIndex | (labelTargetGetsValue ? 4 : 0) | (hasResult ? 2 : 0) | (hasValue ? 1 : 0);
-                return s_cache[index] ?? (s_cache[index] = new GotoInstruction(labelIndex, hasResult, hasValue, labelTargetGetsValue));
+                var index = _variants * labelIndex | (labelTargetGetsValue ? 4 : 0) | (hasResult ? 2 : 0) | (hasValue ? 1 : 0);
+                return _cache[index] ?? (_cache[index] = new GotoInstruction(labelIndex, hasResult, hasValue, labelTargetGetsValue));
             }
             return new GotoInstruction(labelIndex, hasResult, hasValue, labelTargetGetsValue);
         }
@@ -357,7 +357,7 @@ namespace System.Linq.Expressions.Interpreter
 
             // goto the target label or the current finally continuation:
             var value = _hasValue ? frame.Pop() : Interpreter.NoValue;
-            return frame.Goto(_labelIndex, _labelTargetGetsValue ? value : Interpreter.NoValue, /*gotoExceptionHandler*/ false);
+            return frame.Goto(LabelIndex, _labelTargetGetsValue ? value : Interpreter.NoValue, /*gotoExceptionHandler*/ false);
         }
     }
 
@@ -400,7 +400,7 @@ namespace System.Linq.Expressions.Interpreter
             if (_hasFinally)
             {
                 // Push finally.
-                frame.PushContinuation(_labelIndex);
+                frame.PushContinuation(LabelIndex);
             }
             var prevInstrIndex = frame.InstructionIndex;
             frame.InstructionIndex++;
@@ -523,7 +523,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToString()
         {
-            return _hasFinally ? "EnterTryFinally[" + _labelIndex + "]" : "EnterTryCatch";
+            return _hasFinally ? "EnterTryFinally[" + LabelIndex + "]" : "EnterTryCatch";
         }
     }
 
@@ -532,7 +532,7 @@ namespace System.Linq.Expressions.Interpreter
     /// </summary>
     internal sealed class EnterFinallyInstruction : IndexedBranchInstruction
     {
-        private readonly static EnterFinallyInstruction[] s_cache = new EnterFinallyInstruction[CacheSize];
+        private readonly static EnterFinallyInstruction[] _cache = new EnterFinallyInstruction[CacheSize];
 
         public override string InstructionName
         {
@@ -558,7 +558,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (labelIndex < CacheSize)
             {
-                return s_cache[labelIndex] ?? (s_cache[labelIndex] = new EnterFinallyInstruction(labelIndex));
+                return _cache[labelIndex] ?? (_cache[labelIndex] = new EnterFinallyInstruction(labelIndex));
             }
             return new EnterFinallyInstruction(labelIndex);
         }
@@ -664,7 +664,7 @@ namespace System.Linq.Expressions.Interpreter
     /// </summary>
     internal sealed class LeaveExceptionHandlerInstruction : IndexedBranchInstruction
     {
-        private static readonly LeaveExceptionHandlerInstruction[] s_cache = new LeaveExceptionHandlerInstruction[2 * CacheSize];
+        private static readonly LeaveExceptionHandlerInstruction[] _cache = new LeaveExceptionHandlerInstruction[2 * CacheSize];
 
         private readonly bool _hasValue;
 
@@ -695,7 +695,7 @@ namespace System.Linq.Expressions.Interpreter
             if (labelIndex < CacheSize)
             {
                 var index = (2 * labelIndex) | (hasValue ? 1 : 0);
-                return s_cache[index] ?? (s_cache[index] = new LeaveExceptionHandlerInstruction(labelIndex, hasValue));
+                return _cache[index] ?? (_cache[index] = new LeaveExceptionHandlerInstruction(labelIndex, hasValue));
             }
             return new LeaveExceptionHandlerInstruction(labelIndex, hasValue);
         }
