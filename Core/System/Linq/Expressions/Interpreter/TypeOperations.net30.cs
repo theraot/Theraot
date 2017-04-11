@@ -353,7 +353,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             var type = frame.Pop();
             var obj = frame.Pop();
-            frame.Push(ScriptingRuntimeHelpers.BooleanToObject(obj != null && (object)obj.GetType() == type));
+            frame.Push(ScriptingRuntimeHelpers.BooleanToObject(obj != null && obj.GetType() == type));
             return +1;
         }
     }
@@ -391,7 +391,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal abstract class NegateInstruction : Instruction
     {
-        private static Instruction s_int16, s_int32, s_int64, s_UInt16, s_UInt32, s_single, s_double;
+        private static Instruction _int16, _int32, _int64, _uInt16, _uInt32, _single, _double;
 
         public override int ConsumedStack
         {
@@ -508,7 +508,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(unchecked(-(Single)obj));
+                    frame.Push(-(Single)obj);
                 }
                 return +1;
             }
@@ -525,7 +525,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(unchecked(-(Double)obj));
+                    frame.Push(-(Double)obj);
                 }
                 return +1;
             }
@@ -537,25 +537,25 @@ namespace System.Linq.Expressions.Interpreter
             switch (type.GetNonNullableType().GetTypeCode())
             {
                 case TypeCode.Int16:
-                    return s_int16 ?? (s_int16 = new NegateInt16());
+                    return _int16 ?? (_int16 = new NegateInt16());
 
                 case TypeCode.Int32:
-                    return s_int32 ?? (s_int32 = new NegateInt32());
+                    return _int32 ?? (_int32 = new NegateInt32());
 
                 case TypeCode.Int64:
-                    return s_int64 ?? (s_int64 = new NegateInt64());
+                    return _int64 ?? (_int64 = new NegateInt64());
 
                 case TypeCode.UInt16:
-                    return s_UInt16 ?? (s_UInt16 = new NegateUInt16());
+                    return _uInt16 ?? (_uInt16 = new NegateUInt16());
 
                 case TypeCode.UInt32:
-                    return s_UInt32 ?? (s_UInt32 = new NegateUInt32());
+                    return _uInt32 ?? (_uInt32 = new NegateUInt32());
 
                 case TypeCode.Single:
-                    return s_single ?? (s_single = new NegateSingle());
+                    return _single ?? (_single = new NegateSingle());
 
                 case TypeCode.Double:
-                    return s_double ?? (s_double = new NegateDouble());
+                    return _double ?? (_double = new NegateDouble());
 
                 default:
                     throw Error.ExpressionNotSupportedForType("Negate", type);
@@ -570,7 +570,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal abstract class NegateCheckedInstruction : Instruction
     {
-        private static Instruction s_int16, s_int32, s_int64, s_UInt16, s_UInt32, s_single, s_double;
+        private static Instruction _int16, _int32, _int64, _uInt16, _uInt32, _single, _double;
 
         public override int ConsumedStack
         {
@@ -687,7 +687,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(checked(-(Single)obj));
+                    frame.Push(-(Single)obj);
                 }
                 return +1;
             }
@@ -704,7 +704,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(checked(-(Double)obj));
+                    frame.Push(-(Double)obj);
                 }
                 return +1;
             }
@@ -716,25 +716,25 @@ namespace System.Linq.Expressions.Interpreter
             switch (type.GetNonNullableType().GetTypeCode())
             {
                 case TypeCode.Int16:
-                    return s_int16 ?? (s_int16 = new NegateCheckedInt16());
+                    return _int16 ?? (_int16 = new NegateCheckedInt16());
 
                 case TypeCode.Int32:
-                    return s_int32 ?? (s_int32 = new NegateCheckedInt32());
+                    return _int32 ?? (_int32 = new NegateCheckedInt32());
 
                 case TypeCode.Int64:
-                    return s_int64 ?? (s_int64 = new NegateCheckedInt64());
+                    return _int64 ?? (_int64 = new NegateCheckedInt64());
 
                 case TypeCode.UInt16:
-                    return s_UInt16 ?? (s_UInt16 = new NegateCheckedUInt16());
+                    return _uInt16 ?? (_uInt16 = new NegateCheckedUInt16());
 
                 case TypeCode.UInt32:
-                    return s_UInt32 ?? (s_UInt32 = new NegateCheckedUInt32());
+                    return _uInt32 ?? (_uInt32 = new NegateCheckedUInt32());
 
                 case TypeCode.Single:
-                    return s_single ?? (s_single = new NegateCheckedSingle());
+                    return _single ?? (_single = new NegateCheckedSingle());
 
                 case TypeCode.Double:
-                    return s_double ?? (s_double = new NegateCheckedDouble());
+                    return _double ?? (_double = new NegateCheckedDouble());
 
                 default:
                     throw Error.ExpressionNotSupportedForType("NegateChecked", type);
@@ -749,7 +749,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal abstract class IncrementInstruction : Instruction
     {
-        private static Instruction s_int16, s_int32, s_int64, s_UInt16, s_UInt32, s_single, s_double;
+        private static Instruction _int16, _int32, _int64, _uInt16, _uInt32, _single, _double;
 
         public override int ConsumedStack
         {
@@ -866,7 +866,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(unchecked(1 + (Single)obj));
+                    frame.Push(1 + (Single)obj);
                 }
                 return +1;
             }
@@ -883,7 +883,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(unchecked(1 + (Double)obj));
+                    frame.Push(1 + (Double)obj);
                 }
                 return +1;
             }
@@ -895,25 +895,25 @@ namespace System.Linq.Expressions.Interpreter
             switch (type.GetTypeCode())
             {
                 case TypeCode.Int16:
-                    return s_int16 ?? (s_int16 = new IncrementInt16());
+                    return _int16 ?? (_int16 = new IncrementInt16());
 
                 case TypeCode.Int32:
-                    return s_int32 ?? (s_int32 = new IncrementInt32());
+                    return _int32 ?? (_int32 = new IncrementInt32());
 
                 case TypeCode.Int64:
-                    return s_int64 ?? (s_int64 = new IncrementInt64());
+                    return _int64 ?? (_int64 = new IncrementInt64());
 
                 case TypeCode.UInt16:
-                    return s_UInt16 ?? (s_UInt16 = new IncrementUInt16());
+                    return _uInt16 ?? (_uInt16 = new IncrementUInt16());
 
                 case TypeCode.UInt32:
-                    return s_UInt32 ?? (s_UInt32 = new IncrementUInt32());
+                    return _uInt32 ?? (_uInt32 = new IncrementUInt32());
 
                 case TypeCode.Single:
-                    return s_single ?? (s_single = new IncrementSingle());
+                    return _single ?? (_single = new IncrementSingle());
 
                 case TypeCode.Double:
-                    return s_double ?? (s_double = new IncrementDouble());
+                    return _double ?? (_double = new IncrementDouble());
 
                 default:
                     throw Error.ExpressionNotSupportedForType("Increment", type);
@@ -928,7 +928,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal abstract class DecrementInstruction : Instruction
     {
-        private static Instruction s_int16, s_int32, s_int64, s_UInt16, s_UInt32, s_single, s_double;
+        private static Instruction _int16, _int32, _int64, _uInt16, _uInt32, _single, _double;
 
         public override int ConsumedStack
         {
@@ -1045,7 +1045,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(unchecked((Single)obj - 1));
+                    frame.Push((Single)obj - 1);
                 }
                 return +1;
             }
@@ -1062,7 +1062,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(unchecked((Double)obj - 1));
+                    frame.Push((Double)obj - 1);
                 }
                 return +1;
             }
@@ -1074,25 +1074,25 @@ namespace System.Linq.Expressions.Interpreter
             switch (type.GetTypeCode())
             {
                 case TypeCode.Int16:
-                    return s_int16 ?? (s_int16 = new DecrementInt16());
+                    return _int16 ?? (_int16 = new DecrementInt16());
 
                 case TypeCode.Int32:
-                    return s_int32 ?? (s_int32 = new DecrementInt32());
+                    return _int32 ?? (_int32 = new DecrementInt32());
 
                 case TypeCode.Int64:
-                    return s_int64 ?? (s_int64 = new DecrementInt64());
+                    return _int64 ?? (_int64 = new DecrementInt64());
 
                 case TypeCode.UInt16:
-                    return s_UInt16 ?? (s_UInt16 = new DecrementUInt16());
+                    return _uInt16 ?? (_uInt16 = new DecrementUInt16());
 
                 case TypeCode.UInt32:
-                    return s_UInt32 ?? (s_UInt32 = new DecrementUInt32());
+                    return _uInt32 ?? (_uInt32 = new DecrementUInt32());
 
                 case TypeCode.Single:
-                    return s_single ?? (s_single = new DecrementSingle());
+                    return _single ?? (_single = new DecrementSingle());
 
                 case TypeCode.Double:
-                    return s_double ?? (s_double = new DecrementDouble());
+                    return _double ?? (_double = new DecrementDouble());
 
                 default:
                     throw Error.ExpressionNotSupportedForType("Decrement", type);
@@ -1108,7 +1108,7 @@ namespace System.Linq.Expressions.Interpreter
     internal abstract class LeftShiftInstruction : Instruction
     {
         // Perf: LeftShiftityComparer<T> but is 3/2 to 2 times slower.
-        private static Instruction s_SByte, s_int16, s_int32, s_int64, s_byte, s_UInt16, s_UInt32, s_UInt64;
+        private static Instruction _sByte, _int16, _int32, _int64, _byte, _uInt16, _uInt32, _uInt64;
 
         public override int ConsumedStack
         {
@@ -1279,28 +1279,28 @@ namespace System.Linq.Expressions.Interpreter
             switch ((type.IsEnum ? Enum.GetUnderlyingType(type) : type.GetNonNullableType()).GetTypeCode())
             {
                 case TypeCode.SByte:
-                    return s_SByte ?? (s_SByte = new LeftShiftSByte());
+                    return _sByte ?? (_sByte = new LeftShiftSByte());
 
                 case TypeCode.Byte:
-                    return s_byte ?? (s_byte = new LeftShiftByte());
+                    return _byte ?? (_byte = new LeftShiftByte());
 
                 case TypeCode.Int16:
-                    return s_int16 ?? (s_int16 = new LeftShiftInt16());
+                    return _int16 ?? (_int16 = new LeftShiftInt16());
 
                 case TypeCode.Int32:
-                    return s_int32 ?? (s_int32 = new LeftShiftInt32());
+                    return _int32 ?? (_int32 = new LeftShiftInt32());
 
                 case TypeCode.Int64:
-                    return s_int64 ?? (s_int64 = new LeftShiftInt64());
+                    return _int64 ?? (_int64 = new LeftShiftInt64());
 
                 case TypeCode.UInt16:
-                    return s_UInt16 ?? (s_UInt16 = new LeftShiftUInt16());
+                    return _uInt16 ?? (_uInt16 = new LeftShiftUInt16());
 
                 case TypeCode.UInt32:
-                    return s_UInt32 ?? (s_UInt32 = new LeftShiftUInt32());
+                    return _uInt32 ?? (_uInt32 = new LeftShiftUInt32());
 
                 case TypeCode.UInt64:
-                    return s_UInt64 ?? (s_UInt64 = new LeftShiftUInt64());
+                    return _uInt64 ?? (_uInt64 = new LeftShiftUInt64());
 
                 default:
                     throw Error.ExpressionNotSupportedForType("LeftShift", type);
@@ -1316,7 +1316,7 @@ namespace System.Linq.Expressions.Interpreter
     internal abstract class RightShiftInstruction : Instruction
     {
         // Perf: RightShiftityComparer<T> but is 3/2 to 2 times slower.
-        private static Instruction s_SByte, s_int16, s_int32, s_int64, s_byte, s_UInt16, s_UInt32, s_UInt64;
+        private static Instruction _sByte, _int16, _int32, _int64, _byte, _uInt16, _uInt32, _uInt64;
 
         public override int ConsumedStack
         {
@@ -1487,28 +1487,28 @@ namespace System.Linq.Expressions.Interpreter
             switch ((type.IsEnum ? Enum.GetUnderlyingType(type) : type.GetNonNullableType()).GetTypeCode())
             {
                 case TypeCode.SByte:
-                    return s_SByte ?? (s_SByte = new RightShiftSByte());
+                    return _sByte ?? (_sByte = new RightShiftSByte());
 
                 case TypeCode.Byte:
-                    return s_byte ?? (s_byte = new RightShiftByte());
+                    return _byte ?? (_byte = new RightShiftByte());
 
                 case TypeCode.Int16:
-                    return s_int16 ?? (s_int16 = new RightShiftInt16());
+                    return _int16 ?? (_int16 = new RightShiftInt16());
 
                 case TypeCode.Int32:
-                    return s_int32 ?? (s_int32 = new RightShiftInt32());
+                    return _int32 ?? (_int32 = new RightShiftInt32());
 
                 case TypeCode.Int64:
-                    return s_int64 ?? (s_int64 = new RightShiftInt64());
+                    return _int64 ?? (_int64 = new RightShiftInt64());
 
                 case TypeCode.UInt16:
-                    return s_UInt16 ?? (s_UInt16 = new RightShiftUInt16());
+                    return _uInt16 ?? (_uInt16 = new RightShiftUInt16());
 
                 case TypeCode.UInt32:
-                    return s_UInt32 ?? (s_UInt32 = new RightShiftUInt32());
+                    return _uInt32 ?? (_uInt32 = new RightShiftUInt32());
 
                 case TypeCode.UInt64:
-                    return s_UInt64 ?? (s_UInt64 = new RightShiftUInt64());
+                    return _uInt64 ?? (_uInt64 = new RightShiftUInt64());
 
                 default:
                     throw Error.ExpressionNotSupportedForType("RightShift", type);
@@ -1524,7 +1524,7 @@ namespace System.Linq.Expressions.Interpreter
     internal abstract class ExclusiveOrInstruction : Instruction
     {
         // Perf: ExclusiveOrityComparer<T> but is 3/2 to 2 times slower.
-        private static Instruction s_SByte, s_int16, s_int32, s_int64, s_byte, s_UInt16, s_UInt32, s_UInt64, s_bool;
+        private static Instruction _sByte, _int16, _int32, _int64, _byte, _uInt16, _uInt32, _uInt64, _bool;
 
         public override int ConsumedStack
         {
@@ -1695,31 +1695,31 @@ namespace System.Linq.Expressions.Interpreter
             switch (GetTypeCode(type))
             {
                 case TypeCode.SByte:
-                    return s_SByte ?? (s_SByte = new ExclusiveOrSByte());
+                    return _sByte ?? (_sByte = new ExclusiveOrSByte());
 
                 case TypeCode.Byte:
-                    return s_byte ?? (s_byte = new ExclusiveOrByte());
+                    return _byte ?? (_byte = new ExclusiveOrByte());
 
                 case TypeCode.Int16:
-                    return s_int16 ?? (s_int16 = new ExclusiveOrInt16());
+                    return _int16 ?? (_int16 = new ExclusiveOrInt16());
 
                 case TypeCode.Int32:
-                    return s_int32 ?? (s_int32 = new ExclusiveOrInt32());
+                    return _int32 ?? (_int32 = new ExclusiveOrInt32());
 
                 case TypeCode.Int64:
-                    return s_int64 ?? (s_int64 = new ExclusiveOrInt64());
+                    return _int64 ?? (_int64 = new ExclusiveOrInt64());
 
                 case TypeCode.UInt16:
-                    return s_UInt16 ?? (s_UInt16 = new ExclusiveOrUInt16());
+                    return _uInt16 ?? (_uInt16 = new ExclusiveOrUInt16());
 
                 case TypeCode.UInt32:
-                    return s_UInt32 ?? (s_UInt32 = new ExclusiveOrUInt32());
+                    return _uInt32 ?? (_uInt32 = new ExclusiveOrUInt32());
 
                 case TypeCode.UInt64:
-                    return s_UInt64 ?? (s_UInt64 = new ExclusiveOrUInt64());
+                    return _uInt64 ?? (_uInt64 = new ExclusiveOrUInt64());
 
                 case TypeCode.Boolean:
-                    return s_bool ?? (s_bool = new ExclusiveOrBool());
+                    return _bool ?? (_bool = new ExclusiveOrBool());
 
                 default:
                     throw Error.ExpressionNotSupportedForType("ExclusiveOr", type);
@@ -1740,7 +1740,7 @@ namespace System.Linq.Expressions.Interpreter
     internal abstract class OrInstruction : Instruction
     {
         // Perf: OrityComparer<T> but is 3/2 to 2 times slower.
-        private static Instruction s_SByte, s_int16, s_int32, s_int64, s_byte, s_UInt16, s_UInt32, s_UInt64, s_bool;
+        private static Instruction _sByte, _int16, _int32, _int64, _byte, _uInt16, _uInt32, _uInt64, _bool;
 
         public override int ConsumedStack
         {
@@ -1923,31 +1923,31 @@ namespace System.Linq.Expressions.Interpreter
             switch ((type.IsEnum ? Enum.GetUnderlyingType(type) : type.GetNonNullableType()).GetTypeCode())
             {
                 case TypeCode.SByte:
-                    return s_SByte ?? (s_SByte = new OrSByte());
+                    return _sByte ?? (_sByte = new OrSByte());
 
                 case TypeCode.Byte:
-                    return s_byte ?? (s_byte = new OrByte());
+                    return _byte ?? (_byte = new OrByte());
 
                 case TypeCode.Int16:
-                    return s_int16 ?? (s_int16 = new OrInt16());
+                    return _int16 ?? (_int16 = new OrInt16());
 
                 case TypeCode.Int32:
-                    return s_int32 ?? (s_int32 = new OrInt32());
+                    return _int32 ?? (_int32 = new OrInt32());
 
                 case TypeCode.Int64:
-                    return s_int64 ?? (s_int64 = new OrInt64());
+                    return _int64 ?? (_int64 = new OrInt64());
 
                 case TypeCode.UInt16:
-                    return s_UInt16 ?? (s_UInt16 = new OrUInt16());
+                    return _uInt16 ?? (_uInt16 = new OrUInt16());
 
                 case TypeCode.UInt32:
-                    return s_UInt32 ?? (s_UInt32 = new OrUInt32());
+                    return _uInt32 ?? (_uInt32 = new OrUInt32());
 
                 case TypeCode.UInt64:
-                    return s_UInt64 ?? (s_UInt64 = new OrUInt64());
+                    return _uInt64 ?? (_uInt64 = new OrUInt64());
 
                 case TypeCode.Boolean:
-                    return s_bool ?? (s_bool = new OrBool());
+                    return _bool ?? (_bool = new OrBool());
 
                 default:
                     throw Error.ExpressionNotSupportedForType("Or", type);
@@ -1963,7 +1963,7 @@ namespace System.Linq.Expressions.Interpreter
     internal abstract class AndInstruction : Instruction
     {
         // Perf: AndityComparer<T> but is 3/2 to 2 times slower.
-        private static Instruction s_SByte, s_int16, s_int32, s_int64, s_byte, s_UInt16, s_UInt32, s_UInt64, s_bool;
+        private static Instruction _sByte, _int16, _int32, _int64, _byte, _uInt16, _uInt32, _uInt64, _bool;
 
         public override int ConsumedStack
         {
@@ -2146,31 +2146,31 @@ namespace System.Linq.Expressions.Interpreter
             switch ((type.IsEnum ? Enum.GetUnderlyingType(type) : type.GetNonNullableType()).GetTypeCode())
             {
                 case TypeCode.SByte:
-                    return s_SByte ?? (s_SByte = new AndSByte());
+                    return _sByte ?? (_sByte = new AndSByte());
 
                 case TypeCode.Byte:
-                    return s_byte ?? (s_byte = new AndByte());
+                    return _byte ?? (_byte = new AndByte());
 
                 case TypeCode.Int16:
-                    return s_int16 ?? (s_int16 = new AndInt16());
+                    return _int16 ?? (_int16 = new AndInt16());
 
                 case TypeCode.Int32:
-                    return s_int32 ?? (s_int32 = new AndInt32());
+                    return _int32 ?? (_int32 = new AndInt32());
 
                 case TypeCode.Int64:
-                    return s_int64 ?? (s_int64 = new AndInt64());
+                    return _int64 ?? (_int64 = new AndInt64());
 
                 case TypeCode.UInt16:
-                    return s_UInt16 ?? (s_UInt16 = new AndUInt16());
+                    return _uInt16 ?? (_uInt16 = new AndUInt16());
 
                 case TypeCode.UInt32:
-                    return s_UInt32 ?? (s_UInt32 = new AndUInt32());
+                    return _uInt32 ?? (_uInt32 = new AndUInt32());
 
                 case TypeCode.UInt64:
-                    return s_UInt64 ?? (s_UInt64 = new AndUInt64());
+                    return _uInt64 ?? (_uInt64 = new AndUInt64());
 
                 case TypeCode.Boolean:
-                    return s_bool ?? (s_bool = new AndBool());
+                    return _bool ?? (_bool = new AndBool());
 
                 default:
                     throw Error.ExpressionNotSupportedForType("And", type);
@@ -2185,7 +2185,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal abstract class NullableMethodCallInstruction : Instruction
     {
-        private static NullableMethodCallInstruction s_hasValue, s_value, s_equals, s_getHashCode, s_getValueOrDefault, s_getValueOrDefault1, s_toString;
+        private static NullableMethodCallInstruction _hasValue, _value, _equals, _getHashCode, _getValueOrDefault, _getValueOrDefault1, _toString;
 
         public override int ConsumedStack
         {
@@ -2331,28 +2331,28 @@ namespace System.Linq.Expressions.Interpreter
             switch (method)
             {
                 case "get_HasValue":
-                    return s_hasValue ?? (s_hasValue = new HasValue());
+                    return _hasValue ?? (_hasValue = new HasValue());
 
                 case "get_Value":
-                    return s_value ?? (s_value = new GetValue());
+                    return _value ?? (_value = new GetValue());
 
                 case "Equals":
-                    return s_equals ?? (s_equals = new EqualsClass());
+                    return _equals ?? (_equals = new EqualsClass());
 
                 case "GetHashCode":
-                    return s_getHashCode ?? (s_getHashCode = new GetHashCodeClass());
+                    return _getHashCode ?? (_getHashCode = new GetHashCodeClass());
 
                 case "GetValueOrDefault":
                     if (argCount == 0)
                     {
-                        return s_getValueOrDefault ?? (s_getValueOrDefault = new GetValueOrDefault());
+                        return _getValueOrDefault ?? (_getValueOrDefault = new GetValueOrDefault());
                     }
                     else
                     {
-                        return s_getValueOrDefault1 ?? (s_getValueOrDefault1 = new GetValueOrDefault1());
+                        return _getValueOrDefault1 ?? (_getValueOrDefault1 = new GetValueOrDefault1());
                     }
                 case "ToString":
-                    return s_toString ?? (s_toString = new ToStringClass());
+                    return _toString ?? (_toString = new ToStringClass());
 
                 default:
                     // System.Nullable doesn't have other instance methods
@@ -2363,7 +2363,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal abstract class CastInstruction : Instruction
     {
-        private static CastInstruction s_boolean, s_byte, s_char, s_dateTime, s_decimal, s_double, s_int16, s_int32, s_int64, s_SByte, s_single, s_string, s_UInt16, s_UInt32, s_UInt64;
+        private static CastInstruction _boolean, _byte, _char, _dateTime, _decimal, _double, _int16, _int32, _int64, _sByte, _single, _string, _uInt16, _uInt32, _uInt64;
 
         public override int ConsumedStack
         {
@@ -2433,49 +2433,49 @@ namespace System.Linq.Expressions.Interpreter
                 switch (t.GetTypeCode())
                 {
                     case TypeCode.Boolean:
-                        return s_boolean ?? (s_boolean = new CastInstructionT<Boolean>());
+                        return _boolean ?? (_boolean = new CastInstructionT<Boolean>());
 
                     case TypeCode.Byte:
-                        return s_byte ?? (s_byte = new CastInstructionT<Byte>());
+                        return _byte ?? (_byte = new CastInstructionT<Byte>());
 
                     case TypeCode.Char:
-                        return s_char ?? (s_char = new CastInstructionT<Char>());
+                        return _char ?? (_char = new CastInstructionT<Char>());
 
                     case TypeCode.DateTime:
-                        return s_dateTime ?? (s_dateTime = new CastInstructionT<DateTime>());
+                        return _dateTime ?? (_dateTime = new CastInstructionT<DateTime>());
 
                     case TypeCode.Decimal:
-                        return s_decimal ?? (s_decimal = new CastInstructionT<Decimal>());
+                        return _decimal ?? (_decimal = new CastInstructionT<Decimal>());
 
                     case TypeCode.Double:
-                        return s_double ?? (s_double = new CastInstructionT<Double>());
+                        return _double ?? (_double = new CastInstructionT<Double>());
 
                     case TypeCode.Int16:
-                        return s_int16 ?? (s_int16 = new CastInstructionT<Int16>());
+                        return _int16 ?? (_int16 = new CastInstructionT<Int16>());
 
                     case TypeCode.Int32:
-                        return s_int32 ?? (s_int32 = new CastInstructionT<Int32>());
+                        return _int32 ?? (_int32 = new CastInstructionT<Int32>());
 
                     case TypeCode.Int64:
-                        return s_int64 ?? (s_int64 = new CastInstructionT<Int64>());
+                        return _int64 ?? (_int64 = new CastInstructionT<Int64>());
 
                     case TypeCode.SByte:
-                        return s_SByte ?? (s_SByte = new CastInstructionT<SByte>());
+                        return _sByte ?? (_sByte = new CastInstructionT<SByte>());
 
                     case TypeCode.Single:
-                        return s_single ?? (s_single = new CastInstructionT<Single>());
+                        return _single ?? (_single = new CastInstructionT<Single>());
 
                     case TypeCode.String:
-                        return s_string ?? (s_string = new CastInstructionT<String>());
+                        return _string ?? (_string = new CastInstructionT<String>());
 
                     case TypeCode.UInt16:
-                        return s_UInt16 ?? (s_UInt16 = new CastInstructionT<UInt16>());
+                        return _uInt16 ?? (_uInt16 = new CastInstructionT<UInt16>());
 
                     case TypeCode.UInt32:
-                        return s_UInt32 ?? (s_UInt32 = new CastInstructionT<UInt32>());
+                        return _uInt32 ?? (_uInt32 = new CastInstructionT<UInt32>());
 
                     case TypeCode.UInt64:
-                        return s_UInt64 ?? (s_UInt64 = new CastInstructionT<UInt64>());
+                        return _uInt64 ?? (_uInt64 = new CastInstructionT<UInt64>());
                 }
             }
 
@@ -2506,8 +2506,8 @@ namespace System.Linq.Expressions.Interpreter
     internal class NullCheckInstruction : Instruction
     {
         private readonly int _stackOffset;
-        private const int CacheSize = 12;
-        private static readonly NullCheckInstruction[] s_cache = new NullCheckInstruction[CacheSize];
+        private const int _cacheSize = 12;
+        private static readonly NullCheckInstruction[] _cache = new NullCheckInstruction[_cacheSize];
 
         public override int ConsumedStack
         {
@@ -2531,9 +2531,9 @@ namespace System.Linq.Expressions.Interpreter
 
         public static Instruction Create(int stackOffset)
         {
-            if (stackOffset < CacheSize)
+            if (stackOffset < _cacheSize)
             {
-                return s_cache[stackOffset] ?? (s_cache[stackOffset] = new NullCheckInstruction(stackOffset));
+                return _cache[stackOffset] ?? (_cache[stackOffset] = new NullCheckInstruction(stackOffset));
             }
 
             return new NullCheckInstruction(stackOffset);
