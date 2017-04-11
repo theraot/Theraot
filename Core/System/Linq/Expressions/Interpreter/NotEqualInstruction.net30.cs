@@ -269,7 +269,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(ScriptingRuntimeHelpers.BooleanToObject(((Single)left) != ((Single)right)));
+                    frame.Push(ScriptingRuntimeHelpers.BooleanToObject(((Single)left) != ((Single)right))); // No, don't try to be clever about float comparison
                 }
                 return +1;
             }
@@ -291,7 +291,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(ScriptingRuntimeHelpers.BooleanToObject(((Double)left) != ((Double)right)));
+                    frame.Push(ScriptingRuntimeHelpers.BooleanToObject(((Double)left) != ((Double)right))); // No, don't try to be clever about double comparison
                 }
                 return +1;
             }
@@ -301,7 +301,9 @@ namespace System.Linq.Expressions.Interpreter
         {
             public override int Run(InterpretedFrame frame)
             {
-                frame.Push(ScriptingRuntimeHelpers.BooleanToObject(frame.Pop() != frame.Pop()));
+                var left = frame.Pop();
+                var right = frame.Pop();
+                frame.Push(ScriptingRuntimeHelpers.BooleanToObject(left != right));
                 return +1;
             }
         }
@@ -498,7 +500,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(ScriptingRuntimeHelpers.BooleanToObject(((Single)left) != ((Single)right)));
+                    frame.Push(ScriptingRuntimeHelpers.BooleanToObject(((Single)left) != ((Single)right))); // No, don't try to be clever about float comparison
                 }
                 return +1;
             }
@@ -516,7 +518,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(ScriptingRuntimeHelpers.BooleanToObject(((Double)left) != ((Double)right)));
+                    frame.Push(ScriptingRuntimeHelpers.BooleanToObject(((Double)left) != ((Double)right))); // No, don't try to be clever about double comparison
                 }
                 return +1;
             }
