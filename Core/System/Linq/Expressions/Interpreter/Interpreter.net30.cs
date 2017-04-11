@@ -28,25 +28,25 @@ namespace System.Linq.Expressions.Interpreter
         private readonly Dictionary<ParameterExpression, LocalVariable> _closureVariables;
 
         private readonly InstructionArray _instructions;
-        internal readonly object[] _objects;
-        internal readonly RuntimeLabel[] _labels;
+        internal readonly object[] Objects;
+        internal readonly RuntimeLabel[] Labels;
 
-        internal readonly string _name;
-        internal readonly DebugInfo[] _debugInfos;
+        internal readonly string Name;
+        internal readonly DebugInfo[] DebugInfos;
 
         internal Interpreter(string name, LocalVariables locals, HybridReferenceDictionary<LabelTarget, BranchLabel> labelMapping,
             InstructionArray instructions, DebugInfo[] debugInfos)
         {
-            _name = name;
+            Name = name;
             _localCount = locals.LocalCount;
             _closureVariables = locals.ClosureVariables;
 
             _instructions = instructions;
-            _objects = instructions.Objects;
-            _labels = instructions.Labels;
+            Objects = instructions.Objects;
+            Labels = instructions.Labels;
             _labelMapping = labelMapping;
 
-            _debugInfos = debugInfos;
+            DebugInfos = debugInfos;
         }
 
         internal int ClosureSize
@@ -107,8 +107,8 @@ namespace System.Linq.Expressions.Interpreter
             get
             {
                 // the last label is "return and rethrow" label:
-                Debug.Assert(_labels[_labels.Length - 1].Index == RethrowOnReturn);
-                return _labels.Length - 1;
+                Debug.Assert(Labels[Labels.Length - 1].Index == RethrowOnReturn);
+                return Labels.Length - 1;
             }
         }
     }
