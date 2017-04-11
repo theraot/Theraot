@@ -5,7 +5,7 @@ using Theraot.Core;
 namespace Tests.Theraot.Core
 {
     [TestFixture]
-    internal partial class PrimeHelperTest
+    internal class PrimeHelperTest
     {
         [Test]
         public void TestIsPrime()
