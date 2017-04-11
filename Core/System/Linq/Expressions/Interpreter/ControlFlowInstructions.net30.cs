@@ -93,7 +93,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal sealed class BranchTrueInstruction : OffsetInstruction
     {
-        private static Instruction[] _cache; // TODO not used field
+        private static Instruction[] _cache;
 
         public override string InstructionName
         {
@@ -104,6 +104,10 @@ namespace System.Linq.Expressions.Interpreter
         {
             get
             {
+                if (_cache == null)
+                {
+                    _cache = new Instruction[CacheSize];
+                }
                 return _cache;
             }
         }
@@ -122,7 +126,7 @@ namespace System.Linq.Expressions.Interpreter
                 return Offset;
             }
 
-            return +1;
+            return 1;
         }
     }
 
