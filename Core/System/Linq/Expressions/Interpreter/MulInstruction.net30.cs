@@ -10,7 +10,7 @@ namespace System.Linq.Expressions.Interpreter
 {
     internal abstract class MulInstruction : Instruction
     {
-        private static Instruction s_int16, s_int32, s_int64, s_UInt16, s_UInt32, s_UInt64, s_single, s_double;
+        private static Instruction _int16, _int32, _int64, _uint16, _uint32, _uint64, _single, _double;
 
         public override int ConsumedStack
         {
@@ -189,28 +189,28 @@ namespace System.Linq.Expressions.Interpreter
             switch (type.GetNonNullableType().GetTypeCode())
             {
                 case TypeCode.Int16:
-                    return s_int16 ?? (s_int16 = new MulInt16());
+                    return _int16 ?? (_int16 = new MulInt16());
 
                 case TypeCode.Int32:
-                    return s_int32 ?? (s_int32 = new MulInt32());
+                    return _int32 ?? (_int32 = new MulInt32());
 
                 case TypeCode.Int64:
-                    return s_int64 ?? (s_int64 = new MulInt64());
+                    return _int64 ?? (_int64 = new MulInt64());
 
                 case TypeCode.UInt16:
-                    return s_UInt16 ?? (s_UInt16 = new MulUInt16());
+                    return _uint16 ?? (_uint16 = new MulUInt16());
 
                 case TypeCode.UInt32:
-                    return s_UInt32 ?? (s_UInt32 = new MulUInt32());
+                    return _uint32 ?? (_uint32 = new MulUInt32());
 
                 case TypeCode.UInt64:
-                    return s_UInt64 ?? (s_UInt64 = new MulUInt64());
+                    return _uint64 ?? (_uint64 = new MulUInt64());
 
                 case TypeCode.Single:
-                    return s_single ?? (s_single = new MulSingle());
+                    return _single ?? (_single = new MulSingle());
 
                 case TypeCode.Double:
-                    return s_double ?? (s_double = new MulDouble());
+                    return _double ?? (_double = new MulDouble());
 
                 default:
                     throw Error.ExpressionNotSupportedForType("Mul", type);
@@ -225,7 +225,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal abstract class MulOvfInstruction : Instruction
     {
-        private static Instruction s_int16, s_int32, s_int64, s_UInt16, s_UInt32, s_UInt64, s_single, s_double;
+        private static Instruction _int16, _int32, _int64, _uint16, _uint32, _uint64, _single, _double;
 
         public override int ConsumedStack
         {
@@ -404,28 +404,28 @@ namespace System.Linq.Expressions.Interpreter
             switch (type.GetNonNullableType().GetTypeCode())
             {
                 case TypeCode.Int16:
-                    return s_int16 ?? (s_int16 = new MulOvfInt16());
+                    return _int16 ?? (_int16 = new MulOvfInt16());
 
                 case TypeCode.Int32:
-                    return s_int32 ?? (s_int32 = new MulOvfInt32());
+                    return _int32 ?? (_int32 = new MulOvfInt32());
 
                 case TypeCode.Int64:
-                    return s_int64 ?? (s_int64 = new MulOvfInt64());
+                    return _int64 ?? (_int64 = new MulOvfInt64());
 
                 case TypeCode.UInt16:
-                    return s_UInt16 ?? (s_UInt16 = new MulOvfUInt16());
+                    return _uint16 ?? (_uint16 = new MulOvfUInt16());
 
                 case TypeCode.UInt32:
-                    return s_UInt32 ?? (s_UInt32 = new MulOvfUInt32());
+                    return _uint32 ?? (_uint32 = new MulOvfUInt32());
 
                 case TypeCode.UInt64:
-                    return s_UInt64 ?? (s_UInt64 = new MulOvfUInt64());
+                    return _uint64 ?? (_uint64 = new MulOvfUInt64());
 
                 case TypeCode.Single:
-                    return s_single ?? (s_single = new MulOvfSingle());
+                    return _single ?? (_single = new MulOvfSingle());
 
                 case TypeCode.Double:
-                    return s_double ?? (s_double = new MulOvfDouble());
+                    return _double ?? (_double = new MulOvfDouble());
 
                 default:
                     throw Error.ExpressionNotSupportedForType("MulOvf", type);
