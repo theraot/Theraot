@@ -143,14 +143,14 @@ namespace System.Linq
             {
                 return false;
             }
-            var candidate_parameters = candidate.GetParameterTypes();
-            if (candidate_parameters[0] != GetComparableType(parameters[0]))
+            var candidateParameters = candidate.GetParameterTypes();
+            if (candidateParameters[0] != GetComparableType(parameters[0]))
             {
                 return false;
             }
-            for (int index = 1; index < candidate_parameters.Length; ++index)
+            for (int index = 1; index < candidateParameters.Length; ++index)
             {
-                if (!TypeMatch(candidate_parameters[index], parameters[index]))
+                if (!TypeMatch(candidateParameters[index], parameters[index]))
                 {
                     return false;
                 }
@@ -160,8 +160,8 @@ namespace System.Linq
 
         private static MethodInfo ReplaceQueryableMethod(MethodInfo method)
         {
-            var target_type = GetTargetDeclaringType(method);
-            var result = GetMatchingMethod(method, target_type);
+            var targetType = GetTargetDeclaringType(method);
+            var result = GetMatchingMethod(method, targetType);
             if (result != null)
             {
                 return result;
@@ -172,7 +172,7 @@ namespace System.Linq
                     (
                         "There is no method {0} on type {1} that matches the specified arguments",
                         method.Name,
-                        target_type.FullName
+                        targetType.FullName
                     )
                 );
         }

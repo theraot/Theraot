@@ -34,11 +34,11 @@ namespace System.Linq
 {
     internal abstract class OrderedEnumerable<TElement> : IOrderedEnumerable<TElement>
     {
-        private readonly IEnumerable<TElement> source;
+        private readonly IEnumerable<TElement> _source;
 
         protected OrderedEnumerable(IEnumerable<TElement> source)
         {
-            this.source = source;
+            this._source = source;
         }
 
         public abstract SortContext<TElement> CreateContext(SortContext<TElement> current);
@@ -49,7 +49,7 @@ namespace System.Linq
             return new OrderedSequence<TElement, TKey>
             (
                 this,
-                source,
+                _source,
                 selector,
                 comparer,
                 descending ? SortDirection.Descending : SortDirection.Ascending
@@ -58,7 +58,7 @@ namespace System.Linq
 
         public IEnumerator<TElement> GetEnumerator()
         {
-            return Sort(source).GetEnumerator();
+            return Sort(_source).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

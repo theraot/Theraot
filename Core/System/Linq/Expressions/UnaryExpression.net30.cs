@@ -411,7 +411,7 @@ namespace System.Linq.Expressions
         private static UnaryExpression GetUserDefinedUnaryOperator(ExpressionType unaryType, string name, Expression operand)
         {
             var operandType = operand.Type;
-            var types = new Type[] { operandType };
+            var types = new[] { operandType };
             var nnOperandType = operandType.GetNonNullableType();
             var method = nnOperandType.GetStaticMethod(name, types);
             if (method != null)
