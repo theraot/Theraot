@@ -155,11 +155,11 @@ namespace System.Linq.Expressions.Interpreter
             var handlers = _handlers;
             Debug.Assert(handlers != null, "we should have at least one handler if the method gets called");
             handler = null;
-            for (int i = 0; i < handlers.Length; i++)
+            foreach (ExceptionHandler candidateHandler in handlers)
             {
-                if (handlers[i].Matches(exception.GetType()))
+                if (candidateHandler.Matches(exception.GetType()))
                 {
-                    handler = handlers[i];
+                    handler = candidateHandler;
                     break;
                 }
             }
