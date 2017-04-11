@@ -321,7 +321,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             var type = frame.Pop();
             var obj = frame.Pop();
-            frame.Push(ScriptingRuntimeHelpers.BooleanToObject(obj != null && (object)obj.GetType() == type));
+            frame.Push(ScriptingRuntimeHelpers.BooleanToObject(obj != null && obj.GetType() == type));
             return +1;
         }
     }
