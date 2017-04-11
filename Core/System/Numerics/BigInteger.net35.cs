@@ -13,13 +13,13 @@ namespace System.Numerics
 
         internal readonly uint[] InternalBits;
 
-        private readonly static BigInteger _sBnMinInt = new BigInteger(-1, new[] { unchecked((uint)int.MinValue) });
+        private static readonly BigInteger _bigIntegerMinInt = new BigInteger(-1, new[] { unchecked((uint)int.MinValue) });
 
-        private readonly static BigInteger _sBnOneInt = new BigInteger(1);
+        private static readonly BigInteger _bigIntegerOneInt = new BigInteger(1);
 
-        private readonly static BigInteger _sBnZeroInt = new BigInteger(0);
+        private static readonly BigInteger _bigIntegerZeroInt = new BigInteger(0);
 
-        private readonly static BigInteger _sBnMinusOneInt = new BigInteger(-1);
+        private static readonly BigInteger _bigIntegerMinusOneInt = new BigInteger(-1);
 
         /// <summary>Indicates whether the value of the current <see cref="T:System.Numerics.BigInteger" /> object is an even number.</summary>
         /// <returns>true if the value of the <see cref="T:System.Numerics.BigInteger" /> object is an even number; otherwise, false.</returns>
@@ -79,14 +79,14 @@ namespace System.Numerics
         /// <returns>An integer whose value is negative one (-1).</returns>
         public static BigInteger MinusOne
         {
-            get { return _sBnMinusOneInt; }
+            get { return _bigIntegerMinusOneInt; }
         }
 
         /// <summary>Gets a value that represents the number one (1).</summary>
         /// <returns>An object whose value is one (1).</returns>
         public static BigInteger One
         {
-            get { return _sBnOneInt; }
+            get { return _bigIntegerOneInt; }
         }
 
         /// <summary>Gets a number that indicates the sign (negative, positive, or zero) of the current <see cref="T:System.Numerics.BigInteger" /> object.</summary>
@@ -100,7 +100,7 @@ namespace System.Numerics
         /// <returns>An integer whose value is 0 (zero).</returns>
         public static BigInteger Zero
         {
-            get { return _sBnZeroInt; }
+            get { return _bigIntegerZeroInt; }
         }
 
         /// <summary>Initializes a new instance of the <see cref="T:System.Numerics.BigInteger" /> structure using a 32-bit signed integer value.</summary>
@@ -114,7 +114,7 @@ namespace System.Numerics
             }
             else
             {
-                this = _sBnMinInt;
+                this = _bigIntegerMinInt;
             }
         }
 
@@ -148,7 +148,7 @@ namespace System.Numerics
                 }
                 else
                 {
-                    this = _sBnMinInt;
+                    this = _bigIntegerMinInt;
                 }
                 return;
             }
@@ -227,7 +227,7 @@ namespace System.Numerics
             }
             if (size == 0)
             {
-                this = _sBnZeroInt;
+                this = _bigIntegerZeroInt;
             }
             else if (size != 1 || bits[0] <= 0)
             {
@@ -314,7 +314,7 @@ namespace System.Numerics
                 }
                 if (isZero)
                 {
-                    this = _sBnZeroInt;
+                    this = _bigIntegerZeroInt;
                 }
                 else if (isNegative)
                 {
@@ -329,11 +329,11 @@ namespace System.Numerics
                         switch (internalBits[0])
                         {
                             case 1:
-                                this = _sBnMinusOneInt;
+                                this = _bigIntegerMinusOneInt;
                                 break;
 
                             case unchecked((uint)int.MinValue):
-                                this = _sBnMinInt;
+                                this = _bigIntegerMinInt;
                                 break;
 
                             default:
@@ -387,7 +387,7 @@ namespace System.Numerics
                 }
                 if (InternalSign == int.MinValue)
                 {
-                    this = _sBnMinInt;
+                    this = _bigIntegerMinInt;
                 }
             }
         }
@@ -411,7 +411,7 @@ namespace System.Numerics
             }
             if (length == 0)
             {
-                this = _sBnZeroInt;
+                this = _bigIntegerZeroInt;
             }
             else if (length != 1 || value[0] >= unchecked((uint)int.MinValue))
             {
@@ -425,7 +425,7 @@ namespace System.Numerics
                 InternalBits = null;
                 if (InternalSign == int.MinValue)
                 {
-                    this = _sBnMinInt;
+                    this = _bigIntegerMinInt;
                 }
             }
         }
@@ -444,7 +444,7 @@ namespace System.Numerics
             }
             if (dwordCount == 0)
             {
-                this = _sBnZeroInt;
+                this = _bigIntegerZeroInt;
                 return;
             }
             if (dwordCount == 1)
@@ -461,7 +461,7 @@ namespace System.Numerics
                 }
                 else
                 {
-                    this = _sBnMinInt;
+                    this = _bigIntegerMinInt;
                 }
                 return;
             }
@@ -502,7 +502,7 @@ namespace System.Numerics
             }
             else if (value[0] == 1)
             {
-                this = _sBnMinusOneInt;
+                this = _bigIntegerMinusOneInt;
             }
             else if (value[0] != unchecked((uint)int.MinValue))
             {
@@ -511,7 +511,7 @@ namespace System.Numerics
             }
             else
             {
-                this = _sBnMinInt;
+                this = _bigIntegerMinInt;
             }
         }
 

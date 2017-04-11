@@ -39,7 +39,7 @@ namespace System.Runtime.CompilerServices
         }
 
         /// <summary>
-        /// Represents a method that creates a non-default value to add as part of a key/value pair to a ConditionalWeakTable<TKey, TValue> object.
+        /// Represents a method that creates a non-default value to add as part of a key/value pair to a <see cref="ConditionalWeakTable{TKey, TValue}"/> object.
         /// </summary>
         /// <param name="key">The key that belongs to the value to create.</param>
         /// <returns>An instance of a reference type that represents the value to attach to the specified key.</returns>
