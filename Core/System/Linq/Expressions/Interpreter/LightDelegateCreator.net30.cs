@@ -30,11 +30,6 @@ namespace System.Linq.Expressions.Interpreter
             get { return _interpreter; }
         }
 
-        private bool HasClosure
-        {
-            get { return _interpreter.ClosureSize > 0; }
-        }
-
         public Delegate CreateDelegate()
         {
             return CreateDelegate(null);
