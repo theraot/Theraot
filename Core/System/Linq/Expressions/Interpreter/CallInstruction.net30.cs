@@ -155,7 +155,7 @@ namespace System.Linq.Expressions.Interpreter
         }
     }
 
-    internal partial class MethodInfoCallInstruction : CallInstruction
+    internal class MethodInfoCallInstruction : CallInstruction
     {
         private readonly MethodInfo _target;
         private readonly int _argumentCount;
@@ -291,7 +291,7 @@ namespace System.Linq.Expressions.Interpreter
         }
     }
 
-    internal partial class ByRefMethodInfoCallInstruction : CallInstruction
+    internal class ByRefMethodInfoCallInstruction : CallInstruction
     {
         private readonly ByRefUpdater[] _byrefArgs;
         private readonly MethodInfo _target;
