@@ -72,7 +72,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal abstract class NotInstruction : Instruction
     {
-        public static Instruction _Bool, _Int64, _Int32, _Int16, _UInt64, _UInt32, _UInt16, _Byte, _SByte;
+        public static Instruction _bool, _int64, _int32, _int16, _uint64, _uint32, _uint16, _byte, _sbyte;
 
         private NotInstruction()
         {
@@ -251,31 +251,31 @@ namespace System.Linq.Expressions.Interpreter
             switch (t.GetNonNullableType().GetTypeCode())
             {
                 case TypeCode.Boolean:
-                    return _Bool ?? (_Bool = new BoolNot());
+                    return _bool ?? (_bool = new BoolNot());
 
                 case TypeCode.Int64:
-                    return _Int64 ?? (_Int64 = new Int64Not());
+                    return _int64 ?? (_int64 = new Int64Not());
 
                 case TypeCode.Int32:
-                    return _Int32 ?? (_Int32 = new Int32Not());
+                    return _int32 ?? (_int32 = new Int32Not());
 
                 case TypeCode.Int16:
-                    return _Int16 ?? (_Int16 = new Int16Not());
+                    return _int16 ?? (_int16 = new Int16Not());
 
                 case TypeCode.UInt64:
-                    return _UInt64 ?? (_UInt64 = new UInt64Not());
+                    return _uint64 ?? (_uint64 = new UInt64Not());
 
                 case TypeCode.UInt32:
-                    return _UInt32 ?? (_UInt32 = new UInt32Not());
+                    return _uint32 ?? (_uint32 = new UInt32Not());
 
                 case TypeCode.UInt16:
-                    return _UInt16 ?? (_UInt16 = new UInt16Not());
+                    return _uint16 ?? (_uint16 = new UInt16Not());
 
                 case TypeCode.Byte:
-                    return _Byte ?? (_Byte = new ByteNot());
+                    return _byte ?? (_byte = new ByteNot());
 
                 case TypeCode.SByte:
-                    return _SByte ?? (_SByte = new SByteNot());
+                    return _sbyte ?? (_sbyte = new SByteNot());
 
                 default:
                     throw new InvalidOperationException("Not for " + t);
