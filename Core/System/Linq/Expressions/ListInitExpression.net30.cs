@@ -26,10 +26,10 @@ namespace System.Linq.Expressions
         private readonly NewExpression _newExpression;
         private readonly ReadOnlyCollection<ElementInit> _initializers;
 
-        internal ListInitExpression(NewExpression newExpression, ReadOnlyCollection<ElementInit> initializers)
+        internal ListInitExpression(NewExpression newExpression, ElementInit[] initializers)
         {
             _newExpression = newExpression;
-            _initializers = initializers;
+            _initializers = new TrueReadOnlyCollection<ElementInit>(initializers);
         }
 
         /// <summary>
@@ -121,7 +121,22 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(newExpression, "newExpression");
             ContractUtils.RequiresNotNull(initializers, "initializers");
-            return ListInit(newExpression, initializers as IEnumerable<Expression>);
+
+            if (initializers.Length == 0)
+            {
+                throw Error.ListInitializerWithZeroMembers();
+            }
+            var addMethod = FindMethod(newExpression.Type, "Add", null, new Expression[] { initializers[0] },
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            var initArray = new ElementInit[initializers.Length];
+            var index = 0;
+            foreach (var initializer in initializers)
+            {
+                initArray[index] = ElementInit(addMethod, initializer);
+                index++;
+            }
+            ValidateListInitArgs(newExpression.Type, initArray);
+            return new ListInitExpression(newExpression, initArray);
         }
 
         /// <summary>
@@ -135,14 +150,58 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(newExpression, "newExpression");
             ContractUtils.RequiresNotNull(initializers, "initializers");
 
-            var initializerlist = initializers.ToReadOnly();
-            if (initializerlist.Count == 0)
-            {
-                throw Error.ListInitializerWithZeroMembers();
-            }
+            List<ElementInit> initList = null;
+            ElementInit[] initArray = null;
+            MethodInfo addMethod = null;
 
-            var addMethod = FindMethod(newExpression.Type, "Add", null, new Expression[] { initializerlist[0] }, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            return ListInit(newExpression, addMethod, initializers);
+            initializers = initializers.NullOrEmptyChecked
+            (
+                () =>
+                {
+                    throw Error.ListInitializerWithZeroMembers();
+                },
+                () => initList = new List<ElementInit>(),
+                count => initArray = new ElementInit[count]
+            );
+            var enumerator = initializers.GetEnumerator();
+            try
+            {
+                enumerator.MoveNext();
+                var initializer = enumerator.Current;
+                addMethod = FindMethod(newExpression.Type, "Add", null, new Expression[] { initializer }, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                if (addMethod == null)
+                {
+                    return ListInit(newExpression, initializers);
+                }
+                if (initList != null)
+                {
+                    initList.Add(ElementInit(addMethod, initializer));
+                    while (enumerator.MoveNext())
+                    {
+                        initializer = enumerator.Current;
+                        initList.Add(ElementInit(addMethod, initializer));
+                    }
+                    initArray = initList.ToArray();
+                }
+                else
+                {
+                    var index = 0;
+                    initArray[index] = ElementInit(addMethod, initializer);
+                    index++;
+                    while (enumerator.MoveNext())
+                    {
+                        initializer = enumerator.Current;
+                        initArray[index] = ElementInit(addMethod, initializer);
+                        index++;
+                    }
+                }
+            }
+            finally
+            {
+                enumerator.Dispose();
+            }
+            ValidateListInitArgs(newExpression.Type, initArray);
+            return new ListInitExpression(newExpression, initArray);
         }
 
         /// <summary>
@@ -160,7 +219,19 @@ namespace System.Linq.Expressions
             }
             ContractUtils.RequiresNotNull(newExpression, "newExpression");
             ContractUtils.RequiresNotNull(initializers, "initializers");
-            return ListInit(newExpression, addMethod, initializers as IEnumerable<Expression>);
+            if (initializers.Length == 0)
+            {
+                throw Error.ListInitializerWithZeroMembers();
+            }
+            var initArray = new ElementInit[initializers.Length];
+            var index = 0;
+            foreach (var initializer in initializers)
+            {
+                initArray[index] = ElementInit(addMethod, initializer);
+                index++;
+            }
+            ValidateListInitArgs(newExpression.Type, initArray);
+            return new ListInitExpression(newExpression, initArray);
         }
 
         /// <summary>
@@ -179,17 +250,56 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(newExpression, "newExpression");
             ContractUtils.RequiresNotNull(initializers, "initializers");
 
-            var initializerlist = initializers.ToReadOnly();
-            if (initializerlist.Count == 0)
+            List<ElementInit> initList = null;
+            ElementInit[] initArray = null;
+
+            initializers = initializers.NullOrEmptyChecked
+                (
+                    () =>
+                    {
+                        throw Error.ListInitializerWithZeroMembers();
+                    },
+                    () => initList = new List<ElementInit>(),
+                    count => initArray = new ElementInit[count]
+                );
+            var enumerator = initializers.GetEnumerator();
+            try
             {
-                throw Error.ListInitializerWithZeroMembers();
+                enumerator.MoveNext();
+                var initializer = enumerator.Current;
+                if (addMethod == null)
+                {
+                    return ListInit(newExpression, initializers);
+                }
+                if (initList != null)
+                {
+                    initList.Add(ElementInit(addMethod, initializer));
+                    while (enumerator.MoveNext())
+                    {
+                        initializer = enumerator.Current;
+                        initList.Add(ElementInit(addMethod, initializer));
+                    }
+                    initArray = initList.ToArray();
+                }
+                else
+                {
+                    var index = 0;
+                    initArray[index] = ElementInit(addMethod, initializer);
+                    index++;
+                    while (enumerator.MoveNext())
+                    {
+                        initializer = enumerator.Current;
+                        initArray[index] = ElementInit(addMethod, initializer);
+                        index++;
+                    }
+                }
             }
-            var initList = new ElementInit[initializerlist.Count];
-            for (int i = 0; i < initializerlist.Count; i++)
+            finally
             {
-                initList[i] = ElementInit(addMethod, initializerlist[i]);
+                enumerator.Dispose();
             }
-            return ListInit(newExpression, new TrueReadOnlyCollection<ElementInit>(initList));
+            ValidateListInitArgs(newExpression.Type, initArray);
+            return new ListInitExpression(newExpression, initArray);
         }
 
         /// <summary>
@@ -207,7 +317,21 @@ namespace System.Linq.Expressions
         /// </remarks>
         public static ListInitExpression ListInit(NewExpression newExpression, params ElementInit[] initializers)
         {
-            return ListInit(newExpression, (IEnumerable<ElementInit>)initializers);
+            ContractUtils.RequiresNotNull(newExpression, "newExpression");
+            ContractUtils.RequiresNotNull(initializers, "initializers");
+            if (initializers.Length == 0)
+            {
+                throw Error.ListInitializerWithZeroMembers();
+            }
+            var initArray = new ElementInit[initializers.Length];
+            var index = 0;
+            foreach (var initializer in initializers)
+            {
+                initArray[index] = initializer;
+                index++;
+            }
+            ValidateListInitArgs(newExpression.Type, initArray);
+            return new ListInitExpression(newExpression, initArray);
         }
 
         /// <summary>
@@ -224,13 +348,53 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(newExpression, "newExpression");
             ContractUtils.RequiresNotNull(initializers, "initializers");
-            var initializerlist = initializers.ToReadOnly();
-            if (initializerlist.Count == 0)
+
+            List<ElementInit> initList = null;
+            ElementInit[] initArray = null;
+
+            initializers = initializers.NullOrEmptyChecked
+                (
+                    () =>
+                    {
+                        throw Error.ListInitializerWithZeroMembers();
+                    },
+                    () => initList = new List<ElementInit>(),
+                    count => initArray = new ElementInit[count]
+                );
+            var enumerator = initializers.GetEnumerator();
+            try
             {
-                throw Error.ListInitializerWithZeroMembers();
+                enumerator.MoveNext();
+                var initializer = enumerator.Current;
+                if (initList != null)
+                {
+                    initList.Add(initializer);
+                    while (enumerator.MoveNext())
+                    {
+                        initializer = enumerator.Current;
+                        initList.Add(initializer);
+                    }
+                    initArray = initList.ToArray();
+                }
+                else
+                {
+                    var index = 0;
+                    initArray[index] = initializer;
+                    index++;
+                    while (enumerator.MoveNext())
+                    {
+                        initializer = enumerator.Current;
+                        initArray[index] = initializer;
+                        index++;
+                    }
+                }
             }
-            ValidateListInitArgs(newExpression.Type, initializerlist);
-            return new ListInitExpression(newExpression, initializerlist);
+            finally
+            {
+                enumerator.Dispose();
+            }
+            ValidateListInitArgs(newExpression.Type, initArray);
+            return new ListInitExpression(newExpression, initArray);
         }
     }
 }
