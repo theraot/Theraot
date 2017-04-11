@@ -93,7 +93,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal sealed class BranchTrueInstruction : OffsetInstruction
     {
-        private static Instruction[] _cache;
+        private static Instruction[] _cache; // TODO not used field
 
         public override string InstructionName
         {
@@ -180,7 +180,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             get
             {
-                _caches = _caches ?? new Instruction[2][][] { new Instruction[2][], new Instruction[2][] };
+                _caches = _caches ?? new[] { new Instruction[2][], new Instruction[2][] };
                 return _caches[ConsumedStack][ProducedStack] ?? (_caches[ConsumedStack][ProducedStack] = new Instruction[CacheSize]);
             }
         }
@@ -354,7 +354,7 @@ namespace System.Linq.Expressions.Interpreter
 
     internal sealed class EnterTryCatchFinallyInstruction : IndexedBranchInstruction
     {
-        private readonly bool _hasFinally = false;
+        private readonly bool _hasFinally;
         private TryCatchFinallyHandler _tryHandler;
 
         internal void SetTryHandler(TryCatchFinallyHandler tryHandler)
@@ -860,6 +860,8 @@ namespace System.Linq.Expressions.Interpreter
 
     internal sealed class EnterLoopInstruction : Instruction
     {
+        // TODO not used fields
+
         private readonly int _instructionIndex;
         private readonly Dictionary<ParameterExpression, LocalVariable> _variables;
         private readonly Dictionary<ParameterExpression, LocalVariable> _closureVariables;
