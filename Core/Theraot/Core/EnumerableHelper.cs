@@ -166,7 +166,7 @@ namespace Theraot.Core
             var _tryTake = tryTake;
             if (converter == null)
             {
-                throw new ArgumentNullException("resultSelector");
+                throw new ArgumentNullException("converter");
             }
             var _converter = converter;
             TState item;
