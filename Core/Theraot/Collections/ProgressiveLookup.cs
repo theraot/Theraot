@@ -33,7 +33,11 @@ namespace Theraot.Collections
 
         protected ProgressiveLookup(IEnumerable<IGrouping<TKey, T>> wrapped, IDictionary<TKey, IGrouping<TKey, T>> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
         {
-            _cache = Check.NotNullArgument(cache, "cache");
+            if (cache == null)
+            {
+                throw new ArgumentNullException("cache");
+            }
+            _cache = cache;
             _progressor = new Progressor<IGrouping<TKey, T>>(wrapped);
             _progressor.SubscribeAction(obj => _cache.Add(new KeyValuePair<TKey, IGrouping<TKey, T>>(obj.Key, obj)));
             _keyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
@@ -43,7 +47,11 @@ namespace Theraot.Collections
 
         protected ProgressiveLookup(Progressor<IGrouping<TKey, T>> wrapped, IDictionary<TKey, IGrouping<TKey, T>> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
         {
-            _cache = Check.NotNullArgument(cache, "cache");
+            if (cache == null)
+            {
+                throw new ArgumentNullException("cache");
+            }
+            _cache = cache;
             _progressor = new Progressor<IGrouping<TKey, T>>(wrapped);
             _progressor.SubscribeAction(obj => _cache.Add(new KeyValuePair<TKey, IGrouping<TKey, T>>(obj.Key, obj)));
             _keyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
@@ -53,7 +61,11 @@ namespace Theraot.Collections
 
         protected ProgressiveLookup(TryTake<IGrouping<TKey, T>> tryTake, IDictionary<TKey, IGrouping<TKey, T>> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<T> itemComparer)
         {
-            _cache = Check.NotNullArgument(cache, "cache");
+            if (cache == null)
+            {
+                throw new ArgumentNullException("cache");
+            }
+            _cache = cache;
             _progressor = new Progressor<IGrouping<TKey, T>>(tryTake, false); // false because the underlaying structure may change
             _progressor.SubscribeAction(obj => _cache.Add(new KeyValuePair<TKey, IGrouping<TKey, T>>(obj.Key, obj)));
             _keyComparer = keyComparer ?? EqualityComparer<TKey>.Default;

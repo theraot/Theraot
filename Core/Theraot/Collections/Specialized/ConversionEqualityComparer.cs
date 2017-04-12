@@ -16,7 +16,11 @@ namespace Theraot.Collections.Specialized
         public ConversionEqualityComparer(IEqualityComparer<TOutput> comparer, Converter<TInput, TOutput> converter)
         {
             _comparer = comparer ?? EqualityComparer<TOutput>.Default;
-            _converter = Check.NotNullArgument(converter, "converter");
+            if (converter == null)
+            {
+                throw new ArgumentNullException("converter");
+            }
+            _converter = converter;
         }
 
         public bool Equals(TInput x, TInput y)

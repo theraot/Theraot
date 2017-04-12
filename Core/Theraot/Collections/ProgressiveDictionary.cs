@@ -30,7 +30,11 @@ namespace Theraot.Collections
         protected ProgressiveDictionary(IEnumerable<KeyValuePair<TKey, TValue>> wrapped, IDictionary<TKey, TValue> cache, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
             : this(wrapped.GetEnumerator(), cache, new KeyValuePairEqualityComparer<TKey, TValue>(keyComparer, valueComparer))
         {
-            _cache = Check.NotNullArgument(cache, "cache");
+            if (cache == null)
+            {
+                throw new ArgumentNullException("cache");
+            }
+            _cache = cache;
             _keyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
             _valuesReadonly = new ProgressiveSet<TValue>(Progressor<TValue>.CreateConverted(Progressor, input => input.Value), valueComparer);
             _keysReadonly = new ProgressiveSet<TKey>(Progressor<TKey>.CreateConverted(Progressor, input => input.Key), keyComparer);
@@ -55,7 +59,11 @@ namespace Theraot.Collections
                 }
             }, cache, new KeyValuePairEqualityComparer<TKey, TValue>(keyComparer, valueComparer))
         {
-            _cache = Check.NotNullArgument(cache, "cache");
+            if (cache == null)
+            {
+                throw new ArgumentNullException("cache");
+            }
+            _cache = cache;
             _keyComparer = keyComparer ?? EqualityComparer<TKey>.Default;
             _keyComparer = EqualityComparer<TKey>.Default;
             _valuesReadonly = new ProgressiveSet<TValue>(Progressor<TValue>.CreateConverted(Progressor, input => input.Value), valueComparer);

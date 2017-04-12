@@ -30,7 +30,7 @@ namespace System.Linq
             foreach (TOuter element in outer)
             {
                 var outerKey = outerKeySelector(element);
-                if (outerKey != null && innerKeys.Contains(outerKey))
+                if (!ReferenceEquals(outerKey, null) && innerKeys.Contains(outerKey))
                 {
                     foreach (TInner innerElement in innerKeys[outerKey])
                     {

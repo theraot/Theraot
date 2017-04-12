@@ -15,7 +15,11 @@ namespace System.Collections.ObjectModel
 
             internal ValueCollection(ICollection<TValue> wrapped)
             {
-                _wrapped = Check.NotNullArgument(wrapped, "wrapped");
+                if (wrapped == null)
+                {
+                    throw new ArgumentNullException("wrapped");
+                }
+                _wrapped = wrapped;
             }
 
             public int Count

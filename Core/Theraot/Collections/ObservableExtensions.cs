@@ -10,27 +10,47 @@ namespace Theraot.Collections
     {
         public static IDisposable SubscribeAction<T>(this IObservable<T> observable, Action<T> listener)
         {
-            return Check.NotNullArgument(observable, "observable").Subscribe(listener.ToObserver());
+            if (observable == null)
+            {
+                throw new ArgumentNullException("observable");
+            }
+            return observable.Subscribe(listener.ToObserver());
         }
 
         public static IDisposable SubscribeAction<TInput, TOutput>(this IObservable<TInput> observable, Action<TOutput> listener, Converter<TInput, TOutput> converter)
         {
-            return Check.NotNullArgument(observable, "observable").Subscribe(listener.ToObserver(converter));
+            if (observable == null)
+            {
+                throw new ArgumentNullException("observable");
+            }
+            return observable.Subscribe(listener.ToObserver(converter));
         }
 
         public static IDisposable SubscribeConverted<TInput, TOutput>(this IObservable<TInput> observable, IObserver<TOutput> observer, Converter<TInput, TOutput> converter)
         {
-            return Check.NotNullArgument(observable, "observable").Subscribe(new ConvertedObserver<TInput, TOutput>(observer, converter));
+            if (observable == null)
+            {
+                throw new ArgumentNullException("observable");
+            }
+            return observable.Subscribe(new ConvertedObserver<TInput, TOutput>(observer, converter));
         }
 
         public static IDisposable SubscribeFiltered<T>(this IObservable<T> observable, IObserver<T> observer, Predicate<T> filter)
         {
-            return Check.NotNullArgument(observable, "observable").Subscribe(new FilteredObserver<T>(observer, filter));
+            if (observable == null)
+            {
+                throw new ArgumentNullException("observable");
+            }
+            return observable.Subscribe(new FilteredObserver<T>(observer, filter));
         }
 
         public static IDisposable SubscribeFilteredConverted<TInput, TOutput>(this IObservable<TInput> observable, IObserver<TOutput> observer, Predicate<TInput> filter, Converter<TInput, TOutput> converter)
         {
-            return Check.NotNullArgument(observable, "observable").Subscribe(new FilteredConvertedObserver<TInput, TOutput>(observer, filter, converter));
+            if (observable == null)
+            {
+                throw new ArgumentNullException("observable");
+            }
+            return observable.Subscribe(new FilteredConvertedObserver<TInput, TOutput>(observer, filter, converter));
         }
 
         public static IObserver<T> ToObserver<T>(this Action<T> listener)

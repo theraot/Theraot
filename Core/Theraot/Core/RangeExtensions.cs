@@ -12,10 +12,17 @@ namespace Theraot.Core
         public static bool Contains<T>(this IEnumerable<Range<T>> ranges, T item)
             where T : IComparable<T>
         {
-            T _item = Check.NotNullArgument(item, "item");
-            foreach (Range<T> range in Check.NotNullArgument(ranges, "ranges"))
+            if (ReferenceEquals(item, null))
             {
-                if (range.Contains(_item))
+                throw new ArgumentNullException("item");
+            }
+            if (ranges == null)
+            {
+                throw new ArgumentNullException("ranges");
+            }
+            foreach (Range<T> range in ranges)
+            {
+                if (range.Contains(item))
                 {
                     return true;
                 }
@@ -26,10 +33,13 @@ namespace Theraot.Core
         public static IEnumerable<Range<T>> Overlapped<T>(this IEnumerable<Range<T>> ranges, Range<T> range)
             where T : IComparable<T>
         {
-            Range<T> _range = Check.NotNullArgument(range, "item");
-            foreach (Range<T> item in Check.NotNullArgument(ranges, "ranges"))
+            if (ranges == null)
             {
-                if (item.Overlaps(_range))
+                throw new ArgumentNullException("ranges");
+            }
+            foreach (Range<T> item in ranges)
+            {
+                if (item.Overlaps(range))
                 {
                     yield return item;
                 }
@@ -47,8 +57,16 @@ namespace Theraot.Core
         public static IEnumerable<Range<T>> Sort<T>(this IEnumerable<Range<T>> ranges, Comparison<Range<T>> comparison)
             where T : IComparable<T>
         {
-            var list = new List<Range<T>>(Check.NotNullArgument(ranges, "ranges"));
-            list.Sort(Check.NotNullArgument(comparison, "comparison"));
+            if (ranges == null)
+            {
+                throw new ArgumentNullException("ranges");
+            }
+            if (comparison == null)
+            {
+                throw new ArgumentNullException("comparison");
+            }
+            var list = new List<Range<T>>(ranges);
+            list.Sort(comparison);
             return list;
         }
     }

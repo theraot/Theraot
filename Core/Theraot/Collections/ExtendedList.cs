@@ -29,20 +29,36 @@ namespace Theraot.Collections
             _comparer = EqualityComparer<T>.Default;
             _wrapped = new List<T>();
             _readOnly = CreateReadOnly();
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            if (prototype == null)
+            {
+                throw new ArgumentNullException("prototype");
+            }
+            this.AddRange(prototype);
         }
 
         public ExtendedList(IEnumerable<T> prototype, IEqualityComparer<T> comparer)
         {
-            _comparer = Check.NotNullArgument(comparer, "comparer");
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            _comparer = comparer;
             _wrapped = new List<T>();
             _readOnly = CreateReadOnly();
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            if (prototype == null)
+            {
+                throw new ArgumentNullException("prototype");
+            }
+            this.AddRange(prototype);
         }
 
         public ExtendedList(IEqualityComparer<T> comparer)
         {
-            _comparer = Check.NotNullArgument(comparer, "comparer");
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            _comparer = comparer;
             _wrapped = new List<T>();
             _readOnly = CreateReadOnly();
         }
@@ -224,7 +240,11 @@ namespace Theraot.Collections
 
         public bool SetEquals(IEnumerable<T> other)
         {
-            var that = Extensions.AsDistinctCollection(Check.NotNullArgument(other, "other"));
+            if (other == null)
+            {
+                throw new ArgumentNullException("other");
+            }
+            var that = Extensions.AsDistinctCollection(other);
             foreach (var item in that.Where(input => !Contains(input)))
             {
                 GC.KeepAlive(item);

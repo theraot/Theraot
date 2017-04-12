@@ -15,7 +15,11 @@ namespace System.Collections.ObjectModel
 
             internal KeyCollection(ICollection<TKey> wrapped)
             {
-                _wrapped = Check.NotNullArgument(wrapped, "wrapped");
+                if (wrapped == null)
+                {
+                    throw new ArgumentNullException("wrapped");
+                }
+                _wrapped = wrapped;
             }
 
             public int Count

@@ -45,8 +45,16 @@ namespace Theraot.Core
 
             public ComparerLinked(IComparer<T> first, IComparer<T> second)
             {
-                _first = Check.NotNullArgument(first, "first");
-                _second = Check.NotNullArgument(second, "second");
+                if (first == null)
+                {
+                    throw new ArgumentNullException("first");
+                }
+                _first = first;
+                if (second == null)
+                {
+                    throw new ArgumentNullException("second");
+                }
+                _second = second;
             }
 
             public int Compare(T x, T y)
@@ -66,7 +74,11 @@ namespace Theraot.Core
 
             public ReverseComparer(IComparer<T> wrapped)
             {
-                _wrapped = Check.NotNullArgument(wrapped, "wrapped");
+                if (wrapped == null)
+                {
+                    throw new ArgumentNullException("wrapped");
+                }
+                _wrapped = wrapped;
             }
 
             internal IComparer<T> Wrapped

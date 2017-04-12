@@ -16,7 +16,11 @@ namespace System.Collections.ObjectModel
 
         public ReadOnlyDictionary(IDictionary<TKey, TValue> dictionary)
         {
-            _wrapped = Check.NotNullArgument(dictionary, "dictioanry");
+            if (dictionary == null)
+            {
+                throw new ArgumentNullException("dictioanry");
+            }
+            _wrapped = dictionary;
             _keys = new KeyCollection(new DelegatedCollection<TKey>(() => _wrapped.Keys));
             _values = new ValueCollection(new DelegatedCollection<TValue>(() => _wrapped.Values));
         }
