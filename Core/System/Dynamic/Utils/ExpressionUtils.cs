@@ -77,7 +77,8 @@ namespace System.Dynamic.Utils
             ValidateArgumentCount(method, nodeKind, arguments.Count, pis);
 
             Expression[] newArgs = null;
-            for (int i = 0, n = pis.Length; i < n; i++)
+            var n = pis.Length;
+            for (int i = 0; i < n; i++)
             {
                 var arg = arguments[i];
                 var pi = pis[i];

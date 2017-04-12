@@ -462,7 +462,8 @@ namespace System.Linq.Expressions.Compiler
             _ilg.Emit(OpCodes.Br, @default);
 
             // Emit the cases
-            for (int i = 0, n = node.Cases.Count; i < n; i++)
+            var n = node.Cases.Count;
+            for (int i = 0; i < n; i++)
             {
                 // If the body is a goto, we already emitted an optimized
                 // branch directly to it. No need to emit anything else.
@@ -645,7 +646,8 @@ namespace System.Linq.Expressions.Compiler
 
             var nullCase = -1;
             var add = typeof(Dictionary<string, int>).GetMethod("Add", new[] { typeof(string), typeof(int) });
-            for (int i = 0, n = node.Cases.Count; i < n; i++)
+            var n = node.Cases.Count;
+            for (int i = 0; i < n; i++)
             {
                 foreach (ConstantExpression t in node.Cases[i].TestValues)
                 {
