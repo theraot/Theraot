@@ -77,6 +77,8 @@ namespace MonoTests.System.Linq.Expressions
 
         static public int MyCompare(OpStruct a, OpStruct b)
         {
+            GC.KeepAlive(a);
+            GC.KeepAlive(b);
             return 1;
         }
 
