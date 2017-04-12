@@ -119,6 +119,7 @@ namespace MonoTests.System.Linq.Expressions
         {
             public void Bar(string s)
             {
+                GC.KeepAlive(s);
             }
         }
 
@@ -351,6 +352,7 @@ namespace MonoTests.System.Linq.Expressions
 
         public static void FooRef(ref string s)
         {
+            GC.KeepAlive(s);
         }
 
         [Test]
