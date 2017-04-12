@@ -160,6 +160,7 @@ namespace Theraot.Collections.Specialized
 
             internal static AVLNode Get(AVLNode node, TKey key, Comparison<TKey> comparison)
             {
+                // NOTICE this method has no null check
                 while (node != null)
                 {
                     var compare = comparison(key, node._key);
@@ -239,6 +240,7 @@ namespace Theraot.Collections.Specialized
 
             internal static bool Remove(ref AVLNode node, TKey key, Comparison<TKey> comparison)
             {
+                // NOTICE this method has no null check
                 if (node == null)
                 {
                     return false;

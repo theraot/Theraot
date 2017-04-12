@@ -332,11 +332,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("tryTake");
             }
+            var tryTakeCopy = tryTake;
             _proxy = new ProxyObservable<T>();
             _tryTake = (out T value) =>
             {
                 // This is not an overridable method, and it is not being called on the constructor.
-                if (tryTake(out value))
+                if (tryTakeCopy(out value))
                 {
                     _proxy.OnNext(value);
                     return true;
@@ -356,11 +357,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("isDone");
             }
+            var tryTakeCopy = tryTake;
             _proxy = new ProxyObservable<T>();
             _tryTake = (out T value) =>
             {
                 // This is not an overridable method, and it is not being called on the constructor.
-                if (tryTake(out value))
+                if (tryTakeCopy(out value))
                 {
                     _proxy.OnNext(value);
                     return true;
