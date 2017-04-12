@@ -44,9 +44,7 @@ namespace System.Runtime.CompilerServices
         ///             It must only be used by the debugger and only in a single-threaded manner.
         ///
         /// </remarks>
-// ReSharper disable UnusedMember.Local
         private object ObjectIdForDebugger
-        // ReSharper restore UnusedMember.Local
         {
             get { return _objectIdForDebugger ?? (_objectIdForDebugger = new object()); }
         }
