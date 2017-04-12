@@ -32,11 +32,6 @@ namespace System.Linq.Expressions.Compiler
 #endif
         }
 
-        /// <summary>
-        /// Finds a delegate type using the types in the array.
-        /// We use the cache to avoid copying the array, and to cache the
-        /// created delegate type
-        /// </summary>
         internal static Type MakeDelegateType(Type[] types)
         {
             lock (_DelegateCache)

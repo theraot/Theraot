@@ -79,12 +79,6 @@ namespace System.Linq.Expressions.Compiler
             _ilg.EmitNew(typeof(Closure).GetConstructor(new[] { typeof(object[]), typeof(object[]) }));
         }
 
-        /// <summary>
-        /// Emits code which creates new instance of the delegateType delegate.
-        ///
-        /// Since the delegate is getting closed over the "Closure" argument, this
-        /// cannot be used with virtual/instance methods (inner must be static method)
-        /// </summary>
         private void EmitDelegateConstruction(LambdaCompiler inner)
         {
             var delegateType = inner._lambda.Type;

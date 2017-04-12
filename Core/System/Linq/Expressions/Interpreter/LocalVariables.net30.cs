@@ -239,9 +239,6 @@ namespace System.Linq.Expressions.Interpreter
             return res;
         }
 
-        /// <summary>
-        /// Checks to see if the given variable is defined within the current local scope.
-        /// </summary>
         internal bool ContainsVariable(ParameterExpression variable)
         {
             return _variables.ContainsKey(variable);

@@ -81,15 +81,6 @@ namespace System.Linq.Expressions.Interpreter
             get { return _labelMapping; }
         }
 
-        /// <summary>
-        /// Runs instructions within the given frame.
-        /// </summary>
-        /// <remarks>
-        /// Interpreted stack frames are linked via Parent reference so that each CLR frame of this method corresponds
-        /// to an interpreted stack frame in the chain. It is therefore possible to combine CLR stack traces with
-        /// interpreted stack traces by aligning interpreted frames to the frames of this method.
-        /// Each group of subsequent frames of Run method corresponds to a single interpreted frame.
-        /// </remarks>
         [MethodImpl(MethodImplOptions.NoInlining)]
         public void Run(InterpretedFrame frame)
         {
