@@ -21,7 +21,6 @@ namespace Theraot.Collections.ThreadSafe
     public sealed class NeedleBucket<T, TNeedle> : IEnumerable<T>, IBucket<T>
         where TNeedle : class, IRecyclableNeedle<T>
     {
-        private readonly IEqualityComparer<T> _comparer;
         private readonly FixedSizeBucket<TNeedle> _entries;
         private readonly Func<T, TNeedle> _needleFactory;
         private readonly Func<int, TNeedle> _needleIndexFactory;
@@ -51,7 +50,6 @@ namespace Theraot.Collections.ThreadSafe
             _reservoir = new NeedleReservoir<T, TNeedle>(_needleFactory);
             _needleIndexFactory = index => Reservoir.GetNeedle(new ValueFuncClosure<int, T>(valueFactory, index).InvokeReturn());
             _entries = new FixedSizeBucket<TNeedle>(capacity);
-            _comparer = EqualityComparer<T>.Default;
         }
 
         /// <summary>
@@ -76,66 +74,6 @@ namespace Theraot.Collections.ThreadSafe
             _reservoir = new NeedleReservoir<T, TNeedle>(_needleFactory);
             _needleIndexFactory = index => Reservoir.GetNeedle(new ValueFuncClosure<T>(valueFactory).InvokeReturn());
             _entries = new FixedSizeBucket<TNeedle>(capacity);
-            _comparer = EqualityComparer<T>.Default;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NeedleBucket{T, TNeedle}" /> class.
-        /// </summary>
-        /// <param name = "valueFactory">The delegate that is invoked to do the lazy initialization of the items given their index.</param>
-        /// <param name="needleFactory">The delegate that is invoked to create a needle</param>
-        /// <param name="capacity">The capacity.</param>
-        /// <param name="comparer">The equality comparer</param>
-        /// <exception cref="ArgumentNullException"><paramref name="valueFactory"/> is <c>null</c>.</exception>
-        /// <exception cref="InvalidOperationException"></exception>
-        public NeedleBucket(Func<int, T> valueFactory, Func<T, TNeedle> needleFactory, int capacity, IEqualityComparer<T> comparer)
-        {
-            if (comparer == null)
-            {
-                throw new ArgumentNullException("comparer");
-            }
-            if (valueFactory == null)
-            {
-                throw new ArgumentNullException("valueFactory");
-            }
-            if (needleFactory == null)
-            {
-                throw new ArgumentNullException("needleFactory");
-            }
-            _needleFactory = needleFactory;
-            _reservoir = new NeedleReservoir<T, TNeedle>(_needleFactory);
-            _needleIndexFactory = index => Reservoir.GetNeedle(new ValueFuncClosure<int, T>(valueFactory, index).InvokeReturn());
-            _entries = new FixedSizeBucket<TNeedle>(capacity);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NeedleBucket{T, TNeedle}" /> class.
-        /// </summary>
-        /// <param name = "valueFactory">The delegate that is invoked to do the lazy initialization of the items.</param>
-        /// <param name="needleFactory">The delegate that is invoked to create a needle</param>
-        /// <param name="capacity">The capacity.</param>
-        /// <param name="comparer">The equality comparer</param>
-        /// <exception cref="InvalidOperationException"></exception>
-        /// <exception cref="ArgumentNullException"><paramref name="valueFactory"/> is <c>null</c>.</exception>
-        public NeedleBucket(Func<T> valueFactory, Func<T, TNeedle> needleFactory, int capacity, IEqualityComparer<T> comparer)
-        {
-            if (valueFactory == null)
-            {
-                throw new ArgumentNullException("valueFactory");
-            }
-            if (needleFactory == null)
-            {
-                throw new ArgumentNullException("needleFactory");
-            }
-            if (comparer == null)
-            {
-                throw new ArgumentNullException("comparer");
-            }
-            _needleFactory = needleFactory;
-            _reservoir = new NeedleReservoir<T, TNeedle>(_needleFactory);
-            _needleIndexFactory = index => Reservoir.GetNeedle(new ValueFuncClosure<T>(valueFactory).InvokeReturn());
-            _entries = new FixedSizeBucket<TNeedle>(capacity);
-            _comparer = comparer;
         }
 
         /// <summary>
