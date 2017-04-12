@@ -320,7 +320,7 @@ namespace System.Linq.Expressions
                     list.Add(element);
                 }
             }
-            return list != null ? (IList<TElement>)list : original;
+            return (IList<TElement>)list ?? original;
         }
     }
 }
