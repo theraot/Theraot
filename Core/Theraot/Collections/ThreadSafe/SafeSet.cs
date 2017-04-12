@@ -14,7 +14,7 @@ namespace Theraot.Collections.ThreadSafe
     [Serializable]
     public class SafeSet<T> : IEnumerable<T>, ISet<T>
     {
-        private const int INT_DefaultProbing = 1;
+        private const int _defaultProbing = 1;
         private readonly IEqualityComparer<T> _comparer;
         private Bucket<T> _bucket;
         private int _probing;
@@ -23,7 +23,7 @@ namespace Theraot.Collections.ThreadSafe
         /// Initializes a new instance of the <see cref="SafeSet{T}" /> class.
         /// </summary>
         public SafeSet()
-            : this(EqualityComparer<T>.Default, INT_DefaultProbing)
+            : this(EqualityComparer<T>.Default, _defaultProbing)
         {
             // Empty
         }
@@ -43,7 +43,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         /// <param name="comparer">The value comparer.</param>
         public SafeSet(IEqualityComparer<T> comparer)
-            : this(comparer, INT_DefaultProbing)
+            : this(comparer, _defaultProbing)
         {
             // Empty
         }
