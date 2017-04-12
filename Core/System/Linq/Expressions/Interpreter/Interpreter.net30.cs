@@ -21,7 +21,7 @@ namespace System.Linq.Expressions.Interpreter
     internal sealed class Interpreter
     {
         internal static readonly object NoValue = new object();
-        internal const int RethrowOnReturn = Int32.MaxValue;
+        internal const int RethrowOnReturn = int.MaxValue;
 
         private readonly int _localCount;
         private readonly HybridReferenceDictionary<LabelTarget, BranchLabel> _labelMapping;

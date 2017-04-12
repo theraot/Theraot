@@ -35,31 +35,31 @@ namespace System.Linq.Expressions
                     switch (type.GetTypeCode())
                     {
                         case TypeCode.Boolean:
-                            return new PrimitiveParameterExpression<Boolean>(name);
+                            return new PrimitiveParameterExpression<bool>(name);
 
                         case TypeCode.Byte:
-                            return new PrimitiveParameterExpression<Byte>(name);
+                            return new PrimitiveParameterExpression<byte>(name);
 
                         case TypeCode.Char:
-                            return new PrimitiveParameterExpression<Char>(name);
+                            return new PrimitiveParameterExpression<char>(name);
 
                         case TypeCode.DateTime:
                             return new PrimitiveParameterExpression<DateTime>(name);
 
                         case TypeCode.Decimal:
-                            return new PrimitiveParameterExpression<Decimal>(name);
+                            return new PrimitiveParameterExpression<decimal>(name);
 
                         case TypeCode.Double:
-                            return new PrimitiveParameterExpression<Double>(name);
+                            return new PrimitiveParameterExpression<double>(name);
 
                         case TypeCode.Int16:
-                            return new PrimitiveParameterExpression<Int16>(name);
+                            return new PrimitiveParameterExpression<short>(name);
 
                         case TypeCode.Int32:
-                            return new PrimitiveParameterExpression<Int32>(name);
+                            return new PrimitiveParameterExpression<int>(name);
 
                         case TypeCode.Int64:
-                            return new PrimitiveParameterExpression<Int64>(name);
+                            return new PrimitiveParameterExpression<long>(name);
 
                         case TypeCode.Object:
                             // common reference types which we optimize go here.  Of course object is in
@@ -80,22 +80,22 @@ namespace System.Linq.Expressions
                             break;
 
                         case TypeCode.SByte:
-                            return new PrimitiveParameterExpression<SByte>(name);
+                            return new PrimitiveParameterExpression<sbyte>(name);
 
                         case TypeCode.Single:
-                            return new PrimitiveParameterExpression<Single>(name);
+                            return new PrimitiveParameterExpression<float>(name);
 
                         case TypeCode.String:
-                            return new PrimitiveParameterExpression<String>(name);
+                            return new PrimitiveParameterExpression<string>(name);
 
                         case TypeCode.UInt16:
-                            return new PrimitiveParameterExpression<UInt16>(name);
+                            return new PrimitiveParameterExpression<ushort>(name);
 
                         case TypeCode.UInt32:
-                            return new PrimitiveParameterExpression<UInt32>(name);
+                            return new PrimitiveParameterExpression<uint>(name);
 
                         case TypeCode.UInt64:
-                            return new PrimitiveParameterExpression<UInt64>(name);
+                            return new PrimitiveParameterExpression<ulong>(name);
                     }
                 }
             }

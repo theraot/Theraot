@@ -121,7 +121,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(~(Int64)value);
+                    frame.Push(~(long)value);
                 }
                 return +1;
             }
@@ -138,7 +138,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(~(Int32)value);
+                    frame.Push(~(int)value);
                 }
                 return +1;
             }
@@ -155,7 +155,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((Int16)(~(Int16)value));
+                    frame.Push((short)(~(short)value));
                 }
                 return +1;
             }
@@ -172,7 +172,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(~(UInt64)value);
+                    frame.Push(~(ulong)value);
                 }
                 return +1;
             }
@@ -189,7 +189,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(~(UInt32)value);
+                    frame.Push(~(uint)value);
                 }
                 return +1;
             }
@@ -206,7 +206,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((UInt16)(~(UInt16)value));
+                    frame.Push((ushort)(~(ushort)value));
                 }
                 return +1;
             }
@@ -223,7 +223,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((object)(Byte)(~(Byte)value));
+                    frame.Push((object)(byte)(~(byte)value));
                 }
                 return +1;
             }
@@ -240,7 +240,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((object)(SByte)(~(SByte)value));
+                    frame.Push((object)(sbyte)(~(sbyte)value));
                 }
                 return +1;
             }

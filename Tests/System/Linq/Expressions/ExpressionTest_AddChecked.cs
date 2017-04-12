@@ -137,7 +137,7 @@ namespace MonoTests.System.Linq.Expressions
                 // OK
                 return;
             }
-            throw new Exception(String.Format("AddChecked on {2} should have thrown an exception with values {0} {1}, result was: {3}",
+            throw new Exception(string.Format("AddChecked on {2} should have thrown an exception with values {0} {1}, result was: {3}",
                                 v1, v2, v1.GetType(), res));
         }
 
@@ -168,7 +168,7 @@ namespace MonoTests.System.Linq.Expressions
                 // OK
                 return;
             }
-            throw new Exception(String.Format("AddChecked should have thrown for the creation of a tree with {0} operands", v1.GetType()));
+            throw new Exception(string.Format("AddChecked should have thrown for the creation of a tree with {0} operands", v1.GetType()));
         }
 
         [Test]
@@ -178,12 +178,12 @@ namespace MonoTests.System.Linq.Expressions
             // in BinaryExpression:
             MustOverflow<int>(int.MaxValue, 1);
             MustOverflow<int>(int.MinValue, -11);
-            MustOverflow<long>(Int64.MaxValue, 1);
-            MustOverflow<long>(Int64.MinValue, -1);
+            MustOverflow<long>(long.MaxValue, 1);
+            MustOverflow<long>(long.MinValue, -1);
 
             // unsigned values use Add_Ovf_Un, check that too:
-            MustOverflow<ulong>(UInt64.MaxValue, 1);
-            MustOverflow<uint>(UInt32.MaxValue, 1);
+            MustOverflow<ulong>(ulong.MaxValue, 1);
+            MustOverflow<uint>(uint.MaxValue, 1);
         }
 
         //
@@ -196,8 +196,8 @@ namespace MonoTests.System.Linq.Expressions
             MustNotOverflow<int>(10, 20);
 
             // These are invalid:
-            InvalidOperation<byte>(Byte.MaxValue, 2);
-            InvalidOperation<sbyte>(SByte.MaxValue, 2);
+            InvalidOperation<byte>(byte.MaxValue, 2);
+            InvalidOperation<sbyte>(sbyte.MaxValue, 2);
 #if NET35
             // Stuff that just fits in 32 bits, does not overflow:
             MustNotOverflow<short>(Int16.MaxValue, 2);
@@ -205,8 +205,8 @@ namespace MonoTests.System.Linq.Expressions
             MustNotOverflow<ushort>(UInt16.MaxValue, 2);
 #endif
             // Doubles, floats, do not overflow
-            MustNotOverflow<float>(Single.MaxValue, 1);
-            MustNotOverflow<double>(Double.MaxValue, 1);
+            MustNotOverflow<float>(float.MaxValue, 1);
+            MustNotOverflow<double>(double.MaxValue, 1);
         }
     }
 }

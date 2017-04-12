@@ -84,37 +84,37 @@ namespace System.Linq.Expressions.Interpreter
                 switch (From)
                 {
                     case TypeCode.Byte:
-                        return ConvertInt32((Byte)obj);
+                        return ConvertInt32((byte)obj);
 
                     case TypeCode.SByte:
-                        return ConvertInt32((SByte)obj);
+                        return ConvertInt32((sbyte)obj);
 
                     case TypeCode.Int16:
-                        return ConvertInt32((Int16)obj);
+                        return ConvertInt32((short)obj);
 
                     case TypeCode.Char:
-                        return ConvertInt32((Char)obj);
+                        return ConvertInt32((char)obj);
 
                     case TypeCode.Int32:
-                        return ConvertInt32((Int32)obj);
+                        return ConvertInt32((int)obj);
 
                     case TypeCode.Int64:
-                        return ConvertInt64((Int64)obj);
+                        return ConvertInt64((long)obj);
 
                     case TypeCode.UInt16:
-                        return ConvertInt32((UInt16)obj);
+                        return ConvertInt32((ushort)obj);
 
                     case TypeCode.UInt32:
-                        return ConvertInt64((UInt32)obj);
+                        return ConvertInt64((uint)obj);
 
                     case TypeCode.UInt64:
-                        return ConvertUInt64((UInt64)obj);
+                        return ConvertUInt64((ulong)obj);
 
                     case TypeCode.Single:
-                        return ConvertDouble((Single)obj);
+                        return ConvertDouble((float)obj);
 
                     case TypeCode.Double:
-                        return ConvertDouble((Double)obj);
+                        return ConvertDouble((double)obj);
 
                     default:
                         throw Assert.Unreachable;
@@ -128,37 +128,37 @@ namespace System.Linq.Expressions.Interpreter
                     switch (To)
                     {
                         case TypeCode.Byte:
-                            return (Byte)obj;
+                            return (byte)obj;
 
                         case TypeCode.SByte:
-                            return (SByte)obj;
+                            return (sbyte)obj;
 
                         case TypeCode.Int16:
-                            return (Int16)obj;
+                            return (short)obj;
 
                         case TypeCode.Char:
-                            return (Char)obj;
+                            return (char)obj;
 
                         case TypeCode.Int32:
                             return obj;
 
                         case TypeCode.Int64:
-                            return (Int64)obj;
+                            return (long)obj;
 
                         case TypeCode.UInt16:
-                            return (UInt16)obj;
+                            return (ushort)obj;
 
                         case TypeCode.UInt32:
-                            return (UInt32)obj;
+                            return (uint)obj;
 
                         case TypeCode.UInt64:
-                            return (UInt64)obj;
+                            return (ulong)obj;
 
                         case TypeCode.Single:
-                            return (Single)obj;
+                            return (float)obj;
 
                         case TypeCode.Double:
-                            return (Double)obj;
+                            return (double)obj;
 
                         default:
                             throw Assert.Unreachable;
@@ -166,44 +166,44 @@ namespace System.Linq.Expressions.Interpreter
                 }
             }
 
-            private object ConvertInt64(Int64 obj)
+            private object ConvertInt64(long obj)
             {
                 unchecked
                 {
                     switch (To)
                     {
                         case TypeCode.Byte:
-                            return (Byte)obj;
+                            return (byte)obj;
 
                         case TypeCode.SByte:
-                            return (SByte)obj;
+                            return (sbyte)obj;
 
                         case TypeCode.Int16:
-                            return (Int16)obj;
+                            return (short)obj;
 
                         case TypeCode.Char:
-                            return (Char)obj;
+                            return (char)obj;
 
                         case TypeCode.Int32:
-                            return (Int32)obj;
+                            return (int)obj;
 
                         case TypeCode.Int64:
                             return obj;
 
                         case TypeCode.UInt16:
-                            return (UInt16)obj;
+                            return (ushort)obj;
 
                         case TypeCode.UInt32:
-                            return (UInt32)obj;
+                            return (uint)obj;
 
                         case TypeCode.UInt64:
-                            return (UInt64)obj;
+                            return (ulong)obj;
 
                         case TypeCode.Single:
-                            return (Single)obj;
+                            return (float)obj;
 
                         case TypeCode.Double:
-                            return (Double)obj;
+                            return (double)obj;
 
                         default:
                             throw Assert.Unreachable;
@@ -211,44 +211,44 @@ namespace System.Linq.Expressions.Interpreter
                 }
             }
 
-            private object ConvertUInt64(UInt64 obj)
+            private object ConvertUInt64(ulong obj)
             {
                 unchecked
                 {
                     switch (To)
                     {
                         case TypeCode.Byte:
-                            return (Byte)obj;
+                            return (byte)obj;
 
                         case TypeCode.SByte:
-                            return (SByte)obj;
+                            return (sbyte)obj;
 
                         case TypeCode.Int16:
-                            return (Int16)obj;
+                            return (short)obj;
 
                         case TypeCode.Char:
-                            return (Char)obj;
+                            return (char)obj;
 
                         case TypeCode.Int32:
-                            return (Int32)obj;
+                            return (int)obj;
 
                         case TypeCode.Int64:
-                            return (Int64)obj;
+                            return (long)obj;
 
                         case TypeCode.UInt16:
-                            return (UInt16)obj;
+                            return (ushort)obj;
 
                         case TypeCode.UInt32:
-                            return (UInt32)obj;
+                            return (uint)obj;
 
                         case TypeCode.UInt64:
                             return obj;
 
                         case TypeCode.Single:
-                            return (Single)obj;
+                            return (float)obj;
 
                         case TypeCode.Double:
-                            return (Double)obj;
+                            return (double)obj;
 
                         default:
                             throw Assert.Unreachable;
@@ -256,41 +256,41 @@ namespace System.Linq.Expressions.Interpreter
                 }
             }
 
-            private object ConvertDouble(Double obj)
+            private object ConvertDouble(double obj)
             {
                 unchecked
                 {
                     switch (To)
                     {
                         case TypeCode.Byte:
-                            return (Byte)obj;
+                            return (byte)obj;
 
                         case TypeCode.SByte:
-                            return (SByte)obj;
+                            return (sbyte)obj;
 
                         case TypeCode.Int16:
-                            return (Int16)obj;
+                            return (short)obj;
 
                         case TypeCode.Char:
-                            return (Char)obj;
+                            return (char)obj;
 
                         case TypeCode.Int32:
-                            return (Int32)obj;
+                            return (int)obj;
 
                         case TypeCode.Int64:
-                            return (Int64)obj;
+                            return (long)obj;
 
                         case TypeCode.UInt16:
-                            return (UInt16)obj;
+                            return (ushort)obj;
 
                         case TypeCode.UInt32:
-                            return (UInt32)obj;
+                            return (uint)obj;
 
                         case TypeCode.UInt64:
-                            return (UInt64)obj;
+                            return (ulong)obj;
 
                         case TypeCode.Single:
-                            return (Single)obj;
+                            return (float)obj;
 
                         case TypeCode.Double:
                             return obj;
@@ -319,37 +319,37 @@ namespace System.Linq.Expressions.Interpreter
                 switch (From)
                 {
                     case TypeCode.Byte:
-                        return ConvertInt32((Byte)obj);
+                        return ConvertInt32((byte)obj);
 
                     case TypeCode.SByte:
-                        return ConvertInt32((SByte)obj);
+                        return ConvertInt32((sbyte)obj);
 
                     case TypeCode.Int16:
-                        return ConvertInt32((Int16)obj);
+                        return ConvertInt32((short)obj);
 
                     case TypeCode.Char:
-                        return ConvertInt32((Char)obj);
+                        return ConvertInt32((char)obj);
 
                     case TypeCode.Int32:
-                        return ConvertInt32((Int32)obj);
+                        return ConvertInt32((int)obj);
 
                     case TypeCode.Int64:
-                        return ConvertInt64((Int64)obj);
+                        return ConvertInt64((long)obj);
 
                     case TypeCode.UInt16:
-                        return ConvertInt32((UInt16)obj);
+                        return ConvertInt32((ushort)obj);
 
                     case TypeCode.UInt32:
-                        return ConvertInt64((UInt32)obj);
+                        return ConvertInt64((uint)obj);
 
                     case TypeCode.UInt64:
-                        return ConvertUInt64((UInt64)obj);
+                        return ConvertUInt64((ulong)obj);
 
                     case TypeCode.Single:
-                        return ConvertDouble((Single)obj);
+                        return ConvertDouble((float)obj);
 
                     case TypeCode.Double:
-                        return ConvertDouble((Double)obj);
+                        return ConvertDouble((double)obj);
 
                     default:
                         throw Assert.Unreachable;
@@ -363,37 +363,37 @@ namespace System.Linq.Expressions.Interpreter
                     switch (To)
                     {
                         case TypeCode.Byte:
-                            return (Byte)obj;
+                            return (byte)obj;
 
                         case TypeCode.SByte:
-                            return (SByte)obj;
+                            return (sbyte)obj;
 
                         case TypeCode.Int16:
-                            return (Int16)obj;
+                            return (short)obj;
 
                         case TypeCode.Char:
-                            return (Char)obj;
+                            return (char)obj;
 
                         case TypeCode.Int32:
                             return obj;
 
                         case TypeCode.Int64:
-                            return (Int64)obj;
+                            return (long)obj;
 
                         case TypeCode.UInt16:
-                            return (UInt16)obj;
+                            return (ushort)obj;
 
                         case TypeCode.UInt32:
-                            return (UInt32)obj;
+                            return (uint)obj;
 
                         case TypeCode.UInt64:
-                            return (UInt64)obj;
+                            return (ulong)obj;
 
                         case TypeCode.Single:
-                            return (Single)obj;
+                            return (float)obj;
 
                         case TypeCode.Double:
-                            return (Double)obj;
+                            return (double)obj;
 
                         default:
                             throw Assert.Unreachable;
@@ -401,44 +401,44 @@ namespace System.Linq.Expressions.Interpreter
                 }
             }
 
-            private object ConvertInt64(Int64 obj)
+            private object ConvertInt64(long obj)
             {
                 checked
                 {
                     switch (To)
                     {
                         case TypeCode.Byte:
-                            return (Byte)obj;
+                            return (byte)obj;
 
                         case TypeCode.SByte:
-                            return (SByte)obj;
+                            return (sbyte)obj;
 
                         case TypeCode.Int16:
-                            return (Int16)obj;
+                            return (short)obj;
 
                         case TypeCode.Char:
-                            return (Char)obj;
+                            return (char)obj;
 
                         case TypeCode.Int32:
-                            return (Int32)obj;
+                            return (int)obj;
 
                         case TypeCode.Int64:
                             return obj;
 
                         case TypeCode.UInt16:
-                            return (UInt16)obj;
+                            return (ushort)obj;
 
                         case TypeCode.UInt32:
-                            return (UInt32)obj;
+                            return (uint)obj;
 
                         case TypeCode.UInt64:
-                            return (UInt64)obj;
+                            return (ulong)obj;
 
                         case TypeCode.Single:
-                            return (Single)obj;
+                            return (float)obj;
 
                         case TypeCode.Double:
-                            return (Double)obj;
+                            return (double)obj;
 
                         default:
                             throw Assert.Unreachable;
@@ -446,44 +446,44 @@ namespace System.Linq.Expressions.Interpreter
                 }
             }
 
-            private object ConvertUInt64(UInt64 obj)
+            private object ConvertUInt64(ulong obj)
             {
                 checked
                 {
                     switch (To)
                     {
                         case TypeCode.Byte:
-                            return (Byte)obj;
+                            return (byte)obj;
 
                         case TypeCode.SByte:
-                            return (SByte)obj;
+                            return (sbyte)obj;
 
                         case TypeCode.Int16:
-                            return (Int16)obj;
+                            return (short)obj;
 
                         case TypeCode.Char:
-                            return (Char)obj;
+                            return (char)obj;
 
                         case TypeCode.Int32:
-                            return (Int32)obj;
+                            return (int)obj;
 
                         case TypeCode.Int64:
-                            return (Int64)obj;
+                            return (long)obj;
 
                         case TypeCode.UInt16:
-                            return (UInt16)obj;
+                            return (ushort)obj;
 
                         case TypeCode.UInt32:
-                            return (UInt32)obj;
+                            return (uint)obj;
 
                         case TypeCode.UInt64:
                             return obj;
 
                         case TypeCode.Single:
-                            return (Single)obj;
+                            return (float)obj;
 
                         case TypeCode.Double:
-                            return (Double)obj;
+                            return (double)obj;
 
                         default:
                             throw Assert.Unreachable;
@@ -491,41 +491,41 @@ namespace System.Linq.Expressions.Interpreter
                 }
             }
 
-            private object ConvertDouble(Double obj)
+            private object ConvertDouble(double obj)
             {
                 checked
                 {
                     switch (To)
                     {
                         case TypeCode.Byte:
-                            return (Byte)obj;
+                            return (byte)obj;
 
                         case TypeCode.SByte:
-                            return (SByte)obj;
+                            return (sbyte)obj;
 
                         case TypeCode.Int16:
-                            return (Int16)obj;
+                            return (short)obj;
 
                         case TypeCode.Char:
-                            return (Char)obj;
+                            return (char)obj;
 
                         case TypeCode.Int32:
-                            return (Int32)obj;
+                            return (int)obj;
 
                         case TypeCode.Int64:
-                            return (Int64)obj;
+                            return (long)obj;
 
                         case TypeCode.UInt16:
-                            return (UInt16)obj;
+                            return (ushort)obj;
 
                         case TypeCode.UInt32:
-                            return (UInt32)obj;
+                            return (uint)obj;
 
                         case TypeCode.UInt64:
-                            return (UInt64)obj;
+                            return (ulong)obj;
 
                         case TypeCode.Single:
-                            return (Single)obj;
+                            return (float)obj;
 
                         case TypeCode.Double:
                             return obj;

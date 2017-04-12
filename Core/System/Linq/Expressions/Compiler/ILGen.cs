@@ -54,7 +54,7 @@ namespace System.Linq.Expressions.Compiler
                     break;
 
                 default:
-                    if (index <= Byte.MaxValue)
+                    if (index <= byte.MaxValue)
                     {
                         il.Emit(OpCodes.Ldarg_S, (byte)index);
                     }
@@ -70,7 +70,7 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(index >= 0);
 
-            if (index <= Byte.MaxValue)
+            if (index <= byte.MaxValue)
             {
                 il.Emit(OpCodes.Ldarga_S, (byte)index);
             }
@@ -84,7 +84,7 @@ namespace System.Linq.Expressions.Compiler
         {
             Debug.Assert(index >= 0);
 
-            if (index <= Byte.MaxValue)
+            if (index <= byte.MaxValue)
             {
                 il.Emit(OpCodes.Starg_S, (byte)index);
             }
@@ -811,13 +811,13 @@ namespace System.Linq.Expressions.Compiler
         {
             var isFromUnsigned = typeFrom.IsUnsigned();
             var isFromFloatingPoint = typeFrom.IsFloatingPoint();
-            if (typeTo == typeof(Single))
+            if (typeTo == typeof(float))
             {
                 if (isFromUnsigned)
                     il.Emit(OpCodes.Conv_R_Un);
                 il.Emit(OpCodes.Conv_R4);
             }
-            else if (typeTo == typeof(Double))
+            else if (typeTo == typeof(double))
             {
                 if (isFromUnsigned)
                     il.Emit(OpCodes.Conv_R_Un);
@@ -1156,19 +1156,19 @@ namespace System.Linq.Expressions.Compiler
 
         internal static void EmitDecimal(this ILGenerator il, decimal value)
         {
-            if (Decimal.Truncate(value) == value)
+            if (decimal.Truncate(value) == value)
             {
-                if (Int32.MinValue <= value && value <= Int32.MaxValue)
+                if (int.MinValue <= value && value <= int.MaxValue)
                 {
-                    var intValue = Decimal.ToInt32(value);
+                    var intValue = decimal.ToInt32(value);
                     il.EmitInt(intValue);
-                    il.EmitNew(typeof(Decimal).GetConstructor(new Type[] { typeof(int) }));
+                    il.EmitNew(typeof(decimal).GetConstructor(new Type[] { typeof(int) }));
                 }
-                else if (Int64.MinValue <= value && value <= Int64.MaxValue)
+                else if (long.MinValue <= value && value <= long.MaxValue)
                 {
-                    var longValue = Decimal.ToInt64(value);
+                    var longValue = decimal.ToInt64(value);
                     il.EmitLong(longValue);
-                    il.EmitNew(typeof(Decimal).GetConstructor(new Type[] { typeof(long) }));
+                    il.EmitNew(typeof(decimal).GetConstructor(new Type[] { typeof(long) }));
                 }
                 else
                 {
@@ -1183,7 +1183,7 @@ namespace System.Linq.Expressions.Compiler
 
         private static void EmitDecimalBits(this ILGenerator il, decimal value)
         {
-            var bits = Decimal.GetBits(value);
+            var bits = decimal.GetBits(value);
             il.EmitInt(bits[0]);
             il.EmitInt(bits[1]);
             il.EmitInt(bits[2]);
@@ -1241,16 +1241,16 @@ namespace System.Linq.Expressions.Compiler
                     break;
 
                 case TypeCode.Single:
-                    il.Emit(OpCodes.Ldc_R4, default(Single));
+                    il.Emit(OpCodes.Ldc_R4, default(float));
                     break;
 
                 case TypeCode.Double:
-                    il.Emit(OpCodes.Ldc_R8, default(Double));
+                    il.Emit(OpCodes.Ldc_R8, default(double));
                     break;
 
                 case TypeCode.Decimal:
                     il.Emit(OpCodes.Ldc_I4_0);
-                    il.Emit(OpCodes.Newobj, typeof(Decimal).GetConstructor(new Type[] { typeof(int) }));
+                    il.Emit(OpCodes.Newobj, typeof(decimal).GetConstructor(new Type[] { typeof(int) }));
                     break;
 
                 default:

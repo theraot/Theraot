@@ -82,7 +82,7 @@ namespace MonoTests.System.Linq
         [Test]
         public void LookupContainsNull()
         {
-            var lookup = new[] { "hi", "bye", "42" }.ToLookup(c => (Char.IsNumber(c[0]) ? null : c[0].ToString()));
+            var lookup = new[] { "hi", "bye", "42" }.ToLookup(c => (char.IsNumber(c[0]) ? null : c[0].ToString()));
 
             Assert.IsTrue(lookup.Contains("h"));
             Assert.IsTrue(lookup.Contains(null));
@@ -102,7 +102,7 @@ namespace MonoTests.System.Linq
         [Test]
         public void LookupEnumeratorWithNull()
         {
-            var lookup = new[] { "hi", "bye", "42" }.ToLookup(c => (Char.IsNumber(c[0]) ? null : c[0].ToString()));
+            var lookup = new[] { "hi", "bye", "42" }.ToLookup(c => (char.IsNumber(c[0]) ? null : c[0].ToString()));
 
             Assert.IsTrue(lookup.Any(g => g.Key == "h"));
             Assert.IsTrue(lookup.Any(g => g.Key == "b"));

@@ -423,7 +423,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(ScriptingRuntimeHelpers.Int32ToObject(unchecked(-(Int32)obj)));
+                    frame.Push(ScriptingRuntimeHelpers.Int32ToObject(unchecked(-(int)obj)));
                 }
                 return +1;
             }
@@ -440,7 +440,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((Int16)unchecked(-(Int16)obj));
+                    frame.Push((short)unchecked(-(short)obj));
                 }
                 return +1;
             }
@@ -457,7 +457,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(unchecked(-(Int64)obj));
+                    frame.Push(unchecked(-(long)obj));
                 }
                 return +1;
             }
@@ -474,7 +474,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((Int16)unchecked(-(UInt16)obj));
+                    frame.Push((short)unchecked(-(ushort)obj));
                 }
                 return +1;
             }
@@ -491,7 +491,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((Int32)unchecked(-(UInt32)obj));
+                    frame.Push((int)unchecked(-(uint)obj));
                 }
                 return +1;
             }
@@ -508,7 +508,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(-(Single)obj);
+                    frame.Push(-(float)obj);
                 }
                 return +1;
             }
@@ -525,7 +525,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(-(Double)obj);
+                    frame.Push(-(double)obj);
                 }
                 return +1;
             }
@@ -602,7 +602,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(ScriptingRuntimeHelpers.Int32ToObject(checked(-(Int32)obj)));
+                    frame.Push(ScriptingRuntimeHelpers.Int32ToObject(checked(-(int)obj)));
                 }
                 return +1;
             }
@@ -619,7 +619,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((Int16)checked(-(Int16)obj));
+                    frame.Push((short)checked(-(short)obj));
                 }
                 return +1;
             }
@@ -636,7 +636,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(checked(-(Int64)obj));
+                    frame.Push(checked(-(long)obj));
                 }
                 return +1;
             }
@@ -653,7 +653,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((Int16)checked(-(UInt16)obj));
+                    frame.Push((short)checked(-(ushort)obj));
                 }
                 return +1;
             }
@@ -670,7 +670,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((Int32)checked(-(UInt32)obj));
+                    frame.Push((int)checked(-(uint)obj));
                 }
                 return +1;
             }
@@ -687,7 +687,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(-(Single)obj);
+                    frame.Push(-(float)obj);
                 }
                 return +1;
             }
@@ -704,7 +704,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(-(Double)obj);
+                    frame.Push(-(double)obj);
                 }
                 return +1;
             }
@@ -781,7 +781,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(ScriptingRuntimeHelpers.Int32ToObject(unchecked(1 + (Int32)obj)));
+                    frame.Push(ScriptingRuntimeHelpers.Int32ToObject(unchecked(1 + (int)obj)));
                 }
                 return +1;
             }
@@ -798,7 +798,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((Int16)unchecked(1 + (Int16)obj));
+                    frame.Push((short)unchecked(1 + (short)obj));
                 }
                 return +1;
             }
@@ -815,7 +815,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(unchecked(1 + (Int64)obj));
+                    frame.Push(unchecked(1 + (long)obj));
                 }
                 return +1;
             }
@@ -832,7 +832,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((Int16)unchecked(1 + (UInt16)obj));
+                    frame.Push((short)unchecked(1 + (ushort)obj));
                 }
                 return +1;
             }
@@ -849,7 +849,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((Int32)unchecked(1 + (UInt32)obj));
+                    frame.Push((int)unchecked(1 + (uint)obj));
                 }
                 return +1;
             }
@@ -866,7 +866,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(1 + (Single)obj);
+                    frame.Push(1 + (float)obj);
                 }
                 return +1;
             }
@@ -883,7 +883,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(1 + (Double)obj);
+                    frame.Push(1 + (double)obj);
                 }
                 return +1;
             }
@@ -960,7 +960,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(ScriptingRuntimeHelpers.Int32ToObject(unchecked((Int32)obj - 1)));
+                    frame.Push(ScriptingRuntimeHelpers.Int32ToObject(unchecked((int)obj - 1)));
                 }
                 return +1;
             }
@@ -977,7 +977,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((Int16)unchecked((Int16)obj - 1));
+                    frame.Push((short)unchecked((short)obj - 1));
                 }
                 return +1;
             }
@@ -994,7 +994,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(unchecked((Int64)obj - 1));
+                    frame.Push(unchecked((long)obj - 1));
                 }
                 return +1;
             }
@@ -1011,7 +1011,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((Int16)unchecked((UInt16)obj - 1));
+                    frame.Push((short)unchecked((ushort)obj - 1));
                 }
                 return +1;
             }
@@ -1028,7 +1028,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(unchecked((UInt32)obj - 1));
+                    frame.Push(unchecked((uint)obj - 1));
                 }
                 return +1;
             }
@@ -1045,7 +1045,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((Single)obj - 1);
+                    frame.Push((float)obj - 1);
                 }
                 return +1;
             }
@@ -1062,7 +1062,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((Double)obj - 1);
+                    frame.Push((double)obj - 1);
                 }
                 return +1;
             }
@@ -1141,7 +1141,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((SByte)(((SByte)value) << ((int)shift)));
+                    frame.Push((sbyte)(((sbyte)value) << ((int)shift)));
                 }
                 return +1;
             }
@@ -1159,7 +1159,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((Int16)(((Int16)value) << ((int)shift)));
+                    frame.Push((short)(((short)value) << ((int)shift)));
                 }
                 return +1;
             }
@@ -1177,7 +1177,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(((Int32)value) << ((int)shift));
+                    frame.Push(((int)value) << ((int)shift));
                 }
                 return +1;
             }
@@ -1195,7 +1195,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(((Int64)value) << ((int)shift));
+                    frame.Push(((long)value) << ((int)shift));
                 }
                 return +1;
             }
@@ -1213,7 +1213,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((Byte)(((Byte)value) << ((int)shift)));
+                    frame.Push((byte)(((byte)value) << ((int)shift)));
                 }
                 return +1;
             }
@@ -1231,7 +1231,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((UInt16)(((UInt16)value) << ((int)shift)));
+                    frame.Push((ushort)(((ushort)value) << ((int)shift)));
                 }
                 return +1;
             }
@@ -1249,7 +1249,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(((UInt32)value) << ((int)shift));
+                    frame.Push(((uint)value) << ((int)shift));
                 }
                 return +1;
             }
@@ -1267,7 +1267,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(((UInt64)value) << ((int)shift));
+                    frame.Push(((ulong)value) << ((int)shift));
                 }
                 return +1;
             }
@@ -1349,7 +1349,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((SByte)(((SByte)value) >> ((int)shift)));
+                    frame.Push((sbyte)(((sbyte)value) >> ((int)shift)));
                 }
                 return +1;
             }
@@ -1367,7 +1367,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((Int16)(((Int16)value) >> ((int)shift)));
+                    frame.Push((short)(((short)value) >> ((int)shift)));
                 }
                 return +1;
             }
@@ -1385,7 +1385,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(((Int32)value) >> ((int)shift));
+                    frame.Push(((int)value) >> ((int)shift));
                 }
                 return +1;
             }
@@ -1403,7 +1403,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(((Int64)value) >> ((int)shift));
+                    frame.Push(((long)value) >> ((int)shift));
                 }
                 return +1;
             }
@@ -1421,7 +1421,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((Byte)(((Byte)value) >> ((int)shift)));
+                    frame.Push((byte)(((byte)value) >> ((int)shift)));
                 }
                 return +1;
             }
@@ -1439,7 +1439,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push((UInt16)(((UInt16)value) >> ((int)shift)));
+                    frame.Push((ushort)(((ushort)value) >> ((int)shift)));
                 }
                 return +1;
             }
@@ -1457,7 +1457,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(((UInt32)value) >> ((int)shift));
+                    frame.Push(((uint)value) >> ((int)shift));
                 }
                 return +1;
             }
@@ -1475,7 +1475,7 @@ namespace System.Linq.Expressions.Interpreter
                 }
                 else
                 {
-                    frame.Push(((UInt64)value) >> ((int)shift));
+                    frame.Push(((ulong)value) >> ((int)shift));
                 }
                 return +1;
             }
@@ -1556,7 +1556,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return +1;
                 }
-                frame.Push((SByte)(((SByte)left) ^ ((SByte)right)));
+                frame.Push((sbyte)(((sbyte)left) ^ ((sbyte)right)));
                 return +1;
             }
         }
@@ -1572,7 +1572,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return +1;
                 }
-                frame.Push((Int16)(((Int16)left) ^ ((Int16)right)));
+                frame.Push((short)(((short)left) ^ ((short)right)));
                 return +1;
             }
         }
@@ -1588,7 +1588,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return +1;
                 }
-                frame.Push(((Int32)left) ^ ((Int32)right));
+                frame.Push(((int)left) ^ ((int)right));
                 return +1;
             }
         }
@@ -1604,7 +1604,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return +1;
                 }
-                frame.Push(((Int64)left) ^ ((Int64)right));
+                frame.Push(((long)left) ^ ((long)right));
                 return +1;
             }
         }
@@ -1620,7 +1620,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return +1;
                 }
-                frame.Push((Byte)(((Byte)left) ^ ((Byte)right)));
+                frame.Push((byte)(((byte)left) ^ ((byte)right)));
                 return +1;
             }
         }
@@ -1636,7 +1636,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return +1;
                 }
-                frame.Push((UInt16)(((UInt16)left) ^ ((UInt16)right)));
+                frame.Push((ushort)(((ushort)left) ^ ((ushort)right)));
                 return +1;
             }
         }
@@ -1652,7 +1652,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return +1;
                 }
-                frame.Push(((UInt32)left) ^ ((UInt32)right));
+                frame.Push(((uint)left) ^ ((uint)right));
                 return +1;
             }
         }
@@ -1668,7 +1668,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return +1;
                 }
-                frame.Push(((UInt64)left) ^ ((UInt64)right));
+                frame.Push(((ulong)left) ^ ((ulong)right));
                 return +1;
             }
         }
@@ -1684,7 +1684,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return +1;
                 }
-                frame.Push(((Boolean)left) ^ ((Boolean)right));
+                frame.Push(((bool)left) ^ ((bool)right));
                 return +1;
             }
         }
@@ -1772,7 +1772,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return +1;
                 }
-                frame.Push((SByte)(((SByte)left) | ((SByte)right)));
+                frame.Push((sbyte)(((sbyte)left) | ((sbyte)right)));
                 return +1;
             }
         }
@@ -1788,7 +1788,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return +1;
                 }
-                frame.Push((Int16)(((Int16)left) | ((Int16)right)));
+                frame.Push((short)(((short)left) | ((short)right)));
                 return +1;
             }
         }
@@ -1804,7 +1804,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return +1;
                 }
-                frame.Push(((Int32)left) | ((Int32)right));
+                frame.Push(((int)left) | ((int)right));
                 return +1;
             }
         }
@@ -1820,7 +1820,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return +1;
                 }
-                frame.Push(((Int64)left) | ((Int64)right));
+                frame.Push(((long)left) | ((long)right));
                 return +1;
             }
         }
@@ -1836,7 +1836,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return +1;
                 }
-                frame.Push((Byte)(((Byte)left) | ((Byte)right)));
+                frame.Push((byte)(((byte)left) | ((byte)right)));
                 return +1;
             }
         }
@@ -1852,7 +1852,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return +1;
                 }
-                frame.Push((UInt16)(((UInt16)left) | ((UInt16)right)));
+                frame.Push((ushort)(((ushort)left) | ((ushort)right)));
                 return +1;
             }
         }
@@ -1868,7 +1868,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return +1;
                 }
-                frame.Push(((UInt32)left) | ((UInt32)right));
+                frame.Push(((uint)left) | ((uint)right));
                 return +1;
             }
         }
@@ -1884,7 +1884,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return +1;
                 }
-                frame.Push(((UInt64)left) | ((UInt64)right));
+                frame.Push(((ulong)left) | ((ulong)right));
                 return +1;
             }
         }
@@ -1903,16 +1903,16 @@ namespace System.Linq.Expressions.Interpreter
                     }
                     else
                     {
-                        frame.Push((Boolean)right ? ScriptingRuntimeHelpers.True : null);
+                        frame.Push((bool)right ? ScriptingRuntimeHelpers.True : null);
                     }
                     return +1;
                 }
                 else if (right == null)
                 {
-                    frame.Push((Boolean)left ? ScriptingRuntimeHelpers.True : null);
+                    frame.Push((bool)left ? ScriptingRuntimeHelpers.True : null);
                     return +1;
                 }
-                frame.Push(((Boolean)left) | ((Boolean)right));
+                frame.Push(((bool)left) | ((bool)right));
                 return +1;
             }
         }
@@ -1995,7 +1995,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return +1;
                 }
-                frame.Push((SByte)(((SByte)left) & ((SByte)right)));
+                frame.Push((sbyte)(((sbyte)left) & ((sbyte)right)));
                 return +1;
             }
         }
@@ -2011,7 +2011,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return +1;
                 }
-                frame.Push((Int16)(((Int16)left) & ((Int16)right)));
+                frame.Push((short)(((short)left) & ((short)right)));
                 return +1;
             }
         }
@@ -2027,7 +2027,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return +1;
                 }
-                frame.Push(((Int32)left) & ((Int32)right));
+                frame.Push(((int)left) & ((int)right));
                 return +1;
             }
         }
@@ -2043,7 +2043,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return +1;
                 }
-                frame.Push(((Int64)left) & ((Int64)right));
+                frame.Push(((long)left) & ((long)right));
                 return +1;
             }
         }
@@ -2059,7 +2059,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return +1;
                 }
-                frame.Push((Byte)(((Byte)left) & ((Byte)right)));
+                frame.Push((byte)(((byte)left) & ((byte)right)));
                 return +1;
             }
         }
@@ -2075,7 +2075,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return +1;
                 }
-                frame.Push((UInt16)(((UInt16)left) & ((UInt16)right)));
+                frame.Push((ushort)(((ushort)left) & ((ushort)right)));
                 return +1;
             }
         }
@@ -2091,7 +2091,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return +1;
                 }
-                frame.Push(((UInt32)left) & ((UInt32)right));
+                frame.Push(((uint)left) & ((uint)right));
                 return +1;
             }
         }
@@ -2107,7 +2107,7 @@ namespace System.Linq.Expressions.Interpreter
                     frame.Push(null);
                     return +1;
                 }
-                frame.Push(((UInt64)left) & ((UInt64)right));
+                frame.Push(((ulong)left) & ((ulong)right));
                 return +1;
             }
         }
@@ -2126,16 +2126,16 @@ namespace System.Linq.Expressions.Interpreter
                     }
                     else
                     {
-                        frame.Push((Boolean)right ? null : ScriptingRuntimeHelpers.False);
+                        frame.Push((bool)right ? null : ScriptingRuntimeHelpers.False);
                     }
                     return +1;
                 }
                 else if (right == null)
                 {
-                    frame.Push((Boolean)left ? null : ScriptingRuntimeHelpers.False);
+                    frame.Push((bool)left ? null : ScriptingRuntimeHelpers.False);
                     return +1;
                 }
-                frame.Push(((Boolean)left) & ((Boolean)right));
+                frame.Push(((bool)left) & ((bool)right));
                 return +1;
             }
         }
@@ -2433,49 +2433,49 @@ namespace System.Linq.Expressions.Interpreter
                 switch (t.GetTypeCode())
                 {
                     case TypeCode.Boolean:
-                        return _boolean ?? (_boolean = new CastInstructionT<Boolean>());
+                        return _boolean ?? (_boolean = new CastInstructionT<bool>());
 
                     case TypeCode.Byte:
-                        return _byte ?? (_byte = new CastInstructionT<Byte>());
+                        return _byte ?? (_byte = new CastInstructionT<byte>());
 
                     case TypeCode.Char:
-                        return _char ?? (_char = new CastInstructionT<Char>());
+                        return _char ?? (_char = new CastInstructionT<char>());
 
                     case TypeCode.DateTime:
                         return _dateTime ?? (_dateTime = new CastInstructionT<DateTime>());
 
                     case TypeCode.Decimal:
-                        return _decimal ?? (_decimal = new CastInstructionT<Decimal>());
+                        return _decimal ?? (_decimal = new CastInstructionT<decimal>());
 
                     case TypeCode.Double:
-                        return _double ?? (_double = new CastInstructionT<Double>());
+                        return _double ?? (_double = new CastInstructionT<double>());
 
                     case TypeCode.Int16:
-                        return _int16 ?? (_int16 = new CastInstructionT<Int16>());
+                        return _int16 ?? (_int16 = new CastInstructionT<short>());
 
                     case TypeCode.Int32:
-                        return _int32 ?? (_int32 = new CastInstructionT<Int32>());
+                        return _int32 ?? (_int32 = new CastInstructionT<int>());
 
                     case TypeCode.Int64:
-                        return _int64 ?? (_int64 = new CastInstructionT<Int64>());
+                        return _int64 ?? (_int64 = new CastInstructionT<long>());
 
                     case TypeCode.SByte:
-                        return _sByte ?? (_sByte = new CastInstructionT<SByte>());
+                        return _sByte ?? (_sByte = new CastInstructionT<sbyte>());
 
                     case TypeCode.Single:
-                        return _single ?? (_single = new CastInstructionT<Single>());
+                        return _single ?? (_single = new CastInstructionT<float>());
 
                     case TypeCode.String:
-                        return _string ?? (_string = new CastInstructionT<String>());
+                        return _string ?? (_string = new CastInstructionT<string>());
 
                     case TypeCode.UInt16:
-                        return _uInt16 ?? (_uInt16 = new CastInstructionT<UInt16>());
+                        return _uInt16 ?? (_uInt16 = new CastInstructionT<ushort>());
 
                     case TypeCode.UInt32:
-                        return _uInt32 ?? (_uInt32 = new CastInstructionT<UInt32>());
+                        return _uInt32 ?? (_uInt32 = new CastInstructionT<uint>());
 
                     case TypeCode.UInt64:
-                        return _uInt64 ?? (_uInt64 = new CastInstructionT<UInt64>());
+                        return _uInt64 ?? (_uInt64 = new CastInstructionT<ulong>());
                 }
             }
 

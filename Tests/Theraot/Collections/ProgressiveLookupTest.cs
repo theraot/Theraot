@@ -49,7 +49,7 @@ namespace Tests.Theraot.Collections
             var lookup = ProgressiveLookup<string, string>.Create
                 (
                     new[] { "hi", "bye", "42" },
-                    c => (Char.IsNumber(c[0]) ? null : c[0].ToString(CultureInfo.InvariantCulture))
+                    c => (char.IsNumber(c[0]) ? null : c[0].ToString(CultureInfo.InvariantCulture))
                 );
 
             Assert.IsTrue(lookup.Contains("h"));
@@ -63,7 +63,7 @@ namespace Tests.Theraot.Collections
             var lookup = ProgressiveLookup<string, string>.Create
                 (
                     new[] { "hi", "bye", "42" },
-                    c => (Char.IsNumber(c[0]) ? null : c[0].ToString(CultureInfo.InvariantCulture))
+                    c => (char.IsNumber(c[0]) ? null : c[0].ToString(CultureInfo.InvariantCulture))
                 );
 
             Assert.IsTrue(lookup.Any(g => g.Key == "h"));

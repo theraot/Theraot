@@ -64,7 +64,7 @@ namespace System.Linq.Expressions.Interpreter
             {
                 if (j.ContainsTarget(_node))
                 {
-                    throw new InvalidOperationException(String.Format(CultureInfo.InvariantCulture, "Label target already defined: {0}", _node.Name));
+                    throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Label target already defined: {0}", _node.Name));
                 }
             }
 
@@ -115,7 +115,7 @@ namespace System.Linq.Expressions.Interpreter
 
             if (HasMultipleDefinitions)
             {
-                throw new InvalidOperationException(String.Format(CultureInfo.InvariantCulture, "Ambiguous jump {0}", _node.Name));
+                throw new InvalidOperationException(string.Format(CultureInfo.InvariantCulture, "Ambiguous jump {0}", _node.Name));
             }
 
             // We didn't find an outward jump. Look for a jump across blocks

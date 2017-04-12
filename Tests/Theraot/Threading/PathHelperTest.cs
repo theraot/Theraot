@@ -230,7 +230,7 @@ namespace Tests.Theraot.Threading
 
         private string Concat(string sep, params string[] parms)
         {
-            return String.Join(sep, parms);
+            return string.Join(sep, parms);
         }
     }
 }

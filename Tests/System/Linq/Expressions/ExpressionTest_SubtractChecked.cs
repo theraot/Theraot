@@ -137,7 +137,7 @@ namespace MonoTests.System.Linq.Expressions
                 // OK
                 return;
             }
-            throw new Exception(String.Format("SubtractChecked on {2} should have thrown an exception with values {0} {1}, result was: {3}",
+            throw new Exception(string.Format("SubtractChecked on {2} should have thrown an exception with values {0} {1}, result was: {3}",
                                 v1, v2, v1.GetType(), res));
         }
 
@@ -168,7 +168,7 @@ namespace MonoTests.System.Linq.Expressions
                 // OK
                 return;
             }
-            throw new Exception(String.Format("SubtractChecked should have thrown for the creation of a tree with {0} operands", v1.GetType()));
+            throw new Exception(string.Format("SubtractChecked should have thrown for the creation of a tree with {0} operands", v1.GetType()));
         }
 
         [Test]
@@ -178,10 +178,10 @@ namespace MonoTests.System.Linq.Expressions
             // in BinaryExpression:
             MustOverflow<int>(int.MinValue, 1);
             MustOverflow<int>(int.MaxValue, -1);
-            MustOverflow<long>(Int64.MinValue, 1);
-            MustOverflow<long>(Int64.MaxValue, -1);
+            MustOverflow<long>(long.MinValue, 1);
+            MustOverflow<long>(long.MaxValue, -1);
 
-            MustOverflow<ushort>(UInt16.MinValue, 1);
+            MustOverflow<ushort>(ushort.MinValue, 1);
 
             // unsigned values use Sub_Ovf_Un, check that too:
             MustOverflow<ulong>(0, 1);
@@ -210,15 +210,15 @@ namespace MonoTests.System.Linq.Expressions
             MustNotOverflow<int>(10, 20);
 
             // There are invalid:
-            InvalidOperation<byte>(Byte.MinValue, 1);
-            InvalidOperation<sbyte>(SByte.MaxValue, 2);
+            InvalidOperation<byte>(byte.MinValue, 1);
+            InvalidOperation<sbyte>(sbyte.MaxValue, 2);
 
-            MustNotOverflow<short>(Int16.MaxValue, 2);
-            MustNotOverflow<ushort>(UInt16.MaxValue, 2);
+            MustNotOverflow<short>(short.MaxValue, 2);
+            MustNotOverflow<ushort>(ushort.MaxValue, 2);
 
             // Doubles, floats, do not overflow
-            MustNotOverflow<float>(Single.MaxValue, 1);
-            MustNotOverflow<double>(Double.MaxValue, 1);
+            MustNotOverflow<float>(float.MaxValue, 1);
+            MustNotOverflow<double>(double.MaxValue, 1);
         }
     }
 }
