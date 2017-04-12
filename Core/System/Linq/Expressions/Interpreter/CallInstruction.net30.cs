@@ -27,9 +27,6 @@ namespace System.Linq.Expressions.Interpreter
             return Create(info, info.GetParameters());
         }
 
-        /// <summary>
-        /// Creates a new ReflectedCaller which can be used to quickly invoke the provided MethodInfo.
-        /// </summary>
         public static CallInstruction Create(MethodInfo info, ParameterInfo[] parameters)
         {
             var argumentCount = parameters.Length;
