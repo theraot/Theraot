@@ -252,7 +252,10 @@ namespace System.Threading.Tasks
             try
             {
                 if (prevCurrentTask != null)
+                {
                     currentTask = null;
+                }
+
                 action();
             }
             catch (Exception exception)
@@ -262,7 +265,9 @@ namespace System.Threading.Tasks
             finally
             {
                 if (prevCurrentTask != null)
+                {
                     currentTask = prevCurrentTask;
+                }
             }
         }
 

@@ -647,7 +647,9 @@ namespace System.Numerics
         private static bool HexNumberToBigInteger(BigNumberBuffer number, ref BigInteger value)
         {
             if (number.Digits == null || number.Digits.Length == 0)
+            {
                 return false;
+            }
 
             var len = number.Digits.Length; // there is no trailing '\0'
             var bits = new byte[(len / 2) + (len % 2)];

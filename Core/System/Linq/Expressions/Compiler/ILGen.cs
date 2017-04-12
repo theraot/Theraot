@@ -383,7 +383,10 @@ namespace System.Linq.Expressions.Compiler
 
             var ci = type.GetConstructor(paramTypes);
             if (ci == null)
+            {
                 throw Error.TypeDoesNotHaveConstructorForTheSignature();
+            }
+
             il.EmitNew(ci);
         }
 
@@ -814,13 +817,19 @@ namespace System.Linq.Expressions.Compiler
             if (typeTo == typeof(float))
             {
                 if (isFromUnsigned)
+                {
                     il.Emit(OpCodes.Conv_R_Un);
+                }
+
                 il.Emit(OpCodes.Conv_R4);
             }
             else if (typeTo == typeof(double))
             {
                 if (isFromUnsigned)
+                {
                     il.Emit(OpCodes.Conv_R_Un);
+                }
+
                 il.Emit(OpCodes.Conv_R8);
             }
             else
@@ -1024,9 +1033,13 @@ namespace System.Linq.Expressions.Compiler
             Debug.Assert(typeFrom.IsNullableType());
             Debug.Assert(!typeTo.IsNullableType());
             if (typeTo.IsValueType)
+            {
                 il.EmitNullableToNonNullableStructConversion(typeFrom, typeTo, isChecked);
+            }
             else
+            {
                 il.EmitNullableToReferenceConversion(typeFrom);
+            }
         }
 
         private static void EmitNullableToNonNullableStructConversion(this ILGenerator il, Type typeFrom, Type typeTo, bool isChecked)
@@ -1057,11 +1070,17 @@ namespace System.Linq.Expressions.Compiler
             var isTypeToNullable = typeTo.IsNullableType();
             Debug.Assert(isTypeFromNullable || isTypeToNullable);
             if (isTypeFromNullable && isTypeToNullable)
+            {
                 il.EmitNullableToNullableConversion(typeFrom, typeTo, isChecked);
+            }
             else if (isTypeFromNullable)
+            {
                 il.EmitNullableToNonNullableConversion(typeFrom, typeTo, isChecked);
+            }
             else
+            {
                 il.EmitNonNullableToNullableConversion(typeFrom, typeTo, isChecked);
+            }
         }
 
         internal static void EmitHasValue(this ILGenerator il, Type nullableType)
@@ -1113,7 +1132,9 @@ namespace System.Linq.Expressions.Compiler
                 throw new ArgumentNullException("emit");
             }
             if (count < 0)
+            {
                 throw Error.CountCannotBeNegative();
+            }
 
             il.EmitInt(count);
             il.Emit(OpCodes.Newarr, elementType);
@@ -1132,7 +1153,9 @@ namespace System.Linq.Expressions.Compiler
         {
             ContractUtils.RequiresNotNull(arrayType, "arrayType");
             if (!arrayType.IsArray)
+            {
                 throw Error.ArrayTypeMustBeArray();
+            }
 
             var rank = arrayType.GetArrayRank();
             if (rank == 1)

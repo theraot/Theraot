@@ -125,7 +125,10 @@ namespace System.Linq.Expressions
         public virtual Expression Reduce()
         {
             if (CanReduce)
+            {
                 throw Error.ReducibleMustOverrideReduce();
+            }
+
             return this;
         }
 
@@ -144,7 +147,10 @@ namespace System.Linq.Expressions
         protected internal virtual Expression VisitChildren(ExpressionVisitor visitor)
         {
             if (!CanReduce)
+            {
                 throw Error.MustBeReducible();
+            }
+
             return visitor.Visit(ReduceAndCheck());
         }
 
@@ -180,16 +186,24 @@ namespace System.Linq.Expressions
         public Expression ReduceAndCheck()
         {
             if (!CanReduce)
+            {
                 throw Error.MustBeReducible();
+            }
 
             var newNode = Reduce();
 
             // 1. Reduction must return a new, non-null node
             // 2. Reduction must return a new node whose result type can be assigned to the type of the original node
             if (newNode == null || newNode == this)
+            {
                 throw Error.MustReduceToDifferent();
+            }
+
             if (!TypeHelper.AreReferenceAssignable(Type, newNode.Type))
+            {
                 throw Error.ReducedNotCompatible();
+            }
+
             return newNode;
         }
 

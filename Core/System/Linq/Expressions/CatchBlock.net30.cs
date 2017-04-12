@@ -164,7 +164,9 @@ namespace System.Linq.Expressions
             {
                 RequiresCanRead(filter, "filter");
                 if (filter.Type != typeof(bool))
+                {
                     throw Error.ArgumentMustBeBoolean();
+                }
             }
 
             return new CatchBlock(type, variable, body, filter);

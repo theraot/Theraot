@@ -135,7 +135,9 @@ namespace System.Threading.Tasks
             var activeTasksSource = GetScheduledTasks();
 
             if (activeTasksSource == null)
+            {
                 return null;
+            }
 
             // If it can be cast to an array, use it directly
             var activeTasksArray = activeTasksSource as Task[] ?? (new List<Task>(activeTasksSource)).ToArray();

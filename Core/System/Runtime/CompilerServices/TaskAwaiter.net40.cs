@@ -61,7 +61,10 @@ namespace System.Runtime.CompilerServices
             {
                 var current = SynchronizationContext.Current;
                 if (current != null && current.GetType() != typeof(SynchronizationContext))
+                {
                     return false;
+                }
+
                 return TaskScheduler.Current == TaskScheduler.Default;
             }
         }
@@ -127,7 +130,10 @@ namespace System.Runtime.CompilerServices
         internal static void ValidateEnd(Task task)
         {
             if (task.Status == TaskStatus.RanToCompletion)
+            {
                 return;
+            }
+
             HandleNonSuccess(task);
         }
 
@@ -149,7 +155,10 @@ namespace System.Runtime.CompilerServices
                 }
             }
             if (task.Status == TaskStatus.RanToCompletion)
+            {
                 return;
+            }
+
             ThrowForNonSuccess(task);
         }
 
@@ -182,7 +191,10 @@ namespace System.Runtime.CompilerServices
         internal static void OnCompletedInternal(Task task, Action continuation, bool continueOnCapturedContext)
         {
             if (continuation == null)
+            {
                 throw new ArgumentNullException("continuation");
+            }
+
             var syncContext = continueOnCapturedContext ? SynchronizationContext.Current : null;
             if (syncContext != null && syncContext.GetType() != typeof(SynchronizationContext))
             {

@@ -72,7 +72,10 @@ namespace System.Runtime.CompilerServices
         {
             _synchronizationContext = synchronizationContext;
             if (synchronizationContext != null)
+            {
                 synchronizationContext.OperationStarted();
+            }
+
             _coreState = new AsyncMethodBuilderCore();
             _objectIdForDebugger = null;
         }
@@ -83,7 +86,10 @@ namespace System.Runtime.CompilerServices
         internal static void PreventUnobservedTaskExceptions()
         {
             if (Interlocked.CompareExchange(ref _preventUnobservedTaskExceptionsInvoked, 1, 0) != 0)
+            {
                 return;
+            }
+
             TaskScheduler.UnobservedTaskException += (s, e) => e.SetObserved();
         }
 
@@ -169,7 +175,10 @@ namespace System.Runtime.CompilerServices
         public void SetResult()
         {
             if (_synchronizationContext == null)
+            {
                 return;
+            }
+
             NotifySynchronizationContextOfCompletion();
         }
 
@@ -180,7 +189,10 @@ namespace System.Runtime.CompilerServices
         public void SetException(Exception exception)
         {
             if (exception == null)
+            {
                 throw new ArgumentNullException("exception");
+            }
+
             if (_synchronizationContext != null)
             {
                 try
@@ -193,7 +205,9 @@ namespace System.Runtime.CompilerServices
                 }
             }
             else
+            {
                 AsyncMethodBuilderCore.ThrowOnContext(exception, null);
+            }
         }
 
         /// <summary>

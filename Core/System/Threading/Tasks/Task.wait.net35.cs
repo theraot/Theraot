@@ -310,7 +310,11 @@ namespace System.Threading.Tasks
                     {
                         exceptionSeen = true;
                     }
-                    else cancellationSeen |= task.IsCanceled;
+                    else
+                    {
+                        cancellationSeen |= task.IsCanceled;
+                    }
+
                     if (task.IsWaitNotificationEnabled)
                     {
                         AddToList(task, ref notificationTasks, /*initSize:*/ 1);
@@ -333,7 +337,11 @@ namespace System.Threading.Tasks
                         {
                             exceptionSeen = true;
                         }
-                        else cancellationSeen |= task.IsCanceled;
+                        else
+                        {
+                            cancellationSeen |= task.IsCanceled;
+                        }
+
                         if (task.IsWaitNotificationEnabled)
                         {
                             AddToList(task, ref notificationTasks, /*initSize:*/ 1);
@@ -392,7 +400,10 @@ namespace System.Threading.Tasks
         private static void AddToList<T>(T item, ref List<T> list, int initSize)
         {
             if (list == null)
+            {
                 list = new List<T>(initSize);
+            }
+
             list.Add(item);
         }
 

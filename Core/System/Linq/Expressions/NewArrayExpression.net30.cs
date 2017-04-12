@@ -219,7 +219,9 @@ namespace System.Linq.Expressions
 
             var dimensions = boundsList.Count;
             if (dimensions <= 0)
+            {
                 throw Error.BoundsCannotBeLessThanOne();
+            }
 
             for (int i = 0; i < dimensions; i++)
             {

@@ -269,16 +269,24 @@ namespace System.Linq.Expressions
             var props = type.GetProperties(flags).Where(x => x.Name.Equals(propertyName, StringComparison.CurrentCultureIgnoreCase));
             var members = new List<PropertyInfo>(props).ToArray();
             if (members == null || members.Length == 0)
+            {
                 return null;
+            }
 
             PropertyInfo pi;
             var propertyInfos = members.Map(t => t);
             var count = FindBestProperty(propertyInfos, arguments, out pi);
 
             if (count == 0)
+            {
                 return null;
+            }
+
             if (count > 1)
+            {
                 throw Error.PropertyWithMoreThanOneMatch(propertyName, type);
+            }
+
             return pi;
         }
 
@@ -330,11 +338,17 @@ namespace System.Linq.Expressions
             }
 
             if (parms.Length != args.Length)
+            {
                 return false;
+            }
+
             for (int i = 0; i < args.Length; i++)
             {
                 if (args[i] == null)
+                {
                     return false;
+                }
+
                 if (!TypeHelper.AreReferenceAssignable(parms[i].ParameterType, args[i].Type))
                 {
                     return false;
@@ -385,9 +399,14 @@ namespace System.Linq.Expressions
 
             ContractUtils.RequiresNotNull(property, "property");
             if (property.PropertyType.IsByRef)
+            {
                 throw Error.PropertyCannotHaveRefType();
+            }
+
             if (property.PropertyType == typeof(void))
+            {
                 throw Error.PropertyTypeCannotBeVoid();
+            }
 
             ParameterInfo[] getParameters = null;
             var getter = property.GetGetMethod(true);
@@ -402,28 +421,45 @@ namespace System.Linq.Expressions
             {
                 var setParameters = setter.GetParameters();
                 if (setParameters.Length == 0)
+                {
                     throw Error.SetterHasNoParams();
+                }
 
                 // valueType is the type of the value passed to the setter (last parameter)
                 var valueType = setParameters[setParameters.Length - 1].ParameterType;
                 if (valueType.IsByRef)
+                {
                     throw Error.PropertyCannotHaveRefType();
+                }
+
                 if (setter.ReturnType != typeof(void))
+                {
                     throw Error.SetterMustBeVoid();
+                }
+
                 if (property.PropertyType != valueType)
+                {
                     throw Error.PropertyTyepMustMatchSetter();
+                }
 
                 if (getter != null)
                 {
                     if (getter.IsStatic ^ setter.IsStatic)
+                    {
                         throw Error.BothAccessorsMustBeStatic();
+                    }
+
                     if (getParameters.Length != setParameters.Length - 1)
+                    {
                         throw Error.IndexesOfSetGetMustMatch();
+                    }
 
                     for (int i = 0; i < getParameters.Length; i++)
                     {
                         if (getParameters[i].ParameterType != setParameters[i].ParameterType)
+                        {
                             throw Error.IndexesOfSetGetMustMatch();
+                        }
                     }
                 }
                 else
@@ -444,16 +480,24 @@ namespace System.Linq.Expressions
 
             ValidateMethodInfo(method);
             if ((method.CallingConvention & CallingConventions.VarArgs) != 0)
+            {
                 throw Error.AccessorsCannotHaveVarArgs();
+            }
+
             if (method.IsStatic)
             {
                 if (instance != null)
+                {
                     throw Error.OnlyStaticMethodsHaveNullInstance();
+                }
             }
             else
             {
                 if (instance == null)
+                {
                     throw Error.OnlyStaticMethodsHaveNullInstance();
+                }
+
                 RequiresCanRead(instance, "instance");
                 ValidateCallInstanceType(instance.Type, method);
             }
@@ -479,7 +523,10 @@ namespace System.Linq.Expressions
 
                     var pType = pi.ParameterType;
                     if (pType.IsByRef)
+                    {
                         throw Error.AccessorsCannotHaveByRefArgs();
+                    }
+
                     TypeHelper.ValidateType(pType);
 
                     if (!TypeHelper.AreReferenceAssignable(pType, arg.Type))

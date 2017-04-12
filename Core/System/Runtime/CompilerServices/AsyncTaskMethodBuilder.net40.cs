@@ -192,7 +192,10 @@ namespace System.Runtime.CompilerServices
             {
                 var completionSource = _task;
                 if (completionSource == null)
+                {
                     _task = completionSource = new TaskCompletionSource<TResult>();
+                }
+
                 return completionSource;
             }
         }
@@ -327,9 +330,13 @@ namespace System.Runtime.CompilerServices
         {
             var completionSource = _task;
             if (completionSource == null)
+            {
                 _task = GetTaskForResult(result);
+            }
             else if (!completionSource.TrySetResult(result))
+            {
                 throw new InvalidOperationException("The Task was already completed.");
+            }
         }
 
         /// <summary>
@@ -341,9 +348,13 @@ namespace System.Runtime.CompilerServices
         internal void SetResult(TaskCompletionSource<TResult> completedTask)
         {
             if (_task == null)
+            {
                 _task = completedTask;
+            }
             else
+            {
                 SetResult(default(TResult));
+            }
         }
 
         /// <summary>
@@ -355,11 +366,16 @@ namespace System.Runtime.CompilerServices
         public void SetException(Exception exception)
         {
             if (exception == null)
+            {
                 throw new ArgumentNullException("exception");
+            }
+
             var completionSource = CompletionSource;
             var setException = (exception is OperationCanceledException ? completionSource.TrySetCanceled() : completionSource.TrySetException(exception));
             if (!setException)
+            {
                 throw new InvalidOperationException("The Task was already completed.");
+            }
         }
 
         /// <summary>
@@ -392,7 +408,10 @@ namespace System.Runtime.CompilerServices
         {
             var asyncMethodTaskCache = AsyncMethodTaskCache<TResult>.Singleton;
             if (asyncMethodTaskCache == null)
+            {
                 return AsyncMethodTaskCache<TResult>.CreateCompleted(result);
+            }
+
             return asyncMethodTaskCache.FromResult(result);
         }
     }

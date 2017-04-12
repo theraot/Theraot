@@ -654,7 +654,10 @@ namespace System.Linq.Expressions
             for (int i = start; i < n; i++)
             {
                 if (i > start)
+                {
                     Out(", ");
+                }
+
                 Visit(node.Arguments[i]);
             }
             Out(")");

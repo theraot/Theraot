@@ -31,7 +31,9 @@ namespace System.Threading.Tasks
         public static Task Unwrap(this Task<Task> task)
         {
             if (task == null)
+            {
                 throw new ArgumentNullException("task");
+            }
 
             // Fast path for an already successfully completed outer task: just return the inner one.
             // As in the subsequent slower path, a null inner task is special-cased to mean cancellation.
@@ -64,7 +66,9 @@ namespace System.Threading.Tasks
         public static Task<TResult> Unwrap<TResult>(this Task<Task<TResult>> task)
         {
             if (task == null)
+            {
                 throw new ArgumentNullException("task");
+            }
 
             // Fast path for an already successfully completed outer task: just return the inner one.
             // As in the subsequent slower path, a null inner task is special-cased to mean cancellation.
@@ -94,7 +98,9 @@ namespace System.Threading.Tasks
             {
                 var ct = oce.CancellationToken;
                 if (ct.IsCancellationRequested)
+                {
                     return ct;
+                }
             }
             return new CancellationToken(true);
         }

@@ -46,9 +46,14 @@ namespace System.Runtime.CompilerServices
         {
             var type = typeof(TResult);
             if (type == typeof(bool))
+            {
                 return (AsyncMethodTaskCache<TResult>)(object)new AsyncMethodBooleanTaskCache();
+            }
+
             if (type == typeof(int))
+            {
                 return (AsyncMethodTaskCache<TResult>)(object)new AsyncMethodInt32TaskCache();
+            }
 
             return null;
         }
@@ -121,7 +126,10 @@ namespace System.Runtime.CompilerServices
         {
             var completionSourceArray = new TaskCompletionSource<int>[10];
             for (var index = 0; index < completionSourceArray.Length; ++index)
+            {
                 completionSourceArray[index] = CreateCompleted(index - 1);
+            }
+
             return completionSourceArray;
         }
 
@@ -135,7 +143,9 @@ namespace System.Runtime.CompilerServices
         internal override TaskCompletionSource<int> FromResult(int result)
         {
             if (result < _minInt32ValueInclusive || result >= _maxInt32ValueExclusive)
+            {
                 return CreateCompleted(result);
+            }
 
             return _int32Tasks[result - -1];
         }

@@ -710,7 +710,9 @@ namespace System.Threading.Tasks
 
                 // If the continuation was not queued (because the task completed), then run it now.
                 if (!continuationQueued)
+                {
                     continuation.Run(this, true);
+                }
             }
         }
 
@@ -776,7 +778,10 @@ namespace System.Threading.Tasks
                 {
                     var currentContinuation = continuations[index];
                     if (currentContinuation == null)
+                    {
                         continue;
+                    }
+
                     continuations[index] = null; // to enable free'ing up memory earlier
                     // If the continuation is an Action delegate, it came from an await continuation,
                     // and we should use AwaitTaskContinuation to run it.

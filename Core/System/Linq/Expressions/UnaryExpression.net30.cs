@@ -437,7 +437,10 @@ namespace System.Linq.Expressions
             ValidateOperator(method);
             var pms = method.GetParameters();
             if (pms.Length != 1)
+            {
                 throw Error.IncorrectNumberOfMethodCallArguments(method);
+            }
+
             if (ParameterIsAssignable(pms[0], operand.Type))
             {
                 ValidateParamswithOperandsOrThrow(pms[0].ParameterType, operand.Type, unaryType, method.Name);
@@ -769,7 +772,10 @@ namespace System.Linq.Expressions
                 throw Error.InvalidUnboxType();
             }
             if (!type.IsValueType)
+            {
                 throw Error.InvalidUnboxType();
+            }
+
             TypeHelper.ValidateType(type);
             return new UnaryExpression(ExpressionType.Unbox, expression, type, null);
         }
@@ -890,7 +896,10 @@ namespace System.Linq.Expressions
             RequiresCanRead(expression, "expression");
             var validQuote = expression is LambdaExpression;
             if (!validQuote)
+            {
                 throw Error.QuotedExpressionMustBeLambda();
+            }
+
             return new UnaryExpression(ExpressionType.Quote, expression, expression.GetType(), null);
         }
 
@@ -938,7 +947,9 @@ namespace System.Linq.Expressions
             {
                 RequiresCanRead(value, "value");
                 if (value.Type.IsValueType)
+                {
                     throw Error.ArgumentMustNotHaveValueType();
+                }
             }
             return new UnaryExpression(ExpressionType.Throw, value, type, null);
         }

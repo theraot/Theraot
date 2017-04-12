@@ -67,9 +67,14 @@ namespace System.Dynamic.Utils
             Debug.Assert(array != null);
 
             if (count < 0)
+            {
                 throw new ArgumentOutOfRangeException(countName);
+            }
+
             if (offset < 0 || array.Count - offset < count)
+            {
                 throw new ArgumentOutOfRangeException(offsetName);
+            }
         }
     }
 }

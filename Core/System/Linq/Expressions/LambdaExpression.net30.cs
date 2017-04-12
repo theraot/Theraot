@@ -613,7 +613,9 @@ public class ExpressionCreator<TDelegate>
         public static Type GetFuncType(params Type[] typeArgs)
         {
             if (!ValidateTryGetFuncActionArgs(typeArgs))
+            {
                 throw Error.TypeMustNotBeByRef();
+            }
 
             var result = Compiler.DelegateHelpers.GetFuncType(typeArgs);
             if (result == null)
@@ -648,7 +650,9 @@ public class ExpressionCreator<TDelegate>
         public static Type GetActionType(params Type[] typeArgs)
         {
             if (!ValidateTryGetFuncActionArgs(typeArgs))
+            {
                 throw Error.TypeMustNotBeByRef();
+            }
 
             var result = Compiler.DelegateHelpers.GetActionType(typeArgs);
             if (result == null)

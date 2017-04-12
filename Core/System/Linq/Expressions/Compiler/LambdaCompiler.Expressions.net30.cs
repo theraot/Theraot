@@ -1059,10 +1059,16 @@ namespace System.Linq.Expressions.Compiler
         {
             var fi = member as FieldInfo;
             if (fi != null)
+            {
                 return fi.FieldType;
+            }
+
             var pi = member as PropertyInfo;
             if (pi != null)
+            {
                 return pi.PropertyType;
+            }
+
             throw Error.MemberNotFieldOrProperty(member);
         }
 

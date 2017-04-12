@@ -404,7 +404,9 @@ namespace System.Threading.Tasks
                     else if (task.IsCanceled)
                     {
                         if (canceledTask == null)
+                        {
                             canceledTask = task; // use the first task that's canceled
+                        }
                     }
                     else
                     {
@@ -414,9 +416,13 @@ namespace System.Threading.Tasks
                     // Regardless of completion state, if the task has its debug bit set, transfer it to the
                     // WhenAll task.  We must do this before we complete the task.
                     if (task.IsWaitNotificationEnabled)
+                    {
                         SetNotificationForWaitCompletion(/*enabled:*/ true);
+                    }
                     else
+                    {
                         _tasks[index] = null; // avoid holding onto tasks unnecessarily
+                    }
                 }
                 if (observedExceptions != null)
                 {

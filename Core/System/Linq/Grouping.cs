@@ -29,20 +29,14 @@ namespace System.Linq
     internal class Grouping<TK, T> : IGrouping<TK, T>
     {
         private readonly IEnumerable<T> _group;
-        private TK _key;
 
         public Grouping(TK key, IEnumerable<T> group)
         {
             _group = group;
-            _key = key;
+            Key = key;
         }
 
-        public TK Key
-        {
-            get { return _key; }
-
-            set { _key = value; }
-        }
+        public TK Key { get; set; }
 
         public IEnumerator<T> GetEnumerator()
         {

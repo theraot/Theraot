@@ -125,7 +125,10 @@ namespace System.Linq.Expressions
         {
             RequiresCanRead(body, "body");
             if (@continue != null && @continue.Type != typeof(void))
+            {
                 throw Error.LabelTypeMustBeVoid();
+            }
+
             return new LoopExpression(body, @break, @continue);
         }
     }
