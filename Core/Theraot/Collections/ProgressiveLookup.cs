@@ -144,10 +144,10 @@ namespace Theraot.Collections
             }
             else
             {
-                IGrouping<TKey, T> _item;
-                while (_progressor.TryTake(out _item))
+                IGrouping<TKey, T> item;
+                while (_progressor.TryTake(out item))
                 {
-                    if (_keyComparer.Equals(key, _item.Key))
+                    if (_keyComparer.Equals(key, item.Key))
                     {
                         return true;
                     }
@@ -220,12 +220,12 @@ namespace Theraot.Collections
             {
                 return true;
             }
-            IGrouping<TKey, T> _item;
-            while (_progressor.TryTake(out _item))
+            IGrouping<TKey, T> item;
+            while (_progressor.TryTake(out item))
             {
-                if (_keyComparer.Equals(key, _item.Key))
+                if (_keyComparer.Equals(key, item.Key))
                 {
-                    value = _item;
+                    value = item;
                     return true;
                 }
             }
