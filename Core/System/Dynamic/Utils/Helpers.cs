@@ -10,6 +10,7 @@ namespace System.Dynamic.Utils
     {
         internal static T CommonNode<T>(T first, T second, Func<T, T> parent) where T : class
         {
+            // NOTICE this method has no null check
             var cmp = EqualityComparer<T>.Default;
             if (cmp.Equals(first, second))
             {

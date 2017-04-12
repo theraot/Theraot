@@ -174,7 +174,12 @@ namespace System.Threading.Tasks
         [SecurityCritical]
         protected void RunCallback(ContextCallback callback, object state, ref Task currentTask)
         {
-            Contract.Requires(callback != null);
+            if (callback == null)
+            {
+                Contract.Requires(false);
+                throw new ArgumentNullException("callback");
+            }
+
             Contract.Assert(currentTask == Task.InternalCurrent);
 
             // Pretend there's no current task, so that no task is seen as a parent
@@ -233,6 +238,7 @@ namespace System.Threading.Tasks
         [SecurityCritical]
         internal static void RunOrScheduleAction(Action action, bool allowInlining, ref Task currentTask)
         {
+            // NOTICE this method has no null check
             Contract.Assert(currentTask == Task.InternalCurrent);
 
             // If we're not allowed to run here, schedule the action
