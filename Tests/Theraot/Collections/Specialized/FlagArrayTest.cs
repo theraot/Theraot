@@ -5,7 +5,7 @@ using System;
 
 namespace Theraot.Collections.Specialized
 {
-    public class FlagArrayTest
+    public static class FlagArrayTest
     {
         [Test]
         public static void FlagArrayCapacityIsGuaranteed()

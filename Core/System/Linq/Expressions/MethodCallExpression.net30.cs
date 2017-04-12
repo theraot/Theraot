@@ -859,7 +859,7 @@ namespace System.Linq.Expressions
                 arguments = ArrayReservoir<Expression>.EmptyArray;
             }
 
-            var flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
+            const System.Reflection.BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
             return InternalCall(instance, FindMethod(instance.Type, methodName, typeArguments, arguments, flags), arguments);
         }
 
@@ -882,7 +882,7 @@ namespace System.Linq.Expressions
 
             if (arguments == null)
                 arguments = ArrayReservoir<Expression>.EmptyArray;
-            var flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
+            const System.Reflection.BindingFlags flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
             return InternalCall(null, FindMethod(type, methodName, typeArguments, arguments, flags), arguments);
         }
 

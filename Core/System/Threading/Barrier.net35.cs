@@ -843,7 +843,7 @@ namespace System.Threading
         private bool DiscontinuousWait(ManualResetEventSlim currentPhaseEvent, int totalTimeout, CancellationToken token, long observedPhase)
         {
             var maxWait = 100; // 100 ms
-            var waitTimeCeiling = 10000; // 10 seconds
+            const int waitTimeCeiling = 10000; // 10 seconds
             while (observedPhase == CurrentPhaseNumber)
             {
                 // the next wait time, the min of the maxWait and the totalTimeout

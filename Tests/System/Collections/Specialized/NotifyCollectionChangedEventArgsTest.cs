@@ -367,7 +367,7 @@ namespace MonoTests.System.Collections.Specialized
              */
 
             IList changedItems = new List<object>();
-            var startingIndex = 5; // Doesn't matter what the value of this is.
+            const int startingIndex = 5; // Doesn't matter what the value of this is.
 
             // Trying with Add
             var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changedItems, startingIndex);
@@ -494,7 +494,7 @@ namespace MonoTests.System.Collections.Specialized
         public void NotifyCollectionChangedEventArgsConstructor6Test()
         {
             var changedItem = new object();
-            var startingIndex = 5; // Doesn't matter what the value of this is.
+            const int startingIndex = 5; // Doesn't matter what the value of this is.
 
             // Trying with Add
             var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, changedItem, startingIndex);
@@ -631,7 +631,7 @@ namespace MonoTests.System.Collections.Specialized
         {
             IList newItems = new List<object>();
             IList oldItems = new List<object>();
-            var startIndex = 5;
+            const int startIndex = 5;
 
             // Trying with Replace
             var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItems, oldItems, startIndex);
@@ -728,8 +728,8 @@ namespace MonoTests.System.Collections.Specialized
         public void NotifyCollectionChangedEventArgsConstructor9Test()
         {
             IList changed = new List<object>();
-            var newIndex = 2;
-            var oldIndex = 5;
+            const int newIndex = 2;
+            const int oldIndex = 5;
 
             // Trying with Replace
             var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, changed, newIndex, oldIndex);
@@ -806,8 +806,8 @@ namespace MonoTests.System.Collections.Specialized
         public void NotifyCollectionChangedEventArgsConstructor10Test()
         {
             var changed = new object();
-            var newIndex = 2;
-            var oldIndex = 5;
+            const int newIndex = 2;
+            const int oldIndex = 5;
 
             // Trying with Replace
             var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, changed, newIndex, oldIndex);
@@ -875,7 +875,7 @@ namespace MonoTests.System.Collections.Specialized
         {
             var newItem = new object();
             var oldItem = new object();
-            var startIndex = 5;
+            const int startIndex = 5;
 
             // Trying with Replace
             var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newItem, oldItem, startIndex);

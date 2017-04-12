@@ -208,7 +208,7 @@ namespace Tests.Theraot.Threading
         public void Combine_Extra()
         {
             var source = new[] { "test", "/test", "\\test" };
-            var start = @"C:\test";
+            const string start = @"C:\test";
             // tested this on Linux and Windows using Path.Combine...
             foreach (var combination in source)
             {
