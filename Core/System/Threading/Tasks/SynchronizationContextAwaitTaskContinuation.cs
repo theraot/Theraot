@@ -31,7 +31,7 @@ namespace System.Threading.Tasks
         }
 
         [SecuritySafeCritical]
-        internal override void Run(Task task, bool canInlineContinuationTask)
+        internal override void Run(Task completedTask, bool canInlineContinuationTask)
         {
             // If we're allowed to inline, run the action on this thread.
             if (canInlineContinuationTask && _syncContext == SynchronizationContext.Current)

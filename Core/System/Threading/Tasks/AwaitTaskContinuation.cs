@@ -48,7 +48,7 @@ namespace System.Threading.Tasks
         }
 
         [SecuritySafeCritical]
-        internal override void Run(Task task, bool canInlineContinuationTask)
+        internal override void Run(Task completedTask, bool canInlineContinuationTask)
         {
             // For the base AwaitTaskContinuation, we allow inlining if our caller allows it
             // and if we're in a "valid location" for it.  See the comments on

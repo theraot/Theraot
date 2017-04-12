@@ -24,14 +24,14 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>Inlines or schedules the continuation.</summary>
-        /// <param name="ignored">The antecedent task, which is ignored.</param>
+        /// <param name="completedTask">The antecedent task, which is ignored.</param>
         /// <param name="canInlineContinuationTask">true if inlining is permitted; otherwise, false.</param>
-        internal override void Run(Task ignored, bool canInlineContinuationTask)
+        internal override void Run(Task completedTask, bool canInlineContinuationTask)
         {
             // If we're targeting the default scheduler, we can use the faster path provided by the base class.
             if (_scheduler == TaskScheduler.Default)
             {
-                base.Run(ignored, canInlineContinuationTask);
+                base.Run(completedTask, canInlineContinuationTask);
             }
             else
             {
