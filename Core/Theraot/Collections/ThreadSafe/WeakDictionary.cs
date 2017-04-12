@@ -53,7 +53,6 @@ namespace Theraot.Collections.ThreadSafe
         {
             get { return _handle != null; }
 
-
             set
             {
                 var handle = _handle;
@@ -1205,13 +1204,6 @@ namespace Theraot.Collections.ThreadSafe
         private static bool PrivateTryGetValue(WeakNeedle<TKey> needle, out TKey foundKey)
         {
             return needle.TryGetValue(out foundKey);
-        }
-
-        private void GarbageCollected(object sender, EventArgs e)
-        {
-            GC.KeepAlive(sender);
-            GC.KeepAlive(e);
-            RemoveDeadItems();
         }
     }
 }
