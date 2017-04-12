@@ -202,6 +202,11 @@ namespace MonoTests.System.Linq.Expressions
 
         public static void EineGenericMethod<X, Y>(string foo, int bar)
         {
+            // Used via Reflection
+            GC.KeepAlive(foo);
+            GC.KeepAlive(bar);
+            GC.KeepAlive(typeof(X));
+            GC.KeepAlive(typeof(Y));
         }
 
         [Test]
