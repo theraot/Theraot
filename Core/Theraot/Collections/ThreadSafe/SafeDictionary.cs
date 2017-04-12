@@ -20,7 +20,7 @@ namespace Theraot.Collections.ThreadSafe
     [Serializable]
     public sealed partial class SafeDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {
-        private const int INT_DefaultProbing = 1;
+        private const int _defaultProbing = 1;
 
         private readonly KeyCollection<TKey, TValue> _keyCollection;
         private readonly IEqualityComparer<TKey> _keyComparer;
@@ -33,7 +33,7 @@ namespace Theraot.Collections.ThreadSafe
         /// Initializes a new instance of the <see cref="SafeDictionary{TKey,TValue}" /> class.
         /// </summary>
         public SafeDictionary()
-            : this(EqualityComparer<TKey>.Default, INT_DefaultProbing)
+            : this(EqualityComparer<TKey>.Default, _defaultProbing)
         {
             // Empty
         }
@@ -53,7 +53,7 @@ namespace Theraot.Collections.ThreadSafe
         /// </summary>
         /// <param name="comparer">The key comparer.</param>
         public SafeDictionary(IEqualityComparer<TKey> comparer)
-            : this(comparer, INT_DefaultProbing)
+            : this(comparer, _defaultProbing)
         {
             // Empty
         }
