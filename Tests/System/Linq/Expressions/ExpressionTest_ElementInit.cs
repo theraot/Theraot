@@ -53,7 +53,7 @@ namespace MonoTests.System.Linq.Expressions
         [ExpectedException(typeof(ArgumentException))]
         public void MethodNameDoesntMatchAdd()
         {
-            Expression.ElementInit(typeof(Foo).GetMethod("Bar"), new Expression[] { });
+            Expression.ElementInit(typeof(Foo).GetMethod("Baz"), new Expression[] { });
         }
 
         [Test]
@@ -99,7 +99,7 @@ namespace MonoTests.System.Linq.Expressions
                 GC.KeepAlive(s);
             }
 
-            public void Bar()
+            public void Baz()
             {
             }
         }
