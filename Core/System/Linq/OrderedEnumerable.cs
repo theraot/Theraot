@@ -38,7 +38,7 @@ namespace System.Linq
 
         protected OrderedEnumerable(IEnumerable<TElement> source)
         {
-            this._source = source;
+            _source = source;
         }
 
         public abstract SortContext<TElement> CreateContext(SortContext<TElement> current);
