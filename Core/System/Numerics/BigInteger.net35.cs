@@ -286,10 +286,7 @@ namespace System.Numerics
                 {
                     for (var byteInDword = 0; byteInDword < 4; byteInDword++)
                     {
-                        if (value[byteIndex] != 0)
-                        {
-                            isZero = false;
-                        }
+                        isZero &= value[byteIndex] == 0;
                         internalBits[dwordIndex] <<= 8;
                         internalBits[dwordIndex] |= value[byteIndex];
                         byteIndex--;
@@ -304,10 +301,7 @@ namespace System.Numerics
                     }
                     for (byteIndex = valueLength - 1; byteIndex >= valueLength - unalignedBytes; byteIndex--)
                     {
-                        if (value[byteIndex] != 0)
-                        {
-                            isZero = false;
-                        }
+                        isZero &= value[byteIndex] == 0;
                         internalBits[dwordIndex] <<= 8;
                         internalBits[dwordIndex] |= value[byteIndex];
                     }
