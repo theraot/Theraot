@@ -13,12 +13,12 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            Func<TInput, IEnumerable<TInput>> temp = next;
+            var temp = next;
             if (resultSelector == null)
             {
                 throw new ArgumentNullException("next");
             }
-            Func<TInput, TOutput> temp1 = resultSelector;
+            var temp1 = resultSelector;
             var queue = new Queue<TInput>();
             queue.Enqueue(initial);
             return ExploreBreadthFirstGraphExtracted(queue, next, resultSelector);
@@ -30,12 +30,12 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            Func<TInput, IEnumerable<TInput>> temp = next;
+            var temp = next;
             if (resultSelector == null)
             {
                 throw new ArgumentNullException("next");
             }
-            Func<TInput, TOutput> temp1 = resultSelector;
+            var temp1 = resultSelector;
             return ExploreBreadthFirstGraphExtracted(new Queue<TInput>(initial), next, resultSelector);
         }
 
@@ -45,7 +45,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            Func<T, IEnumerable<T>> temp = next;
+            var temp = next;
             var queue = new Queue<T>();
             queue.Enqueue(initial);
             return ExploreBreadthFirstGraphExtracted(queue, next);
@@ -57,7 +57,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            Func<T, IEnumerable<T>> temp = next;
+            var temp = next;
             return ExploreBreadthFirstGraphExtracted(new Queue<T>(initial), next);
         }
 
@@ -67,12 +67,12 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            Func<TInput, IEnumerable<TInput>> temp = next;
+            var temp = next;
             if (resultSelector == null)
             {
                 throw new ArgumentNullException("next");
             }
-            Func<TInput, TOutput> temp1 = resultSelector;
+            var temp1 = resultSelector;
             var queue = new Queue<TInput>();
             queue.Enqueue(initial);
             return ExploreBreadthFirstTreeExtracted(queue, next, resultSelector);
@@ -84,12 +84,12 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            Func<TInput, IEnumerable<TInput>> temp = next;
+            var temp = next;
             if (resultSelector == null)
             {
                 throw new ArgumentNullException("next");
             }
-            Func<TInput, TOutput> temp1 = resultSelector;
+            var temp1 = resultSelector;
             return ExploreBreadthFirstTreeExtracted(new Queue<TInput>(initial), next, resultSelector);
         }
 
@@ -99,7 +99,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            Func<T, IEnumerable<T>> temp = next;
+            var temp = next;
             var queue = new Queue<T>();
             queue.Enqueue(initial);
             return ExploreBreadthFirstTreeExtracted(queue, next);
@@ -111,7 +111,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            Func<T, IEnumerable<T>> temp = next;
+            var temp = next;
             return ExploreBreadthFirstTreeExtracted(new Queue<T>(initial), next);
         }
 
@@ -312,12 +312,12 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            Func<TInput, IEnumerable<TInput>> temp = next;
+            var temp = next;
             if (resultSelector == null)
             {
                 throw new ArgumentNullException("next");
             }
-            Func<TInput, TOutput> temp1 = resultSelector;
+            var temp1 = resultSelector;
             var stack = new Stack<TInput>();
             stack.Push(initial);
             return ExploreDepthFirstGraphExtracted(stack, next, resultSelector);
@@ -329,12 +329,12 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            Func<TInput, IEnumerable<TInput>> temp = next;
+            var temp = next;
             if (resultSelector == null)
             {
                 throw new ArgumentNullException("next");
             }
-            Func<TInput, TOutput> temp1 = resultSelector;
+            var temp1 = resultSelector;
             return ExploreDepthFirstGraphExtracted(new Stack<TInput>(initial), next, resultSelector);
         }
 
@@ -344,7 +344,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            Func<T, IEnumerable<T>> temp = next;
+            var temp = next;
             var stack = new Stack<T>();
             stack.Push(initial);
             return ExploreDepthFirstGraphExtracted(stack, next);
@@ -356,7 +356,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            Func<T, IEnumerable<T>> temp = next;
+            var temp = next;
             return ExploreDepthFirstGraphExtracted(new Stack<T>(initial), next);
         }
 
@@ -366,12 +366,12 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            Func<TInput, IEnumerable<TInput>> temp = next;
+            var temp = next;
             if (resultSelector == null)
             {
                 throw new ArgumentNullException("next");
             }
-            Func<TInput, TOutput> temp1 = resultSelector;
+            var temp1 = resultSelector;
             var stack = new Stack<TInput>();
             stack.Push(initial);
             return ExploreDepthFirstTreeExtracted(stack, next, resultSelector);
@@ -383,12 +383,12 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            Func<TInput, IEnumerable<TInput>> temp = next;
+            var temp = next;
             if (resultSelector == null)
             {
                 throw new ArgumentNullException("next");
             }
-            Func<TInput, TOutput> temp1 = resultSelector;
+            var temp1 = resultSelector;
             return ExploreDepthFirstTreeExtracted(new Stack<TInput>(initial), next, resultSelector);
         }
 
@@ -398,7 +398,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            Func<T, IEnumerable<T>> temp = next;
+            var temp = next;
             var stack = new Stack<T>();
             stack.Push(initial);
             return ExploreDepthFirstTreeExtracted(stack, next);
@@ -410,7 +410,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("next");
             }
-            Func<T, IEnumerable<T>> temp = next;
+            var temp = next;
             return ExploreDepthFirstTreeExtracted(new Stack<T>(initial), next);
         }
 

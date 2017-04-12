@@ -811,7 +811,7 @@ namespace System.Threading.Tasks
         {
             try
             {
-                List<object> continuations = GetContinuations();
+                var continuations = GetContinuations();
                 if (continuations == null || Status == TaskStatus.RanToCompletion)
                 {
                     return;
@@ -835,7 +835,7 @@ namespace System.Threading.Tasks
             Contract.Requires(continuationObject != null);
             try
             {
-                List<object> continuations = RetrieveContinuations();
+                var continuations = RetrieveContinuations();
                 if (continuations == null || Status == TaskStatus.RanToCompletion)
                 {
                     return false;
