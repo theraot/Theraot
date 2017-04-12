@@ -315,15 +315,15 @@ namespace System.Linq.Expressions.Interpreter
 
         #region Stack Operations
 
-        private const int PushIntMinCachedValue = -100;
-        private const int PushIntMaxCachedValue = 100;
-        private const int CachedObjectCount = 256;
+        private const int _pushIntMinCachedValue = -100;
+        private const int _pushIntMaxCachedValue = 100;
+        private const int _cachedObjectCount = 256;
 
-        private static Instruction s_null;
-        private static Instruction s_true;
-        private static Instruction s_false;
-        private static Instruction[] s_ints;
-        private static Instruction[] s_loadObjectCached;
+        private static Instruction _null;
+        private static Instruction _true;
+        private static Instruction _false;
+        private static Instruction[] _ints;
+        private static Instruction[] _loadObjectCached;
 
         public void EmitLoad(object value)
         {
@@ -334,11 +334,11 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (value)
             {
-                Emit(s_true ?? (s_true = new LoadObjectInstruction(value)));
+                Emit(_true ?? (_true = new LoadObjectInstruction(value)));
             }
             else
             {
-                Emit(s_false ?? (s_false = new LoadObjectInstruction(value)));
+                Emit(_false ?? (_false = new LoadObjectInstruction(value)));
             }
         }
 
@@ -346,7 +346,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (value == null)
             {
-                Emit(s_null ?? (s_null = new LoadObjectInstruction(null)));
+                Emit(_null ?? (_null = new LoadObjectInstruction(null)));
                 return;
             }
 
@@ -361,14 +361,14 @@ namespace System.Linq.Expressions.Interpreter
                 if (value is int)
                 {
                     var i = (int)value;
-                    if (i >= PushIntMinCachedValue && i <= PushIntMaxCachedValue)
+                    if (i >= _pushIntMinCachedValue && i <= _pushIntMaxCachedValue)
                     {
-                        if (s_ints == null)
+                        if (_ints == null)
                         {
-                            s_ints = new Instruction[PushIntMaxCachedValue - PushIntMinCachedValue + 1];
+                            _ints = new Instruction[_pushIntMaxCachedValue - _pushIntMinCachedValue + 1];
                         }
-                        i -= PushIntMinCachedValue;
-                        Emit(s_ints[i] ?? (s_ints[i] = new LoadObjectInstruction(value)));
+                        i -= _pushIntMinCachedValue;
+                        Emit(_ints[i] ?? (_ints[i] = new LoadObjectInstruction(value)));
                         return;
                     }
                 }
@@ -377,17 +377,17 @@ namespace System.Linq.Expressions.Interpreter
             if (_objects == null)
             {
                 _objects = new List<object>();
-                if (s_loadObjectCached == null)
+                if (_loadObjectCached == null)
                 {
-                    s_loadObjectCached = new Instruction[CachedObjectCount];
+                    _loadObjectCached = new Instruction[_cachedObjectCount];
                 }
             }
 
-            if (_objects.Count < s_loadObjectCached.Length)
+            if (_objects.Count < _loadObjectCached.Length)
             {
                 var index = (uint)_objects.Count;
                 _objects.Add(value);
-                Emit(s_loadObjectCached[index] ?? (s_loadObjectCached[index] = new LoadCachedObjectInstruction(index)));
+                Emit(_loadObjectCached[index] ?? (_loadObjectCached[index] = new LoadCachedObjectInstruction(index)));
             }
             else
             {
@@ -423,28 +423,28 @@ namespace System.Linq.Expressions.Interpreter
             }
         }
 
-        private const int LocalInstrCacheSize = 64;
+        private const int _LocalInstrCacheSize = 64;
 
-        private static Instruction[] s_loadLocal;
-        private static Instruction[] s_loadLocalBoxed;
-        private static Instruction[] s_loadLocalFromClosure;
-        private static Instruction[] s_loadLocalFromClosureBoxed;
-        private static Instruction[] s_assignLocal;
-        private static Instruction[] s_storeLocal;
-        private static Instruction[] s_assignLocalBoxed;
-        private static Instruction[] s_storeLocalBoxed;
-        private static Instruction[] s_assignLocalToClosure;
+        private static Instruction[] _loadLocal;
+        private static Instruction[] _loadLocalBoxed;
+        private static Instruction[] _loadLocalFromClosure;
+        private static Instruction[] _loadLocalFromClosureBoxed;
+        private static Instruction[] _assignLocal;
+        private static Instruction[] _storeLocal;
+        private static Instruction[] _assignLocalBoxed;
+        private static Instruction[] _storeLocalBoxed;
+        private static Instruction[] _assignLocalToClosure;
 
         public void EmitLoadLocal(int index)
         {
-            if (s_loadLocal == null)
+            if (_loadLocal == null)
             {
-                s_loadLocal = new Instruction[LocalInstrCacheSize];
+                _loadLocal = new Instruction[_LocalInstrCacheSize];
             }
 
-            if (index < s_loadLocal.Length)
+            if (index < _loadLocal.Length)
             {
-                Emit(s_loadLocal[index] ?? (s_loadLocal[index] = new LoadLocalInstruction(index)));
+                Emit(_loadLocal[index] ?? (_loadLocal[index] = new LoadLocalInstruction(index)));
             }
             else
             {
@@ -459,14 +459,14 @@ namespace System.Linq.Expressions.Interpreter
 
         internal static Instruction LoadLocalBoxed(int index)
         {
-            if (s_loadLocalBoxed == null)
+            if (_loadLocalBoxed == null)
             {
-                s_loadLocalBoxed = new Instruction[LocalInstrCacheSize];
+                _loadLocalBoxed = new Instruction[_LocalInstrCacheSize];
             }
 
-            if (index < s_loadLocalBoxed.Length)
+            if (index < _loadLocalBoxed.Length)
             {
-                return s_loadLocalBoxed[index] ?? (s_loadLocalBoxed[index] = new LoadLocalBoxedInstruction(index));
+                return _loadLocalBoxed[index] ?? (_loadLocalBoxed[index] = new LoadLocalBoxedInstruction(index));
             }
             else
             {
@@ -476,14 +476,14 @@ namespace System.Linq.Expressions.Interpreter
 
         public void EmitLoadLocalFromClosure(int index)
         {
-            if (s_loadLocalFromClosure == null)
+            if (_loadLocalFromClosure == null)
             {
-                s_loadLocalFromClosure = new Instruction[LocalInstrCacheSize];
+                _loadLocalFromClosure = new Instruction[_LocalInstrCacheSize];
             }
 
-            if (index < s_loadLocalFromClosure.Length)
+            if (index < _loadLocalFromClosure.Length)
             {
-                Emit(s_loadLocalFromClosure[index] ?? (s_loadLocalFromClosure[index] = new LoadLocalFromClosureInstruction(index)));
+                Emit(_loadLocalFromClosure[index] ?? (_loadLocalFromClosure[index] = new LoadLocalFromClosureInstruction(index)));
             }
             else
             {
@@ -493,14 +493,14 @@ namespace System.Linq.Expressions.Interpreter
 
         public void EmitLoadLocalFromClosureBoxed(int index)
         {
-            if (s_loadLocalFromClosureBoxed == null)
+            if (_loadLocalFromClosureBoxed == null)
             {
-                s_loadLocalFromClosureBoxed = new Instruction[LocalInstrCacheSize];
+                _loadLocalFromClosureBoxed = new Instruction[_LocalInstrCacheSize];
             }
 
-            if (index < s_loadLocalFromClosureBoxed.Length)
+            if (index < _loadLocalFromClosureBoxed.Length)
             {
-                Emit(s_loadLocalFromClosureBoxed[index] ?? (s_loadLocalFromClosureBoxed[index] = new LoadLocalFromClosureBoxedInstruction(index)));
+                Emit(_loadLocalFromClosureBoxed[index] ?? (_loadLocalFromClosureBoxed[index] = new LoadLocalFromClosureBoxedInstruction(index)));
             }
             else
             {
@@ -510,14 +510,14 @@ namespace System.Linq.Expressions.Interpreter
 
         public void EmitAssignLocal(int index)
         {
-            if (s_assignLocal == null)
+            if (_assignLocal == null)
             {
-                s_assignLocal = new Instruction[LocalInstrCacheSize];
+                _assignLocal = new Instruction[_LocalInstrCacheSize];
             }
 
-            if (index < s_assignLocal.Length)
+            if (index < _assignLocal.Length)
             {
-                Emit(s_assignLocal[index] ?? (s_assignLocal[index] = new AssignLocalInstruction(index)));
+                Emit(_assignLocal[index] ?? (_assignLocal[index] = new AssignLocalInstruction(index)));
             }
             else
             {
@@ -527,14 +527,14 @@ namespace System.Linq.Expressions.Interpreter
 
         public void EmitStoreLocal(int index)
         {
-            if (s_storeLocal == null)
+            if (_storeLocal == null)
             {
-                s_storeLocal = new Instruction[LocalInstrCacheSize];
+                _storeLocal = new Instruction[_LocalInstrCacheSize];
             }
 
-            if (index < s_storeLocal.Length)
+            if (index < _storeLocal.Length)
             {
-                Emit(s_storeLocal[index] ?? (s_storeLocal[index] = new StoreLocalInstruction(index)));
+                Emit(_storeLocal[index] ?? (_storeLocal[index] = new StoreLocalInstruction(index)));
             }
             else
             {
@@ -549,14 +549,14 @@ namespace System.Linq.Expressions.Interpreter
 
         internal static Instruction AssignLocalBoxed(int index)
         {
-            if (s_assignLocalBoxed == null)
+            if (_assignLocalBoxed == null)
             {
-                s_assignLocalBoxed = new Instruction[LocalInstrCacheSize];
+                _assignLocalBoxed = new Instruction[_LocalInstrCacheSize];
             }
 
-            if (index < s_assignLocalBoxed.Length)
+            if (index < _assignLocalBoxed.Length)
             {
-                return s_assignLocalBoxed[index] ?? (s_assignLocalBoxed[index] = new AssignLocalBoxedInstruction(index));
+                return _assignLocalBoxed[index] ?? (_assignLocalBoxed[index] = new AssignLocalBoxedInstruction(index));
             }
             else
             {
@@ -571,14 +571,14 @@ namespace System.Linq.Expressions.Interpreter
 
         internal static Instruction StoreLocalBoxed(int index)
         {
-            if (s_storeLocalBoxed == null)
+            if (_storeLocalBoxed == null)
             {
-                s_storeLocalBoxed = new Instruction[LocalInstrCacheSize];
+                _storeLocalBoxed = new Instruction[_LocalInstrCacheSize];
             }
 
-            if (index < s_storeLocalBoxed.Length)
+            if (index < _storeLocalBoxed.Length)
             {
-                return s_storeLocalBoxed[index] ?? (s_storeLocalBoxed[index] = new StoreLocalBoxedInstruction(index));
+                return _storeLocalBoxed[index] ?? (_storeLocalBoxed[index] = new StoreLocalBoxedInstruction(index));
             }
             else
             {
@@ -588,14 +588,14 @@ namespace System.Linq.Expressions.Interpreter
 
         public void EmitAssignLocalToClosure(int index)
         {
-            if (s_assignLocalToClosure == null)
+            if (_assignLocalToClosure == null)
             {
-                s_assignLocalToClosure = new Instruction[LocalInstrCacheSize];
+                _assignLocalToClosure = new Instruction[_LocalInstrCacheSize];
             }
 
-            if (index < s_assignLocalToClosure.Length)
+            if (index < _assignLocalToClosure.Length)
             {
-                Emit(s_assignLocalToClosure[index] ?? (s_assignLocalToClosure[index] = new AssignLocalToClosureInstruction(index)));
+                Emit(_assignLocalToClosure[index] ?? (_assignLocalToClosure[index] = new AssignLocalToClosureInstruction(index)));
             }
             else
             {
