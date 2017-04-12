@@ -59,7 +59,7 @@ namespace Theraot.Threading.Needles
             get
             {
                 var target = _target;
-                return target != null ? target.IsAlive : false;
+                return target != null && target.IsAlive;
             }
         }
 
