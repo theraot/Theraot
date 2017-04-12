@@ -121,7 +121,7 @@ namespace System.Linq.Expressions.Interpreter
                 var stackDepth = 0;
                 var continuationsDepth = 0;
 
-                var cookieEnumerator = (debugCookies != null ? debugCookies : new KeyValuePair<int, object>[0]).GetEnumerator();
+                var cookieEnumerator = (debugCookies ?? new KeyValuePair<int, object>[0]).GetEnumerator();
                 var hasCookie = cookieEnumerator.MoveNext();
 
                 for (int i = 0; i < instructions.Count; i++)
