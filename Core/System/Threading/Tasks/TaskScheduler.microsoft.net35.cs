@@ -24,7 +24,7 @@ namespace System.Threading.Tasks
     /// </para>
     /// </remarks>
     [DebuggerDisplay("Id={Id}")]
-    [DebuggerTypeProxy(typeof(SystemThreadingTasks_TaskSchedulerDebugView))]
+    [DebuggerTypeProxy(typeof(SystemThreadingTasksTaskSchedulerDebugView))]
     public abstract partial class TaskScheduler
     {
         ////////////////////////////////////////////////////////////
@@ -59,7 +59,7 @@ namespace System.Threading.Tasks
         //
 
         // An AppDomain-wide default manager.
-        private static readonly TaskScheduler s_defaultTaskScheduler = new ThreadPoolTaskScheduler();
+        private static readonly TaskScheduler _defaultTaskScheduler = new ThreadPoolTaskScheduler();
 
         ////////////////////////////////////////////////////////////
         //
@@ -158,16 +158,12 @@ namespace System.Threading.Tasks
                 return null;
 
             // If it can be cast to an array, use it directly
-            var activeTasksArray = activeTasksSource as Task[];
-            if (activeTasksArray == null)
-            {
-                activeTasksArray = (new List<Task>(activeTasksSource)).ToArray();
-            }
+            var activeTasksArray = activeTasksSource as Task[] ?? (new List<Task>(activeTasksSource)).ToArray();
 
             // touch all Task.Id fields so that the debugger doesn't need to do a lot of cross-proc calls to generate them
             foreach (Task t in activeTasksArray)
             {
-                var tmp = t.Id;
+                GC.KeepAlive(t.Id);
             }
 
             return activeTasksArray;
@@ -176,11 +172,11 @@ namespace System.Threading.Tasks
         /// <summary>
         /// Nested class that provides debugger view for TaskScheduler
         /// </summary>
-        internal sealed class SystemThreadingTasks_TaskSchedulerDebugView
+        internal sealed class SystemThreadingTasksTaskSchedulerDebugView
         {
             private readonly TaskScheduler m_taskScheduler;
 
-            public SystemThreadingTasks_TaskSchedulerDebugView(TaskScheduler scheduler)
+            public SystemThreadingTasksTaskSchedulerDebugView(TaskScheduler scheduler)
             {
                 m_taskScheduler = scheduler;
             }

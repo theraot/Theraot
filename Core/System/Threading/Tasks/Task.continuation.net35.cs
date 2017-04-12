@@ -809,10 +809,9 @@ namespace System.Threading.Tasks
 
         internal void RemoveContinuation(object continuationObject) // could be TaskContinuation or Action<Task>
         {
-            List<object> continuations = null;
             try
             {
-                continuations = GetContinuations();
+                List<object> continuations = GetContinuations();
                 if (continuations == null || Status == TaskStatus.RanToCompletion)
                 {
                     return;
@@ -834,10 +833,9 @@ namespace System.Threading.Tasks
         private bool AddTaskContinuation(object continuationObject, bool addBeforeOthers)
         {
             Contract.Requires(continuationObject != null);
-            List<object> continuations = null;
             try
             {
-                continuations = RetrieveContinuations();
+                List<object> continuations = RetrieveContinuations();
                 if (continuations == null || Status == TaskStatus.RanToCompletion)
                 {
                     return false;

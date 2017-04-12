@@ -136,7 +136,6 @@ namespace System.Threading
             var spinCount = _spinCount;
             if (!IsSet)
             {
-                var start = ThreadingHelper.TicksNow();
                 retry:
                 if (!IsSet)
                 {
@@ -390,7 +389,6 @@ namespace System.Threading
         {
             var spinWait = new SpinWait();
             var spinCount = _spinCount;
-            var start = ThreadingHelper.TicksNow();
             retry:
             if (!IsSet)
             {
