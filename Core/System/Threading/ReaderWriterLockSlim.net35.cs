@@ -296,8 +296,7 @@ namespace System.Threading
                             }
                             finally
                             {
-                                if (Interlocked.CompareExchange(ref _rwlock, state | _rwWait, state) == state)
-                                    registered = true;
+                                registered |= Interlocked.CompareExchange(ref _rwlock, state | _rwWait, state) == state;
                             }
                             if (registered)
                                 break;

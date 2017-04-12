@@ -344,14 +344,8 @@ namespace System.Numerics
                 // [sign][digits,]digits[E[sign]exponential_digits][ws
                 if (allowLeadingSign)
                 {
-                    if (reader.Read(negativeSign))
-                    {
-                        number.Negative = true;
-                    }
-                    if (reader.Read(positiveSign))
-                    {
-                        positive = true;
-                    }
+                    number.Negative |= reader.Read(negativeSign);
+                    positive |= reader.Read(positiveSign);
                 }
                 if (!number.Negative && allowParentheses && reader.Read('('))
                 {
@@ -445,14 +439,8 @@ namespace System.Numerics
                 // ---
                 if (!number.Negative && !positive && allowTrailingSign)
                 {
-                    if (reader.Read(negativeSign))
-                    {
-                        number.Negative = true;
-                    }
-                    if (reader.Read(positiveSign))
-                    {
-                        positive = true; // For completness sake
-                    }
+                    number.Negative |= reader.Read(negativeSign);
+                    positive |= reader.Read(positiveSign);
                 }
                 if (waitingParentheses && !reader.Read(')'))
                 {
@@ -691,8 +679,7 @@ namespace System.Numerics
                     Contract.Assert(c >= 'a' && c <= 'f');
                     b = (byte)((c - 'a') + 10);
                 }
-                if (i == 0 && (b & 0x08) == 0x08)
-                    isNegative = true;
+                isNegative |= (i == 0 && (b & 0x08) == 0x08);
 
                 if (shift)
                 {
