@@ -24,9 +24,10 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
+            var progressive = new ProgressiveCollection<T>(source);
             while (true)
             {
-                foreach (var item in source)
+                foreach (var item in progressive)
                 {
                     yield return item;
                 }
