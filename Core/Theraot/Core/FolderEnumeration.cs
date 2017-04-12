@@ -76,7 +76,7 @@ namespace Theraot.Core
             }
             catch
             {
-                // Pokemon
+                // Catch'em all
                 return ArrayReservoir<string>.EmptyArray;
             }
         }

@@ -424,7 +424,7 @@ namespace Tests.Theraot.Threading.Needles
             }
             catch (Exception exception)
             {
-                // Pokemon
+                // Catch'em all
                 GC.KeepAlive(exception);
             }
             // We did not commit

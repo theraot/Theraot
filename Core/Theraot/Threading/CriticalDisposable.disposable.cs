@@ -23,7 +23,7 @@ namespace Theraot.Threading
                 }
                 catch (Exception exception)
                 {
-                    // Pokemon - fields may be partially collected.
+                    // Catch'em all - fields may be partially collected.
                     GC.KeepAlive(exception);
                 }
             }
