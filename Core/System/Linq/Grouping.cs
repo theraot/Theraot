@@ -33,8 +33,8 @@ namespace System.Linq
 
         public Grouping(TK key, IEnumerable<T> group)
         {
-            this._group = group;
-            this._key = key;
+            _group = group;
+            _key = key;
         }
 
         public TK Key
