@@ -24,24 +24,39 @@ namespace Theraot.Collections
 
         private static IEnumerable<TOutput> BuildEnumerable(IEnumerable<TInput> wrapped, Converter<TInput, TOutput> converter)
         {
-            var _wrapped = Check.NotNullArgument(wrapped, "wrapped");
-            var _converter = Check.NotNullArgument(converter, "converter");
-            foreach (var item in _wrapped)
+            if (wrapped == null)
             {
-                yield return _converter(item);
+                throw new ArgumentNullException("wrapped");
+            }
+            if (converter == null)
+            {
+                throw new ArgumentNullException("converter");
+            }
+            foreach (var item in wrapped)
+            {
+                yield return converter(item);
             }
         }
 
         private static IEnumerable<TOutput> BuildEnumerable(IEnumerable<TInput> wrapped, Converter<TInput, TOutput> converter, Predicate<TInput> filter)
         {
-            var _wrapped = Check.NotNullArgument(wrapped, "wrapped");
-            var _converter = Check.NotNullArgument(converter, "converter");
-            var _filter = Check.NotNullArgument(filter, "filter");
-            foreach (var item in _wrapped)
+            if (wrapped == null)
             {
-                if (_filter(item))
+                throw new ArgumentNullException("wrapped");
+            }
+            if (converter == null)
+            {
+                throw new ArgumentNullException("converter");
+            }
+            if (filter == null)
+            {
+                throw new ArgumentNullException("filter");
+            }
+            foreach (var item in wrapped)
+            {
+                if (filter(item))
                 {
-                    yield return _converter(item);
+                    yield return converter(item);
                 }
             }
         }
