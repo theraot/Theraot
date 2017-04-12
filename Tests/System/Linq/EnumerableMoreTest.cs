@@ -607,7 +607,7 @@ namespace MonoTests.System.Linq
             if (b)
             {
                 Console.WriteLine(data.Contains(0));
-                object o = null;
+                const object o = null;
                 o.ToString();
                 Assert.IsFalse(true);
             }

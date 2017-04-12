@@ -495,7 +495,7 @@ namespace System.Threading.Tasks
             Contract.Requires((_internalOptions & InternalTaskOptions.PromiseTask) == 0, "Task.InternalCancel() did not expect promise-style task");
 
             var cancelSucceeded = false;
-            TaskSchedulerException taskSchedulerException = null;
+            const TaskSchedulerException taskSchedulerException = null;
 
             RecordInternalCancellationRequest();
 

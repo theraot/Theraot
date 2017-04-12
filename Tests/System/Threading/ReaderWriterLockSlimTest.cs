@@ -405,7 +405,7 @@ namespace MonoTests.System.Threading
         public void EnterReadLock_MultiRead()
         {
             var v = new ReaderWriterLockSlim();
-            var local = 10;
+            const int local = 10;
 
             var r = from i in Enumerable.Range(1, 30)
                     select new Thread(() =>

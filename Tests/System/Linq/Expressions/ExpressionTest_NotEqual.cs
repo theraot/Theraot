@@ -117,7 +117,7 @@ namespace MonoTests.System.Linq.Expressions
         public void Nullable_Mixed()
         {
             int? a = 1;
-            var b = 2;
+            const int b = 2;
 
             Expression.NotEqual(Expression.Constant(a, typeof(int?)),
                       Expression.Constant(b, typeof(int)));

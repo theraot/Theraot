@@ -330,7 +330,7 @@ namespace MonoTests.System.Linq
         [Test]
         public void UserExtensionMethod()
         {
-            var extensionFlags = BindingFlags.Static | BindingFlags.Public;
+            const global::System.Reflection.BindingFlags extensionFlags = BindingFlags.Static | BindingFlags.Public;
             var method = (from m in typeof(Ext).GetMethods(extensionFlags)
                           where (m.Name == "UserQueryableExt1" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
                           select m).FirstOrDefault().MakeGenericMethod(typeof(int));
@@ -353,7 +353,7 @@ namespace MonoTests.System.Linq
         [ExpectedException(typeof(InvalidOperationException))]
         public void UserExtensionMethodNegative()
         {
-            var extensionFlags = BindingFlags.Static | BindingFlags.Public;
+            const global::System.Reflection.BindingFlags extensionFlags = BindingFlags.Static | BindingFlags.Public;
             var method = (from m in typeof(Ext).GetMethods(extensionFlags)
                           where (m.Name == "UserQueryableExt3" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
                           select m).FirstOrDefault().MakeGenericMethod(typeof(int));
@@ -365,7 +365,7 @@ namespace MonoTests.System.Linq
         [Test]
         public void NonGenericMethod()
         {
-            var extensionFlags = BindingFlags.Static | BindingFlags.Public;
+            const global::System.Reflection.BindingFlags extensionFlags = BindingFlags.Static | BindingFlags.Public;
             var method = (from m in typeof(Ext).GetMethods(extensionFlags)
                           where (m.Name == "NonGenericMethod" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
                           select m).FirstOrDefault();
@@ -378,7 +378,7 @@ namespace MonoTests.System.Linq
         [ExpectedException(typeof(InvalidOperationException))]
         public void InstantiatedGenericMethod()
         {
-            var extensionFlags = BindingFlags.Static | BindingFlags.Public;
+            const global::System.Reflection.BindingFlags extensionFlags = BindingFlags.Static | BindingFlags.Public;
             var method = (from m in typeof(Ext).GetMethods(extensionFlags)
                           where (m.Name == "InstantiatedGenericMethod" && m.GetParameters()[0].ParameterType.GetGenericTypeDefinition() == typeof(IQueryable<>))
                           select m).FirstOrDefault().MakeGenericMethod(typeof(int));
@@ -391,7 +391,7 @@ namespace MonoTests.System.Linq
         [ExpectedException(typeof(ArgumentNullException))]
         public void NullEnumerable()
         {
-            IEnumerable<int> a = null;
+            const IEnumerable<int> a = null;
             a.AsQueryable();
         }
 
