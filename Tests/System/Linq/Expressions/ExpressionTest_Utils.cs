@@ -183,7 +183,7 @@ namespace MonoTests.System.Linq.Expressions
 
     public class MemberClass
     {
-        public int TestField1 = 0;
+        public int TestField1;
         public readonly int TestField2 = 1;
 
         public int TestProperty1
@@ -221,7 +221,7 @@ namespace MonoTests.System.Linq.Expressions
             }
         }
 
-        public static int StaticField = 0;
+        public static int StaticField;
 
         public static int StaticProperty
         {

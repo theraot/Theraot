@@ -295,7 +295,7 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual("foo42", lamda(42, "foo"));
         }
 
-        private static bool fout_called = false;
+        private static bool fout_called;
 
         public static int FooOut(out int x)
         {
