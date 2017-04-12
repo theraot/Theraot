@@ -75,7 +75,7 @@ namespace System.Linq.Expressions.Compiler
         }
     }
 
-    internal class AssemblyBuilderEx
+    internal static class AssemblyBuilderEx
     {
         public static AssemblyBuilder DefineDynamicAssembly(AssemblyName name, AssemblyBuilderAccess access, CustomAttributeBuilder[] assemblyAttributes)
         {
