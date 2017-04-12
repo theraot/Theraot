@@ -141,12 +141,12 @@ namespace Theraot.Collections
                 }
                 catch (KeyNotFoundException)
                 {
-                    KeyValuePair<TKey, TValue> _item;
-                    while (Progressor.TryTake(out _item))
+                    KeyValuePair<TKey, TValue> item;
+                    while (Progressor.TryTake(out item))
                     {
-                        if (_keyComparer.Equals(key, _item.Key))
+                        if (_keyComparer.Equals(key, item.Key))
                         {
-                            return _item.Value;
+                            return item.Value;
                         }
                     }
                     throw;
@@ -166,12 +166,12 @@ namespace Theraot.Collections
                 }
                 catch (KeyNotFoundException)
                 {
-                    KeyValuePair<TKey, TValue> _item;
-                    while (Progressor.TryTake(out _item))
+                    KeyValuePair<TKey, TValue> item;
+                    while (Progressor.TryTake(out item))
                     {
-                        if (_keyComparer.Equals(key, _item.Key))
+                        if (_keyComparer.Equals(key, item.Key))
                         {
-                            return _item.Value;
+                            return item.Value;
                         }
                     }
                     throw;
@@ -187,10 +187,10 @@ namespace Theraot.Collections
             }
             else
             {
-                KeyValuePair<TKey, TValue> _item;
-                while (Progressor.TryTake(out _item))
+                KeyValuePair<TKey, TValue> item;
+                while (Progressor.TryTake(out item))
                 {
-                    if (_keyComparer.Equals(key, _item.Key))
+                    if (_keyComparer.Equals(key, item.Key))
                     {
                         return true;
                     }
