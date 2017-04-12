@@ -18,8 +18,8 @@ namespace System.Threading.Tasks
     /// </remarks>
     public class UnobservedTaskExceptionEventArgs : EventArgs
     {
-        private readonly AggregateException m_exception;
-        internal bool m_observed = false;
+        private readonly AggregateException _exception;
+        private bool _observed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UnobservedTaskExceptionEventArgs"/> class
@@ -28,7 +28,7 @@ namespace System.Threading.Tasks
         /// <param name="exception">The Exception that has gone unobserved.</param>
         public UnobservedTaskExceptionEventArgs(AggregateException exception)
         {
-            m_exception = exception;
+            _exception = exception;
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace System.Threading.Tasks
         /// </summary>
         public void SetObserved()
         {
-            m_observed = true;
+            _observed = true;
         }
 
         /// <summary>
@@ -45,7 +45,8 @@ namespace System.Threading.Tasks
         /// </summary>
         public bool Observed
         {
-            get { return m_observed; }
+            get { return _observed; }
+            internal set { _observed = value; }
         }
 
         /// <summary>
@@ -53,7 +54,7 @@ namespace System.Threading.Tasks
         /// </summary>
         public AggregateException Exception
         {
-            get { return m_exception; }
+            get { return _exception; }
         }
     }
 }

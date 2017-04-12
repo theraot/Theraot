@@ -49,7 +49,7 @@ namespace System.Threading
         /// <param name="message">A string that describes the exception.</param>
         /// <param name="innerException">The exception that is the cause of the current exception.</param>
         public BarrierPostPhaseException(string message, Exception innerException)
-            : base(message == null ? "The postPhaseAction failed with an exception." : message, innerException)
+            : base(message ?? "The postPhaseAction failed with an exception.", innerException)
         {
         }
 
@@ -91,19 +91,19 @@ namespace System.Threading
         // The 16th bit is dummy
         // The next 15th bit for the current
         // And the last highest bit is for the sense
-        private volatile int _currentTotalCount;
+        private int _currentTotalCount;
 
         // Bitmask to extract the current count
-        private const int CURRENT_MASK = 0x7FFF0000;
+        private const int _currentMask = 0x7FFF0000;
 
         // Bitmask to extract the total count
-        private const int TOTAL_MASK = 0x00007FFF;
+        private const int _totalMask = 0x00007FFF;
 
         // Bitmask to extract the sense flag
-        private const int SENSE_MASK = unchecked((int)0x80000000);
+        private const int _senseMask = unchecked((int)0x80000000);
 
         // The maximum participants the barrier can operate = 32767 ( 2 power 15 - 1 )
-        private const int MAX_PARTICIPANTS = TOTAL_MASK;
+        private const int _maxParticipants = _totalMask;
 
         // The current barrier phase
         // We don't need to worry about overflow, the max value is 2^63-1; If it starts from 0 at a
@@ -120,11 +120,11 @@ namespace System.Threading
         private readonly ManualResetEventSlim _evenEvent;
 
         // The execution context of the creator thread
-        private ExecutionContext _ownerThreadContext;
+        private readonly ExecutionContext _ownerThreadContext;
 
         // The EC callback that invokes the post phase action
         [SecurityCritical]
-        private static ContextCallback s_invokePostPhaseAction;
+        private static ContextCallback _invokePostPhaseAction;
 
         // Post phase action after each phase
         private readonly Action<Barrier> _postPhaseAction;
@@ -135,7 +135,7 @@ namespace System.Threading
         // This is the ManagedThreadID of the postPhaseAction caller thread, this is used to determine if the SignalAndWait, Dispose or Add/RemoveParticipant caller thread is
         // the same thread as the postPhaseAction thread which means this method was called from the postPhaseAction which is illegal.
         // This value is captured before calling the action and reset back to zero after it.
-        private int _actionCallerID;
+        private int _actionCallerId;
 
         #region Properties
 
@@ -151,9 +151,9 @@ namespace System.Threading
         {
             get
             {
-                var currentTotal = _currentTotalCount;
-                var total = currentTotal & TOTAL_MASK;
-                var current = (currentTotal & CURRENT_MASK) >> 16;
+                var currentTotal = Volatile.Read(ref _currentTotalCount);
+                var total = currentTotal & _totalMask;
+                var current = (currentTotal & _currentMask) >> 16;
                 return total - current;
             }
         }
@@ -163,7 +163,7 @@ namespace System.Threading
         /// </summary>
         public int ParticipantCount
         {
-            get { return _currentTotalCount & TOTAL_MASK; }
+            get { return Volatile.Read(ref _currentTotalCount) & _totalMask; }
         }
 
         /// <summary>
@@ -207,7 +207,7 @@ namespace System.Threading
         public Barrier(int participantCount, Action<Barrier> postPhaseAction)
         {
             // the count must be non negative value
-            if (participantCount < 0 || participantCount > MAX_PARTICIPANTS)
+            if (participantCount < 0 || participantCount > _maxParticipants)
             {
                 throw new ArgumentOutOfRangeException("participantCount", participantCount, "The participantCount argument must be non-negative and less than or equal to 32767");
             }
@@ -224,7 +224,7 @@ namespace System.Threading
                 _ownerThreadContext = ExecutionContext.Capture();
             }
 
-            _actionCallerID = 0;
+            _actionCallerId = 0;
         }
 
         /// <summary>
@@ -236,9 +236,9 @@ namespace System.Threading
         /// <param name="sense">The sense flag</param>
         private void GetCurrentTotal(int currentTotal, out int current, out int total, out bool sense)
         {
-            total = currentTotal & TOTAL_MASK;
-            current = (currentTotal & CURRENT_MASK) >> 16;
-            sense = (currentTotal & SENSE_MASK) == 0 ? true : false;
+            total = currentTotal & _totalMask;
+            current = (currentTotal & _currentMask) >> 16;
+            sense = (currentTotal & _senseMask) == 0;
         }
 
         /// <summary>
@@ -255,7 +255,7 @@ namespace System.Threading
 
             if (!sense)
             {
-                newCurrentTotal |= SENSE_MASK;
+                newCurrentTotal |= _senseMask;
             }
 
             return Interlocked.CompareExchange(ref _currentTotalCount, newCurrentTotal, currentTotal) == currentTotal;
@@ -313,28 +313,28 @@ namespace System.Threading
                 throw new ArgumentOutOfRangeException("participantCount", participantCount,
                     "The participantCount argument must be a positive value.");
             }
-            else if (participantCount > MAX_PARTICIPANTS) //overflow
+            else if (participantCount > _maxParticipants) //overflow
             {
                 throw new ArgumentOutOfRangeException("participantCount",
                         "Adding participantCount participants would result in the number of participants exceeding the maximum number allowed.");
             }
 
             // in case of this is called from the PHA
-            if (_actionCallerID != 0 && Thread.CurrentThread.ManagedThreadId == _actionCallerID)
+            if (_actionCallerId != 0 && Thread.CurrentThread.ManagedThreadId == _actionCallerId)
             {
                 throw new InvalidOperationException("This method may not be called from within the postPhaseAction.");
             }
 
             var spinner = new SpinWait();
-            long newPhase = 0;
+            long newPhase;
             while (true)
             {
-                var currentTotal = _currentTotalCount;
+                var currentTotal = Volatile.Read(ref _currentTotalCount);
                 int total;
                 int current;
                 bool sense;
                 GetCurrentTotal(currentTotal, out current, out total, out sense);
-                if (participantCount + total > MAX_PARTICIPANTS) //overflow
+                if (participantCount + total > _maxParticipants) //overflow
                 {
                     throw new ArgumentOutOfRangeException("participantCount",
                         "Adding participantCount participants would result in the number of participants exceeding the maximum number allowed.");
@@ -421,7 +421,7 @@ namespace System.Threading
             }
 
             // in case of this is called from the PHA
-            if (_actionCallerID != 0 && Thread.CurrentThread.ManagedThreadId == _actionCallerID)
+            if (_actionCallerId != 0 && Thread.CurrentThread.ManagedThreadId == _actionCallerId)
             {
                 throw new InvalidOperationException("This method may not be called from within the postPhaseAction.");
             }
@@ -429,7 +429,7 @@ namespace System.Threading
             var spinner = new SpinWait();
             while (true)
             {
-                var currentTotal = _currentTotalCount;
+                var currentTotal = Volatile.Read(ref _currentTotalCount);
                 int total;
                 int current;
                 bool sense;
@@ -611,7 +611,7 @@ namespace System.Threading
             }
 
             // in case of this is called from the PHA
-            if (_actionCallerID != 0 && Thread.CurrentThread.ManagedThreadId == _actionCallerID)
+            if (_actionCallerId != 0 && Thread.CurrentThread.ManagedThreadId == _actionCallerId)
             {
                 throw new InvalidOperationException("This method may not be called from within the postPhaseAction.");
             }
@@ -626,7 +626,7 @@ namespace System.Threading
             var spinner = new SpinWait();
             while (true)
             {
-                currentTotal = _currentTotalCount;
+                currentTotal = Volatile.Read(ref _currentTotalCount);
                 GetCurrentTotal(currentTotal, out current, out total, out sense);
                 phase = CurrentPhaseNumber;
                 // throw if zero participants
@@ -689,7 +689,7 @@ namespace System.Threading
                 while (true)
                 {
                     bool newSense;
-                    currentTotal = _currentTotalCount;
+                    currentTotal = Volatile.Read(ref _currentTotalCount);
                     GetCurrentTotal(currentTotal, out current, out total, out newSense);
                     // If the timeout expired and the phase has just finished, return true and this is considered as succeeded SignalAndWait
                     //otherwise the timeout expired and the current phase has not been finished yet, return false
@@ -742,15 +742,15 @@ namespace System.Threading
                 try
                 {
                     // Capture the caller thread ID to check if the Add/RemoveParticipant(s) is called from the PHA
-                    _actionCallerID = Thread.CurrentThread.ManagedThreadId;
+                    _actionCallerId = Thread.CurrentThread.ManagedThreadId;
                     if (_ownerThreadContext != null)
                     {
-                        var currentContext = _ownerThreadContext;
+                        GC.KeepAlive(_ownerThreadContext);
 
-                        var handler = s_invokePostPhaseAction;
+                        var handler = _invokePostPhaseAction;
                         if (handler == null)
                         {
-                            s_invokePostPhaseAction = handler = InvokePostPhaseAction;
+                            _invokePostPhaseAction = handler = InvokePostPhaseAction;
                         }
                         ExecutionContext.Run(_ownerThreadContext, handler, this);
                     }
@@ -767,7 +767,7 @@ namespace System.Threading
                 }
                 finally
                 {
-                    _actionCallerID = 0;
+                    _actionCallerId = 0;
                     SetResetEvents(observedSense);
                     if (_exception != null)
                         throw new BarrierPostPhaseException(_exception);
@@ -884,7 +884,7 @@ namespace System.Threading
         public void Dispose()
         {
             // in case of this is called from the PHA
-            if (_actionCallerID != 0 && Thread.CurrentThread.ManagedThreadId == _actionCallerID)
+            if (_actionCallerId != 0 && Thread.CurrentThread.ManagedThreadId == _actionCallerId)
             {
                 throw new InvalidOperationException("This method may not be called from within the postPhaseAction.");
             }
