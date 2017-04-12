@@ -910,7 +910,7 @@ namespace System.Linq.Expressions.Interpreter
 
         #region Fields and Methods
 
-        private static readonly Dictionary<FieldInfo, Instruction> s_loadFields = new Dictionary<FieldInfo, Instruction>();
+        private static readonly Dictionary<FieldInfo, Instruction> _loadFields = new Dictionary<FieldInfo, Instruction>();
 
         public void EmitLoadField(FieldInfo field)
         {
@@ -919,10 +919,10 @@ namespace System.Linq.Expressions.Interpreter
 
         private Instruction GetLoadField(FieldInfo field)
         {
-            lock (s_loadFields)
+            lock (_loadFields)
             {
                 Instruction instruction;
-                if (!s_loadFields.TryGetValue(field, out instruction))
+                if (!_loadFields.TryGetValue(field, out instruction))
                 {
                     if (field.IsStatic)
                     {
@@ -932,7 +932,7 @@ namespace System.Linq.Expressions.Interpreter
                     {
                         instruction = new LoadFieldInstruction(field);
                     }
-                    s_loadFields.Add(field, instruction);
+                    _loadFields.Add(field, instruction);
                 }
                 return instruction;
             }
@@ -979,13 +979,13 @@ namespace System.Linq.Expressions.Interpreter
 
         #region Control Flow
 
-        private static readonly RuntimeLabel[] s_emptyRuntimeLabels = { new RuntimeLabel(Interpreter.RethrowOnReturn, 0, 0) };
+        private static readonly RuntimeLabel[] _emptyRuntimeLabels = { new RuntimeLabel(Interpreter.RethrowOnReturn, 0, 0) };
 
         private RuntimeLabel[] BuildRuntimeLabels()
         {
             if (_runtimeLabelCount == 0)
             {
-                return s_emptyRuntimeLabels;
+                return _emptyRuntimeLabels;
             }
 
             var result = new RuntimeLabel[_runtimeLabelCount + 1];

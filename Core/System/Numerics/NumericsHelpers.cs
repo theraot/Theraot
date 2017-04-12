@@ -11,10 +11,10 @@ namespace System.Numerics
     internal struct DoubleUlong
     {
         [FieldOffset(0)]
-        public double dbl;
+        public double Dbl;
 
         [FieldOffset(0)]
-        public ulong uu;
+        public ulong Uu;
     }
 
     internal static class NumericsHelpers
@@ -26,12 +26,12 @@ namespace System.Numerics
             Contract.Ensures(Contract.ValueAtReturn(out sign) == +1 || Contract.ValueAtReturn(out sign) == -1);
 
             DoubleUlong du;
-            du.uu = 0;
-            du.dbl = dbl;
+            du.Uu = 0;
+            du.Dbl = dbl;
 
-            sign = 1 - ((int)(du.uu >> 62) & 2);
-            man = du.uu & 0x000FFFFFFFFFFFFF;
-            exp = (int)(du.uu >> 52) & 0x7FF;
+            sign = 1 - ((int)(du.Uu >> 62) & 2);
+            man = du.Uu & 0x000FFFFFFFFFFFFF;
+            exp = (int)(du.Uu >> 52) & 0x7FF;
             if (exp == 0)
             {
                 // Denormalized number.
@@ -56,10 +56,10 @@ namespace System.Numerics
         public static double GetDoubleFromParts(int sign, int exp, ulong man)
         {
             DoubleUlong du;
-            du.dbl = 0;
+            du.Dbl = 0;
 
             if (man == 0)
-                du.uu = 0;
+                du.Uu = 0;
             else
             {
                 // Normalize so that 0x0010 0000 0000 0000 is the highest bit set.
@@ -78,7 +78,7 @@ namespace System.Numerics
                 if (exp >= 0x7FF)
                 {
                     // Infinity.
-                    du.uu = 0x7FF0000000000000;
+                    du.Uu = 0x7FF0000000000000;
                 }
                 else if (exp <= 0)
                 {
@@ -87,25 +87,25 @@ namespace System.Numerics
                     if (exp < -52)
                     {
                         // Underflow to zero.
-                        du.uu = 0;
+                        du.Uu = 0;
                     }
                     else
                     {
-                        du.uu = man >> -exp;
-                        Debug.Assert(du.uu != 0);
+                        du.Uu = man >> -exp;
+                        Debug.Assert(du.Uu != 0);
                     }
                 }
                 else
                 {
                     // Mask off the implicit high bit.
-                    du.uu = (man & 0x000FFFFFFFFFFFFF) | ((ulong)exp << 52);
+                    du.Uu = (man & 0x000FFFFFFFFFFFFF) | ((ulong)exp << 52);
                 }
             }
 
             if (sign < 0)
-                du.uu |= 0x8000000000000000;
+                du.Uu |= 0x8000000000000000;
 
-            return du.dbl;
+            return du.Dbl;
         }
 
         // Do an in-place two's complement. "Dangerous" because it causes

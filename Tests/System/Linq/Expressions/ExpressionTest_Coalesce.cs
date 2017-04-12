@@ -148,16 +148,16 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct Slot
         {
-            private readonly int Value;
+            private readonly int _value;
 
             public Slot(int v)
             {
-                Value = v;
+                _value = v;
             }
 
             public static implicit operator int(Slot s)
             {
-                return s.Value;
+                return s._value;
             }
         }
 

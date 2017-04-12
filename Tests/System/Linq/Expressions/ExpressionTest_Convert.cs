@@ -235,16 +235,16 @@ namespace MonoTests.System.Linq.Expressions
 
         private class Klang
         {
-            private readonly int i;
+            private readonly int _i;
 
             public Klang(int i)
             {
-                this.i = i;
+                this._i = i;
             }
 
             public static explicit operator int(Klang k)
             {
-                return k.i;
+                return k._i;
             }
         }
 
@@ -280,16 +280,16 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct Kling
         {
-            private readonly int i;
+            private readonly int _i;
 
             public Kling(int i)
             {
-                this.i = i;
+                this._i = i;
             }
 
             public static implicit operator int(Kling k)
             {
-                return k.i;
+                return k._i;
             }
         }
 
@@ -459,16 +459,16 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct ImplicitToShort
         {
-            private readonly short value;
+            private readonly short _value;
 
             public ImplicitToShort(short v)
             {
-                value = v;
+                _value = v;
             }
 
             public static implicit operator short(ImplicitToShort i)
             {
-                return i.value;
+                return i._value;
             }
         }
 
@@ -564,16 +564,16 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct ImplicitToInt
         {
-            private readonly int Value;
+            private readonly int _value;
 
             public ImplicitToInt(int v)
             {
-                Value = v;
+                _value = v;
             }
 
             public static implicit operator int(ImplicitToInt i)
             {
-                return i.Value;
+                return i._value;
             }
         }
 
