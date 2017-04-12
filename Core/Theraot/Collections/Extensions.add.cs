@@ -36,10 +36,9 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("items");
             }
-            var _collection = collection;
             foreach (var item in items)
             {
-                _collection.Add(item);
+                collection.Add(item);
                 yield return item;
             }
         }
