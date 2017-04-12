@@ -301,6 +301,7 @@ namespace System.Linq.Expressions
 
         private IList<TElement> VisitList<TElement>(ReadOnlyCollection<TElement> original, Func<TElement, TElement> visit)
         {
+            // NOTICE this method has no null check
             List<TElement> list = null;
             var count = original.Count;
             for (int index = 0; index < count; index++)

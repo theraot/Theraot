@@ -352,6 +352,10 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("tryTake");
             }
+            if (isDone == null)
+            {
+                throw new ArgumentNullException("isDone");
+            }
             _proxy = new ProxyObservable<T>();
             _tryTake = (out T value) =>
             {
@@ -361,7 +365,7 @@ namespace Theraot.Collections
                     _proxy.OnNext(value);
                     return true;
                 }
-                _done = isDone();
+                _done = new ValueFuncClosure<bool>(isDone).InvokeReturn();
                 return false;
             };
         }

@@ -1212,6 +1212,7 @@ namespace System.Linq
 
         private static IEnumerable<TResult> SelectExtracted<TSource, TResult>(IEnumerable<TSource> source, Func<TSource, int, TResult> selector)
         {
+            // NOTICE this method has no null check
             var count = 0;
             foreach (var item in source)
             {
@@ -1222,6 +1223,7 @@ namespace System.Linq
 
         private static IEnumerable<TResult> SelectManyExtracted<TSource, TResult>(IEnumerable<TSource> source, Func<TSource, IEnumerable<TResult>> selector)
         {
+            // NOTICE this method has no null check
             foreach (var key in source)
             {
                 foreach (var item in selector(key))
@@ -1233,6 +1235,7 @@ namespace System.Linq
 
         private static IEnumerable<TResult> SelectManyExtracted<TSource, TResult>(IEnumerable<TSource> source, Func<TSource, int, IEnumerable<TResult>> selector)
         {
+            // NOTICE this method has no null check
             var count = 0;
             foreach (var key in source)
             {
@@ -1246,6 +1249,7 @@ namespace System.Linq
 
         private static IEnumerable<TResult> SelectManyExtracted<TSource, TCollection, TResult>(IEnumerable<TSource> source, Func<TSource, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
         {
+            // NOTICE this method has no null check
             foreach (var element in source)
             {
                 foreach (var collection in collectionSelector(element))
@@ -1257,6 +1261,7 @@ namespace System.Linq
 
         private static IEnumerable<TResult> SelectManyExtracted<TSource, TCollection, TResult>(IEnumerable<TSource> source, Func<TSource, int, IEnumerable<TCollection>> collectionSelector, Func<TSource, TCollection, TResult> resultSelector)
         {
+            // NOTICE this method has no null check
             var count = 0;
             foreach (var element in source)
             {
@@ -1289,6 +1294,7 @@ namespace System.Linq
 
         private static IEnumerable<TSource> SkipWhileExtracted<TSource>(IEnumerable<TSource> source, Func<TSource, int, bool> predicate)
         {
+            // NOTICE this method has no null check
             var enumerator = source.GetEnumerator();
             using (enumerator)
             {
@@ -1333,6 +1339,7 @@ namespace System.Linq
 
         private static IEnumerable<TSource> TakeWhileExtracted<TSource>(this IEnumerable<TSource> source, Func<TSource, int, bool> predicate)
         {
+            // NOTICE this method has no null check
             var count = 0;
             foreach (var item in source)
             {
@@ -1347,6 +1354,7 @@ namespace System.Linq
 
         private static IEnumerable<TSource> WhereExtracted<TSource>(IEnumerable<TSource> source, Func<TSource, int, bool> predicate)
         {
+            // NOTICE this method has no null check
             var count = 0;
             foreach (var item in source)
             {

@@ -157,6 +157,7 @@ namespace System
 
         private T CachingNoneMode(Func<T> valueFactory, HashSet<Thread> threads)
         {
+            // NOTICE this method has no null check
             var currentThread = Thread.CurrentThread;
             if (Thread.VolatileRead(ref _isValueCreated) == 0)
             {
@@ -242,6 +243,7 @@ namespace System
 
         private T NoneMode(Func<T> valueFactory, HashSet<Thread> threads)
         {
+            // NOTICE this method has no null check
             var currentThread = Thread.CurrentThread;
             if (Thread.VolatileRead(ref _isValueCreated) == 0)
             {
@@ -284,6 +286,7 @@ namespace System
 
         private T PublicationOnlyMode(Func<T> valueFactory)
         {
+            // NOTICE this method has no null check
             _target = valueFactory();
             if (Interlocked.CompareExchange(ref _isValueCreated, 1, 0) == 0)
             {

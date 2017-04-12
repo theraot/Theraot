@@ -82,6 +82,7 @@ namespace System.Linq.Expressions
 
         public static void OnFieldOrProperty(this MemberInfo self, Action<FieldInfo> onfield, Action<PropertyInfo> onprop)
         {
+            // NOTICE this method has no null check
             switch (self.MemberType)
             {
                 case MemberTypes.Field:
@@ -99,6 +100,7 @@ namespace System.Linq.Expressions
 
         public static T OnFieldOrProperty<T>(this MemberInfo self, Func<FieldInfo, T> onfield, Func<PropertyInfo, T> onprop)
         {
+            // NOTICE this method has no null check
             switch (self.MemberType)
             {
                 case MemberTypes.Field:

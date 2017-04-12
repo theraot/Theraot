@@ -182,7 +182,8 @@ namespace System.Linq.Expressions.Compiler
             // Emit tests
             var labels = new Label[node.Cases.Count];
             var isGoto = new bool[node.Cases.Count];
-            for (int i = 0, n = node.Cases.Count; i < n; i++)
+            var n = node.Cases.Count;
+            for (int i = 0; i < n; i++)
             {
                 DefineSwitchCaseLabel(node.Cases[i], out labels[i], out isGoto[i]);
                 foreach (Expression test in node.Cases[i].TestValues)

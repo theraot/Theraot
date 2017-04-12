@@ -277,6 +277,8 @@ namespace Theraot.Collections.Specialized
 
             private static void AddExtracted(ref AVLNode node, TKey key, Comparison<TKey> comparison, AVLNode created)
             {
+                // NOTICE this method has no null check
+                // Ok, it has for node only
                 int compare;
                 if (node == null || (compare = comparison(key, node._key)) == 0)
                 {
@@ -299,6 +301,8 @@ namespace Theraot.Collections.Specialized
 
             private static bool AddNonDuplicateExtracted(ref AVLNode node, TKey key, TValue value, Comparison<TKey> comparison, AVLNode created)
             {
+                // NOTICE this method has no null check
+                // Ok, it has for node only
                 if (node == null)
                 {
                     if (created == null)
@@ -351,6 +355,8 @@ namespace Theraot.Collections.Specialized
 
             private static AVLNode GetOrAddExtracted(ref AVLNode node, TKey key, Func<TKey, TValue> factory, Comparison<TKey> comparison, AVLNode created, out bool isNew)
             {
+                // NOTICE this method has no null check
+                // Ok, it has for node only
                 if (node == null)
                 {
                     if (created == null)
