@@ -53,6 +53,8 @@ namespace MonoTests.System.Linq.Expressions
         {
             public void Add(object a, object b)
             {
+                GC.KeepAlive(a);
+                GC.KeepAlive(b);
             }
         }
 

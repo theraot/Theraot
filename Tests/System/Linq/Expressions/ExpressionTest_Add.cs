@@ -123,6 +123,8 @@ namespace MonoTests.System.Linq.Expressions
         {
             public static int MyAdder(int a, int b)
             {
+                GC.KeepAlive(a);
+                GC.KeepAlive(b);
                 return 1000;
             }
         }
