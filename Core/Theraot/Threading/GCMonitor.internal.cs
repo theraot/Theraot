@@ -41,7 +41,7 @@ namespace Theraot.Threading
                     }
                     catch (Exception exception)
                     {
-                        // Pokemon
+                        // Catch'em all
                         GC.KeepAlive(exception);
                     }
                     Thread.VolatileWrite(ref _status, INT_StatusReady);

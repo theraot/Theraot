@@ -113,7 +113,7 @@ namespace Theraot.Threading
                     }
                     catch (Exception exception)
                     {
-                        // Pokemon - there shouldn't be exceptions here, yet we really don't want them
+                        // Catch'em all - there shouldn't be exceptions here, yet we really don't want them
                         GC.KeepAlive(exception);
                     }
                 }
