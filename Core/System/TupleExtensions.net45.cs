@@ -531,11 +531,11 @@ namespace System
         /// This member is an explicit interface member implementation. It can be used only when the
         ///  <see cref="ValueTuple{T1, T2}"/> instance is cast to an <see cref="IStructuralEquatable"/> interface.
         ///
-        /// The <see cref="IEqualityComparer.Equals"/> implementation is called only if <c>other</c> is not <see langword="null"/>,
+        /// The <see cref="IEqualityComparer.Equals(object,object)"/> implementation is called only if <c>other</c> is not <see langword="null"/>,
         ///  and if it can be successfully cast (in C#) or converted (in Visual Basic) to a <see cref="ValueTuple{T1, T2}"/>
         ///  whose components are of the same types as those of the current instance. The IStructuralEquatable.Equals(Object, IEqualityComparer) method
         ///  first passes the <see cref="Item1"/> values of the <see cref="ValueTuple{T1, T2}"/> objects to be compared to the
-        ///  <see cref="IEqualityComparer.Equals"/> implementation. If this method call returns <see langword="true"/>, the method is
+        ///  <see cref="IEqualityComparer.Equals(object,object)"/> implementation. If this method call returns <see langword="true"/>, the method is
         ///  called again and passed the <see cref="Item2"/> values of the two <see cref="ValueTuple{T1, T2}"/> instances.
         /// </remarks>
         bool IStructuralEquatable.Equals(object other, IEqualityComparer comparer)
