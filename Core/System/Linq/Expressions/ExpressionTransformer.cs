@@ -174,9 +174,9 @@ namespace System.Linq.Expressions
             return c;
         }
 
-        protected virtual Expression VisitConstant(ConstantExpression c)
+        protected virtual Expression VisitConstant(ConstantExpression constant)
         {
-            return c;
+            return constant;
         }
 
         protected virtual ElementInit VisitElementInitializer(ElementInit initializer)
@@ -251,15 +251,15 @@ namespace System.Linq.Expressions
             return bindings != binding.Bindings ? Expression.MemberBind(binding.Member, bindings) : binding;
         }
 
-        protected virtual Expression VisitMethodCall(MethodCallExpression m)
+        protected virtual Expression VisitMethodCall(MethodCallExpression methodCall)
         {
-            var obj = Visit(m.Object);
-            IEnumerable<Expression> args = VisitExpressionList(m.Arguments);
-            if (obj != m.Object || args != m.Arguments)
+            var obj = Visit(methodCall.Object);
+            IEnumerable<Expression> args = VisitExpressionList(methodCall.Arguments);
+            if (obj != methodCall.Object || args != methodCall.Arguments)
             {
-                return Expression.Call(obj, m.Method, args);
+                return Expression.Call(obj, methodCall.Method, args);
             }
-            return m;
+            return methodCall;
         }
 
         protected virtual NewExpression VisitNew(NewExpression nex)
