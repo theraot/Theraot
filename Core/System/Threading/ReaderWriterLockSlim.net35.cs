@@ -438,10 +438,7 @@ namespace System.Threading
             {
                 GC.KeepAlive(ex);
                 // An async exception occured, if we had taken the upgradable mode, release it
-                if (taken && !success)
-                {
-                    _upgradableTaken.Value = false;
-                }
+                _upgradableTaken.Value &= (!taken || success);
             }
 
             return success;
