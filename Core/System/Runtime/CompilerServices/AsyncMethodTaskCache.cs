@@ -64,84 +64,80 @@ namespace System.Runtime.CompilerServices
         {
             return CreateCompleted(result);
         }
+    }
+
+    /// <summary>
+    /// Provides a cache for Boolean tasks.
+    /// </summary>
+    internal sealed class AsyncMethodBooleanTaskCache : AsyncMethodTaskCache<bool>
+    {
+        /// <summary>
+        /// A true task.
+        /// </summary>
+        private readonly TaskCompletionSource<bool> _true = CreateCompleted(true);
 
         /// <summary>
-        /// Provides a cache for Boolean tasks.
+        /// A false task.
         /// </summary>
-        private sealed class AsyncMethodBooleanTaskCache : AsyncMethodTaskCache<bool>
+        private readonly TaskCompletionSource<bool> _false = CreateCompleted(false);
+
+        /// <summary>
+        /// Gets a cached task for the Boolean result.
+        /// </summary>
+        /// <param name="result">true or false</param>
+        /// <returns>
+        /// A cached task for the Boolean result.
+        /// </returns>
+        internal override TaskCompletionSource<bool> FromResult(bool result)
         {
-            /// <summary>
-            /// A true task.
-            /// </summary>
-            private readonly TaskCompletionSource<bool> _true = CreateCompleted(true);
+            return result ? _true : _false;
+        }
+    }
 
-            /// <summary>
-            /// A false task.
-            /// </summary>
-            private readonly TaskCompletionSource<bool> _false = CreateCompleted(false);
+    /// <summary>
+    /// Provides a cache for zero Int32 tasks.
+    /// </summary>
+    internal sealed class AsyncMethodInt32TaskCache : AsyncMethodTaskCache<int>
+    {
+        /// <summary>
+        /// The cache of Task{Int32}.
+        /// </summary>
+        private static readonly TaskCompletionSource<int>[] _int32Tasks = CreateInt32Tasks();
 
-            /// <summary>
-            /// Gets a cached task for the Boolean result.
-            /// </summary>
-            /// <param name="result">true or false</param>
-            /// <returns>
-            /// A cached task for the Boolean result.
-            /// </returns>
-            internal override TaskCompletionSource<bool> FromResult(bool result)
-            {
-                return result ? _true : _false;
-            }
+        /// <summary>
+        /// The minimum value, inclusive, for which we want a cached task.
+        /// </summary>
+        private const int _minInt32ValueInclusive = -1;
+
+        /// <summary>
+        /// The maximum value, exclusive, for which we want a cached task.
+        /// </summary>
+        private const int _maxInt32ValueExclusive = 9;
+
+        /// <summary>
+        /// Creates an array of cached tasks for the values in the range [INCLUSIVE_MIN,EXCLUSIVE_MAX).
+        /// </summary>
+        private static TaskCompletionSource<int>[] CreateInt32Tasks()
+        {
+            var completionSourceArray = new TaskCompletionSource<int>[10];
+            for (var index = 0; index < completionSourceArray.Length; ++index)
+                completionSourceArray[index] = CreateCompleted(index - 1);
+            return completionSourceArray;
         }
 
         /// <summary>
-        /// Provides a cache for zero Int32 tasks.
+        /// Gets a cached task for the zero Int32 result.
         /// </summary>
-        private sealed class AsyncMethodInt32TaskCache : AsyncMethodTaskCache<int>
+        /// <param name="result">The integer value</param>
+        /// <returns>
+        /// A cached task for the Int32 result or null if not cached.
+        /// </returns>
+        internal override TaskCompletionSource<int> FromResult(int result)
         {
-            /// <summary>
-            /// The cache of Task{Int32}.
-            /// </summary>
-            private static readonly TaskCompletionSource<int>[] _int32Tasks = CreateInt32Tasks();
+            if (result < _minInt32ValueInclusive || result >= _maxInt32ValueExclusive)
+                return CreateCompleted(result);
 
-            /// <summary>
-            /// The minimum value, inclusive, for which we want a cached task.
-            /// </summary>
-            private const int _minInt32ValueInclusive = -1;
-
-            /// <summary>
-            /// The maximum value, exclusive, for which we want a cached task.
-            /// </summary>
-            private const int _maxInt32ValueExclusive = 9;
-
-            static AsyncMethodInt32TaskCache()
-            {
-            }
-
-            /// <summary>
-            /// Creates an array of cached tasks for the values in the range [INCLUSIVE_MIN,EXCLUSIVE_MAX).
-            /// </summary>
-            private static TaskCompletionSource<int>[] CreateInt32Tasks()
-            {
-                var completionSourceArray = new TaskCompletionSource<int>[10];
-                for (var index = 0; index < completionSourceArray.Length; ++index)
-                    completionSourceArray[index] = CreateCompleted(index - 1);
-                return completionSourceArray;
-            }
-
-            /// <summary>
-            /// Gets a cached task for the zero Int32 result.
-            /// </summary>
-            /// <param name="result">The integer value</param>
-            /// <returns>
-            /// A cached task for the Int32 result or null if not cached.
-            /// </returns>
-            internal override TaskCompletionSource<int> FromResult(int result)
-            {
-                if (result < _minInt32ValueInclusive || result >= _maxInt32ValueExclusive)
-                    return CreateCompleted(result);
-
-                return _int32Tasks[result - -1];
-            }
+            return _int32Tasks[result - -1];
         }
     }
 }
