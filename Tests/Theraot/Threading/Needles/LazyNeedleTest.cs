@@ -221,8 +221,8 @@ namespace Tests.Theraot.Threading.Needles
             var c = new LazyNeedle<string>();
             Assert.IsFalse(c.IsAlive);
             Assert.IsTrue(c.IsCompleted);   // Nothing to run
-            c.Value = String.Empty;
-            Assert.AreEqual(c.Value, String.Empty);
+            c.Value = string.Empty;
+            Assert.AreEqual(c.Value, string.Empty);
             Assert.IsTrue(c.IsAlive);
             Assert.IsTrue(c.IsCompleted);
             //Not Alive Version

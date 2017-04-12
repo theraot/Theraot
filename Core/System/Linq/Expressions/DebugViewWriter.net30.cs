@@ -113,19 +113,19 @@ namespace System.Linq.Expressions
 
         private int GetLambdaId(LambdaExpression le)
         {
-            Debug.Assert(String.IsNullOrEmpty(le.Name));
+            Debug.Assert(string.IsNullOrEmpty(le.Name));
             return GetId(le, ref _lambdaIds);
         }
 
         private int GetParamId(ParameterExpression p)
         {
-            Debug.Assert(String.IsNullOrEmpty(p.Name));
+            Debug.Assert(string.IsNullOrEmpty(p.Name));
             return GetId(p, ref _paramIds);
         }
 
         private int GetLabelTargetId(LabelTarget target)
         {
-            Debug.Assert(String.IsNullOrEmpty(target.Name));
+            Debug.Assert(string.IsNullOrEmpty(target.Name));
             return GetId(target, ref _labelIds);
         }
 
@@ -192,7 +192,7 @@ namespace System.Linq.Expressions
 
                 case Flow.NewLine:
                     WriteLine();
-                    Write(new String(' ', Depth));
+                    Write(new string(' ', Depth));
                     break;
             }
             Write(s);
@@ -519,7 +519,7 @@ namespace System.Linq.Expressions
                 // prepend # to the operator to represent checked op
                 if (isChecked)
                 {
-                    op = String.Format(
+                    op = string.Format(
                             CultureInfo.CurrentCulture,
                             "#{0}",
                             op
@@ -544,7 +544,7 @@ namespace System.Linq.Expressions
         {
             // Have '$' for the DebugView of ParameterExpressions
             Out("$");
-            if (String.IsNullOrEmpty(node.Name))
+            if (string.IsNullOrEmpty(node.Name))
             {
                 // If no name if provided, generate a name as $var1, $var2.
                 // No guarantee for not having name conflicts with user provided variable names.
@@ -562,7 +562,7 @@ namespace System.Linq.Expressions
         protected internal override Expression VisitLambda(LambdaExpression node)
         {
             Out(
-                String.Format(CultureInfo.CurrentCulture,
+                string.Format(CultureInfo.CurrentCulture,
                     "{0} {1}<{2}>",
                     ".Lambda",
                     GetLambdaName(node),
@@ -632,14 +632,14 @@ namespace System.Linq.Expressions
             }
             else if ((value is string) && node.Type == typeof(string))
             {
-                Out(String.Format(
+                Out(string.Format(
                     CultureInfo.CurrentCulture,
                     "\"{0}\"",
                     value));
             }
             else if ((value is char) && node.Type == typeof(char))
             {
-                Out(String.Format(
+                Out(string.Format(
                     CultureInfo.CurrentCulture,
                     "'{0}'",
                     value));
@@ -659,7 +659,7 @@ namespace System.Linq.Expressions
                 }
                 else
                 {
-                    Out(String.Format(
+                    Out(string.Format(
                         CultureInfo.CurrentCulture,
                         ".Constant<{0}>({1})",
                         node.Type.ToString(),
@@ -671,27 +671,27 @@ namespace System.Linq.Expressions
 
         private static string GetConstantValueSuffix(Type type)
         {
-            if (type == typeof(UInt32))
+            if (type == typeof(uint))
             {
                 return "U";
             }
-            if (type == typeof(Int64))
+            if (type == typeof(long))
             {
                 return "L";
             }
-            if (type == typeof(UInt64))
+            if (type == typeof(ulong))
             {
                 return "UL";
             }
-            if (type == typeof(Double))
+            if (type == typeof(double))
             {
                 return "D";
             }
-            if (type == typeof(Single))
+            if (type == typeof(float))
             {
                 return "F";
             }
-            if (type == typeof(Decimal))
+            if (type == typeof(decimal))
             {
                 return "M";
             }
@@ -1175,7 +1175,7 @@ namespace System.Linq.Expressions
             // last expression's type in the block.
             if (node.Type != node.GetExpression(node.ExpressionCount - 1).Type)
             {
-                Out(String.Format(CultureInfo.CurrentCulture, "<{0}>", node.Type.ToString()));
+                Out(string.Format(CultureInfo.CurrentCulture, "<{0}>", node.Type.ToString()));
             }
 
             VisitDeclarations(node.Variables);
@@ -1334,7 +1334,7 @@ namespace System.Linq.Expressions
 
         protected internal override Expression VisitExtension(Expression node)
         {
-            Out(String.Format(CultureInfo.CurrentCulture, ".Extension<{0}>", node.GetType().ToString()));
+            Out(string.Format(CultureInfo.CurrentCulture, ".Extension<{0}>", node.GetType().ToString()));
 
             if (node.CanReduce)
             {
@@ -1350,7 +1350,7 @@ namespace System.Linq.Expressions
 
         protected internal override Expression VisitDebugInfo(DebugInfoExpression node)
         {
-            Out(String.Format(
+            Out(string.Format(
                 CultureInfo.CurrentCulture,
                 ".DebugInfo({0}: {1}, {2} - {3}, {4})",
                 node.Document.FileName,
@@ -1364,7 +1364,7 @@ namespace System.Linq.Expressions
 
         private void DumpLabel(LabelTarget target)
         {
-            Out(String.Format(CultureInfo.CurrentCulture, ".LabelTarget {0}:", GetLabelTargetName(target)));
+            Out(string.Format(CultureInfo.CurrentCulture, ".LabelTarget {0}:", GetLabelTargetName(target)));
         }
 
         private string GetLabelTargetName(LabelTarget target)
@@ -1372,7 +1372,7 @@ namespace System.Linq.Expressions
             if (string.IsNullOrEmpty(target.Name))
             {
                 // Create the label target name as #Label1, #Label2, etc.
-                return String.Format(CultureInfo.CurrentCulture, "#Label{0}", GetLabelTargetId(target));
+                return string.Format(CultureInfo.CurrentCulture, "#Label{0}", GetLabelTargetId(target));
             }
             else
             {
@@ -1383,7 +1383,7 @@ namespace System.Linq.Expressions
         private void WriteLambda(LambdaExpression lambda)
         {
             Out(
-                String.Format(
+                string.Format(
                     CultureInfo.CurrentCulture,
                     ".Lambda {0}<{1}>",
                     GetLambdaName(lambda),
@@ -1402,7 +1402,7 @@ namespace System.Linq.Expressions
 
         private string GetLambdaName(LambdaExpression lambda)
         {
-            if (String.IsNullOrEmpty(lambda.Name))
+            if (string.IsNullOrEmpty(lambda.Name))
             {
                 return "#Lambda" + GetLambdaId(lambda);
             }
@@ -1413,7 +1413,7 @@ namespace System.Linq.Expressions
         {
             foreach (char c in name)
             {
-                if (Char.IsWhiteSpace(c))
+                if (char.IsWhiteSpace(c))
                 {
                     return true;
                 }
@@ -1423,7 +1423,7 @@ namespace System.Linq.Expressions
 
         private static string QuoteName(string name)
         {
-            return String.Format(CultureInfo.CurrentCulture, "'{0}'", name);
+            return string.Format(CultureInfo.CurrentCulture, "'{0}'", name);
         }
 
         private static string GetDisplayName(string name)

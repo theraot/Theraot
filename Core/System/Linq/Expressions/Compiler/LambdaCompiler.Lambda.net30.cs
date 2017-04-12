@@ -132,7 +132,7 @@ namespace System.Linq.Expressions.Compiler
             else
             {
                 // When the lambda does not have a name or the name is empty, generate a unique name for it.
-                var name = String.IsNullOrEmpty(lambda.Name) ? GetUniqueMethodName() : lambda.Name;
+                var name = string.IsNullOrEmpty(lambda.Name) ? GetUniqueMethodName() : lambda.Name;
                 var mb = _typeBuilder.DefineMethod(name, MethodAttributes.Private | MethodAttributes.Static);
                 impl = new LambdaCompiler(_tree, lambda, mb);
             }

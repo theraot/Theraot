@@ -17,7 +17,7 @@ namespace System.Linq.Expressions
             _node = node;
         }
 
-        public Boolean CanReduce
+        public bool CanReduce
         {
             get { return _node.CanReduce; }
         }
@@ -27,17 +27,17 @@ namespace System.Linq.Expressions
             get { return _node.Conversion; }
         }
 
-        public String DebugView
+        public string DebugView
         {
             get { return _node.DebugView; }
         }
 
-        public Boolean IsLifted
+        public bool IsLifted
         {
             get { return _node.IsLifted; }
         }
 
-        public Boolean IsLiftedToNull
+        public bool IsLiftedToNull
         {
             get { return _node.IsLiftedToNull; }
         }
@@ -77,12 +77,12 @@ namespace System.Linq.Expressions
             _node = node;
         }
 
-        public Boolean CanReduce
+        public bool CanReduce
         {
             get { return _node.CanReduce; }
         }
 
-        public String DebugView
+        public string DebugView
         {
             get { return _node.DebugView; }
         }
@@ -152,12 +152,12 @@ namespace System.Linq.Expressions
             _node = node;
         }
 
-        public Boolean CanReduce
+        public bool CanReduce
         {
             get { return _node.CanReduce; }
         }
 
-        public String DebugView
+        public string DebugView
         {
             get { return _node.DebugView; }
         }
@@ -197,12 +197,12 @@ namespace System.Linq.Expressions
             _node = node;
         }
 
-        public Boolean CanReduce
+        public bool CanReduce
         {
             get { return _node.CanReduce; }
         }
 
-        public String DebugView
+        public string DebugView
         {
             get { return _node.DebugView; }
         }
@@ -217,7 +217,7 @@ namespace System.Linq.Expressions
             get { return _node.Type; }
         }
 
-        public Object Value
+        public object Value
         {
             get { return _node.Value; }
         }
@@ -232,12 +232,12 @@ namespace System.Linq.Expressions
             _node = node;
         }
 
-        public Boolean CanReduce
+        public bool CanReduce
         {
             get { return _node.CanReduce; }
         }
 
-        public String DebugView
+        public string DebugView
         {
             get { return _node.DebugView; }
         }
@@ -247,17 +247,17 @@ namespace System.Linq.Expressions
             get { return _node.Document; }
         }
 
-        public Int32 EndColumn
+        public int EndColumn
         {
             get { return _node.EndColumn; }
         }
 
-        public Int32 EndLine
+        public int EndLine
         {
             get { return _node.EndLine; }
         }
 
-        public Boolean IsClear
+        public bool IsClear
         {
             get { return _node.IsClear; }
         }
@@ -267,12 +267,12 @@ namespace System.Linq.Expressions
             get { return _node.NodeType; }
         }
 
-        public Int32 StartColumn
+        public int StartColumn
         {
             get { return _node.StartColumn; }
         }
 
-        public Int32 StartLine
+        public int StartLine
         {
             get { return _node.StartLine; }
         }
@@ -292,12 +292,12 @@ namespace System.Linq.Expressions
             _node = node;
         }
 
-        public Boolean CanReduce
+        public bool CanReduce
         {
             get { return _node.CanReduce; }
         }
 
-        public String DebugView
+        public string DebugView
         {
             get { return _node.DebugView; }
         }
@@ -322,12 +322,12 @@ namespace System.Linq.Expressions
             _node = node;
         }
 
-        public Boolean CanReduce
+        public bool CanReduce
         {
             get { return _node.CanReduce; }
         }
 
-        public String DebugView
+        public string DebugView
         {
             get { return _node.DebugView; }
         }
@@ -372,12 +372,12 @@ namespace System.Linq.Expressions
             get { return _node.Arguments; }
         }
 
-        public Boolean CanReduce
+        public bool CanReduce
         {
             get { return _node.CanReduce; }
         }
 
-        public String DebugView
+        public string DebugView
         {
             get { return _node.DebugView; }
         }
@@ -417,12 +417,12 @@ namespace System.Linq.Expressions
             get { return _node.Arguments; }
         }
 
-        public Boolean CanReduce
+        public bool CanReduce
         {
             get { return _node.CanReduce; }
         }
 
-        public String DebugView
+        public string DebugView
         {
             get { return _node.DebugView; }
         }
@@ -452,12 +452,12 @@ namespace System.Linq.Expressions
             _node = node;
         }
 
-        public Boolean CanReduce
+        public bool CanReduce
         {
             get { return _node.CanReduce; }
         }
 
-        public String DebugView
+        public string DebugView
         {
             get { return _node.DebugView; }
         }
@@ -497,17 +497,17 @@ namespace System.Linq.Expressions
             get { return _node.Body; }
         }
 
-        public Boolean CanReduce
+        public bool CanReduce
         {
             get { return _node.CanReduce; }
         }
 
-        public String DebugView
+        public string DebugView
         {
             get { return _node.DebugView; }
         }
 
-        public String Name
+        public string Name
         {
             get { return _node.Name; }
         }
@@ -527,7 +527,7 @@ namespace System.Linq.Expressions
             get { return _node.ReturnType; }
         }
 
-        public Boolean TailCall
+        public bool TailCall
         {
             get { return _node.TailCall; }
         }
@@ -547,12 +547,12 @@ namespace System.Linq.Expressions
             _node = node;
         }
 
-        public Boolean CanReduce
+        public bool CanReduce
         {
             get { return _node.CanReduce; }
         }
 
-        public String DebugView
+        public string DebugView
         {
             get { return _node.DebugView; }
         }
@@ -597,7 +597,7 @@ namespace System.Linq.Expressions
             get { return _node.BreakLabel; }
         }
 
-        public Boolean CanReduce
+        public bool CanReduce
         {
             get { return _node.CanReduce; }
         }
@@ -607,7 +607,7 @@ namespace System.Linq.Expressions
             get { return _node.ContinueLabel; }
         }
 
-        public String DebugView
+        public string DebugView
         {
             get { return _node.DebugView; }
         }
@@ -632,12 +632,12 @@ namespace System.Linq.Expressions
             _node = node;
         }
 
-        public Boolean CanReduce
+        public bool CanReduce
         {
             get { return _node.CanReduce; }
         }
 
-        public String DebugView
+        public string DebugView
         {
             get { return _node.DebugView; }
         }
@@ -677,12 +677,12 @@ namespace System.Linq.Expressions
             get { return _node.Bindings; }
         }
 
-        public Boolean CanReduce
+        public bool CanReduce
         {
             get { return _node.CanReduce; }
         }
 
-        public String DebugView
+        public string DebugView
         {
             get { return _node.DebugView; }
         }
@@ -717,12 +717,12 @@ namespace System.Linq.Expressions
             get { return _node.Arguments; }
         }
 
-        public Boolean CanReduce
+        public bool CanReduce
         {
             get { return _node.CanReduce; }
         }
 
-        public String DebugView
+        public string DebugView
         {
             get { return _node.DebugView; }
         }
@@ -757,12 +757,12 @@ namespace System.Linq.Expressions
             _node = node;
         }
 
-        public Boolean CanReduce
+        public bool CanReduce
         {
             get { return _node.CanReduce; }
         }
 
-        public String DebugView
+        public string DebugView
         {
             get { return _node.DebugView; }
         }
@@ -797,7 +797,7 @@ namespace System.Linq.Expressions
             get { return _node.Arguments; }
         }
 
-        public Boolean CanReduce
+        public bool CanReduce
         {
             get { return _node.CanReduce; }
         }
@@ -807,7 +807,7 @@ namespace System.Linq.Expressions
             get { return _node.Constructor; }
         }
 
-        public String DebugView
+        public string DebugView
         {
             get { return _node.DebugView; }
         }
@@ -837,22 +837,22 @@ namespace System.Linq.Expressions
             _node = node;
         }
 
-        public Boolean CanReduce
+        public bool CanReduce
         {
             get { return _node.CanReduce; }
         }
 
-        public String DebugView
+        public string DebugView
         {
             get { return _node.DebugView; }
         }
 
-        public Boolean IsByRef
+        public bool IsByRef
         {
             get { return _node.IsByRef; }
         }
 
-        public String Name
+        public string Name
         {
             get { return _node.Name; }
         }
@@ -877,12 +877,12 @@ namespace System.Linq.Expressions
             _node = node;
         }
 
-        public Boolean CanReduce
+        public bool CanReduce
         {
             get { return _node.CanReduce; }
         }
 
-        public String DebugView
+        public string DebugView
         {
             get { return _node.DebugView; }
         }
@@ -932,7 +932,7 @@ namespace System.Linq.Expressions
             _node = node;
         }
 
-        public Boolean CanReduce
+        public bool CanReduce
         {
             get { return _node.CanReduce; }
         }
@@ -947,7 +947,7 @@ namespace System.Linq.Expressions
             get { return _node.Comparison; }
         }
 
-        public String DebugView
+        public string DebugView
         {
             get { return _node.DebugView; }
         }
@@ -987,12 +987,12 @@ namespace System.Linq.Expressions
             get { return _node.Body; }
         }
 
-        public Boolean CanReduce
+        public bool CanReduce
         {
             get { return _node.CanReduce; }
         }
 
-        public String DebugView
+        public string DebugView
         {
             get { return _node.DebugView; }
         }
@@ -1032,12 +1032,12 @@ namespace System.Linq.Expressions
             _node = node;
         }
 
-        public Boolean CanReduce
+        public bool CanReduce
         {
             get { return _node.CanReduce; }
         }
 
-        public String DebugView
+        public string DebugView
         {
             get { return _node.DebugView; }
         }
@@ -1072,22 +1072,22 @@ namespace System.Linq.Expressions
             _node = node;
         }
 
-        public Boolean CanReduce
+        public bool CanReduce
         {
             get { return _node.CanReduce; }
         }
 
-        public String DebugView
+        public string DebugView
         {
             get { return _node.DebugView; }
         }
 
-        public Boolean IsLifted
+        public bool IsLifted
         {
             get { return _node.IsLifted; }
         }
 
-        public Boolean IsLiftedToNull
+        public bool IsLiftedToNull
         {
             get { return _node.IsLiftedToNull; }
         }

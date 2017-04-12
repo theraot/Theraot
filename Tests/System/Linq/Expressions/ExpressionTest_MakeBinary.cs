@@ -68,7 +68,7 @@ namespace MonoTests.System.Linq.Expressions
                 }
             }
 
-            throw new Exception(String.Format("Method {0} not found", n));
+            throw new Exception(string.Format("Method {0} not found", n));
         }
 
         [Test]
@@ -225,7 +225,7 @@ namespace MonoTests.System.Linq.Expressions
                 p, new ParameterExpression[] { pa, pb });
 
             var compiled = pexpr.Compile();
-            Assert.AreEqual(r, compiled(a, b), String.Format("{0} ({1},{2}) == {3}", node, a, b, r));
+            Assert.AreEqual(r, compiled(a, b), string.Format("{0} ({1},{2}) == {3}", node, a, b, r));
         }
 
         [Test]
@@ -261,7 +261,7 @@ namespace MonoTests.System.Linq.Expressions
             CTest<sbyte>(t, false, 1, 1);
             CTest<int>(t, false, 1, 1);
             CTest<uint>(t, true, 1, 0);
-            CTest<ulong>(t, true, Int64.MaxValue, 0);
+            CTest<ulong>(t, true, long.MaxValue, 0);
             CTest<double>(t, false, 1.0, 1.0);
             CTest<double>(t, false, 1.0, 1.0);
 
@@ -272,7 +272,7 @@ namespace MonoTests.System.Linq.Expressions
             CTest<sbyte>(t, false, 1, 1);
             CTest<int>(t, false, 1, 1);
             CTest<uint>(t, false, 1, 0);
-            CTest<ulong>(t, false, Int64.MaxValue, 0);
+            CTest<ulong>(t, false, long.MaxValue, 0);
             CTest<double>(t, false, 1.0, 1.0);
             CTest<double>(t, false, 1.0, 1.0);
 
@@ -283,7 +283,7 @@ namespace MonoTests.System.Linq.Expressions
             CTest<sbyte>(t, true, 1, 1);
             CTest<int>(t, true, 1, 1);
             CTest<uint>(t, true, 1, 0);
-            CTest<ulong>(t, true, Int64.MaxValue, 0);
+            CTest<ulong>(t, true, long.MaxValue, 0);
             CTest<double>(t, true, 1.0, 1.0);
             CTest<double>(t, true, 1.0, 1.0);
 
@@ -294,7 +294,7 @@ namespace MonoTests.System.Linq.Expressions
             CTest<sbyte>(t, true, 1, 1);
             CTest<int>(t, true, 1, 1);
             CTest<uint>(t, false, 1, 0);
-            CTest<ulong>(t, false, Int64.MaxValue, 0);
+            CTest<ulong>(t, false, long.MaxValue, 0);
             CTest<double>(t, true, 1.0, 1.0);
             CTest<double>(t, true, 1.0, 1.0);
         }

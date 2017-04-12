@@ -166,43 +166,43 @@ namespace System.Linq.Expressions.Interpreter
                     return False;
 
                 case TypeCode.SByte:
-                    return default(SByte);
+                    return default(sbyte);
 
                 case TypeCode.Byte:
-                    return default(Byte);
+                    return default(byte);
 
                 case TypeCode.Char:
-                    return default(Char);
+                    return default(char);
 
                 case TypeCode.Int16:
-                    return default(Int16);
+                    return default(short);
 
                 case TypeCode.Int32:
                     return Int32ToObject(0);
 
                 case TypeCode.Int64:
-                    return default(Int64);
+                    return default(long);
 
                 case TypeCode.UInt16:
-                    return default(UInt16);
+                    return default(ushort);
 
                 case TypeCode.UInt32:
-                    return default(UInt32);
+                    return default(uint);
 
                 case TypeCode.UInt64:
-                    return default(UInt64);
+                    return default(ulong);
 
                 case TypeCode.Single:
-                    return default(Single);
+                    return default(float);
 
                 case TypeCode.Double:
-                    return default(Double);
+                    return default(double);
                 //            case TypeCode.DBNull: return default(DBNull);
                 case TypeCode.DateTime:
                     return default(DateTime);
 
                 case TypeCode.Decimal:
-                    return default(Decimal);
+                    return default(decimal);
 
                 default:
                     return null;
@@ -536,7 +536,7 @@ namespace System.Linq.Expressions.Interpreter
         [Conditional("DEBUG")]
         public static void NotEmpty(string str)
         {
-            Debug.Assert(!String.IsNullOrEmpty(str));
+            Debug.Assert(!string.IsNullOrEmpty(str));
         }
     }
 

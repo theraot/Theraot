@@ -24,14 +24,14 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToString()
         {
-            return String.Format(CultureInfo.InvariantCulture, "->{0} C({1}) S({2})", Index, ContinuationStackDepth, StackDepth);
+            return string.Format(CultureInfo.InvariantCulture, "->{0} C({1}) S({2})", Index, ContinuationStackDepth, StackDepth);
         }
     }
 
     internal sealed class BranchLabel
     {
-        internal const int UnknownIndex = Int32.MinValue;
-        internal const int UnknownDepth = Int32.MinValue;
+        internal const int UnknownIndex = int.MinValue;
+        internal const int UnknownDepth = int.MinValue;
 
         internal int LabelIndex = UnknownIndex;
         internal int TargetIndex = UnknownIndex;

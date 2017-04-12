@@ -36,9 +36,9 @@ namespace System.Threading.Tasks
         /// Indicates the maximum concurrency level this
         /// <see cref="TaskScheduler"/>  is able to support.
         /// </summary>
-        public virtual Int32 MaximumConcurrencyLevel
+        public virtual int MaximumConcurrencyLevel
         {
-            get { return Int32.MaxValue; }
+            get { return int.MaxValue; }
         }
 
         ////////////////////////////////////////////////////////////
@@ -182,7 +182,7 @@ namespace System.Threading.Tasks
             }
 
             // returns the scheduler's Id
-            public Int32 Id
+            public int Id
             {
                 get { return _taskScheduler.Id; }
             }

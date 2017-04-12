@@ -151,7 +151,7 @@ namespace Theraot.Threading
 
         private bool TakeDisposalExecution()
         {
-            return _status == -1 ? false : ThreadingHelper.SpinWaitSetUnless(ref _status, -1, 0, -1);
+            return _status != -1 && ThreadingHelper.SpinWaitSetUnless(ref _status, -1, 0, -1);
         }
     }
 }

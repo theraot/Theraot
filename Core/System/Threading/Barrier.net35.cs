@@ -523,7 +523,7 @@ namespace System.Threading
         /// </exception>
         /// <exception cref="T:System.ObjectDisposedException">The current instance has already been
         /// disposed.</exception>
-        public Boolean SignalAndWait(TimeSpan timeout)
+        public bool SignalAndWait(TimeSpan timeout)
         {
             return SignalAndWait(timeout, new CancellationToken());
         }
@@ -549,9 +549,9 @@ namespace System.Threading
         /// canceled.</exception>
         /// <exception cref="T:System.ObjectDisposedException">The current instance has already been
         /// disposed.</exception>
-        public Boolean SignalAndWait(TimeSpan timeout, CancellationToken cancellationToken)
+        public bool SignalAndWait(TimeSpan timeout, CancellationToken cancellationToken)
         {
-            var totalMilliseconds = (Int64)timeout.TotalMilliseconds;
+            var totalMilliseconds = (long)timeout.TotalMilliseconds;
             if (totalMilliseconds < -1 || totalMilliseconds > int.MaxValue)
             {
                 throw new ArgumentOutOfRangeException("timeout", timeout,

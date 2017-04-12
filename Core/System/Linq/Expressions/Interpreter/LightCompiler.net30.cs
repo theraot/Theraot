@@ -82,7 +82,7 @@ namespace System.Linq.Expressions.Interpreter
 
         public override string ToString()
         {
-            return String.Format(CultureInfo.InvariantCulture, "{0} [{1}-{2}] [{3}->{4}]",
+            return string.Format(CultureInfo.InvariantCulture, "{0} [{1}-{2}] [{3}->{4}]",
                 (IsFault ? "fault" : "catch(" + ExceptionType.Name + ")"),
                 StartIndex, EndIndex,
                 HandlerStartIndex, HandlerEndIndex
@@ -229,11 +229,11 @@ namespace System.Linq.Expressions.Interpreter
         {
             if (IsClear)
             {
-                return String.Format(CultureInfo.InvariantCulture, "{0}: clear", Index);
+                return string.Format(CultureInfo.InvariantCulture, "{0}: clear", Index);
             }
             else
             {
-                return String.Format(CultureInfo.InvariantCulture, "{0}: [{1}-{2}] '{3}'", Index, StartLine, EndLine, FileName);
+                return string.Format(CultureInfo.InvariantCulture, "{0}: [{1}-{2}] '{3}'", Index, StartLine, EndLine, FileName);
             }
         }
     }
@@ -1484,7 +1484,7 @@ namespace System.Linq.Expressions.Interpreter
                     switch (switchType)
                     {
                         case TypeCode.Int32:
-                            CompileIntSwitchExpression<Int32>(node);
+                            CompileIntSwitchExpression<int>(node);
                             return;
 
                         // the following cases are uncomon,
@@ -1501,7 +1501,7 @@ namespace System.Linq.Expressions.Interpreter
                         case TypeCode.UInt32:
                         case TypeCode.UInt64:
                         case TypeCode.Int64:
-                            CompileIntSwitchExpression<Object>(node);
+                            CompileIntSwitchExpression<object>(node);
                             return;
                     }
                 }
@@ -2280,7 +2280,7 @@ namespace System.Linq.Expressions.Interpreter
                         }
                         return null;
                     }
-                    throw new InvalidOperationException(String.Format("Address of {0}", node.NodeType));
+                    throw new InvalidOperationException(string.Format("Address of {0}", node.NodeType));
                 case ExpressionType.Call:
                     // An array index of a multi-dimensional array is represented by a call to Array.Get,
                     // rather than having its own array-access node. This means that when we are trying to
@@ -3188,7 +3188,7 @@ namespace System.Linq.Expressions.Interpreter
                     throw new PlatformNotSupportedException(SR.Format(SR.UnsupportedExpressionType, expr.NodeType));
             }
             Debug.Assert(_instructions.CurrentStackDepth == startingStackDepth + (expr.Type == typeof(void) ? 0 : 1),
-                String.Format("{0} vs {1} for {2}", _instructions.CurrentStackDepth, startingStackDepth + (expr.Type == typeof(void) ? 0 : 1), expr.NodeType));
+                string.Format("{0} vs {1} for {2}", _instructions.CurrentStackDepth, startingStackDepth + (expr.Type == typeof(void) ? 0 : 1), expr.NodeType));
         }
 
         public void Compile(Expression expr)
