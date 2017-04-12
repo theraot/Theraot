@@ -16,6 +16,9 @@ namespace System.Runtime.CompilerServices
         [TargetedPatchingOptOut("Performance critical to inline this type of method across NGen image boundaries")]
         public CallerFilePathAttribute()
         {
+            // Empty
+            // This constructor is not redundant
+            // You cannot put attributes on the default constructor
         }
     }
 }

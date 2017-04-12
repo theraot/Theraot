@@ -18,6 +18,9 @@ namespace Theraot.Core
         public NewOperationCanceledException()
         {
             // Empty
+            // This constructor is not redundant
+            // If removed, the compiler will not generate the default one...
+            // because there are other constructors in the class
         }
     }
 
