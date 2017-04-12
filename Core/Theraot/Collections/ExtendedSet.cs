@@ -189,10 +189,13 @@ namespace Theraot.Collections
 
         public bool Remove(T item, IEqualityComparer<T> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            foreach (var _item in _wrapped.RemoveWhereEnumerable(input => _comparer.Equals(input, item)))
+            if (comparer == null)
             {
-                GC.KeepAlive(_item);
+                comparer = EqualityComparer<T>.Default;
+            }
+            foreach (var foundItem in _wrapped.RemoveWhereEnumerable(input => comparer.Equals(input, item)))
+            {
+                GC.KeepAlive(foundItem);
                 return true;
             }
             return false;
