@@ -63,6 +63,7 @@ namespace Theraot.Collections
 
         private static IEnumerable<IGrouping<TKey, TSource>> CreateGroupByIterator<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer)
         {
+            // NOTICE this method has no null check
             var groups = new Dictionary<TKey, List<TSource>>(comparer);
             var nullList = new List<TSource>();
             var counter = 0;
@@ -115,6 +116,7 @@ namespace Theraot.Collections
 
         private static IEnumerable<IGrouping<TKey, TElement>> CreateGroupByIterator<TSource, TKey, TElement>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, IEqualityComparer<TKey> comparer)
         {
+            // NOTICE this method has no null check
             var groups = new Dictionary<TKey, List<TElement>>(comparer);
             var nullList = new List<TElement>();
             var counter = 0;
@@ -168,6 +170,7 @@ namespace Theraot.Collections
 
         private static IEnumerable<TResult> CreateGroupByIterator<TSource, TKey, TElement, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TElement> elementSelector, Func<TKey, IEnumerable<TElement>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
         {
+            // NOTICE this method has no null check
             var groups = GroupProgressiveBy(source, keySelector, elementSelector, comparer);
 
             foreach (IGrouping<TKey, TElement> group in groups)
@@ -178,6 +181,7 @@ namespace Theraot.Collections
 
         private static IEnumerable<TResult> CreateGroupByIterator<TSource, TKey, TResult>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TKey, IEnumerable<TSource>, TResult> resultSelector, IEqualityComparer<TKey> comparer)
         {
+            // NOTICE this method has no null check
             var groups = GroupProgressiveBy(source, keySelector, comparer);
 
             foreach (IGrouping<TKey, TSource> group in groups)

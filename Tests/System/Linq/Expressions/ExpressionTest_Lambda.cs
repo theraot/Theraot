@@ -199,6 +199,10 @@ namespace MonoTests.System.Linq.Expressions
 
         public static int CallDelegate(Func<int, int> e)
         {
+            if (e == null)
+            {
+                return 0;
+            }
             return e(42);
         }
 
@@ -234,6 +238,10 @@ namespace MonoTests.System.Linq.Expressions
 
         public static int CallFunc(Func<int, int> e, int i)
         {
+            if (e == null)
+            {
+                return 0;
+            }
             return e(i);
         }
 

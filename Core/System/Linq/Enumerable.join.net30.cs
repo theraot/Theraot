@@ -25,6 +25,7 @@ namespace System.Linq
 
         private static IEnumerable<TResult> CreateJoinIterator<TOuter, TInner, TKey, TResult>(this IEnumerable<TOuter> outer, IEnumerable<TInner> inner, Func<TOuter, TKey> outerKeySelector, Func<TInner, TKey> innerKeySelector, Func<TOuter, TInner, TResult> resultSelector, IEqualityComparer<TKey> comparer)
         {
+            // NOTICE this method has no null check
             var innerKeys = ToLookup(inner, innerKeySelector, comparer);
 
             foreach (TOuter element in outer)

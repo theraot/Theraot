@@ -197,6 +197,10 @@ namespace MonoTests.System.Linq.Expressions
 
         public T CodeGen<T>(Func<Expression, Expression, Expression> bin, T v1, T v2)
         {
+            if (bin == null)
+            {
+                throw new ArgumentNullException("bin");
+            }
             var lambda = Expression.Lambda<Func<T>>(bin(v1.ToConstant(), v2.ToConstant())).Compile();
             return lambda();
         }

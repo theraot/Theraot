@@ -48,6 +48,7 @@ namespace System.Linq
 
         public IEnumerable<TResult> ApplyResultSelector<TResult>(Func<TKey, IEnumerable<TElement>, TResult> resultSelector)
         {
+            // MICROSFT doens't do a null check for resultSelector
             foreach (var group in _groupings.Values)
             {
                 yield return resultSelector(group.Key, group);
