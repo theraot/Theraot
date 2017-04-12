@@ -124,7 +124,6 @@ namespace MonoTests.System.Linq.Expressions
 
         public class Foo
         {
-            private string[] _foo;
             public string Str;
 
             public int Baz;
@@ -135,12 +134,7 @@ namespace MonoTests.System.Linq.Expressions
                 get { return _list; }
             }
 
-            public string[] Bar
-            {
-                get { return _foo; }
-
-                set { _foo = value; }
-            }
+            public string[] Bar { get; set; }
 
             public int BarBar
             {
