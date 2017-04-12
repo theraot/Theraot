@@ -133,11 +133,11 @@ namespace MonoTests.System.Linq.Expressions
 
         public class Gazonk
         {
-            private readonly string value;
+            private readonly string _value;
 
             public Gazonk(string s)
             {
-                value = s;
+                _value = s;
             }
 
             public override bool Equals(object obj)
@@ -148,12 +148,12 @@ namespace MonoTests.System.Linq.Expressions
                     return false;
                 }
 
-                return value == o.value;
+                return _value == o._value;
             }
 
             public override int GetHashCode()
             {
-                return value.GetHashCode();
+                return _value.GetHashCode();
             }
         }
 
@@ -265,13 +265,13 @@ namespace MonoTests.System.Linq.Expressions
 
         public struct EineStrukt
         {
-            public int left;
-            public int right;
+            public int Left;
+            public int Right;
 
             public EineStrukt(int left, int right)
             {
-                this.left = left;
-                this.right = right;
+                this.Left = left;
+                this.Right = right;
             }
         }
 
@@ -282,8 +282,8 @@ namespace MonoTests.System.Linq.Expressions
                 Expression.New(typeof(EineStrukt))).Compile();
 
             var s = create();
-            Assert.AreEqual(0, s.left);
-            Assert.AreEqual(0, s.right);
+            Assert.AreEqual(0, s.Left);
+            Assert.AreEqual(0, s.Right);
         }
 
         [Test]
@@ -297,8 +297,8 @@ namespace MonoTests.System.Linq.Expressions
 
             var s = create(42, 12);
 
-            Assert.AreEqual(42, s.left);
-            Assert.AreEqual(12, s.right);
+            Assert.AreEqual(42, s.Left);
+            Assert.AreEqual(12, s.Right);
         }
 
         public class EineKlass

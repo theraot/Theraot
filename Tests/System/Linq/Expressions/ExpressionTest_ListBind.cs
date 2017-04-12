@@ -66,7 +66,7 @@ namespace MonoTests.System.Linq.Expressions
         [ExpectedException(typeof(ArgumentException))]
         public void MemberTypeImplementIEnumerable()
         {
-            Expression.ListBind(typeof(Foo).GetMember("baz")[0], new List<ElementInit>());
+            Expression.ListBind(typeof(Foo).GetMember("Baz")[0], new List<ElementInit>());
         }
 
         [Test]
@@ -80,7 +80,7 @@ namespace MonoTests.System.Linq.Expressions
         [ExpectedException(typeof(ArgumentException))]
         public void MethodMustBeAnAccessor()
         {
-            Expression.ListBind(typeof(Foo).GetMethod("test"), new List<ElementInit>());
+            Expression.ListBind(typeof(Foo).GetMethod("Test"), new List<ElementInit>());
         }
 
         [Test]
@@ -124,22 +124,22 @@ namespace MonoTests.System.Linq.Expressions
 
         public class Foo
         {
-            public string[] foo;
-            public string str;
+            private string[] _foo;
+            public string Str;
 
-            public int baz;
-            private readonly List<string> list = new List<string>();
+            public int Baz;
+            private readonly List<string> _list = new List<string>();
 
             public List<string> List
             {
-                get { return list; }
+                get { return _list; }
             }
 
             public string[] Bar
             {
-                get { return foo; }
+                get { return _foo; }
 
-                set { foo = value; }
+                set { _foo = value; }
             }
 
             public int BarBar
@@ -147,7 +147,7 @@ namespace MonoTests.System.Linq.Expressions
                 get { return 0; }
             }
 
-            public string[] test()
+            public string[] Test()
             {
                 return null;
             }

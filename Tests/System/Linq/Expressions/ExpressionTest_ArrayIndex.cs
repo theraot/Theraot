@@ -194,11 +194,11 @@ namespace MonoTests.System.Linq.Expressions
 
         private struct Bar
         {
-            public int bar;
+            private int _bar;
 
             public Bar(int b)
             {
-                bar = b;
+                _bar = b;
             }
         }
 

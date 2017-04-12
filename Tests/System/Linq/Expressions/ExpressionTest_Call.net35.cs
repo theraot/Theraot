@@ -295,11 +295,11 @@ namespace MonoTests.System.Linq.Expressions
             Assert.AreEqual("foo42", lamda(42, "foo"));
         }
 
-        private static bool fout_called;
+        private static bool _foutCalled;
 
         public static int FooOut(out int x)
         {
-            fout_called = true;
+            _foutCalled = true;
             return x = 0;
         }
 
@@ -321,7 +321,7 @@ namespace MonoTests.System.Linq.Expressions
                 p).Compile();
 
             Assert.AreEqual(0, lambda(0));
-            Assert.IsTrue(fout_called);
+            Assert.IsTrue(_foutCalled);
         }
 
         public static int FooOut2(out int x)

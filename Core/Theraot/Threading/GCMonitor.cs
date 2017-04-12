@@ -9,12 +9,12 @@ namespace Theraot.Threading
     [System.Diagnostics.DebuggerNonUserCode]
     public static partial class GCMonitor
     {
-        private const int INT_MaxProbingHint = 128;
-        private const int INT_StatusFinished = 1;
-        private const int INT_StatusNotReady = -2;
-        private const int INT_StatusPending = -1;
-        private const int INT_StatusReady = 0;
-        private static int _status = INT_StatusNotReady;
+        private const int _maxProbingHint = 128;
+        private const int _statusFinished = 1;
+        private const int _statusNotReady = -2;
+        private const int _statusPending = -1;
+        private const int _statusReady = 0;
+        private static int _status = _statusNotReady;
 
         static GCMonitor()
         {
@@ -43,7 +43,7 @@ namespace Theraot.Threading
             }
             remove
             {
-                if (Thread.VolatileRead(ref _status) == INT_StatusReady)
+                if (Thread.VolatileRead(ref _status) == _statusReady)
                 {
                     try
                     {
@@ -72,23 +72,23 @@ namespace Theraot.Threading
 
         private static void Initialize()
         {
-            var check = Interlocked.CompareExchange(ref _status, INT_StatusPending, INT_StatusNotReady);
+            var check = Interlocked.CompareExchange(ref _status, _statusPending, _statusNotReady);
             switch (check)
             {
-                case INT_StatusNotReady:
+                case _statusNotReady:
                     GC.KeepAlive(new GCProbe());
-                    Thread.VolatileWrite(ref _status, INT_StatusReady);
+                    Thread.VolatileWrite(ref _status, _statusReady);
                     break;
 
-                case INT_StatusPending:
-                    ThreadingHelper.SpinWaitUntil(ref _status, INT_StatusReady);
+                case _statusPending:
+                    ThreadingHelper.SpinWaitUntil(ref _status, _statusReady);
                     break;
             }
         }
 
         private static void ReportApplicationDomainExit(object sender, EventArgs e)
         {
-            Thread.VolatileWrite(ref _status, INT_StatusFinished);
+            Thread.VolatileWrite(ref _status, _statusFinished);
         }
 
         [System.Diagnostics.DebuggerNonUserCode]
@@ -105,7 +105,7 @@ namespace Theraot.Threading
                     try
                     {
                         var check = Thread.VolatileRead(ref _status);
-                        if (check == INT_StatusReady)
+                        if (check == _statusReady)
                         {
                             GC.ReRegisterForFinalize(this);
                             Internal.Invoke();

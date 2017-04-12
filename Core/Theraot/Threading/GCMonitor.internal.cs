@@ -16,7 +16,7 @@ namespace Theraot.Threading
             static Internal()
             {
                 _work = _ => RaiseCollected();
-                _collectedEventHandlers = new WeakDelegateCollection(false, false, INT_MaxProbingHint);
+                _collectedEventHandlers = new WeakDelegateCollection(false, false, _maxProbingHint);
             }
 
             public static WeakDelegateCollection CollectedEventHandlers
@@ -32,7 +32,7 @@ namespace Theraot.Threading
             private static void RaiseCollected()
             {
                 var check = Thread.VolatileRead(ref _status);
-                if (check == INT_StatusReady)
+                if (check == _statusReady)
                 {
                     try
                     {
@@ -44,7 +44,7 @@ namespace Theraot.Threading
                         // Catch'em all
                         GC.KeepAlive(exception);
                     }
-                    Thread.VolatileWrite(ref _status, INT_StatusReady);
+                    Thread.VolatileWrite(ref _status, _statusReady);
                 }
             }
         }

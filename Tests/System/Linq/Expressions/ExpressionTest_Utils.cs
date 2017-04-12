@@ -334,44 +334,44 @@ namespace MonoTests.System.Linq.Expressions
 
     internal class Item<T>
     {
-        private bool left_called;
-        private readonly T left;
+        private bool _leftCalled;
+        private readonly T _left;
 
         public T Left
         {
             get
             {
-                left_called = true;
-                return left;
+                _leftCalled = true;
+                return _left;
             }
         }
 
         public bool LeftCalled
         {
-            get { return left_called; }
+            get { return _leftCalled; }
         }
 
-        private bool right_called;
-        private readonly T right;
+        private bool _rightCalled;
+        private readonly T _right;
 
         public T Right
         {
             get
             {
-                right_called = true;
-                return right;
+                _rightCalled = true;
+                return _right;
             }
         }
 
         public bool RightCalled
         {
-            get { return right_called; }
+            get { return _rightCalled; }
         }
 
         public Item(T left, T right)
         {
-            this.left = left;
-            this.right = right;
+            this._left = left;
+            this._right = right;
         }
     }
 }
