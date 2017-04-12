@@ -31,6 +31,8 @@ namespace MonoTests.System.Linq.Expressions
     {
         public static int GoodMethod(string a, double d)
         {
+            GC.KeepAlive(a);
+            GC.KeepAlive(d);
             return 1;
         }
 
@@ -41,11 +43,15 @@ namespace MonoTests.System.Linq.Expressions
 
         public static int BadMethodSig_2(int a)
         {
+            GC.KeepAlive(a);
             return 1;
         }
 
         public static int BadMethodSig_3(int a, int b, int c)
         {
+            GC.KeepAlive(a);
+            GC.KeepAlive(b);
+            GC.KeepAlive(c);
             return 1;
         }
 
