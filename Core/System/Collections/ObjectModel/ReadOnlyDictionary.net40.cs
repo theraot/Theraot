@@ -18,7 +18,7 @@ namespace System.Collections.ObjectModel
         {
             if (dictionary == null)
             {
-                throw new ArgumentNullException("dictioanry");
+                throw new ArgumentNullException("dictionary");
             }
             _wrapped = dictionary;
             _keys = new KeyCollection(new DelegatedCollection<TKey>(() => _wrapped.Keys));
