@@ -310,10 +310,7 @@ namespace System.Threading.Tasks
                     {
                         exceptionSeen = true;
                     }
-                    else if (task.IsCanceled)
-                    {
-                        cancellationSeen = true;
-                    }
+                    else cancellationSeen |= task.IsCanceled;
                     if (task.IsWaitNotificationEnabled)
                     {
                         AddToList(task, ref notificationTasks, /*initSize:*/ 1);
@@ -336,10 +333,7 @@ namespace System.Threading.Tasks
                         {
                             exceptionSeen = true;
                         }
-                        else if (task.IsCanceled)
-                        {
-                            cancellationSeen = true;
-                        }
+                        else cancellationSeen |= task.IsCanceled;
                         if (task.IsWaitNotificationEnabled)
                         {
                             AddToList(task, ref notificationTasks, /*initSize:*/ 1);

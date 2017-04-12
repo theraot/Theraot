@@ -135,10 +135,7 @@ namespace System.Threading
         {
             if (_disableThreadTracking)
             {
-                if (ThreadingHelper.SpinWaitSet(ref _isHeld, 1, 0, millisecondsTimeout))
-                {
-                    lockTaken = true;
-                }
+                lockTaken |= ThreadingHelper.SpinWaitSet(ref _isHeld, 1, 0, millisecondsTimeout);
             }
             else
             {
@@ -149,10 +146,7 @@ namespace System.Threading
                 }
                 else
                 {
-                    if (ThreadingHelper.SpinWaitSet(ref _isHeld, 1, 0, millisecondsTimeout) && ReferenceEquals(Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null), null))
-                    {
-                        lockTaken = true;
-                    }
+                    lockTaken |= (ThreadingHelper.SpinWaitSet(ref _isHeld, 1, 0, millisecondsTimeout) && ReferenceEquals(Interlocked.CompareExchange(ref _ownerThread, Thread.CurrentThread, null), null));
                 }
             }
         }

@@ -186,10 +186,7 @@ namespace System.Threading.Tasks
             {
                 CancellationToken = tokenToRecord;
             }
-            if (InternalCancel(false))
-            {
-                returnValue = true;
-            }
+            returnValue |= InternalCancel(false);
             return returnValue;
         }
 
