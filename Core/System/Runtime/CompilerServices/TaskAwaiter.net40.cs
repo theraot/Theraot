@@ -194,7 +194,7 @@ namespace System.Runtime.CompilerServices
                     }
                     catch (Exception ex)
                     {
-                        AsyncMethodBuilderCore.ThrowAsync(ex, null);
+                        AsyncMethodBuilderCore.ThrowOnContext(ex, null);
                     }
                 }, CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
             }
@@ -242,7 +242,7 @@ namespace System.Runtime.CompilerServices
             }
             catch (Exception ex)
             {
-                AsyncMethodBuilderCore.ThrowAsync(ex, null);
+                AsyncMethodBuilderCore.ThrowOnContext(ex, null);
             }
         }
 

@@ -76,7 +76,7 @@ namespace System.Runtime.CompilerServices
         /// Throws the exception on the ThreadPool.
         /// </summary>
         /// <param name="exception">The exception to propagate.</param><param name="targetContext">The target context on which to propagate the exception.  Null to use the ThreadPool.</param>
-        internal static void ThrowAsync(Exception exception, SynchronizationContext targetContext)
+        internal static void ThrowOnContext(Exception exception, SynchronizationContext targetContext)
         {
             if (targetContext != null)
             {
