@@ -174,23 +174,23 @@ namespace System.Threading.Tasks
         /// </summary>
         internal sealed class SystemThreadingTasksTaskSchedulerDebugView
         {
-            private readonly TaskScheduler m_taskScheduler;
+            private readonly TaskScheduler _taskScheduler;
 
             public SystemThreadingTasksTaskSchedulerDebugView(TaskScheduler scheduler)
             {
-                m_taskScheduler = scheduler;
+                _taskScheduler = scheduler;
             }
 
             // returns the scheduler's Id
             public Int32 Id
             {
-                get { return m_taskScheduler.Id; }
+                get { return _taskScheduler.Id; }
             }
 
             // returns the scheduler's GetScheduledTasks
             public IEnumerable<Task> ScheduledTasks
             {
-                get { return m_taskScheduler.GetScheduledTasks(); }
+                get { return _taskScheduler.GetScheduledTasks(); }
             }
         }
     }
