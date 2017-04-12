@@ -13,10 +13,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentException(parameterName, parameterName);
             }
-            else
-            {
-                return argument;
-            }
+            return argument;
         }
 
         public static TArgument InRangeArgument<TArgument>(TArgument argument, Predicate<TArgument> isInRange, string parameterName)
@@ -25,10 +22,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentOutOfRangeException(parameterName, argument, parameterName + " is out of range.");
             }
-            else
-            {
-                return argument;
-            }
+            return argument;
         }
 
         public static T NotNullArgument<T>(T argument, string parameterName)
@@ -37,10 +31,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(parameterName, parameterName + " is null.");
             }
-            else
-            {
-                return argument;
-            }
+            return argument;
         }
 
         public static string NotNullNotEmpty(string text, string parameterName)
@@ -49,17 +40,11 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException(parameterName, parameterName + " is null.");
             }
-            else
+            if (string.IsNullOrEmpty(text))
             {
-                if (string.IsNullOrEmpty(text))
-                {
-                    throw new ArgumentOutOfRangeException(parameterName, parameterName + " is empty.");
-                }
-                else
-                {
-                    return text;
-                }
+                throw new ArgumentOutOfRangeException(parameterName, parameterName + " is empty.");
             }
+            return text;
         }
     }
 }
