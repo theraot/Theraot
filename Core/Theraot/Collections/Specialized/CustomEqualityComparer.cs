@@ -15,29 +15,58 @@ namespace Theraot.Collections.Specialized
 
         public CustomEqualityComparer(Func<T, T, bool> comparison, Func<T, int> getHashCode)
         {
-            _comparison = Check.NotNullArgument(comparison, "comparison");
-            _getHashCode = Check.NotNullArgument(getHashCode, "getHasCode");
+            if (comparison == null)
+            {
+                throw new ArgumentNullException("comparison");
+            }
+            if (getHashCode == null)
+            {
+                throw new ArgumentNullException("getHashCode");
+            }
+            _comparison = comparison;
+            _getHashCode = getHashCode;
         }
 
         public CustomEqualityComparer(IComparer<T> comparer, Func<T, int> getHashCode)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            _comparison = (x, y) => _comparer.Compare(x, y) == 0;
-            _getHashCode = Check.NotNullArgument(getHashCode, "getHasCode");
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            if (getHashCode == null)
+            {
+                throw new ArgumentNullException("getHashCode");
+            }
+            _comparison = (x, y) => comparer.Compare(x, y) == 0;
+            _getHashCode = getHashCode;
         }
 
         public CustomEqualityComparer(Func<T, T, int> comparison, Func<T, int> getHashCode)
         {
-            var __comparison = Check.NotNullArgument(comparison, "comparison");
-            _comparison = (x, y) => __comparison.Invoke(x, y) == 0;
-            _getHashCode = Check.NotNullArgument(getHashCode, "getHasCode");
+            if (comparison == null)
+            {
+                throw new ArgumentNullException("comparison");
+            }
+            if (getHashCode == null)
+            {
+                throw new ArgumentNullException("getHashCode");
+            }
+            _comparison = (x, y) => comparison.Invoke(x, y) == 0;
+            _getHashCode = getHashCode;
         }
 
         public CustomEqualityComparer(Comparison<T> comparison, Func<T, int> getHashCode)
         {
-            var __comparison = Check.NotNullArgument(comparison, "comparison");
-            _comparison = (x, y) => __comparison.Invoke(x, y) == 0;
-            _getHashCode = Check.NotNullArgument(getHashCode, "getHasCode");
+            if (comparison == null)
+            {
+                throw new ArgumentNullException("comparison");
+            }
+            if (getHashCode == null)
+            {
+                throw new ArgumentNullException("getHashCode");
+            }
+            _comparison = (x, y) => comparison.Invoke(x, y) == 0;
+            _getHashCode = getHashCode;
         }
 
         public bool Equals(T x, T y)
