@@ -457,46 +457,63 @@ namespace MonoTests.System.Linq
     {
         public static string UserQueryableExt1<T>(this IQueryable<T> e, Expression<Func<int, int>> ex)
         {
+            GC.KeepAlive(e);
+            GC.KeepAlive(ex);
             return "UserQueryableExt1";
         }
 
         public static string UserQueryableExt2<T>(this IQueryable<T> e, Expression<Func<int, int>> ex)
         {
+            GC.KeepAlive(e);
+            GC.KeepAlive(ex);
             return "UserQueryableExt2";
         }
 
         public static string UserQueryableExt3<T>(this IQueryable<T> e, Expression<Func<int, int>> ex, int dummy)
         {
+            GC.KeepAlive(e);
+            GC.KeepAlive(ex);
+            GC.KeepAlive(dummy);
             return "UserQueryableExt3";
         }
 
         public static string UserQueryableExt1<T>(this IEnumerable<T> e, Expression<Func<int, int>> ex)
         {
+            GC.KeepAlive(e);
+            GC.KeepAlive(ex);
             return "UserEnumerableExt1";
         }
 
         public static string UserQueryableExt2<T>(this IEnumerable<T> e, Func<int, int> ex)
         {
+            GC.KeepAlive(e);
+            GC.KeepAlive(ex);
             return "UserEnumerableExt2";
         }
 
         public static string NonGenericMethod(this IQueryable<int> iq)
         {
+            GC.KeepAlive(iq);
             return "QueryableNonGenericMethod";
         }
 
         public static string NonGenericMethod(this IEnumerable<int> iq)
         {
+            GC.KeepAlive(iq);
             return "EnumerableNonGenericMethod";
         }
 
         public static string InstantiatedGenericMethod<T>(this IQueryable<int> iq, T t)
         {
+            GC.KeepAlive(iq);
+            GC.KeepAlive(t);
             return "QueryableInstantiatedGenericMethod";
         }
 
         public static string InstantiatedGenericMethod(this IEnumerable<int> ie, int t)
         {
+            GC.KeepAlive(ie);
+            GC.KeepAlive(t);
             return "EnumerableInstantiatedGenericMethod";
         }
     }
