@@ -511,6 +511,7 @@ namespace MonoTests.System.Linq.Expressions
 
         public static void AcceptsIEnumerable(IEnumerable<object> o)
         {
+            GC.KeepAlive(o);
         }
 
         [Test]
