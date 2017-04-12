@@ -881,7 +881,10 @@ namespace System.Linq.Expressions
             ContractUtils.RequiresNotNull(methodName, "methodName");
 
             if (arguments == null)
+            {
                 arguments = ArrayReservoir<Expression>.EmptyArray;
+            }
+
             const System.Reflection.BindingFlags flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
             return InternalCall(null, FindMethod(type, methodName, typeArguments, arguments, flags), arguments);
         }
@@ -948,12 +951,17 @@ namespace System.Linq.Expressions
             if (method.IsStatic)
             {
                 if (instance != null)
+                {
                     throw new ArgumentException(Strings.OnlyStaticMethodsHaveNullInstance, "instance");
+                }
             }
             else
             {
                 if (instance == null)
+                {
                     throw new ArgumentNullException(Strings.OnlyStaticMethodsHaveNullInstance, "method");
+                }
+
                 RequiresCanRead(instance, "instance");
                 ValidateCallInstanceType(instance.Type, method);
             }
@@ -964,12 +972,17 @@ namespace System.Linq.Expressions
             if (method.IsStatic)
             {
                 if (instance != null)
+                {
                     throw new InvalidOperationException(Strings.OnlyStaticMethodsHaveNullInstance);
+                }
             }
             else
             {
                 if (instance == null)
+                {
                     throw new InvalidOperationException(Strings.OnlyStaticMethodsHaveNullInstance);
+                }
+
                 RequiresCanRead(instance, "instance");
                 ValidateCallInstanceType(instance.Type, method);
             }
@@ -1013,7 +1026,9 @@ namespace System.Linq.Expressions
         {
             MemberInfo[] members = type.GetMethodsIgnoreCase(flags, methodName);
             if (members == null || members.Length == 0)
+            {
                 throw Error.MethodDoesNotExistOnType(methodName, type);
+            }
 
             MethodInfo method;
 
@@ -1032,7 +1047,10 @@ namespace System.Linq.Expressions
                 }
             }
             if (count > 1)
+            {
                 throw Error.MethodWithMoreThanOneMatch(methodName, type);
+            }
+
             return method;
         }
 
@@ -1065,7 +1083,10 @@ namespace System.Linq.Expressions
         {
             var parms = m.GetParameters();
             if (parms.Length != args.Length)
+            {
                 return false;
+            }
+
             for (var i = 0; i < args.Length; i++)
             {
                 var arg = args[i];
@@ -1103,12 +1124,16 @@ namespace System.Linq.Expressions
             if (typeArgs == null || typeArgs.Length == 0)
             {
                 if (!m.IsGenericMethodDefinition)
+                {
                     return m;
+                }
             }
             else
             {
                 if (m.IsGenericMethodDefinition && m.GetGenericArguments().Length == typeArgs.Length)
+                {
                     return m.MakeGenericMethod(typeArgs);
+                }
             }
             return null;
         }

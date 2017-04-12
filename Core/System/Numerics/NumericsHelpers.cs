@@ -37,7 +37,9 @@ namespace System.Numerics
                 // Denormalized number.
                 fFinite = true;
                 if (man != 0)
+                {
                     exp = -1074;
+                }
             }
             else if (exp == 0x7FF)
             {
@@ -59,15 +61,22 @@ namespace System.Numerics
             du.Dbl = 0;
 
             if (man == 0)
+            {
                 du.Uu = 0;
+            }
             else
             {
                 // Normalize so that 0x0010 0000 0000 0000 is the highest bit set.
                 var cbitShift = CbitHighZero(man) - 11;
                 if (cbitShift < 0)
+                {
                     man >>= -cbitShift;
+                }
                 else
+                {
                     man <<= cbitShift;
+                }
+
                 exp -= cbitShift;
                 Debug.Assert((man & 0xFFF0000000000000) == 0x0010000000000000);
 
@@ -103,7 +112,9 @@ namespace System.Numerics
             }
 
             if (sign < 0)
+            {
                 du.Uu |= 0x8000000000000000;
+            }
 
             return du.Dbl;
         }
@@ -154,7 +165,9 @@ namespace System.Numerics
         public static int CbitHighZero(uint u)
         {
             if (u == 0)
+            {
                 return 32;
+            }
 
             var cbit = 0;
             if ((u & 0xFFFF0000) == 0)
@@ -178,14 +191,20 @@ namespace System.Numerics
                 u <<= 2;
             }
             if ((u & 0x80000000) == 0)
+            {
                 cbit += 1;
+            }
+
             return cbit;
         }
 
         public static int CbitHighZero(ulong uu)
         {
             if ((uu & 0xFFFFFFFF00000000) == 0)
+            {
                 return 32 + CbitHighZero((uint)uu);
+            }
+
             return CbitHighZero((uint)(uu >> 32));
         }
     }

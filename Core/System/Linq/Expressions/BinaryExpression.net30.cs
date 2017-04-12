@@ -682,7 +682,10 @@ namespace System.Linq.Expressions
             ValidateOperator(method);
             var pms = method.GetParameters();
             if (pms.Length != 2)
+            {
                 throw Error.IncorrectNumberOfMethodCallArguments(method);
+            }
+
             if (ParameterIsAssignable(pms[0], left.Type) && ParameterIsAssignable(pms[1], right.Type))
             {
                 ValidateParamswithOperandsOrThrow(pms[0].ParameterType, left.Type, binaryType, method.Name);
@@ -792,7 +795,10 @@ namespace System.Linq.Expressions
         {
             var pType = pi.ParameterType;
             if (pType.IsByRef)
+            {
                 pType = pType.GetElementType();
+            }
+
             return TypeHelper.AreReferenceAssignable(pType, argType);
         }
 
@@ -809,17 +815,27 @@ namespace System.Linq.Expressions
             Debug.Assert(method != null);
             ValidateMethodInfo(method);
             if (!method.IsStatic)
+            {
                 throw Error.UserDefinedOperatorMustBeStatic(method);
+            }
+
             if (method.ReturnType == typeof(void))
+            {
                 throw Error.UserDefinedOperatorMustNotBeVoid(method);
+            }
         }
 
         private static void ValidateMethodInfo(MethodInfo method)
         {
             if (method.IsGenericMethodDefinition)
+            {
                 throw Error.MethodIsGeneric(method);
+            }
+
             if (method.ContainsGenericParameters)
+            {
                 throw Error.MethodContainsGenericParameters(method);
+            }
         }
 
         private static bool IsNullComparison(Expression left, Expression right)
@@ -855,16 +871,23 @@ namespace System.Linq.Expressions
             ValidateOperator(method);
             var pms = method.GetParameters();
             if (pms.Length != 2)
+            {
                 throw Error.IncorrectNumberOfMethodCallArguments(method);
+            }
+
             if (!ParameterIsAssignable(pms[0], left))
             {
                 if (!(left.IsNullableType() && ParameterIsAssignable(pms[0], left.GetNonNullableType())))
+                {
                     throw Error.OperandTypesDoNotMatchParameters(nodeType, method.Name);
+                }
             }
             if (!ParameterIsAssignable(pms[1], right))
             {
                 if (!(right.IsNullableType() && ParameterIsAssignable(pms[1], right.GetNonNullableType())))
+                {
                     throw Error.OperandTypesDoNotMatchParameters(nodeType, method.Name);
+                }
             }
             if (pms[0].ParameterType != pms[1].ParameterType)
             {
@@ -893,12 +916,16 @@ namespace System.Linq.Expressions
         {
             var pmsOpTrue = opTrue.GetParameters();
             if (pmsOpTrue.Length != 1)
+            {
                 throw Error.IncorrectNumberOfMethodCallArguments(opTrue);
+            }
 
             if (!ParameterIsAssignable(pmsOpTrue[0], left))
             {
                 if (!(left.IsNullableType() && ParameterIsAssignable(pmsOpTrue[0], left.GetNonNullableType())))
+                {
                     throw Error.OperandTypesDoNotMatchParameters(nodeType, opTrue.Name);
+                }
             }
         }
 

@@ -29,7 +29,10 @@ namespace System.Runtime.CompilerServices
         internal void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
         {
             if (ReferenceEquals(stateMachine, null))
+            {
                 throw new ArgumentNullException("stateMachine");
+            }
+
             stateMachine.MoveNext();
         }
 
@@ -40,9 +43,15 @@ namespace System.Runtime.CompilerServices
         public void SetStateMachine(IAsyncStateMachine stateMachine)
         {
             if (stateMachine == null)
+            {
                 throw new ArgumentNullException("stateMachine");
+            }
+
             if (_stateMachine != null)
+            {
                 throw new InvalidOperationException("The builder was not properly initialized.");
+            }
+
             _stateMachine = stateMachine;
         }
 
@@ -146,7 +155,10 @@ namespace System.Runtime.CompilerServices
                 {
                     var callback = _invokeMoveNext;
                     if (callback == null)
+                    {
                         _invokeMoveNext = callback = InvokeMoveNext;
+                    }
+
                     ExecutionContext.Run(_context, callback, _stateMachine);
                 }
                 finally

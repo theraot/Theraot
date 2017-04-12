@@ -957,7 +957,9 @@ namespace Theraot.Core
         {
             // not using IsIn/IsOut properties as they are not available in Silverlight:
             if (pi.ParameterType.IsByRef)
+            {
                 return true;
+            }
 
             return (pi.Attributes & (ParameterAttributes.Out)) == ParameterAttributes.Out;
         }

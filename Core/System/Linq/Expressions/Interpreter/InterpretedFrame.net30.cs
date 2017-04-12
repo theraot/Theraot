@@ -16,7 +16,6 @@ namespace System.Linq.Expressions.Interpreter
         public static InterpretedFrame CurrentFrame;
 
         internal readonly Interpreter Interpreter;
-        private InterpretedFrame _parent;
 
         private readonly int[] _continuations;
 
@@ -128,11 +127,7 @@ namespace System.Linq.Expressions.Interpreter
 
         #region Stack Trace
 
-        public InterpretedFrame Parent
-        {
-            get { return _parent; }
-            internal set { _parent = value; }
-        }
+        public InterpretedFrame Parent { get; set; }
 
         public static bool IsInterpretedFrame(MethodBase method)
         {
@@ -186,7 +181,7 @@ namespace System.Linq.Expressions.Interpreter
         {
             var currentFrame = CurrentFrame;
             CurrentFrame = this;
-            return _parent = currentFrame;
+            return Parent = currentFrame;
         }
 
         internal void Leave(InterpretedFrame prevFrame)

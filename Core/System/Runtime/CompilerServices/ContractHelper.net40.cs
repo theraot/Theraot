@@ -103,7 +103,10 @@ namespace System.Runtime.CompilerServices
             string conditionText, Exception innerException, ref string resultFailureMessage)
         {
             if (failureKind < ContractFailureKind.Precondition || failureKind > ContractFailureKind.Assume)
+            {
                 throw new ArgumentException(string.Format("Invalid enum value: {0}", failureKind), "failureKind");
+            }
+
             Contract.EndContractBlock();
 
             string returnValue;

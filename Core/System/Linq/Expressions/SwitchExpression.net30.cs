@@ -200,7 +200,9 @@ namespace System.Linq.Expressions
         {
             RequiresCanRead(switchValue, "switchValue");
             if (switchValue.Type == typeof(void))
+            {
                 throw Error.ArgumentCannotBeOfTypeVoid();
+            }
 
             var caseList = cases.ToReadOnly();
             ContractUtils.RequiresNotEmpty(caseList, "cases");
@@ -286,7 +288,9 @@ namespace System.Linq.Expressions
             if (defaultBody == null)
             {
                 if (resultType != typeof(void))
+                {
                     throw Error.DefaultBodyMustBeSupplied();
+                }
             }
             else
             {

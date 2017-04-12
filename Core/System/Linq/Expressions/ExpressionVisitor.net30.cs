@@ -494,7 +494,10 @@ namespace System.Linq.Expressions
         public virtual Expression Visit(Expression node)
         {
             if (node == null)
+            {
                 return null;
+            }
+
             return node.Accept(this);
         }
 

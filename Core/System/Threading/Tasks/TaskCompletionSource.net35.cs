@@ -118,7 +118,9 @@ namespace System.Threading.Tasks
             // Spin wait until the completion is finalized by another thread.
             var sw = new SpinWait();
             while (!_task.Value.IsCompleted)
+            {
                 sw.SpinOnce();
+            }
         }
 
         /// <summary>
@@ -146,7 +148,10 @@ namespace System.Threading.Tasks
             }
             var rval = _task.Value.TrySetException(exception);
             if (!rval && !_task.Value.IsCompleted)
+            {
                 SpinUntilCompleted();
+            }
+
             return rval;
         }
 
@@ -172,12 +177,18 @@ namespace System.Threading.Tasks
         public bool TrySetException(IEnumerable<Exception> exceptions)
         {
             if (exceptions == null)
+            {
                 throw new ArgumentNullException("exceptions");
+            }
+
             var defensiveCopy = new List<Exception>();
             foreach (var e in exceptions)
             {
                 if (e == null)
+                {
                     throw new ArgumentException("The exceptions collection included at least one null element.", "exceptions");
+                }
+
                 defensiveCopy.Add(e);
             }
             if (defensiveCopy.Count == 0)
@@ -186,7 +197,10 @@ namespace System.Threading.Tasks
             }
             var rval = _task.Value.TrySetException(defensiveCopy);
             if (!rval && !_task.Value.IsCompleted)
+            {
                 SpinUntilCompleted();
+            }
+
             return rval;
         }
 
@@ -209,7 +223,9 @@ namespace System.Threading.Tasks
         public void SetException(Exception exception)
         {
             if (exception == null)
+            {
                 throw new ArgumentNullException("exception");
+            }
 
             if (!TrySetException(exception))
             {
@@ -262,7 +278,10 @@ namespace System.Threading.Tasks
         {
             var rval = _task.Value.TrySetResult(result);
             if (!rval && !_task.Value.IsCompleted)
+            {
                 SpinUntilCompleted();
+            }
+
             return rval;
         }
 
@@ -284,7 +303,9 @@ namespace System.Threading.Tasks
         public void SetResult(TResult result)
         {
             if (!TrySetResult(result))
+            {
                 throw new InvalidOperationException("An attempt was made to transition a task to a final state when it had already completed.");
+            }
         }
 
         /// <summary>

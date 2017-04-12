@@ -164,7 +164,9 @@ namespace System.Threading
                         * sleep correctly if they try to acquire write lock
                         */
                         if (val >> _rwReadBit == 1)
+                        {
                             _readerDoneEvent.Reset();
+                        }
 
                         ctstate.LockState ^= LockState.Read;
                         ++ctstate.ReaderRecursiveCount;
@@ -177,7 +179,9 @@ namespace System.Threading
                     }
                 }
                 if (success)
+                {
                     return true;
+                }
 
                 _writerDoneEvent.Wait(ComputeTimeout(millisecondsTimeout, start));
             } while (millisecondsTimeout == -1 || (_stopwatch.ElapsedMilliseconds - start) < millisecondsTimeout);
@@ -202,13 +206,17 @@ namespace System.Threading
                 var ctstate = CurrentThreadState;
 
                 if (!ctstate.LockState.Has(LockState.Read))
+                {
                     throw new SynchronizationLockException("The current thread has not entered the lock in read mode");
+                }
 
                 if (--ctstate.ReaderRecursiveCount == 0)
                 {
                     ctstate.LockState ^= LockState.Read;
                     if (Interlocked.Add(ref _rwlock, -_rwRead) >> _rwReadBit == 0)
+                    {
                         _readerDoneEvent.Set();
+                    }
                 }
             }
         }
@@ -249,7 +257,10 @@ namespace System.Threading
                     finally
                     {
                         if (Interlocked.Add(ref _rwlock, _rwWaitUpgrade - _rwRead) >> _rwReadBit == 0)
+                        {
                             _readerDoneEvent.Set();
+                        }
+
                         registered = true;
                     }
                 }
@@ -281,7 +292,9 @@ namespace System.Threading
                             }
                         }
                         if (success)
+                        {
                             return true;
+                        }
                     }
 
                     state = _rwlock;
@@ -299,7 +312,10 @@ namespace System.Threading
                                 registered |= Interlocked.CompareExchange(ref _rwlock, state | _rwWait, state) == state;
                             }
                             if (registered)
+                            {
                                 break;
+                            }
+
                             state = _rwlock;
                         }
                     }
@@ -308,11 +324,18 @@ namespace System.Threading
                     do
                     {
                         if (_rwlock <= stateCheck)
+                        {
                             break;
+                        }
+
                         if ((_rwlock & _rwWrite) != 0)
+                        {
                             _writerDoneEvent.Wait(ComputeTimeout(millisecondsTimeout, start));
+                        }
                         else if ((_rwlock >> _rwReadBit) > 0)
+                        {
                             _readerDoneEvent.Wait(ComputeTimeout(millisecondsTimeout, start));
+                        }
                     } while (millisecondsTimeout < 0 || (_stopwatch.ElapsedMilliseconds - start) < millisecondsTimeout);
                 } while (millisecondsTimeout < 0 || (_stopwatch.ElapsedMilliseconds - start) < millisecondsTimeout);
 
@@ -321,7 +344,9 @@ namespace System.Threading
             finally
             {
                 if (registered)
+                {
                     Interlocked.Add(ref _rwlock, isUpgradable ? -_rwWaitUpgrade : -_rwWait);
+                }
             }
 
             return false;
@@ -343,7 +368,9 @@ namespace System.Threading
                 var ctstate = CurrentThreadState;
 
                 if (!ctstate.LockState.Has(LockState.Write))
+                {
                     throw new SynchronizationLockException("The current thread has not entered the lock in write mode");
+                }
 
                 if (--ctstate.WriterRecursiveCount == 0)
                 {
@@ -353,7 +380,9 @@ namespace System.Threading
                     var value = Interlocked.Add(ref _rwlock, isUpgradable ? _rwRead - _rwWrite : -_rwWrite);
                     _writerDoneEvent.Set();
                     if (isUpgradable && value >> _rwReadBit == 1)
+                    {
                         _readerDoneEvent.Reset();
+                    }
                 }
             }
         }
@@ -378,7 +407,9 @@ namespace System.Threading
             }
 
             if (ctstate.LockState.Has(LockState.Read))
+            {
                 throw new LockRecursionException("The current thread has already entered read mode");
+            }
 
             ++_numUpgradeWaiters;
             var start = millisecondsTimeout == -1 ? 0 : _stopwatch.ElapsedMilliseconds;
@@ -398,7 +429,10 @@ namespace System.Threading
                         taken = _upgradableTaken.TryRelaxedSet();
                     }
                     if (taken)
+                    {
                         break;
+                    }
+
                     if (millisecondsTimeout != -1 && (_stopwatch.ElapsedMilliseconds - start) > millisecondsTimeout)
                     {
                         --_numUpgradeWaiters;
@@ -460,7 +494,9 @@ namespace System.Threading
                 var ctstate = CurrentThreadState;
 
                 if (!ctstate.LockState.Has(LockState.Upgradable | LockState.Read))
+                {
                     throw new SynchronizationLockException("The current thread has not entered the lock in upgradable mode");
+                }
 
                 if (--ctstate.UpgradeableRecursiveCount == 0)
                 {
@@ -469,7 +505,9 @@ namespace System.Threading
 
                     ctstate.LockState &= ~LockState.Upgradable;
                     if (Interlocked.Add(ref _rwlock, -_rwRead) >> _rwReadBit == 0)
+                    {
                         _readerDoneEvent.Set();
+                    }
                 }
             }
         }
@@ -566,11 +604,15 @@ namespace System.Threading
         private ThreadLockState GetGlobalThreadState()
         {
             if (_currentThreadState == null)
+            {
                 Interlocked.CompareExchange(ref _currentThreadState, new Dictionary<int, ThreadLockState>(), null);
+            }
 
             ThreadLockState state;
             if (!_currentThreadState.TryGetValue(_id, out state))
+            {
                 _currentThreadState[_id] = state = new ThreadLockState();
+            }
 
             return state;
         }
@@ -578,27 +620,39 @@ namespace System.Threading
         private bool CheckState(ThreadLockState state, int millisecondsTimeout, LockState validState)
         {
             if (_disposed)
+            {
                 throw new ObjectDisposedException("ReaderWriterLockSlim");
+            }
 
             if (millisecondsTimeout < -1)
+            {
                 throw new ArgumentOutOfRangeException("millisecondsTimeout");
+            }
 
             // Detect and prevent recursion
             var ctstate = state.LockState;
 
             if (ctstate != LockState.None && _noRecursion && (!ctstate.Has(LockState.Upgradable) || validState == LockState.Upgradable))
+            {
                 throw new LockRecursionException("The current thread has already a lock and recursion isn't supported");
+            }
 
             if (_noRecursion)
+            {
                 return false;
+            }
 
             // If we already had right lock state, just return
             if (ctstate.Has(validState))
+            {
                 return true;
+            }
 
             // In read mode you can just enter Read recursively
             if (ctstate == LockState.Read)
+            {
                 throw new LockRecursionException();
+            }
 
             return false;
         }

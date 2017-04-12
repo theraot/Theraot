@@ -84,7 +84,9 @@ namespace System.Threading.Tasks
                         foreach (Exception innerExp in flattenedAggExp.InnerExceptions)
                         {
                             if (innerExp is ThreadAbortException)
+                            {
                                 return;
+                            }
                         }
                     }
                     else if (exp is ThreadAbortException)
@@ -136,9 +138,13 @@ namespace System.Threading.Tasks
                 "TaskExceptionHolder.Add(): Expected Exception, IEnumerable<Exception>, ExceptionDispatchInfo, or IEnumerable<ExceptionDispatchInfo>");
 
             if (representsCancellation)
+            {
                 SetCancellationException(exceptionObject);
+            }
             else
+            {
                 AddFaultException(exceptionObject);
+            }
         }
 
         /// <summary>
@@ -161,7 +167,9 @@ namespace System.Threading.Tasks
             // If we're only including the previously captured exceptions,
             // return them immediately in an aggregate.
             if (includeThisException == null)
+            {
                 return new AggregateException(exceptions.Select(exceptionDispatchInfo => exceptionDispatchInfo.SourceException));
+            }
 
             // Otherwise, the caller wants a specific exception to be included,
             // so return an aggregate containing that exception and the rest.
@@ -255,9 +263,13 @@ namespace System.Threading.Tasks
             // Initialize the exceptions list if necessary.  The list should be non-null iff it contains exceptions.
             var exceptions = _faultExceptions;
             if (exceptions == null)
+            {
                 _faultExceptions = exceptions = new List<ExceptionDispatchInfo>(1);
+            }
             else
+            {
                 Debug.Assert(exceptions.Count > 0, "Expected existing exceptions list to have > 0 exceptions.");
+            }
 
             // Handle Exception by capturing it into an ExceptionDispatchInfo and storing that
             var exception = exceptionObject as Exception;

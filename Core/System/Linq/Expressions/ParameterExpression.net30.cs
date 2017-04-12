@@ -259,9 +259,15 @@ namespace System.Linq.Expressions
         {
             ContractUtils.RequiresNotNull(type, "type");
             if (type == typeof(void))
+            {
                 throw Error.ArgumentCannotBeOfTypeVoid();
+            }
+
             if (type.IsByRef)
+            {
                 throw Error.TypeMustNotBeByRef();
+            }
+
             return ParameterExpression.Make(type, name, false);
         }
     }

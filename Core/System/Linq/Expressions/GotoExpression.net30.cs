@@ -365,7 +365,9 @@ namespace System.Linq.Expressions
             if (value == null)
             {
                 if (target.Type != typeof(void))
+                {
                     throw Error.LabelMustBeVoidOrHaveExpression();
+                }
             }
             else
             {

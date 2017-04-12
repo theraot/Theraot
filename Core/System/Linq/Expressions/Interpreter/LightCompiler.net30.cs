@@ -58,7 +58,9 @@ namespace System.Linq.Expressions.Interpreter
         public bool IsBetterThan(ExceptionHandler other)
         {
             if (other == null)
+            {
                 return true;
+            }
 
             Debug.Assert(StartIndex == other.StartIndex && EndIndex == other.EndIndex, "we only need to compare handlers for the same try block");
             return HandlerStartIndex < other.HandlerStartIndex;
@@ -193,11 +195,17 @@ namespace System.Linq.Expressions.Interpreter
             int IComparer<DebugInfo>.Compare(DebugInfo d1, DebugInfo d2)
             {
                 if (d1.Index > d2.Index)
+                {
                     return 1;
+                }
                 else if (d1.Index == d2.Index)
+                {
                     return 0;
+                }
                 else
+                {
                     return -1;
+                }
             }
         }
 
@@ -2664,10 +2672,16 @@ namespace System.Linq.Expressions.Interpreter
         {
             var fi = member as FieldInfo;
             if (fi != null)
+            {
                 return fi.FieldType;
+            }
+
             var pi = member as PropertyInfo;
             if (pi != null)
+            {
                 return pi.PropertyType;
+            }
+
             throw new InvalidOperationException("MemberNotFieldOrProperty");
         }
 

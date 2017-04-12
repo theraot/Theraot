@@ -370,9 +370,13 @@ namespace System.Threading
                     else
                     {
                         if (sense && _evenEvent.IsSet)
+                        {
                             _evenEvent.Reset();
+                        }
                         else if (!sense && _oddEvent.IsSet)
+                        {
                             _oddEvent.Reset();
+                        }
                     }
                     break;
                 }
@@ -675,9 +679,13 @@ namespace System.Threading
             {
                 // make sure the current phase for this thread is already finished, otherwise propagate the exception
                 if (phase < CurrentPhaseNumber)
+                {
                     waitResult = true;
+                }
                 else
+                {
                     throw;
+                }
             }
 
             if (!waitResult)
@@ -714,16 +722,22 @@ namespace System.Threading
                         //or return false if it was the timeout that woke the wait.
                         //
                         if (waitWasCanceled)
+                        {
                             throw new NewOperationCanceledException("The operation was canceled.", cancellationToken);
+                        }
                         else
+                        {
                             return false;
+                        }
                     }
                     spinner.SpinOnce();
                 }
             }
 
             if (_exception != null)
+            {
                 throw new BarrierPostPhaseException(_exception);
+            }
 
             return true;
         }
@@ -770,7 +784,9 @@ namespace System.Threading
                     _actionCallerId = 0;
                     SetResetEvents(observedSense);
                     if (_exception != null)
+                    {
                         throw new BarrierPostPhaseException(_exception);
+                    }
                 }
             }
             else
@@ -850,14 +866,18 @@ namespace System.Threading
                 var waitTime = totalTimeout == Timeout.Infinite ? maxWait : Math.Min(maxWait, totalTimeout);
 
                 if (currentPhaseEvent.Wait(waitTime, token))
+                {
                     return true;
+                }
 
                 //update the total wait time
                 if (totalTimeout != Timeout.Infinite)
                 {
                     totalTimeout -= waitTime;
                     if (totalTimeout <= 0)
+                    {
                         return false;
+                    }
                 }
 
                 //if the maxwait exceeded 10 seconds then we will stop increasing the maxWait time and keep it 10 seconds, otherwise keep doubling it

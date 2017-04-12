@@ -71,7 +71,9 @@ namespace System.Dynamic.Utils
                 var paramIsByReference = parameters[i].ParameterType.IsByRef;
                 var paramType = parameters[i].ParameterType;
                 if (paramIsByReference)
+                {
                     paramType = paramType.GetElementType();
+                }
 
                 hasRefArgs = hasRefArgs || paramIsByReference;
 
