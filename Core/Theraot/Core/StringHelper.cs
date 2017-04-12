@@ -205,7 +205,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("text");
             }
-            if (!text.StartsWith(start, false, CultureInfo.CurrentCulture))
+            if (!text.StartsWith(start, StringComparison.CurrentCulture))
             {
                 return start.Append(text);
             }
@@ -739,7 +739,7 @@ namespace Theraot.Core
             {
                 throw new ArgumentNullException("start");
             }
-            if (text.StartsWith(start, false, CultureInfo.CurrentCulture))
+            if (text.StartsWith(start, StringComparison.CurrentCulture))
             {
                 return text.ExceptStart(start.Length);
             }
