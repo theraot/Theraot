@@ -1905,6 +1905,7 @@ namespace MonoTests.System.Threading.Tasks
         }
 
         [Test]
+        [Category("RaceCondition")] // This test creates a race condition
         public void HideSchedulerTest()
         {
             using (var mre = new ManualResetEventSlim())
@@ -1921,7 +1922,7 @@ namespace MonoTests.System.Threading.Tasks
                     });
                 }, CancellationToken.None, TaskCreationOptions.HideScheduler, scheduler);
 
-                Assert.IsTrue(mre.Wait(1000), "#1");
+                Assert.IsTrue(mre.Wait(10000), "#1");
                 Assert.IsTrue(ranOnDefault, "#2");
             }
         }
