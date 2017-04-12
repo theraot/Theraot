@@ -54,9 +54,7 @@ namespace System.Runtime.CompilerServices
         ///             when no other threads are in the middle of accessing this property or this.Task.
         ///
         /// </remarks>
-// ReSharper disable UnusedMember.Local
         private object ObjectIdForDebugger
-        // ReSharper restore UnusedMember.Local
         {
             get { return Task; }
         }
@@ -222,9 +220,7 @@ namespace System.Runtime.CompilerServices
         ///             when no other threads are in the middle of accessing this property or this.Task.
         ///
         /// </remarks>
-// ReSharper disable UnusedMember.Local
         private object ObjectIdForDebugger
-        // ReSharper restore UnusedMember.Local
         {
             get { return Task; }
         }

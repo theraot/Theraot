@@ -28,9 +28,7 @@ namespace System.Runtime.CompilerServices
         [DebuggerStepThrough]
         internal void Start<TStateMachine>(ref TStateMachine stateMachine) where TStateMachine : IAsyncStateMachine
         {
-            // ReSharper disable RedundantCast
             if (ReferenceEquals(stateMachine, null))
-                // ReSharper restore RedundantCast
                 throw new ArgumentNullException("stateMachine");
             stateMachine.MoveNext();
         }
