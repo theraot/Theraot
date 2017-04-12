@@ -205,9 +205,6 @@ namespace System.Linq.Expressions.Compiler
             EmitSwitchCases(node, labels, isGoto, @default, end, flags);
         }
 
-        /// <summary>
-        /// Gets the common test test value type of the SwitchExpression.
-        /// </summary>
         private static Type GetTestValueType(SwitchExpression node)
         {
             if (node.Comparison == null)
@@ -427,11 +424,6 @@ namespace System.Linq.Expressions.Compiler
             return Convert.ToDecimal(value, CultureInfo.InvariantCulture);
         }
 
-        /// <summary>
-        /// Creates the label for this case.
-        /// Optimization: if the body is just a goto, and we can branch
-        /// to it, put the goto target directly in the jump table.
-        /// </summary>
         private void DefineSwitchCaseLabel(SwitchCase @case, out Label label, out bool isGoto)
         {
             var jump = @case.Body as GotoExpression;
@@ -876,11 +868,6 @@ namespace System.Linq.Expressions.Compiler
             PopLabelBlock(LabelScopeKind.Try);
         }
 
-        /// <summary>
-        /// Emits the start of a catch block.  The exception value that is provided by the
-        /// CLR is stored in the variable specified by the catch block or popped if no
-        /// variable is provided.
-        /// </summary>
         private void EmitCatchStart(CatchBlock cb)
         {
             if (cb.Filter == null)
