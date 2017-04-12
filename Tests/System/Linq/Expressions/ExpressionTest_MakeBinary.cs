@@ -208,11 +208,11 @@ namespace MonoTests.System.Linq.Expressions
         [Test]
         public void TestOperations()
         {
-            Assert.AreEqual(30, CodeGen<int>((a, b) => Expression.Add(a, b), 10, 20));
-            Assert.AreEqual(-12, CodeGen<int>((a, b) => Expression.Subtract(a, b), 11, 23));
-            Assert.AreEqual(253, CodeGen<int>((a, b) => Expression.Multiply(a, b), 11, 23));
-            Assert.AreEqual(33, CodeGen<int>((a, b) => Expression.Divide(a, b), 100, 3));
-            Assert.AreEqual(100.0 / 3, CodeGen<double>((a, b) => Expression.Divide(a, b), 100, 3));
+            Assert.AreEqual(30, CodeGen<int>(Expression.Add, 10, 20));
+            Assert.AreEqual(-12, CodeGen<int>(Expression.Subtract, 11, 23));
+            Assert.AreEqual(253, CodeGen<int>(Expression.Multiply, 11, 23));
+            Assert.AreEqual(33, CodeGen<int>(Expression.Divide, 100, 3));
+            Assert.AreEqual(100.0 / 3, CodeGen<double>(Expression.Divide, 100, 3));
         }
 
         private void CTest<T>(ExpressionType node, bool r, T a, T b)

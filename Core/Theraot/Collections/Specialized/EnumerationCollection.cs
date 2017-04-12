@@ -21,7 +21,7 @@ namespace Theraot.Collections.Specialized
                 throw new ArgumentNullException("wrapped");
             }
             _wrapped = wrapped;
-            _count = () => _wrapped.Count();
+            _count = _wrapped.Count;
             _contains = item => _wrapped.Contains(item, EqualityComparer<T>.Default);
         }
 
@@ -69,7 +69,7 @@ namespace Theraot.Collections.Specialized
                 throw new ArgumentNullException("wrapped");
             }
             _wrapped = wrapped;
-            _count = () => _wrapped.Count();
+            _count = _wrapped.Count;
             if (contains == null)
             {
                 throw new ArgumentNullException("contains");
