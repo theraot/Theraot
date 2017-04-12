@@ -9,13 +9,21 @@ namespace Theraot.Core
     {
         public static Predicate<T> CreateEquals<T>(T comparand, IEqualityComparer<T> comparer)
         {
-            Check.NotNullArgument(comparer, "comparer");
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            IEqualityComparer<T> temp = comparer;
             return y => comparer.Equals(comparand, y);
         }
 
         public static Predicate<T> CreateNotEquals<T>(T comparand, IEqualityComparer<T> comparer)
         {
-            Check.NotNullArgument(comparer, "comparer");
+            if (comparer == null)
+            {
+                throw new ArgumentNullException("comparer");
+            }
+            IEqualityComparer<T> temp = comparer;
             return y => !comparer.Equals(comparand, y);
         }
 
@@ -107,7 +115,11 @@ namespace Theraot.Core
 
             public FuncWrapper(Func<T, bool> func)
             {
-                _func = Check.NotNullArgument(func, "func");
+                if (func == null)
+                {
+                    throw new ArgumentNullException("func");
+                }
+                _func = func;
             }
 
             public Func<T, bool> Func
@@ -127,7 +139,11 @@ namespace Theraot.Core
 
             public PredicateWrapper(Predicate<T> predicate)
             {
-                _predicate = Check.NotNullArgument(predicate, "predicate");
+                if (predicate == null)
+                {
+                    throw new ArgumentNullException("predicate");
+                }
+                _predicate = predicate;
             }
 
             public Predicate<T> Predicate

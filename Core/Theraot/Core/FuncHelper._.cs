@@ -8,8 +8,16 @@ namespace Theraot.Core
     {
         public static Func<TOutput> ChainConversion<TInput, TOutput>(this Func<TInput> source, Converter<TInput, TOutput> converter)
         {
-            var _converter = Check.NotNullArgument(converter, "converter");
-            var _source = Check.NotNullArgument(source, "source");
+            if (converter == null)
+            {
+                throw new ArgumentNullException("converter");
+            }
+            var _converter = converter;
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
+            var _source = source;
             return () => _converter.Invoke(_source.Invoke());
         }
 

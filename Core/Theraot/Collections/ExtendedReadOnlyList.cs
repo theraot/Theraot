@@ -15,7 +15,11 @@ namespace Theraot.Collections
 
         public ExtendedReadOnlyList(IList<T> wrapped)
         {
-            _wrapped = Check.NotNullArgument(wrapped, "wrapped");
+            if (wrapped == null)
+            {
+                throw new ArgumentNullException("wrapped");
+            }
+            _wrapped = wrapped;
         }
 
         public int Count

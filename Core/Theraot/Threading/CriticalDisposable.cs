@@ -14,7 +14,11 @@ namespace Theraot.Threading
 
         private CriticalDisposable(Action release)
         {
-            _release = Check.NotNullArgument(release, "release");
+            if (release == null)
+            {
+                throw new ArgumentNullException("release");
+            }
+            _release = release;
         }
 
         public static CriticalDisposable Create(Action release)
@@ -24,7 +28,11 @@ namespace Theraot.Threading
 
         public bool Dispose(Func<bool> condition)
         {
-            Check.NotNullArgument(condition, "condition");
+            if (condition == null)
+            {
+                throw new ArgumentNullException("condition");
+            }
+            Func<bool> temp = condition;
             return DisposedConditional
                    (
                        FuncHelper.GetFallacyFunc(),

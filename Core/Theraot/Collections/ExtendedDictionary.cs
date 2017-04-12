@@ -1,5 +1,6 @@
 #if FAT
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -34,23 +35,39 @@ namespace Theraot.Collections
             _readOnly = new ExtendedReadOnlyDictionary<TKey, TValue>(this);
             _keysReadonly = new ExtendedReadOnlyCollection<TKey>(_wrapped.Keys);
             _valuesReadonly = new ExtendedReadOnlyCollection<TValue>(_wrapped.Values);
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            if (prototype == null)
+            {
+                throw new ArgumentNullException("prototype");
+            }
+            this.AddRange(prototype);
         }
 
         public ExtendedDictionary(IEnumerable<KeyValuePair<TKey, TValue>> prototype, IEqualityComparer<TKey> keyComparer)
         {
             _valueComparer = EqualityComparer<TValue>.Default;
-            _wrapped = new Dictionary<TKey, TValue>(Check.NotNullArgument(keyComparer, "keyComparer"));
+            if (keyComparer == null)
+            {
+                throw new ArgumentNullException("keyComparer");
+            }
+            _wrapped = new Dictionary<TKey, TValue>(keyComparer);
             _readOnly = new ExtendedReadOnlyDictionary<TKey, TValue>(this);
             _keysReadonly = new ExtendedReadOnlyCollection<TKey>(_wrapped.Keys);
             _valuesReadonly = new ExtendedReadOnlyCollection<TValue>(_wrapped.Values);
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            if (prototype == null)
+            {
+                throw new ArgumentNullException("prototype");
+            }
+            this.AddRange(prototype);
         }
 
         public ExtendedDictionary(IEqualityComparer<TKey> keyComparer)
         {
             _valueComparer = EqualityComparer<TValue>.Default;
-            _wrapped = new Dictionary<TKey, TValue>(Check.NotNullArgument(keyComparer, "keyComparer"));
+            if (keyComparer == null)
+            {
+                throw new ArgumentNullException("keyComparer");
+            }
+            _wrapped = new Dictionary<TKey, TValue>(keyComparer);
             _readOnly = new ExtendedReadOnlyDictionary<TKey, TValue>(this);
             _keysReadonly = new ExtendedReadOnlyCollection<TKey>(_wrapped.Keys);
             _valuesReadonly = new ExtendedReadOnlyCollection<TValue>(_wrapped.Values);
@@ -58,18 +75,38 @@ namespace Theraot.Collections
 
         public ExtendedDictionary(IEnumerable<KeyValuePair<TKey, TValue>> prototype, IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
         {
-            _valueComparer = Check.NotNullArgument(valueComparer, "valueComparer");
-            _wrapped = new Dictionary<TKey, TValue>(Check.NotNullArgument(keyComparer, "keyComparer"));
+            if (valueComparer == null)
+            {
+                throw new ArgumentNullException("valueComparer");
+            }
+            _valueComparer = valueComparer;
+            if (keyComparer == null)
+            {
+                throw new ArgumentNullException("keyComparer");
+            }
+            _wrapped = new Dictionary<TKey, TValue>(keyComparer);
             _readOnly = new ExtendedReadOnlyDictionary<TKey, TValue>(this);
             _keysReadonly = new ExtendedReadOnlyCollection<TKey>(_wrapped.Keys);
             _valuesReadonly = new ExtendedReadOnlyCollection<TValue>(_wrapped.Values);
-            this.AddRange(Check.NotNullArgument(prototype, "prototype"));
+            if (prototype == null)
+            {
+                throw new ArgumentNullException("prototype");
+            }
+            this.AddRange(prototype);
         }
 
         public ExtendedDictionary(IEqualityComparer<TKey> keyComparer, IEqualityComparer<TValue> valueComparer)
         {
-            _valueComparer = Check.NotNullArgument(valueComparer, "valueComparer");
-            _wrapped = new Dictionary<TKey, TValue>(Check.NotNullArgument(keyComparer, "keyComparer"));
+            if (valueComparer == null)
+            {
+                throw new ArgumentNullException("valueComparer");
+            }
+            _valueComparer = valueComparer;
+            if (keyComparer == null)
+            {
+                throw new ArgumentNullException("keyComparer");
+            }
+            _wrapped = new Dictionary<TKey, TValue>(keyComparer);
             _readOnly = new ExtendedReadOnlyDictionary<TKey, TValue>(this);
             _keysReadonly = new ExtendedReadOnlyCollection<TKey>(_wrapped.Keys);
             _valuesReadonly = new ExtendedReadOnlyCollection<TValue>(_wrapped.Values);
@@ -163,7 +200,11 @@ namespace Theraot.Collections
         {
             try
             {
-                return Check.NotNullArgument(comparer, "comparer").Equals(new KeyValuePair<TKey, TValue>(item.Key, _wrapped[item.Key]), item);
+                if (comparer == null)
+                {
+                    throw new ArgumentNullException("comparer");
+                }
+                return comparer.Equals(new KeyValuePair<TKey, TValue>(item.Key, _wrapped[item.Key]), item);
             }
             catch (KeyNotFoundException)
             {

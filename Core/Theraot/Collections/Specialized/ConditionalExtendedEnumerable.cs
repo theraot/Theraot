@@ -16,7 +16,11 @@ namespace Theraot.Collections.Specialized
         public ConditionalExtendedEnumerable(IEnumerable<T> target, IEnumerable<T> append, Func<bool> enumerateTarget, Func<bool> enumerateAppend)
             : base(target, append)
         {
-            _enumerateTarget = Check.NotNullArgument(enumerateTarget, "enumerateTarget");
+            if (enumerateTarget == null)
+            {
+                throw new ArgumentNullException("enumerateTarget");
+            }
+            _enumerateTarget = enumerateTarget;
             _enumerateAppend = enumerateAppend ?? (null == append ? FuncHelper.GetFallacyFunc() : FuncHelper.GetTautologyFunc());
         }
 

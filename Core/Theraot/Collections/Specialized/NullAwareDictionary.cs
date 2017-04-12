@@ -449,7 +449,11 @@ namespace Theraot.Collections.Specialized
 
         public void UnionWith(IEnumerable<KeyValuePair<TKey, TValue>> other)
         {
-            this.AddRange(Check.NotNullArgument(other, "other"));
+            if (other == null)
+            {
+                throw new ArgumentNullException("other");
+            }
+            this.AddRange(other);
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

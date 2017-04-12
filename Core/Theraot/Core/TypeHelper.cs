@@ -65,7 +65,11 @@ namespace Theraot.Core
 
         public static bool CanBeNull(this Type type)
         {
-            var _type = Check.NotNullArgument(type, "type");
+            if (type == null)
+            {
+                throw new ArgumentNullException("type");
+            }
+            var _type = type;
             return !_type.IsValueType || !ReferenceEquals(Nullable.GetUnderlyingType(_type), null);
         }
 
@@ -91,7 +95,11 @@ namespace Theraot.Core
 
         public static TTarget Cast<TTarget>(object source, Func<TTarget> alternative)
         {
-            var _alternative = Check.NotNullArgument(alternative, "alternative");
+            if (alternative == null)
+            {
+                throw new ArgumentNullException("alternative");
+            }
+            var _alternative = alternative;
             try
             {
                 var _source = (TTarget)source;
@@ -116,7 +124,11 @@ namespace Theraot.Core
         public static TAttribute[] GetAttributes<TAttribute>(this ICustomAttributeProvider item, bool inherit)
             where TAttribute : Attribute
         {
-            return (TAttribute[])Check.NotNullArgument(item, "item").GetCustomAttributes(typeof(TAttribute), inherit);
+            if (item == null)
+            {
+                throw new ArgumentNullException("item");
+            }
+            return (TAttribute[])item.GetCustomAttributes(typeof(TAttribute), inherit);
         }
 
         public static TAttribute[] GetAttributes<TAttribute>(this Type type, bool inherit)

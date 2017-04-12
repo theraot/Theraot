@@ -19,7 +19,11 @@ namespace System.Runtime.CompilerServices
 
         public DynamicAttribute(bool[] transformFlags)
         {
-            _transformFlags = Check.NotNullArgument(transformFlags, "tranformFlags");
+            if (transformFlags == null)
+            {
+                throw new ArgumentNullException("tranformFlags");
+            }
+            _transformFlags = transformFlags;
         }
 
         public IList<bool> TransformFlags

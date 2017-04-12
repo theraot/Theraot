@@ -140,7 +140,11 @@ namespace Theraot.Threading.Needles
 
         public static explicit operator T(WeakNeedle<T> needle)
         {
-            return Check.NotNullArgument(needle, "needle").Value;
+            if (needle == null)
+            {
+                throw new ArgumentNullException("needle");
+            }
+            return needle.Value;
         }
 
         public static implicit operator WeakNeedle<T>(T field)

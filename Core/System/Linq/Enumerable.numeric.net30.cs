@@ -484,9 +484,9 @@ namespace System.Linq
             {
                 foreach (var element in source)
                 {
-                    if (element != null)
+                    if (!ReferenceEquals(element, null))
                     {
-                        if (max == null || comparer.Compare(element, max) > 0)
+                        if (ReferenceEquals(max, null) || comparer.Compare(element, max) > 0)
                         {
                             max = element;
                         }
@@ -1056,15 +1056,15 @@ namespace System.Linq
             }
             var comparer = Comparer<TSource>.Default;
             var min = default(TSource);
-            if (default(TSource) == null)
+            if (ReferenceEquals(default(TSource), null))
             {
                 foreach (var element in source)
                 {
-                    if (element == null)
+                    if (ReferenceEquals(element, null))
                     {
                         continue;
                     }
-                    if (min == null || comparer.Compare(element, min) < 0)
+                    if (ReferenceEquals(min, null) || comparer.Compare(element, min) < 0)
                     {
                         min = element;
                     }

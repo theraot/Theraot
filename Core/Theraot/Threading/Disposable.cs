@@ -13,7 +13,11 @@ namespace Theraot.Threading
 
         private Disposable(Action release)
         {
-            _release = Check.NotNullArgument(release, "release");
+            if (release == null)
+            {
+                throw new ArgumentNullException("release");
+            }
+            _release = release;
         }
 
         public static Disposable Create()
