@@ -4,8 +4,6 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 // Enables instruction counting and displaying stats at process exit.
-// #define STATS
-
 // TODO update from corefx
 
 using System.Collections.Generic;
