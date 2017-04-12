@@ -15,7 +15,11 @@ namespace Theraot.Collections.Specialized
 
         public DelegatedCollection(Func<ICollection<T>> wrapped)
         {
-            _wrapped = Check.NotNullArgument(wrapped, "wrapped");
+            if (wrapped == null)
+            {
+                throw new ArgumentNullException("wrapped");
+            }
+            _wrapped = wrapped;
             _readOnly = new ExtendedReadOnlyCollection<T>(this);
         }
 
@@ -95,10 +99,13 @@ namespace Theraot.Collections.Specialized
 
         public bool Remove(T item, IEqualityComparer<T> comparer)
         {
-            var _comparer = Check.NotNullArgument(comparer, "comparer");
-            foreach (var _item in Instance.RemoveWhereEnumerable(input => _comparer.Equals(input, item)))
+            if (comparer == null)
             {
-                GC.KeepAlive(_item);
+                comparer = EqualityComparer<T>.Default;
+            }
+            foreach (var foundItem in Instance.RemoveWhereEnumerable(input => comparer.Equals(input, item)))
+            {
+                GC.KeepAlive(foundItem);
                 return true;
             }
             return false;
