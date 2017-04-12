@@ -143,7 +143,7 @@ namespace System.Linq.Expressions.Interpreter
         }
     }
 
-    internal class ScriptingRuntimeHelpers
+    internal static class ScriptingRuntimeHelpers
     {
         public static object Int32ToObject(int i)
         {

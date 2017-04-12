@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace System.Diagnostics.Contracts.Tests
 {
     [TestFixture]
-    public class AssertTests
+    public static class AssertTests
     {
         [Test]
         [SecurityPermission(SecurityAction.LinkDemand, Unrestricted = true)]

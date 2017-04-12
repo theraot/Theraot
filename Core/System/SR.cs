@@ -1,6 +1,6 @@
 ﻿namespace System
 {
-    internal class SR
+    internal static class SR
     {
         internal static string AccessorsCannotHaveByRefArgs
         {
