@@ -154,11 +154,11 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("items");
             }
-            var _comparer = comparer ?? EqualityComparer<T>.Default;
+            comparer = comparer ?? EqualityComparer<T>.Default;
             var localCollection = AsCollection(source);
             foreach (var item in items)
             {
-                if (localCollection.Contains(item, _comparer))
+                if (localCollection.Contains(item, comparer))
                 {
                     return true;
                 }
@@ -176,11 +176,10 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("converter");
             }
-            var _converter = converter;
             var result = new List<TOutput>();
             foreach (var item in source)
             {
-                result.Add(_converter(item));
+                result.Add(converter(item));
             }
             return result;
         }
@@ -196,11 +195,10 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("converter");
             }
-            var _converter = converter;
             var result = new TList();
             foreach (var item in source)
             {
-                result.Add(_converter(item));
+                result.Add(converter(item));
             }
             return result;
         }
@@ -219,14 +217,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("filter");
             }
-            var _converter = converter;
-            var _filter = filter;
             var result = new List<TOutput>();
             foreach (var item in source)
             {
-                if (_filter(item))
+                if (filter(item))
                 {
-                    result.Add(_converter(item));
+                    result.Add(converter(item));
                 }
             }
             return result;
@@ -246,15 +242,13 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("filter");
             }
-            var _converter = converter;
-            var _filter = filter;
             var index = 0;
             var result = new List<TOutput>();
             foreach (var item in source)
             {
-                if (_filter(item, index))
+                if (filter(item, index))
                 {
-                    result.Add(_converter(item));
+                    result.Add(converter(item));
                 }
                 index++;
             }
@@ -276,14 +270,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("filter");
             }
-            var _converter = converter;
-            var _filter = filter;
             var result = new TList();
             foreach (var item in source)
             {
-                if (_filter(item))
+                if (filter(item))
                 {
-                    result.Add(_converter(item));
+                    result.Add(converter(item));
                 }
             }
             return result;
@@ -304,15 +296,13 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("filter");
             }
-            var _converter = converter;
-            var _filter = filter;
             var index = 0;
             var result = new TList();
             foreach (var item in source)
             {
-                if (_filter(item, index))
+                if (filter(item, index))
                 {
-                    result.Add(_converter(item));
+                    result.Add(converter(item));
                 }
                 index++;
             }
@@ -333,15 +323,13 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("filter");
             }
-            var _converter = converter;
-            var _filter = filter;
             var index = 0;
             var result = new List<KeyValuePair<int, TOutput>>();
             foreach (var item in source)
             {
-                if (_filter(item))
+                if (filter(item))
                 {
-                    result.Add(new KeyValuePair<int, TOutput>(index, _converter(item)));
+                    result.Add(new KeyValuePair<int, TOutput>(index, converter(item)));
                 }
                 index++;
             }
@@ -362,15 +350,13 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("filter");
             }
-            var _converter = converter;
-            var _filter = filter;
             var index = 0;
             var result = new List<KeyValuePair<int, TOutput>>();
             foreach (var item in source)
             {
-                if (_filter(item, index))
+                if (filter(item, index))
                 {
-                    result.Add(new KeyValuePair<int, TOutput>(index, _converter(item)));
+                    result.Add(new KeyValuePair<int, TOutput>(index, converter(item)));
                 }
                 index++;
             }
@@ -392,15 +378,13 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("filter");
             }
-            var _converter = converter;
-            var _filter = filter;
             var index = 0;
             var result = new TList();
             foreach (var item in source)
             {
-                if (_filter(item))
+                if (filter(item))
                 {
-                    result.Add(new KeyValuePair<int, TOutput>(index, _converter(item)));
+                    result.Add(new KeyValuePair<int, TOutput>(index, converter(item)));
                 }
                 index++;
             }
@@ -422,15 +406,13 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("filter");
             }
-            var _converter = converter;
-            var _filter = filter;
             var index = 0;
             var result = new TList();
             foreach (var item in source)
             {
-                if (_filter(item, index))
+                if (filter(item, index))
                 {
-                    result.Add(new KeyValuePair<int, TOutput>(index, _converter(item)));
+                    result.Add(new KeyValuePair<int, TOutput>(index, converter(item)));
                 }
                 index++;
             }
@@ -447,10 +429,9 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("converter");
             }
-            var _converter = converter;
             foreach (var item in source)
             {
-                yield return _converter(item);
+                yield return converter(item);
             }
         }
 
@@ -468,13 +449,11 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("filter");
             }
-            var _converter = converter;
-            var _filter = filter;
             foreach (var item in source)
             {
-                if (_filter(item))
+                if (filter(item))
                 {
-                    yield return _converter(item);
+                    yield return converter(item);
                 }
             }
         }
@@ -493,14 +472,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("filter");
             }
-            var _converter = converter;
-            var _filter = filter;
             var index = 0;
             foreach (var item in source)
             {
-                if (_filter(item, index))
+                if (filter(item, index))
                 {
-                    yield return _converter(item);
+                    yield return converter(item);
                 }
                 index++;
             }
@@ -520,14 +497,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("filter");
             }
-            var _converter = converter;
-            var _filter = filter;
             var index = 0;
             foreach (var item in source)
             {
-                if (_filter(item))
+                if (filter(item))
                 {
-                    yield return new KeyValuePair<int, TOutput>(index, _converter(item));
+                    yield return new KeyValuePair<int, TOutput>(index, converter(item));
                 }
                 index++;
             }
@@ -547,14 +522,12 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("filter");
             }
-            var _converter = converter;
-            var _filter = filter;
             var index = 0;
             foreach (var item in source)
             {
-                if (_filter(item, index))
+                if (filter(item, index))
                 {
-                    yield return new KeyValuePair<int, TOutput>(index, _converter(item));
+                    yield return new KeyValuePair<int, TOutput>(index, converter(item));
                 }
                 index++;
             }
@@ -873,10 +846,10 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            var _comparer = comparer ?? EqualityComparer<T>.Default;
+            comparer = comparer ?? EqualityComparer<T>.Default;
             foreach (var local in source)
             {
-                if (_comparer.Equals(local, value))
+                if (comparer.Equals(local, value))
                 {
                     return true;
                 }
@@ -1275,13 +1248,12 @@ namespace Theraot.Collections
                 throw new ArgumentNullException("predicate");
             }
             var currentIndex = 0;
-            var _predicate = predicate;
             var result = -1;
             using (var enumerator = source.GetEnumerator())
             {
                 while (enumerator.MoveNext())
                 {
-                    if (_predicate(enumerator.Current))
+                    if (predicate(enumerator.Current))
                     {
                         result = currentIndex;
                     }
@@ -1302,10 +1274,9 @@ namespace Theraot.Collections
                 throw new ArgumentNullException("predicate");
             }
             var result = new List<T>();
-            var _predicate = predicate;
             foreach (var item in source)
             {
-                if (_predicate(item))
+                if (predicate(item))
                 {
                     result.Add(item);
                 }
@@ -1325,10 +1296,9 @@ namespace Theraot.Collections
                 throw new ArgumentNullException("predicate");
             }
             var result = new TList();
-            var _predicate = predicate;
             foreach (var item in source)
             {
-                if (_predicate(item))
+                if (predicate(item))
                 {
                     result.Add(item);
                 }
@@ -1475,12 +1445,11 @@ namespace Theraot.Collections
                 throw new ArgumentNullException("dictionary");
             }
             TValue value;
-            var _dictionary = dictionary;
-            if (_dictionary.TryGetValue(key, out value))
+            if (dictionary.TryGetValue(key, out value))
             {
                 return value;
             }
-            _dictionary.Add(key, newValue);
+            dictionary.Add(key, newValue);
             return newValue;
         }
 
@@ -1508,7 +1477,7 @@ namespace Theraot.Collections
             }
             var currentIndex = 0;
             var limit = index + count;
-            var _comparer = EqualityComparer<T>.Default;
+            var comparer = EqualityComparer<T>.Default;
             using (var enumerator = source.GetEnumerator())
             {
                 while (enumerator.MoveNext())
@@ -1525,7 +1494,7 @@ namespace Theraot.Collections
                     {
                         break;
                     }
-                    if (_comparer.Equals(enumerator.Current, item))
+                    if (comparer.Equals(enumerator.Current, item))
                     {
                         return currentIndex;
                     }
@@ -1543,7 +1512,7 @@ namespace Theraot.Collections
             }
             var currentIndex = 0;
             var limit = index + count;
-            var _comparer = comparer ?? EqualityComparer<T>.Default;
+            comparer = comparer ?? EqualityComparer<T>.Default;
             using (var enumerator = source.GetEnumerator())
             {
                 while (enumerator.MoveNext())
@@ -1560,7 +1529,7 @@ namespace Theraot.Collections
                     {
                         break;
                     }
-                    if (_comparer.Equals(enumerator.Current, item))
+                    if (comparer.Equals(enumerator.Current, item))
                     {
                         return currentIndex;
                     }
@@ -1577,7 +1546,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException("source");
             }
             var currentIndex = 0;
-            var _comparer = EqualityComparer<T>.Default;
+            var comparer = EqualityComparer<T>.Default;
             using (var enumerator = source.GetEnumerator())
             {
                 while (enumerator.MoveNext())
@@ -1590,7 +1559,7 @@ namespace Theraot.Collections
                 }
                 while (enumerator.MoveNext())
                 {
-                    if (_comparer.Equals(enumerator.Current, item))
+                    if (comparer.Equals(enumerator.Current, item))
                     {
                         return currentIndex;
                     }
@@ -1607,7 +1576,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException("source");
             }
             var currentIndex = 0;
-            var _comparer = comparer ?? EqualityComparer<T>.Default;
+            comparer = comparer ?? EqualityComparer<T>.Default;
             using (var enumerator = source.GetEnumerator())
             {
                 while (enumerator.MoveNext())
@@ -1620,7 +1589,7 @@ namespace Theraot.Collections
                 }
                 while (enumerator.MoveNext())
                 {
-                    if (_comparer.Equals(enumerator.Current, item))
+                    if (comparer.Equals(enumerator.Current, item))
                     {
                         return currentIndex;
                     }
@@ -1637,12 +1606,12 @@ namespace Theraot.Collections
                 throw new ArgumentNullException("source");
             }
             var currentIndex = 0;
-            var _comparer = EqualityComparer<T>.Default;
+            var comparer = EqualityComparer<T>.Default;
             using (var enumerator = source.GetEnumerator())
             {
                 while (enumerator.MoveNext())
                 {
-                    if (_comparer.Equals(enumerator.Current, item))
+                    if (comparer.Equals(enumerator.Current, item))
                     {
                         return currentIndex;
                     }
@@ -1659,12 +1628,12 @@ namespace Theraot.Collections
                 throw new ArgumentNullException("source");
             }
             var currentIndex = 0;
-            var _comparer = comparer ?? EqualityComparer<T>.Default;
+            comparer = comparer ?? EqualityComparer<T>.Default;
             using (var enumerator = source.GetEnumerator())
             {
                 while (enumerator.MoveNext())
                 {
-                    if (_comparer.Equals(enumerator.Current, item))
+                    if (comparer.Equals(enumerator.Current, item))
                     {
                         return currentIndex;
                     }
@@ -1716,8 +1685,8 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("other");
             }
-            var _other = AsCollection(other);
-            return source.RemoveWhere(input => !_other.Contains(input));
+            var otherAsCollection = AsCollection(other);
+            return source.RemoveWhere(input => !otherAsCollection.Contains(input));
         }
 
         public static int IntersectWith<T>(this ICollection<T> source, IEnumerable<T> other, IEqualityComparer<T> comparer)
@@ -1730,9 +1699,9 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("other");
             }
-            var _comparer = comparer ?? EqualityComparer<T>.Default;
-            var _other = AsCollection(other);
-            return source.RemoveWhere(input => !_other.Contains(input, _comparer));
+            comparer = comparer ?? EqualityComparer<T>.Default;
+            var otherASCollection = AsCollection(other);
+            return source.RemoveWhere(input => !otherASCollection.Contains(input, comparer));
         }
 
         public static IEnumerable<T> IntersectWithEnumerable<T>(this ICollection<T> source, IEnumerable<T> other)
@@ -1745,8 +1714,8 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("other");
             }
-            var _other = AsCollection(other);
-            return source.RemoveWhereEnumerable(input => !_other.Contains(input));
+            var otherAsCollection = AsCollection(other);
+            return source.RemoveWhereEnumerable(input => !otherAsCollection.Contains(input));
         }
 
         public static IEnumerable<T> IntersectWithEnumerable<T>(this ICollection<T> source, IEnumerable<T> other, IEqualityComparer<T> comparer)
@@ -1759,9 +1728,9 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("other");
             }
-            var _comparer = comparer ?? EqualityComparer<T>.Default;
-            var _other = AsCollection(other);
-            return source.RemoveWhereEnumerable(input => !_other.Contains(input, _comparer));
+            comparer = comparer ?? EqualityComparer<T>.Default;
+            var otherAsCollection = AsCollection(other);
+            return source.RemoveWhereEnumerable(input => !otherAsCollection.Contains(input, comparer));
         }
 
         public static bool IsEmpty<T>(this IEnumerable<T> source)
@@ -1828,7 +1797,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException("source");
             }
             var currentIndex = 0;
-            var _comparer = comparer ?? EqualityComparer<T>.Default;
+            comparer = comparer ?? EqualityComparer<T>.Default;
             var result = -1;
             using (var enumerator = source.GetEnumerator())
             {
@@ -1842,7 +1811,7 @@ namespace Theraot.Collections
                 }
                 while (enumerator.MoveNext())
                 {
-                    if (_comparer.Equals(enumerator.Current, item))
+                    if (comparer.Equals(enumerator.Current, item))
                     {
                         result = currentIndex;
                     }
@@ -1859,7 +1828,7 @@ namespace Theraot.Collections
                 throw new ArgumentNullException("source");
             }
             var currentIndex = 0;
-            var _comparer = EqualityComparer<T>.Default;
+            var comparer = EqualityComparer<T>.Default;
             var result = -1;
             using (var enumerator = source.GetEnumerator())
             {
@@ -1873,7 +1842,7 @@ namespace Theraot.Collections
                 }
                 while (enumerator.MoveNext())
                 {
-                    if (_comparer.Equals(enumerator.Current, item))
+                    if (comparer.Equals(enumerator.Current, item))
                     {
                         result = currentIndex;
                     }
@@ -1890,13 +1859,13 @@ namespace Theraot.Collections
                 throw new ArgumentNullException("source");
             }
             var currentIndex = 0;
-            var _comparer = EqualityComparer<T>.Default;
+            var comparer = EqualityComparer<T>.Default;
             var result = -1;
             using (var enumerator = source.GetEnumerator())
             {
                 while (enumerator.MoveNext())
                 {
-                    if (_comparer.Equals(enumerator.Current, item))
+                    if (comparer.Equals(enumerator.Current, item))
                     {
                         result = currentIndex;
                     }
@@ -1913,13 +1882,13 @@ namespace Theraot.Collections
                 throw new ArgumentNullException("source");
             }
             var currentIndex = 0;
-            var _comparer = comparer ?? EqualityComparer<T>.Default;
+            comparer = comparer ?? EqualityComparer<T>.Default;
             var result = -1;
             using (var enumerator = source.GetEnumerator())
             {
                 while (enumerator.MoveNext())
                 {
-                    if (_comparer.Equals(enumerator.Current, item))
+                    if (comparer.Equals(enumerator.Current, item))
                     {
                         result = currentIndex;
                     }
@@ -1937,7 +1906,7 @@ namespace Theraot.Collections
             }
             var currentIndex = 0;
             var limit = index + count;
-            var _comparer = comparer ?? EqualityComparer<T>.Default;
+            comparer = comparer ?? EqualityComparer<T>.Default;
             var result = -1;
             using (var enumerator = source.GetEnumerator())
             {
@@ -1955,7 +1924,7 @@ namespace Theraot.Collections
                     {
                         break;
                     }
-                    if (_comparer.Equals(enumerator.Current, item))
+                    if (comparer.Equals(enumerator.Current, item))
                     {
                         result = currentIndex;
                     }
@@ -1973,7 +1942,7 @@ namespace Theraot.Collections
             }
             var currentIndex = 0;
             var limit = index + count;
-            var _comparer = EqualityComparer<T>.Default;
+            var comparer = EqualityComparer<T>.Default;
             var result = -1;
             using (var enumerator = source.GetEnumerator())
             {
@@ -1991,7 +1960,7 @@ namespace Theraot.Collections
                     {
                         break;
                     }
-                    if (_comparer.Equals(enumerator.Current, item))
+                    if (comparer.Equals(enumerator.Current, item))
                     {
                         result = currentIndex;
                     }
@@ -2021,20 +1990,28 @@ namespace Theraot.Collections
             var cmp = EqualityComparer<T>.Default;
             var f = first.GetEnumerator();
             var s = second.GetEnumerator();
-            while (f.MoveNext())
+            try
             {
-                s.MoveNext();
-
-                if (!cmp.Equals(f.Current, s.Current))
+                while (f.MoveNext())
                 {
-                    return false;
+                    s.MoveNext();
+
+                    if (!cmp.Equals(f.Current, s.Current))
+                    {
+                        return false;
+                    }
                 }
+                return true;
             }
-            return true;
+            finally
+            {
+                f.Dispose();
+                s.Dispose();
+            }
         }
 
         // Name needs to be different so it doesn't conflict with Enumerable.Select
-        public static U[] Map<T, U>(this ICollection<T> source, Func<T, U> select)
+        public static TOutput[] Map<TInput, TOutput>(this ICollection<TInput> source, Func<TInput, TOutput> select)
         {
             if (source == null)
             {
@@ -2043,7 +2020,7 @@ namespace Theraot.Collections
             // Copyright (c) Microsoft. All rights reserved.
             // Licensed under the MIT license. See LICENSE file in the project root for full license information.
             var count = source.Count;
-            var result = new U[count];
+            var result = new TOutput[count];
             count = 0;
             foreach (var t in source)
             {
@@ -2201,8 +2178,8 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            var _comparer = comparer ?? EqualityComparer<T>.Default;
-            using (var enumerator = source.RemoveWhereEnumerable(input => _comparer.Equals(input, item)).GetEnumerator())
+            comparer = comparer ?? EqualityComparer<T>.Default;
+            using (var enumerator = source.RemoveWhereEnumerable(input => comparer.Equals(input, item)).GetEnumerator())
             {
                 return enumerator.MoveNext();
             }
@@ -2322,13 +2299,13 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("other");
             }
-            var _that = AsCollection(other);
-            foreach (var item in _that.Where(input => !source.Contains(input)))
+            var thatAsCollection = AsCollection(other);
+            foreach (var item in thatAsCollection.Where(input => !source.Contains(input)))
             {
                 GC.KeepAlive(item);
                 return false;
             }
-            foreach (var item in source.Where(input => !_that.Contains(input)))
+            foreach (var item in source.Where(input => !thatAsCollection.Contains(input)))
             {
                 GC.KeepAlive(item);
                 return false;
@@ -2342,7 +2319,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("list");
             }
-            var _comparer = comparer ?? Comparer<T>.Default;
+            comparer = comparer ?? Comparer<T>.Default;
             if (index < 0)
             {
                 throw new ArgumentOutOfRangeException("index", "Non-negative number is required.");
@@ -2356,7 +2333,7 @@ namespace Theraot.Collections
             {
                 throw new ArgumentException("The list does not contain the number of elements.", "list");
             }
-            SortExtracted(list, index, count + index, _comparer);
+            SortExtracted(list, index, count + index, comparer);
         }
 
         public static void Swap<T>(this IList<T> list, int indexA, int indexB)
@@ -2502,12 +2479,11 @@ namespace Theraot.Collections
             {
                 throw new ArgumentNullException("source");
             }
-            var _predicate = predicate;
             using (var enumerator = source.GetEnumerator())
             {
                 while (enumerator.MoveNext())
                 {
-                    if (_predicate(enumerator.Current))
+                    if (predicate(enumerator.Current))
                     {
                         founT = enumerator.Current;
                         return true;
