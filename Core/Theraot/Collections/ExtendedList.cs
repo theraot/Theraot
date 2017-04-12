@@ -157,12 +157,15 @@ namespace Theraot.Collections
 
         public bool Overlaps(IEnumerable<T> other)
         {
-            var _other = Check.NotNullArgument(other, "other");
+            if (other == null)
+            {
+                throw new ArgumentNullException("other");
+            }
             if (Count == 0)
             {
                 return false;
             }
-            foreach (T item in _other)
+            foreach (T item in other)
             {
                 if (Contains(item))
                 {
@@ -174,9 +177,9 @@ namespace Theraot.Collections
 
         public bool Remove(T item)
         {
-            foreach (var _item in _wrapped.RemoveWhereEnumerable(input => _comparer.Equals(input, item)))
+            foreach (var foundItem in _wrapped.RemoveWhereEnumerable(input => _comparer.Equals(input, item)))
             {
-                GC.KeepAlive(_item);
+                GC.KeepAlive(foundItem);
                 return true;
             }
             return false;
@@ -184,10 +187,13 @@ namespace Theraot.Collections
 
         public bool Remove(T item, IEqualityComparer<T> comparer)
         {
-            var __comparer = Check.NotNullArgument(comparer, "comparer");
-            foreach (var _item in _wrapped.RemoveWhereEnumerable(input => __comparer.Equals(input, item)))
+            if (comparer == null)
             {
-                GC.KeepAlive(_item);
+                comparer = EqualityComparer<T>.Default;
+            }
+            foreach (var foundItem in _wrapped.RemoveWhereEnumerable(input => comparer.Equals(input, item)))
+            {
+                GC.KeepAlive(foundItem);
                 return true;
             }
             return false;
