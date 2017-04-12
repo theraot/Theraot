@@ -27,11 +27,6 @@ namespace System.Threading.Tasks
     [DebuggerTypeProxy(typeof(SystemThreadingTasksTaskSchedulerDebugView))]
     public abstract partial class TaskScheduler
     {
-        ////////////////////////////////////////////////////////////
-        //
-        // User Provided Methods and Properties
-        //
-
         /// <summary>
         /// Indicates the maximum concurrency level this
         /// <see cref="TaskScheduler"/>  is able to support.
@@ -41,11 +36,6 @@ namespace System.Threading.Tasks
             get { return int.MaxValue; }
         }
 
-        ////////////////////////////////////////////////////////////
-        //
-        // Internal overridable methods
-        //
-
         /// <summary>
         /// Notifies the scheduler that a work item has made progress.
         /// </summary>
@@ -53,18 +43,8 @@ namespace System.Threading.Tasks
         {
         }
 
-        ////////////////////////////////////////////////////////////
-        //
-        // Member variables
-        //
-
         // An AppDomain-wide default manager.
         private static readonly TaskScheduler _defaultTaskScheduler = new ThreadPoolTaskScheduler();
-
-        ////////////////////////////////////////////////////////////
-        //
-        // Constructors and public properties
-        //
 
         /// <summary>
         /// Gets the <see cref="System.Threading.Tasks.TaskScheduler">TaskScheduler</see>
