@@ -24,27 +24,11 @@ namespace System.Linq.Expressions.Compiler
             return false;
         }
 
-        /// <summary>
-        /// If the result of a TypeBinaryExpression is known statically, this
-        /// returns the result, otherwise it returns null, meaning we'll need
-        /// to perform the IsInst instruction at runtime.
-        ///
-        /// The result of this function must be equivalent to IsInst, or
-        /// null.
-        /// </summary>
         internal static AnalyzeTypeIsResult AnalyzeTypeIs(TypeBinaryExpression typeIs)
         {
             return AnalyzeTypeIs(typeIs.Expression, typeIs.TypeOperand);
         }
 
-        /// <summary>
-        /// If the result of an isinst opcode is known statically, this
-        /// returns the result, otherwise it returns null, meaning we'll need
-        /// to perform the IsInst instruction at runtime.
-        ///
-        /// The result of this function must be equivalent to IsInst, or
-        /// null.
-        /// </summary>
         private static AnalyzeTypeIsResult AnalyzeTypeIs(Expression operand, Type testType)
         {
             var operandType = operand.Type;

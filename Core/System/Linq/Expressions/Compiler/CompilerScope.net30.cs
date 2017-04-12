@@ -113,11 +113,6 @@ namespace System.Linq.Expressions.Compiler
             get { return _hoistedLocals ?? _closureHoistedLocals; }
         }
 
-        /// <summary>
-        /// Called when entering a lambda/block. Performs all variable allocation
-        /// needed, including creating hoisted locals and IL locals for accessing
-        /// parent locals
-        /// </summary>
         internal CompilerScope Enter(LambdaCompiler lc, CompilerScope parent)
         {
             SetParent(lc, parent);
@@ -209,9 +204,6 @@ namespace System.Linq.Expressions.Compiler
 
         #region Variable access
 
-        /// <summary>
-        /// Adds a new virtual variable corresponding to an IL local
-        /// </summary>
         internal void AddLocal(LambdaCompiler gen, ParameterExpression variable)
         {
             _locals.Add(variable, new LocalStorage(gen, variable));
@@ -237,10 +229,6 @@ namespace System.Linq.Expressions.Compiler
             return ResolveVariable(variable, NearestHoistedLocals);
         }
 
-        /// <summary>
-        /// Resolve a local variable in this scope or a closed over scope
-        /// Throws if the variable is defined
-        /// </summary>
         private Storage ResolveVariable(ParameterExpression variable, HoistedLocals hoistedLocals)
         {
             // Search IL locals and arguments, but only in this lambda
