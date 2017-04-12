@@ -14,13 +14,20 @@ namespace Theraot.Collections.Specialized
 
         public CustomComparer(Func<T, T, int> comparison)
         {
-            _comparison = Check.NotNullArgument(comparison, "comparison");
+            if (comparison == null)
+            {
+                throw new ArgumentNullException("comparison");
+            }
+            _comparison = comparison;
         }
 
         public CustomComparer(Comparison<T> comparison)
         {
-            var __comparison = Check.NotNullArgument(comparison, "comparison");
-            _comparison = __comparison.Invoke;
+            if (comparison == null)
+            {
+                throw new ArgumentNullException("comparison");
+            }
+            _comparison = comparison.Invoke;
         }
 
         public int Compare(T x, T y)
