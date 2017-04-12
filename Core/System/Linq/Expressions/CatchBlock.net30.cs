@@ -12,7 +12,7 @@ namespace System.Linq.Expressions
     /// Represents a catch statement in a try block.
     /// This must have the same return type (i.e., the type of <see cref="P:CatchBlock.Body"/>) as the try block it is associated with.
     /// </summary>
-    [DebuggerTypeProxy(typeof(Expression.CatchBlockProxy))]
+    [DebuggerTypeProxy(typeof(CatchBlockProxy))]
     public sealed class CatchBlock
     {
         private readonly Type _test;

@@ -14,7 +14,7 @@ namespace System.Linq.Expressions
     /// <summary>
     /// Represents one case of a <see cref="SwitchExpression"/>.
     /// </summary>
-    [DebuggerTypeProxy(typeof(Expression.SwitchCaseProxy))]
+    [DebuggerTypeProxy(typeof(SwitchCaseProxy))]
     public sealed class SwitchCase
     {
         private readonly ReadOnlyCollection<Expression> _testValues;
