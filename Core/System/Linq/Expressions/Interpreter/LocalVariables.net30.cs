@@ -51,7 +51,7 @@ namespace System.Linq.Expressions.Interpreter
             _flags = (closure ? _inClosureFlag : 0) | (boxed ? _isBoxedFlag : 0);
         }
 
-        internal Expression LoadFromArray(Expression frameData, Expression closure, Type parameterType)
+        internal Expression LoadFromArray(Expression frameData, Expression closure)
         {
             Expression result = Expression.ArrayAccess(InClosure ? closure : frameData, Expression.Constant(Index));
             return (IsBoxed && !InClosure) ? Expression.Convert(result, typeof(StrongBox<object>)) : result;
