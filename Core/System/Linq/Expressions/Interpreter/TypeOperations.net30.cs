@@ -2746,8 +2746,7 @@ namespace System.Linq.Expressions.Interpreter
                         Expression.Field(
                             var.LoadFromArray(
                                 Expression.Constant(_frame.Data),
-                                Expression.Constant(_frame.Closure),
-                                node.Type
+                                Expression.Constant(_frame.Closure)
                             ),
                             "Value"
                         ),
