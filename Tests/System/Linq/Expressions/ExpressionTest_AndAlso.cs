@@ -358,11 +358,14 @@ namespace MonoTests.System.Linq.Expressions
 
             public static bool op_True<T>(B x)
             {
+                GC.KeepAlive(x);
+                GC.KeepAlive(typeof(T));
                 return true;
             }
 
             public static bool op_False(B x)
             {
+                GC.KeepAlive(x);
                 return false;
             }
         }
