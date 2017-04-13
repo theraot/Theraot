@@ -2394,6 +2394,24 @@ namespace Theraot.Collections
             return new ReadOnlyCollection<TSource>(source.ToArray());
         }
 
+        public static bool TryAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
+        {
+            if (dictionary == null)
+            {
+                throw new ArgumentNullException("dictionary");
+            }
+            try
+            {
+                dictionary.Add(key, value);
+                return true;
+            }
+            catch (ArgumentException ex)
+            {
+                GC.KeepAlive(ex);
+                return false;
+            }
+        }
+
         public static bool TryFind<T>(this IEnumerable<T> source, int index, int count, Predicate<T> predicate, out T founT)
         {
             if (predicate == null)
