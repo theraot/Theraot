@@ -198,9 +198,8 @@ namespace System.Dynamic.Utils
             // quote (produce a new tree closed over parameter values), only
             // works consistently for lambdas
             var quoteable = typeof(LambdaExpression);
-            // TODO: check generics?
             if (parameterType.IsSameOrSubclassOf(quoteable)
-                && parameterType.IsAssignableFrom(argument.GetType()))
+                && parameterType.IsInstanceOfType(argument))
             {
                 argument = Expression.Quote(argument);
                 return true;
