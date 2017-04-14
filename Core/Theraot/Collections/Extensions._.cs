@@ -15,6 +15,24 @@ namespace Theraot.Collections
     [System.Diagnostics.DebuggerNonUserCode]
     public static partial class Extensions
     {
+        public static void Add<T>(this Stack<T> stack, T item)
+        {
+            if (stack == null)
+            {
+                throw new ArgumentNullException("stack");
+            }
+            stack.Push(item);
+        }
+
+        public static void Add<T>(this Queue<T> queue, T item)
+        {
+            if (queue == null)
+            {
+                throw new ArgumentNullException("queue");
+            }
+            queue.Enqueue(item);
+        }
+
         public static T[] AddFirst<T>(this IList<T> list, T item)
         {
             if (list == null)
