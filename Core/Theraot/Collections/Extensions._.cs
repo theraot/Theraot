@@ -2615,6 +2615,42 @@ namespace Theraot.Collections
             }
         }
 
+        public static bool TryTake<T>(this Stack<T> stack, out T item)
+        {
+            if (stack == null)
+            {
+                throw new ArgumentNullException("stack");
+            }
+            try
+            {
+                item = stack.Pop();
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                item = default(T);
+                return false;
+            }
+        }
+
+        public static bool TryTake<T>(this Queue<T> queue, out T item)
+        {
+            if (queue == null)
+            {
+                throw new ArgumentNullException("queue");
+            }
+            try
+            {
+                item = queue.Dequeue();
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+                item = default(T);
+                return false;
+            }
+        }
+
         public static int UnionWith<T>(this ICollection<T> source, IEnumerable<T> other)
         {
             return source.AddRange(other.Where(input => !source.Contains(input)));
